@@ -47,6 +47,7 @@ def digest(path):
 
 
 def catalog(root=ROOT):
+    root = Path(root).resolve()
     obj = read_json(root / "workbench/catalog.json")
     if obj.get("schema") != 1 or not isinstance(obj.get("projects"), dict):
         raise ValueError("unsupported catalog")
@@ -58,6 +59,7 @@ def catalog(root=ROOT):
 
 
 def project(name, root=ROOT):
+    root = Path(root).resolve()
     entries = catalog(root)
     if name not in entries:
         raise ValueError("unknown project: " + name)
@@ -115,6 +117,7 @@ def source_check(path):
 
 
 def context(name, query="", budget=12000, root=ROOT):
+    root = Path(root).resolve()
     if not 1000 <= budget <= 64000:
         raise ValueError("context budget must be 1000..64000 characters")
     base, obj = project(name, root)
@@ -146,6 +149,8 @@ def context(name, query="", budget=12000, root=ROOT):
 
 
 def tracked_inputs(base, obj, root):
+    root = Path(root).resolve()
+    base = Path(base).resolve()
     paths = {contained(base, f) for f in obj["inputs"]}
     paths.add(base / "project.json")
     # Explicit shared dependency surface. No recursive private-directory scan.
@@ -166,6 +171,7 @@ def git_state(root):
 
 
 def run_task(name, task, root=ROOT):
+    root = Path(root).resolve()
     base, obj = project(name, root)
     if task not in obj["tasks"]:
         raise ValueError("task is not declared in project.json")
@@ -213,8 +219,9 @@ def run_task(name, task, root=ROOT):
 
 
 def verify_receipt(path, name, root=ROOT):
+    root = Path(root).resolve()
     base, obj = project(name, root)
-    path = contained(root, Path(path).relative_to(root).as_posix())
+    path = contained(root, Path(path).resolve().relative_to(root).as_posix())
     data = read_json(path)
     if data.get("schema") != 1 or data.get("project") != name or data.get("task") not in obj["tasks"]:
         raise ValueError("receipt identity mismatch")
@@ -232,6 +239,7 @@ def verify_receipt(path, name, root=ROOT):
 
 def export_project(name, destination, root=ROOT):
     """Export an explicit single-project snapshot, excluding all other projects."""
+    root = Path(root).resolve()
     base, obj = project(name, root)
     destination = Path(destination).resolve()
     if destination.exists() or destination.is_relative_to(root.resolve()):
