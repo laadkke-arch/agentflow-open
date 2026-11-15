@@ -36,7 +36,10 @@ def execute(require_git=False):
               'source':git_state(ROOT), 'python':sys.version.split()[0],
               'projects':{}, 'exports':{}, 'new_model_session_tested':False}
     markers = {'repo-intake':'INTAKE_ONLY_4C21', 'reference-audit':'AUDIT_ONLY_9E52'}
-    for name in catalog():
+    registered = catalog()
+    require(set(markers).issubset(registered), 'required acceptance labs are missing')
+    # New projects are registered separately; never execute them implicitly.
+    for name in markers:
         source_count = source_check(ROOT / catalog()[name] / 'sources.json')
         runs = []
         for task in ('test', 'demo'):
@@ -61,7 +64,7 @@ def execute(require_git=False):
                                     'context_process':'fresh process, not a fresh AI session'}
     # A second project reuses the shared module, but cannot see the first project's files.
     with tempfile.TemporaryDirectory(prefix='workbench-reuse-') as temp:
-        for name in catalog():
+        for name in markers:
             target = Path(temp)/name
             export_project(name,target)
             require(list(catalog(target))==[name], 'export catalog mixed projects')
