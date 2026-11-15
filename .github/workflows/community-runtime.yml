@@ -1,0 +1,62 @@
+name: Community web runtime
+on:
+  push:
+    branches: [chore/workspace-foundation]
+    paths:
+      - 'integrations/web-runtime/**'
+      - '.github/workflows/community-runtime.yml'
+permissions:
+  contents: read
+concurrency:
+  group: community-runtime-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Fetch reviewed community implementation at exact commit
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          lock = json.loads(pathlib.Path('integrations/web-runtime/upstreams.json').read_text())
+          target = pathlib.Path(os.environ['RUNNER_TEMP']) / 'webjjonku-upstream'
+          subprocess.run(['git', 'init', str(target)], check=True)
+          subprocess.run(['git', '-C', str(target), 'remote', 'add', 'origin', 'https://github.com/' + lock['wrapper']['repository'] + '.git'], check=True)
+          subprocess.run(['git', '-C', str(target), 'fetch', '--depth', '1', 'origin', lock['wrapper']['commit']], check=True)
+          subprocess.run(['git', '-C', str(target), 'checkout', '--detach', 'FETCH_HEAD'], check=True)
+          actual = subprocess.check_output(['git', '-C', str(target), 'rev-parse', 'HEAD'], text=True).strip()
+          assert actual == lock['wrapper']['commit']
+          print('UPSTREAM_COMMIT=' + actual)
+          PY
+          mkdir -p "$RUNNER_TEMP/af-evidence"
+          chmod 777 "$RUNNER_TEMP/af-evidence"
+      - name: Build actual community container and engine tests
+        run: |
+          set -euo pipefail
+          docker build --progress=plain -t agentflow-community-runtime:test "$RUNNER_TEMP/webjjonku-upstream" 2>&1 | tee "$RUNNER_TEMP/af-evidence/build.log"
+          docker image inspect agentflow-community-runtime:test --format '{{.Id}}' > "$RUNNER_TEMP/af-evidence/image-id.txt"
+      - name: Exercise upstream HTTP OAuth and MCP without public exposure
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=256m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --entrypoint python3 agentflow-community-runtime:test /opt/kc-mcp/scripts/smoke_test.py /usr/local/bin/spacedock --output /evidence/upstream-oauth.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/upstream-oauth.log"
+      - name: Exercise project work through the actual MCP runtime
+        if: ${{ hashFiles('integrations/web-runtime/exercise.py') != '' }}
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=512m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --mount "type=bind,source=$GITHUB_WORKSPACE,target=/fixture,readonly" --entrypoint python3 agentflow-community-runtime:test /fixture/integrations/web-runtime/exercise.py --fixture /fixture --output /evidence/project-mcp.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/project-mcp.log"
+      - name: Preserve non-secret evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: community-runtime-${{ github.sha }}
+          path: ${{ runner.temp }}/af-evidence/
+          retention-days: 14
+          if-no-files-found: warn
