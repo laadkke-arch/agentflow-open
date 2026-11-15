@@ -41,6 +41,10 @@ def execute(require_git=False):
         runs = []
         for task in ('test', 'demo'):
             path, receipt = run_task(name, task)
+            print(f'=== {name}/{task} stdout ===', flush=True)
+            print(path.with_name('stdout.txt').read_text(encoding='utf-8', errors='replace'), flush=True)
+            print(f'=== {name}/{task} stderr ===', flush=True)
+            print(path.with_name('stderr.txt').read_text(encoding='utf-8', errors='replace'), flush=True)
             require(receipt['status']=='passed', f'{name}/{task} failed: {path}')
             verify_receipt(path,name)
             runs.append({'task':task, 'receipt':path.relative_to(ROOT).as_posix(),

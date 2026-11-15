@@ -1,5 +1,5 @@
 # Current state
 
-Local test and demo tasks passed on Python 3.13.5. Empty credential fields were rejected after two genuine regression failures; assertions were not weakened. Remote exact-commit verification is pending in this implementation commit.
+Test and demo passed locally and in Linux/Windows CI at c48190a335228788c9ce41969259efce08c9913d (run 43703974464). Empty-credential regression fixed; assertions retained. Independent export and backup restoration passed.
 
-Next: read the root STATE and acceptance receipt before adopting this procedure. Scope remains the offline root-repository contract, not repository existence or a production crawler.
+Current contract: offline repository-root identity only. No existence, redirect or production crawler claim. Next: read root STATE and its exact-commit receipt before changes. This document update is later than that verified run.
