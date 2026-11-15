@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      AGENTFLOW_WEB_HOME: ${{ runner.temp }}/agentflow-web-runtime
       PYTHONDONTWRITEBYTECODE: '1'
     defaults:
       run:
@@ -24,6 +23,8 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
+      - name: Set isolated runtime location
+        run: echo "AGENTFLOW_WEB_HOME=$RUNNER_TEMP/agentflow-web-runtime" >> "$GITHUB_ENV"
       - name: Test installation boundaries
         run: python3 -m unittest discover -s integrations/web-runtime -p 'test_*.py' -v
       - name: Build pinned community engine and project adapter
