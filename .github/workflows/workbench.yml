@@ -1,0 +1,25 @@
+name: Workbench round trip
+on:
+  push:
+    branches: [chore/workspace-foundation]
+    paths:
+      - 'workbench/**'
+      - '.github/workflows/workbench.yml'
+permissions:
+  contents: read
+concurrency:
+  group: workbench-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Read exact committed workspace
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, resolved 2026-11-15
+        with:
+          persist-credentials: false
+      - name: Test validation rules
+        run: python3 -m unittest discover -s workbench -p 'test_*.py' -v
+      - name: Return traceable receipt
+        run: python3 workbench/verify.py
