@@ -42,6 +42,10 @@ jobs:
         run: |
           set -euo pipefail
           docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=512m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --mount "type=bind,source=$GITHUB_WORKSPACE,target=/fixture,readonly" --entrypoint python3 agentflow-web-runtime:e0cef9118f61 /fixture/integrations/web-runtime/exercise.py --fixture /fixture --output /evidence/project-mcp.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/project-mcp.log"
+      - name: Check actual Python contract and Git persistence through MCP
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=512m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --mount "type=bind,source=$GITHUB_WORKSPACE,target=/fixture,readonly" --entrypoint python3 agentflow-web-runtime:e0cef9118f61 /fixture/integrations/web-runtime/compatibility.py --fixture /fixture --output /evidence/compatibility.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/compatibility.log"
       - name: Start the user installation profile internally and verify it
         run: |
           set -euo pipefail
@@ -59,8 +63,10 @@ jobs:
           root=pathlib.Path(os.environ['RUNNER_TEMP'])/'af-evidence'
           upstream=json.loads((root/'upstream-oauth.json').read_text())
           actual=json.loads((root/'project-mcp.json').read_text())
+          compatibility=json.loads((root/'compatibility.json').read_text())
           result={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],
             'upstream_checks':len(upstream['passed']),'project_checks':len(actual['passed']),
+            'compatibility_checks':len(compatibility['passed']),'python':compatibility['python'],
             'actual_mcp_calls':len(actual['mcp_calls']),'installation_profile':'passed and recreated',
             'public_endpoint_created':False,'user_pc_modified':False,'chatgpt_ui_tested':False}
           (root/'summary.json').write_text(json.dumps(result,indent=2))
