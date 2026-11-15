@@ -1,9 +1,13 @@
-name: Workbench round trip
+name: Workbench acceptance
 on:
   push:
-    branches: [chore/workspace-foundation]
+    branches: [chore/workspace-foundation, 'work/**']
     paths:
       - 'workbench/**'
+      - 'lab/**'
+      - 'scripts/**'
+      - 'docs/procedures/**'
+      - '.gitattributes'
       - '.github/workflows/workbench.yml'
 permissions:
   contents: read
@@ -12,14 +16,44 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    env:
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Read exact committed workspace
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, resolved 2026-11-15
+      - name: Read exact committed workspace and history
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, checked 2026-11-15
         with:
           persist-credentials: false
-      - name: Test validation rules
-        run: python3 -m unittest discover -s workbench -p 'test_*.py' -v
-      - name: Return traceable receipt
-        run: python3 workbench/verify.py
+          fetch-depth: 0
+      - name: Use Python 3.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6, checked 2026-11-15
+        with:
+          python-version: '3.12'
+      - name: Diagnose workspace
+        run: python -m workbench doctor
+      - name: Test, exercise both projects, export and restore backup
+        run: python scripts/check.py --require-git
+      - name: Preserve original smoke check
+        run: python workbench/verify.py
+      - name: Keep bounded execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, checked 2026-11-15
+        with:
+          name: workbench-evidence-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            .workbench/acceptance.json
+            .workbench/check-*.log
+            .workbench/context-*.json
+            .workbench/runs/**/receipt.json
+            .workbench/runs/**/stdout.txt
+            .workbench/runs/**/stderr.txt
+            .workbench/source.bundle
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: warn
