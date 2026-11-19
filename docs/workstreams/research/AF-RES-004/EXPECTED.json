@@ -1,0 +1,849 @@
+{
+  "task_id": "AF-RES-004",
+  "pack_version": "1.0",
+  "status": "AUTHOR_EXPECTATIONS_FROZEN_BEFORE_BLIND_REVIEW",
+  "protocol_commit": "f4f08a0ef5f5354f814abb2d6fe98d0b2f53b114",
+  "cases_commit": "b245a275b0e8d1a2552aa36b5900cd219ff73b73",
+  "notice": "작성자의 기대 판단이다. 판정자에게 사전 공개하지 않는다. 제품 검증·인간 정답·실행 결과가 아니다. 내부 검토 뒤 수정이 필요하면 원본을 보존하고 변경 사유를 별도 기록한다.",
+  "interpretation": [
+    "H pass는 명시된 적용 범위·given·설계 조건에 대한 문서적/논리적 충족이다. CONDITIONAL_TRANSFER의 pass는 실제 구현 성공을 뜻하지 않는다.",
+    "P04의 applies_to 조건은 해당 범위에만 적용한다. 완성 대안에서 참고 원리 전용 조건을 임의 면제한 것이 아니다.",
+    "source_ids는 CASES.json 및 sources.json에서 URL로 해석한다. 합성 입력 가정은 외부 자료가 관측했다는 뜻이 아니다.",
+    "라벨 일치가 근거의 충분함을 대신하지 않는다. 새로운 유효 근거, 잘못된 입력, 더 정확한 해석은 REVIEW.md에서 이견으로 심사한다."
+  ],
+  "expected_counts": {
+    "DIRECT_DOCUMENTED": 7,
+    "SURFACE_OR_CONSTRAINT_MISMATCH": 6,
+    "INSUFFICIENT": 2,
+    "CONDITIONAL_TRANSFER": 3
+  },
+  "rows": [
+    {
+      "row_id": "R01",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "component",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P01-H1",
+          "status": "pass",
+          "reason": "기존 문서는 network 없이 수정할 수 있다.",
+          "source_ids": [
+            "S02"
+          ]
+        },
+        {
+          "id": "P01-H2",
+          "status": "pass",
+          "reason": "IndexedDBStorageAdapter를 명시했고 저장 완료 후 정상 재진입이라는 입력이다.",
+          "source_ids": [
+            "S01"
+          ]
+        },
+        {
+          "id": "P01-H3",
+          "status": "pass",
+          "reason": "같은 초기 문서와 변경 전달 조건에서 CRDT의 결정적인 merge 규칙을 사용한다.",
+          "source_ids": [
+            "S03"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S01 Storage/IndexedDB",
+        "S02 Network Not Required",
+        "S03 Map/List merge rules"
+      ],
+      "rationale": "명시된 저장·동기화 구성이 문서 범위에서 세 요구를 함께 뒷받침한다. 같은 key의 동시 값에서 임의지만 결정적인 선택을 하는 것은 이 문제의 수렴 요구와 모순되지 않는다.",
+      "counterexample": "StorageAdapter를 빼면 문서는 transient일 수 있다. 모든 편집 의도나 재고 불변조건 보존을 요구하면 현재 근거만으로 부족하다.",
+      "minimum_next_check": "D3 승격 시 두 브라우저의 오프라인 저장·정상 재시작·역순 전달 시험을 수행한다. 이 팩에서는 미실행.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R02",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "component",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P01-H1",
+          "status": "pass",
+          "reason": "오프라인 Y.Doc 편집을 설명한다.",
+          "source_ids": [
+            "S04"
+          ]
+        },
+        {
+          "id": "P01-H2",
+          "status": "pass",
+          "reason": "y-indexeddb가 명시되어 update를 브라우저에 보존한다.",
+          "source_ids": [
+            "S04"
+          ]
+        },
+        {
+          "id": "P01-H3",
+          "status": "pass",
+          "reason": "모든 update가 전달되면 commutative/associative/idempotent update 규칙으로 수렴한다.",
+          "source_ids": [
+            "S05"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S04 Offline Support / y-indexeddb",
+        "S05 서두 Document Updates"
+      ],
+      "rationale": "본문 Y.Doc, persistence, eventual delivery, 이미 캐시된 app shell이 각각 구분되어 있다.",
+      "counterexample": "Y.Doc만 선언하거나 app shell 캐시까지 y-indexeddb가 해결한다고 주장하면 요구를 넘는 추론이다. 브라우저 저장소 삭제는 이 사례의 보장 범위가 아니다.",
+      "minimum_next_check": "D3 승격 시 실제 provider와 저장 완료를 기다린 restart 시나리오를 확인한다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R03",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "component",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P01-H1",
+          "status": "pass",
+          "reason": "로컬 JSON 변경은 네트워크 없이 가능하다는 합성 구성이다.",
+          "source_ids": [
+            "S07"
+          ]
+        },
+        {
+          "id": "P01-H2",
+          "status": "pass",
+          "reason": "기존 IndexedDB log가 저장한다는 입력의 given에 한정한다.",
+          "source_ids": []
+        },
+        {
+          "id": "P01-H3",
+          "status": "fail",
+          "reason": "replace 연산은 교환 법칙을 보장하지 않으며 공통 순서/병합이 없다.",
+          "source_ids": [
+            "S07"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S07 §3, §4.3 replace"
+      ],
+      "rationale": "patch의 작음/표준화는 동시성 충돌 해소 근거가 아니다. 반박은 RFC 연산 의미와 아래 합성 trace의 결합 추론이다.",
+      "counterexample": "초기 {title:'0'}에서 pA=replace /title 'A', pB=replace /title 'B'. A가 pA→pB를 적용하면 B, B가 pB→pA를 적용하면 A다. 모든 patch를 받아도 다르다. 실제 실행한 trace는 아니다.",
+      "minimum_next_check": "공통 total order 또는 충돌 병합 규칙을 추가한 새 구성으로 별도 행을 만든 뒤 재판정한다. 현재 입력을 몰래 보완하지 않는다.",
+      "evidence_level": "D1 + researcher_derived_counterexample"
+    },
+    {
+      "row_id": "R04",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "component",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P01-H1",
+          "status": "pass",
+          "reason": "local awareness state에 text를 넣는 것은 입력의 로컬 변경에 해당한다.",
+          "source_ids": [
+            "S06"
+          ]
+        },
+        {
+          "id": "P01-H2",
+          "status": "fail",
+          "reason": "Awareness는 Y.Doc에 보존되지 않고 offline state가 제거된다. 별도 persistence도 없다고 명시했다.",
+          "source_ids": [
+            "S06"
+          ]
+        },
+        {
+          "id": "P01-H3",
+          "status": "unknown",
+          "reason": "presence map의 합의가 단일 문서 본문 의미를 제공하는지는 이 구성으로 입증되지 않는다.",
+          "source_ids": [
+            "S06"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S06 Awareness 정의와 persistence 설명"
+      ],
+      "rationale": "같은 CRDT 계열이라는 이름이 본문 영속성을 보장하지 않는다. 알려진 H2 실패가 다른 미확인보다 우선한다.",
+      "counterexample": "마지막 사용자 탭 종료 뒤 다시 열면 text가 담긴 영속 Y.Doc 경로가 없다.",
+      "minimum_next_check": "본문을 Y.Doc과 persistence에 두는 R02와 같은 별도 구성을 평가한다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R05",
+      "label": "INSUFFICIENT",
+      "role": "component",
+      "L": "ok",
+      "E": "unknown",
+      "H": [
+        {
+          "id": "P01-H1",
+          "status": "pass",
+          "reason": "Automerge의 오프라인 편집 원리는 문서로 뒷받침된다.",
+          "source_ids": [
+            "S02"
+          ]
+        },
+        {
+          "id": "P01-H2",
+          "status": "unknown",
+          "reason": "실제 사용 패키지와 StorageAdapter 연결 여부가 없어서 저장을 판정할 수 없다.",
+          "source_ids": [
+            "S01"
+          ]
+        },
+        {
+          "id": "P01-H3",
+          "status": "pass",
+          "reason": "동일 초기 문서와 eventual delivery라는 문제의 조건 아래 merge 원리는 뒷받침된다.",
+          "source_ids": [
+            "S03"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S01 Storage 첫 단락",
+        "S02 Network Not Required",
+        "S03 Merge Rules"
+      ],
+      "rationale": "Automerge의 가능 기능과 이 제안의 구성을 혼동하지 않는다. adapter가 미기재라는 사실은 adapter가 없다는 사실이 아니다.",
+      "counterexample": "같은 설명을 쓰는 두 구현 중 하나는 IndexedDBStorageAdapter, 다른 하나는 메모리만 사용할 수 있다.",
+      "minimum_next_check": "Repo 초기화 코드와 storage adapter 연결/정상 reload 경로를 요구한다. 영속 경로가 확인되면 직접 문서 적합, 부재가 확인되면 H2 위반, 미제공이면 보류를 유지한다.",
+      "evidence_level": "D1 + configuration_unknown"
+    },
+    {
+      "row_id": "R06",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "component",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P02-H1",
+          "status": "pass",
+          "reason": "3 member quorum의 다수 복제와 publisher confirm, known routing을 명시했다.",
+          "source_ids": [
+            "S08",
+            "S09"
+          ]
+        },
+        {
+          "id": "P02-H2",
+          "status": "pass",
+          "reason": "TTL/길이 drop이 없고 x-delivery-limit=-1이므로 반복 재전달 제한에 의한 폐기를 제거한 구성이다.",
+          "source_ids": [
+            "S09"
+          ]
+        },
+        {
+          "id": "P02-H3",
+          "status": "pass",
+          "reason": "결과 영속화 후 manual ack와 기존 handler 멱등성을 명시했다.",
+          "source_ids": [
+            "S08"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S08 acknowledgements/confirms, retransmission",
+        "S09 quorum data safety, poison message handling, x-delivery-limit"
+      ],
+      "rationale": "durable이라는 단어만 쓰지 않고 보관·복제·ack·재전달 제한을 모두 지정했다. 다수 복제본 영구 상실 제외 조건을 유지한다.",
+      "counterexample": "quorum 기본 delivery limit 20을 그대로 쓰고 별도 보존 경로가 없다면 30회 중단 조건에서 drop 위험이 생긴다. TTL 또는 max-length 정책도 판단을 바꾼다.",
+      "minimum_next_check": "D3 승격 시 실제 4.1 queue declaration과 적용 정책을 조회하고 30회 crash-before-ack 시험을 한다. 문서 4.1 경로의 4.3 관련 혼입 때문에 policy hot-change 주장을 하지 않는다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R07",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "component",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P02-H1",
+          "status": "fail",
+          "reason": "Pub/Sub의 at-most-once 전달에는 offline consumer를 위한 보관이 없다.",
+          "source_ids": [
+            "S10"
+          ]
+        },
+        {
+          "id": "P02-H2",
+          "status": "fail",
+          "reason": "연결이 끊긴 동안 놓친 메시지를 resubscribe만으로 replay하지 않는다.",
+          "source_ids": [
+            "S10"
+          ]
+        },
+        {
+          "id": "P02-H3",
+          "status": "fail",
+          "reason": "영속 처리 결과에 결합할 queue ack/delete 경로가 제시된 Pub/Sub에 없다.",
+          "source_ids": [
+            "S10"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S10 Delivery semantics"
+      ],
+      "rationale": "publish/subscribe 기능은 신뢰 작업 큐 요구와 다르다. 멱등 handler가 있더라도 사라진 입력을 복원하지 않는다.",
+      "counterexample": "worker가 offline인 동안 publish 후 재접속하면 그 작업을 다시 받을 보관 경로가 없다.",
+      "minimum_next_check": "Streams나 영속 outbox 등 새 구성을 명시한 별도 행을 평가한다. Redis 전체를 부적합이라고 일반화하지 않는다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R08",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "alternative",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P02-H1",
+          "status": "pass",
+          "reason": "FIFO partition의 다중 AZ 복제와 수락 후 응답이라는 주어진 조건을 사용한다.",
+          "source_ids": [
+            "S27"
+          ]
+        },
+        {
+          "id": "P02-H2",
+          "status": "pass",
+          "reason": "24시간 보존·재전달 가능한 visibility·redrive drop 없음·24시간 내 완료라는 지정 범위다.",
+          "source_ids": [
+            "S12",
+            "S13"
+          ]
+        },
+        {
+          "id": "P02-H3",
+          "status": "pass",
+          "reason": "영속 결과 뒤 DeleteMessage와 이미 주어진 영속 멱등 처리가 중복을 흡수한다.",
+          "source_ids": [
+            "S12",
+            "S14"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S27 Partitions and data distribution",
+        "S12 visibility lifecycle",
+        "S13 MessageRetentionPeriod / RedrivePolicy",
+        "S14 deduplication 5-minute interval"
+      ],
+      "rationale": "직접 문서 적합의 근거는 FIFO 이름이나 exactly-once 문구 단독이 아니라 수신/삭제 수명주기와 명시한 handler 경계다.",
+      "counterexample": "handler 멱등성을 제거하고 외부 효과를 한 번만 요구하면 R18의 crash window가 발생한다. 보존기간보다 긴 작업은 현재 범위 밖이다.",
+      "minimum_next_check": "D3 승격 시 계정의 retention/redrive/visibility 설정과 중단 후 동일 ID의 결과 중복 방지를 확인한다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R09",
+      "label": "INSUFFICIENT",
+      "role": "component",
+      "L": "ok",
+      "E": "unknown",
+      "H": [
+        {
+          "id": "P02-H1",
+          "status": "unknown",
+          "reason": "durable 선언만으로 복제 유형과 단일 노드 장애 보존이 결정되지 않는다.",
+          "source_ids": [
+            "S08",
+            "S09"
+          ]
+        },
+        {
+          "id": "P02-H2",
+          "status": "unknown",
+          "reason": "TTL·delivery limit·길이 제한·DLX를 모른다.",
+          "source_ids": [
+            "S09"
+          ]
+        },
+        {
+          "id": "P02-H3",
+          "status": "unknown",
+          "reason": "manual ack라는 표현은 있지만 결과 영속화와 ack의 순서가 명시되지 않았다.",
+          "source_ids": [
+            "S08"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S08 Data Safety, ack semantics",
+        "S09 data safety and poison message handling"
+      ],
+      "rationale": "누락된 설정을 기본값으로 채워 넣지 않는다. 문서상 기능이 있다는 것만으로 이 배포 구성의 보존을 승인하지 않는다.",
+      "counterexample": "quorum+무제한 재전달과 single-node/짧은 TTL 구성은 같은 짧은 제안문과 모두 양립한다.",
+      "minimum_next_check": "실제 queue declaration, policy/operator policy, replicas, TTL/max-length/delivery-limit/DLX, ack 호출 위치를 한 묶음으로 받는다. 요구 충족이면 직접 문서 적합, 알려진 drop/선ack가 있으면 위반, 누락이면 보류다.",
+      "evidence_level": "D1 + configuration_unknown"
+    },
+    {
+      "row_id": "R10",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "component",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P03-H1",
+          "status": "pass",
+          "reason": "maxsize=8은 큐 안 대기를 제한하고 4개 고정 worker는 각 한 작업만 처리한다.",
+          "source_ids": [
+            "S15"
+          ]
+        },
+        {
+          "id": "P03-H2",
+          "status": "pass",
+          "reason": "full queue의 await put이 기다리며 입력이 lazy이고 별도 task/buffer가 없다.",
+          "source_ids": [
+            "S15"
+          ]
+        },
+        {
+          "id": "P03-H3",
+          "status": "pass",
+          "reason": "worker가 sink 완료 후에만 다음 get을 하므로 처리 slot이 시간만으로 늘지 않는다.",
+          "source_ids": [
+            "S15"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S15 Queue(maxsize), put/get"
+      ],
+      "rationale": "큐의 상한과 실행 중 상한을 별도로 계산한다. 순서는 합성 구성의 설명이며 Python 문서가 전체 애플리케이션을 검사했다는 뜻이 아니다.",
+      "counterexample": "모든 입력마다 create_task를 미리 만들고 내부에서 Semaphore만 기다리면 기다리는 task 수가 계속 늘 수 있다. maxsize는 byte 메모리 상한도 아니다.",
+      "minimum_next_check": "D3 승격 시 sink를 event로 막은 상태에서 queue qsize≤8, processing≤4, producer 대기를 계측한다.",
+      "evidence_level": "D1 + configuration_reasoning"
+    },
+    {
+      "row_id": "R11",
+      "label": "CONDITIONAL_TRANSFER",
+      "role": "reference",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P03-H1",
+          "status": "pass",
+          "reason": "명시한 credit 4와 유한 중간 buffer 8을 구현한다는 좁은 설계 대응에 한정한 pass다.",
+          "source_ids": [
+            "S17",
+            "S15"
+          ]
+        },
+        {
+          "id": "P03-H2",
+          "status": "pass",
+          "reason": "producer가 demand를 지키고 선행 task를 만들지 않는 연결이 필요하다고 명시했다.",
+          "source_ids": [
+            "S17"
+          ]
+        },
+        {
+          "id": "P03-H3",
+          "status": "pass",
+          "reason": "request 보충 시점을 최종 완료 뒤로 두는 대상 측 설계 조건을 적었다.",
+          "source_ids": [
+            "S17",
+            "S16"
+          ]
+        }
+      ],
+      "T": "mapped",
+      "source_locations": [
+        "S17 Publisher rule 1.1, Subscriber rule 2.1, cancellation rules 1.8/2.8",
+        "S16 Semaphore acquire/release"
+      ],
+      "rationale": "요청 수 이하로 발행한다는 원 분야 관계를 admission credit에 연결한다. 규격 자체는 item 전달 이후의 Python 작업 완료 시점을 정하지 않으므로 그 연결은 연구자의 구현 조건이다.",
+      "transfer_conditions": {
+        "mapping": [
+          "Subscriber demand → 받아도 되는 작업 credit",
+          "Publisher onNext → 새 작업 admission",
+          "처리·sink 완료 → credit 1개 재발급"
+        ],
+        "bridge": [
+          "Python adapter, permit 회수, 유한 buffer, cancellation/failure 경로의 중복 회수 방지"
+        ],
+        "excluded": [
+          "JVM 바이너리 직접 사용",
+          "cancel 호출 직후 모든 in-flight 동작의 즉시 종료"
+        ]
+      },
+      "counterexample": "onNext 수신 즉시 request(1)하면서 작업을 별도 task로 시작하면 완료와 credit이 분리되어 processing이 증가한다.",
+      "minimum_next_check": "completion 기반 request 재발급 adapter의 상태 전이와 취소/실패 경로를 먼저 설계·검토하고 그 뒤 stall 시험을 한다.",
+      "evidence_level": "D1 + unimplemented_transfer_hypothesis"
+    },
+    {
+      "row_id": "R12",
+      "label": "CONDITIONAL_TRANSFER",
+      "role": "reference",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P03-H1",
+          "status": "pass",
+          "reason": "숫자 상한은 Toyota 사실이 아니라 입력에 명시한 4 permits와 큐 8의 추가 장부 조건이다.",
+          "source_ids": [
+            "S18",
+            "S16"
+          ]
+        },
+        {
+          "id": "P03-H2",
+          "status": "pass",
+          "reason": "하류의 소모를 보충 근거로 삼는 관계를 pausable producer에 연결하는 설계다.",
+          "source_ids": [
+            "S18"
+          ]
+        },
+        {
+          "id": "P03-H3",
+          "status": "pass",
+          "reason": "제조 현장의 인출 신호를 소프트웨어에서는 최종 저장 완료 신호로 구체적으로 바꾼다.",
+          "source_ids": [
+            "S18",
+            "S16"
+          ]
+        }
+      ],
+      "T": "mapped",
+      "source_locations": [
+        "S18 Just-in-Time / downstream withdrawal and replenishment",
+        "S16 Semaphore acquire/release"
+      ],
+      "rationale": "제조업 명칭만 가져오는 유사성이 아니라 보충의 원인과 범위가 대응한다. TPS 페이지가 Python 동시 작업 상한을 증명했다는 주장은 하지 않는다.",
+      "transfer_conditions": {
+        "mapping": [
+          "뒤 공정 사용 → 이미 허용된 작업의 최종 완료",
+          "앞 공정 보충 → 회수한 permit만큼 신규 admission",
+          "완충 재고 → 별도 크기를 제한한 대기 큐"
+        ],
+        "bridge": [
+          "permit 총량과 소유자를 명시",
+          "sink 완료 후 정확히 한 번 회수",
+          "예외·취소 시 permit 누수/이중 회수 방지"
+        ],
+        "excluded": [
+          "제조 리드타임 수치를 소프트웨어 처리량으로 사용",
+          "정해진 permit 없이 pull이라는 이름만 사용"
+        ]
+      },
+      "counterexample": "파일을 큐에서 꺼내자마자 permit을 돌려주고 저장은 계속하면 느린 sink 앞의 실행 중 작업이 늘어난다. 소프트웨어의 실패/취소는 원 페이지가 해결하지 않는다.",
+      "minimum_next_check": "최종 완료 event 정의와 permit 보존 상태도를 작성한다. 소프트웨어 추가 장부를 제외해도 상한이 성립한다고 주장하면 위반으로 바뀐다.",
+      "evidence_level": "D1 + cross_domain_design_hypothesis"
+    },
+    {
+      "row_id": "R13",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "reference",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P03-H1",
+          "status": "fail",
+          "reason": "시간 보충 token은 완료하지 않은 task 수를 제한하지 않는다.",
+          "source_ids": [
+            "S19"
+          ]
+        },
+        {
+          "id": "P03-H2",
+          "status": "fail",
+          "reason": "producer 재개가 sink 완료와 연결되지 않고 별도 유한 대기 경로가 없다.",
+          "source_ids": [
+            "S19"
+          ]
+        },
+        {
+          "id": "P03-H3",
+          "status": "fail",
+          "reason": "R=4/s로 시간에 따라 새 token이 생겨 미완료 4개 위에 새 작업이 들어간다.",
+          "source_ids": [
+            "S19"
+          ]
+        }
+      ],
+      "T": "analogy_only",
+      "source_locations": [
+        "S19 §5.1.3, Appendix A.4 token bucket"
+      ],
+      "rationale": "rate와 concurrency의 단위를 혼동했다. token bucket이 무용하다는 결론이 아니라 이 요구의 상한 대체로 사용할 수 없다는 결론이다.",
+      "counterexample": "t=0에 4개를 시작해 모두 멈추게 한다. t=1s에 token 4개가 보충되면 4개를 더 시작하여 미완료가 8개가 된다. 합성 반례이며 실행하지 않았다.",
+      "minimum_next_check": "완료 때 회수하는 concurrency permit 또는 fixed worker를 추가한 새 구성을 별도 평가한다.",
+      "evidence_level": "D1 + researcher_derived_counterexample"
+    },
+    {
+      "row_id": "R14",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "alternative",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P04-H1",
+          "status": "pass",
+          "reason": "local repository init이 문서화되어 있다.",
+          "source_ids": [
+            "S20"
+          ]
+        },
+        {
+          "id": "P04-H2",
+          "status": "pass",
+          "reason": "snapshot을 여러 개 유지하고 ID를 선택해 restore한다. forget/prune을 하지 않는 입력이다.",
+          "source_ids": [
+            "S21",
+            "S22"
+          ]
+        },
+        {
+          "id": "P04-H3",
+          "status": "pass",
+          "reason": "파일 blob과 metadata의 암호화 구조를 설명한다.",
+          "source_ids": [
+            "S23"
+          ]
+        }
+      ],
+      "not_applicable_requirement_ids": [
+        "P04-H4",
+        "P04-H5"
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S20 Local repository",
+        "S21 Creating snapshots",
+        "S22 restore selected snapshot",
+        "S23 Design: encryption"
+      ],
+      "rationale": "정해진 범위의 백업 대안에 문서상 요구가 맞는다. reference 전용 H4/H5는 적용 대상이 아니므로 합격으로 채점하지 않는다.",
+      "counterexample": "보존하려는 snapshot을 forget/prune하거나 키를 잃으면 복원 요구를 만족하지 못한다. 움직이는 파일의 application consistency는 given에서 제외했다.",
+      "minimum_next_check": "D3 승격 시 임시 파일을 수정·삭제한 후 이전 snapshot을 별도 폴더에 restore하여 bytes를 대조한다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R15",
+      "label": "DIRECT_DOCUMENTED",
+      "role": "alternative",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P04-H1",
+          "status": "pass",
+          "reason": "local repo와 init --encryption=repokey 예제가 있다.",
+          "source_ids": [
+            "S24"
+          ]
+        },
+        {
+          "id": "P04-H2",
+          "status": "pass",
+          "reason": "명명된 복수 archive와 archive extract를 문서화한다.",
+          "source_ids": [
+            "S24"
+          ]
+        },
+        {
+          "id": "P04-H3",
+          "status": "pass",
+          "reason": "repokey 암호화 구성과 키/암호 보관 전제를 명시한다.",
+          "source_ids": [
+            "S24"
+          ]
+        }
+      ],
+      "not_applicable_requirement_ids": [
+        "P04-H4",
+        "P04-H5"
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S24 Quick Start: repository initialization, create, extract, encryption"
+      ],
+      "rationale": "Borg 1.2.8의 지정된 local archive 구성에만 한정한 D1 판정이다. 최신 보안 추천 버전이라는 판단은 아니다.",
+      "counterexample": "같은 repo라도 암호화를 끄거나 이전 archive를 삭제하면 현재 요구를 충족하지 않는다.",
+      "minimum_next_check": "D3 승격 시 임시 Monday/Tuesday archive를 만들고 Monday를 분리 디렉터리에 추출하여 수정·삭제 파일을 대조한다.",
+      "evidence_level": "D1"
+    },
+    {
+      "row_id": "R16",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "alternative",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P04-H1",
+          "status": "pass",
+          "reason": "지정한 양쪽 폴더가 local이다.",
+          "source_ids": [
+            "S25"
+          ]
+        },
+        {
+          "id": "P04-H2",
+          "status": "fail",
+          "reason": "단일 대상에 덮어 쓰고 --delete로 없어진 source 항목을 제거하며 이전 판 경로가 없다.",
+          "source_ids": [
+            "S25"
+          ]
+        },
+        {
+          "id": "P04-H3",
+          "status": "fail",
+          "reason": "평문 대상이고 별도 저장 암호화가 없다고 입력에서 명시했다.",
+          "source_ids": []
+        }
+      ],
+      "not_applicable_requirement_ids": [
+        "P04-H4",
+        "P04-H5"
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S25 --delete, --backup, --backup-dir"
+      ],
+      "rationale": "현재 mirror 방식은 이력 보존·암호화 요구를 충족하지 않는다. rsync가 어떤 백업 구성에도 사용 불가능하다는 결론은 아니다.",
+      "counterexample": "day1 a.txt='old', day2 a.txt 수정 또는 삭제 후 같은 target에 실행하면 old 판을 선택할 보관 위치가 없다. --backup-dir나 snapshot을 추가하면 다른 구성이다.",
+      "minimum_next_check": "이전 판 보존 경로와 저장 암호화를 추가한 별도 제안이면 새 행으로 평가한다.",
+      "evidence_level": "D1 + given_configuration"
+    },
+    {
+      "row_id": "R17",
+      "label": "CONDITIONAL_TRANSFER",
+      "role": "reference",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "id": "P04-H1",
+          "status": "not_in_scope",
+          "reason": "처음부터 manifest 포함 검증의 참고 역할만 평가한다.",
+          "source_ids": []
+        },
+        {
+          "id": "P04-H2",
+          "status": "not_in_scope",
+          "reason": "실제 보존·복원은 다른 구성요소 책임이라고 입력에서 한정했다.",
+          "source_ids": []
+        },
+        {
+          "id": "P04-H3",
+          "status": "not_in_scope",
+          "reason": "암호화를 대신한다는 주장이 없다.",
+          "source_ids": []
+        },
+        {
+          "id": "P04-H4",
+          "status": "pass",
+          "reason": "leaf에서 신뢰 root까지 inclusion proof를 검증하는 관계를 옮긴다.",
+          "source_ids": [
+            "S26"
+          ]
+        },
+        {
+          "id": "P04-H5",
+          "status": "pass",
+          "reason": "파일 보관·암호화·복원을 대체하지 않는다고 명시했다.",
+          "source_ids": [
+            "S26"
+          ]
+        }
+      ],
+      "T": "mapped",
+      "source_locations": [
+        "S26 §2.1.3 inclusion proof; §2.1.4 consistency proof와 구별"
+      ],
+      "rationale": "인증서 로그에서 문서 목록으로 대상은 바뀌지만 해시 트리의 포함 관계를 보존한다. root의 신뢰와 결정적 인코딩이 given으로 제공된다.",
+      "transfer_conditions": {
+        "mapping": [
+          "certificate leaf → 결정적으로 인코딩한 manifest entry",
+          "trusted log root → 소유자가 보유한 selected snapshot root",
+          "inclusion path → 선택한 항목의 membership 증명"
+        ],
+        "bridge": [
+          "leaf domain separation, 인코딩/정렬 규칙, tree size와 index, root 보관·선택 경로를 구체화"
+        ],
+        "excluded": [
+          "임의 삭제가 허용되는 snapshot 간 append-only consistency 강제",
+          "membership만으로 파일 bytes의 존재·암호화·복원 가능성 주장",
+          "검증 대상이 스스로 준 root만 믿기"
+        ]
+      },
+      "counterexample": "공격자 또는 잘못된 저장소가 root와 proof를 함께 바꾸면 신뢰 anchor 없이 포함 계산만 맞을 수 있다. manifest가 있어도 실제 파일 blob이 사라질 수 있다.",
+      "minimum_next_check": "canonical manifest 형식과 owner-held root 경로를 고정하고 변경된 entry/순서/다른 root를 거절하는 소규모 검증을 한다.",
+      "evidence_level": "D1 + unimplemented_transfer_hypothesis"
+    },
+    {
+      "row_id": "R18",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "role": "alternative",
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "id": "P02-H1",
+          "status": "pass",
+          "reason": "R08과 같은 FIFO 복제·수락 조건이다.",
+          "source_ids": [
+            "S27"
+          ]
+        },
+        {
+          "id": "P02-H2",
+          "status": "pass",
+          "reason": "R08의 보존·visibility·재전달 조건을 유지한다.",
+          "source_ids": [
+            "S12"
+          ]
+        },
+        {
+          "id": "P02-H3",
+          "status": "fail",
+          "reason": "P02-V1은 외부 효과 멱등성/원자성을 없앴다. 송신 중복 제거만으로 수신 후 외부 효과의 crash window를 닫지 못한다.",
+          "source_ids": [
+            "S12",
+            "S14"
+          ]
+        }
+      ],
+      "T": "not_needed",
+      "source_locations": [
+        "S12 visibility timeout / DeleteMessage",
+        "S14 5-minute send deduplication"
+      ],
+      "rationale": "R08과 큐 이름·설정이 같아도 handler 경계 하나가 달라지면 판단이 바뀐다. 반박은 원문의 수명주기와 합성 고장 시점으로 도출한다.",
+      "counterexample": "counter=0 → message receive → external increment로 1 → DeleteMessage 전 crash → visibility 만료 → redelivery → 외부 increment로 2. 두 번째 SendMessage를 하지 않아도 중복 효과가 생긴다.",
+      "minimum_next_check": "external API의 idempotency key, 영속 업무 중복 방지 또는 원자적 효과 경계가 가능한지 확인한다. 현재 입력은 모두 없다고 고정했으므로 조건부라는 말로 승인하지 않는다.",
+      "evidence_level": "D1 + researcher_derived_counterexample"
+    }
+  ]
+}
