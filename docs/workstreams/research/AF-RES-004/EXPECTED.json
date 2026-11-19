@@ -1,10 +1,10 @@
 {
   "task_id": "AF-RES-004",
-  "pack_version": "1.1",
-  "status": "REVISED_AFTER_V1_BLIND_REVIEW",
+  "pack_version": "1.2",
+  "status": "REVISED_AFTER_FOCUSED_V11_REVIEW",
   "protocol_commit": "e36abce43f4979dfd7bd864571e29ac8b0fb1b99",
-  "cases_commit": "b8b965ede6368f8fc6879f4edb95a97382b14f17",
-  "notice": "v1.0의 작성자 기대 답은 13e7655212726ce1941c3aeb278c834611378887에서 블라인드 검토 전에 동결했다. 현재 v1.1은 원응답을 보존한 뒤 일부 H 값과 적용 층위를 고친 연구자 답이다. 새 블라인드 검증·실행 성공·인간 정답으로 표시하지 않는다.",
+  "cases_commit": "ba1b7737ed48793ed709c8c8c4a1e0d683f7e31e",
+  "notice": "v1.0의 작성자 기대 답은 13e7655212726ce1941c3aeb278c834611378887에서 블라인드 검토 전에 동결했다. 현재 v1.1은 원응답을 보존한 뒤 일부 H 값과 적용 층위를 고친 연구자 답이다. 새 블라인드 검증·실행 성공·인간 정답으로 표시하지 않는다. v1.2는 B의 비블라인드 수정 검토에서 드러난 R12의 producer 대기 연결을 새 조건으로 명시했다. 이 강화된 입력이 v1.0 블라인드에서 이미 확인됐다고 주장하지 않는다.",
   "interpretation": [
     "H pass는 명시된 적용 범위·given·설계 조건에 대한 문서적/논리적 충족이다. CONDITIONAL_TRANSFER의 pass는 실제 구현 성공을 뜻하지 않는다.",
     "P04의 applies_to 조건은 해당 범위에만 적용한다. 완성 대안에서 참고 원리 전용 조건을 임의 면제한 것이 아니다.",
@@ -544,7 +544,7 @@
         {
           "id": "P03-H2",
           "status": "pass",
-          "reason": "하류의 소모를 보충 근거로 삼는 관계를 pausable producer에 연결하는 설계다.",
+          "reason": "v1.2가 명시한 producer의 실제 permit/유한 큐 대기, 선행 대기 task 생성 금지, 우회 무한 buffer 금지 조건을 정확히 구현하는 설계 범위에서만 pass다. 앞 버전의 숫자 장부만으로는 이 연결을 충분히 확인하지 못한다.",
           "source_ids": [
             "S18"
           ]
@@ -574,7 +574,8 @@
         "bridge": [
           "permit 총량과 소유자를 명시",
           "sink 완료 후 정확히 한 번 회수",
-          "예외·취소 시 permit 누수/이중 회수 방지"
+          "예외·취소 시 permit 누수/이중 회수 방지",
+          "producer가 permit/유한 큐 용량을 실제 기다린 뒤 작업을 만들도록 연결; 미리 만든 대기 task와 우회 무한 buffer 금지"
         ],
         "excluded": [
           "제조 리드타임 수치를 소프트웨어 처리량으로 사용",
@@ -582,7 +583,7 @@
         ]
       },
       "counterexample": "파일을 큐에서 꺼내자마자 permit을 돌려주고 저장은 계속하면 느린 sink 앞의 실행 중 작업이 늘어난다. 소프트웨어의 실패/취소는 원 페이지가 해결하지 않는다.",
-      "minimum_next_check": "최종 완료 event 정의와 permit 보존 상태도를 작성한다. 소프트웨어 추가 장부를 제외해도 상한이 성립한다고 주장하면 위반으로 바뀐다.",
+      "minimum_next_check": "producer가 실제로 대기하는 지점과 작업 생성 시점, 최종 저장 완료 후 permit 반환을 같은 상태 전이로 확인한다. 4/8이라는 숫자 장부만 있고 이 연결이 없으면 H2의 pass를 줄 수 없다. 실제 구현은 미실시다.",
       "evidence_level": "D1 + cross_domain_design_hypothesis",
       "H_assessment_scope": "reference_design",
       "runtime_observation": "not_performed",
@@ -936,6 +937,20 @@
           ],
           "field": "P02-H2",
           "reason": "총 경과시간 기산점 및 12시간 visibility 한계 명시"
+        }
+      ],
+      "label_changes": 0,
+      "not_new_blind_evidence": true
+    },
+    {
+      "version": "1.2",
+      "previous_expected_commit": "d74f77e6be9fc94eb850f273819649947f615224",
+      "changes": [
+        {
+          "row_id": "R12",
+          "field": "P03-H2 / transfer_conditions.bridge",
+          "reason": "B의 비블라인드 v1.1 검토가 찾은 누락 연결을 채택. 가용 permit/큐 용량을 기다린 뒤 생성하고 선행 task/무한 buffer를 금지하는 조건을 입력에 새로 명시한 후 설계상 pass를 유지한다.",
+          "previous_claim_limit": "v1.1의 H2 pass는 연결 명시가 부족했다. 이를 원문이나 초기 블라인드 결과로 소급 정당화하지 않는다."
         }
       ],
       "label_changes": 0,
