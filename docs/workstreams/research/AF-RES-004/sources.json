@@ -1,0 +1,447 @@
+{
+  "task_id": "AF-RES-004",
+  "version": 1,
+  "source_count": 26,
+  "count_policy": "서로 다른 외부 1차 자료 26개. 동일 URL의 재열람/fragment는 중복 제외. 방법론 6편은 methodology-notes.json에 따로 있으며 합계 32개. 운영 지침과 실패 열람은 제외.",
+  "evidence_boundary": "아래는 공식 문서·규격을 직접 읽은 D1 근거. candidate 코드를 설치/실행/통합한 D3/D4 근거가 아니다. versioned URL도 영구불변이라고 가정하지 않는다.",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Automerge Repo — Storage",
+      "url": "https://automerge.org/docs/reference/repositories/storage/",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "Storage, IndexedDB, File system; web lines 58–96",
+      "confirmed": "StorageAdapter가 없으면 Repo는 재시작 후 원격 peer에서 다시 받아야 하는 일시 상태다. IndexedDB/파일 시스템 adapter를 별도로 제공하며 같은 저장소를 여러 Repo가 사용할 수 있다.",
+      "limits": "브라우저 저장 삭제·quota·전원 손실 내구성·업무 의미 충돌을 검증한 자료가 아니다. 페이지 전체 버전은 고정되지 않았다.",
+      "tool_refs": [
+        "turn350296117view1"
+      ]
+    },
+    {
+      "id": "S02",
+      "title": "Automerge — Network Sync",
+      "url": "https://automerge.org/docs/tutorial/network-sync/",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "Network Not Required 및 Caution; lines 83–110",
+      "confirmed": "IndexedDBStorageAdapter를 포함한 예에서 이미 불러온 문서를 오프라인 수정하고 재접속 후 peer 변경을 동기화한다. 공개 sync server는 실험용이며 production 신뢰성 보장이 없다고 적혀 있다.",
+      "limits": "공개 서버 사용이 사설 호스팅·인증·배포 성공을 증명하지 않는다. 이 팩은 공개 서버를 호출하지 않았다.",
+      "tool_refs": [
+        "turn350296117view2"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "Automerge — Merge Rules",
+      "url": "https://automerge.org/docs/reference/under-the-hood/merge-rules/",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "Map merge rules / List merge rules; lines 62–82",
+      "confirmed": "서로 다른 key 변경은 함께 반영된다. 같은 key에 동시 값을 쓰면 모든 노드가 같은 값을 고르는 규칙이다. 목록 변경은 요소 ID에 결부된다.",
+      "limits": "수렴이 사람의 의도 보존·재고/금액 등 업무 불변조건 충족을 뜻하지 않는다. 문서상의 규칙이며 구현 실행은 하지 않았다.",
+      "tool_refs": [
+        "turn143914666view0"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "Yjs — Offline Support",
+      "url": "https://docs.yjs.dev/getting-started/allowing-offline-editing",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "y-indexeddb 구성과 Loading HTML content without network access; lines 5–48",
+      "confirmed": "y-indexeddb는 Y.Doc update를 IndexedDB에 저장하고 다음 방문에 불러온다. network provider와 함께 쓸 수 있다. HTML/JS/CSS 자체의 오프라인 로딩은 service worker 등 별도 수단이다.",
+      "limits": "저장 adapter를 빼거나 앱 shell을 캐시하지 않은 구성까지 offline 앱이라고 부를 근거가 아니다. 브라우저 quota/eviction 내구성 미검증.",
+      "tool_refs": [
+        "turn350296117view3"
+      ]
+    },
+    {
+      "id": "S05",
+      "title": "Yjs — Document Updates",
+      "url": "https://docs.yjs.dev/api/document-updates",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "서두, Update API, Syncing clients; lines 5–29,70–89",
+      "confirmed": "document update는 교환·결합·멱등 성질을 가지며 모든 update를 받은 client가 동기화된다. state vector와 누락 update 교환 API를 제공한다.",
+      "limits": "모든 update의 최종 전달이 전제다. update 속성이 저장·인증·업무 규칙 보장까지 제공하지 않는다.",
+      "tool_refs": [
+        "turn350296117view4"
+      ]
+    },
+    {
+      "id": "S06",
+      "title": "Yjs — Awareness & Presence",
+      "url": "https://docs.yjs.dev/getting-started/adding-awareness",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "Awareness 정의·보존 범위·Quick start; lines 4–36",
+      "confirmed": "Awareness는 presence/cursor용 별도 CRDT이며 Y.Doc에 보존되지 않는다. offline 전환 시 자신의 awareness state를 제거한다고 설명한다.",
+      "limits": "Yjs 문서 전체가 비영속이라는 뜻은 아니다. Awareness를 본문 저장으로 쓰는 제안에만 반례다.",
+      "tool_refs": [
+        "turn350296117view5"
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "RFC 6902 — JSON Patch",
+      "url": "https://www.rfc-editor.org/rfc/rfc6902.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "RFC6902_2013_04",
+      "read_scope": "§3 Document Structure, §4.3 replace, §4.6 test, §5 Error Handling",
+      "confirmed": "JSON Patch는 순서 있는 연산 배열을 대상 JSON에 순차 적용한다. replace는 해당 값을 바꾸고 test는 조건 불일치 시 오류가 될 수 있다.",
+      "limits": "서로 다른 replica에서 받은 patch 순서를 같게 만드는 프로토콜이나 CRDT 병합 규칙을 이 RFC가 제공하지 않는다. 도착 순서 반례는 이 팩의 수작업 추론이다.",
+      "tool_refs": [
+        "turn716396566view4",
+        "turn992888874view0"
+      ]
+    },
+    {
+      "id": "S08",
+      "title": "RabbitMQ 4.1 — Reliability Guide",
+      "url": "https://www.rabbitmq.com/docs/4.1/reliability",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "version_label_4.1_mutable_docs",
+      "read_scope": "Acknowledgements/Confirms, Data Safety, Retransmission; lines 64–94",
+      "confirmed": "consumer ack와 publisher confirm은 방향·책임이 다르다. 처리 후 ack와 durable/복제 queue가 필요하며 확인이 유실된 publish 재전송은 중복을 만들 수 있어 consumer 멱등 처리가 필요하다.",
+      "limits": "TCP 연결이나 broker confirm만으로 업무 부작용이 한 번 발생했다고 단정할 수 없다. 4.1 문서 경로가 영구 snapshot임은 보장하지 않는다.",
+      "tool_refs": [
+        "turn716396566view7"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "RabbitMQ 4.1 — Quorum Queues",
+      "url": "https://www.rabbitmq.com/docs/4.1/quorum-queues",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "version_label_4.1_mutable_docs",
+      "read_scope": "Use Cases, feature matrix, poison handling, Data Safety; lines 86–129,201–226,628–635",
+      "confirmed": "quorum queue는 durable·복제되며 confirm은 quorum 복제 후 발행한다. 대다수 복제본의 영구 상실을 배제해야 한다. 4.0 이후 기본 delivery limit 20을 넘으면 drop 또는 dead-letter한다.",
+      "limits": "durability가 TTL·길이 제한·재전달 횟수에 의한 삭제까지 막지 않는다. 읽은 4.1 페이지에 4.3 정책 변경 설명도 있어 version URL만으로 전체 내용을 고정했다고 하지 않는다.",
+      "tool_refs": [
+        "turn716396566view6",
+        "turn755790124view6"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "Redis — Pub/Sub",
+      "url": "https://redis.io/docs/latest/develop/pubsub/",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_document_observation",
+      "read_scope": "Delivery semantics; lines 93–96",
+      "confirmed": "Pub/Sub은 at-most-once이며 소비자 오류·단절 중 놓친 메시지는 재전달되지 않는다. 같은 문서가 더 강한 전달을 위한 Streams를 별도로 안내한다.",
+      "limits": "Redis 제품 전체나 Streams까지 부적합이라고 확장하면 안 된다. PUBLISH/SUBSCRIBE만의 구성에 한정한다.",
+      "tool_refs": [
+        "turn716396566view5"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "Amazon SQS — At-least-once delivery",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_service_document_observation",
+      "read_scope": "전체 본문 lines 3–6",
+      "confirmed": "standard queue는 여러 서버에 메시지 사본을 저장한다. 사본 삭제가 완료되지 않아 다시 받을 수 있으므로 애플리케이션을 멱등하게 만들라고 설명한다.",
+      "limits": "이번에 AWS 계정·API·가용성·요금·실제 설정은 확인하지 않았다. 단일 업무 효과나 무한 보존 보장 자료가 아니다.",
+      "tool_refs": [
+        "turn992888874view4"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "Amazon SQS — Visibility timeout",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_service_document_observation",
+      "read_scope": "Deletion, timeout expiry, standard/FIFO, handling failures; lines 7–21,37–51",
+      "confirmed": "수신은 삭제가 아니며 처리 후 DeleteMessage를 수행한다. timeout 만료 전 삭제하지 않으면 다시 보인다. FIFO도 삭제/timeout 경계가 존재한다.",
+      "limits": "visibility는 외부 시스템의 부작용과 원자적으로 묶인 commit이 아니다. 문서 앞부분의 중복 방지 설명을 전 구간 exactly-once로 확대하면 안 된다.",
+      "tool_refs": [
+        "turn925017723view3"
+      ]
+    },
+    {
+      "id": "S13",
+      "title": "Amazon SQS — SetQueueAttributes",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_service_document_observation",
+      "read_scope": "MessageRetentionPeriod, VisibilityTimeout, RedrivePolicy; lines 33–49",
+      "confirmed": "보존 기간은 설정 가능하며 60초~14일, 기본 4일로 설명된다. 기존 메시지보다 보존기간을 줄이면 삭제될 수 있다. redrive는 maxReceiveCount를 넘긴 메시지를 DLQ로 이동시킨다.",
+      "limits": "값이 허용된다는 문서는 실제 사용자 queue 설정이 그 값이라는 증거가 아니다. 이번 사례는 합성 설정을 명시한다.",
+      "tool_refs": [
+        "turn925017723view2"
+      ]
+    },
+    {
+      "id": "S14",
+      "title": "Amazon SQS — Exactly-once processing",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_service_document_observation",
+      "read_scope": "본문 deduplication 설명; lines 3–8",
+      "confirmed": "FIFO의 duplicate 억제 설명은 SendMessage 재시도 및 5분 deduplication interval을 명시한다. content-based dedup은 body를 사용하고 attributes는 제외한다.",
+      "limits": "페이지 제목만으로 consumer crash 뒤 외부 부작용이 중복되지 않는다고 해석할 수 없다. S12와 함께 읽어 경계를 확인했다.",
+      "tool_refs": [
+        "turn111538745view3"
+      ]
+    },
+    {
+      "id": "S15",
+      "title": "Python 3.13 — asyncio Queues",
+      "url": "https://docs.python.org/3.13/library/asyncio-queue.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "Python_docs_3.13_observed_3.13.18",
+      "read_scope": "Queue maxsize, get, put, join/task_done, example",
+      "confirmed": "양수 maxsize에서는 큐가 차면 await put이 기다리고 get은 항목을 제거한다. maxsize는 큐 안 항목 수이며 기본 0은 무제한이다.",
+      "limits": "큐에서 꺼낸 작업 수, 외부 buffer, producer가 들고 있는 항목, payload byte 크기를 maxsize가 제한하지 않는다. 문서 예제와 제안 구성은 실행하지 않았다.",
+      "tool_refs": [
+        "turn716396566view0"
+      ]
+    },
+    {
+      "id": "S16",
+      "title": "Python 3.13 — asyncio Synchronization",
+      "url": "https://docs.python.org/3.13/library/asyncio-sync.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "Python_docs_3.13_observed_3.13.18",
+      "read_scope": "Semaphore / BoundedSemaphore; lines 220–275",
+      "confirmed": "Semaphore는 acquire에서 counter를 줄이고 0이면 기다린다. release는 늘리며 BoundedSemaphore는 초기값을 넘기는 release를 거절한다. async with/finally release 예가 있다.",
+      "limits": "이미 무한히 생성한 대기 task나 payload를 semaphore가 없애 주는 것은 아니다. 즉시 외부 작업 취소·분산 permit 회수는 이 문서의 보장이 아니다.",
+      "tool_refs": [
+        "turn143914666view1"
+      ]
+    },
+    {
+      "id": "S17",
+      "title": "Reactive Streams JVM 1.0.4 specification",
+      "url": "https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "tag_v1.0.4_blob_197b80a5dca60311f0b2c32a6f9304293673579f",
+      "read_scope": "Goals/Scope; Publisher rules 1.1,1.8; Subscriber rules 2.1,2.8",
+      "confirmed": "Publisher가 보낸 onNext 수는 request 수를 넘으면 안 된다. 요구량 기반 비동기 backpressure가 목적이고 JVM stream 규격이다. cancel 후 이미 요청된 신호가 도착할 수 있다.",
+      "limits": "완료 뒤에만 request를 보충하는 Python 설계는 연구자의 전이 제안이다. 규격 자체가 작업 완료·메모리 bytes·즉시 취소를 보장하지 않는다. 웹 열람 실패 후 GitHub file API로 실제 본문을 읽었다.",
+      "tool_refs": []
+    },
+    {
+      "id": "S18",
+      "title": "Toyota — Toyota Production System",
+      "url": "https://global.toyota/en/company/vision-and-philosophy/production-system/",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_official_document_observation",
+      "read_scope": "Just-in-Time; canonical page lines 22–30",
+      "confirmed": "다음 공정이 앞 공정의 준비된 부품을 가져가고 앞 공정은 가져간 만큼 보충하는 관계를 설명한다. 필요한 양·시점의 생산을 지향한다.",
+      "limits": "이 설명은 소프트웨어 queue나 정확한 WIP=K 상한의 증명이 아니다. 작업 완료 신호·고정 permit으로 바꾸는 내용은 별도의 설계 가설이다.",
+      "tool_refs": [
+        "turn259854254view1"
+      ]
+    },
+    {
+      "id": "S19",
+      "title": "RFC 3290 — Diffserv Routers",
+      "url": "https://www.rfc-editor.org/rfc/rfc3290.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "RFC3290_2002_05_Informational",
+      "read_scope": "§5.1.3 Simple Token Bucket Meter; Appendix A.4",
+      "confirmed": "token bucket은 평균 token rate R과 burst size B를 두고 시간에 따라 token을 채운다. 패킷 길이에 따른 적합성을 판정한다.",
+      "limits": "완료된 작업이 permit을 돌려주는 concurrency 제어와 같지 않다. 작업 시작 rate가 작아도 작업이 끝나지 않으면 실행 중 수가 늘 수 있다는 것은 팩의 반례 추론이다.",
+      "tool_refs": [
+        "turn925017723view0"
+      ]
+    },
+    {
+      "id": "S20",
+      "title": "restic 0.17.3 — Preparing a new repository",
+      "url": "https://restic.readthedocs.io/en/v0.17.3/030_preparing_a_new_repo.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "restic_v0.17.3_docs",
+      "read_scope": "Local repository/password; lines 7–39",
+      "confirmed": "local directory를 repository로 초기화할 수 있으며 접근에 password가 필요하다. 여러 key를 둘 수 있고 password를 잃으면 접근할 수 없다고 경고한다.",
+      "limits": "실제 백업·복원을 실행한 증거가 아니다. 키 복구·암호분실 복원·랜섬웨어 방어를 자동 제공한다는 뜻도 아니다.",
+      "tool_refs": [
+        "turn259854254view2"
+      ]
+    },
+    {
+      "id": "S21",
+      "title": "restic 0.17.3 — Backing up",
+      "url": "https://restic.readthedocs.io/en/v0.17.3/040_backup.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "restic_v0.17.3_docs",
+      "read_scope": "snapshot examples, repeated backup/dedup, file change detection; lines 6–25,60–111",
+      "confirmed": "backup마다 snapshot ID가 만들어지고 같은 자료의 재백업에서 deduplication을 한다. snapshot 비교와 file metadata 기반 변경 감지를 설명한다.",
+      "limits": "움직이는 여러 파일이 하나의 application-consistent 시점으로 읽힌다는 보장은 별개다. 예제 성능 수치를 우리 측 실측으로 사용하지 않는다.",
+      "tool_refs": [
+        "turn259854254view3"
+      ]
+    },
+    {
+      "id": "S22",
+      "title": "restic 0.17.3 — Restoring from backup",
+      "url": "https://restic.readthedocs.io/en/v0.17.3/050_restore.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "restic_v0.17.3_docs",
+      "read_scope": "Restoring from a snapshot; lines 7–14",
+      "confirmed": "snapshot 식별자를 지정해 별도 target 디렉터리에 복원할 수 있고 latest/host/path 선택이 가능하다.",
+      "limits": "문서상의 명령 경로 확인이다. 실제 파일의 hash 일치·권한·복원 가능성·운영 안전성은 시험하지 않았다.",
+      "tool_refs": [
+        "turn111538745view2"
+      ]
+    },
+    {
+      "id": "S23",
+      "title": "restic 0.17.3 — Repository design",
+      "url": "https://restic.readthedocs.io/en/v0.17.3/design.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "restic_v0.17.3_docs",
+      "read_scope": "Pack/Unpacked data format, Encryption, threat model; lines 22,82–114,157–188,388–390",
+      "confirmed": "data blob·header·snapshot 등의 암호화와 인증을 설명한다. 저장된 파일 내용·metadata는 password 없이 읽을 수 없다는 threat-model 조건부 설명이 있다.",
+      "limits": "정보성 key metadata 등 예외와 위협 모델이 있다. 암호가 안전하게 관리됐다는 사실이나 최신 보안성 평가로 확대하지 않는다.",
+      "tool_refs": [
+        "turn925017723view1"
+      ]
+    },
+    {
+      "id": "S24",
+      "title": "Borg 1.2.8 — Quick Start",
+      "url": "https://borgbackup.readthedocs.io/en/1.2.8/quickstart.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "Borg_1.2.8_docs",
+      "read_scope": "step-by-step, archives/repositories, encryption, restore; lines 35–99,312–336,357–470",
+      "confirmed": "repokey encrypted local repo, 이름 있는 여러 archive 생성, 새 chunk만 저장하는 dedup, 특정 archive extract 경로를 보여준다. client에서 암호화하고 key/passphrase가 필요하다.",
+      "limits": "동시 수정 파일, 공간 부족, key 상실, 실제 복원은 별개 위험이다. 특정 버전 문서 예시이며 현재 추천 버전·보안 감사를 뜻하지 않는다.",
+      "tool_refs": [
+        "turn259854254view4",
+        "turn861577821view4"
+      ]
+    },
+    {
+      "id": "S25",
+      "title": "rsync — official manpage",
+      "url": "https://download.samba.org/pub/rsync/rsync.1",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "living_manual_observation",
+      "read_scope": "Description; --delete; --backup/--backup-dir option descriptions",
+      "confirmed": "rsync는 복사·동기화 도구다. --delete는 송신측에 없는 수신측 항목을 제거한다. 별도 backup/backup-dir 옵션도 있어 모든 사용을 단순 mirror로 일반화하면 안 된다.",
+      "limits": "팩이 거절하는 것은 추가 version directory·backup 옵션·저장 암호화가 없는 명시된 단일 mirror 구성이다. 도구 전체가 백업에 쓸모없다는 판단은 아니다.",
+      "tool_refs": [
+        "turn861577821view0",
+        "turn111538745view5"
+      ]
+    },
+    {
+      "id": "S26",
+      "title": "RFC 9162 — Certificate Transparency 2.0",
+      "url": "https://www.rfc-editor.org/rfc/rfc9162.html",
+      "checked_date_utc": "2026-11-19",
+      "checked_date_kst": "2026-11-20",
+      "reader": "primary_author",
+      "evidence_level": "D1_document_read",
+      "pin": "RFC9162_2021_12_Experimental",
+      "read_scope": "§1; §2.1.2–2.1.4; §5.4",
+      "confirmed": "Merkle inclusion은 leaf가 신뢰할 root에 포함됨을 확인하고 consistency proof는 이전 leaf prefix를 보존하는 append-only 관계를 검사한다. 서로 다른 client에게 다른 view를 주는 문제도 명시한다.",
+      "limits": "backup 파일 보존·암호화·복원을 제공하는 도구가 아니다. snapshot manifest에 적용하려면 leaf 인코딩·정렬·root 신뢰·rollback 방어가 별도이며 그 전이는 연구자 가설이다.",
+      "tool_refs": [
+        "turn143914666view4",
+        "turn111538745view6",
+        "turn755790124view5"
+      ]
+    }
+  ],
+  "failed_or_excluded": [
+    {
+      "url": "https://automerge.org/docs/",
+      "reason": "open 결과 readable lines 0; 검색 발췌만 있으므로 이 페이지는 자료 수 제외."
+    },
+    {
+      "url": "https://www.reactive-streams.org/reactive-streams-1.0.4/",
+      "reason": "web tool inaccessible; GitHub v1.0.4 README를 별도 경로로 실제 읽음."
+    },
+    {
+      "url": "https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md",
+      "reason": "web tool DisabledError; 같은 파일을 GitHub connector로 읽어 S17 하나로 계산."
+    },
+    {
+      "url": "https://www.toyota-global.com/company/vision_philosophy/toyota_production_system/just-in-time.html",
+      "reason": "canonical로 redirect. canonical 직접 열람 S18과 하나로 계산."
+    }
+  ]
+}
