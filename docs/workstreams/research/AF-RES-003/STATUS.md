@@ -27,4 +27,9 @@
 
 ## 현재 진행
 
-계약 핀 생성 완료: `task-manifest.json` (remote_checked). 조사 진행 중이며 이 파일은 연구 완료 보고가 아니다. 묶음별 결과는 Git 커밋으로 보존하고 최종 상태와 다음 행동은 `HANDOFF.md`에서 확인한다.
+**REVIEW_READY — 조사·수작업 대조·별도 검토 완료, 통합 검토 대기.** 원문 33개와 동일 사례 9개의 비교를 보존했다. 연구/검토 커밋 `caf806738b0ed07fe5bce8d4c5c173bada5286b3`의 개별 계약 검사와 문서 감사는 통과했다. 이 상태 문서와 최종 인계의 후속 커밋을 앞선 검사에 포함시키지 않는다.
+
+- 읽을 순서: [최종 인계](HANDOFF.md) → [연구 본문](RESEARCH.md) → 필요한 [사례](CASES.md)·[별도 검토](REVIEW.md)·원장.
+- 검증 명령·입력 SHA·종료 코드: [VALIDATION.json](VALIDATION.json).
+- 통합 대상 초안 PR: [#5](https://github.com/laadkke-arch/agentflow-open/pull/5), `chore/workspace-foundation` 대상.
+- 저장 구조의 최종 채택, 작성 비용·오병합률 실측, 제품 조합 실행은 이번 결과가 확정하지 않는다. 다음 첫 행동과 색인 변경 제안은 HANDOFF에 있다.
