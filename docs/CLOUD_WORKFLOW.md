@@ -7,12 +7,15 @@
 | 작업 | 기본 위치 | 남겨야 할 결과 |
 | --- | --- | --- |
 | 문제 정의·검색·대안 비교·설계 검토 | 웹 ChatGPT Pro | 근거·제약·결정·다음 질문 |
+| 작업 연결·진행 확인·세션 교체 | Dot와 Dot의 클라우드 컴퓨터 | 작업 ID·실행 상태·저장 커밋·다음 행동 |
 | 파일·브랜치·PR·결정 이력 | GitHub | 정확한 커밋과 연결된 문서 |
 | 커밋 검사·OS별 실행·실패 로그 | GitHub Actions 표준 러너 | 검사 SHA·결과·bounded artifact |
 | 반복 편집·디버깅·작은 독립 실험 | Codex Cloud 또는 현재 제공된 클라우드 작업공간 | 실제 실행 로그·변경 diff·handoff |
 | 제품 시연용 웹 서비스 | 추후 Render 등 | 별도 배포 검증 |
 
 GitHub Actions가 모델을 제공하는 것은 아니다. 검토한 코드의 실행을 맡긴다. 웹 Pro와 Codex 사용량은 실제 계정의 현재 표시를 따른다. API 키로 실행하는 모델은 ChatGPT 구독과 별도 과금이므로 이 구성에는 넣지 않았다.
+
+사용자의 Dot은 가벼운 진행 담당으로 배치한다. 자기 클라우드 컴퓨터에서 Git·diff·검사 결과를 읽고, 실제 작업은 웹 Pro와 Codex Cloud에 묶음으로 전달한다. [Dot 연결 절차와 시작문](DOT_AUTOMATION.md), [진행 상태](automation/dot-control.json)를 따른다. 새 세션은 GitHub에 저장된 handoff를 직접 읽는다. 실제 native 웹 Pro 세션 생성·모델 선택은 Codex 위임과 별도로 확인하며, 현재 연결 상태는 준비 단계다.
 
 ## 1. GitHub 왕복
 

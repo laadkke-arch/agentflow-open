@@ -4,6 +4,8 @@
 
 사용자 PC 설치 없이 웹 Pro + GitHub + Actions를 기본으로 삼고, 반복 실행에는 Codex Cloud를 사용할 수 있다. Docker/MCP는 선택 경로다. 현재 기본은 진행·통합 담당 1개와 독립 검토 1개다. 아래 A/B/C는 가능한 역할이며 동시에 활성화해야 하는 조건이 아니다.
 
+Dot을 진행 담당으로 사용할 때는 `docs/DOT_AUTOMATION.md`와 `docs/automation/dot-control.json`을 읽는다. Dot은 작업·세션 연결을 맡고 웹 Pro의 조사·설계·검토 역할을 유지한다. Dot의 클라우드 컴퓨터는 Git·상태·검사 결과 확인에 사용한다. 현재 진행표는 미활성 설정이며 native 작업 생성·교체의 실측 결과를 기록하기 전까지 연결됐다고 보고하지 않는다.
+
 실행 가능한 과제는 최신 통합 브랜치에서 시작해 `workbench.session start`로 계약·허용 경로·의존 SHA를 고정한다. 인수인계와 PR 전에 `check --fetch`한다. 통합 담당만 공통 계약을 바꾸고 영향받는 과제를 기록한다. [docs/CLOUD_WORKFLOW.md](docs/CLOUD_WORKFLOW.md)를 따른다.
 
 공통 실행 명령은 `python scripts/cloud_check.py --environment codex-cloud --fetch-contract`이며 CI는 `--require-clean`을 추가한다. 내부 기존 검사 `python scripts/check.py --require-git`도 유지한다. 환경 이름만으로 계정 연결을 증명하지 않는다.
