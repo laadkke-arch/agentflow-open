@@ -1,64 +1,55 @@
 # 공통 작업환경 시작 안내
 
-## 새 대화에서 제품·병렬 조사 작업을 시작한다면 (2026-11-19)
+갱신: 2026-11-19. 기본 경로는 **사용자 PC 설치 없이 웹 ChatGPT Pro + GitHub + GitHub Actions**다. 코드를 여러 번 실행하며 수정할 때는 **Codex Cloud**를 보조 실행환경으로 사용한다.
 
-먼저 [오픈소스·웹서비스 탐색기 기준문서](product/README.md), [조사·근거 기준](product/RESEARCH_PROTOCOL.md), [병렬 웹 세션 3개 시작 지시문](collaboration/SESSION_STARTS.md), [작업 상태 보드](collaboration/STATUS_BOARD.md)를 읽는다.
+## 무엇을 위한 환경인가
 
-현재 공통 브랜치는 `chore/workspace-foundation`이고 각 대화는 `work/discovery`, `work/data-model`, `work/experience` 담당 브랜치를 사용한다. 이슈 #2·#3·#4가 작업 범위를 명시한다. `main`은 변경하지 않는다. **문서화를 제품 기능 구현/PC 연결/무인 자동진행 완료로 착각하지 않는다.**
+최종 제품은 사용자의 개발 문제에서 출발해 오픈소스·웹서비스·라이브러리·MCP를 찾고, **요구조건별 적합성·출처·제약·미확인 사항**을 비교하는 탐색기다. 지금은 그 제품을 조사·설계·검증할 공통 기반을 준비한다. 제품의 웹앱·DB·추천 엔진은 아직 구현하지 않았다.
 
-목표는 웹 대화에서 실제 개발 환경을 사용하고 조사·판단·검증 결과를 다음 프로젝트에 남기는 것이다. 이 브랜치에는 실제 커뮤니티 MCP 런타임의 설치 구성과 기록·검증 보조 도구가 함께 있다. 탐색기 제품은 아직 없다.
+처음에는 다음 다섯 곳만 읽는다. 나머지는 과제에 필요한 때 읽는다.
 
-## 웹 개발 환경을 연결할 때
+1. [현재 상태](../STATE.md): 실제 검사와 미실시 범위.
+2. [제품 목적](product/README.md), [조사 기준](product/RESEARCH_PROTOCOL.md).
+3. [이번에 확인한 선택과 이유](research/no-local-discovery-workflow-2026-11-19.md).
+4. [클라우드 실행 절차](CLOUD_WORKFLOW.md).
+5. [협업 규칙](collaboration/README.md), [새 대화 시작문](collaboration/SESSION_STARTS.md).
 
-먼저 [커뮤니티 런타임 설치 안내](../integrations/web-runtime/README.md)를 따른다. 실제 서버·파일 편집·명령 세션·recall은 WebJjonku/SpaceDock 원본을 사용한다. 기본 설치에는 Git, Python, Docker Linux 엔진과 Compose가 필요하다.
+## 기본 작업 순서
 
-```sh
-git clone --branch chore/workspace-foundation https://github.com/laadkke-arch/agentflow-open.git
-cd agentflow-open
-python integrations/web-runtime/manage.py setup
-```
+1. GitHub 연결로 `laadkke-arch/agentflow-open`의 **`chore/workspace-foundation` 최신 SHA**를 확인한다. 기본 `main`의 옛 파일을 기준으로 작업하지 않는다.
+2. 개발 문제 하나를 정하고 필요한 기존 도구·자료부터 조사한다. 출처는 링크·확인일·근거 수준과 함께 저장한다. [실제 조사 사례](research/discovery-case-2026-11-19.json)를 재사용할 수 있다.
+3. 통합 담당이 목표·완료 조건·허용 경로·공통 계약·의존 커밋을 정한다. 기존 A/B/C 역할은 선택지다. 현재 기본은 **진행 담당 1개 + 독립 검토 1개**, 독립적인 조사에만 추가 세션을 사용한다.
+4. 변경은 작업 브랜치에 저장한다. 구현이 필요한 작업은 Codex Cloud 등 클라우드 checkout에서 작업 manifest를 생성하고 검사한다. 웹 GitHub 연결만 있는 대화는 파일 읽기·편집·PR·Actions 결과 검토를 담당할 수 있지만, 셸 명령을 실행했다고 보고하지 않는다.
+5. Actions가 실제 checkout을 검사한다. 완료 후 실행한 SHA·종료 코드·로그·미실시 항목을 읽어 변경과 연결한다. 테스트는 제품의 추천 품질을 대신하지 않는다.
+6. 짧은 인수인계에 현재 결론, 결정이 달라질 조건, 근거 파일, 검사 SHA, 다음 행동을 남긴다. 새 대화는 이를 직접 읽는다.
 
-setup 명령은 내부 검증 후 종료되지만 시작한 컨테이너는 stop할 때까지 유지된다. 기본 설정은 인터넷에서 접속할 수 있는 터널을 만들지 않는다. 실제 웹 연결은 사용자 승인과 계정 등록이 필요하며, CI 성공으로 그 연결을 대신하지 않는다. Docker나 OS 관리자 설정을 자동 변경하지 않는다.
+## 클라우드에서 실행할 공통 명령
 
-긴 대화의 Goal·Loop·Compact는 별도 브라우저 계층이다. CoS와 via Agents의 비교는 [커뮤니티 비교](research/community-web-runtime-2026-11-15.md)에 있다. 런타임, 브라우저 자동 진행, Git 저장을 같은 기능으로 혼동하지 않는다.
-
-## 기존 기록·검증 보조 도구
-
-보조 도구 자체는 Python 3.12 이상과 Git으로 실행하며 추가 Python 패키지를 요구하지 않는다.
-
-```sh
-python -m workbench doctor
-python scripts/check.py --require-git
-python -m workbench context repo-intake --query "manual review"
-python -m workbench run repo-intake test
-python -m workbench run repo-intake demo
-python -m workbench context reference-audit --query contract
-python -m workbench run reference-audit test
-```
-
-receipt 경로를 확인한 뒤 `python -m workbench verify-receipt 프로젝트 receipt경로`로 검사하고 stdout.txt와 stderr.txt를 읽는다. 해시는 변경 검출 근거이지 서명이나 완전한 품질 인증이 아니다. context는 BRIEF와 STATE를 우선 포함하는 문자열 검색이다. --budget은 토큰 수가 아니라 본문 문자 수다.
-
-## 소규모 프로젝트를 독립 폴더로 내보내기
+현재 필요한 것은 Python 3.12 이상과 Git이다. 기본 검사는 외부 Python 패키지나 모델 API 키 없이 실행한다. 아래 명령을 **사용자 PC에 설치하라는 의미가 아니다.**
 
 ```sh
-python -m workbench export repo-intake ../repo-intake-independent
-cd ../repo-intake-independent
-python -m workbench doctor
-python -m workbench run repo-intake test
+python scripts/cloud_check.py --environment codex-cloud --fetch-contract
 ```
 
-기존 목적지에는 덮어쓰지 않고 다른 프로젝트·Git 이력·.env는 자동 복사하지 않는다. 선언한 파일의 비밀값까지 자동 검사하지는 않으므로 공개 가능한 자료만 사용한다.
+CI처럼 커밋된 파일만 검사하려면 `--require-clean`을 추가한다. `.workbench/cloud-check.json`에 검사한 SHA, 작업 폴더 수정 여부, 플랫폼, 명령별 종료 코드와 로그 경로가 남는다. `--environment`는 호출자가 붙인 이름이며 Codex 계정 연결 증명이 아니다.
 
-새 소규모 작업은 별도 폴더에 BRIEF, STATE, DECISIONS, RESEARCH, sources.json, 실행 코드와 테스트를 두고 workbench/catalog.json에 새 id를 등록한다. inputs에는 실제 읽는 파일을 포함하고 tasks에는 검토한 Python argv와 최대 120초 제한을 기록한다. 프로젝트 등록만으로 공통 acceptance 실행 범위가 확대되지는 않는다. 제품의 완료 조건은 그 제품의 실제 테스트로 별도 검증한다.
+Actions가 사용할 수 없는 때에도 같은 명령을 다른 허용된 클라우드 환경에서 실행할 수 있다. Ubuntu 실행을 Windows 통과로 보고하지 않는다. 현재 세션에서 실제로 실행한 결과와 GitHub hosted 실행은 [검사 기록](../STATE.md)에서 구분한다.
 
-## 다음 대화 시작
+## 자료 재사용 확인
 
-저장소·계정·작업 브랜치의 최신 커밋을 확인하고 AGENTS.md, STATE.md, 이 파일을 읽는다. 실제 실행 기록과 검사 커밋을 대조한 뒤 필요한 프로젝트의 문서만 읽는다. 현재 MCP가 연결돼 있지 않다면 연결된 것처럼 도구를 호출했다고 쓰지 않는다. 이미 완료된 연결 시험을 계속 반복하지 않고 남은 실제 연결 조건부터 확인한다.
+`lab/reference-audit`는 출처 연결을 검사하는 기존 실습이다. 실제 탐색기 조사에 사용한 자료도 다음 명령으로 연결 무결성을 확인한다.
 
-## CI와 백업
+```sh
+python -m workbench run reference-audit discovery
+```
 
-workbench.yml은 이전 Python 보조 환경과 두 실습을 검사한다. community-runtime.yml은 실제 원본 컨테이너와 MCP 통합을 검사한다. main 자동 병합·배포는 없다. 기존 workbench 아티팩트는 7일, 커뮤니티 런타임 증거는 14일 보관한다. Git bundle은 Git 객체·참조용으로 DB, 이슈, 비밀값, LFS 내용, 미커밋 파일의 완전한 백업이 아니다.
+이 검사는 출처 ID 누락과 중복을 찾는다. 외부 주장 자체의 진실성·현재 서비스 상태·우리 제품의 추천 정확도를 자동 인증하지 않는다. 실제 자료의 판단은 고정 출처와 확인 시점까지 읽어 검토한다.
 
-## 자동 실행의 경계
+## 선택형 경로
 
-보조 도구는 검토된 작업 한 번을 실행한다. MCP 엔진은 명령 세션을 제공한다. CoS 같은 별도 브라우저 도구는 후속 메시지와 대화 교체를 관리할 수 있다. 현재 대화에 마지막 계층을 연결하지 않았으므로 무인 모델 작업을 시작했다고 보고하지 않는다. 새 연결·권한·비밀정보·유료 자원 사용은 승인 경계를 유지한다.
+- **Codex Cloud 준비 환경**: [CLOUD_WORKFLOW.md](CLOUD_WORKFLOW.md)의 설정 대화를 사용한다. 이번 공유 브라우저는 로그인 화면까지만 확인되어 사용자 계정의 환경 발행은 미완료다.
+- **WebJjonku/SpaceDock**: 직접 파일·명령 MCP가 필요한 때 [기존 설치 안내](../integrations/web-runtime/README.md)를 참고한다. Docker·지속 호스트·웹 계정 연결을 요하는 별도 경로이며 기본 작업의 선행조건이 아니다.
+- **CoS Goal/Loop/Compact**: 별도 브라우저 계층이다. 현재 연결하지 않았다. GitHub에 저장한 근거·결정이 장기 기록이다.
+- **Render**: 제품 시연·배포가 필요해질 때 검토한다. 현재 작업환경 검사에는 서버 생성이 필요하지 않다.
+
+공개 저장소에는 공개 가능한 요약과 시험 자료만 보관한다. 기존 AgentFlow Studio, `main`, 계정 권한과 유료 자원의 변경은 현재 작업 범위에 포함하지 않는다.

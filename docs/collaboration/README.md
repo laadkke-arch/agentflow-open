@@ -1,42 +1,49 @@
-# 웹 ChatGPT Pro 세션 3개 병렬 협업 규칙
+# 웹 세션의 결과 공유와 검토
 
-작성: 2026-11-19. 상태: **협업 파일·이슈·브랜치 준비 단계**. 다른 AI 웹 세션에서의 실제 실행/인수인계 검증은 아직 없다.
+갱신: 2026-11-19. GitHub는 작업의 공통 기록이며 다른 ChatGPT 대화에 문맥을 자동 주입하지 않는다.
 
-## 시작
+## 현재 배정 방식
 
-- 저장소: `laadkke-arch/agentflow-open`, 통합 기준 브랜치: `chore/workspace-foundation`. **`main`은 건드리지 않는다.**
-- A **실제 오픈소스·웹사이트 자료 조사**: `work/discovery`, [이슈 #2](https://github.com/laadkke-arch/agentflow-open/issues/2), 수정할 경로 `docs/workstreams/discovery/`.
-- B **데이터 모델·DB 검증 계약**: `work/data-model`, [이슈 #3](https://github.com/laadkke-arch/agentflow-open/issues/3), 수정할 경로 `docs/workstreams/data/`.
-- C **검색·비교 UX 및 AgentFlow 지도 연동 설계**: `work/experience`, [이슈 #4](https://github.com/laadkke-arch/agentflow-open/issues/4), 수정할 경로 `docs/workstreams/experience/`.
-- 새 대화 각각에 [`SESSION_STARTS.md`](SESSION_STARTS.md)의 A, B, C 시작 지시문을 **하나씩** 전달한다.
-- 제품 기준문서는 `docs/product/README.md`, `RESEARCH_PROTOCOL.md`, `DATA_MODEL_DRAFT.md`, `AGENTFLOW_INTEGRATION.md`, `ROADMAP.md`이다. **수업 과제 조건과 제품 장기 목표, 확인된 사실과 설계 제안을 구분**한다.
+기본은 **진행·통합 담당 1개 + 독립 검토 1개**다. 요구조건과 자료 형식이 합의되기 전에는 조사·DB·UX 세 구현을 동시에 확정하지 않는다. 서로 독립적인 출처 조사만 추가 세션에 맡긴다. 개발 때는 공통 데이터/API 계약을 먼저 검토하고, 서로 다른 기능이나 경로를 작은 작업으로 나눈다.
 
-## 세션마다 반드시 해야 하는 순서
+기존 역할과 이슈는 유지한다. A/B/C는 바로 켜야 하는 세 에이전트가 아니라 사용할 수 있는 업무 묶음이다.
 
-1. 올바른 GitHub 계정이 연결됐는지 확인하고 **자기 브랜치의 최신 SHA**를 조회한다. GitHub의 기본 `main` 파일만 열지 않는다.
-2. 자기 브랜치의 `AGENTS.md`, `STATE.md`, 위 제품 기준문서, 이슈 및 담당 `STATUS.md`를 **직접 읽는다**. 전혀 다른 채팅의 메모를 자동 공유한다고 가정하지 않는다.
-3. 기존 해결책·커뮤니티 실제 사례를 비교하고 출처/확인 시점/검증 수준/채택·보류·제외 이유를 명시한다.
-4. 자기 담당 폴더에서 문서·작은 재현 가능한 예제만 만들고, 가능하면 실제 검증한다. **기존 AgentFlow Studio 코드, `main`, 다른 세션 폴더, 운영 데이터는 변경하지 않는다.**
-5. `STATUS.md`와 자기 폴더 `HANDOFF.md`에 작업 내용·커밋·검증·다음 행동을 적고 같은 브랜치에 커밋한다.
-6. 리뷰 가능하면 **자기 브랜치 → `chore/workspace-foundation`** 대상 PR을 만든다. 자동으로 병합하지 않는다.
+| 업무 | 기존 이슈·브랜치 | 기본 편집 경로 |
+| --- | --- | --- |
+| 자원 발견·근거 비교 | [#2](https://github.com/laadkke-arch/agentflow-open/issues/2), `work/discovery` | `docs/workstreams/discovery/` |
+| 데이터·DB 계약 검토 | [#3](https://github.com/laadkke-arch/agentflow-open/issues/3), `work/data-model` | `docs/workstreams/data/` |
+| 프로젝트 적합성·UX·미래 연동 | [#4](https://github.com/laadkke-arch/agentflow-open/issues/4), `work/experience` | `docs/workstreams/experience/` |
 
-## 파일 충돌과 데이터 공유
+## 공통 계약
 
-- 공유 제품 기준문서(`docs/product/`), 루트 README·AGENTS·STATE, 협업 규칙(`docs/collaboration/`)은 **통합 담당만 수정한다**.
-- A/B/C는 공통 설계의 변경 제안을 **자기 폴더의 `PROPOSALS.md`**에 기록한다. 같은 파일을 동시에 고치는 일은 피한다.
-- 상호 의존 정보는 이슈/PR URL, **정확한 커밋 SHA**, 필요한 필드와 불확실성을 적는다. 다른 대화가 기록을 즉시 감지하지는 못한다.
-- PR이 승인되면 통합 담당은 근거·중복·보안·데이터 계약 충돌을 검토하고 기준문서를 별도 커밋으로 갱신한다. 자동 병합·강제 push 금지.
-- 새 대화에서 이어받을 때에는 과거 답변의 '완료'가 아니라 **GitHub의 최신 파일·PR·실제 테스트 기록**으로 상태를 재구성한다.
+통합 기준은 `chore/workspace-foundation`이다. `contract.json`은 제품 기준 5개 문서와 이 협업 규칙의 변경을 추적한다. 규칙 변경은 통합 담당이 수행하고, 영향받는 작업을 기록한다. A/B/C는 자기 `PROPOSALS.md`로 제안한다.
 
-## 자동화의 실제 범위
+각 실행 가능한 작업은 `docs/tasks/<task>.json`에 시작 SHA, 계약 버전·파일 해시, 허용 경로, 의존 브랜치의 정확한 SHA를 고정한다. [클라우드 절차](../CLOUD_WORKFLOW.md)의 `workbench.session start`로 생성한다. 웹 GitHub 도구만 있는 대화는 실행 담당에게 manifest 생성을 맡기고 그 결과를 읽는다. manifest 없이 조사 문서를 저장할 수 있지만 기계적 계약 검사까지 통과했다고 보고하지 않는다.
 
-세 개의 ChatGPT 웹 대화를 열면 **세 개의 독립 채팅**이 되는 것이지, 자동 조율되는 에이전트 팀이 되는 것은 아니다. GitHub에 브랜치/문서가 있어도 자동으로 프롬프트를 보내거나 무기한 작업하지 않는다.
+작업 시작·인수인계 수락·PR 준비 때 `check ... --fetch`로 통합 기준을 다시 읽는다. 원격 fetch가 없으면 최신성을 확인한 것이 아니다. 계약 버전 문자열을 올리지 않은 내용 변경도 해시로 감지한다. 의존 결과가 바뀌면 사용한 가정과 영향 범위를 다시 검토한다.
 
-현재 WebJjonku/SpaceDock의 Docker 실행 구성을 독립 Linux CI에서 확인했지만, **사용자 PC 및 이 웹 채팅의 MCP 연결은 미완료**다. CoS의 Goal·Loop·Compact는 별도 설치·브라우저 권한을 요하는 다른 계층이며 현재 켜져 있지 않다. 이번 3개 작업은 연결 없이도 GitHub로 조사·문서화를 할 수 있게 분리했다.
+## 충돌과 의미 변경
 
-이 저장소는 공개다. 개인 대화 원문, API 키, 고객 자료, 로컬 비공개 경로, 비공개 코드, 사업상의 비공개 기록을 올리지 않는다. 배포·계정 권한·유료 자원·Render/DB 변경·기존 운영환경 변경은 별도 승인 대상이다.
+| 상황 | 처리 |
+| --- | --- |
+| 자원 분류·필드 변경 | 제안 → 통합 담당 검토 → 공통 계약 변경 → 영향받은 작업 재검토 |
+| A 결과를 전제로 B가 진행 | A의 파일·커밋·미확인을 B manifest/handoff에 고정 |
+| 같은 파일 편집 필요 | 파일 소유자를 하나로 정하고 다른 세션은 제안/검토로 참여 |
+| 최신 브랜치가 기존 대화와 다름 | 실제 GitHub head와 diff를 읽고 현재 판단을 재구성 |
+| 서로 다른 경로지만 의미 충돌 | 통합 검토에서 타입·URL·근거·unknown·요구조건 판정 대조 |
+| 테스트 실패·병합 충돌 | 실패 로그 보존, 원인 해결 뒤 같은 입력으로 재검증 |
+| 세션 중단·길이 초과 | 짧은 handoff와 고정 근거를 저장하고 새 대화가 직접 읽음 |
 
-- 작업 배정 및 실제 상태: [STATUS_BOARD.md](STATUS_BOARD.md)
-- 새 세션 시작: [SESSION_STARTS.md](SESSION_STARTS.md)
-- 인수인계 양식: [HANDOFF_TEMPLATE.md](HANDOFF_TEMPLATE.md)
-- 검토·통합: [REVIEW_AND_MERGE.md](REVIEW_AND_MERGE.md)
+경로 분리는 Git 충돌을 줄인다. 서로 다른 파일에 모순된 설계를 쓰는 문제는 계약·독립 검토가 맡는다. 검사기는 의미의 옳음을 판정하지 않는다.
+
+## 통합 순서
+
+작업은 최신 통합 브랜치에서 만든 `work/<task>` 또는 `codex/<task>`를 사용한다. 기존 장기 브랜치는 차이를 읽고 업데이트하거나 새 작업 브랜치를 만든다. `STATUS.md`와 `HANDOFF.md`에 결과·근거·검사·다음 행동을 남기고 통합 브랜치 대상으로 PR을 연다. 통합 담당은 변경과 계약·검증을 읽고 병합 여부를 판단한다. `main` 자동 병합은 없다.
+
+`check-all`은 통합 기준에 이미 같은 manifest가 있는 과제를 새 과제로 세지 않는다. 기존 과제만 있는데 후속 변경이 생기면 새 작업 핀이 필요하다. 과제가 없거나 이미 통합되고 후속 변경도 없는 상태를 새로운 협업 시험 성공으로 바꾸지 않는다. 개별 `check`는 해당 과제를 직접 검사한다.
+
+## 실제 검증의 경계
+
+임시 Git 저장소와 독립 worktree의 계약 변경·범위 이탈·의존 커밋 이동·병합·충돌 복구를 자동 시험한다. 이는 **Git 협업 동작** 시험이다. 실제 별도의 사용자 ChatGPT 웹 대화가 이어받는 시험과 구별한다. 현재 연결된 클라우드 도구의 실행도 사용자 PC 또는 사용자 Codex 계정 연결로 보고하지 않는다.
+
+공개 자료만 이 저장소에 기록한다. 개발 기록과 향후 제품 운영 데이터는 별도로 관리한다. 상세 상태는 [STATE.md](../../STATE.md), [작업 보드](STATUS_BOARD.md), [인수인계](HANDOFF_TEMPLATE.md), [검토 절차](REVIEW_AND_MERGE.md)를 따른다.

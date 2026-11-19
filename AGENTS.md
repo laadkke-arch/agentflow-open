@@ -1,6 +1,14 @@
 # AgentFlow Open 작업 규칙
 
-## 세션 3개 작업 규칙 — 2026-11-19 추가
+## 기본 실행·배정 — 2026-11-19 갱신
+
+사용자 PC 설치 없이 웹 Pro + GitHub + Actions를 기본으로 삼고, 반복 실행에는 Codex Cloud를 사용할 수 있다. Docker/MCP는 선택 경로다. 현재 기본은 진행·통합 담당 1개와 독립 검토 1개다. 아래 A/B/C는 가능한 역할이며 동시에 활성화해야 하는 조건이 아니다.
+
+실행 가능한 과제는 최신 통합 브랜치에서 시작해 `workbench.session start`로 계약·허용 경로·의존 SHA를 고정한다. 인수인계와 PR 전에 `check --fetch`한다. 통합 담당만 공통 계약을 바꾸고 영향받는 과제를 기록한다. [docs/CLOUD_WORKFLOW.md](docs/CLOUD_WORKFLOW.md)를 따른다.
+
+공통 실행 명령은 `python scripts/cloud_check.py --environment codex-cloud --fetch-contract`이며 CI는 `--require-clean`을 추가한다. 내부 기존 검사 `python scripts/check.py --require-git`도 유지한다. 환경 이름만으로 계정 연결을 증명하지 않는다.
+
+## 역할별 작업 규칙
 
 이 저장소는 **오픈소스·웹서비스 탐색기**를 위한 공통 개발환경이다. 제품 기준은 `docs/product/README.md`, 조사 기준은 `docs/product/RESEARCH_PROTOCOL.md`, 단계·미확인 사항은 `docs/product/ROADMAP.md`를 읽는다.
 

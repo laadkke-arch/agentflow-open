@@ -1,5 +1,7 @@
 # AgentFlow Open 공통 작업환경
 
+**기본 경로: 사용자 PC 설치 없이 웹 ChatGPT Pro → GitHub → Actions 검증.** 반복 편집·실행에는 Codex Cloud를 사용한다. 처음에는 [시작 안내](docs/START_HERE.md), [클라우드 절차](docs/CLOUD_WORKFLOW.md), [2026-11-19 조사·결정](docs/research/no-local-discovery-workflow-2026-11-19.md)을 읽는다. 기존 Docker/MCP는 선택 경로다.
+
 ## 새 세션·탐색기 제품 시작점 (2026-11-19)
 
 이 공통 작업환경은 **오픈소스·웹사이트·무료/유료 서비스 발견 및 프로젝트 적합성 비교**를 위한 기반이다. 작업환경 코드와 실제 탐색기 제품은 별개이며, 제품 DB·웹서비스·배포는 아직 구현하지 않았다.
@@ -7,7 +9,7 @@
 - **제품 목적과 결정:** [docs/product/README.md](docs/product/README.md)
 - **조사 기준:** [docs/product/RESEARCH_PROTOCOL.md](docs/product/RESEARCH_PROTOCOL.md)
 - **DB 초안·범위:** [docs/product/DATA_MODEL_DRAFT.md](docs/product/DATA_MODEL_DRAFT.md), [ROADMAP.md](docs/product/ROADMAP.md)
-- **3개 ChatGPT 웹 세션의 시작 지시문:** [docs/collaboration/SESSION_STARTS.md](docs/collaboration/SESSION_STARTS.md)
+- **진행·검토 및 선택형 A/B/C 시작 지시문:** [docs/collaboration/SESSION_STARTS.md](docs/collaboration/SESSION_STARTS.md)
 - **이슈/브랜치/인수인계:** [docs/collaboration/README.md](docs/collaboration/README.md), [STATUS_BOARD.md](docs/collaboration/STATUS_BOARD.md)
 
 실제 기준은 `chore/workspace-foundation` 브랜치의 최신 파일이다. 다른 웹 채팅은 GitHub 기록을 **직접 읽고** 시작한다. 브랜치 생성은 자동 AI 실행이 아니며, 공개 저장소에 개인/비공개 자료를 넣지 않는다.
@@ -16,7 +18,7 @@
 
 현재 작업 브랜치는 `chore/workspace-foundation`입니다. 최종 실행 결과는 [STATE.md](STATE.md), 시작 안내는 [docs/START_HERE.md](docs/START_HERE.md)를 읽으세요.
 
-## 바로 실행
+## 클라우드 checkout에서 실행
 
 Python 3.12 이상과 Git을 사용합니다. 기본 실행에 pip 설치, API 키, 외부 네트워크는 필요하지 않습니다. Windows에서는 `python` 대신 설치된 `py -3.12`를 사용할 수 있습니다.
 
@@ -27,10 +29,10 @@ python -m workbench context repo-intake --query contract
 python -m workbench run repo-intake test
 python -m workbench run repo-intake demo
 python -m workbench run reference-audit test
-python scripts/check.py
+python scripts/cloud_check.py --environment codex-cloud --fetch-contract
 ```
 
-Git으로 받은 작업 폴더에서 전체 백업 복원 시험까지 강제하려면 `python scripts/check.py --require-git`를 사용합니다. Actions도 같은 명령을 실행합니다.
+전체 검사에는 Git bundle 복원 시험이 포함됩니다. Actions는 같은 wrapper에 `--require-clean`을 추가해 커밋된 checkout을 검사합니다. 내부 `python scripts/check.py --require-git`도 유지합니다.
 
 ## 실제로 들어 있는 기능
 
