@@ -1,6 +1,14 @@
 # 현재 작업 상태
 
-기준일: 2026-11-15
+## 2026-11-19 신규 기록 — 제품 문서화와 병렬 협업 준비
+
+- 기존 2026-11-15 환경 시험 결과는 아래에 보존한다. **2026-11-19에 새 런타임/새 PC 연결 실험을 통과했다고 주장하지 않는다.**
+- 오픈소스·웹사이트·무료 서비스 탐색기 목표, 근거 중심 조사 방식, 5개 관계형 테이블 초안, AgentFlow Studio 선택형 미래 연동, 단계별 완료 기준을 `docs/product/`에 문서화했다. 현재까지는 **명세 초안**이며 제품 구현/실제 자료 수집/DB 배포가 아니다.
+- 웹 ChatGPT 3개 병렬 대화용 `docs/collaboration/`, 작업별 `docs/workstreams/{discovery,data,experience}/` 상태 파일, 이슈 [#2](https://github.com/laadkke-arch/agentflow-open/issues/2)·[#3](https://github.com/laadkke-arch/agentflow-open/issues/3)·[#4](https://github.com/laadkke-arch/agentflow-open/issues/4)를 준비했다. **별도 채팅에서 실제 실행·인수인계 검증은 아직 없다.**
+- 다음 단계: 3개 전용 작업 브랜치로 각 새 세션 시작, 담당 기록·실제 출처·검증·PR 인계. 통합 PR을 자동 병합하지 않으며 `main`은 그대로 둔다.
+- 기술 환경의 미완료 항목인 사용자 PC Docker 설치, 웹 MCP 연결, CoS Goal/Loop, Render·DB 서비스 생성은 그대로 미완료다.
+
+기술 환경 검증 기록 기준일: 2026-11-15
 브랜치: `chore/workspace-foundation`
 단계: 커뮤니티의 실제 WebJjonku/SpaceDock 런타임을 설치 가능한 형태로 구성하고 독립 컨테이너에서 검증. 실제 사용자 PC와 웹 계정 연결은 아직 안 됨.
 

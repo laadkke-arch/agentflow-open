@@ -1,5 +1,11 @@
 # 공통 작업환경 시작 안내
 
+## 새 대화에서 제품·병렬 조사 작업을 시작한다면 (2026-11-19)
+
+먼저 [오픈소스·웹서비스 탐색기 기준문서](product/README.md), [조사·근거 기준](product/RESEARCH_PROTOCOL.md), [병렬 웹 세션 3개 시작 지시문](collaboration/SESSION_STARTS.md), [작업 상태 보드](collaboration/STATUS_BOARD.md)를 읽는다.
+
+현재 공통 브랜치는 `chore/workspace-foundation`이고 각 대화는 `work/discovery`, `work/data-model`, `work/experience` 담당 브랜치를 사용한다. 이슈 #2·#3·#4가 작업 범위를 명시한다. `main`은 변경하지 않는다. **문서화를 제품 기능 구현/PC 연결/무인 자동진행 완료로 착각하지 않는다.**
+
 목표는 웹 대화에서 실제 개발 환경을 사용하고 조사·판단·검증 결과를 다음 프로젝트에 남기는 것이다. 이 브랜치에는 실제 커뮤니티 MCP 런타임의 설치 구성과 기록·검증 보조 도구가 함께 있다. 탐색기 제품은 아직 없다.
 
 ## 웹 개발 환경을 연결할 때

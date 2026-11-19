@@ -1,5 +1,13 @@
 # AgentFlow Open 작업 규칙
 
+## 세션 3개 작업 규칙 — 2026-11-19 추가
+
+이 저장소는 **오픈소스·웹서비스 탐색기**를 위한 공통 개발환경이다. 제품 기준은 `docs/product/README.md`, 조사 기준은 `docs/product/RESEARCH_PROTOCOL.md`, 단계·미확인 사항은 `docs/product/ROADMAP.md`를 읽는다.
+
+ChatGPT 웹 대화 A/B/C는 각자 `work/discovery`, `work/data-model`, `work/experience` 브랜치에서 시작하고 자기 `docs/workstreams/{discovery,data,experience}/` 안만 수정한다. 기준 문서는 통합 담당이 관리한다. 시작 지시문·충돌 방지·인수인계·이슈는 `docs/collaboration/README.md`와 `SESSION_STARTS.md`에 있다.
+
+이 규칙은 **GitHub가 세 채팅에 동일한 문맥을 자동 제공한다는 약속이 아니다.** 새 대화는 자기 브랜치와 이슈/근거를 실제로 읽고, 완료된 검증 SHA와 미실시 항목을 구분한다. 작업 범위를 넘어 새 제품 배포, 본격 구현, 기존 AgentFlow Studio의 변경, `main` 병합, 계정/개인정보 접근은 별도 승인 없이 하지 않는다.
+
 ## 목표와 범위
 
 탐색기 제품 구현은 보류한다. 먼저 조사·판단·작은 구현·검증·기록 검색·다중 프로젝트 재사용을 연결하는 공통 환경을 운영한다. 현재 브랜치는 `chore/workspace-foundation`이며 기존 AgentFlow Studio와 main은 변경하지 않는다. 문서 개수나 검사 통과 문구가 아니라 실행 근거를 확인한다.

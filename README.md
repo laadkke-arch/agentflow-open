@@ -1,5 +1,17 @@
 # AgentFlow Open 공통 작업환경
 
+## 새 세션·탐색기 제품 시작점 (2026-11-19)
+
+이 공통 작업환경은 **오픈소스·웹사이트·무료/유료 서비스 발견 및 프로젝트 적합성 비교**를 위한 기반이다. 작업환경 코드와 실제 탐색기 제품은 별개이며, 제품 DB·웹서비스·배포는 아직 구현하지 않았다.
+
+- **제품 목적과 결정:** [docs/product/README.md](docs/product/README.md)
+- **조사 기준:** [docs/product/RESEARCH_PROTOCOL.md](docs/product/RESEARCH_PROTOCOL.md)
+- **DB 초안·범위:** [docs/product/DATA_MODEL_DRAFT.md](docs/product/DATA_MODEL_DRAFT.md), [ROADMAP.md](docs/product/ROADMAP.md)
+- **3개 ChatGPT 웹 세션의 시작 지시문:** [docs/collaboration/SESSION_STARTS.md](docs/collaboration/SESSION_STARTS.md)
+- **이슈/브랜치/인수인계:** [docs/collaboration/README.md](docs/collaboration/README.md), [STATUS_BOARD.md](docs/collaboration/STATUS_BOARD.md)
+
+실제 기준은 `chore/workspace-foundation` 브랜치의 최신 파일이다. 다른 웹 채팅은 GitHub 기록을 **직접 읽고** 시작한다. 브랜치 생성은 자동 AI 실행이 아니며, 공개 저장소에 개인/비공개 자료를 넣지 않는다.
+
 탐색기 제품을 만들기 전에, 조사·작은 구현·검증·기록 검색·다른 프로젝트 재사용을 실제로 실행하는 작업환경입니다. 제품 UI, DB, Render 서비스는 아직 만들지 않습니다. 기존 AgentFlow Studio와 main은 변경하지 않습니다.
 
 현재 작업 브랜치는 `chore/workspace-foundation`입니다. 최종 실행 결과는 [STATE.md](STATE.md), 시작 안내는 [docs/START_HERE.md](docs/START_HERE.md)를 읽으세요.

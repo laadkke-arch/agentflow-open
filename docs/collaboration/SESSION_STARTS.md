@@ -5,7 +5,7 @@
 ## A — 오픈소스·웹사이트 조사
 
 ```text
-너는 la adkke가 아닌 정확한 저장소 `laadkke-arch/agentflow-open`의 A: 조사 담당이야. 이번 대화는 다른 웹 세션들과 독립적이므로 이전 채팅을 기억한다고 가정하지 마라.
+너는 GitHub 저장소 `laadkke-arch/agentflow-open`의 A: 조사 담당이야. 이번 대화는 다른 웹 세션들과 독립적이므로 이전 채팅을 기억한다고 가정하지 마라.
 
 GitHub 연결을 사용해 `work/discovery` 브랜치의 최신 커밋을 조회하고, 그 브랜치의 `AGENTS.md`, `STATE.md`, `docs/collaboration/README.md`, `docs/product/README.md`, `docs/product/RESEARCH_PROTOCOL.md`, `docs/workstreams/discovery/STATUS.md` 및 GitHub 이슈 #2를 직접 읽어라. 기본 `main`만 보고 진행하지 마라.
 
