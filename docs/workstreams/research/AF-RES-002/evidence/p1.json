@@ -1,0 +1,1313 @@
+{
+  "problem_id": "P1",
+  "protocol": "../PROTOCOL.md",
+  "scope": "제품명 없이 고정한 문서 묶음 처리 문제. 완성품/부품/다른 분야 원리의 실제 발견과 정적 검증 비교.",
+  "evidence_policy": {
+    "external_opened_unique_sources": 16,
+    "source_grades": {
+      "D1": 14,
+      "D2": 2,
+      "D3": 0,
+      "D4": 0
+    },
+    "actual_query_strings": 10,
+    "query_batches": 6,
+    "counts_note": "다시 연 같은 자료, GitHub tree/commit metadata, 검색 snippet, 차단된 페이지는 16개에 포함하지 않는다. 검색 호출은 초기3+후속3 질의가 각각 묶였으므로 6번이다.",
+    "timestamp_basis": "도구 실행 주변 UTC clock 관측; 원 서버 발행 시각이 아니다. S15는 고정 파일을 저장 응답에서 다시 읽은 시각이다.",
+    "result_scope": "observed_results는 검토에 사용한 도구 반환 후보 표본이다. 전체 카탈로그·전체 SERP·질의별 순위를 저장하거나 주장하지 않는다."
+  },
+  "sources": [
+    {
+      "id": "P1-S01",
+      "title": "Paperless-ngx usage.md — consumption, duplicate documents, architecture",
+      "url": "https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/docs/usage.md",
+      "checked_at_utc": "2026-11-19T15:21:43Z",
+      "level": "D1",
+      "locator": "14–23, 156–166, 299–313, 1252–1298행",
+      "version": "default-branch snapshot 4973be8499bc61dc4f791a609d0d31e9ac9ccd41; blob 0cc10269b92310f73616a9641dc26bbd5283e7bd",
+      "observed": "폴더 소비·OCR·색인·검색 경험을 설명한다. 이 스냅샷은 중복 입력을 기본적으로 거부하지 않고 경고 후 소비한다고 명시한다. PAPERLESS_CONSUMER_DELETE_DUPLICATES=true이면 중복 입력 삭제·거부를 선택한다.",
+      "limitations": "고정된 기본 브랜치 소스이며 배포된 안정 릴리스와 동일하다고 확인하지 않았다. 문서의 task fails 표현은 S03의 typed result 및 UI 상태와 함께 해석해야 한다. 원 사이트 403 후 공식 저장소의 문서를 읽었다.",
+      "open_ref": "github_fetch_file:paperless-ngx/paperless-ngx:docs/usage.md@4973be8499bc61dc4f791a609d0d31e9ac9ccd41",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S02",
+      "title": "Paperless-ngx consumer.py — duplicate preflight and document storage",
+      "url": "https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/src/documents/consumer.py",
+      "checked_at_utc": "2026-11-19T15:21:43Z",
+      "level": "D2",
+      "locator": "ConsumerPreflightPlugin.pre_check_duplicate 1052–1103행; document storage transaction 605–804행",
+      "version": "4973be8499bc61dc4f791a609d0d31e9ac9ccd41; blob c060368b4da2fdba099f38892b4369a4f6c90c3c",
+      "observed": "원본/보관 checksum 일치 조회 후 경고하며 CONSUMER_DELETE_DUPLICATES 분기에서만 입력 삭제, FAILED progress, ConsumeFileDuplicateError를 수행한다. 저장 부분에 transaction.atomic, 파일 작업·잠금이 있고 후처리 스크립트는 바깥에서 호출한다.",
+      "limitations": "정적 코드 읽기다. 모든 모델 제약·경쟁 조건·파일시스템 crash consistency를 검토하거나 장애를 주입하지 않았다. 체크 후 저장 경로만 보고 중복 race가 존재한다고 단정하지 않는다. DB transaction은 외부 파일까지 원자적이라는 입증이 아니다.",
+      "open_ref": "github_fetch_file:paperless-ngx/paperless-ngx:src/documents/consumer.py@4973be8499bc61dc4f791a609d0d31e9ac9ccd41",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S03",
+      "title": "Paperless-ngx tasks.py — consume_file",
+      "url": "https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/src/documents/tasks.py",
+      "checked_at_utc": "2026-11-19T15:21:43Z",
+      "level": "D2",
+      "locator": "consume_file 184–279행, 특히 예외별 반환/재발생 255–274행",
+      "version": "4973be8499bc61dc4f791a609d0d31e9ac9ccd41; blob 193596f6357abe9fe30ab328665c3f3c8396b808",
+      "observed": "개별 consume_file 작업이 플러그인들을 실행·정리한다. 중복 예외는 ConsumeFileDuplicateResult로 반환하며 일반 예외는 FAILED progress 후 다시 발생시킨다. 작업 결과, 화면 진행 상태, 성공 문서 생성을 구별할 근거다.",
+      "limitations": "함수의 decorator만으로 전체 worker 재시도 정책 부재를 추론하지 않는다. 중복 결과의 Celery backend 상태·UI 전달은 실행 확인하지 않았다.",
+      "open_ref": "github_fetch_file:paperless-ngx/paperless-ngx:src/documents/tasks.py@4973be8499bc61dc4f791a609d0d31e9ac9ccd41",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S04",
+      "title": "Paperless-ngx troubleshooting.md — failed tasks",
+      "url": "https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/docs/troubleshooting.md",
+      "checked_at_utc": "2026-11-19T15:21:43Z",
+      "level": "D1",
+      "locator": "문서 소비 troubleshooting, 24–27행",
+      "version": "4973be8499bc61dc4f791a609d0d31e9ac9ccd41; blob ba2498e2979b68f39450e77231e5898234617e2d",
+      "observed": "소비 오류 시 로그와 관리자 화면의 실패 작업·오류 메시지를 확인하도록 안내한다.",
+      "limitations": "이 절은 실패 관찰 경로를 설명한다. 모든 실패 원본 보존·자동 재처리·재시작 내구성을 증명하지 않는다.",
+      "open_ref": "github_fetch_file:paperless-ngx/paperless-ngx:docs/troubleshooting.md@4973be8499bc61dc4f791a609d0d31e9ac9ccd41",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S05",
+      "title": "Docspell — Job Queue",
+      "url": "https://docspell.org/docs/webapp/processing/",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "Job Queue, 관측 141–157행",
+      "version": "페이지 문서 버전 0.43.0; URL은 이동 가능",
+      "observed": "실패는 stuck 상태에서 재시도되고 설정 횟수 초과 시 failed가 된다. 로그·상태 필터·취소를 제공하며 최근 80개(완료/미완료 각 40개)를 표시한다. 실패·취소되어도 제안 정보가 없는 문서가 만들어질 수 있다.",
+      "limitations": "항목 존재와 변환 성공은 다르다. 최근 작업 화면은 전체 배치 감사 원장과 같지 않다. 실행·전체 API 조회 가능성은 확인하지 않았다.",
+      "open_ref": "turn170578597view2",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S06",
+      "title": "Docspell — Upload Request",
+      "url": "https://docspell.org/docs/api/upload/",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "Meta Data / multiple, skipDuplicates, flattenArchives, 관측 141–194행",
+      "version": "0.43.0 표시; 이동 가능한 문서",
+      "observed": "multiple=true가 기본이라 업로드 파일을 별도 item으로 만든다. skipDuplicates 기본값은 false다. flattenArchives=true는 압축 항목별 작업으로 나누되 원래 archive는 유지하지 않고 재귀적으로 풀지 않는다.",
+      "limitations": "업로드 옵션의 설명이며 동시 중복 제출·worker 강제 종료의 공개 결과 유일성을 입증하지 않는다. archive 분해 시 보존 의미가 달라진다.",
+      "open_ref": "turn170578597view4; turn936908370view1",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S07",
+      "title": "Docspell — File Processing",
+      "url": "https://docspell.org/docs/joex/file-processing/",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "File Processing / Duplicate Check / Extract Archives, 관측 141–197행",
+      "version": "0.43.0 표시; 이동 가능한 문서",
+      "observed": "업로드 입력·메타데이터를 작업에 저장하고 변환·텍스트 추출·분석 단계를 실행한다. 오류에도 불완전한 item이 생성될 수 있다. 지정한 경우 SHA256 중복 확인을 수행한다. 변환 단계는 외부 실행파일들에 의존한다.",
+      "limitations": "완성품 내부 단계의 존재만으로 독립 라이브러리로 바로 재사용 가능하다고 결론낼 수 없다. 손상파일·문서유형별 성공 격리 동작은 실행하지 않았다.",
+      "open_ref": "turn170578597view3; turn936908370view0",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S08",
+      "title": "OCRmyPDF — Batch processing",
+      "url": "https://ocrmypdf.readthedocs.io/en/latest/batch.html",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "Batch jobs; misc/batch.py 예제 105–133행; watcher 환경변수 235–264행",
+      "version": "열람 시 17.14.2; 검색 snippet은 17.13.1; latest URL 변동",
+      "observed": "파일별 OCR와 예외 처리를 포함한 배치 예제, 폴더 watcher를 제공한다. 예제는 예외를 기록한 뒤에도 OCR complete 로그를 남긴다. watcher의 목적지 충돌 기본 정책 SUFFIX는 이름을 늘려 저장하며 SKIP/OVERWRITE와 다르다. 현재 watcher는 입력 안의 출력·보관 경로를 거부한다.",
+      "limitations": "예제 코드를 제품 전체의 성공 상태 정책으로 일반화하지 않는다. OCR는 검색 PDF 변환 부품이며 문서 검색 UI·내구성 원장·중복 공개 방지 전체는 미입증이다. 이동 문서라 배포 버전과 비교 필요.",
+      "open_ref": "turn170578597view5; turn401318407view0; turn984864617view0",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S09",
+      "title": "Celery — FAQ: natural task ids; retry or acks_late",
+      "url": "https://docs.celeryq.dev/en/stable/faq.html",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "Can I use natural task ids? 460–464행; Should I use retry or acks_late? 543–560행",
+      "version": "열람 시 Celery 5.7.0; stable 이동 URL",
+      "observed": "동일 task ID 두 작업의 동작은 정의되지 않고 결과를 덮을 수 있다. Task.retry와 ack 시점은 다른 기능이며 acks_late 자체는 자동 재시도 정책이 아니다. 파일 수·메타데이터 갱신 뒤 복사 중 실패하는 예로 불완전 상태를 설명한다.",
+      "limitations": "pool·transport에 따른 재전달 차이가 명시되어 있다. 특정 설정에서 실제 재전달/정확히 한 번 공개를 검증하지 않았다. 예제와 일반 원리만 P1에 연결한다.",
+      "open_ref": "turn170578597view6; turn936908370view3; turn984864617view1",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S10",
+      "title": "BullMQ — Idempotent jobs",
+      "url": "https://docs.bullmq.io/patterns/idempotent-jobs",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "level": "D1",
+      "locator": "Idempotent jobs, 관측 390–399행",
+      "version": "버전 고정 없음; 열람일의 공식 문서",
+      "observed": "재시도 후 동일한 최종 상태가 되도록 작업 자체를 설계해야 한다고 설명한다. 복합 DB·API 작업보다 작고 단순한 작업을 권고한다.",
+      "limitations": "큐가 사용자 부작용의 멱등성을 만들어 준다는 보장이 아니다. 같은 사이트의 /bull/important-notes는 legacy Bull 경로라 현재 BullMQ 보증으로 혼용하지 않았다.",
+      "open_ref": "turn170578597view7; turn936908370view4",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S11",
+      "title": "Spring Batch 4.3.9 Reference — restart metadata and typical repeat-retry",
+      "url": "https://docs.spring.io/spring-batch/docs/4.3.9/reference/html/index-single.html",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "level": "D1",
+      "locator": "Appendix B.7–B.8 (8134–8155행), C.1 (8171–8185행), C.3 (8198–8229행)",
+      "version": "4.3.9 문서 경로 고정; 전체 문서 중 지정 절을 읽음",
+      "observed": "재시작은 ExecutionContext 등 저장 메타데이터에 의존한다. 청크 트랜잭션 내부 실패는 청크를 되돌릴 수 있다. 입력은 transactional, 출력은 transactional 또는 idempotent여야 하며 항목별 retry/skip 정책을 분리한다.",
+      "limitations": "현재 최신 버전 채택 추천이 아니다. 청크 내 처리 완료와 이미 커밋된 성공은 다르다. OCR 외부 프로세스·파일 공개가 DB 청크에 자동 편입되지는 않는다.",
+      "open_ref": "turn815252322view2; turn536544579view2; turn401318407view2",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S12",
+      "title": "Bazel — Remote caching",
+      "url": "https://bazel.build/remote/caching",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "level": "D1",
+      "locator": "Overview/action cache and CAS (95–120행); Known issues (239–253행)",
+      "version": "공식 live 문서; 릴리스 고정 없음",
+      "observed": "action cache의 계산 식별자→결과 메타데이터와 CAS의 출력 blob을 구분한다. 계산 입력·명령·환경이 중요하며 빌드 중 입력 변경이나 추적되지 않은 외부 도구가 잘못된 캐시를 만들 수 있다.",
+      "limitations": "계산 결과 재사용 원리다. 공개 문서 row의 유일성, 외부 알림, 내구성 보관 원장까지 제공한다고 해석하지 않는다. P1으로의 적용은 제안이다.",
+      "open_ref": "turn815252322view0; turn536544579view0",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S13",
+      "title": "SQLite — Atomic Commit In SQLite",
+      "url": "https://www.sqlite.org/atomiccommit.html",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "level": "D1",
+      "locator": "§1, §3.5–3.11, §9.1–9.3; 특히 rollback-journal 범위와 journal deletion commit point",
+      "version": "공식 live 설명; rollback journal 모드 설명이며 WAL 설명 아님",
+      "observed": "journal·flush·commit 판별점으로 DB 트랜잭션의 중단 전후 복구를 설명한다. 파일 잠금·동기화·삭제 동작에 가정이 있다.",
+      "limitations": "DB 원자성이 임의 외부 파일 이동+메시지+DB를 한 트랜잭션으로 묶는다는 뜻이 아니다. 과거 파일시스템 관련 주의가 현재 환경의 측정 결과는 아니다. P1의 item 공개 원장 대응은 가설이다.",
+      "open_ref": "turn815252322view1; turn536544579view1; turn401318407view1",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S14",
+      "title": "Mokhov, Mitchell, Peyton Jones — Build Systems à la Carte (2018)",
+      "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/build-systems.pdf",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "level": "D1",
+      "locator": "Abstract/§1; §2.4 p.6; §3.6 p.11; §6.4 p.24",
+      "version": "ICFP 2018, DOI 10.1145/3236774; 저자/연구기관 원문 PDF",
+      "observed": "실행 순서(scheduling)와 다시 계산할지(rebuilding)를 나누고 Make·Shake·Bazel·Excel을 비교한다. 입력/출력 해시를 통한 재사용, correctness 전제, Reflow 같은 데이터 처리 적용을 다룬다.",
+      "limitations": "논문의 계산 모델·전제에서 얻은 결과다. 비결정적 OCR/모델 변경과 외부 부작용은 별도 조건을 요구한다. P1 적용의 효과를 직접 측정하지 않았다.",
+      "open_ref": "turn815252322view3; turn536544579view3",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S15",
+      "title": "GRAIL Reflow — README",
+      "url": "https://github.com/grailbio/reflow/blob/90deddd72f8f1b489cab0812e2827c299f77dd19/README.md",
+      "checked_at_utc": "2026-11-19T15:24:55Z",
+      "level": "D1",
+      "locator": "5–38행; 125–130행; 424–434행",
+      "version": "고정 90deddd72f8f1b489cab0812e2827c299f77dd19, commit date 2023-10-18; live repo를 연 뒤 이 README 고정본 재열람",
+      "observed": "제작자는 NGS 생물정보학 워크로드용으로 만들고 모델 학습·분석에도 사용했다고 설명한다. Docker 도구의 증분 실행·결과 memoization, 입력/코드 변경에 따른 재계산, S3 파일 객체와 DynamoDB association 구분을 명시한다.",
+      "limitations": "제작자의 사용 설명이며 독립 운영 평가나 현재 유지보수·배포 가능성 확인이 아니다. 빌드식 재사용의 다른 분야 사례는 문서화되어 있으나 P1 문서 공개 멱등성은 입증하지 않는다.",
+      "open_ref": "turn778880336view0; github_fetch_file:grailbio/reflow:README.md@90deddd72f8f1b489cab0812e2827c299f77dd19",
+      "read_status": "opened"
+    },
+    {
+      "id": "P1-S16",
+      "title": "Jiandu — Self-hosted document management for households",
+      "url": "https://jiandu.org/",
+      "checked_at_utc": "2026-11-19T15:22:32Z",
+      "level": "D1",
+      "locator": "1–20행, Where it stands 62–95행",
+      "version": "live 공식 페이지; 스크린샷은 0.6.0.1 표시",
+      "observed": "PDF·사진, watched folder, 검색 라이브러리를 설명하지만 공개 릴리스 패키지·프로젝트 라이선스가 없고 소스 저장소 접근이 필요하다고 명시한다.",
+      "limitations": "기능 표면은 P1과 가깝지만 현재 공개 접근 조건에서는 소스 빌드 평가를 수행할 수 없다. 접근·라이선스·배포 상태가 변하면 다시 판단해야 한다.",
+      "open_ref": "turn778880336view1; turn984864617view2",
+      "read_status": "opened"
+    }
+  ],
+  "queries": [
+    {
+      "id": "P1-Q01",
+      "q": "self hosted document management watched folder PDF OCR failed documents duplicate detection",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:32Z",
+      "purpose": "제품명 없는 완성품 시작 질의",
+      "observed_results": [
+        {
+          "title": "Nestbox",
+          "url": "https://github.com/aebarth/nestbox",
+          "disposition": "D0_보류",
+          "reason": "자체 운영·OCR·중복이라는 후보 단서만 관측. 이 조사에서 원문 열람하지 않아 기능 확정 제외.",
+          "search_ref": "turn551442850search1"
+        },
+        {
+          "title": "Paperless-ngx third-party overview",
+          "url": "https://kx.cloudingenium.com/en/paperless-ngx-self-hosted-document-management-ocr-tagging",
+          "disposition": "공식원문으로_전환",
+          "reason": "제품 단서를 얻고 공식 문서·고정 저장소 소스에서 검증.",
+          "search_ref": "turn551442850search4"
+        },
+        {
+          "title": "Papermerge canonical",
+          "url": "https://github.com/papermerge/papermerge-core?ref=selfh.st",
+          "disposition": "D0_보류",
+          "reason": "완성품 후보이나 모든 후보 평가가 아닌 경로 비교 범위에서 미열람.",
+          "search_ref": "turn551442850search10"
+        },
+        {
+          "title": "Papermerge mirror",
+          "url": "https://github.masuit.org/papermerge/papermerge-core",
+          "disposition": "검증출처_제외",
+          "reason": "공식 저장소와 다른 미러 도메인. 내용 보증에 사용하지 않음.",
+          "search_ref": "turn551442850search5"
+        },
+        {
+          "title": "Docspell overview",
+          "url": "https://localhosted.com/docspell",
+          "disposition": "공식원문으로_전환",
+          "reason": "업무 목표에 가까운 후보; 공식 job queue/upload/processing 문서 후속 확인.",
+          "search_ref": "turn551442850search9"
+        },
+        {
+          "title": "OCRmyPDF batch",
+          "url": "https://ocrmypdf.readthedocs.io/en/latest/batch.html?pubDate=20261015",
+          "disposition": "선택_부품",
+          "reason": "공식 배치 처리 원문으로 이동. 완성품과 부품을 혼동하지 않는 비교 사례.",
+          "search_ref": "turn551442850search13"
+        },
+        {
+          "title": "Spring Batch 4.3.9",
+          "url": "https://docs.spring.io/spring-batch/docs/4.3.9/reference/html/index-single.html",
+          "disposition": "선택_부품원리",
+          "reason": "버전 있는 restart/transaction/retry 원문을 확인.",
+          "search_ref": "turn551442850search22"
+        },
+        {
+          "title": "atomic_fs",
+          "url": "https://docs.rs/atomic-fs/latest/atomic_fs/",
+          "disposition": "D0_보류",
+          "reason": "atomic라는 기능명만으로 DB·파일 공개 전체를 보장한다고 볼 수 없어 원리 추적을 우선.",
+          "search_ref": "turn551442850search24"
+        },
+        {
+          "title": "Content-Addressed Pipelines",
+          "url": "https://weaveward.com/blog/content-addressed-pipeline-caching",
+          "disposition": "공식원문으로_전환",
+          "reason": "서드파티 개념 단서. 사실은 Bazel·논문·Reflow 원문에서 확인.",
+          "search_ref": "turn551442850search26"
+        },
+        {
+          "title": "Buildbarn worker configuration",
+          "url": "https://github.com/buildbarn/bb-remote-execution/blob/main/pkg/proto/configuration/bb_worker/bb_worker.proto",
+          "disposition": "D0_보류",
+          "reason": "빌드 실행 분야 단서; 본 비교에서는 Bazel과 Reflow를 추적.",
+          "search_ref": "turn551442850search32"
+        }
+      ],
+      "source_ids": [
+        "P1-S01",
+        "P1-S04",
+        "P1-S08"
+      ],
+      "next_query_ids": [
+        "P1-Q04",
+        "P1-Q07"
+      ],
+      "batch_id": "P1-B01",
+      "attribution": "Q01–Q03 동시 호출의 공유 관측 집합. 개별 결과가 어느 질의에서 왔는지는 도구가 구분하지 않아 미상."
+    },
+    {
+      "id": "P1-Q02",
+      "q": "job queue retry idempotent tasks batch independent failures persistent result",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:32Z",
+      "purpose": "제품명 없는 부품 시작 질의",
+      "observed_results": [
+        {
+          "title": "Nestbox",
+          "url": "https://github.com/aebarth/nestbox",
+          "disposition": "D0_보류",
+          "reason": "자체 운영·OCR·중복이라는 후보 단서만 관측. 이 조사에서 원문 열람하지 않아 기능 확정 제외.",
+          "search_ref": "turn551442850search1"
+        },
+        {
+          "title": "Paperless-ngx third-party overview",
+          "url": "https://kx.cloudingenium.com/en/paperless-ngx-self-hosted-document-management-ocr-tagging",
+          "disposition": "공식원문으로_전환",
+          "reason": "제품 단서를 얻고 공식 문서·고정 저장소 소스에서 검증.",
+          "search_ref": "turn551442850search4"
+        },
+        {
+          "title": "Papermerge canonical",
+          "url": "https://github.com/papermerge/papermerge-core?ref=selfh.st",
+          "disposition": "D0_보류",
+          "reason": "완성품 후보이나 모든 후보 평가가 아닌 경로 비교 범위에서 미열람.",
+          "search_ref": "turn551442850search10"
+        },
+        {
+          "title": "Papermerge mirror",
+          "url": "https://github.masuit.org/papermerge/papermerge-core",
+          "disposition": "검증출처_제외",
+          "reason": "공식 저장소와 다른 미러 도메인. 내용 보증에 사용하지 않음.",
+          "search_ref": "turn551442850search5"
+        },
+        {
+          "title": "Docspell overview",
+          "url": "https://localhosted.com/docspell",
+          "disposition": "공식원문으로_전환",
+          "reason": "업무 목표에 가까운 후보; 공식 job queue/upload/processing 문서 후속 확인.",
+          "search_ref": "turn551442850search9"
+        },
+        {
+          "title": "OCRmyPDF batch",
+          "url": "https://ocrmypdf.readthedocs.io/en/latest/batch.html?pubDate=20261015",
+          "disposition": "선택_부품",
+          "reason": "공식 배치 처리 원문으로 이동. 완성품과 부품을 혼동하지 않는 비교 사례.",
+          "search_ref": "turn551442850search13"
+        },
+        {
+          "title": "Spring Batch 4.3.9",
+          "url": "https://docs.spring.io/spring-batch/docs/4.3.9/reference/html/index-single.html",
+          "disposition": "선택_부품원리",
+          "reason": "버전 있는 restart/transaction/retry 원문을 확인.",
+          "search_ref": "turn551442850search22"
+        },
+        {
+          "title": "atomic_fs",
+          "url": "https://docs.rs/atomic-fs/latest/atomic_fs/",
+          "disposition": "D0_보류",
+          "reason": "atomic라는 기능명만으로 DB·파일 공개 전체를 보장한다고 볼 수 없어 원리 추적을 우선.",
+          "search_ref": "turn551442850search24"
+        },
+        {
+          "title": "Content-Addressed Pipelines",
+          "url": "https://weaveward.com/blog/content-addressed-pipeline-caching",
+          "disposition": "공식원문으로_전환",
+          "reason": "서드파티 개념 단서. 사실은 Bazel·논문·Reflow 원문에서 확인.",
+          "search_ref": "turn551442850search26"
+        },
+        {
+          "title": "Buildbarn worker configuration",
+          "url": "https://github.com/buildbarn/bb-remote-execution/blob/main/pkg/proto/configuration/bb_worker/bb_worker.proto",
+          "disposition": "D0_보류",
+          "reason": "빌드 실행 분야 단서; 본 비교에서는 Bazel과 Reflow를 추적.",
+          "search_ref": "turn551442850search32"
+        }
+      ],
+      "source_ids": [
+        "P1-S11"
+      ],
+      "next_query_ids": [
+        "P1-Q05",
+        "P1-Q08",
+        "P1-Q09"
+      ],
+      "batch_id": "P1-B01",
+      "attribution": "Q01–Q03 공유 결과. 이 배열의 후보를 Q02 단독 발견으로 읽지 않는다."
+    },
+    {
+      "id": "P1-Q03",
+      "q": "crash recovery atomic publish output file write ahead log content addressable build cache",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:32Z",
+      "purpose": "제품명 없는 다른 분야 원리 시작 질의",
+      "observed_results": [
+        {
+          "title": "Nestbox",
+          "url": "https://github.com/aebarth/nestbox",
+          "disposition": "D0_보류",
+          "reason": "자체 운영·OCR·중복이라는 후보 단서만 관측. 이 조사에서 원문 열람하지 않아 기능 확정 제외.",
+          "search_ref": "turn551442850search1"
+        },
+        {
+          "title": "Paperless-ngx third-party overview",
+          "url": "https://kx.cloudingenium.com/en/paperless-ngx-self-hosted-document-management-ocr-tagging",
+          "disposition": "공식원문으로_전환",
+          "reason": "제품 단서를 얻고 공식 문서·고정 저장소 소스에서 검증.",
+          "search_ref": "turn551442850search4"
+        },
+        {
+          "title": "Papermerge canonical",
+          "url": "https://github.com/papermerge/papermerge-core?ref=selfh.st",
+          "disposition": "D0_보류",
+          "reason": "완성품 후보이나 모든 후보 평가가 아닌 경로 비교 범위에서 미열람.",
+          "search_ref": "turn551442850search10"
+        },
+        {
+          "title": "Papermerge mirror",
+          "url": "https://github.masuit.org/papermerge/papermerge-core",
+          "disposition": "검증출처_제외",
+          "reason": "공식 저장소와 다른 미러 도메인. 내용 보증에 사용하지 않음.",
+          "search_ref": "turn551442850search5"
+        },
+        {
+          "title": "Docspell overview",
+          "url": "https://localhosted.com/docspell",
+          "disposition": "공식원문으로_전환",
+          "reason": "업무 목표에 가까운 후보; 공식 job queue/upload/processing 문서 후속 확인.",
+          "search_ref": "turn551442850search9"
+        },
+        {
+          "title": "OCRmyPDF batch",
+          "url": "https://ocrmypdf.readthedocs.io/en/latest/batch.html?pubDate=20261015",
+          "disposition": "선택_부품",
+          "reason": "공식 배치 처리 원문으로 이동. 완성품과 부품을 혼동하지 않는 비교 사례.",
+          "search_ref": "turn551442850search13"
+        },
+        {
+          "title": "Spring Batch 4.3.9",
+          "url": "https://docs.spring.io/spring-batch/docs/4.3.9/reference/html/index-single.html",
+          "disposition": "선택_부품원리",
+          "reason": "버전 있는 restart/transaction/retry 원문을 확인.",
+          "search_ref": "turn551442850search22"
+        },
+        {
+          "title": "atomic_fs",
+          "url": "https://docs.rs/atomic-fs/latest/atomic_fs/",
+          "disposition": "D0_보류",
+          "reason": "atomic라는 기능명만으로 DB·파일 공개 전체를 보장한다고 볼 수 없어 원리 추적을 우선.",
+          "search_ref": "turn551442850search24"
+        },
+        {
+          "title": "Content-Addressed Pipelines",
+          "url": "https://weaveward.com/blog/content-addressed-pipeline-caching",
+          "disposition": "공식원문으로_전환",
+          "reason": "서드파티 개념 단서. 사실은 Bazel·논문·Reflow 원문에서 확인.",
+          "search_ref": "turn551442850search26"
+        },
+        {
+          "title": "Buildbarn worker configuration",
+          "url": "https://github.com/buildbarn/bb-remote-execution/blob/main/pkg/proto/configuration/bb_worker/bb_worker.proto",
+          "disposition": "D0_보류",
+          "reason": "빌드 실행 분야 단서; 본 비교에서는 Bazel과 Reflow를 추적.",
+          "search_ref": "turn551442850search32"
+        }
+      ],
+      "source_ids": [],
+      "next_query_ids": [
+        "P1-Q06"
+      ],
+      "batch_id": "P1-B01",
+      "attribution": "Q01–Q03 공유 결과. SQLite는 여기에 반환된 후보가 아니라 후속 지식 기반 직접 탐색이다."
+    },
+    {
+      "id": "P1-Q04",
+      "q": "self hosted document management watched folder PDF OCR failed documents duplicate detection",
+      "engine": "system1",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:42Z",
+      "purpose": "완성품 경로 결과를 단독 질의로 관측하고 공식 검증 후보 선택",
+      "observed_results": [
+        {
+          "title": "Nestbox",
+          "url": "https://github.com/aebarth/nestbox",
+          "disposition": "D0_보류",
+          "reason": "원문 미열람; 검색에 보였다는 사실만 기록.",
+          "search_ref": "turn689613915search0"
+        },
+        {
+          "title": "Paperless-ngx configuration",
+          "url": "https://docs.paperless-ngx.com/configuration/",
+          "disposition": "선택_공식원문",
+          "reason": "웹 open 403; 공식 고정 저장소 문서·코드로 전환.",
+          "search_ref": "turn689613915search2"
+        },
+        {
+          "title": "Paperless fork administration",
+          "url": "https://github.com/AHibari/paperless-ngx-paperless-ngx/blob/dev/docs/administration.md",
+          "disposition": "검증출처_제외",
+          "reason": "fork·이동 branch 내용을 공식 현재 중복 기본값 보장으로 사용하지 않음.",
+          "search_ref": "turn689613915search3"
+        },
+        {
+          "title": "Jiandu",
+          "url": "https://jiandu.org/",
+          "disposition": "선택후_공개평가후보제외",
+          "reason": "기능 키워드는 맞지만 원문은 저장소 접근·라이선스·배포 한계를 명시.",
+          "search_ref": "turn689613915search4"
+        },
+        {
+          "title": "Lekto",
+          "url": "https://github.com/lektohq/lekto",
+          "disposition": "D0_보류",
+          "reason": "미열람. 검색 snippet만으로 채택·배제 확정하지 않음.",
+          "search_ref": "turn689613915search5"
+        },
+        {
+          "title": "Readur third-party",
+          "url": "https://hysenlabs.com/projects/readur-readur",
+          "disposition": "D0_보류",
+          "reason": "공식 원문 미열람; 제품 성능·안정성 주장에 사용하지 않음.",
+          "search_ref": "turn689613915search6"
+        },
+        {
+          "title": "Docspell overview",
+          "url": "https://localhosted.com/docspell",
+          "disposition": "선택_후속공식검증",
+          "reason": "Q07에서 공식 상태·업로드 의미를 확인.",
+          "search_ref": "turn689613915search7"
+        },
+        {
+          "title": "OCRmyPDF batch",
+          "url": "https://ocrmypdf.readthedocs.io/en/latest/batch.html?pubDate=20261015",
+          "disposition": "선택_역할재분류",
+          "reason": "완성품 검색에도 부품이 노출됨. 배치 OCR를 전체 문서관리로 취급하지 않음.",
+          "search_ref": "turn689613915search8"
+        }
+      ],
+      "source_ids": [
+        "P1-S01",
+        "P1-S02",
+        "P1-S03",
+        "P1-S04",
+        "P1-S08",
+        "P1-S16"
+      ],
+      "next_query_ids": [
+        "P1-Q07"
+      ]
+    },
+    {
+      "id": "P1-Q05",
+      "q": "persistent job queue idempotent retry independent batch task",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:56Z",
+      "purpose": "부품 경로 단독 질의; 큐 기능명에서 재시작·출력 보장으로 추적",
+      "observed_results": [
+        {
+          "title": "job-queue",
+          "url": "https://github.com/the-deep-33/job-queue",
+          "disposition": "D0_보류",
+          "reason": "큐 기능 단서. 코드 미열람이므로 보증/채택 평가 제외.",
+          "search_ref": "turn687349409search0"
+        },
+        {
+          "title": "Respire job queues",
+          "url": "https://respire.tomlonghurst.dev/docs/guides/job-queues/",
+          "disposition": "D0_보류",
+          "reason": "타입·큐 분야 단서; 기능명보다 retry 의미를 공식 비교 문서에서 검증.",
+          "search_ref": "turn687349409search1"
+        },
+        {
+          "title": "sqlite-workqueue",
+          "url": "https://github.com/SammyRyuga/sqlite-workqueue",
+          "disposition": "D0_보류",
+          "reason": "enqueue 중복과 부작용 구별을 연상하는 단서일 뿐 원문은 미열람.",
+          "search_ref": "turn687349409search2"
+        },
+        {
+          "title": "durable-queue",
+          "url": "https://github.com/abhijith-abhii/durable-queue",
+          "disposition": "D0_보류",
+          "reason": "미열람; 인기도나 작은 프로젝트라는 이유로 실패라 판정하지 않음.",
+          "search_ref": "turn687349409search3"
+        },
+        {
+          "title": "Azure background jobs",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/background-jobs",
+          "disposition": "D0_보류",
+          "reason": "공식 일반 지침 후보이나 self-host 제품 선택의 직접 증거로 사용하지 않음.",
+          "search_ref": "turn687349409search4"
+        },
+        {
+          "title": "Spring Batch older trunk reference",
+          "url": "https://docs.spring.io/spring-batch/trunk_bkp/reference/pdf/spring-batch-reference.pdf",
+          "disposition": "고정버전_전환",
+          "reason": "혼합 최초 결과의 명확한 4.3.9 문서로 원리 확인.",
+          "search_ref": "turn687349409search12"
+        }
+      ],
+      "source_ids": [
+        "P1-S11"
+      ],
+      "next_query_ids": [
+        "P1-Q08",
+        "P1-Q09"
+      ]
+    },
+    {
+      "id": "P1-Q06",
+      "q": "build system cache content addressable outputs crash atomic commit",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:20:59Z",
+      "purpose": "다른 분야 원리 단독 질의; 계산 재사용·commit 대응 근거 탐색",
+      "observed_results": [
+        {
+          "title": "Tuist build cache",
+          "url": "https://tuist.dev/en/docs/references/concepts/build-cache",
+          "disposition": "D0_보류",
+          "reason": "캐시 원리 후보; 별도 열람/성능 판단 미실시.",
+          "search_ref": "turn766977762search0"
+        },
+        {
+          "title": "BuildXL cache",
+          "url": "https://github.com/microsoft/BuildXL/blob/main/Public/Src/Cache/README.md",
+          "disposition": "D0_보류",
+          "reason": "구현 분야 단서; 비교 범위에서는 Bazel·Reflow를 추적.",
+          "search_ref": "turn766977762search1"
+        },
+        {
+          "title": "Build Systems à la Carte",
+          "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/build-systems.pdf",
+          "disposition": "선택_원논문",
+          "reason": "빌드/스프레드시트/데이터 처리 사이의 원리 대응과 전제를 확인.",
+          "search_ref": "turn766977762search13"
+        },
+        {
+          "title": "Bazel remote caching source",
+          "url": "https://bazel.googlesource.com/bazel/%2Bshow/ec7ff27b691c6207081b7b8b057b96ef786a0108/site/docs/remote-caching.md",
+          "disposition": "공식현재문서_전환",
+          "reason": "발견은 이 결과, 검증은 bazel.build 공식 페이지 직접 탐색.",
+          "search_ref": "turn766977762search5"
+        },
+        {
+          "title": "Content-Addressed Pipelines",
+          "url": "https://weaveward.com/blog/content-addressed-pipeline-caching",
+          "disposition": "검증출처_제외",
+          "reason": "서드파티 설명 대신 공식 원문을 사용.",
+          "search_ref": "turn766977762search7"
+        }
+      ],
+      "source_ids": [
+        "P1-S12",
+        "P1-S14"
+      ],
+      "next_query_ids": [
+        "P1-Q10"
+      ]
+    },
+    {
+      "id": "P1-Q07",
+      "q": "site.docspell.org docs processing jobs duplicate files retry failed",
+      "engine": "system1",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:21:03Z",
+      "purpose": "발견된 Docspell 공식 문서 검증; 실제 입력 오타(site. prefix) 그대로 보존",
+      "observed_results": [
+        {
+          "title": "Docspell Job Queue",
+          "url": "https://docspell.org/docs/webapp/processing/",
+          "disposition": "선택",
+          "reason": "실패·재시도·생성 item 의미 확인.",
+          "search_ref": "turn765449022search0"
+        },
+        {
+          "title": "Docspell defaults",
+          "url": "https://docspell.org/docs/configure/defaults/",
+          "disposition": "D0_보류",
+          "reason": "개별 설정 전체 원문은 읽지 않음.",
+          "search_ref": "turn765449022search1"
+        },
+        {
+          "title": "Docspell File Processing",
+          "url": "https://docspell.org/docs/joex/file-processing/",
+          "disposition": "선택",
+          "reason": "처리 단계·오류·중복 옵션 확인.",
+          "search_ref": "turn765449022search2"
+        },
+        {
+          "title": "Docspell Upload Request",
+          "url": "https://docspell.org/docs/api/upload/",
+          "disposition": "선택",
+          "reason": "multiple/skipDuplicates 기본값 확인.",
+          "search_ref": "turn765449022search3"
+        },
+        {
+          "title": "Celery tasks main",
+          "url": "https://docs.celeryq.dev/en/main/userguide/tasks.html",
+          "disposition": "D0_보류",
+          "reason": "FAQ를 선택했으므로 별도 읽은 원문 수에 넣지 않음.",
+          "search_ref": "turn765449022search4"
+        },
+        {
+          "title": "Celery FAQ latest",
+          "url": "https://docs.celeryq.dev/en/latest/faq.html",
+          "disposition": "stable문서_선택",
+          "reason": "검색 제목의 버전 차이를 관측. 실제 열람한 stable 페이지 버전을 기록.",
+          "search_ref": "turn765449022search5"
+        },
+        {
+          "title": "Celery FAQ stable",
+          "url": "https://docs.celeryq.dev/en/stable/faq.html",
+          "disposition": "선택",
+          "reason": "retry/ack 및 자연 task id 반례 확인.",
+          "search_ref": "turn765449022search6"
+        },
+        {
+          "title": "Celery FAQ main",
+          "url": "https://docs.celeryq.dev/en/main/faq.html",
+          "disposition": "중복검증_제외",
+          "reason": "stable와 같은 제목의 다른 이동 URL을 자료 수로 추가하지 않음.",
+          "search_ref": "turn765449022search7"
+        },
+        {
+          "title": "BullMQ Idempotent jobs",
+          "url": "https://docs.bullmq.io/patterns/idempotent-jobs",
+          "disposition": "선택",
+          "reason": "재시도를 안전하게 만드는 사용자 작업 책임 확인.",
+          "search_ref": "turn765449022search8"
+        },
+        {
+          "title": "Bull legacy important notes",
+          "url": "https://docs.bullmq.io/bull/important-notes",
+          "disposition": "버전혼용_제외",
+          "reason": "legacy Bull 경로를 BullMQ 최신 보증으로 사용하지 않음.",
+          "search_ref": "turn765449022search9"
+        },
+        {
+          "title": "BullMQ Retrying failing jobs",
+          "url": "https://docs.bullmq.io/guide/retrying-failing-jobs",
+          "disposition": "D0_보류",
+          "reason": "재시도 상세 정책보다 멱등 설계 조건을 우선; 미열람.",
+          "search_ref": "turn765449022search10"
+        }
+      ],
+      "source_ids": [
+        "P1-S05",
+        "P1-S06",
+        "P1-S07"
+      ],
+      "next_query_ids": [],
+      "batch_id": "P1-B02",
+      "attribution": "Q07–Q09 공유 반환. 후보 배열은 배치 전체이며 개별 질의 순위/총수 아님. 구조화 domain filter는 사용하지 않았다."
+    },
+    {
+      "id": "P1-Q08",
+      "q": "site:docs.celeryq.dev tasks idempotent acks_late retry",
+      "engine": "system1",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:21:03Z",
+      "purpose": "연구자가 알고 있던 큐 이름을 사용한 검증 확장; 무명 발견 검색과 분리",
+      "observed_results": [
+        {
+          "title": "Docspell Job Queue",
+          "url": "https://docspell.org/docs/webapp/processing/",
+          "disposition": "선택",
+          "reason": "실패·재시도·생성 item 의미 확인.",
+          "search_ref": "turn765449022search0"
+        },
+        {
+          "title": "Docspell defaults",
+          "url": "https://docspell.org/docs/configure/defaults/",
+          "disposition": "D0_보류",
+          "reason": "개별 설정 전체 원문은 읽지 않음.",
+          "search_ref": "turn765449022search1"
+        },
+        {
+          "title": "Docspell File Processing",
+          "url": "https://docspell.org/docs/joex/file-processing/",
+          "disposition": "선택",
+          "reason": "처리 단계·오류·중복 옵션 확인.",
+          "search_ref": "turn765449022search2"
+        },
+        {
+          "title": "Docspell Upload Request",
+          "url": "https://docspell.org/docs/api/upload/",
+          "disposition": "선택",
+          "reason": "multiple/skipDuplicates 기본값 확인.",
+          "search_ref": "turn765449022search3"
+        },
+        {
+          "title": "Celery tasks main",
+          "url": "https://docs.celeryq.dev/en/main/userguide/tasks.html",
+          "disposition": "D0_보류",
+          "reason": "FAQ를 선택했으므로 별도 읽은 원문 수에 넣지 않음.",
+          "search_ref": "turn765449022search4"
+        },
+        {
+          "title": "Celery FAQ latest",
+          "url": "https://docs.celeryq.dev/en/latest/faq.html",
+          "disposition": "stable문서_선택",
+          "reason": "검색 제목의 버전 차이를 관측. 실제 열람한 stable 페이지 버전을 기록.",
+          "search_ref": "turn765449022search5"
+        },
+        {
+          "title": "Celery FAQ stable",
+          "url": "https://docs.celeryq.dev/en/stable/faq.html",
+          "disposition": "선택",
+          "reason": "retry/ack 및 자연 task id 반례 확인.",
+          "search_ref": "turn765449022search6"
+        },
+        {
+          "title": "Celery FAQ main",
+          "url": "https://docs.celeryq.dev/en/main/faq.html",
+          "disposition": "중복검증_제외",
+          "reason": "stable와 같은 제목의 다른 이동 URL을 자료 수로 추가하지 않음.",
+          "search_ref": "turn765449022search7"
+        },
+        {
+          "title": "BullMQ Idempotent jobs",
+          "url": "https://docs.bullmq.io/patterns/idempotent-jobs",
+          "disposition": "선택",
+          "reason": "재시도를 안전하게 만드는 사용자 작업 책임 확인.",
+          "search_ref": "turn765449022search8"
+        },
+        {
+          "title": "Bull legacy important notes",
+          "url": "https://docs.bullmq.io/bull/important-notes",
+          "disposition": "버전혼용_제외",
+          "reason": "legacy Bull 경로를 BullMQ 최신 보증으로 사용하지 않음.",
+          "search_ref": "turn765449022search9"
+        },
+        {
+          "title": "BullMQ Retrying failing jobs",
+          "url": "https://docs.bullmq.io/guide/retrying-failing-jobs",
+          "disposition": "D0_보류",
+          "reason": "재시도 상세 정책보다 멱등 설계 조건을 우선; 미열람.",
+          "search_ref": "turn765449022search10"
+        }
+      ],
+      "source_ids": [
+        "P1-S09"
+      ],
+      "next_query_ids": [],
+      "batch_id": "P1-B02",
+      "attribution": "Q07–Q09 공유 반환. site:는 문자열 일부이며 API domains filter가 아님."
+    },
+    {
+      "id": "P1-Q09",
+      "q": "site:docs.bullmq.io idempotent jobs stalled retry",
+      "engine": "system1",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:21:03Z",
+      "purpose": "연구자가 알고 있던 두 번째 큐의 멱등 책임·버전 경계 검증",
+      "observed_results": [
+        {
+          "title": "Docspell Job Queue",
+          "url": "https://docspell.org/docs/webapp/processing/",
+          "disposition": "선택",
+          "reason": "실패·재시도·생성 item 의미 확인.",
+          "search_ref": "turn765449022search0"
+        },
+        {
+          "title": "Docspell defaults",
+          "url": "https://docspell.org/docs/configure/defaults/",
+          "disposition": "D0_보류",
+          "reason": "개별 설정 전체 원문은 읽지 않음.",
+          "search_ref": "turn765449022search1"
+        },
+        {
+          "title": "Docspell File Processing",
+          "url": "https://docspell.org/docs/joex/file-processing/",
+          "disposition": "선택",
+          "reason": "처리 단계·오류·중복 옵션 확인.",
+          "search_ref": "turn765449022search2"
+        },
+        {
+          "title": "Docspell Upload Request",
+          "url": "https://docspell.org/docs/api/upload/",
+          "disposition": "선택",
+          "reason": "multiple/skipDuplicates 기본값 확인.",
+          "search_ref": "turn765449022search3"
+        },
+        {
+          "title": "Celery tasks main",
+          "url": "https://docs.celeryq.dev/en/main/userguide/tasks.html",
+          "disposition": "D0_보류",
+          "reason": "FAQ를 선택했으므로 별도 읽은 원문 수에 넣지 않음.",
+          "search_ref": "turn765449022search4"
+        },
+        {
+          "title": "Celery FAQ latest",
+          "url": "https://docs.celeryq.dev/en/latest/faq.html",
+          "disposition": "stable문서_선택",
+          "reason": "검색 제목의 버전 차이를 관측. 실제 열람한 stable 페이지 버전을 기록.",
+          "search_ref": "turn765449022search5"
+        },
+        {
+          "title": "Celery FAQ stable",
+          "url": "https://docs.celeryq.dev/en/stable/faq.html",
+          "disposition": "선택",
+          "reason": "retry/ack 및 자연 task id 반례 확인.",
+          "search_ref": "turn765449022search6"
+        },
+        {
+          "title": "Celery FAQ main",
+          "url": "https://docs.celeryq.dev/en/main/faq.html",
+          "disposition": "중복검증_제외",
+          "reason": "stable와 같은 제목의 다른 이동 URL을 자료 수로 추가하지 않음.",
+          "search_ref": "turn765449022search7"
+        },
+        {
+          "title": "BullMQ Idempotent jobs",
+          "url": "https://docs.bullmq.io/patterns/idempotent-jobs",
+          "disposition": "선택",
+          "reason": "재시도를 안전하게 만드는 사용자 작업 책임 확인.",
+          "search_ref": "turn765449022search8"
+        },
+        {
+          "title": "Bull legacy important notes",
+          "url": "https://docs.bullmq.io/bull/important-notes",
+          "disposition": "버전혼용_제외",
+          "reason": "legacy Bull 경로를 BullMQ 최신 보증으로 사용하지 않음.",
+          "search_ref": "turn765449022search9"
+        },
+        {
+          "title": "BullMQ Retrying failing jobs",
+          "url": "https://docs.bullmq.io/guide/retrying-failing-jobs",
+          "disposition": "D0_보류",
+          "reason": "재시도 상세 정책보다 멱등 설계 조건을 우선; 미열람.",
+          "search_ref": "turn765449022search10"
+        }
+      ],
+      "source_ids": [
+        "P1-S10"
+      ],
+      "next_query_ids": [],
+      "batch_id": "P1-B02",
+      "attribution": "Q07–Q09 공유 반환. legacy Bull 후보를 현재 BullMQ로 혼용하지 않았다."
+    },
+    {
+      "id": "P1-Q10",
+      "q": "site:github.com/grailbio/reflow memoization reproducible",
+      "engine": "system2",
+      "filters": {
+        "domains": [],
+        "recency": null
+      },
+      "checked_at_utc": "2026-11-19T15:22:11Z",
+      "purpose": "S14 §6.4가 지목한 다른 분야 실제 적용을 제작자 원문으로 추적",
+      "observed_results": [
+        {
+          "title": "GRAIL Reflow",
+          "url": "https://github.com/grailbio/reflow",
+          "disposition": "선택_고정README",
+          "reason": "논문 §6.4의 데이터 처리 사례를 공식 저장소에서 확인하고 SHA 고정.",
+          "search_ref": "turn751519139search0"
+        },
+        {
+          "title": "Reflow README master",
+          "url": "https://github.com/grailbio/reflow/blob/master/README.md",
+          "disposition": "고정주소_전환",
+          "reason": "이동 branch 대신 90deddd… README를 읽음.",
+          "search_ref": "turn751519139search1"
+        },
+        {
+          "title": "Reflow repository.go",
+          "url": "https://github.com/grailbio/reflow/blob/master/repository.go",
+          "disposition": "D0_보류",
+          "reason": "이번에는 README의 문서화된 사용 범위만 확인; 코드검증이라 표시하지 않음.",
+          "search_ref": "turn751519139search2"
+        },
+        {
+          "title": "RectifiedFlow run_lib_reflow.py",
+          "url": "https://github.com/gnobitab/RectifiedFlow/blob/main/ImageGeneration/run_lib_reflow.py",
+          "disposition": "이름오탐_제외",
+          "reason": "reflow 문자열은 겹치지만 목표 GRAIL 증분 워크플로와 다른 이미지 생성 코드. 내용 평가하지 않음.",
+          "search_ref": "turn751519139search4"
+        },
+        {
+          "title": "GRPO-Flow",
+          "url": "https://github.com/justLeo-1/GRPO-Flow",
+          "disposition": "이름오탐_제외",
+          "reason": "검색에 관측되었으나 GRAIL Reflow 후보와 다른 저장소.",
+          "search_ref": "turn751519139search6"
+        },
+        {
+          "title": "rectified-flow-from-scratch",
+          "url": "https://github.com/aghasalim/rectified-flow-from-scratch",
+          "disposition": "이름오탐_제외",
+          "reason": "단어가 같아도 필요한 원리 사례의 동일성을 확인할 수 없음.",
+          "search_ref": "turn751519139search9"
+        }
+      ],
+      "source_ids": [
+        "P1-S15"
+      ],
+      "next_query_ids": []
+    }
+  ],
+  "navigation": [
+    {
+      "id": "P1-N01",
+      "type": "failed_open",
+      "url": "https://docs.paperless-ngx.com/configuration/",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "result": "403",
+      "next": "공식 GitHub 저장소의 고정 SHA 문서·코드 사용",
+      "counted_as_read": false
+    },
+    {
+      "id": "P1-N02",
+      "type": "failed_open",
+      "url": "https://docs.paperless-ngx.com/usage/",
+      "checked_at_utc": "2026-11-19T15:21:09Z",
+      "result": "403",
+      "next": "S01 직접 fetch",
+      "counted_as_read": false
+    },
+    {
+      "id": "P1-N03",
+      "type": "official_repository_pin",
+      "url": "https://api.github.com/repos/paperless-ngx/paperless-ngx/commits?per_page=1",
+      "checked_at_utc": "2026-11-19T15:21:43Z",
+      "result": "4973be8499bc61dc4f791a609d0d31e9ac9ccd41",
+      "source_ids": [
+        "P1-S01",
+        "P1-S02",
+        "P1-S03",
+        "P1-S04"
+      ],
+      "note": "default branch 최신 commit 스냅샷. 안정 릴리스 식별 아님; tree로 파일 확인 후 공식 fetch_file."
+    },
+    {
+      "id": "P1-N04",
+      "type": "official_site_navigation",
+      "url": "https://bazel.build/remote/caching",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "from": "P1-Q06의 공식 옛 문서 결과",
+      "source_ids": [
+        "P1-S12"
+      ]
+    },
+    {
+      "id": "P1-N05",
+      "type": "prior_knowledge_guided_navigation",
+      "url": "https://www.sqlite.org/atomiccommit.html",
+      "checked_at_utc": "2026-11-19T15:21:21Z",
+      "from": "crash/atomic commit 개념에 대한 연구자의 기존 지식; 반환된 검색결과였다고 주장하지 않음",
+      "source_ids": [
+        "P1-S13"
+      ]
+    },
+    {
+      "id": "P1-N06",
+      "type": "official_repository_pin",
+      "url": "https://api.github.com/repos/grailbio/reflow/commits?per_page=1",
+      "checked_at_utc": "2026-11-19T15:22:33Z",
+      "result": "90deddd72f8f1b489cab0812e2827c299f77dd19",
+      "source_ids": [
+        "P1-S15"
+      ],
+      "note": "live README 열람 후 고정본 fetch; 2023-10-18 commit. 유지보수 상태의 충분한 지표 아님."
+    }
+  ],
+  "candidate_map": [
+    {
+      "candidate": "Paperless-ngx",
+      "route": "완성품",
+      "role": "조건부 직접 사용 후보",
+      "source_ids": [
+        "P1-S01",
+        "P1-S02",
+        "P1-S03",
+        "P1-S04"
+      ],
+      "fit": "폴더·OCR·색인·검색·실패 관찰",
+      "missing_or_condition": "고정 스냅샷 중복 기본값은 거부가 아니다. 배포 버전 및 설정 확인, 중단·동시입력 공개 유일성 별도 검증."
+    },
+    {
+      "candidate": "Docspell",
+      "route": "완성품",
+      "role": "조건부 직접 사용 후보",
+      "source_ids": [
+        "P1-S05",
+        "P1-S06",
+        "P1-S07"
+      ],
+      "fit": "개별 파일 작업·재시도·실패로그·문서 처리",
+      "missing_or_condition": "skipDuplicates 기본 false. item 생성은 OCR 성공과 다르며 작업화면 범위와 전체 원장 구별 필요."
+    },
+    {
+      "candidate": "Jiandu",
+      "route": "완성품",
+      "role": "공개 소스 평가 단계에서 중단",
+      "source_ids": [
+        "P1-S16"
+      ],
+      "fit": "입력·검색 기능 설명은 근접",
+      "missing_or_condition": "원문이 현재 소스 접근 필요·미선택 라이선스·패키지 없음 명시. 접근/배포 조건이 바뀌기 전 채택 검증 불가."
+    },
+    {
+      "candidate": "OCRmyPDF",
+      "route": "부품; 완성품 질의에서도 관측",
+      "role": "변환 부품 후보",
+      "source_ids": [
+        "P1-S08"
+      ],
+      "fit": "배치 OCR·watcher",
+      "missing_or_condition": "샘플 완료 로그가 성공 증거는 아님. SUFFIX 충돌 정책은 동일 입력 중복 공개 방지와 다름. 검색 서비스·내구성 공개 원장 필요."
+    },
+    {
+      "candidate": "Celery",
+      "route": "부품",
+      "role": "작업 전달·실행 후보",
+      "source_ids": [
+        "P1-S09"
+      ],
+      "fit": "retry/ack 동작 구분",
+      "missing_or_condition": "작업 ID·재시도로 부작용 멱등성 확보 안 됨. P1 공개 상태 책임 별도."
+    },
+    {
+      "candidate": "BullMQ",
+      "route": "부품",
+      "role": "작업 전달·실행 대안",
+      "source_ids": [
+        "P1-S10"
+      ],
+      "fit": "작은 작업·재시도 설계 지침",
+      "missing_or_condition": "사용자 작업이 멱등하도록 설계해야 함. Celery와 함께 채택하라는 뜻 아님."
+    },
+    {
+      "candidate": "Spring Batch",
+      "route": "부품/참고",
+      "role": "restart·skip·transaction 모델 참고",
+      "source_ids": [
+        "P1-S11"
+      ],
+      "fit": "청크와 저장 상태 기반 재시작",
+      "missing_or_condition": "청크 rollback·출력 트랜잭션/멱등 조건. 4.3.9는 원리 확인용이지 현재 도입 추천 버전 아님."
+    },
+    {
+      "candidate": "Bazel + Reflow",
+      "route": "다른 분야 원리",
+      "role": "계산 식별·결과 재사용 참고",
+      "source_ids": [
+        "P1-S12",
+        "P1-S14",
+        "P1-S15"
+      ],
+      "fit": "입력/변환 정의 변화에 따른 결과 재계산 및 별도 blob/association",
+      "missing_or_condition": "문서 공개 idempotency 해결로 자동 전이되지 않음. Reflow는 실제 타 분야 사용의 제작자 서술, P1 전이는 가설."
+    },
+    {
+      "candidate": "SQLite atomic commit",
+      "route": "다른 분야 원리",
+      "role": "내구성 상태와 commit 경계 참고",
+      "source_ids": [
+        "P1-S13"
+      ],
+      "fit": "중단 시 commit 여부 판단·복구",
+      "missing_or_condition": "DB 밖 파일·큐 ACK·API를 자동 원자화하지 않음. rollback journal 설명을 WAL 구현으로 오독하지 않음."
+    }
+  ],
+  "counterexamples": [
+    {
+      "id": "P1-C01",
+      "initial_claim": "OCR와 중복 탐지가 있는 완성품이면 재시작 중복 공개가 해결된다.",
+      "source_ids": [
+        "P1-S01",
+        "P1-S02",
+        "P1-S06"
+      ],
+      "finding": "Paperless 고정 스냅샷 기본 중복 허용, Docspell skipDuplicates 기본 false.",
+      "revised_claim": "필요 기능 이름뿐 아니라 배포 버전·기본값·실패/중단 조건을 확인한다.",
+      "status": "문서 및 Paperless 정적코드 확인; 장애 실행 미실시"
+    },
+    {
+      "id": "P1-C02",
+      "initial_claim": "retry 또는 같은 task ID가 작업을 한 번만 효과 내게 한다.",
+      "source_ids": [
+        "P1-S09",
+        "P1-S10"
+      ],
+      "finding": "retry/ACK는 부작용 멱등성과 별개이며 Celery 동일 ID 동작은 undefined. BullMQ도 작업 설계 책임 명시.",
+      "revised_claim": "실행 재시도, 계산 결과 재사용, 최종 공개의 유일성을 분리한다.",
+      "status": "공식 원문 반례; 제품별 실행 검증 없음"
+    },
+    {
+      "id": "P1-C03",
+      "initial_claim": "item이 생성되거나 완료 로그가 있으면 변환 성공이다.",
+      "source_ids": [
+        "P1-S05",
+        "P1-S07",
+        "P1-S08",
+        "P1-S03"
+      ],
+      "finding": "Docspell은 오류에도 불완전 item 생성 가능. OCRmyPDF 배치 예제는 예외 뒤에도 완료 로그. Paperless 중복 예외는 typed 결과로 바뀐다.",
+      "revised_claim": "문서 의미의 성공·오류·이미 존재함을 queue/로그 상태와 구별한다.",
+      "status": "문서·예제·고정 코드의 제한적 관측"
+    },
+    {
+      "id": "P1-C04",
+      "initial_claim": "배치 restart 지원이면 먼저 끝난 파일은 항상 보존된다.",
+      "source_ids": [
+        "P1-S11"
+      ],
+      "finding": "아직 커밋하지 않은 청크의 앞 항목은 뒤 항목 실패로 rollback될 수 있다.",
+      "revised_claim": "처리 시도 완료와 영속 커밋된 성공을 구별하고 실패 단위를 요구에 맞춘다.",
+      "status": "버전 문서의 조건 확인"
+    },
+    {
+      "id": "P1-C05",
+      "initial_claim": "입력 해시 기반 캐시가 곧 같은 문서의 단 한 번 공개를 보장한다.",
+      "source_ids": [
+        "P1-S12",
+        "P1-S13",
+        "P1-S14",
+        "P1-S15"
+      ],
+      "finding": "캐시는 변환/환경 identity와 무효화 조건이 필요하고 commit은 별도다. DB 원자성도 외부 파일·메시지 전체 원자성은 아니다.",
+      "revised_claim": "내용·변환 identity 기반 계산 재사용과 사용자에게 보이는 문서 공개 identity를 분리하는 가설을 제시한다.",
+      "status": "원 분야 근거 D1; 목표 분야 적용 D3/D4 미실시"
+    },
+    {
+      "id": "P1-C06",
+      "initial_claim": "검색에 self-hosted/문서/OCR가 모두 나타나면 바로 평가 가능한 공개 제품이다.",
+      "source_ids": [
+        "P1-S16"
+      ],
+      "finding": "Jiandu 페이지는 소스 접근 필요·라이선스 미선택·패키지 없음 명시.",
+      "revised_claim": "기능 적합과 접근/배포 조건을 별도 확인한다.",
+      "status": "공식 페이지 확인; 접근 요청하지 않음"
+    }
+  ],
+  "observed_omissions": [
+    {
+      "query_id": "P1-Q05",
+      "observation": "해당 단독 반환 묶음에서 Celery·BullMQ 공식 결과는 관측하지 않았다. 일부 제3자 snippet의 이름 언급은 별개다.",
+      "later": "P1-Q08/P1-Q09 이름·도메인 후속 질의에서 공식 FAQ/멱등 문서를 확인.",
+      "limit": "엔진 색인 부재나 recall 수치가 아니다."
+    },
+    {
+      "query_id": "P1-Q04",
+      "observation": "이 완성품 반환 묶음에는 Bazel·Reflow 원문이 관측되지 않았다.",
+      "later": "P1-Q06의 빌드 논문과 P1-Q10을 통해 다른 분야 재사용 근거를 확인.",
+      "limit": "완성품 목적 질의에 원리 자료가 없다는 관측일 뿐 품질 열등 판정 아님."
+    }
+  ],
+  "limits": [
+    "공개 원문 16개 정적 확인만 수행. 후보 설치·제품 실행·유료 API·통합 검증 없음.",
+    "서로 다른 엔진·길이·후속 지식을 사용한 수작업 비교라 통제 실험, recall, 성능 순위, 검색 속도 우위를 주장하지 않는다.",
+    "초기 배치 및 공식 검증 배치의 결과는 질의별 귀속이 미상이다. 배열 중복은 새로운 출처/독립 발견으로 세지 않는다.",
+    "선택된 관측 후보만 기록하며 미열람 D0 후보를 부적합 제품으로 판정하지 않는다.",
+    "이름 오탐은 Q10의 다른 reflow 저장소로 관측했다. 인기도가 순위를 왜곡했다는 인과는 측정하지 않았다. stars 기반 선정도 하지 않았다.",
+    "Paperless SHA는 기본 브랜치 스냅샷이다. 현재 안정 릴리스·사용자 배포와의 동일성 미확인.",
+    "움직이는 문서의 버전 표시와 코드 pin을 혼동하지 않는다. 예컨대 OCRmyPDF 검색17.13.1과 열람17.14.2는 동일 스냅샷이 아니다.",
+    "다른 분야 실제 사용 사례는 Reflow 제작자 문서화까지 확인했다. P1 적용 성공은 가설로 남긴다.",
+    "P1과 P2 조사 결과를 사전 공유하지 않았다. 다른 새 AF 연구 산출물을 읽지 않았다."
+  ]
+}
