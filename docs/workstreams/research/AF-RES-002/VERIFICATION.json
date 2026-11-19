@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "task_id": "AF-RES-002#1",
+  "status": "passed",
+  "checked_at_utc": "2026-11-19 15:40:32 UTC",
+  "timezone_user": "Asia/Seoul",
+  "checked_date_user": "2026-11-20",
+  "repository": "laadkke-arch/agentflow-open",
+  "branch": "work/research-af-res-002",
+  "owned_path": "docs/workstreams/research/AF-RES-002/",
+  "source_commit": "46c874671c6d066292750401d75af50136ef95d6",
+  "tested_commit": "3bf691afcb3ef398b84cd745875a03814d0effaa",
+  "working_directory": "repository root",
+  "checks": [
+    {
+      "id": "audit",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python - <<'PY'\nimport json, pathlib, re, subprocess, hashlib\nfrom collections import Counter\nfrom urllib.parse import urlsplit, urlunsplit, unquote\nbase_commit = '46c874671c6d066292750401d75af50136ef95d6'\nroot = pathlib.Path('docs/workstreams/research/AF-RES-002')\ndocs = {n: json.loads((root/'evidence'/f'{n}.json').read_text()) for n in ('methods','p1','p2')}\nsources = [s for d in docs.values() for s in d['sources']]\nqueries = [q for d in docs.values() for q in d['queries']]\nsids = {s['id'] for s in sources}\nqids = {q['id'] for q in queries}\nassert len(sids) == len(sources) and len(qids) == len(queries), 'duplicate IDs'\nrequired = ('id','url','checked_at_utc','level','locator','version','observed','limitations','read_status')\nmissing = [(s['id'], k) for s in sources for k in required if not s.get(k)]\nassert not missing, missing\ndef norm(url):\n    p = urlsplit(url)\n    assert p.scheme in ('http','https'), url\n    return urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path.rstrip('/'), p.query, ''))\nopened = [s for s in sources if s['read_status'] == 'opened']\nopened_urls = [norm(s['url']) for s in opened]\nassert len(opened_urls) == len(set(opened_urls)), 'duplicate opened URLs'\nabstract_only = {'P2-S14'}\nsection_reads = [s for s in opened if s['id'] not in abstract_only]\nassert len(section_reads) >= 20, 'fewer than 20 substantive source reads'\nassert all(s['level'] in ('D1','D2') for s in opened), 'opened source incorrectly graded'\nassert all(re.search(r'/blob/[0-9a-f]{40}/', s['url']) for s in opened if s['level']=='D2'), 'unpinned D2 code'\nrefs = []\ndef walk(x):\n    if isinstance(x, dict):\n        for k,v in x.items():\n            if k == 'source_id' or k.endswith('source_ids'):\n                refs.extend(('S',z) for z in ([v] if isinstance(v,str) else v))\n            if k == 'query_id' or k.endswith('query_ids'):\n                refs.extend(('Q',z) for z in ([v] if isinstance(v,str) else v))\n            walk(v)\n    elif isinstance(x,list):\n        for v in x: walk(v)\nwalk(docs)\ninvalid = [(kind,z) for kind,z in refs if z not in (sids if kind=='S' else qids)]\nassert not invalid, invalid\nunknown_text_ids = set(re.findall(r'\\b(?:M|P1|P2)-[SQ]\\d{2}\\b',json.dumps(docs))) - sids - qids\nassert not unknown_text_ids, sorted(unknown_text_ids)\nassert not sids - {z for k,z in refs if k=='S'}, 'unlinked sources'\nmissing_targets = []\nchecked_links = 0\nfor p in root.rglob('*.md'):\n    for target in re.findall(r'\\[[^\\]]*\\]\\(([^\\s)]+)\\)',p.read_text()):\n        if '://' in target or target.startswith(('mailto:','#')): continue\n        path = unquote(target.split('#')[0])\n        if not path: continue\n        checked_links += 1\n        if not (p.parent/path).exists(): missing_targets.append((str(p),target))\nassert not missing_targets, missing_targets\ndef git(*args):\n    return subprocess.check_output(['git',*args],text=True).strip()\nchanged = set(filter(None, git('diff','--name-only',base_commit).splitlines()))\nchanged.update(filter(None,git('ls-files','--others','--exclude-standard').splitlines()))\noutside = sorted(p for p in changed if not p.startswith(str(root)+'/'))\nassert not outside, outside\nassert git('branch','--show-current') == 'work/research-af-res-002'\nassert not git('diff','--name-only','--diff-filter=U'), 'merge conflicts'\ncontrol='docs/automation/dot-control.json'\ncontrol_before=git('rev-parse',base_commit+':'+control)\ncontrol_working=git('hash-object',control)\nassert control_before == control_working, 'dot-control changed'\nreview = json.loads((root/'evidence/review.json').read_text())\nassert review['status'] == 'complete', 'review not complete'\nreview_mismatches = [x['path'] for x in review['reviewed_files'] if hashlib.sha256((root/x['path']).read_bytes()).hexdigest() != x['sha256']]\nassert not review_mismatches, review_mismatches\nhashes={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and p.name not in ('VERIFICATION.json','HANDOFF.md')}\nreport={\n 'status':'passed','checked_out_commit':git('rev-parse','HEAD'),\n 'source_records':len(sources),'unique_source_urls':len({norm(s['url']) for s in sources}),\n 'opened_unique_sources':len(opened),'document_or_code_section_reads':len(section_reads),\n 'abstract_only_source_ids':sorted(abstract_only),'blocked_sources':[s['id'] for s in sources if s['read_status']!='opened'],\n 'opened_levels':dict(Counter(s['level'] for s in opened)),\n 'query_records':len(queries),'unique_query_strings_including_rejected_attempt':len({q['q'] for q in queries}),\n 'source_reference_edges':sum(k=='S' for k,z in refs),'query_reference_edges':sum(k=='Q' for k,z in refs),\n 'invalid_references':invalid,'review_target_hashes_checked':len(review['reviewed_files']),'review_hash_mismatches':review_mismatches,'checked_relative_link_targets':checked_links,'missing_relative_link_targets':missing_targets,\n 'outside_paths':outside,'changed_paths':sorted(changed),'dot_control_blob_unchanged':control_before,\n 'content_sha256':hashes,\n 'limits':['Internal consistency and path audit only; not source truth or product execution verification.',\n           'Relative file targets checked; Markdown heading anchors and remote URL availability are not checked.',\n           'HANDOFF.md and this report are excluded from content hashes to avoid self-reference.']\n}\nprint(json.dumps(report,ensure_ascii=False,indent=2))\n\nPY",
+      "started_at_utc": "2026-11-19 15:40:00 UTC",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"passed\",\n  \"checked_out_commit\": \"3bf691afcb3ef398b84cd745875a03814d0effaa\",\n  \"source_records\": 45,\n  \"unique_source_urls\": 45,\n  \"opened_unique_sources\": 44,\n  \"document_or_code_section_reads\": 43,\n  \"abstract_only_source_ids\": [\n    \"P2-S14\"\n  ],\n  \"blocked_sources\": [\n    \"M-S04\"\n  ],\n  \"opened_levels\": {\n    \"D1\": 39,\n    \"D2\": 5\n  },\n  \"query_records\": 27,\n  \"unique_query_strings_including_rejected_attempt\": 26,\n  \"source_reference_edges\": 116,\n  \"query_reference_edges\": 38,\n  \"invalid_references\": [],\n  \"review_target_hashes_checked\": 8,\n  \"review_hash_mismatches\": [],\n  \"checked_relative_link_targets\": 27,\n  \"missing_relative_link_targets\": [],\n  \"outside_paths\": [],\n  \"changed_paths\": [\n    \"docs/workstreams/research/AF-RES-002/CASE_P1.md\",\n    \"docs/workstreams/research/AF-RES-002/CASE_P2.md\",\n    \"docs/workstreams/research/AF-RES-002/METHODS.md\",\n    \"docs/workstreams/research/AF-RES-002/PROTOCOL.md\",\n    \"docs/workstreams/research/AF-RES-002/RESEARCH.md\",\n    \"docs/workstreams/research/AF-RES-002/REVIEW.md\",\n    \"docs/workstreams/research/AF-RES-002/evidence/methods.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/p1.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/p2.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/review.json\",\n    \"docs/workstreams/research/AF-RES-002/manifest.json\"\n  ],\n  \"dot_control_blob_unchanged\": \"c1052b87254895cdca066169eb154b6681b29be7\",\n  \"content_sha256\": {\n    \"CASE_P1.md\": \"21493be746ae4aaeceb565a6dcec1dc35ff054fccbb260b718378531a209dd6c\",\n    \"REVIEW.md\": \"866e70fb684446e79fc68a7240d5e03c1305c7d2932f65b21767c9538610edf8\",\n    \"manifest.json\": \"dbfcf165f32bbdf98967cad679f5f1fffa70724630bd67e305d07106ef44e6af\",\n    \"PROTOCOL.md\": \"8beb0593a69cdc9f9abeb83ace06dad77e3b9ff3f8ffdfbfa2ab9854dbfa5081\",\n    \"CASE_P2.md\": \"f85ffabc57df7601307b937b814dbd1c91eb6c38620b2acf7c2e3aff52638fd7\",\n    \"METHODS.md\": \"f755c56d1743a4e2ed57c2886bc2ce8938a31245297b7c71a212a9e4f73a03b5\",\n    \"RESEARCH.md\": \"525e1344e0672171004accca65c41592be58515e35465da987bc4d7a90171945\",\n    \"evidence/p2.json\": \"36a4d7794d3592ea23ce907eb9c50ab554bb9fb8af2de1c2832d4ef3245bd834\",\n    \"evidence/methods.json\": \"464c04df8db660cf05053a22cb20741de3808f3ed47cebc622b06fb6e4e90a34\",\n    \"evidence/p1.json\": \"54c86758890282ce6b9bb792df96523d6e149008287a16da2608fe4283bd3ed4\",\n    \"evidence/review.json\": \"b04f8659f399496bcc8284cd9e14ff8f5f12862fe00fe005bc7dc8f867b0669e\"\n  },\n  \"limits\": [\n    \"Internal consistency and path audit only; not source truth or product execution verification.\",\n    \"Relative file targets checked; Markdown heading anchors and remote URL availability are not checked.\",\n    \"HANDOFF.md and this report are excluded from content hashes to avoid self-reference.\"\n  ]\n}\n"
+    },
+    {
+      "id": "contract",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -m workbench.session check docs/workstreams/research/AF-RES-002/manifest.json --fetch",
+      "started_at_utc": "2026-11-19 15:40:00 UTC",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"passed\",\n  \"task_id\": \"af-res-002\",\n  \"freshness\": \"remote_checked\",\n  \"checked_at\": \"2026-11-19T15:40:06.729037+00:00\",\n  \"checked_out_commit\": \"3bf691afcb3ef398b84cd745875a03814d0effaa\",\n  \"task_base_commit\": \"46c874671c6d066292750401d75af50136ef95d6\",\n  \"integration_commit\": \"9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad\",\n  \"scope_base_commit\": \"46c874671c6d066292750401d75af50136ef95d6\",\n  \"contract_sha256\": \"19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc\",\n  \"changed_paths\": [\n    \"docs/workstreams/research/AF-RES-002/CASE_P1.md\",\n    \"docs/workstreams/research/AF-RES-002/CASE_P2.md\",\n    \"docs/workstreams/research/AF-RES-002/METHODS.md\",\n    \"docs/workstreams/research/AF-RES-002/PROTOCOL.md\",\n    \"docs/workstreams/research/AF-RES-002/RESEARCH.md\",\n    \"docs/workstreams/research/AF-RES-002/REVIEW.md\",\n    \"docs/workstreams/research/AF-RES-002/evidence/methods.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/p1.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/p2.json\",\n    \"docs/workstreams/research/AF-RES-002/evidence/review.json\"\n  ],\n  \"outside_paths\": [],\n  \"unmerged_paths\": [],\n  \"errors\": [],\n  \"boundary\": \"Git contract and ownership checks; not a new AI chat or product verification\"\n}\n"
+    },
+    {
+      "id": "whitespace",
+      "command": "git diff --check 46c874671c6d066292750401d75af50136ef95d6 HEAD",
+      "started_at_utc": "2026-11-19 15:40:00 UTC",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "id": "clean",
+      "command": "git status --porcelain=v1 --untracked-files=all",
+      "started_at_utc": "2026-11-19 15:40:00 UTC",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "audit": {
+    "status": "passed",
+    "checked_out_commit": "3bf691afcb3ef398b84cd745875a03814d0effaa",
+    "source_records": 45,
+    "unique_source_urls": 45,
+    "opened_unique_sources": 44,
+    "document_or_code_section_reads": 43,
+    "abstract_only_source_ids": [
+      "P2-S14"
+    ],
+    "blocked_sources": [
+      "M-S04"
+    ],
+    "opened_levels": {
+      "D1": 39,
+      "D2": 5
+    },
+    "query_records": 27,
+    "unique_query_strings_including_rejected_attempt": 26,
+    "source_reference_edges": 116,
+    "query_reference_edges": 38,
+    "invalid_references": [],
+    "review_target_hashes_checked": 8,
+    "review_hash_mismatches": [],
+    "checked_relative_link_targets": 27,
+    "missing_relative_link_targets": [],
+    "outside_paths": [],
+    "changed_paths": [
+      "docs/workstreams/research/AF-RES-002/CASE_P1.md",
+      "docs/workstreams/research/AF-RES-002/CASE_P2.md",
+      "docs/workstreams/research/AF-RES-002/METHODS.md",
+      "docs/workstreams/research/AF-RES-002/PROTOCOL.md",
+      "docs/workstreams/research/AF-RES-002/RESEARCH.md",
+      "docs/workstreams/research/AF-RES-002/REVIEW.md",
+      "docs/workstreams/research/AF-RES-002/evidence/methods.json",
+      "docs/workstreams/research/AF-RES-002/evidence/p1.json",
+      "docs/workstreams/research/AF-RES-002/evidence/p2.json",
+      "docs/workstreams/research/AF-RES-002/evidence/review.json",
+      "docs/workstreams/research/AF-RES-002/manifest.json"
+    ],
+    "dot_control_blob_unchanged": "c1052b87254895cdca066169eb154b6681b29be7",
+    "content_sha256": {
+      "CASE_P1.md": "21493be746ae4aaeceb565a6dcec1dc35ff054fccbb260b718378531a209dd6c",
+      "REVIEW.md": "866e70fb684446e79fc68a7240d5e03c1305c7d2932f65b21767c9538610edf8",
+      "manifest.json": "dbfcf165f32bbdf98967cad679f5f1fffa70724630bd67e305d07106ef44e6af",
+      "PROTOCOL.md": "8beb0593a69cdc9f9abeb83ace06dad77e3b9ff3f8ffdfbfa2ab9854dbfa5081",
+      "CASE_P2.md": "f85ffabc57df7601307b937b814dbd1c91eb6c38620b2acf7c2e3aff52638fd7",
+      "METHODS.md": "f755c56d1743a4e2ed57c2886bc2ce8938a31245297b7c71a212a9e4f73a03b5",
+      "RESEARCH.md": "525e1344e0672171004accca65c41592be58515e35465da987bc4d7a90171945",
+      "evidence/p2.json": "36a4d7794d3592ea23ce907eb9c50ab554bb9fb8af2de1c2832d4ef3245bd834",
+      "evidence/methods.json": "464c04df8db660cf05053a22cb20741de3808f3ed47cebc622b06fb6e4e90a34",
+      "evidence/p1.json": "54c86758890282ce6b9bb792df96523d6e149008287a16da2608fe4283bd3ed4",
+      "evidence/review.json": "b04f8659f399496bcc8284cd9e14ff8f5f12862fe00fe005bc7dc8f867b0669e"
+    },
+    "limits": [
+      "Internal consistency and path audit only; not source truth or product execution verification.",
+      "Relative file targets checked; Markdown heading anchors and remote URL availability are not checked.",
+      "HANDOFF.md and this report are excluded from content hashes to avoid self-reference."
+    ]
+  },
+  "contract": {
+    "status": "passed",
+    "task_id": "af-res-002",
+    "freshness": "remote_checked",
+    "checked_at": "2026-11-19T15:40:06.729037+00:00",
+    "checked_out_commit": "3bf691afcb3ef398b84cd745875a03814d0effaa",
+    "task_base_commit": "46c874671c6d066292750401d75af50136ef95d6",
+    "integration_commit": "9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad",
+    "scope_base_commit": "46c874671c6d066292750401d75af50136ef95d6",
+    "contract_sha256": "19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc",
+    "changed_paths": [
+      "docs/workstreams/research/AF-RES-002/CASE_P1.md",
+      "docs/workstreams/research/AF-RES-002/CASE_P2.md",
+      "docs/workstreams/research/AF-RES-002/METHODS.md",
+      "docs/workstreams/research/AF-RES-002/PROTOCOL.md",
+      "docs/workstreams/research/AF-RES-002/RESEARCH.md",
+      "docs/workstreams/research/AF-RES-002/REVIEW.md",
+      "docs/workstreams/research/AF-RES-002/evidence/methods.json",
+      "docs/workstreams/research/AF-RES-002/evidence/p1.json",
+      "docs/workstreams/research/AF-RES-002/evidence/p2.json",
+      "docs/workstreams/research/AF-RES-002/evidence/review.json"
+    ],
+    "outside_paths": [],
+    "unmerged_paths": [],
+    "errors": [],
+    "boundary": "Git contract and ownership checks; not a new AI chat or product verification"
+  },
+  "remote_read": {
+    "commit": "3bf691afcb3ef398b84cd745875a03814d0effaa",
+    "path": "docs/workstreams/research/AF-RES-002/RESEARCH.md",
+    "line_range": [
+      1,
+      12
+    ],
+    "blob_sha": "411df6a280b6d4abe2fb0e131911eaf403fa8a40",
+    "url": "https://github.com/laadkke-arch/agentflow-open/blob/3bf691afcb3ef398b84cd745875a03814d0effaa/docs/workstreams/research/AF-RES-002/RESEARCH.md",
+    "success": true
+  },
+  "resolved_check_failure": {
+    "command": "git diff --check 46c874671c6d066292750401d75af50136ef95d6 HEAD",
+    "at_commit": "5b9c3c925d0f3a76c88b0fde4e0a1a7643081d30",
+    "exit_code": 2,
+    "output": "docs/workstreams/research/AF-RES-002/CASE_P1.md:236: new blank line at EOF.",
+    "resolution": "Removed one trailing blank line; review hashes updated; committed in 3bf691afcb3ef398b84cd745875a03814d0effaa. The same committed diff check then passed."
+  },
+  "primary_author_direct_source_reads": {
+    "unique_count": 23,
+    "source_ids": [
+      "M-S01",
+      "M-S02",
+      "M-S03",
+      "M-S05",
+      "M-S06",
+      "M-S07",
+      "M-S08",
+      "M-S09",
+      "M-S10",
+      "M-S11",
+      "M-S12",
+      "M-S13",
+      "M-S14",
+      "M-S15",
+      "P1-S01",
+      "P1-S02",
+      "P1-S09",
+      "P1-S12",
+      "P1-S15",
+      "P2-S02",
+      "P2-S09",
+      "P2-S11",
+      "P2-S13"
+    ],
+    "scope": "Directly opened and read relevant source sections/code. Existing evidence records supply URLs, dates, observed content and limitations. Includes case-source reopenings; does not add 23 to the total of 44."
+  },
+  "independent_review": {
+    "file": "REVIEW.md",
+    "evidence_file": "evidence/review.json",
+    "reviewed_content_hashes": 8,
+    "reopened_primary_sources": 14,
+    "additional_unique_research_source_count": 0
+  },
+  "unperformed": [
+    "Product installation, runtime API execution, fault injection, user trials and P1/P2 deployment/integration (D3/D4).",
+    "Implementation or execution of BM25, dense retrieval, SOLVENT, RRF, a search engine, product DB or common benchmark.",
+    "Exhaustive fact verification of all product behavior; global recall/ranking performance measurement; causal popularity experiment.",
+    "Markdown heading-anchor validation and automatic remote URL availability rechecks."
+  ],
+  "boundary": "Documentation research verification. Tested commit precedes this verification record and the final HANDOFF commit. No claim that a future commit was already tested. Final remote HANDOFF read and clean working-tree check are performed after its commit."
+}
