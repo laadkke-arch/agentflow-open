@@ -233,4 +233,3 @@ P1에서 전체 사용 경험이 목적에 맞는다면 Paperless-ngx·Docspell 
 [P1-S14]: https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/build-systems.pdf
 [P1-S15]: https://github.com/grailbio/reflow/blob/90deddd72f8f1b489cab0812e2827c299f77dd19/README.md
 [P1-S16]: https://jiandu.org/
-
