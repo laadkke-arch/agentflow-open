@@ -4,7 +4,7 @@
 
 **이름·링크·기능 설명의 정확성만으로 추천의 유용성을 판정할 수 없다.** 판정 단위는 **문제 × 후보 × 제안한 역할 × 설정 × 제공 근거**여야 한다. 출처 연결(L), 원문의 주장 뒷받침(E), 필수 요구 충족(H), 분야 간 전이 논증(T)을 나누고, 결정적인 실패나 미확인을 다른 점수로 상쇄하지 않는 작은 판정 절차를 제안한다. 이는 이번 연구의 설계 제안이며 제품 계약이나 검증된 사용자 효용이 아니다.
 
-이 묶음은 네 개의 합성 문제와 18개 판정 행으로 그 경계를 드러낸다. 작성자의 최초 기대 판단은 문서상 직접 적합 7개, 조건부 전이 3개, 알려진 제약 위반 6개, 자료 부족 2개다. 정답표는 독립 검토 전에 커밋했다. 최종 검토의 이견·채택 여부는 [REVIEW.md](REVIEW.md)에 보존한다. `DIRECT_DOCUMENTED`는 D1 문서 기반 판단이고 설치·실행·프로젝트 적용 성공을 뜻하지 않는다.
+이 묶음은 네 개의 합성 문제와 18개 판정 행으로 그 경계를 드러낸다. 작성자의 최초 기대 판단은 문서상 직접 적합 7개, 조건부 전이 3개, 알려진 제약 위반 6개, 자료 부족 2개다. 최초 v1.0 정답표는 독립 검토 전에 커밋했고, A/B의 최종 라벨은 각각 18/18 일치했다. 그러나 세부 H 값과 적용 층위에서 이견이 나와 현재 v1.1에 반영했다. 특히 R03-H2·R04-H1을 pass에서 unknown으로 좁혔다. 최종 라벨은 바뀌지 않았다. 원응답·이견·수정 검토는 [REVIEW.md](REVIEW.md)에 보존한다. 이 일치는 수작업으로 구성한 표본 안의 관찰이며 실효성 수치가 아니다. `DIRECT_DOCUMENTED`는 D1 문서 기반 판단이고 설치·실행·프로젝트 적용 성공을 뜻하지 않는다.
 
 시작 SHA는 `bdc2e052900b1658981dfcec354682f4e1fc29fb`, 작업 브랜치는 `work/research-af-res-004`, 소유 경로는 이 디렉터리다. `depends_on: []`이고 다른 새 AF-RES 작업 결과를 보지 않았다. [AF-DOT-002 인계](https://github.com/laadkke-arch/agentflow-open/blob/06a57eba60c64389c614b5ce01238d9c4e337fbf/docs/workstreams/dot-trial/AF-DOT-002/HANDOFF.md)는 출처 ID 연결 검증을 추천 유용성 검증과 구분하는 시작 경계로만 사용했다.
 
@@ -20,6 +20,7 @@
 | [source-pins.json](source-pins.json) | 변하는 문서의 Git 원본 10개에 대한 실제 커밋·경로·blob SHA와 대조 범위 |
 | [blind-review-a.json](blind-review-a.json), [blind-review-b.json](blind-review-b.json) | 기대 답을 보지 않은 내부 검토의 원래 응답 |
 | [REVIEW.md](REVIEW.md) | 작성자 기대와 독립 응답의 비교, 이견 원인과 처리 |
+| [revision-review.json](revision-review.json) | v1.1 수정에 한정한 B의 비블라인드 후속 검토. 새 독립 시험과 구별 |
 | [VERIFICATION.json](VERIFICATION.json) | 자료 구조·원격 저장·수정 범위 확인과 미실시 |
 | [HANDOFF.md](HANDOFF.md) | 최종 상태와 다음 담당자의 첫 행동 |
 
@@ -56,7 +57,7 @@
 | P03 느린 sink의 작업 수 상한 | R10 유한 큐+고정 worker+await 흐름 | R11 demand→완료 credit, R12 제조 보충 신호→permit 회수 | R13 시간 기반 token bucket 단독: 처리 중 개수 상한 실패 |
 | P04 로컬 암호화 백업과 부분 검증 | R14 restic, R15 Borg의 지정 구성 | R17 Merkle inclusion→manifest membership | R16 평문 단일 rsync mirror: 이전 판·암호화 실패 |
 
-이는 **최초 기대 판단 요약**이다. 각 row는 입력에 선언된 구성에만 적용된다. 좋은 브랜드/나쁜 브랜드 목록이 아니다. 다른 adapter·queue policy·backup 경로·reference scope를 주면 새로운 판정 행이 된다. 전체 시스템을 대신하는 대안, 재사용 부품, 부분 참고를 같은 역할로 섞지 않는다.
+이는 **최초 및 v1.1의 동일한 최종 라벨 요약**이다. v1.1에서는 R03의 재진입 복구와 R04의 오프라인 편집 수명에 대한 비결정적 H 값을 unknown으로 바로잡았다. 각 row는 입력에 선언된 구성에만 적용된다. 좋은 브랜드/나쁜 브랜드 목록이 아니다. 다른 adapter·queue policy·backup 경로·reference scope를 주면 새로운 판정 행이 된다. 전체 시스템을 대신하는 대안, 재사용 부품, 부분 참고를 같은 역할로 섞지 않는다.
 
 ### P01: 수렴과 영속성은 다른 질문
 
@@ -70,7 +71,7 @@
 
 [Redis Pub/Sub(S10)](https://redis.io/docs/latest/develop/pubsub/)의 at-most-once 의미에서는 단절 중 놓친 메시지를 단순 재구독으로 복원할 수 없다. 이 실패는 Redis Streams 등 다른 제품 구성에 대한 판정이 아니다.
 
-[SQS FIFO deduplication(S14)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)은 송신 중복 제거 구간을 설명한다. [Visibility timeout(S12)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)은 receive 후 삭제하지 않은 메시지가 다시 보일 수 있는 수명주기를 설명한다. 따라서 외부 증가→worker 중단→DeleteMessage 미실행→재전달→두 번째 증가라는 R18 반례가 가능하다. FIFO 이름이 같아도 R08에 주어진 영속 멱등 처리 경계를 제거하면 판단이 달라진다.
+[SQS FIFO deduplication(S14)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)은 송신 중복 제거 구간을 설명한다. [Visibility timeout(S12)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)은 receive 후 삭제하지 않은 메시지가 다시 보일 수 있는 수명주기를 설명한다. 따라서 외부 증가→worker 중단→DeleteMessage 미실행→재전달→두 번째 증가라는 R18 반례가 가능하다. FIFO 이름이 같아도 R08에 주어진 영속 멱등 처리 경계를 제거하면 판단이 달라진다. 두 검토자가 지적한 S12의 12시간 visibility 상한을 작성자도 다시 읽었다. v1.1은 retention 24시간과 visibility 한계를 분리하고, 완료 시한을 수락부터 대기·장애·재시도를 포함한 총 경과시간 24시간 미만으로 명시한다.
 
 ### P03: 시간 비율과 진행 중 개수의 단위가 다르다
 
@@ -139,7 +140,7 @@
 
 필수 gate는 결정적 위반의 직접 승인 0, 자료 부족의 검증된 효용 승격 0, 전이의 대응·연결·실패 조건 기록, 증거 수준의 정직한 표기다. 보조 점수는 근거 정확성/제약 추적/설명 유용성 각각 0~2로만 진단하고 총점을 만들지 않는다. 예를 들어 라벨만 맞고 근거가 없는 답은 근거 0·제약 추적 0 또는 1이며, 올바른 자료 부족과 답을 바꿀 구체 확인을 제시한 답은 해당 차원에서 2가 가능하다. 모든 사례를 보류하는 전략도 확인 가능한 근거를 사용하지 않았다는 별도 결함이 된다.
 
-독립성은 새 문맥과 기대 답 비공개에 한정한다. 공유 파일시스템을 강제로 격리하지 않았고 동일 계열 내부 모델일 수 있다. 인간 평가·다른 모델 계열 검증·실제 사용자 업무 시험은 미실시다. 원래 응답과 대조 결과는 REVIEW에만 근거하여 보고한다.
+독립성은 새 문맥과 기대 답 비공개에 한정한다. 공유 파일시스템을 강제로 격리하지 않았고 동일 계열 내부 모델일 수 있다. 인간 평가·다른 모델 계열 검증·실제 사용자 업무 시험은 미실시다. 원래 응답과 대조 결과는 REVIEW에 근거하여 보고한다. A는 26개 자료를 읽고 미사용 S11은 열지 않았으며, B는 27개를 읽고 S11을 Standard/FIFO 범위 구분의 배경으로만 사용했다. 두 원응답을 먼저 커밋한 뒤 v1.1을 만들었다. H의 문서적 설계 충족과 실제 구현 관측을 별도 필드로 표시하는 명확화는 v1.0 블라인드 결과로 소급 검증됐다고 주장하지 않는다.
 
 ## 8. 표본, 미해결과 최소 다음 확인
 
@@ -166,7 +167,11 @@
 | 입력 최초 동결 전 | FIFO 전용 복제 문서 S27 추가, 변동 문서 Git pin 추가 | standard queue 문서를 FIFO 보존의 근거로 대신 쓰지 않기 위해 보강. extra Git 사본은 추가 자료로 세지 않음 |
 | 입력 최초 동결 전 | restic의 named snapshot 표현을 식별 가능한 snapshot으로 좁힘 | 이름 붙이기를 필수 기능처럼 암시하지 않고 ID 선택이라는 실제 문서 범위를 사용 |
 | 입력 b245a275 / 답 13e76552 동결 | CASES와 EXPECTED를 별도 커밋 | 입력은 기대 라벨·작성자 해석을 숨김. 답을 독립 응답보다 먼저 저장 |
-| 독립 검토 이후 | 상세 내역은 REVIEW.md | 원본 입력·기대·응답은 Git 이력에 보존하며 후속 수정/해석은 별도 명시 |
+| v1 원판정 보존 | A 29baa1d1 / B d0a2f23b | 각각 라벨 18/18 일치. A의 H 값 1건, B의 H 값 5건이 원 기대와 다름. 서로 겹치는 항목을 합치면 5개 조건·4개 행 |
+| PROTOCOL v1.1 e36abce4 | H_assessment_scope와 runtime_observation을 구분 | reference의 설계상 pass를 구현 성공으로 읽는 모호성 해소. 축·라벨·우선순위·gate는 유지 |
+| CASES v1.1 b8b965ed | P02의 시간 기산점·총 경과시간, R08의 visibility 12시간 한계, R18 S13 연결 | 두 검토자가 실제 사용한 시간 해석을 명문화. 반복 송신 dedup과 수신 후 외부 효과를 구분하는 대조는 유지 |
+| EXPECTED v1.1 d74f77e6 | R03-H2와 R04-H1을 unknown으로 수정, reference의 미관측 구현 값 분리 | 독립 지적을 채택해 비결정적 과잉 확정을 제거. 최종 라벨 18개는 유지 |
+| 수정 검토 | revision-review.json / REVIEW.md | B가 v1.1 변경만 비블라인드로 확인. 새 블라인드 재현성 검증으로 세지 않음 |
 
 P04는 처음부터 `applies_to`로 완성 백업과 manifest 참고 조건을 나눴다. 전체 대안의 필수 요구를 사후 면제하는 용도로 `not_in_scope`를 사용하지 않는다. 어떤 기준도 답을 맞추기 위해 조용히 완화하지 않는다.
 
