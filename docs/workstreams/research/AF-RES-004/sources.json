@@ -1,6 +1,6 @@
 {
   "task_id": "AF-RES-004",
-  "version": 2,
+  "version": 3,
   "source_count": 27,
   "count_policy": "서로 다른 외부 1차 자료 27개. 동일 자료의 permalink·재열람·fragment는 중복 제외. 방법론 6편은 methodology-notes.json에 따로 있어 채택 자료 합계 33개. source-pins.json은 원본 고정 보강이며 추가 수로 세지 않는다. 운영 지침·실패 열람은 제외.",
   "evidence_boundary": "아래는 공식 문서·규격을 직접 읽은 D1 근거. candidate 코드를 설치/실행/통합한 D3/D4 근거가 아니다. versioned URL도 영구불변이라고 가정하지 않는다.",
@@ -248,11 +248,12 @@
       "reader": "primary_author",
       "evidence_level": "D1_document_read",
       "pin": "living_service_document_observation",
-      "read_scope": "Deletion, timeout expiry, standard/FIFO, handling failures; lines 7–21,37–51",
-      "confirmed": "수신은 삭제가 아니며 처리 후 DeleteMessage를 수행한다. timeout 만료 전 삭제하지 않으면 다시 보인다. FIFO도 삭제/timeout 경계가 존재한다.",
-      "limits": "visibility는 외부 시스템의 부작용과 원자적으로 묶인 commit이 아니다. 문서 앞부분의 중복 방지 설명을 전 구간 exactly-once로 확대하면 안 된다.",
+      "read_scope": "Deletion, timeout expiry, standard/FIFO, handling failures, Best practices 12-hour limit; lines 7–21,37–59",
+      "confirmed": "수신은 삭제가 아니며 처리 후 DeleteMessage를 수행한다. timeout 만료 전 삭제하지 않으면 다시 보인다. FIFO도 삭제/timeout 경계가 존재한다. 최초 수신부터 visibility의 최대 한계는 12시간이며 연장해도 이 한계가 초기화되지 않는다는 설명을 독립 검토 뒤 재확인했다.",
+      "limits": "visibility는 외부 시스템의 부작용과 원자적으로 묶인 commit이 아니다. 문서 앞부분의 중복 방지 설명을 전 구간 exactly-once로 확대하면 안 된다. 24시간 retention과 12시간 visibility는 다른 제한이다. 현재 사례는 timeout 후 중복 재전달을 허용하며 무제한 독점권을 요구하지 않는다.",
       "tool_refs": [
-        "turn925017723view3"
+        "turn925017723view3",
+        "turn481690945view0"
       ]
     },
     {
@@ -527,6 +528,10 @@
     {
       "version": 2,
       "reason": "SQS standard의 중복 설명을 FIFO의 저장 복제 근거로 대신하지 않도록 S27을 직접 열어 보강. 공식 원본 9개(추가 Awareness API 포함 pin 총10개)의 SHA를 덧붙임."
+    },
+    {
+      "version": 3,
+      "reason": "두 블라인드 검토자가 지적한 S12의 12시간 visibility 한계를 작성자가 원문에서 재확인. 같은 자료의 재열람으로 총33개 수는 증가시키지 않음."
     }
   ]
 }
