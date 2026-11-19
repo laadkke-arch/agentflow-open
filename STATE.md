@@ -10,7 +10,11 @@
 - 실제 연구 자료: [4개 후보·13개 출처](docs/research/discovery-case-2026-11-19.json), [ecosyste.ms GET 200 관측](docs/research/ecosystems-probe-2026-11-19.json). 출처 연결 검사는 외부 사실 판정과 구별한다.
 - **현재 계정 연결 한계:** 공유 브라우저는 Codex 로그인 화면이다. 사용자 계정의 재사용 환경 생성·발행은 미완료다. Render는 선택된 workspace가 없어 자원 변경을 하지 않았다. 기본 GitHub/Actions 경로에는 둘 다 선행조건이 아니다.
 - 실제 별도 사용자 ChatGPT 웹 대화 인수인계와 제품 검색 품질 검증은 미실시다. Git worktree·프로세스 시험을 그 대신 완료했다고 표현하지 않는다.
-- 최신 전체 검사와 GitHub 실행 근거는 이 변경의 게시·실행 뒤 `docs/sessions/2026-11-19-cloud-workflow.json`에 기록한다. 아래 11월 15일 검사를 새 코드 검증으로 사용하지 않는다.
+- **실제 검사 코드:** `7b864f0bc075f11187364a3d7359eceae042a333`. 현재 클라우드의 clean checkout과 GitHub hosted Ubuntu/Windows에서 통과했다. 공통 단위 55개(계약 10·wrapper 5 포함), 기존 두 lab 7·9개와 demo·독립 export·Git bundle 복원, 실제 조사 출처 연결을 확인했다. OS별 반복을 고유 검사 수로 더하지 않는다.
+- GitHub [push 검사](https://github.com/laadkke-arch/agentflow-open/actions/runs/44502627493)와 [PR 검사](https://github.com/laadkke-arch/agentflow-open/actions/runs/44502637313)가 성공했다. PR은 실제 merge checkout `cc4ad2f33591cc9675d78bef2186747edd29af17`을 검사했다. PR 검사는 main 병합을 실행한 것이 아니다.
+- 별도 문맥의 에이전트가 저장한 자료만 읽어 목적·미완료·후보별 제약을 복원했다. 웹 재검색·API 재호출은 없었다. **사용자가 연 별도 웹 ChatGPT 대화 시험은 여전히 미실시**다.
+- 현재 저장소에 활성 과제 manifest는 없어 일반 CI 세션 상태는 `no_active_sessions`다. 별도의 읽기 전용 과제 핀으로 실제 GitHub 통합 ref를 fetch하고 계약 검사를 통과했다. 회귀 시험의 협업 시나리오와 운영 중인 실제 팀을 구분한다.
+- 상세 근거와 7개 시험 범위: [docs/sessions/2026-11-19-cloud-workflow.json](docs/sessions/2026-11-19-cloud-workflow.json). 이 상태·증거 파일은 코드 검사 이후의 문서 기록이며 새 코드 검사 SHA로 둔갑시키지 않는다. 11월 15일 검사는 아래 과거 기록이다.
 
 ## 이전 기록 — 2026-11-19 제품 문서화와 병렬 협업 준비
 
