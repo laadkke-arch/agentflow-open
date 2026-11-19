@@ -4,7 +4,7 @@
 
 **이름·링크·기능 설명의 정확성만으로 추천의 유용성을 판정할 수 없다.** 판정 단위는 **문제 × 후보 × 제안한 역할 × 설정 × 제공 근거**여야 한다. 출처 연결(L), 원문의 주장 뒷받침(E), 필수 요구 충족(H), 분야 간 전이 논증(T)을 나누고, 결정적인 실패나 미확인을 다른 점수로 상쇄하지 않는 작은 판정 절차를 제안한다. 이는 이번 연구의 설계 제안이며 제품 계약이나 검증된 사용자 효용이 아니다.
 
-이 묶음은 네 개의 합성 문제와 18개 판정 행으로 그 경계를 드러낸다. 작성자의 최초 기대 판단은 문서상 직접 적합 7개, 조건부 전이 3개, 알려진 제약 위반 6개, 자료 부족 2개다. 최초 v1.0 정답표는 독립 검토 전에 커밋했고, A/B의 최종 라벨은 각각 18/18 일치했다. 그러나 세부 H 값과 적용 층위에서 이견이 나와 현재 v1.1에 반영했다. 특히 R03-H2·R04-H1을 pass에서 unknown으로 좁혔다. 최종 라벨은 바뀌지 않았다. 원응답·이견·수정 검토는 [REVIEW.md](REVIEW.md)에 보존한다. 이 일치는 수작업으로 구성한 표본 안의 관찰이며 실효성 수치가 아니다. `DIRECT_DOCUMENTED`는 D1 문서 기반 판단이고 설치·실행·프로젝트 적용 성공을 뜻하지 않는다.
+이 묶음은 네 개의 합성 문제와 18개 판정 행으로 그 경계를 드러낸다. 작성자의 최초 기대 판단은 문서상 직접 적합 7개, 조건부 전이 3개, 알려진 제약 위반 6개, 자료 부족 2개다. 최초 v1.0 정답표는 독립 검토 전에 커밋했고, A/B의 최종 라벨은 각각 18/18 일치했다. 그러나 세부 H 값과 적용 층위에서 이견이 나와 v1.1에 반영했고, 후속 검토의 R12 연결 누락은 현재 v1.2에서 보완했다. 특히 R03-H2·R04-H1을 pass에서 unknown으로 좁혔다. 최종 라벨은 바뀌지 않았다. 원응답·이견·수정 검토는 [REVIEW.md](REVIEW.md)에 보존한다. 이 일치는 수작업으로 구성한 표본 안의 관찰이며 실효성 수치가 아니다. `DIRECT_DOCUMENTED`는 D1 문서 기반 판단이고 설치·실행·프로젝트 적용 성공을 뜻하지 않는다.
 
 시작 SHA는 `bdc2e052900b1658981dfcec354682f4e1fc29fb`, 작업 브랜치는 `work/research-af-res-004`, 소유 경로는 이 디렉터리다. `depends_on: []`이고 다른 새 AF-RES 작업 결과를 보지 않았다. [AF-DOT-002 인계](https://github.com/laadkke-arch/agentflow-open/blob/06a57eba60c64389c614b5ce01238d9c4e337fbf/docs/workstreams/dot-trial/AF-DOT-002/HANDOFF.md)는 출처 ID 연결 검증을 추천 유용성 검증과 구분하는 시작 경계로만 사용했다.
 
@@ -20,7 +20,7 @@
 | [source-pins.json](source-pins.json) | 변하는 문서의 Git 원본 10개에 대한 실제 커밋·경로·blob SHA와 대조 범위 |
 | [blind-review-a.json](blind-review-a.json), [blind-review-b.json](blind-review-b.json) | 기대 답을 보지 않은 내부 검토의 원래 응답 |
 | [REVIEW.md](REVIEW.md) | 작성자 기대와 독립 응답의 비교, 이견 원인과 처리 |
-| [revision-review.json](revision-review.json) | v1.1 수정에 한정한 B의 비블라인드 후속 검토. 새 독립 시험과 구별 |
+| [revision-review.json](revision-review.json) | v1.1 수정의 B 비블라인드 후속 검토와 발견한 잔여 이견. v1.2의 한 항목 재확인은 REVIEW에 기록 |
 | [VERIFICATION.json](VERIFICATION.json) | 자료 구조·원격 저장·수정 범위 확인과 미실시 |
 | [HANDOFF.md](HANDOFF.md) | 최종 상태와 다음 담당자의 첫 행동 |
 
@@ -57,7 +57,7 @@
 | P03 느린 sink의 작업 수 상한 | R10 유한 큐+고정 worker+await 흐름 | R11 demand→완료 credit, R12 제조 보충 신호→permit 회수 | R13 시간 기반 token bucket 단독: 처리 중 개수 상한 실패 |
 | P04 로컬 암호화 백업과 부분 검증 | R14 restic, R15 Borg의 지정 구성 | R17 Merkle inclusion→manifest membership | R16 평문 단일 rsync mirror: 이전 판·암호화 실패 |
 
-이는 **최초 및 v1.1의 동일한 최종 라벨 요약**이다. v1.1에서는 R03의 재진입 복구와 R04의 오프라인 편집 수명에 대한 비결정적 H 값을 unknown으로 바로잡았다. 각 row는 입력에 선언된 구성에만 적용된다. 좋은 브랜드/나쁜 브랜드 목록이 아니다. 다른 adapter·queue policy·backup 경로·reference scope를 주면 새로운 판정 행이 된다. 전체 시스템을 대신하는 대안, 재사용 부품, 부분 참고를 같은 역할로 섞지 않는다.
+이는 **최초 및 현재 v1.2의 동일한 최종 라벨 요약**이다. v1.1에서는 R03의 재진입 복구와 R04의 오프라인 편집 수명에 대한 비결정적 H 값을 unknown으로 바로잡았다. 각 row는 입력에 선언된 구성에만 적용된다. 좋은 브랜드/나쁜 브랜드 목록이 아니다. 다른 adapter·queue policy·backup 경로·reference scope를 주면 새로운 판정 행이 된다. 전체 시스템을 대신하는 대안, 재사용 부품, 부분 참고를 같은 역할로 섞지 않는다.
 
 ### P01: 수렴과 영속성은 다른 질문
 
@@ -98,6 +98,8 @@
 [Reactive Streams(S17), v1.0.4](https://github.com/reactive-streams/reactive-streams-jvm/blob/944163a4b2477a2bebaaada86b0ba910b6302f2f/README.md)의 수요 규칙은 발행·수신 경계의 규격이다. 완료 시점을 sink 저장 뒤로 늦추는 것은 대상 시스템의 추가 설계다. 취소도 즉시 모든 효과가 사라진다는 보장이 아니다.
 
 [Toyota TPS(S18)](https://global.toyota/en/company/vision-and-philosophy/production-system/)에서 직접 확인한 것은 뒤 공정 인출에 따른 앞 공정 보충이다. 4개 permit을 증명하는 정리나 Python 코드가 아니다. 이 구분을 유지하면 타 분야 참고는 설계 설명에 도움이 되는 가설로 남고, 제조업의 권위를 가져온 허위 검증이 되지 않는다.
+
+R12의 이 연결 조건은 초기 입력에서 충분히 명시되지 않아 비블라인드 수정 검토에서도 지적됐다. v1.2는 실제 producer의 대기와 선행 task·우회 무한 buffer 금지를 새로 명시한다. 숫자 장부만으로 producer 대기가 생긴다고 추정했던 설명은 충분하지 않았다. 이 변경은 대상 측 설계의 보강이며 Toyota 원문의 기능을 늘리는 일이 아니다.
 
 세 참고 원리는 다른 부품과 조합할 수 있다. R11/R12는 R10의 admission/완료 설명을 보완할 수 있으나 실제 수치 상한은 명시된 제어 흐름에서 확인해야 한다. R17은 R14/R15 같은 보존 도구와 별개의 manifest 검증 층으로 생각할 수 있지만 이번 조사에서 그 통합을 구현하거나 비용·사용 편의의 이득을 측정하지 않았다.
 
@@ -171,7 +173,8 @@
 | PROTOCOL v1.1 e36abce4 | H_assessment_scope와 runtime_observation을 구분 | reference의 설계상 pass를 구현 성공으로 읽는 모호성 해소. 축·라벨·우선순위·gate는 유지 |
 | CASES v1.1 b8b965ed | P02의 시간 기산점·총 경과시간, R08의 visibility 12시간 한계, R18 S13 연결 | 두 검토자가 실제 사용한 시간 해석을 명문화. 반복 송신 dedup과 수신 후 외부 효과를 구분하는 대조는 유지 |
 | EXPECTED v1.1 d74f77e6 | R03-H2와 R04-H1을 unknown으로 수정, reference의 미관측 구현 값 분리 | 독립 지적을 채택해 비결정적 과잉 확정을 제거. 최종 라벨 18개는 유지 |
-| 수정 검토 | revision-review.json / REVIEW.md | B가 v1.1 변경만 비블라인드로 확인. 새 블라인드 재현성 검증으로 세지 않음 |
+| 수정 검토 d6cfd4fb | revision-review.json | B가 v1.1 변경을 확인하면서 R12의 producer 대기 연결 누락을 추가 지적. 해결됐다고 덮어쓰지 않음 |
+| CASES/EXPECTED v1.2 ba1b7737 / 24640144 | R12에 실제 producer 대기·선행 task 금지·우회 무한 buffer 금지를 추가 연결 조건으로 명시 | 단순 문구 정리가 아니라 대상 설계 연결의 보강. 제조업 원문의 기능이나 v1 블라인드의 성과로 소급하지 않음. 비블라인드 한 항목 재확인은 REVIEW에 기록 |
 
 P04는 처음부터 `applies_to`로 완성 백업과 manifest 참고 조건을 나눴다. 전체 대안의 필수 요구를 사후 면제하는 용도로 `not_in_scope`를 사용하지 않는다. 어떤 기준도 답을 맞추기 위해 조용히 완화하지 않는다.
 
