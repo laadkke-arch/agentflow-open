@@ -44,7 +44,7 @@ BullMQ 문서도 멱등성을 작업 작성자가 설계해야 한다고 명시�
 | 부품 | `job queue retry idempotent tasks batch independent failures persistent result` | OCRmyPDF, Celery, BullMQ, Spring Batch | 변환·전달·재시작·트랜잭션 단위를 분해할 수 있다. 각 부분 사이의 상태와 공개 책임은 앱 쪽에 남는다. |
 | 다른 분야 원리 | `crash recovery atomic publish output file write ahead log content addressable build cache` | Bazel, SQLite, Build Systems à la Carte, Reflow | 계산 식별과 저장된 공개 결과를 구별할 근거를 얻었다. 원 분야 전제를 P1에 대응하고 깨지는 경우를 별도로 설명해야 했다. |
 
-총 **10개 질의 문자열을 6회 검색 호출**로 실행했다.
+총 **9개 고유 질의 문자열을 반복 포함 10회 제출하고, 6회 검색 호출**로 실행했다. Q01과 Q04는 같은 문자열을 서로 다른 엔진에 제출한 기록이다.
 Q01–Q03은 한 호출로 결과가 섞여 반환되었으므로 개별 후보가 어느 질의에서 나왔는지 배정하지 않았다.
 Q04–Q06은 경로별 단독 질의다. Q07–Q09는 공식 원문 검증을 위한 한 묶음이며, Q10은 논문이 언급한 Reflow 후속 추적이다.
 결과의 전체 순위·전체 개수·시간당 발견률은 계산하지 않았다.
