@@ -73,4 +73,3 @@ AF-DOT-002는 실행 SHA·원본 JSON 해시를 별도로 기록하고, 실제 r
 남은 일은 AF-DOT-002가 GitHub 인계만으로 내용을 복원하고 discovery 명령을 실제 실행하여 이 경계를 유지하는지 확인하는 것이다. 이번 작업에서는 그 후속 과제를 시작하지 않았다.
 
 편집 담당에게 제안할 색인 행: `AF-DOT-001 | 기존 후보 4개 판단과 출처 연결 검사 경계 | 검토 완료·후속 실행 대기 | docs/workstreams/dot-trial/AF-DOT-001/REVIEW.md | 원본 및 코드 9c06a7a998a7040a708d9336545fbf3c9cdfd205`. 공통 색인과 `dot-control.json`은 수정하지 않았다.
-
