@@ -1,5 +1,11 @@
 # AgentFlow Open 작업 규칙
 
+## 현재 작업과 미래 과제 구분
+
+현재 작업은 개발·연구 환경 설정이다. 사용자가 설명한 링크·부분 구조·메커니즘 탐색 제품은 **이 환경 위에서 미래 작업자들이 연구할 대상**이다. 설명을 저장했다는 이유로 그 제품 조사·DB 설계·구현을 지금 시작하지 않는다. 실제 작업 지시를 받으면 `docs/RESEARCH_WORKFLOW.md`와 `docs/product/RESEARCH_BRIEF.md`를 읽고 범위·완료 조건을 정한다.
+
+연구 결과는 최상위 설계 모델이 비교·폐기·재조합할 수 있는 작은 묶음으로 남긴다. 근거·대안·반례·조합 조건·미해결을 보존한다. 현재 자료는 `docs/research/INDEX.md`에서 찾아 필요한 것만 읽는다. 질문 한 번의 허용 범위에서 조사·검토·정리·저장·인계까지 수행한다.
+
 ## 기본 실행·배정 — 2026-11-19 갱신
 
 사용자 PC 설치 없이 웹 Pro + GitHub + Actions를 기본으로 삼고, 반복 실행에는 Codex Cloud를 사용할 수 있다. Docker/MCP는 선택 경로다. 현재 기본은 진행·통합 담당 1개와 독립 검토 1개다. 아래 A/B/C는 가능한 역할이며 동시에 활성화해야 하는 조건이 아니다.
@@ -14,7 +20,7 @@ Dot을 진행 담당으로 사용할 때는 `docs/DOT_AUTOMATION.md`와 `docs/au
 
 이 저장소는 **오픈소스·웹서비스 탐색기**를 위한 공통 개발환경이다. 제품 기준은 `docs/product/README.md`, 조사 기준은 `docs/product/RESEARCH_PROTOCOL.md`, 단계·미확인 사항은 `docs/product/ROADMAP.md`를 읽는다.
 
-ChatGPT 웹 대화 A/B/C는 각자 `work/discovery`, `work/data-model`, `work/experience` 브랜치에서 시작하고 자기 `docs/workstreams/{discovery,data,experience}/` 안만 수정한다. 기준 문서는 통합 담당이 관리한다. 시작 지시문·충돌 방지·인수인계·이슈는 `docs/collaboration/README.md`와 `SESSION_STARTS.md`에 있다.
+각 작업 지시가 역할·새 작업 브랜치·허용 경로를 정한다. 기존 `work/discovery`, `work/data-model`, `work/experience`와 대응 경로는 과거 역할 예시이며 기본 시작점이 아니다. 최신 통합 브랜치에서 시작하고, 세 세션을 쓰는 방식은 `docs/RESEARCH_WORKFLOW.md`에서 과제에 맞게 선택한다. 기준 문서는 통합 담당이 관리한다. 충돌 방지·인수인계는 `docs/collaboration/README.md`를 따른다.
 
 이 규칙은 **GitHub가 세 채팅에 동일한 문맥을 자동 제공한다는 약속이 아니다.** 새 대화는 자기 브랜치와 이슈/근거를 실제로 읽고, 완료된 검증 SHA와 미실시 항목을 구분한다. 작업 범위를 넘어 새 제품 배포, 본격 구현, 기존 AgentFlow Studio의 변경, `main` 병합, 계정/개인정보 접근은 별도 승인 없이 하지 않는다.
 

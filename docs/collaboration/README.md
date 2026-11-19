@@ -8,6 +8,8 @@
 
 기존 역할과 이슈는 유지한다. A/B/C는 바로 켜야 하는 세 에이전트가 아니라 사용할 수 있는 업무 묶음이다.
 
+새 연구에는 [연구 운영 규칙](../RESEARCH_WORKFLOW.md)의 근거→대안→검토, 독립 탐색 두 갈래+대조, 작성+독립 검토 중 과제에 맞는 배정을 쓴다. 아래는 과거 업무 예시이며 '조사·DB·UX 세 부서'를 고정하지 않는다. 제품 설명은 미래 연구 브리프이고 현재 자동 배정 지시가 아니다.
+
 | 업무 | 기존 이슈·브랜치 | 기본 편집 경로 |
 | --- | --- | --- |
 | 자원 발견·근거 비교 | [#2](https://github.com/laadkke-arch/agentflow-open/issues/2), `work/discovery` | `docs/workstreams/discovery/` |
@@ -16,7 +18,7 @@
 
 ## 공통 계약
 
-통합 기준은 `chore/workspace-foundation`이다. `contract.json`은 제품 기준 5개 문서와 이 협업 규칙의 변경을 추적한다. 규칙 변경은 통합 담당이 수행하고, 영향받는 작업을 기록한다. A/B/C는 자기 `PROPOSALS.md`로 제안한다.
+통합 기준은 `chore/workspace-foundation`이다. `contract.json`은 나열된 제품 기준·최신 연구 브리프·연구 운영 규칙·협업 규칙의 변경을 추적한다. 규칙 변경은 통합 담당이 수행하고, 영향받는 작업을 기록한다. 작성자는 자기 허용 경로의 제안 문서로 변경을 제안한다.
 
 각 실행 가능한 작업은 `docs/tasks/<task>.json`에 시작 SHA, 계약 버전·파일 해시, 허용 경로, 의존 브랜치의 정확한 SHA를 고정한다. [클라우드 절차](../CLOUD_WORKFLOW.md)의 `workbench.session start`로 생성한다. 웹 GitHub 도구만 있는 대화는 실행 담당에게 manifest 생성을 맡기고 그 결과를 읽는다. manifest 없이 조사 문서를 저장할 수 있지만 기계적 계약 검사까지 통과했다고 보고하지 않는다.
 

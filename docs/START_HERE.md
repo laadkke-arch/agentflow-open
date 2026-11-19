@@ -8,13 +8,13 @@
 
 최종 제품은 사용자의 개발 문제에서 출발해 오픈소스·웹서비스·라이브러리·MCP를 찾고, **요구조건별 적합성·출처·제약·미확인 사항**을 비교하는 탐색기다. 지금은 그 제품을 조사·설계·검증할 공통 기반을 준비한다. 제품의 웹앱·DB·추천 엔진은 아직 구현하지 않았다.
 
-처음에는 다음 다섯 곳만 읽는다. 나머지는 과제에 필요한 때 읽는다.
+새 세션은 **현재 상태와 배정 과제 → 자료 색인 → 필요한 연구 묶음** 순서로 읽는다. 과거 보고서 전체를 첫 입력에 넣지 않는다.
 
-1. [현재 상태](../STATE.md): 실제 검사와 미실시 범위.
-2. [제품 목적](product/README.md), [조사 기준](product/RESEARCH_PROTOCOL.md).
-3. [이번에 확인한 선택과 이유](research/no-local-discovery-workflow-2026-11-19.md).
-4. [클라우드 실행 절차](CLOUD_WORKFLOW.md).
-5. [협업 규칙](collaboration/README.md), [새 대화 시작문](collaboration/SESSION_STARTS.md).
+1. [현재 상태](../STATE.md)와 이번 작업 지시에서 실행 범위·완료 조건을 확인한다.
+2. [자료 색인](research/INDEX.md)에서 필요한 문서만 고른다. 연구 작업을 시작할 때는 [운영 규칙](RESEARCH_WORKFLOW.md)과 [미래 연구 브리프](product/RESEARCH_BRIEF.md)를 읽는다.
+3. 실제 실행·협업이 필요한 때 [클라우드 절차](CLOUD_WORKFLOW.md)와 [협업 규칙](collaboration/README.md)을 읽는다.
+
+지금은 환경 설정 단계다. 브리프에 적힌 제품 연구·DB 설계·검색 방식 선택을 설명만으로 자동 시작하지 않는다.
 
 ## 기본 작업 순서
 
