@@ -1,0 +1,278 @@
+query_id	entry_id	grade	reason
+K01.w	otel-wal	2	The existing Collector's outbound queue can persist pending sends in a local WAL and retry after backend outage or process restart. Tune sizing and retry for the given interval.
+K01.w	otel-collector	1	The existing architecture describes export scope, shared receivers and distinct processor instances. It supplies no assurance about the configured outbound durable queue.
+K01.w	pg-wal	1	Flush-before-effect and crash redo are a local durability analogy. PostgreSQL's WAL is not a telemetry sending queue.
+K01.w	pg-decoding	1	Slot replay after failure illustrates delivery progress and potential duplicate downstream work. The mechanism is database-specific.
+K01.w	sqlite-wal	1	Local journaling and recovery are design references for a per-instance spool, with no outbound acknowledgement or retry contract.
+K01.w	sqlite-atomic	1	The durable journal commit illustrates when a local spool append can safely count as recorded. Remote sends need a distinct commit boundary.
+K01.w	redis-aof	1	Append plus configurable flush illustrates durability versus lost-tail tradeoffs. Deploying Redis would still add an external dependency.
+K01.w	rabbit-confirms	1	The split of durable acceptance and downstream completion can help define when a local spool entry can be removed. RabbitMQ deployment is outside this scope.
+K01.w	sqs-visibility	1	A lease that leaves unacknowledged work eligible for retry is a transferable spool design detail. AWS is outside this scope.
+K01.w	rabbit-quorum	N	The replicated queue would introduce a separate message broker, explicitly prohibited here.
+K01.w	sqs-standard	N	The managed queue is a separate broker service outside the Collector path, irrespective of who administers it.
+K01.w	sqs-fifo	N	The managed FIFO queue adds a separate broker service outside the selected existing Collector exporter.
+K01.w	redis-pubsub	N	A separate one-shot pub/sub transport misses deliveries during disconnection and adds a broker.
+K01.w	pypi-opentelemetry-exporter-otlp	N	The near-identical name is a Python package for client-side OTLP exporters. Installing it does not configure the existing Collector service's disk queue.
+K01.w	pypi-opentelemetry-api	N	The Python instrumentation API is SDK-side, outside the selected Collector outbound reliability path.
+K01.w	pypi-opentelemetry-sdk	N	The Python SDK instruments producers and cannot itself configure the installed Collector's queue.
+K01.w	grafana-alloy	0	A related collector distribution is not evidence of a persistent sending queue in the build already in place.
+K02.w	paperless-ngx	N	Documented normal consumption can remove the source in the exact input folder, and duplicate removal depends on version/configuration. An internal original is insufficient.
+K02.w	docspell	1	An optional SHA-256 duplicate check is transferable. Exact input-path preservation in the existing Paperless ingestion is unestablished.
+K02.w	bazel-cache	1	Input hashing illustrates reuse for the same input independently of the source path. Publication uniqueness requires another mechanism.
+K02.w	build-systems	1	Input hashing and separating scheduling from rebuilding are useful for deciding whether to process a file again.
+K02.w	bullmq	1	Idempotent per-input tasks can avoid repeated effects if paired with a stable file fingerprint and a non-destructive handoff.
+K02.w	sqlite-atomic	1	A local durable transaction can protect the ingest ledger's unique-claim boundary. Keeping the source in place is separate.
+K02.w	bibframe	1	Separating a work from copies helps express why a retained internal copy cannot satisfy retention of the source copy. It supplies no deduplication algorithm.
+K02.w	datacite	1	An explicit identity versus version/part distinction helps keep byte duplicates separate from related documents. Relations alone do not verify bytes or preserve a file.
+K02.w	swhid	1	Separates fingerprinted content identity from path and other origin context. It cannot retain the input file on its own.
+K02.w	pypi-watchdog	1	Filesystem event observation can drive a copy/read ingress path without requiring removal. Deduplication and durable state are separate.
+K02.w	pypi-watchfiles	1	A file change feed can trigger a non-destructive inbound step. Its code reload purpose supplies no ingest ledger.
+K02.w	pypi-paperless	N	The matching package name refers to a notebook runner, not a document consumption path.
+K02.w	pypi-dedupe	N	Entity resolution matches records, whereas the requirement concerns the same input file and exact-path preservation.
+K02.w	paperless-ng	0	The predecessor's association with Paperless-ngx does not establish a non-destructive intake mechanism.
+K02.w	paperless-original	0	A searchable scan archive alone does not establish deduplication while preserving the original input path.
+K02.w	jiandu	0	Folder intake and search are documented without the combination of same-file deduplication and source-path preservation.
+K03.w	http-202	1	Establishes the acceptance-versus-completion boundary, leaving callback routing and job correlation to the contract.
+K03.w	asyncapi	1	Reply and correlation-ID objects can describe matching a later result to a request. They leave HTTP status and runtime delivery open.
+K03.w	openapi	1	Operation callbacks and separate webhook descriptions can express interface ownership and parent relationship. Define instance correlation and acceptance meaning explicitly.
+K03.w	c4-dynamic	1	A dynamic interaction diagram can make accepted, worker completion and callback-receiver steps inspectable.
+K03.w	rabbit-confirms	1	Separate publisher confirmations and consumer acknowledgements illustrate different lifecycle milestones without committing to a broker.
+K03.w	celery	1	Acknowledging after processing illustrates a distinct completion boundary. An application-facing queued status and result correlation are still needed.
+K03.w	event-sourcing	1	Persisting accepted and completed events per job is a reference for reviewable lifecycle state. It leaves callback delivery and identity conventions to the design.
+K03.w	prov	1	Request, processing activity and result can be linked as separate entities in a provenance record. This does not supply event delivery or response semantics.
+K03.w	pypi-fastapi	0	A general web framework does not establish accepted-versus-complete handling or callback correlation.
+K03.w	pypi-connexion	0	Contract-driven scaffolding does not demonstrate asynchronous lifecycle correlation. The OpenAPI specification entry covers the evidenced reference.
+K03.w	npm-workbox-background-sync	0	Retrying a browser's outgoing request leaves the later result and its intended recipient unspecified.
+K04.w	automerge-conflicts	2	The conflict API implements the selected editing-part requirement of exposing winner and alternate concurrent key values. Use it with local Automerge documents, team-controlled sync and a chooser UI.
+K04.w	automerge-core	1	The locally editable CRDT provides merge rules and deterministic winners. Use separate persistence and conflict access to support the required choice.
+K04.w	automerge-repo	1	Local persistence and offline editing plus later peer sync fit the storage path. The entry needs conflict review/selection and an appropriate team-controlled deployment.
+K04.w	yjs	1	CRDT updates converge after eventual delivery. It needs a separate way to preserve and inspect both values in the intended conflict cases.
+K04.w	y-indexeddb	1	Retains updates in the browser between visits. Transport and the conflict chooser remain separate.
+K04.w	couch-conflicts	1	Exposes competing revision leaves for user resolution. Browser/offline editing and team sync configuration take additional work.
+K04.w	git-merge	1	A local base plus two snapshots and an explicit conflict choice are transferable to the editor. Domain and UI integration are separate.
+K04.w	forking-histories	1	Shows how to preserve alternative histories when an automatic merge risks a forbidden outcome. Deployment and editor behavior are still unverified.
+K04.w	joplin	1	Offline notes and conflict copies match the intended behavior. Shared notebook parity without using the documented hosted option is unverified.
+K04.w	outpost	1	Shows two note values and rebases local revisions in a notes demo. The demo does not establish a team deployment.
+K04.w	npm-idb	1	IndexedDB access can retain the locally loaded note. Conflict handling and peer sync must be built separately.
+K04.w	npm-dexie	1	IndexedDB storage can support offline editing while an app adds peer transport and the conflict chooser.
+K04.w	npm-localforage	1	The offline storage interface can hold a local note copy. It does not resolve concurrent versions.
+K04.w	npm-level	1	Browser data storage is an adapter candidate for the independent offline copy. Team sync and conflict semantics need other components.
+K04.w	npm-lowdb	1	A local JSON store can hold a note model. Keeping alternative concurrent edits and team transfer need separate design.
+K04.w	npm-y-websocket	1	It can transport Yjs changes after reconnection if the chosen server is within policy. It supplies neither durable offline state nor a conflict view.
+K04.w	npm-y-webrtc	1	Peer transport could carry updates when connected, conditional on acceptable signaling. It cannot show both concurrent values or persist notes.
+K04.w	npm-sharedb	1	JSON operational transformation is a collaboration mechanism to compare. Its packaged summary does not establish offline reopen or retaining the competing user-visible values.
+K04.w	json-patch	N	Sequential replace operations alone can let arrival order obscure an edit without presenting both values.
+K04.w	y-awareness	N	Ephemeral cursor and presence state is the wrong data plane for note content or retained conflicting edits.
+K04.w	npm-pouchdb	0	The versioned registry summary does not identify the browser/offline or conflict mechanism needed for this role.
+K05.w	automerge-core	1	Locally editable documents fit the explicitly invited isolated-device reference. Newly authored distant state requires exchange.
+K05.w	automerge-repo	1	The storage adapter supports local edits without networking as a reference. Its peer sync cannot work under permanent isolation.
+K05.w	y-indexeddb	1	Persistent local notebook updates are an invited reference with no network requirement for storage.
+K05.w	yjs	1	A Y.Doc can be edited locally. Convergence between devices still requires transmitting the new changes.
+K05.w	joplin	1	The offline editor is an invited local-only reference. Configure no synchronization to respect permanent isolation.
+K05.w	outpost	1	Offline note editing is an invited local reference, even though the product also illustrates sync conflicts.
+K05.w	json-patch	1	Applies edits to the local JSON data model in isolation. It cannot synchronize other devices.
+K05.w	npm-idb	1	Provides local browser storage for an independent note copy.
+K05.w	npm-dexie	1	IndexedDB access can persist edits on each isolated device.
+K05.w	npm-localforage	1	Offline local storage is useful for the explicit isolated editing reference.
+K05.w	npm-lowdb	1	Local JSON changes can be kept on the device while respecting permanent isolation.
+K05.w	npm-level	1	Local application data storage can be used for one device's editable copy.
+K05.w	forking-histories	1	Separation of local edit history from change transport is an instructive reference for the permitted local mode.
+K05.w	couch-conflicts	N	The replication-conflict mechanism requires exchange and cannot reveal a new remote revision without it.
+K05.w	git-merge	N	Merging a newly changed remote note requires first obtaining its version. This entry covers merge, not editing solely one local file.
+K05.w	npm-y-webrtc	N	WebRTC transports information between devices, expressly prohibited even though it can bypass a central syncing server.
+K05.w	npm-y-websocket	N	WebSocket propagation requires communication between the participants.
+K05.w	npm-sharedb	N	Live JSON synchronization requires edits to move across the collaboration backend.
+K05.w	npm-workbox-background-sync	N	Replay waits for connectivity, incompatible with permanent lack of any communicating path.
+K05.w	rsync	N	Remote file transfer is specifically forbidden alongside networking.
+K05.w	y-awareness	N	Presence metadata cannot communicate between disconnected peers, and does not carry the note body even when connected.
+K05.w	invariant-confluence	N	Coordination-free merging does not move newly authored information between forever-isolated devices.
+K05.w	automerge-conflicts	0	A peer merge conflict cannot occur without receiving the competing edit, and the entry does not describe an isolated editing tool.
+K06.w	sqlite-fts5	1	Local full text is an index option for Markdown and decision records. Capture rationale and check Korean tokenization separately.
+K06.w	sqlite-fts34	1	A local text index can provide search over development logs if available. Rationale modeling and Korean retrieval remain separate.
+K06.w	sqlite-options	1	A built-in FTS availability check can respect the preference to avoid new applications. It is not a rationale capture or search design.
+K06.w	pypi-whoosh	1	Embeddable local full-text search can keep originals on the machine. Korean analysis and linking a decision to its evidence need design.
+K06.w	pypi-lunr	1	The local library offers search building blocks without a service upload. Korean retrieval and rationale capture are unverified.
+K06.w	pypi-mkdocs	1	A local Markdown documentation build can index or organize existing project material when paired with rationale text and a search component. Korean output is still explicitly authored.
+K06.w	arc42	1	The motivation and scope fields give a way to record why a constraint existed in documents under local control.
+K06.w	nasa-se	1	A rationale and assumptions checklist helps preserve why a decision was made. Search and presentation remain implementation work.
+K06.w	web-annotation	1	Pointers to source paragraphs or versions can retain supporting reasons for a decision in the local records.
+K06.w	prov	1	Explicit derivation/use links can connect a decision to its input evidence and activity, with explanation text still required.
+K06.w	event-sourcing	1	Local event history can reconstruct when a choice changed if rationale is stored with the event. It supplies no language-aware retrieval.
+K06.w	solvent	1	Purpose and background facets offer a reference for separating decision rationale from outcome in search inputs. Transfer from paper analogy search is unverified.
+K06.w	gh-code-search	N	The documented hosted source-file indexing path is inconsistent with keeping these originals off an external service.
+K06.w	pypi-aiosqlite	0	Asynchronous access to SQLite is not itself a local search or reason-recording mechanism.
+K06.w	pypi-markdown	0	A renderer leaves the existing rationale and retrieval gap unchanged.
+K06.w	oss-explorer	0	Natural language to SQL over GitHub events is not evidence of access to the team's local decision records.
+P1.w	paperless-ngx	1	Folder ingestion, per-file OCR, checksum checks and failed tasks match many requirements. Durable, duplicate-free publication after arbitrary restart is unverified.
+P1.w	docspell	1	Per-file jobs, optional duplicate fingerprints, status and retry are documented. Partial output and uniqueness across restarts still need verification.
+P1.w	docspell-joex	1	Per-document text extraction and state handling directly illustrate a processing component. The executor has no verified independent reuse interface.
+P1.w	jiandu	1	Watched folders, PDF/photo inputs and searchable archive match the front end of the workflow. Restart/failure handling and deliverable deployment were not established.
+P1.w	paperless-ng	1	A related searchable organizer is a lifecycle/design reference. Its archived status and undocumented restart semantics make it unsuitable as a verified complete replacement.
+P1.w	paperless-original	1	Searchable scanned-document ingestion is an example of the core workflow. Failure recovery and duplicate-free publication are unproven.
+P1.w	ocrmypdf	1	Per-file searchable OCR can isolate conversion failures. Own job state and publication logic must supply restart and idempotency.
+P1.w	pypi-pdf2image	1	Rasterizing PDF pages is a reusable early conversion step. It needs OCR and job state after conversion.
+P1.w	pypi-pdfplumber	1	Extracts searchable text from some PDFs. It cannot replace OCR for all image scans or handle durable publication.
+P1.w	pypi-pypdf	1	A PDF manipulation component can support preprocessing on an individual input. Scanned-text OCR is separate.
+P1.w	pypi-pytesseract	1	Local OCR invocation is a useful per-image processing part. It supplies no durable processing ledger.
+P1.w	pypi-unstructured	1	Document preprocessing is a possible conversion stage. Exact formats, deployment, and retry/publish behavior remain unproven.
+P1.w	pypi-watchdog	1	Folder event observation can admit individual input items to durable jobs. It does not promise recoverable intake by itself.
+P1.w	pypi-watchfiles	1	File changes can trigger per-item admission. Exact restart and output publishing rules remain separate.
+P1.w	celery	1	Per-task processing, retries and acknowledgement controls can help isolate failures. Durable effect idempotency needs the application.
+P1.w	bullmq	1	Idempotent retry patterns directly address duplicate publication after interruption. Durable sink results and failed-item discovery still need implementation.
+P1.w	spring-batch	1	Restart metadata, item retry/skip and chunk commits inform recoverable work. External file publication must be handled outside those transactions.
+P1.w	pypi-backoff	1	A utility for bounded retry of an individual conversion can help isolate recoverable errors. It has no durable failure ledger.
+P1.w	pypi-tenacity	1	Per-operation retries can be attached to individual failed work. They cannot by themselves resume after a process stop.
+P1.w	bazel-cache	1	Input/output hashes and action keys map same inputs to reusable results. Publication needs a unique durable boundary.
+P1.w	build-systems	1	Separating rebuilding from scheduling and keying on input content is a cross-domain restart and deduplication reference.
+P1.w	reflow	1	Docker task composition and input-keyed memoization illustrate reusing individual conversions. Document job publication and deployment are unproven.
+P1.w	sqlite-atomic	1	A durable transaction can protect a per-input result ledger. Files outside the database require their own commit protocol.
+P1.w	event-sourcing	1	Persisting per-input failure and completion events helps expose failed work and reconstruct progress. It does not guarantee uniqueness by itself.
+P1.w	rabbit-quorum	1	A self-operated replicated queue can redeliver unacknowledged per-file work if configured. It supplies no OCR, unique publication or item-status UI.
+P1.w	rabbit-confirms	1	Publisher confirms and result-after-write acknowledgement separate initial acceptance from safely completed work.
+P1.w	sqs-visibility	1	Lease expiry is a useful reference for reclaiming uncompleted work without deploying the managed service.
+P1.w	redis-aof	1	Persisting queue-like state illustrates crash recovery. Append persistence by itself supplies no result uniqueness or item status.
+P1.w	pg-decoding	1	Crash replay motivates an idempotent sink for duplicate delivery. It is a database analogy, not a document worker.
+P1.w	sqlite-fts5	1	A local full-text result index can support searchable converted documents. Conversion and job state are separate.
+P1.w	sqlite-fts34	1	An alternative local full-text index can store searchable output, with per-item processing and recovery separate.
+P1.w	pypi-whoosh	1	Local text indexing covers the searchable result part, with conversion and publication guarantees left to the system design.
+P1.w	pypi-lunr	1	An embeddable search index can cover the output search part, without a durable conversion or recovery workflow.
+P1.w	pypi-paperless	N	The same-family name identifies a Dataproc notebook runner instead of searchable document conversion.
+P1.w	pypi-dedupe	N	Entity-resolution deduplication is a different problem from guaranteeing one durable publish for an exact input.
+P1.w	redis-pubsub	N	At-most-once losses during worker disconnection conflict with resuming interrupted work.
+P1.w	sqs-standard	N	The concrete queue alternative requires a managed AWS service, in conflict with the self-operation requirement.
+P1.w	sqs-fifo	N	The concrete service is AWS-managed and its send deduplication is not duplicate-free end-result publication.
+P1.w	pypi-rq	0	The registry headline identifies a job queue without a processing, failure tracking or restart mechanism confirmed for this case.
+P1.w	pypi-filetype	0	Inferring the known input type is not a reliable decoder or searchable conversion capability.
+P2.w	joplin	2	Offline notes, conflict copies for review, JEX export and shared notebooks fit the app role. The documented hosted mode is allowed because self-operation is optional.
+P2.w	outpost	1	Offers conflict review and JSON export, but single-user demo behavior does not establish a field-team application.
+P2.w	automerge-repo	1	Local persisted drafts plus later peer sync supply a substantial component. Conflict choice and file exporting require application mechanisms.
+P2.w	automerge-core	1	CRDT merges local changes but winner semantics need explicit conflict access, and persistence and file export are separate.
+P2.w	automerge-conflicts	1	Exposes competing values for a chooser, without giving a whole offline sync loop or content export.
+P2.w	couch-conflicts	1	Retains conflicting revision leaves and allows inspecting/merging alternatives. A client, export and durable offline workflow still need work.
+P2.w	yjs	1	Convergent updates are a sync building block. Keeping and exposing competing user edits and file export are separate.
+P2.w	y-indexeddb	1	Persisting document updates supports reading and editing through disconnection. It leaves sync, conflict resolution and export open.
+P2.w	git-merge	1	Base-plus-snapshots and explicit conflict resolution transfer from version control. Record semantics and user workflow need design.
+P2.w	forking-histories	1	A local-first history fork is a design option for preserving disputed changes. The field workflow and export were not validated.
+P2.w	invariant-confluence	1	The distinction between safe concurrent merges and operations needing coordination informs the domain conflict policy.
+P2.w	npm-idb	1	Provides browser persistence for individual offline copies, without sync or export behavior.
+P2.w	npm-dexie	1	IndexedDB access can hold records for offline reads and edits. Conflict handling and export remain separate.
+P2.w	npm-localforage	1	An offline storage interface can retain a user's local record copy.
+P2.w	npm-level	1	Browser data storage can retain disconnected copies. Merge and history exposure need another mechanism.
+P2.w	npm-lowdb	1	A local JSON record store is a possible offline layer, with synchronization and export guarantees separate.
+P2.w	npm-y-websocket	1	Yjs update transport can reconnect replicas. It does not decide what conflicting edits users see.
+P2.w	npm-y-webrtc	1	Peer update transport is a conditional synchronization building block and supplies no offline storage or chooser by itself.
+P2.w	npm-sharedb	1	Operational transformation is a reusable sync reference. Offline, non-silent conflict review and export are unverified.
+P2.w	pypi-dulwich	1	A Git library could keep edits in local versioned files under a three-way merge design. No field-team workflow is documented.
+P2.w	npm-simple-git	1	A local Git adapter could support owning records as files and using explicit merges. No application-level conflict chooser is provided.
+P2.w	y-awareness	N	Transient collaboration presence cannot retain disconnected record edits or recover a conflicting value.
+P2.w	json-patch	N	An ordered patch stream alone can silently replace competing edits, with no replica merge or conflict review.
+P2.w	npm-pouchdb	0	The registry summary does not evidence offline replication and conflict semantics.
+P01.w	automerge-repo	2	Repo with IndexedDB, a network adapter and the documented core merge provides offline edit, durable normal reopen and convergence under eventual delivery.
+P01.w	y-indexeddb	2	The documented provider combination persists Y.Doc updates locally and restores them, with the Yjs network and merge path for convergence. The shell is assumed cached.
+P01.w	automerge-core	1	Type-specific concurrent merge handles convergence and local edits. A persistence adapter is essential for reconnecting after a tab closes.
+P01.w	yjs	1	Document updates converge under eventual delivery and can be applied locally. Its record alone supplies no tab-reopen persistence.
+P01.w	npm-idb	1	IndexedDB access can keep a note over normal reopen, leaving editing and convergence to the app.
+P01.w	npm-dexie	1	Browser IndexedDB storage covers the persistence layer. The registry does not establish two-peer merging.
+P01.w	npm-localforage	1	An offline storage interface can retain local data. It is not a merge protocol.
+P01.w	npm-level	1	The browser database interface is a possible persistence building block without note merge.
+P01.w	npm-lowdb	1	A local browser JSON database can retain text/map/list data. Add an appropriate synchronization mechanism separately.
+P01.w	npm-y-websocket	1	A Yjs transport can distribute updates on reconnect but does not itself persist the note in the tab.
+P01.w	npm-y-webrtc	1	Peer transport can carry eventually delivered updates. Browser persistence is a separate requirement.
+P01.w	npm-sharedb	1	A web JSON operational transformation backend is a synchronization reference. Durable offline re-entry and the exact delivery assumptions are not confirmed.
+P01.w	couch-conflicts	1	Replicated revision trees offer an alternative conflict/merge model. They do not establish the requested browser storage.
+P01.w	git-merge	1	Three-way merge is a reference for combining known snapshots. It is not a browser storage or arbitrary-order replica merge component.
+P01.w	joplin	1	An offline app illustrates persistence and eventual sync behavior. Its role differs from a reusable browser note component.
+P01.w	outpost	1	An offline notes demo gives revision and conflict examples. The pinned summary does not establish arbitrary arrival order convergence.
+P01.w	y-awareness	N	The nearby Yjs component controls transient presence and is not durable note-body state.
+P01.w	json-patch	N	Ordered replace operations can yield different results under reversed concurrent patch arrival and do not persist the note.
+P01.w	npm-pouchdb	0	Browser persistence and convergence require evidence beyond the pinned registry summary.
+P02.w	rabbit-quorum	2	Three quorum replicas, publisher confirms, manual ack after commit and a delivery limit above 30 satisfy the scoped job-retention case. A default limit of 20 would fail.
+P02.w	sqs-standard	2	Replicated at-least-once delivery with retention exceeding 24 hours, appropriate redrive policy and delete only after durable effects fits the assumed idempotent handler.
+P02.w	sqs-fifo	2	Replicated partitions, adequate retention/redrive and timeout redelivery fit. The 12-hour single visibility bound is compatible with duplicate delivery.
+P02.w	rabbit-confirms	1	Acceptance confirmation and manual acknowledgement define necessary contract boundaries. The reliability protocol alone supplies no replicated queue or redelivery-limit policy.
+P02.w	sqs-visibility	1	Timeout re-exposes unfinished work and permits durable-result-before-delete. Replication, retention and redrive belong to the configured queue.
+P02.w	celery	1	Late acknowledgement and retry controls are useful for worker failures. Broker policy, abrupt worker exit behavior and node replication still need verification.
+P02.w	bullmq	1	Job retry design around stable results is useful, but the given handler already supplies idempotency and replicated retention remains unverified.
+P02.w	otel-wal	1	A durable local retry queue illustrates keeping queued IDs across a process restart. It is not a replicated general work broker.
+P02.w	redis-aof	1	The append/fsync policy informs persisted queue state. It does not establish acceptance across broker node failure or ack-based retries.
+P02.w	pg-decoding	1	Replay from persistent progress illustrates how consumer failure can lead to duplicate delivery. This specialized stream does not supply the proposed queue contract.
+P02.w	sqlite-atomic	1	A transaction can make job state and a result durable locally. Another mechanism is needed across loss of one storage node and for redelivery.
+P02.w	event-sourcing	1	An append-only accepted/completed ledger can identify unfinished work to replay. Replicated acceptance and ack semantics are application design.
+P02.w	pypi-aio-pika	1	The AMQP client is a potential integration point for a separately configured quorum queue. It does not supply queue resilience itself.
+P02.w	pypi-pika	1	The AMQP client provides access to a compatible broker. Broker replication and durable-result acknowledgement behavior are still separate.
+P02.w	pypi-kombu	1	The messaging library can connect an application to the chosen delivery transport. The package alone specifies no accepted-job guarantees.
+P02.w	redis-pubsub	N	Disconnected subscribers irretrievably miss work under the documented at-most-once delivery model.
+P02.w	pypi-apscheduler	N	Time-triggered jobs do not supply the durable acknowledgements and redelivery of a previously accepted broker message.
+P02.w	pypi-tenacity	N	An in-process operation retry cannot recover an already-accepted message after that worker process stops.
+P02.w	pypi-backoff	N	An in-process retry timer does not persist broker work across worker termination.
+P02.w	npm-workbox-background-sync	N	A client-side network submission replay is not redelivery of an already-accepted message after worker failure.
+P02.w	pypi-arq	0	A Redis/asyncio task queue is documented at a headline level, with no verified replication or acknowledgement guarantees in the available registry summary.
+P02.w	pypi-rq	0	The job queue headline does not establish a broker acceptance or worker recovery policy.
+P03.w	asyncio-queue	2	Queue maxsize 8 with four long-lived workers that each await conversion and storage blocks lazy admission without precreating tasks or losing items.
+P03.w	asyncio-semaphore	1	Completion-released permits can cap in-flight work if taken before creating each task. A separate bounded queue is needed if the design must include one.
+P03.w	reactive-streams	1	Demand-driven admission is a strong transfer principle if the downstream grants new credits as storage completes. The JVM specification is not the Python implementation.
+P03.w	toyota-jit	1	Downstream pull and replenish offer a reference for work admission based on consumption. Exact event-loop wait and bounds still need a mapping.
+P03.w	pypi-aiojobs	1	The packaged example awaits scheduler spawning, useful as an asyncio admission interface. It does not establish the required pending, active and completion bounds.
+P03.w	pypi-janus	1	Its async queue side follows the relevant asyncio design, useful with a bounded producer and fixed workers. Cross-thread handling is unnecessary in the given loop.
+P03.w	token-bucket	N	Time-based token refills can admit new jobs while old sinks are still busy, violating the completion-driven limit.
+P03.w	pypi-aiolimiter	N	A leaky-bucket rate limiter does not couple capacity to completed jobs and can admit while sinks are still outstanding.
+P03.w	pypi-limits	N	A rate limiter constrains admissions per time interval, and cannot by itself impose the requested active and pending work bounds.
+P03.w	npm-bottleneck	N	The package is a JavaScript rate-oriented scheduler, while the chosen component and completion boundary are Python asyncio.
+P03.w	npm-p-limit	N	A JavaScript Promise concurrency limiter is not a Python asyncio queue/admission primitive.
+P03.w	npm-p-queue	N	A JavaScript Promise queue targets the wrong runtime for this whole query.
+P03.w	pypi-rx	0	The Reactive Extensions registry metadata does not establish downstream-demand or capacity rules in this runtime.
+P03.w	pypi-aiosqlite	0	An asyncio database bridge might implement the sink, but it supplies no specified producer admission bounds.
+P04.w	restic	2	An encrypted local repository with retained snapshot identifiers and selected-version restore satisfies the backup-tool requirements under the key and disk assumptions.
+P04.w	borg	2	An encrypted local repository has named retained archives that can be individually extracted after later source changes.
+P04.w	ct-merkle	2	Merkle inclusion proves a named leaf under the trusted version root and is a correctly scoped manifest verification reference.
+P04.w	npm-merkletreejs	2	Constructs a Merkle tree and verifies membership proofs. The question already provides the trusted root and deterministic input assumptions.
+P04.w	pypi-pymerkle	2	The pinned package description shows proving and verifying a specified leaf against a given state root, index and size. It is a proof component only.
+P04.w	npm-json-stable-stringify	1	Deterministic serialization can prepare equivalent leaf bytes. It supplies neither membership proof nor trustworthy roots.
+P04.w	npm-merkle-tree	1	A tree skeleton can illustrate building the proof structure. The package metadata does not show proof construction or verification.
+P04.w	pypi-borgmatic	1	The packaged description confirms Borg-powered client-side encrypted backups. The wrapper's selected-version restore was not established in the reviewed package material.
+P04.w	pypi-duplicity	1	Packaged docs establish encrypted full/incremental volumes and local destinations. Selection and restoration of an earlier local version were not demonstrated there.
+P04.w	pypi-rdiff-backup	1	Local reverse-incremental history and restoration are relevant. Storage confidentiality without the key is unverified.
+P04.w	swhid	1	Content-addressed identity plus context is useful for describing leaves. That representation alone does not prove a leaf belongs to a trusted root.
+P04.w	rsync	N	The identified single delete-enabled mirror lacks retained prior versions and encryption. Additional separately designed snapshot/encryption layers change the candidate.
+P04.w	pypi-dulwich	0	A version-control library by itself is not an encrypted local backup or manifest inclusion verifier.
+P01.1	automerge-repo	2	IndexedDBStorageAdapter persists the note body after saving and permits offline restoration assuming the browser can open the application.
+P01.1	y-indexeddb	2	The provider stores Y.Doc update data in IndexedDB and reloads it on revisit. Loading the shell offline is a separate issue omitted from this clause.
+P01.1	npm-idb	1	IndexedDB access supports storing the note payload, but the app must implement and verify offline reading after reopen.
+P01.1	npm-dexie	1	IndexedDB can retain the local note transaction, while the browser app must wire payload loading after reopening.
+P01.1	npm-localforage	1	An offline browser storage API is a conditional option for retaining the note body after the save completes.
+P01.1	npm-level	1	A browser data-store abstraction is a candidate persistence layer. Durable reopen depends on the selected backend and app wiring.
+P01.1	npm-lowdb	1	A browser JSON store can retain a simple note if its persistence adapter is chosen and verified.
+P01.1	outpost	1	The offline notes example supports local note persistence as a design reference. Exact tab-close/revisit behavior remains unverified.
+P01.1	y-awareness	N	The presence object is ephemeral and not stored with the note document.
+P01.1	automerge-core	N	The near-name CRDT core alone explicitly needs a storage adapter for note persistence after closing.
+P01.1	yjs	N	Standalone Y.Doc merge/update behavior lacks the persistence provider required by this isolated query.
+P01.1	npm-pouchdb	0	The pinned registry summary does not evidence a browser reopen persistence contract.
+P02.2	rabbit-quorum	2	Durable unacknowledged messages are redeliverable after worker loss or reconnect if the redelivery limit is disabled or exceeds the planned retries and policies do not expire them.
+P02.2	sqs-standard	2	Uncompleted messages become visible again in a retention window covering the relevant job lifetime. The isolated clause does not give that lifetime.
+P02.2	sqs-fifo	2	Timeout re-delivery with retention and redrive configured above the retry window handles a finite interruption history. The isolated clause gives no upper bound.
+P02.2	rabbit-confirms	1	Manual acknowledgement distinguishes incomplete deliveries eligible for retry. Topology and expiry policy still matter for survival.
+P02.2	sqs-visibility	1	Lease expiry makes undeleted work eligible for processing again. Adequate queue retention and redrive policy are separate.
+P02.2	otel-wal	1	A durable local resend buffer supplies a retry-after-restart analogy with capacity and retry bounds. It is not a general worker queue.
+P02.2	celery	1	Late ack and retry are relevant to worker interruption, conditional on explicit worker-loss and broker settings.
+P02.2	bullmq	1	Retries and idempotent application effects give a worker recovery reference, without establishing message retention for the entire interval.
+P02.2	redis-aof	1	Append persistence can retain state needed for retry. It does not designate unfinished items for redelivery.
+P02.2	pg-decoding	1	Persistent consumer progress and restart replay are a reference for eligibility after failure, though limited to database change events.
+P02.2	event-sourcing	1	An unfinished-job ledger can identify which accepted items should be reprocessed. Retention and selection logic remain implementation work.
+P02.2	redis-pubsub	N	The state disappears for consumers that were disconnected, which directly contradicts the isolated recovery requirement.
+P02.2	pypi-apscheduler	N	Time-triggered work does not recover the message a stopped worker already received.
+P02.2	pypi-tenacity	N	Operation retries stop with the worker process and cannot recover the message independently.
+P02.2	pypi-backoff	N	A timing/retry decorator is tied to a live process and cannot retain a message after the worker stops.
+P02.2	npm-workbox-background-sync	N	Replaying a browser request after a network outage does not retain a message already delivered to a repeatedly failing backend worker.
+P03.2	asyncio-queue	2	A bounded queue and awaited put let the producer pause rather than create tasks or buffer all inputs. The producer must feed the bounded queue directly.
+P03.2	asyncio-semaphore	2	A lazy producer that acquires before creating each task holds admission until the slow sink returns a permit and avoids unbounded waiting tasks.
+P03.2	reactive-streams	2	Publisher emission bounded by downstream demand directly fits the isolated backpressure role when requests are replenished as sinks consume capacity.
+P03.2	toyota-jit	1	Pulling and replenishing according to downstream consumption gives an analogous producer policy. Concrete wait and memory behavior remain a design translation.
+P03.2	npm-p-limit	1	Limiting running promises helps only if the caller also holds back submissions. The isolated query does not impose Python.
+P03.2	npm-p-queue	1	A concurrency-controlled promise queue is relevant if the producer waits rather than filling its internal queue. The reviewed registry metadata does not establish this gate.
+P03.2	pypi-aiojobs	1	Awaiting job spawn is relevant to blocking producers, but bounds and when the await suspends are not established by the packaged example.
+P03.2	pypi-janus	1	The asyncio queue abstraction can contribute to a bounded pending buffer. A particular max size and worker roundtrip still need design.
+P03.2	token-bucket	N	A time refill can let a producer continue while the sink remains stalled.
+P03.2	pypi-aiolimiter	N	Leaky-bucket rate limits are driven by time and do not wait for slow sink capacity.
+P03.2	pypi-limits	N	Pacing starts by time is not backpressure from a stalled sink.
+P03.2	npm-bottleneck	N	The documented rate-scheduling mechanism cannot by itself couple producer admission to a slow sink. The mismatch is the mechanism, not JavaScript.
+P03.2	pypi-rx	0	The pinned registry metadata does not establish downstream-demand support or joint bounds.
