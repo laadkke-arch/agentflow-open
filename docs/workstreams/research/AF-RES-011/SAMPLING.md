@@ -88,3 +88,9 @@ G5–G6도 웹 검색이 URL 필터를 무시하고 저장소·토픽 목록을 
 ### 한국어 부분 질문 보완 사전 고정 — 2026-11-20
 
 O1–O7을 소진한 뒤 기타 part2가 부족하면 O8 `site:news.hada.io/topic "Ask GN" "라이브러리"`를 이 변경 커밋 이후 실행한다. 기존 기간·engine2→engine1·관련도 반환순서·원문 및 2실질답 기준을 유지한다.
+
+### Reddit 잔여 부분 질문 사전 고정 — 2026-11-20
+
+R9–R15에서 댓글 전체 열람을 확인할 수 없는 후보를 제외하고 part 할당이 부족하면 R16 `site:reddit.com/r/golang/comments/ "looking for" "library" -book -books -resources`, R17 `site:reddit.com/r/rust/comments/ "alternative to" -book -books`, R18 `site:reddit.com/r/softwarearchitecture/comments/ "recommend" "database"`를 이 변경 커밋 이후 순서대로 실행한다. 동일 기간·engine2→동일engine1·관련도·최소2실질답·80이하 및 완전열람 기준이다.
+
+Reddit의 R2에서 반환된 여러 앱용 VPS 질문은 완성 앱이 아닌 실행 기반(part)으로 분류했다. 원래 '부족 층의 다음 질의 적격 사례' 조항에 따라 Reddit 목표를 whole4/part6으로 기록하며, 전체60의 whole27/part33은 각각20 이상을 유지한다. 성공·거절 결과로 선택을 바꾼 것이 아니며 해당 후보는 R2 반환순번5다. 검색 호출을 병렬 묶음으로 실행한 경우 개별 질의의 가상 순위를 만들지 않고 반환 묶음의 순위를 기록한다. R3–R4는 누락을 발견해 후속 수행했고 후보의 최초 제외·재확인 이력을 보존한다.

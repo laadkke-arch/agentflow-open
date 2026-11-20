@@ -67,3 +67,5 @@ CASES.json 루트는 `{study_id, codebook_version, cases:[...]}`. 필수 case �
 ## 변경 이력
 
 - v1: 공개 사례 검색/열람 전 고정. 이후 새 코드가 필요하면 이유·시점·영향 ID를 남기고 기존 사례도 같은 규칙으로 재검토한다. 원판 코딩과 재코딩 원응답을 덮어쓰지 않는다.
+- v1.1 (2026-11-20, 첫20개 묶음 이후·내부 재코딩 이전): 실제 댓글에는 원질문자에게 정보를 묻는 사건 외에 질문자가 추천 기능을 되묻거나 다른 독자가 답변자를 반문하는 사건이 있었다. `target`(`question/recommendation/side_discussion`)과 `respondent`(`original_asker/answerer_not_original_asker/other_commenter/none/unknown`)를 추가한다. v1의 `changed_answer=yes` 기준은 완화하지 않는다. 원질문자의 응답 뒤 변경 순서가 없는 다른 독자의 설명 정정은 `changed_answer=unknown`, 별도 `changed_explanation=yes`로 구별한다. 영향: T043·T045의 비원질문자 반문을 교정하고 모든 후속 사례에 같은 구별을 적용한다. 주 Q2의 빈도는 원질문자에 대한 되묻기이고, 추천 설명·곁가지 반문은 별도 표로 보고한다.
+- v1.1의 형식 명료화: 이름/도메인+권유만은 링크 유무와 무관하게 `link_only`(최소 후보 제시)다. 기능이나 사용 조건 설명이 있지만 실제 URL이 없으면 `text_only`다. 실제 웹 링크만을 좁혀 센 결과를 별도로 보고해 명칭만 제시와 URL만 제시를 혼합하지 않는다. 원래 v1의 URL/이름 정의를 유지한 명료화이며 T044의 URL 없는 설명 2개를 교정한다.
