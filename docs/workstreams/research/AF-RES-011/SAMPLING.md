@@ -43,4 +43,16 @@
 
 ## 6. 변경·건너뛴 후보 기록
 
-v1: 표본 열람 전 고정. 건너뛴 후보는 실시간으로 `evidence/screening-*.json`에 누적하고, 최종 이 파일에 총수·이유·경로를 연결한다. 이 시점에는 아직 스레드 검색/열람하지 않았다.
+v1: 표본 열람 전 고정. 건너뛴 후보는 실시간으로 `evidence/screening-*.json`에 누적하고, 최종 이 파일에 총수·이유·경로를 연결한다. v1 고정 때에는 아직 스레드 검색/열람하지 않았다.
+
+### 보완 질의 사전 고정 — 2026-11-20 05:19 UTC
+
+초기 S1–S4/H1–H4 검색에서 태그·목록·설문·Show HN 비중이 높아 원래 질의만으로 층을 채우지 못했다. 아래 보완은 해당 결과를 보기 전에 추가한다. 포함 기준·최소 답 수·완전열람 기준·코딩은 바꾸지 않는다.
+
+- S9–S16: 각각 S1–S8 원문에 `-inurl:tagged -inurl:users -inurl:ask`를 추가, 동일 날짜필터/engine2→동일 engine1 순서. 그 뒤에도 부족하면 원래 검색에 처음 나타난 해당 범위의 태그/질문 목록을 열어 **보이는 정렬·순서 그대로** 질문 링크를 검사한다. 목록 주소/정렬/페이지/행순서를 기록하며 결과에 맞춰 정렬을 바꾸지 않는다. 페이지가 끝나면 다음 페이지를 순서대로 열 수 있다.
+- H9: `site:news.ycombinator.com/item "Ask HN" "alternative to" "open source"`
+- H10: `site:news.ycombinator.com/item "Ask HN" "recommend" "library"`
+- H11: `site:news.ycombinator.com/item "Ask HN" "looking for" "software"`
+- H9–H11에도 동일 날짜필터·관련도 순서·engine2→동일 engine1을 적용한다. 원래 H1–H8을 먼저 소진한다.
+
+셸 git push는 인증 부재로 실패했으므로 연결된 GitHub의 tree/commit/ref API로 같은 파일 묶음을 원격 커밋·게시한다. 첫 원격 고정 커밋은 `b1dc4258a6714cfedbc711eb271d022ee21ca71d`이며 실제 표본 조사는 그 뒤 시작했다.
