@@ -1,0 +1,63 @@
+{
+  "case_id": "C27",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C27",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Elixir named function capture with explicit arity",
+      "candidate_url": "https://elixir.hexdocs.pm/main/Enum.html",
+      "candidate_claim": "Elixir's compact module/name/arity capture is a precedent for referencing a callable with explicit identity information and no forwarding closure or parameter-type annotation.",
+      "gold_matches": [],
+      "match_rationale": "named capture는 underscore placeholder 일반 partial application, property lens, empty-label underscore 생략이라는 세 정답과 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 오버로드를 함수 값으로 참조",
+          "value": "pass",
+          "reason": "module/name/arity로 실제 callable reference를 만드는 문법이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "동일 타입·다른 레이블의 경우 처리",
+          "value": "fail",
+          "reason": "선택된 arity identity는 같은 인수 수·서로 다른 label을 구별하지 못한다. 원 응답도 label-aware resolution을 별도 설계로 남겼다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "반복 코드와 불필요한 타입 표기 감소",
+          "value": "pass",
+          "reason": "forwarding closure와 type annotation을 줄이는 축약 문법이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Elixir module/name/arity → 간결한 function-reference 문법의 참고. arity를 labels로 바꾸는 것은 원 응답이 표시한 추론이며, 현재 검증된 메커니즘은 중앙 label 제약을 충족하지 않는다. A-C27-r4의 Erlang 후보와 같은 기준을 적용한다.",
+      "H_assessment_scope": "reference_design: Syntax design for first-class function references; translating the additional identity field from arity to Swift argument labels is an inference.",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C27.json#/candidates/0",
+        "runs/B/C27.json#/opened_documents"
+      ],
+      "remaining_check": "label-aware identity 규칙·overload resolution이 있는 추가 원문을 확인하면 H2를 재판정한다. 날짜는 publisher가 숫자 날짜 표기 순서나 확정된 release date를 밝히는 자료로 확인한다."
+    }
+  ]
+}

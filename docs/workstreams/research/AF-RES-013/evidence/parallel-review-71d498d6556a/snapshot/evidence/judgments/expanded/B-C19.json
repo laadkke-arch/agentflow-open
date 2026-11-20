@@ -1,0 +1,261 @@
+{
+  "case_id": "C19",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C19",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Racket define-match-expander",
+      "candidate_url": "https://download.racket-lang.org/releases/6.0/doc/reference/match.html",
+      "candidate_claim": "A named compile-time transformer can expand a grammar-level abbreviation into a full match pattern, centralizing repeated structure while preserving readable match arms.",
+      "gold_matches": [],
+      "match_rationale": "pattern abstraction·grammar reuse라는 목적은 가깝지만 전체 arm-left-side(pattern+guard), 결과식까지 포함한 arm, 전체 match를 입력으로 받는 절차 매크로라는 세 구별 확장 단위를 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "반복되는 Rust match 패턴을 재사용하여 간결하게 표현할 것",
+          "value": "pass",
+          "reason": "명명된 transformer가 pattern 위치에서 반복 구조를 확장한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명세와 구현의 대응을 읽기 쉽게 할 것",
+          "value": "pass",
+          "reason": "문법 개념에 이름을 붙이고 읽기 쉬운 match arm을 유지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Racket match expander → Rust pattern-position abstraction. binding/type/exhaustiveness 규칙을 별도 설계해야 한다.",
+      "H_assessment_scope": "reference_design: Transferable language design for reusable pattern-position abstractions within an existing matcher.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C19.json#/candidates/0",
+        "runs/B/C19.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "case_id": "C19",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "GHC pattern synonyms",
+      "candidate_url": "https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/pattern_synonyms.html",
+      "candidate_claim": "Parameterized pattern synonyms give repeated nested destructuring a grammar-oriented name without forcing a change to the underlying data representation.",
+      "gold_matches": [],
+      "match_rationale": "pattern abstraction·grammar reuse라는 목적은 가깝지만 전체 arm-left-side(pattern+guard), 결과식까지 포함한 arm, 전체 match를 입력으로 받는 절차 매크로라는 세 구별 확장 단위를 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "반복되는 Rust match 패턴을 재사용하여 간결하게 표현할 것",
+          "value": "pass",
+          "reason": "parameterized pattern synonym이 반복된 nested destructuring을 이름으로 재사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명세와 구현의 대응을 읽기 쉽게 할 것",
+          "value": "pass",
+          "reason": "data representation과 독립된 grammar-oriented name을 제공한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "GHC pattern synonym → Rust pattern abstraction. 기본 메커니즘의 2014년 가용성만 검증됐고 최신 feature 전부를 소급하지 않는다.",
+      "H_assessment_scope": "reference_design: Transferable pattern-abstraction mechanism for matching AST or token structures.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C19.json#/candidates/1",
+        "runs/B/C19.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "case_id": "C19",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "LALRPOP grammar macros",
+      "candidate_url": "https://github.com/lalrpop/lalrpop",
+      "candidate_claim": "Parameterized grammar macros factor recurring productions into named reusable forms while generating a Rust parser from a grammar that can be compared with the specification.",
+      "gold_matches": [],
+      "match_rationale": "pattern abstraction·grammar reuse라는 목적은 가깝지만 전체 arm-left-side(pattern+guard), 결과식까지 포함한 arm, 전체 match를 입력으로 받는 절차 매크로라는 세 구별 확장 단위를 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "반복되는 Rust match 패턴을 재사용하여 간결하게 표현할 것",
+          "value": "not_in_scope",
+          "reason": "원 응답은 기존 native match-pattern fragment가 아닌 parser 전체 grammar 구조로의 변경에 범위를 제한한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명세와 구현의 대응을 읽기 쉽게 할 것",
+          "value": "pass",
+          "reason": "생성기 grammar와 이름 있는 recurring production이 명세 대응을 읽기 쉽게 한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "LALRPOP parameterized grammar macro → 반복되는 production을 named grammar로 재구성. build workflow와 parser architecture 변경이 필요하다.",
+      "H_assessment_scope": "reference_design: Alternative parser architecture when repetition reflects grammar productions or token sequences.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C19.json#/candidates/2",
+        "runs/B/C19.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "case_id": "C19",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "rust-peg parameterized grammar rules",
+      "candidate_url": "https://github.com/kevinmehall/rust-peg",
+      "candidate_claim": "Named grammar rules with arguments provide reusable parsing templates inside a compact Rust grammar macro, allowing recurring recognition structure to follow specification terminology.",
+      "gold_matches": [],
+      "match_rationale": "pattern abstraction·grammar reuse라는 목적은 가깝지만 전체 arm-left-side(pattern+guard), 결과식까지 포함한 arm, 전체 match를 입력으로 받는 절차 매크로라는 세 구별 확장 단위를 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "반복되는 Rust match 패턴을 재사용하여 간결하게 표현할 것",
+          "value": "not_in_scope",
+          "reason": "원 응답은 native Rust pattern alias가 아니라 PEG grammar로 표현 가능한 parser 부분만 제안한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명세와 구현의 대응을 읽기 쉽게 할 것",
+          "value": "pass",
+          "reason": "rule arguments와 template로 명세 terminology를 재사용한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "rust-peg named parameterized rules → grammar production reuse. PEG recognition/error semantics가 기존 parser와 맞는지 확인해야 한다.",
+      "H_assessment_scope": "reference_design: Alternative for parser portions expressible as reusable grammar productions.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C19.json#/candidates/3",
+        "runs/B/C19.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "case_id": "C19",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "combine parser combinators",
+      "candidate_url": "https://github.com/Marwes/combine",
+      "candidate_claim": "Reusable parser values and combinators can replace repeated recognition logic with named grammar components assembled through ordinary Rust expressions.",
+      "gold_matches": [],
+      "match_rationale": "pattern abstraction·grammar reuse라는 목적은 가깝지만 전체 arm-left-side(pattern+guard), 결과식까지 포함한 arm, 전체 match를 입력으로 받는 절차 매크로라는 세 구별 확장 단위를 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "반복되는 Rust match 패턴을 재사용하여 간결하게 표현할 것",
+          "value": "not_in_scope",
+          "reason": "원 응답은 input recognition을 하는 parser 부분으로 범위를 제한하며 pattern-position syntax를 제공하지 않는다고 밝힌다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명세와 구현의 대응을 읽기 쉽게 할 것",
+          "value": "pass",
+          "reason": "ordinary Rust expression으로 named grammar component를 조합한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "combine reusable parser values → 반복 recognition logic을 grammar component로 분해. LL(1) 및 explicit lookahead가 기존 parser와 맞아야 한다.",
+      "H_assessment_scope": "reference_design: Parser refactoring when the repeated match code recognizes input sequences rather than only destructuring a value.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C19.json#/candidates/4",
+        "runs/B/C19.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    }
+  ]
+}

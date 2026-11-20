@@ -1,0 +1,342 @@
+{
+  "case_id": "C20",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "ICU MessageFormat, verified in ICU 52.1",
+      "candidate_url": "https://raw.githubusercontent.com/unicode-org/icu/release-52-1/icu4j/main/classes/core/src/com/ibm/icu/text/MessageFormat.java",
+      "candidate_claim": "A library-owned message interpreter with named or numbered placeholders and locale-driven plural/select branches could supply translated-message behavior without adding that grammar to Rust's built-in formatting.",
+      "gold_matches": [],
+      "match_rationale": "ICU는 L20n 또는 gettext entity와 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "plural/select·순서 재배치 등 whole message 요구를 다룬다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "별도 library가 문법을 소유해 builtin formatter에 넣지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "ICU locale-aware message interpreter → optional Rust localization library. binding/구현·resource·locale data 유지가 필요하며 기존 format grammar를 확장할 필요는 없다.",
+      "H_assessment_scope": "reference_design: Whole-message localization, grammatical selection, argument reordering, and locale-aware argument formatting in an optional library.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/0",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "GNU gettext catalog selection followed by ordinary interpolation",
+      "candidate_url": "https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html",
+      "candidate_claim": "Selecting a translated template and plural form from an external catalog before interpolation cleanly separates localization decisions from basic value formatting.",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "명시한 gettext catalog 선택 후 보통 interpolation이라는 결합이 정답의 gettext+format string 대안이다."
+        }
+      ],
+      "match_rationale": "gettext와 format interpolation의 결합을 직접 제시했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "catalog plural rules 뒤 template interpolation을 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "translation과 basic value formatting을 분리한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "gettext catalog selection → translated template를 먼저 고른 뒤 Rust-compatible formatter에 전달. source fallback·문법 dependency 한계와 runtime template adapter를 확인해야 한다.",
+      "H_assessment_scope": "reference_design: Translation catalogs, translator-specified plural rules and a staged translate-then-format pipeline.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "R0093-G02"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/1",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Mozilla L20n localization language",
+      "candidate_url": "https://blog.mozilla.org/l10n/2012/03/29/l20n-examples-for-localizers/",
+      "candidate_claim": "A localization-specific language lets translators express gender and plural rules in resource files without forcing application code or core format strings to encode every language's grammar.",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G01",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Mozilla L20n 자체와 translator-controlled grammatical selection 역할이 일치한다."
+        }
+      ],
+      "match_rationale": "L20n 원문 선례를 명시적으로 회수했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "gender/plural logic을 번역 resource에 둔다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "core formatting 대신 localization 전용 언어·API 경계를 둔다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "L20n translator-owned resource logic → Rust application값과 독립된 message 평가 경계. parser·translator tooling이 필요하고 Rust 배포 효용을 확인한 것은 아니다.",
+      "H_assessment_scope": "reference_design: Translator-owned message logic and an API boundary between application-provided values and language-specific resource evaluation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0093-G01"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/2",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Boost.Locale 1.55.0",
+      "candidate_url": "https://www.boost.org/doc/libs/1_55_0/libs/locale/doc/html/messages_formatting.html",
+      "candidate_claim": "An optional library that composes gettext catalogs, delayed translation objects and explicit or stream-specific locale selection shows how localization can be layered onto ordinary output facilities.",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "후보가 gettext catalog backend와 일반 value formatting 합성을 직접 설명하므로 동일 gettext 통합 메커니즘의 회수로 판단했다."
+        }
+      ],
+      "match_rationale": "wrapper인 Boost.Locale을 통해서도 gettext와 formatting의 실제 결합을 명시했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "gettext catalogs·plural rule·locale별 rendering을 결합한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "optional library와 output abstraction의 연결이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Boost.Locale의 gettext-backed delayed rendering → Rust locale-aware output integration. stream/locale interface와 catalog fallback·format 호환을 번역해야 한다.",
+      "H_assessment_scope": "reference_design: Library-level integration of translation, deferred rendering and per-output locale choice while reusing a language's output abstractions.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0093-G02"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/3",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "ECMA-402 first-edition Intl service objects",
+      "candidate_url": "https://402.ecma-international.org/1.0/",
+      "candidate_claim": "A separately specified internationalization API with locale-configured formatter objects offers a boundary for number, date and collation services independent of a language's basic formatting syntax.",
+      "gold_matches": [],
+      "match_rationale": "전용 locale service는 L20n format-string 적응 G03과 다른 책임 분리다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "number/date/collation이라는 좁은 locale 요구를 다룬다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "기본 format syntax와 별도 service API의 책임 경계를 제시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "ECMA-402 locale-configured formatter objects → 기본 format 기능과 분리된 Rust locale service API. whole-message gender/plural은 범위 밖이며 외부 package 배치가 유일하다는 증거는 아니다.",
+      "H_assessment_scope": "reference_design: An alternative responsibility split: explicit locale-service objects under a dedicated API, with reusable configured formatter instances.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/4",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C20",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Babel 1.3 catalog tooling and CLDR services",
+      "candidate_url": "https://raw.githubusercontent.com/python-babel/babel/1.3/docs/intro.rst",
+      "candidate_claim": "An external package that owns catalog extraction tooling and CLDR-backed formatting shows how substantial locale data and localization workflows can evolve outside a language core.",
+      "gold_matches": [],
+      "match_rationale": "gettext catalog 사용만 언급하고 format interpolation 결합까지 제시하지 않은 tooling 후보이므로 G02 적중을 추가하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실제 localization 요구에 대응할 것",
+          "value": "pass",
+          "reason": "catalog extraction과 CLDR locale data 서비스를 다룬다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "core compiler/library에 불완전하고 미사용인 기능의 복잡도를 남기지 않을 것",
+          "value": "pass",
+          "reason": "core 밖 external package·extensible extractor가 유지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Babel catalog tooling/CLDR services → Rust 외부 localization workflow library. Rust 대응 구현·bridge가 필요하고 whole-message 문법은 별도다.",
+      "H_assessment_scope": "reference_design: Message extraction and catalog build tools alongside localized number/date/name services, with extensible extractors for application templates.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C20.json#/candidates/5",
+        "runs/A/C20.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

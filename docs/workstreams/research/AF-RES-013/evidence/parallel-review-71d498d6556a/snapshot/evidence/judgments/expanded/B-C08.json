@@ -1,0 +1,271 @@
+{
+  "case_id": "C08",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Common Lisp LOOP list accumulation",
+      "candidate_url": "https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node246.html",
+      "candidate_claim": "LOOP combines iteration variables, conditional tests, and collect/append clauses to construct and return a list with little explicit accumulator code.",
+      "gold_matches": [
+        {
+          "gold_id": "P0202-G06",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 복수 iteration 변수가 같은 단계에서 함께 진행한다는 의미를 명시하여 중첩과 구별했다. 이 병렬 결합 구조는 해당 비교 항목과 같다."
+        }
+      ],
+      "match_rationale": "같은 위치끼리 복수 iteration을 진행하는 의미를 구별하여 G06과 구조 일치. LOOP 전체를 Python map/filter와 동일 실체로 보거나 다른 구문 대안까지 확대하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "원 응답이 새 list를 생성하는 collect·comprehension·명시 materialization을 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "반복 값 생성과 predicate/guard에 따른 선택을 조합하는 구체 문서 근거가 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "LOOP의 driver·조건·collect 관계 → Python list 생성 구문. 문법을 축소하고 함께 진행하는 iteration과 중첩 iteration을 구별해야 한다.",
+      "H_assessment_scope": "reference_design: A design precedent for expressing generation, selection, and accumulation in one construct.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "P0202-G06"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/0",
+        "runs/B/C08.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 설계 참고다. 실제 Python 연결의 평가 순서·binding·성능은 실행하지 않았다. 사후 edition을 당시 존재로 바꾸려면 결정 이전 동일 절 판을 직접 확인해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Haskell 98 list-comprehension syntax and translation",
+      "candidate_url": "https://www.haskell.org/onlinereport/exps.html",
+      "candidate_claim": "Haskell's list-comprehension form combines a result expression, generators, and Boolean guards, with a translation explaining how nested list production and selection compose.",
+      "gold_matches": [],
+      "match_rationale": "Python builtin map/filter 실체와 다른 라이브러리의 대응 기능을 같은 항목으로 합치지 않는다. 명시적 Python 중첩 for 대안을 제안한 것도 아니다. 특정 tuple/세미콜론 구문도 제시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "원 응답이 새 list를 생성하는 collect·comprehension·명시 materialization을 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "반복 값 생성과 predicate/guard에 따른 선택을 조합하는 구체 문서 근거가 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Haskell의 result expression·generator·guard 및 concatMap translation → Python list 생성·선택 의미. Python의 평가·binding·오류 규칙을 별도 연결해야 한다.",
+      "H_assessment_scope": "reference_design: A compact surface grammar and operational translation for constructing lists from several generators with tests.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/1",
+        "runs/B/C08.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 설계 참고다. 실제 Python 연결의 평가 순서·binding·성능은 실행하지 않았다. 사후 edition을 당시 존재로 바꾸려면 결정 이전 동일 절 판을 직접 확인해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Iterate extensible iteration macro",
+      "candidate_url": "https://iterate.common-lisp.dev/doc/Introduction.html",
+      "candidate_claim": "Iterate lets ordinary conditional forms surround collect operations and supports multiple drivers and nested collection, providing an extensible way to shorten list-building loops.",
+      "gold_matches": [],
+      "match_rationale": "Python builtin map/filter 실체와 다른 라이브러리의 대응 기능을 같은 항목으로 합치지 않는다. 명시적 Python 중첩 for 대안을 제안한 것도 아니다. 특정 tuple/세미콜론 구문도 제시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "원 응답이 새 list를 생성하는 collect·comprehension·명시 materialization을 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "반복 값 생성과 predicate/guard에 따른 선택을 조합하는 구체 문서 근거가 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Iterate의 driver와 일반 조건식 안 collect → 반복 생성·선택 표현. Lisp macro/code walking에 의존하므로 Python용 구문/확장을 별도 구현해야 한다.",
+      "H_assessment_scope": "reference_design: A macro-based alternative in which the language exposes iteration and accumulation clauses within ordinary control flow.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/2",
+        "runs/B/C08.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 설계 참고다. 실제 Python 연결의 평가 순서·binding·성능은 실행하지 않았다. 사후 edition을 당시 존재로 바꾸려면 결정 이전 동일 절 판을 직접 확인해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Toolz iterator composition",
+      "candidate_url": "https://toolz.readthedocs.io/en/latest/api.html",
+      "candidate_claim": "Toolz's iterate, remove, mapcat, and composition functions can express generated values, predicate-based selection, and flattened multi-stage results before materializing a list.",
+      "gold_matches": [],
+      "match_rationale": "Python builtin map/filter 실체와 다른 라이브러리의 대응 기능을 같은 항목으로 합치지 않는다. 명시적 Python 중첩 for 대안을 제안한 것도 아니다. 특정 tuple/세미콜론 구문도 제시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "원 응답이 새 list를 생성하는 collect·comprehension·명시 materialization을 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "반복 값 생성과 predicate/guard에 따른 선택을 조합하는 구체 문서 근거가 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Toolz iterate/remove/mapcat의 함수 합성 → 생성·선택·평탄화 후 list materialization. callback과 iterator 평가 시점 차이를 유지해야 한다.",
+      "H_assessment_scope": "reference_design: A library-composition alternative to adding dedicated syntax; useful for decomposing the required operations.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/3",
+        "runs/B/C08.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 설계 참고다. 실제 Python 연결의 평가 순서·binding·성능은 실행하지 않았다. 사후 edition을 당시 존재로 바꾸려면 결정 이전 동일 절 판을 직접 확인해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "Funcy collection transformations and list helpers",
+      "candidate_url": "https://github.com/Suor/funcy",
+      "candidate_claim": "Funcy's walk/select operations and lmapcat/lremove helpers shorten transformations, conditional selection, and flattening while offering direct list-valued operations.",
+      "gold_matches": [],
+      "match_rationale": "Python builtin map/filter 실체와 다른 라이브러리의 대응 기능을 같은 항목으로 합치지 않는다. 명시적 Python 중첩 for 대안을 제안한 것도 아니다. 특정 tuple/세미콜론 구문도 제시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "원 응답이 새 list를 생성하는 collect·comprehension·명시 materialization을 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "반복 값 생성과 predicate/guard에 따른 선택을 조합하는 구체 문서 근거가 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Funcy walk/select/lmapcat/lremove → list 변환·선택·평탄화 API. 현대 Python 제약을 가진 참고 API이며 2000년 설치 가능한 의존성으로 주장하지 않는다.",
+      "H_assessment_scope": "reference_design: A concise functional helper API for constructing selected and transformed lists without introducing new grammar.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/4",
+        "runs/B/C08.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 설계 참고다. 실제 Python 연결의 평가 순서·binding·성능은 실행하지 않았다. 사후 edition을 당시 존재로 바꾸려면 결정 이전 동일 절 판을 직접 확인해야 한다."
+    }
+  ]
+}

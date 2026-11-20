@@ -1,0 +1,353 @@
+{
+  "case_id": "C26",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "C/C++ preprocessing with a language-standard version macro",
+      "candidate_url": "https://gcc.gnu.org/onlinedocs/gcc-5.3.0/cpp/Standard-Predefined-Macros.html",
+      "candidate_claim": "A numeric language-mode macro combined with preprocessing conditions lets one source file select the syntax appropriate to the compiler's selected dialect.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "parse 전 preprocessing으로 dialect 문법을 선택한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "하나의 source file에 호환 영역을 둔다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "선택 language mode와 compiler release를 구분해 source package build를 제시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "C/C++ version macro 조건 → Swift parser 이전 source guard. 제외 branch tokenization과 language-mode/버전 구별을 정의해야 한다.",
+      "H_assessment_scope": "reference_design: Version-dependent declarations and expressions in a source-distributed package.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/0",
+        "runs/A/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "GHC CPP compiler-version predicates",
+      "candidate_url": "https://downloads.haskell.org/ghc/7.10.2/docs/html/users_guide/options-phases.html",
+      "candidate_claim": "GHC's version macros and minimum-version predicate provide a concrete model for selecting compatibility sections within a single package source file.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "compiler-version predicate를 compile 이전 단계에 쓴다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "한 파일의 호환 영역 선택이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "오래된 compiler의 predicate 존재 guard를 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "GHC CPP version guard → Swift package의 source compatibility 선택. guard 자체의 이전 compiler 지원과 문자열 lexical interaction을 처리해야 한다.",
+      "H_assessment_scope": "reference_design: Compiler-version threshold checks and an optional preprocessing stage in package builds.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/1",
+        "runs/A/C26.json#/opened_documents",
+        "evidence/judgments/VERIFICATION.json#J-C26-GHC-DATE"
+      ],
+      "remaining_check": "GHC PDF 표지의 2015-07-22를 채점 추가 열람으로 확인했다. 원 실행의 날짜 근거는 snippet이었다는 차이를 보존한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Clang feature and extension queries",
+      "candidate_url": "https://releases.llvm.org/3.7.0/tools/clang/docs/LanguageExtensions.html",
+      "candidate_claim": "Feature-query conditions let package authors select syntax by actual language capability instead of maintaining a table of compiler version thresholds.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "실제 syntax feature 제공 여부를 검사한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "compiler별 version table 대신 공통 feature 조건을 쓴다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "오래된 compiler의 guard 이해와 fallback을 요구한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Clang feature/extension query → Swift syntax capability guard. 안정적인 feature ID·언어 mode 구별·older compiler fallback이 필요하다.",
+      "H_assessment_scope": "reference_design: Fine-grained syntax availability checks where compiler versions or language modes differ.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/2",
+        "runs/A/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Boost.Config compatibility macros",
+      "candidate_url": "https://www.boost.org/doc/libs/1_60_0/libs/config/doc/html/boost_config/boost_macro_reference.html",
+      "candidate_claim": "A shared compatibility vocabulary can centralize small syntax substitutions so library authors avoid repeating version checks throughout their source.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "older equivalent가 있는 keyword/declaration 차이를 처리하는 좁은 부분이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "반복 version check를 공통 compatibility vocabulary에 모은다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "배포 source가 조건부 syntax substitution을 사용한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Boost.Config macro vocabulary → Swift compatibility abstraction의 표현 가능한 부분. macro 대체 기능과 의미 보존 가능한 이전 문법이 있어야 하며 arbitrary grammar는 제외한다.",
+      "H_assessment_scope": "reference_design: Keyword and declaration differences with expressible older-language equivalents.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/3",
+        "runs/A/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Six compatibility-library pattern",
+      "candidate_url": "https://pypi.org/project/six/1.10.0/",
+      "candidate_claim": "A small compatibility library can concentrate version differences behind stable helpers while package authors keep most source within a shared syntax subset.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "not_in_scope",
+          "reason": "처음부터 공통 syntax subset의 API/operation helper만 제안했고 새 grammar parsing은 지원하지 않는다고 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "작은 compatibility library에 차이를 모아 source tree 분기를 줄인다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "모든 지원 버전이 파싱 가능한 공통 source에서 helper를 호출한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Six single-file compatibility layer → 공통 syntax를 지킨 Swift package helper. 실제 grammar 차이는 별도 guard/transform이 필요하며 후대 상세 helper를 과거에 소급하지 않는다.",
+      "H_assessment_scope": "reference_design: API and operation differences that can be expressed using syntax accepted by every supported language version.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/4",
+        "runs/A/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Babel 6 configurable source transformation",
+      "candidate_url": "https://babeljs.io/blog/2015/10/29/6.0.0",
+      "candidate_claim": "A build-time transformation pipeline can derive compiler-compatible source from one maintained authoring form without maintaining separate release source trees.",
+      "gold_matches": [],
+      "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "build-time source transform으로 target grammar를 생성하는 관계다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "하나의 authoring source를 유지한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "package build에 parser/transform 도구와 diagnostics를 배포해야 한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Babel opt-in transform pipeline → Swift target-version source 생성 단계. Swift 전용 parser/의미 보존 transform과 source location 보존이 필요하다.",
+      "H_assessment_scope": "reference_design: An alternative package-build stage when in-language guards cannot bridge grammar differences.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C26.json#/candidates/5",
+        "runs/A/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

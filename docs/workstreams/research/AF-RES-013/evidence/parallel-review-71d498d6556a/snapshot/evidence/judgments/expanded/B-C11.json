@@ -1,0 +1,348 @@
+{
+  "case_id": "C11",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Per-descriptor close-on-exec control with fcntl",
+      "candidate_url": "https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fcntl.2.html",
+      "candidate_claim": "Setting the close-on-exec flag on unwanted descriptors lets the operating system remove them at program execution regardless of which higher-level launcher reaches that execution boundary.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "exec에서 CLOEXEC descriptor를 닫는 OS 기능으로 의도하지 않은 전달을 다룬다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "pass",
+          "reason": "이미 flag를 설정한 fd는 launcher 종류와 무관하게 exec 경계에서 적용한다. 모든 creator·duplicate 경로 참여가 조건이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "원 응답이 0·1·2 및 explicitly passed extras를 구별하고 descriptor별 flag를 선택한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "fcntl descriptor flag → 여러 exec 경로에 공통인 상속 정책. 생성후 설정 경합과 fork-only 복사를 별도 문제로 남긴다.",
+      "H_assessment_scope": "reference_design: A descriptor-level inheritance policy across standard-library and extension-module execution paths, while treating standard input/output/error (0, 1, 2) and explicitly passed additional descriptors separately.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/0",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Atomic close-on-exec file creation with open/openat O_CLOEXEC",
+      "candidate_url": "https://man7.org/linux/man-pages/man2/open.2.html",
+      "candidate_claim": "Passing O_CLOEXEC when opening a file removes the race in which another thread executes a child between descriptor creation and a later fcntl call.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "생성과 동시에 O_CLOEXEC를 설정하여 creation/flag 간 exec 경합을 제거한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "pass",
+          "reason": "regular-file/directory acquisition과 참여하는 native module이라는 원래 범위에서 여러 후속 exec 경로에 적용한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "의도한 child I/O는 예외 처리한다는 전체 원 응답의 계약을 유지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "open/openat O_CLOEXEC → 공통 파일 생성 계층의 비상속 생성. platform support·모든 생성 경로 coverage와 intentional inheritance를 점검한다.",
+      "H_assessment_scope": "reference_design: Regular-file and directory descriptor acquisition in a common runtime layer and cooperating native modules.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/1",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Close-on-exec pipe creation with pipe2",
+      "candidate_url": "https://man7.org/linux/man-pages/man2/pipe.2.html",
+      "candidate_claim": "pipe2 with O_CLOEXEC marks both pipe endpoints during creation so auxiliary communication pipes do not remain open in an unrelated executed program.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "pipe2가 두 endpoint를 creation-time CLOEXEC로 생성한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "pass",
+          "reason": "process wrapper/runtime/native pipe creator에 적용하고 뒤의 exec caller와 분리한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "child standard stream으로 의도한 endpoint를 명시적으로 매핑한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "pipe2(O_CLOEXEC) → 보조 pipe 생성시 비상속. 두 endpoint 및 의도한 stdio 전달과 미지원 플랫폼을 별도로 처리한다.",
+      "H_assessment_scope": "reference_design: Pipes created by process wrappers, runtime internals and native modules.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/2",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Close-on-exec socket creation with SOCK_CLOEXEC",
+      "candidate_url": "https://man7.org/linux/man-pages/man2/socket.2.html",
+      "candidate_claim": "Adding SOCK_CLOEXEC to socket creation gives networking modules the same execution-boundary inheritance control as file-opening code.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "SOCK_CLOEXEC가 socket 생성시 상속 flag를 설정한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "pass",
+          "reason": "참여하는 network extension의 socket 생성 경로와 후속 launcher를 구별한다. 다른 socket-producing API coverage는 범위 밖으로 명시했다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "의도한 descriptor passing과 표준 입출력을 별도 계약으로 둔다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SOCK_CLOEXEC → socket constructor 정책. accept 등 다른 creator와 미지원 플랫폼으로 암묵 확장하지 않는다.",
+      "H_assessment_scope": "reference_design: New socket descriptors opened by the runtime or cooperating networking extensions.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/3",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "Close-on-exec descriptor duplication with dup3",
+      "candidate_url": "https://man7.org/linux/man-pages/man2/dup2.2.html",
+      "candidate_claim": "dup3 with O_CLOEXEC prevents duplication from silently reintroducing an inheritable descriptor after its original descriptor was protected.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "dup3가 새 descriptor에 CLOEXEC를 설정하여 duplicate에서 보호가 풀리는 것을 막는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "pass",
+          "reason": "runtime/extension duplicate 경로에서 생성된 flag는 이후 exec 경로에 공통 적용된다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "원 응답은 stdio remapping과 extra duplicate의 상속 요구가 다름을 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "dup3(O_CLOEXEC) → duplicate 정책 보존. equal fd 오류와 dup/dup2 표준 스트림의 의도된 의미를 유지한다.",
+      "H_assessment_scope": "reference_design: Descriptor copies and remapping performed by low-level runtime or extension code.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/4",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "case_id": "C11",
+      "baseline": "B",
+      "rank": 6,
+      "candidate_name": "Ordered descriptor actions with posix_spawn",
+      "candidate_url": "https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/posix_spawn_file_actions_init.3.html",
+      "candidate_claim": "An ordered spawn file-actions object provides a concrete way to declare child-specific descriptor changes while unmodified close-on-exec descriptors are closed.",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도치 않은 부모→자식 디스크립터 전달을 다룸",
+          "value": "pass",
+          "reason": "ordered file actions와 뒤의 CLOEXEC 처리가 의도한 child descriptor 조정을 제공한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "여러 실행 경로와 외부 모듈 고려",
+          "value": "not_in_scope",
+          "reason": "이 후보는 configured spawn call에 한정한 보완이며 다른 launcher coverage를 주장하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "표준 입출력과 추가 디스크립터 구분",
+          "value": "pass",
+          "reason": "standard stream과 extra descriptor를 별도로 선언하고 순서를 지정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "posix_spawn file actions → launch-specific descriptor mapping contract. 다른 launcher는 별도 creation policy를 필요로 한다.",
+      "H_assessment_scope": "reference_design: A complementary launch-time contract for opening, closing or remapping descriptors and preserving deliberately configured standard streams.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C11.json#/candidates/5",
+        "runs/B/C11.json#/opened_documents"
+      ],
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    }
+  ]
+}

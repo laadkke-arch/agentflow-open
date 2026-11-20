@@ -1,0 +1,409 @@
+{
+  "case_id": "C02",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Linux user namespaces: identity maps and namespace-owned capabilities",
+      "candidate_url": "https://man7.org/linux/man-pages/man7/user_namespaces.7.html",
+      "candidate_claim": "User namespaces provide the kernel mechanism for mapping workload UID/GID 0 to unprivileged host IDs while confining capabilities to resources owned by the workload's user namespace.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Linux user namespace의 ID 변환과 소유권별 capability 검사 → pod identity 경계. pod의 namespace 소유 관계와 파일 접근 권한을 맞춰야 하며 공유 커널 취약점 제거를 주장하지 않는다.",
+      "H_assessment_scope": "reference_design: Pod identity boundary and capability checks; use a pod-owned user namespace with appropriate ownership of its other namespaces.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/0",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "OCI runtime-spec Linux namespace and ID-mapping configuration",
+      "candidate_url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "candidate_claim": "OCI's user namespace plus uidMappings and gidMappings fields provide an existing runtime-facing representation of container IDs, host IDs, and mapping sizes.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCI uidMappings/gidMappings의 containerID·hostID·size와 기존 namespace path → pod 범위를 runtime 구성에 전달. 할당·수명주기 정책은 orchestrator가 별도 결정해야 한다.",
+      "H_assessment_scope": "reference_design: Translate a pod's allocated ranges into container-runtime configuration; namespace paths can connect containers to an existing namespace.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/1",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Podman automatic UID/GID ranges and explicit rootful mappings",
+      "candidate_url": "https://docs.podman.io/en/v4.3/markdown/podman-run.1.html",
+      "candidate_claim": "Podman's --userns=auto allocation of unique UID/GID ranges offers a concrete model for assigning disjoint host identities to workloads.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Podman의 자동 disjoint UID/GID 범위와 pod namespace 상속 → pod 범위 할당·mapping 크기 설계. subordinate-ID pool과 volume 소유권을 맞추고 pod 참여 container에 별도 매핑을 주지 않는다.",
+      "H_assessment_scope": "reference_design: Range allocation and mapping-size policy; the rootful mapping path is relevant without requiring an unprivileged kubelet or runtime.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/2",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Sysbox user-namespace isolation and exclusive-mapping design",
+      "candidate_url": "https://github.com/nestybox/sysbox/blob/master/docs/user-guide/security.md",
+      "candidate_claim": "Sysbox documents retaining root capabilities inside a container while translating both UID and GID ranges and offering exclusive ranges for cross-container isolation.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Sysbox의 양쪽 ID 매핑·userns 내부 capability와 exclusive range 조건 → runtime enforcement 참고. CE/EE 범위 차이와 exhaustion 시 재사용 정책을 확인하고 공유 namespace에 맞춰야 한다.",
+      "H_assessment_scope": "reference_design: Runtime enforcement, range exhaustion policy, and compatibility handling for mounted files.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/3",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "LXC unprivileged-container UID/GID mapping implementation",
+      "candidate_url": "https://github.com/lxc/lxc",
+      "candidate_claim": "LXC provides a concrete implementation reference for paired UID/GID maps that make container root appear as an unprivileged identity on the host.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "LXC의 inside/outside UID/GID map와 privileged helper 경계 → container runtime의 매핑 설치. pod 공유·disjoint allocation은 추가 연결이고 kubelet rootlessness 요구로 바꾸지 않는다.",
+      "H_assessment_scope": "reference_design: Mapping setup, privileged helper boundaries, and compatibility restrictions for a container runtime.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/4",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 6,
+      "candidate_name": "NsJail configurable UID/GID maps and capability retention",
+      "candidate_url": "https://github.com/google/nsjail",
+      "candidate_claim": "NsJail combines explicit inside/outside UID and GID ranges with user namespaces, selected capability retention, and syscall filters as an inspectable confinement component.",
+      "gold_matches": [],
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "pass",
+          "reason": "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "pass",
+          "reason": "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "NsJail의 별도 UID/GID 범위·capability retention·seccomp → workload process의 매핑 설정 참고. pod namespace 공유와 lifecycle 통합을 추가해야 하며 단독 pod runtime으로 주장하지 않는다.",
+      "H_assessment_scope": "reference_design: Prototype and reference implementation for mapping and capability setup around workload processes.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/5",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 7,
+      "candidate_name": "gVisor application-kernel isolation",
+      "candidate_url": "https://github.com/google/gvisor",
+      "candidate_claim": "gVisor's userspace application kernel can reduce the host-kernel interface reachable by a workload as an additional approach to limiting escape impact.",
+      "gold_matches": [],
+      "match_rationale": "No primary match. Neither alternative selects filesystem chown, a 64K range/pod-count policy, or delegation of ID mapping choice to runtimes.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A privileged identity inside the workload must correspond to an unprivileged identity on the host.",
+          "value": "fail",
+          "reason": "The selected alternative substitutes a application-kernel isolation boundary for the required workload-to-host UID/GID correspondence. No such identity-mapping use is proposed; broader escape hardening does not fulfill that required mechanism."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider both user and group identities and pod-scoped capabilities.",
+          "value": "fail",
+          "reason": "The proposed alternative does not specify both user/group identity mappings and pod-scoped capability semantics. Its acknowledged absence of the requested mapping role cannot be removed by recasting it as the whole identity solution."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Running the kubelet or container runtime itself without privilege is outside this decision.",
+          "value": "pass",
+          "reason": "The original use does not require changing the privilege of the kubelet or container runtime itself."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map the isolated guest/application-kernel boundary to reduced exposure of the host kernel as the original broader-hardening rationale. That relation is real secondary utility, but it does not supply the mandatory identity and capability mapping design.",
+      "H_assessment_scope": "reference_design: Alternative isolation boundary for broader hardening; evaluated as the alternative originally proposed, without inventing a UID/GID mapping component.",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/B/C02.json#/candidates/6",
+        "runs/B/C02.json#/opened_documents"
+      ],
+      "remaining_check": "A distinct original proposal combining this runtime with explicit workload-to-host UID/GID and pod capability semantics would need separate assessment. Do not infer those settings from the project name or claim that the product can never implement them."
+    }
+  ]
+}

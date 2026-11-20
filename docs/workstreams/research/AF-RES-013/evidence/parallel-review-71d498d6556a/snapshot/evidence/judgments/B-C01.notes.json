@@ -1,0 +1,111 @@
+{
+  "case_id": "C01",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "반복 일정의 time-based wake-up을 별도로 유지하고 schedule/Job을 reconcile한다."
+        ],
+        [
+          "pass",
+          "고정판 shared informer/cache와 event handler를 사용한다."
+        ],
+        [
+          "not_in_scope",
+          "원래 선택 범위는 관찰·queue이고 계측은 별도 후보로 명시했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Controller observation and reconciliation infrastructure; adapt event handling to enqueue the owning scheduled resource and reconcile current cached state.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 informer/cron semantics/metrics/idempotency를 선택했으며 unordered/ordered timer list, tree, heap, simple/hashed/hierarchical wheel 중 구체 scheduler 자료구조를 선택하지 않았다. underlying 구현에 존재하기만 하는 heap은 적중시키지 않는다.",
+      "transfer_mapping": "shared-informer cache + keyed reconciliation → 주기 객체와 소유 Job 상태 관찰. 캐시 동기화·시간 wake-up·충돌 처리가 필요하다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "cron parsing·timezone·callback 겹침 정책을 기존 controller API에 맞춰 보존한다."
+        ],
+        [
+          "not_in_scope",
+          "원 응답은 schedule semantics 구성요소로 제한하며 관찰 경로를 맡기지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "계측은 이 후보의 선택 범위가 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Cron expression interpretation and scheduling/concurrency behavior to preserve during the controller implementation change.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 informer/cron semantics/metrics/idempotency를 선택했으며 unordered/ordered timer list, tree, heap, simple/hashed/hierarchical wheel 중 구체 scheduler 자료구조를 선택하지 않았다. underlying 구현에 존재하기만 하는 heap은 적중시키지 않는다.",
+      "transfer_mapping": "robfig cron parsing/wrappers → controller의 schedule 해석 비교. process-local callback을 distributed Job concurrency와 같게 취급하지 않는다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원래 범위는 계측이며 Job scheduling 구현이 아니다."
+        ],
+        [
+          "not_in_scope",
+          "원래 범위는 계측이며 informer의 대체를 주장하지 않는다."
+        ],
+        [
+          "pass",
+          "counter/histogram/timer로 throughput·processing time·schedule delay를 분리한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Metrics embedded in the controller, with separate measures for processing throughput, processing time and scheduling delay.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 informer/cron semantics/metrics/idempotency를 선택했으며 unordered/ordered timer list, tree, heap, simple/hashed/hierarchical wheel 중 구체 scheduler 자료구조를 선택하지 않았다. underlying 구현에 존재하기만 하는 heap은 적중시키지 않는다.",
+      "transfer_mapping": "Prometheus counter/timer → controller 처리량과 두 지연의 계측. bucket·단위·label cardinality를 설계한다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "동일 예정 occurrence의 stable identity로 반복 알림이 중복 Job을 만들지 않도록 매핑한다."
+        ],
+        [
+          "not_in_scope",
+          "원래 범위는 duplicate-safe processing으로 informer 자체가 아니다."
+        ],
+        [
+          "not_in_scope",
+          "원래 범위는 idempotent creation으로 계측 자체가 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Idempotent reconciliation and the boundary between deciding an occurrence is due and creating its Job.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 informer/cron semantics/metrics/idempotency를 선택했으며 unordered/ordered timer list, tree, heap, simple/hashed/hierarchical wheel 중 구체 scheduler 자료구조를 선택하지 않았다. underlying 구현에 존재하기만 하는 heap은 적중시키지 않는다.",
+      "transfer_mapping": "Idempotent Receiver → occurrence identity와 reconcile/create 중복 안전성. create/status 간 부분 성공·API conflict를 별도 처리한다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    }
+  ]
+}

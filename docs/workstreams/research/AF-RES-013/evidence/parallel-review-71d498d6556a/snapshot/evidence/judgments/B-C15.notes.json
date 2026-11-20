@@ -1,0 +1,73 @@
+{
+  "case_id": "C15",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "실제 ordinary library function을 유지하는 library-backed subset에서 함수 값을 제공한다는 명시적 전이 추론이다."
+        ],
+        [
+          "pass",
+          "direct-call recognition과 일반 호출 fallback이 nominal ABI adapter body를 요구하지 않는 구조다. -O0 zero overhead를 주장하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Public function identity, compiler recognition of direct calls, and ordinary callable fallback for library-backed operations.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "transfer_mapping": "GCC recognized ordinary library call → Rust ordinary callable identity와 특별 direct lowering 분리. intrinsic-only/즉시값 연산에는 일반화하지 않는다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "실제 function 구현과 intrinsic 구현을 함께 가진 routine에만 적용 범위를 제한했다."
+        ],
+        [
+          "pass",
+          "함수 이름의 pragma 인식과 일반 호출 복구를 분리하여 naming/ABI wrapper를 없애는 구조다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Per-function intrinsic recognition without an API adapter, explicit ordinary-call fallback, and separation of callable identity from lowering policy.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "transfer_mapping": "MSVC per-function recognition → public callable definition과 직접 호출 lowering을 분리. intrinsic-only 함수 및 부동소수점 의미 차이를 별도 확인한다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "원문이 일반 address-taking/function-value 지원을 확인하지 못했다. selected alias declarations만으로 함수 값을 제공하지 못한다."
+        ],
+        [
+          "pass",
+          "typed declaration에 builtin identity를 붙여 naming-only wrapper를 줄이는 frontend 기법은 확인된다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Frontend declaration representation and direct-call lowering for intrinsic APIs.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "transfer_mapping": "Clang builtin-alias declaration → wrapper 없는 이름/내장 연산 연결. Rust ordinary ABI와 callable implementation은 아직 별도 설계가 필요하다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    }
+  ]
+}

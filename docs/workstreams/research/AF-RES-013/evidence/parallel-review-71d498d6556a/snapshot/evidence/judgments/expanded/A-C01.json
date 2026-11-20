@@ -1,0 +1,473 @@
+{
+  "case_id": "C01",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Kubernetes sample-controller informer/indexer/workqueue pattern",
+      "candidate_url": "https://github.com/kubernetes/sample-controller/blob/master/docs/controller-client-go.md",
+      "candidate_claim": "The informer/indexer/workqueue pattern can replace repeated API polling with change callbacks that enqueue resource keys for reconciliation against cached state.",
+      "gold_matches": [],
+      "match_rationale": "No timer data-structure choice is in the original candidate. An event-driven queue does not identify any particular gold timer design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "not_in_scope",
+          "reason": "The original candidate is the observation/work-dispatch reference, not a cron-expression or recurrence implementation."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "pass",
+          "reason": "The opened sample-controller sections describe watch notifications, informer cache/indexer reads and key enqueuing; these directly replace repeated API polling."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "not_in_scope",
+          "reason": "Instrumentation was not part of this candidate’s original scope."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Informer callbacks become schedule/owned-Job key enqueues; workers reconcile cached state after initial synchronization. The original response requires idempotent handling of repeated/stale events and restart reconstruction; using callbacks as complete state or skipping synchronization breaks this relation.",
+      "H_assessment_scope": "reference_design: informer observation and work dispatch for schedule objects and owned Jobs",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/0",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "client-go delaying work queue",
+      "candidate_url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/delaying_queue.go",
+      "candidate_claim": "The delayed work queue can hold a schedule key until its calculated next activation and then deliver that key to ordinary controller workers without repeatedly polling the API.",
+      "gold_matches": [
+        {
+          "gold_id": "K0019-G04",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "runs/A/C01.json raw_response item 2 and opened delaying_queue.go AddAfter/waitingLoop explicitly use a minimum-readyAt heap feeding controller work; this matches the gold heap-based timer/AddAfter design, unlike ordered linear lists or timer trees."
+        }
+      ],
+      "match_rationale": "The original raw response explicitly specifies a heap and timer, not merely a generic queue. This is the concrete heap-timer alternative in the gold.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "pass",
+          "reason": "Original use maps each calculated next cron occurrence to AddAfter and rechecks the schedule when the worker wakes, retaining recurring controller execution."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "pass",
+          "reason": "Original use combines delayed keys with immediate informer enqueues rather than periodic API list calls."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "not_in_scope",
+          "reason": "The original candidate supplies the scheduling queue, not measurement hooks."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Next cron time maps to readyAt in the delayed heap; due entries enter ordinary workers while informer events trigger immediate reconciliation. Restart rebuilding and current-spec/owner checks are required because timers are process-local and a later duplicate does not cancel an earlier due time.",
+      "H_assessment_scope": "reference_design: heap-backed delayed keys feeding existing controller reconciliation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "K0019-G04"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/1",
+        "runs/A/C01.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA003"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "robfig/cron v3.0.1 parser and Schedule.Next",
+      "candidate_url": "https://pkg.go.dev/github.com/robfig/cron/v3",
+      "candidate_claim": "ParseStandard and Schedule.Next provide existing cron-expression parsing and next-activation calculation for scheduling future Kubernetes reconciliation.",
+      "gold_matches": [],
+      "match_rationale": "No gold timer representation or other cited entity is identified by a cron parser alone.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "pass",
+          "reason": "ParseStandard and Schedule.Next supply recurring next-activation calculation; the original application keeps Job creation in reconciliation and permits callbacks only to enqueue keys."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "not_in_scope",
+          "reason": "The original scope is cron parsing/next-time calculation, not object observation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "not_in_scope",
+          "reason": "Metrics are outside the originally proposed parser scope."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Parse the existing schedule, compute its Next activation, and pass that time to controller enqueueing. The original response preserves cron dialect/timezone/missed-run choices and warns that callback overlap control cannot govern long-lived Kubernetes Jobs; this is a calculation reference, not an overlap-policy replacement.",
+      "H_assessment_scope": "reference_design: cron next-occurrence calculation feeding controller keys",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/2",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "client-go workqueue MetricsProvider",
+      "candidate_url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/metrics.go",
+      "candidate_claim": "The workqueue metrics interface supplies existing hooks for queue depth, additions, waiting latency, processing duration, retries and unfinished work to measure controller load and processing behavior.",
+      "gold_matches": [],
+      "match_rationale": "No gold timer data structure is proposed by the metrics interface.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "not_in_scope",
+          "reason": "The original scope is queue instrumentation, not recurrence."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "not_in_scope",
+          "reason": "The original scope does not replace the observation subsystem."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "pass",
+          "reason": "Opened MetricsProvider implementation provides additions, queue latency and work duration; original use explicitly registers a provider and names the queue, avoiding the no-op default."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map named workqueue adds/wait/work observations to controller load and processing measurements through a registered provider. Preserve the original distinction between queue additions and successful Jobs and between queue latency and scheduling lateness; those other metrics require separately defined events.",
+      "H_assessment_scope": "reference_design: named controller workqueue instrumentation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/3",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "controller-runtime shared cache and RequeueAfter reconciliation",
+      "candidate_url": "https://github.com/kubernetes-sigs/controller-runtime/blob/main/doc.go",
+      "candidate_claim": "controller-runtime offers an alternative implementation framework combining watched-object event handling, cached reads, direct API writes and timed reconciliation through RequeueAfter.",
+      "gold_matches": [],
+      "match_rationale": "Timed reconciliation alone does not specify a heap, tree, list or wheel, so no structural timer match is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "unknown",
+          "reason": "The alternative framework’s RequeueAfter supports timing, but compatibility with the existing controller-manager and selected libraries is explicitly unresolved and could prevent the proposed adoption."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "pass",
+          "reason": "The opened framework documentation supplies watched events, shared cached reads and direct API writes."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "not_in_scope",
+          "reason": "This candidate was scoped to the event/cache/timed-reconciliation framework; metric definitions were a separate candidate."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Owned-Job events map to parent reconcile requests; next scheduled occurrence maps to RequeueAfter. Reads can lag writes and reconcile must tolerate that lag. The original compatibility check is retained as decisive rather than assumed.",
+      "H_assessment_scope": "reference_design: alternative framework for watched and timed reconciliation",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/4",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "Check the selected controller-runtime/client-go versions and integration into the existing controller-manager. Compatible interfaces would permit conditional design utility; incompatibility would make the proposed framework adoption a constraint mismatch."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Kubernetes JobStatus completionTime and Complete condition",
+      "candidate_url": "https://kubernetes.io/docs/reference/kubernetes-api/batch/job-v1/",
+      "candidate_claim": "JobStatus supplies the successful terminal condition and completion timestamp from which the parent controller can maintain the most recent successful Job completion in status.",
+      "gold_matches": [],
+      "match_rationale": "No timer structure is identified. Documented secondary-prefix usefulness is retained, but cannot satisfy the frozen mandatory-constraint gate by making all constraints out of scope.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "unknown",
+          "reason": "The source documents a secondary completion-status goal, but the original candidate supplies no recurring schedule mechanism. None of the frozen mandatory constraints directly tests successful-completion aggregation; that secondary value is not silently converted into a recurrence pass."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "not_in_scope",
+          "reason": "The original reference is successful-Job status interpretation, not an informer implementation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "not_in_scope",
+          "reason": "Completion timestamps were proposed for status aggregation, not controller throughput/latency measurement."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Owned Job Complete conditions and completionTime map to the parent’s greatest observed successful completion timestamp. Ownership, absent timestamps, update conflicts and pruning order remain explicit original boundaries; these timestamps do not prove execution ordering.",
+      "H_assessment_scope": "reference_design: secondary successful-completion status aggregation",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/5",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "A recurrence-supporting use would need to be present in the original candidate to satisfy the existing H1 gate; it is not. Evaluate this status-only contribution separately if a future prospectively defined constraint covers it, without changing this frozen candidate or denominator."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Prometheus histogram and summary guidance",
+      "candidate_url": "https://prometheus.io/docs/practices/histograms/",
+      "candidate_claim": "Prometheus histogram guidance provides a concrete way to expose observation rates, average latency and aggregatable latency distributions for the controller.",
+      "gold_matches": [],
+      "match_rationale": "Metrics guidance does not select any of the gold timer designs.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "not_in_scope",
+          "reason": "Original scope is measurement design."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "not_in_scope",
+          "reason": "Original scope is measurement design, not API observation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "pass",
+          "reason": "Opened histogram guidance supports rates from observation counts, average latency from sums/counts and aggregatable distributions; original response maps separate queue/reconcile/schedule-delay events and a success counter."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map each defined controller event to a counter or duration observation; keep queue delay, reconcile duration and schedule-to-creation lateness distinct. Choose buckets for the intended latency range and aggregate histogram buckets, not precomputed summary quantiles. This supports measurement, not a performance target.",
+      "H_assessment_scope": "reference_design: controller measurement definitions using histograms and counters",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/6",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 8,
+      "candidate_name": "controller-runtime v0.25.2 reconciliation metrics implementation",
+      "candidate_url": "https://pkg.go.dev/sigs.k8s.io/controller-runtime%40v0.25.2/pkg/internal/controller/metrics",
+      "candidate_claim": "The reconciliation metrics implementation demonstrates result-labeled reconciliation counters and a duration histogram that can guide the controller's throughput and latency instrumentation.",
+      "gold_matches": [],
+      "match_rationale": "No timer design match. The later internal package is useful only as a metric reference, as the original response states.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Preserve recurring cron schedule execution within the Kubernetes controller model.",
+          "value": "not_in_scope",
+          "reason": "The original use is an instrumentation reference."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Replace repeated API polling with informer-based observation.",
+          "value": "not_in_scope",
+          "reason": "Observation architecture is outside the originally narrow metric-definition reference."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Support measurement of controller throughput and latency.",
+          "value": "pass",
+          "reason": "The opened versioned package defines result-labeled reconciliation counters and a duration histogram, exactly the narrow throughput/latency instrumentation cited."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map controller/result counter increments and reconcile elapsed time to the target controller’s corresponding events. Reuse the definitions rather than import an internal package; successful Job throughput and schedule accuracy remain distinct, as originally noted.",
+      "H_assessment_scope": "reference_design: reconciliation count and duration metric definitions",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/7",
+        "runs/A/C01.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "case_id": "C15",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C15",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "GCC library-recognized built-ins",
+      "candidate_url": "https://gcc.gnu.org/onlinedocs/gcc-4.8.2/gcc/Other-Builtins.html",
+      "candidate_claim": "GCC's recognized-library-function scheme could expose an operation as an ordinary callable symbol while lowering recognized direct calls without requiring a source wrapper.",
+      "gold_matches": [],
+      "match_rationale": "No dedicated intrinsic attribute/redeclaration, language-item redeclaration or retained intrinsic-ABI coercion is proposed. Same callable symbol is not automatically the gold nominal-ABI-equivalence design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "The selected library-equivalent operations retain ordinary callable symbols; current supporting GCC documentation explicitly confirms type/address identity for the corresponding library function."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "pass",
+          "reason": "Direct-call recognition and ordinary library-call fallback avoid an extra source wrapper and its mandatory inlining at the reference-design level, even when no instruction substitution is made."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a library-equivalent intrinsic to an ordinary callable symbol and compiler-recognized direct calls. Fall back to that symbol when recognition is not used, eliminating the extra wrapper layer; the original excludes instruction-only primitives without callable implementations and makes no debug-build instruction-count claim.",
+      "H_assessment_scope": "reference_design: recognized direct calls plus ordinary library-function fallback",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C15.json#/candidates/0",
+        "runs/A/C15.json#/opened_documents"
+      ],
+      "remaining_check": "Verify callable implementations and lowering for the specific target intrinsic set before implementation claims. Same-address wording was read only in current supporting documentation, so historical eligibility of that exact stronger claim remains unverified."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "OCaml manifest external declarations",
+      "candidate_url": "https://ocaml.org/manual/4.01/ocaml-4.01-refman.pdf",
+      "candidate_claim": "Manifest external declarations expose primitives with ordinary function types and curried function behavior while allowing clients to call the primitive directly instead of an OCaml wrapper.",
+      "gold_matches": [],
+      "match_rationale": "Manifest external metadata does not itself state a redeclarable intrinsic attribute or language item, and the original does not retain/coerce Rust’s nominal intrinsic ABI.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "OCaml 4.01 section 19.1.1 documents external bindings as typed function values with curried behavior."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "pass",
+          "reason": "Manifest externals in client-visible signatures allow direct primitive calls rather than calls through an OCaml wrapper; this is explicit documentary evidence of reducing the wrapper layer."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map an ordinary function signature to primitive implementation metadata visible to clients; direct known calls select the primitive while function values retain callable behavior. Original FFI/object/closure differences and possible adapters for indirect uses remain boundaries; no Rust runtime performance was observed.",
+      "H_assessment_scope": "reference_design: public primitive metadata with ordinary function typing",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C15.json#/candidates/1",
+        "runs/A/C15.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "GHC generated PrimopWrappers",
+      "candidate_url": "https://downloads.haskell.org/ghc/7.6-latest/docs/html/libraries/ghc-7.6.3/src/Id.html",
+      "candidate_claim": "The generated PrimopWrappers module offers a reusable way to materialize curried callable entry points for primitives centrally instead of making each public API author write wrappers.",
+      "gold_matches": [],
+      "match_rationale": "A generated wrapper module is not a gold intrinsic attribute, redeclarable language item or intrinsic-ABI equivalence mechanism.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "unknown",
+          "reason": "The opened GHC note verifies GHCi wrapper use but explicitly says routing native unsaturated primitive uses to wrappers still needs work; ordinary function-value behavior for the proposed native path is not established."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "unknown",
+          "reason": "Generating wrappers centrally reduces manual duplication, but the retrieved mechanism does not establish reduced forced-inlining/runtime wrapper burden in unoptimized native builds."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map primitive descriptions to centrally generated curried entry points and keep direct primitive lowering distinct. The original explicitly limits verified behavior to GHCi and leaves native unsaturated routing and wrapper cost unproved.",
+      "H_assessment_scope": "reference_design: centrally generated callable primitive wrappers",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C15.json#/candidates/2",
+        "runs/A/C15.json#/opened_documents"
+      ],
+      "remaining_check": "Inspect the native pipeline handling an unsaturated primitive and its unoptimized call path. Demonstrated direct/function-value routing without the original extra inlining burden would support conditional utility; persistent mandatory wrappers would fail H2."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Common Lisp compiler macros",
+      "candidate_url": "https://www.lispworks.com/documentation/HyperSpec/Body/03_bba.htm",
+      "candidate_claim": "Compiler macros attach call-rewrite rules to names that retain ordinary function definitions, allowing intrinsic lowering to be represented separately from function-value semantics.",
+      "gold_matches": [],
+      "match_rationale": "Compiler macros attach rewriting behavior but the original does not propose redeclarable intrinsic attributes/items or nominal ABI coercion.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "The source permits an ordinary function definition and a compiler macro under the same name, retaining function-value behavior."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "unknown",
+          "reason": "Compiler-macro expansion can be declined or omitted; the original expressly says unoptimized wrapper-free behavior needs an additional compiler policy not established by this mechanism."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map direct-call syntax to optional compiler expansion while indirect calls retain the normal function binding. An explicit policy ensuring appropriate lowering at no optimization is still required; discretionary expansion cannot be assumed to remove the stated burden.",
+      "H_assessment_scope": "reference_design: separate ordinary function binding and call-expansion metadata",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C15.json#/candidates/3",
+        "runs/A/C15.json#/opened_documents"
+      ],
+      "remaining_check": "Specify and inspect the target compiler’s no-optimization expansion policy. Guaranteed lowering for the relevant direct calls could support conditional use; omitted expansion with remaining wrapper cost would fail H2."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Go math/bits compiler-recognized ordinary functions",
+      "candidate_url": "https://go.dev/doc/go1.9",
+      "candidate_claim": "Go's math/bits design keeps normal library functions with executable bodies while allowing the compiler to replace calls directly, providing a function-value fallback without requiring direct calls to inline those bodies.",
+      "gold_matches": [],
+      "match_rationale": "Ordinary Go functions with recognized calls do not state any of the three gold Rust-specific declaration/ABI choices.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "Go math/bits provides normal public functions with executable fallback bodies, preserving callable function values."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "unknown",
+          "reason": "The original explicitly leaves architecture/release coverage and optimization-disabled substitution unverified; the required absence of mandatory wrapper inlining in that configuration is not established."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map ordinary public fallback functions to indirect calls and compiler recognition to direct instruction selection. Keep the original architecture/release limits and post-decision provenance; no-optimization behavior remains a decisive check.",
+      "H_assessment_scope": "reference_design: ordinary function bodies with compiler intrinsic recognition",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C15.json#/candidates/4",
+        "runs/A/C15.json#/opened_documents"
+      ],
+      "remaining_check": "Inspect code generation for the required target architecture with optimization disabled and compare recognized direct versus function-value calls. Wrapper-free direct lowering would support conditional utility; an inline-only optimization path would fail H2."
+    }
+  ]
+}

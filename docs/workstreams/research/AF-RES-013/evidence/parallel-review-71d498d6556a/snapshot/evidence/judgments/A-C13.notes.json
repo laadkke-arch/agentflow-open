@@ -1,0 +1,200 @@
+{
+  "case_id": "C13",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Opened C API documents lifecycle and thread-state selection for multiple interpreters in one process."
+        ],
+        [
+          "pass",
+          "The original narrow lifecycle wrapper must select the owning thread state and avoid crossing interpreter-owned objects; separate imports and shared OS/extension limits are explicitly documented."
+        ],
+        [
+          "pass",
+          "The original proposal explicitly wraps create/end/swap operations in a Python-facing interpreter handle; this is a concrete API-level mapping, not a claim that the wrapper is implemented."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Python handle over existing CPython interpreter lifecycle",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The underlying C API is not either gold execution-framework extension. No particular channel, exception or automatic-thread alternative was selected.",
+      "transfer_mapping": "Map a Python interpreter handle to its CPython interpreter/thread state; create/end and context selection delegate to the corresponding C operations. Original thread-state/GIL and shared-resource caveats bound the handle; do not treat it as process-level security isolation or pass owner-bound objects across it.",
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Module-local state belongs to individual module instances inside the same-process interpreter arrangement."
+        ],
+        [
+          "pass",
+          "Opened module documentation supports per-instance storage and cleanup, and original use explicitly requires removing inappropriate static state and implementing cleanup."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is state isolation within the wrapper/compatible extensions, not a complete public interpreter-management API."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: per-module extension state owned by each interpreter instance",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "This mechanism does not identify any of the primary API-placement, channel, exception or automatic-thread alternatives.",
+      "transfer_mapping": "Move extension-owned state into PyModuleDef-sized instance storage accessed through PyModule_GetState and lifetime cleanup. The original caveat excludes merely setting a flag while retaining process-wide mutable statics; this is a state-ownership design, not an audit of every installed extension.",
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Jep wraps CPython interpreter instances inside a host process and exposes lifecycle/execution operations."
+        ],
+        [
+          "unknown",
+          "The candidate includes value exchange but leaves conversion and threading adaptation to Python unresolved; the retrieved separate-global/thread-affinity comments do not establish safe cross-interpreter object ownership for that adaptation."
+        ],
+        [
+          "pass",
+          "The original use maps an interpreter object’s execute/close operations into Python-level lifecycle design, rather than proposing to use Java as the Python API."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: interpreter-object lifecycle and thread-affinity checks",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Jep’s object wrapper does not select the gold concurrent.futures/multiprocessing placement or any precise exception transport alternative.",
+      "transfer_mapping": "Map the wrapper’s interpreter handle, execution and explicit close to a Python object and preserve creator-thread validation. The original value-conversion adaptation remains decisive; lifecycle resemblance alone cannot prove isolation-safe exchange.",
+      "remaining_check": "Inspect Jep conversion/ownership rules and define the target Python handle’s admissible values and thread-state transitions. A copied or serialized transfer contract could support conditional use; shared interpreter-owned mutable references would violate H2."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Opened application-group documentation explicitly places separate application interpreters within one Apache process."
+        ],
+        [
+          "pass",
+          "The original reference maps application-group membership to separate versus shared module state and explicitly accounts for extensions requiring the main interpreter."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is assignment policy and isolation expectations, not Python management API exposure."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: application-to-interpreter assignment and sharing policy",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "An application group is not the gold automatic dedicated-thread policy or any execution-framework placement.",
+      "transfer_mapping": "Map application identity to an interpreter group and group equality to intentional module-state sharing. Preserve the original lifetime and main-interpreter extension limitations; the relation is an assignment policy, not a claim that arbitrary extensions are isolated.",
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened interp command manages independent interpreter namespaces inside the Tcl runtime."
+        ],
+        [
+          "unknown",
+          "Original use includes explicit cross-interpreter connections, but Python transfer/alias rules are not specified; Tcl’s rules cannot establish the target object-isolation boundary."
+        ],
+        [
+          "pass",
+          "Language-level create/delete/eval operations supply the requested API-exposure precedent at the management layer."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: public interpreter-management commands and explicit connections",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The original candidate does not specify the gold explicit channel associate/disassociate lifecycle: generic namespace aliases/connections are not that channel design.",
+      "transfer_mapping": "Map interp create/delete/eval to Python-facing handles over existing interpreter operations. Explicit Tcl connections suggest named boundary operations, but safe Python transfer semantics are not provided and Tcl security claims are not inherited.",
+      "remaining_check": "Specify whether each target connection copies, serializes or permits references, and verify its ownership/lifetime rules. Isolation-safe data could permit conditional transfer; aliasing mutable interpreter-owned state would fail H2."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "The original explicitly rejects the Process abstraction and proposes a possible same-process endpoint adapter, but endpoint compatibility/ownership across CPython interpreters was not verified."
+        ],
+        [
+          "pass",
+          "The selected byte-message API avoids directly exposing mutable interpreter-owned Python objects; pickle receive is not proposed as the isolation-safe primitive."
+        ],
+        [
+          "pass",
+          "send_bytes/recv_bytes/poll/close/EOF already supply the Python-facing communication interface precedent."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: byte-message communication interface with a prospective endpoint adapter",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Same project name is insufficient for P0554-G02: the original proposes Connection message semantics, not adding interpreter execution to multiprocessing. It also does not select exactly two one-way interpreter endpoints, so no pipe structural match is inferred.",
+      "transfer_mapping": "Map interpreter boundary payloads to framed bytes and endpoint lifecycle to close/EOF, retaining the original distinction from process creation. The same-process endpoint adapter remains unverified rather than silently assumed.",
+      "remaining_check": "Inspect whether two interpreter contexts can own compatible endpoints without sharing Python object state; define creation/closure ownership. A safe same-process adapter would enable conditional transfer; a process-only or owner-unsafe adapter would fail H1/H2."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened lua_newstate API creates independent embedded states within one host process."
+        ],
+        [
+          "pass",
+          "Opaque lua_State owns runtime state and allocation; the original explicitly contrasts independent states with coroutine stacks sharing globals."
+        ],
+        [
+          "not_in_scope",
+          "The original use is an ownership mechanism reference, explicitly not a ready Python interface."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: opaque interpreter-state ownership and allocation boundaries",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Independent opaque state handles do not choose any gold API placement, channel association, exception mapping or dedicated-thread alternative.",
+      "transfer_mapping": "Map an opaque state handle and its allocator/lifetime to the target interpreter resource owner. Retain the distinction between independent states and shared-global execution stacks; adopting this ownership relation does not eliminate CPython extension globals or supply the full public API.",
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA005"
+      ]
+    }
+  ]
+}

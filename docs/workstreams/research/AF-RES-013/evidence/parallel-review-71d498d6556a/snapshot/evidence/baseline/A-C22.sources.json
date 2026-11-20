@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "case_id": "C22",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C22-D02",
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/151fd3976210c6b79117e30b02aee86a20ff5c7f/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "accessed_at_utc": "2026-11-20 11:18:24 UTC",
+      "source_type": "public_code",
+      "title": "JSR-305 ThreadSafe and Immutable annotations",
+      "version_or_date": "Commit 151fd3976210c6b79117e30b02aee86a20ff5c7f; blob 0d7973b41be9e931db9d5d1853d926436ecf66e7 also identified as the old ThreadSafe blob in the 2008-08-25 diff.",
+      "sections_read": "ThreadSafe annotation Javadoc and declaration",
+      "confirmed": "The annotation describes classes whose public accesses preserve valid state across thread interleavings without extra caller synchronization; it does not require immutability.",
+      "limits": "Java's annotation covers public object operations broadly; any Rust adaptation must explicitly mean safety of concurrent access through shared references, rather than general thread transfer, deep immutability, or every possible operation. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D2",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D03",
+      "url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "accessed_at_utc": "2026-11-20 11:18:24 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Boost shared_ptr shared-ownership terminology and separate thread-safety contract",
+      "version_or_date": "Boost 1.55.0; page explicitly says this release is from 2013.",
+      "sections_read": "Introduction, type parameter requirements, and const indirection signatures",
+      "confirmed": "The pointer manages shared lifetime while accepting broad pointee types; const pointer operations can expose mutable pointees.",
+      "limits": "Reference-count safety does not establish pointee safety, and ownership differs from borrowing. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D04",
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5%5E!/",
+      "accessed_at_utc": "2026-11-20 11:18:24 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "chromium.googlesource.com",
+      "version_or_date": "Commit 4e1f9dc708a57e175e76833b0d1b27212b74d0c5 dated 2008-08-25 04:51:05.",
+      "sections_read": "Commit metadata; ThreadSafe, Immutable, and NotThreadSafe diff sections inspected with find at 2026-11-20 11:19:11 UTC",
+      "confirmed": "The 2008-08-25 diff preserves separate ThreadSafe and Immutable contracts, including that immutable objects can contain unobservable internal changes while thread safety concerns concurrent use.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D05",
+      "url": "https://doc.qt.io/Archives/qt-4.7/threads-reentrancy.html",
+      "accessed_at_utc": "2026-11-20 11:18:24 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Qt reentrant versus thread-safe terminology",
+      "version_or_date": "Qt 4.7.0 archived documentation; footer dated 2008-2010.",
+      "sections_read": "Definitions, Counter examples, const value() and mutable mutex, terminology caveat",
+      "confirmed": "Qt separates different-instance reentrancy from same-instance thread safety and demonstrates locking inside a const accessor.",
+      "limits": "Reentrant is too weak; the locking example must not become a required implementation strategy. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D06",
+      "url": "https://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures/",
+      "accessed_at_utc": "2026-11-20 11:18:39 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Chromium ThreadSafe suffix for scoped guarantees",
+      "version_or_date": "Live official documentation; no reliable publication date established.",
+      "sections_read": "scoped_refptr/RefCounted/RefCountedThreadSafe and ObserverList/ObserverListThreadSafe sections",
+      "confirmed": "The page contains RefCountedThreadSafe and ObserverListThreadSafe names alongside ownership and collection terminology.",
+      "limits": "The suffix is scoped to component operations, not all reachable state. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D07",
+      "url": "https://github.com/junit-team/junit4/blob/main/src/main/java/org/junit/runner/notification/RunListener.java",
+      "accessed_at_utc": "2026-11-20 11:18:39 UTC",
+      "source_type": "public_code",
+      "title": "RunListener.java",
+      "version_or_date": "Live main branch; annotation version date not established.",
+      "sections_read": "File metadata and navigation; source body not reached in this first returned range",
+      "confirmed": "The public JUnit source page opened, but this first range did not verify the ThreadSafe contract; a later range did.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D08",
+      "url": "https://dlang.org/faq.html",
+      "accessed_at_utc": "2026-11-20 11:18:39 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "D shared versus unshared/thread-local qualifier vocabulary",
+      "version_or_date": "Live D 2.0 FAQ; no dated snapshot established.",
+      "sections_read": "FAQ questions on shared guarantees, synchronization, barriers, and casts",
+      "confirmed": "D shared means possible access by multiple threads; memory barriers and synchronization are separate concerns. Redirected to https://dlang.org/articles/faq.html.",
+      "limits": "D shared is not an equivalent guarantee of concurrent-sharing safety. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D13",
+      "url": "https://www.microsoft.com/en-us/research/publication/uniqueness-and-reference-immutability-for-safe-parallelism/",
+      "accessed_at_utc": "2026-11-20 11:19:00 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Reference-immutability and isolation qualifiers for safe parallelism",
+      "version_or_date": "MSR-TR-2012-79, October 2012.",
+      "sections_read": "Publication date and abstract",
+      "confirmed": "The publication is identified as MSR-TR-2012-79, October 2012, and describes a combination of immutable and isolated types for safe parallelism.",
+      "limits": "The paper's readable reference forbids mutation through that reference, unlike Rust shared access with interior mutability, so readable or immutable cannot be transplanted as an equivalent name for the trait. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D14",
+      "url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "accessed_at_utc": "2026-11-20 11:19:00 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Boost shared_ptr shared-ownership terminology and separate thread-safety contract",
+      "version_or_date": "Boost 1.55.0, released in 2013.",
+      "sections_read": "Reopened at line 510; indirection, Thread Safety, and shared-ownership FAQ sections returned",
+      "confirmed": "The Thread Safety section distinguishes permitted concurrent pointer accesses from undefined simultaneous operations.",
+      "limits": "Reference-count safety does not establish pointee safety, and ownership differs from borrowing. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D15",
+      "url": "https://github.com/junit-team/junit4/blob/main/src/main/java/org/junit/runner/notification/RunListener.java",
+      "accessed_at_utc": "2026-11-20 11:19:00 UTC",
+      "source_type": "public_code",
+      "title": "RunListener.java",
+      "version_or_date": "Live main branch; annotation marked since 4.12, but release date not verified.",
+      "sections_read": "Reopened at line 810; class-level synchronization description and nested ThreadSafe annotation contract",
+      "confirmed": "JUnit's annotation designates listeners whose methods can be called concurrently without caller synchronization; its default listener handling uses synchronization instead.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D17",
+      "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/msr-tr-2012-79.pdf",
+      "accessed_at_utc": "2026-11-20 11:19:11 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "msr-tr-2012-79.pdf",
+      "version_or_date": "Extended version of MSR-TR-2012-79; publication page dates the report to October 2012; URL upload path is not treated as its publication date.",
+      "sections_read": "PDF opened through publication-page link; introduction and sections 2, 2.1, and 2.2, especially the four reference qualifiers and parallelism conditions",
+      "confirmed": "The paper separates writable, readable, immutable, and isolated references; readable views may coexist with writable aliases, so safe parallel sharing requires further restrictions on writable access. These qualifiers therefore distinguish a reference's permissions from the conditions for concurrent safety.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C22.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C22-D01",
+      "url": "https://grep.app/api/search?q=%40interface%20ThreadSafe&regexp=false",
+      "accessed_at_utc": "2026-11-20 11:17:47 UTC",
+      "reason": "The web tool reported that the grep.app API search URL was inaccessible; no code-search results were retrieved.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D09",
+      "url": "https://www.cs.drexel.edu/~csg63/assets/pdf/papers/oopsla12.pdf",
+      "accessed_at_utc": "2026-11-20 11:18:39 UTC",
+      "reason": "The author-hosted PDF returned a 502 Bad Gateway error; the same research was subsequently obtained from Microsoft Research.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D10",
+      "url": "https://www.gnu.org/software/libc/manual/html_node/POSIX-Safety-Concepts.html",
+      "accessed_at_utc": "2026-11-20 11:18:39 UTC",
+      "reason": "The GNU libc POSIX Safety Concepts HTML page timed out.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D11",
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5/ri/src/main/java/javax/annotation/concurrent/Immutable.java",
+      "accessed_at_utc": "2026-11-20 11:19:00 UTC",
+      "reason": "The web tool reported this commit-specific Immutable.java URL inaccessible; the dated diff supplied the relevant evidence instead.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D12",
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "accessed_at_utc": "2026-11-20 11:19:00 UTC",
+      "reason": "The web tool reported this commit-specific ThreadSafe.java URL inaccessible; the already-open source and dated diff supplied the relevant evidence instead.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C22-D16",
+      "url": "https://www.gnu.org/software/libc/manual/pdf/libc.pdf",
+      "accessed_at_utc": "2026-11-20 11:19:11 UTC",
+      "reason": "The GNU libc PDF timed out, so MT-Safe remained search-snippet-only evidence and was omitted from the candidates.",
+      "recorded_in": "runs/A/C22.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

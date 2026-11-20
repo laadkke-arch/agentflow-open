@@ -1,0 +1,120 @@
+{
+  "case_id": "C23",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C23",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "C11 draft: pointer/integer conversions and intptr_t/uintptr_t",
+      "candidate_url": "https://port70.net/~nsz/c/c11/n1570.html",
+      "candidate_claim": "Its pointer-preserving integer types provide a concrete conversion contract for exposing addresses to Swift integer arithmetic and matching C pointer-sized integer parameters.",
+      "gold_matches": [],
+      "match_rationale": "정답 G01의 intValue 메서드도 G02의 포인터 타입 전체 연산 API도 아니다. C의 변환 계약을 Swift에 옮기므로 G03의 작업 자체를 C로 넘기는 선택과도 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift에서 저수준 주소 조작",
+          "value": "pass",
+          "reason": "pointer-sized 정수 표현과 명시 변환 계약을 Swift 주소 연산에 옮기는 참고 부분이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "C 상호 운용에 적용",
+          "value": "pass",
+          "reason": "intptr_t/uintptr_t와 valid void pointer 왕복을 통해 C 정수 파라미터와 연결한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "원래 불안전한 작업이라는 전제",
+          "value": "pass",
+          "reason": "optional 타입·implementation-dependent 변환·변경 주소의 유효성 한계를 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "C11 포인터-정수 변환 및 왕복 계약 → Swift의 주소 정수 표현과 C ABI 연결. 실제 API 형태를 결정하고 수정 주소의 유효성을 ABI별로 제한해야 한다.",
+      "H_assessment_scope": "reference_design: Address representation, explicit conversions, and C interoperability.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C23.json#/candidates/0",
+        "runs/B/C23.json#/opened_documents"
+      ],
+      "remaining_check": "실제 Swift API 연결과 대상 ABI에서 tag 비트·왕복 변환을 검증해야 한다. 런타임 검증은 수행하지 않았다."
+    },
+    {
+      "case_id": "C23",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Bit Twiddling Hacks: masked bit merging",
+      "candidate_url": "https://graphics.stanford.edu/~seander/bithacks.html",
+      "candidate_claim": "Its masked integer-bit merge supplies a small mechanism for inserting or replacing pointer tags once Swift exposes a suitable integer address representation.",
+      "gold_matches": [],
+      "match_rationale": "주소 연산의 한 부품으로서 어느 정답 API 선택도 동일하게 제시하지 않는다. 포인터 타입에 모든 연산을 추가하자는 G02로 확대하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift에서 저수준 주소 조작",
+          "value": "pass",
+          "reason": "mask merge는 주소를 정수로 표현한 뒤 tag 비트를 삽입·치환하는 낮은 수준 연산에 구체 대응한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "C 상호 운용에 적용",
+          "value": "not_in_scope",
+          "reason": "원 응답부터 정수 bit 연산 부품만 제시하며 C ABI나 포인터 복원 계약은 별도라고 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "원래 불안전한 작업이라는 전제",
+          "value": "pass",
+          "reason": "ABI에서 사용 가능한 bit와 포인터 재구성 계약이 필요하다는 불안전성 전제를 유지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "정수의 mask merge 관계 → 정수화된 Swift pointer 주소의 tag 갱신. 동일 bit 폭과 ABI상 여유 bit가 필요하며 임의 bit 변경을 유효 pointer라고 보장하지 않는다.",
+      "H_assessment_scope": "reference_design: Integer operations underlying pointer tagging; alignment-mask operations are adjacent supporting material.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C23.json#/candidates/1",
+        "runs/B/C23.json#/opened_documents"
+      ],
+      "remaining_check": "실제 Swift API 연결과 대상 ABI에서 tag 비트·왕복 변환을 검증해야 한다. 런타임 검증은 수행하지 않았다."
+    }
+  ]
+}

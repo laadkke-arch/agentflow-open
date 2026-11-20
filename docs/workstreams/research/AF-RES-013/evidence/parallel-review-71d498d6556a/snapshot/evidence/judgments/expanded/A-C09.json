@@ -1,0 +1,367 @@
+{
+  "case_id": "C09",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Haskell 1.3 arithmetic-sequence notation and Prelude-bound translation",
+      "candidate_url": "https://www.altocumulus.org/haskell-report/exps.html",
+      "candidate_claim": "Haskell's arithmetic-sequence expressions show how compact syntax can express regular numeric indices while translating through specified enumeration bindings instead of an arbitrary locally rebound helper name.",
+      "gold_matches": [],
+      "match_rationale": "No primary gold entity is Haskell. Enum overloading alone does not propose the gold choice to preserve input-value types, and no slice/tuple/mixed-list design is stated.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "pass",
+          "reason": "The opened arithmetic-sequence grammar supplies start and terminal values with a step inferred from the first two values."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "The resulting numeric sequence can supply index and strided iteration as proposed."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "pass",
+          "reason": "Original response identifies compact syntax, Prelude-bound lowering and the remaining Enum overloading restriction; it does not assume spelling alone permits primitive optimization."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map source start/second/end notation to target numeric index sequences and its specified Prelude binding to compiler-generated enumeration operations. The original caveats require choosing inclusive/exclusive bounds, treating zero increments and preserving overloaded Enum behavior rather than assuming integer arithmetic.",
+      "H_assessment_scope": "reference_design: arithmetic-sequence syntax and fixed lowering bindings",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/0",
+        "runs/A/C09.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Common Lisp LOOP arithmetic clauses",
+      "candidate_url": "https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node244.html",
+      "candidate_claim": "LOOP's from, below/to, and by clauses make the initial index, stopping boundary, and stride explicit in readable iteration syntax.",
+      "gold_matches": [],
+      "match_rationale": "Readable LOOP clauses are not the Python slice syntax, tuple-range, mixed-list or flattening choices in the gold.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "pass",
+          "reason": "LOOP from/below-or-to/by clauses explicitly express initial value, boundary and stride."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "The original use is position-based/every-nth-element looping, supported by arithmetic iteration clauses."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "unknown",
+          "reason": "The original candidate says Python binding/mutation semantics still need deliberate adaptation; no particular lowering binding or rebinding behavior was selected for this proposed grammar."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map from/to-or-below/by to start/boundary/stride of index iteration. The original limits distinguish loop control from a first-class sequence and leave target binding semantics unsettled; a readable grammar alone does not settle optimizer assumptions.",
+      "H_assessment_scope": "reference_design: readable arithmetic-loop clauses",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/1",
+        "runs/A/C09.json#/opened_documents"
+      ],
+      "remaining_check": "Specify and validate the intended target lowering binding for these LOOP-like clauses. Fixed compiler operations or a proven/guarded binding could support conditional transfer; arbitrary rebound helpers would preserve the original optimization limitation."
+    },
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Python 2.0 range and xrange",
+      "candidate_url": "https://stuff.mit.edu/afs/sipb.mit.edu/project/python/share/doc/lib/built-in-funcs.html",
+      "candidate_claim": "The existing range/xrange pair supplies the exact start/stop/step behavior and contrasts materialized lists with numeric sequences generated on demand.",
+      "gold_matches": [
+        {
+          "gold_id": "P0204-G01",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original candidate reason and raw item 3 explicitly use Python 2.0 range(start, stop, step), the same built-in mechanism discussed in gold List ranges."
+        },
+        {
+          "gold_id": "P0204-G03",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original candidate separately names xrange and contrasts on-demand numeric generation with materialized lists, matching the independent lazy xrange-type item in gold Open issues."
+        }
+      ],
+      "match_rationale": "The candidate explicitly names and compares both independent Python built-ins and their eager/lazy mechanisms; neither is inferred from a broader project name.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "pass",
+          "reason": "The opened Python 2.0 range/xrange entries document start/stop/step, exclusive stop and zero-step rejection."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "Both supply numeric positions for ordinary and strided loops; xrange avoids storing the full sequence."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "pass",
+          "reason": "The original candidate explicitly retains nested-call readability and name-rebinding limitations and requires binding proof/guard before optimization. The constraint asks these effects to be considered, not eliminated."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "proposed_configuration: existing Python 2.0 range/xrange as compatibility baseline",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "P0204-G01",
+        "P0204-G03"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/2",
+        "runs/A/C09.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "FORTRAN 77 DO loop control",
+      "candidate_url": "https://docs.oracle.com/cd/E19957-01/805-4939/6j4m0vn8c/index.html",
+      "candidate_claim": "FORTRAN DO shows a direct start/limit/increment loop construct with entry-time parameter evaluation and an established iteration count that can guide an explicit numeric-loop design.",
+      "gold_matches": [],
+      "match_rationale": "FORTRAN DO is not an identified primary gold item and does not state the gold tuple/slice/container alternatives.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "pass",
+          "reason": "DO directly specifies start, terminal value and increment, evaluated on loop entry."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "The original proposal uses it as a compiler-visible counted-iteration design, supported by the opened DO rules."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "pass",
+          "reason": "Compiler-visible loop syntax and once-evaluated bounds address the lowering/readability concern without an arbitrary ordinary range helper; original caveats preserve variable-mutation and overflow limitations."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map DO’s entry-time start/limit/increment to target counted iteration and a fixed number of iterations. Preserve the original inclusive-bound, loop-variable mutation and overflow caveats; do not equate this control construct with a first-class Python sequence.",
+      "H_assessment_scope": "reference_design: counted-loop syntax and entry-time evaluation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/3",
+        "runs/A/C09.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Scheme R5RS do iteration and hygienic expansion",
+      "candidate_url": "https://conservatory.scheme.org/schemers/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html",
+      "candidate_claim": "R5RS do offers an alternative that combines initialization, a stop test, and an update expression, while its hygienic expansion rules illustrate how generated helper references can retain their intended bindings.",
+      "gold_matches": [],
+      "match_rationale": "Scheme do and hygiene are not the named Python range/xrange entities or any specific gold container/slice design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "pass",
+          "reason": "Initialization, stop test and update express start, end condition and step for numeric index iteration."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "The opened do example and original use cover index-driven mutation without allocating a numeric list."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "pass",
+          "reason": "Original use explicitly applies hygienic generated references while retaining ordinary semantics for user operators and locally shadowable syntax; verbosity and reevaluation are acknowledged."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map initialization/test/update to index traversal and definition-site inserted references to compiler-generated helper binding. The original distinctions prohibit silently changing repeated evaluation to precomputed bounds or ignoring shadowed user operators.",
+      "H_assessment_scope": "reference_design: index iteration with definition-site helper bindings",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/4",
+        "runs/A/C09.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "case_id": "C09",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "SRFI-1 iota and its public reference implementation",
+      "candidate_url": "https://srfi.schemers.org/srfi-1/srfi-1.html",
+      "candidate_claim": "iota and its actual public code provide a count/start/step progression generator that can serve as an alternative API and a concrete implementation reference.",
+      "gold_matches": [],
+      "match_rationale": "iota is a different entity from range/xrange. Its ordinary function form or numeric type support does not state the gold input-type-preservation or C-API visibility choices.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "시작·끝·간격으로 숫자열 지정",
+          "value": "fail",
+          "reason": "The proposed API accepts count/start/step, not the required end-boundary form; original response acknowledges extra end-to-count arithmetic and supplies no adapted end-based form."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "위치 기반 또는 일정 간격 반복에 적용",
+          "value": "pass",
+          "reason": "When count is known, the returned numeric list supports regular positional iteration."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "가독성 및 내장 이름 재정의 영향 고려",
+          "value": "pass",
+          "reason": "Original response explicitly recognizes eager allocation, ordinary-name rebinding and the extra arithmetic/readability cost."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "The original mapping covers known-count positions only: count becomes list length and start/step become successive values. End-based conversion and binding-safe optimization remain outside this supplied design; therefore this mapping does not remove the known H1 mismatch.",
+      "H_assessment_scope": "reference_design: count-based progression API and implementation reference",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C09.json#/candidates/5",
+        "runs/A/C09.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA002"
+      ],
+      "remaining_check": "An explicit end-to-count adapter with descending/zero-step and rounding semantics would be a different proposed configuration. Preserve the present mismatch; a historical snapshot is additionally required to establish pre-cutoff evidence."
+    }
+  ]
+}

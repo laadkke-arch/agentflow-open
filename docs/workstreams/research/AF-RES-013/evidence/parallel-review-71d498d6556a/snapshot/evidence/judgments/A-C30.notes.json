@@ -1,0 +1,209 @@
+{
+  "case_id": "C30",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened implementation validates UTF-8 before adopting owned bytes and distinguishes lossy repair from borrowed valid text."
+        ],
+        [
+          "pass",
+          "A byte-vector/slice extent supplies the length and valid interior zero bytes remain within that extent."
+        ],
+        [
+          "unknown",
+          "Original use depends on compatible target representation, allocator and ownership to avoid a full copy; compatibility with foreign Swift buffers is expressly unestablished."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: validation separated from owned-buffer adoption and optional repair",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No Swift view append or SequenceType decoding API is proposed. Rust String ownership transfer is not the same external NSString/String.append subsystem named in the gold.",
+      "transfer_mapping": "Map owned counted bytes to validation followed by storage adoption, and borrowed valid input to borrowed text where representation permits. The original allocator/ownership/representation prerequisite and repair allocation remain decisive, not assumed.",
+      "remaining_check": "Establish the target Swift storage representation, deallocator and ownership transfer contract for the intended buffer. Compatible adoption could pass H3; mandatory conversion/copy or incompatible ownership would defeat this particular zero-copy route."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The selected strict and substitution APIs explicitly define malformed-input handling and bounded Unicode conversion; the lenient routine is expressly excluded."
+        ],
+        [
+          "pass",
+          "Source length and destination capacity are explicit, with negative source length separately selecting terminator-based behavior."
+        ],
+        [
+          "pass",
+          "The original bulk conversion accepts caller-provided output storage and does not require cloning the full input or appending one Swift character at a time; transcoding output storage is necessary work."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: explicit-length bulk Unicode conversion with an error policy",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "ICU conversion is not any named primary gold component or the specific Swift views/protocol design.",
+      "transfer_mapping": "Map known byte extent, chosen strict/replace policy and output capacity to the conversion call, then use produced length. The original separates necessary UTF-16 output allocation from optional preflight’s extra pass and excludes lenient malformed-output behavior.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "Additional Apple body confirms counted-buffer decoding with an encoding, but the retrieved wording does not settle malformed-Unicode policy or Swift bridge performance."
+        ],
+        [
+          "pass",
+          "The actual documented initializer takes a byte count and allows unterminated input; the original counted-span use avoids a terminator scan."
+        ],
+        [
+          "unknown",
+          "Zero-copy behavior and the Swift bridge’s additional work remain unverified; the original explicitly identifies both as unresolved."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: counted NSString buffer decoding followed by possible Swift interoperation",
+      "link_status": "opened_body_markdown_alternate",
+      "gold_matches": [
+        {
+          "gold_id": "S0027-G04",
+          "rationale": "Original rank 3 proposes NSString initWithBytes:length:encoding: plus a potential Swift interoperation route. The gold-linked NSString.swift example calls exactly that counted initializer then performs the NSString-to-String bridge, so identity and relevant mechanism both match; performance improvement remains unverified."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The candidate specifically identifies NSString’s bytes/length/encoding constructor and a Swift interoperation route. The gold linked example uses that same initializer and then bridges to String; this is the relevant component/mechanism, not merely the NSString project name.",
+      "transfer_mapping": "Map a known byte span and encoding to the NSString initializer, then bridge only if its cost and representation are acceptable. Additional verification supports the method identity but does not supply the missing malformed-input or bridge-cost contract.",
+      "remaining_check": "Inspect the initializer’s malformed-encoding semantics and measure or inspect the Swift bridging path for the chosen platform/version. A bounded correct decode with no unnecessary extra copy could pass; metadata-only availability and the method name cannot establish that.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA013",
+        "evidence/judgments/reviewer-a-sources.json#RA014"
+      ]
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened counted Unicode constructors define invalid UTF-8 replacement/suppression; the original explicitly distinguishes this from strict rejection."
+        ],
+        [
+          "pass",
+          "The explicit size controls the input extent; only the negative-size alternative invokes qstrlen. The original avoids convenience constructors with different NUL handling."
+        ],
+        [
+          "pass",
+          "The proposed counted bulk conversion avoids terminator scanning and per-element client append, without claiming all necessary transcoding storage disappears."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: explicit-size Unicode constructors and documented repair policy",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "QString is not NSString and no mutable Swift-view or SequenceType API choice is proposed.",
+      "transfer_mapping": "Map pointer plus known code-unit/byte count to the appropriate bulk decoder, preserving count units for each encoding. Choose the documented replacement behavior deliberately and do not substitute a convenience overload that truncates at a zero byte.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Additional primary function text documents chosen conversion policies and failure reporting for invalid charset or unconvertible input; original use explicitly calls for deliberate policy selection."
+        ],
+        [
+          "pass",
+          "The begin/end overloads convert exactly the supplied range, unlike sentinel overloads."
+        ],
+        [
+          "pass",
+          "The original range API processes the source without first materializing a terminator-based input copy or requiring per-element caller append; output storage remains explicit."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: bounded encoding-aware range conversion",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A C++ iterator/pointer range API does not select Swift SequenceType protocol extension decoding. No primary external component identity matches.",
+      "transfer_mapping": "Map a framed source region to begin/end and select encoding/error policy at the boundary. Unsupported backends and output allocation remain original constraints; do not substitute an unchecked or zero-terminated overload.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA015"
+      ]
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened decoder documents malformed/unmappable policies and incremental conversion status; original use includes explicit finalization and incomplete-sequence handling."
+        ],
+        [
+          "pass",
+          "ByteBuffer bounds and explicit final-input signaling support known extents and framing without treating zero bytes as terminators."
+        ],
+        [
+          "pass",
+          "Streaming into bounded output avoids first joining all source chunks into one copied buffer; final string storage is still acknowledged as necessary."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: stateful incremental decoding across framed input chunks",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Streaming decoding does not select the gold Swift SequenceType extension or mutable view append design; no same-component external hit.",
+      "transfer_mapping": "Map input chunks to bounded decode calls, preserve residual partial sequences on underflow, drain output on overflow, and finish/flush at the true end. The original prohibits concurrent decoder sharing and retains final-storage cost.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The original selects checked conversion/validation or explicit repair, excluding unchecked functions from the Unicode-safety claim."
+        ],
+        [
+          "pass",
+          "Begin/end iterator bounds carry exact input extent and do not require a NUL terminator."
+        ],
+        [
+          "unknown",
+          "The original output back-insertion path requires managed growth, but no chosen container/capacity strategy demonstrates avoidance of repeated reallocation or slow target-side element handling."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: checked bounded iterators with caller-selected output storage",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A generic C++ iterator API is not the specific Swift SequenceType protocol-oriented decode choice, and generic append concerns do not identify the Swift String.append component.",
+      "transfer_mapping": "Map the framed input to checked iterator bounds and converted units to the chosen output container. Original output-growth management remains a needed concrete configuration rather than an assumed performance result.",
+      "remaining_check": "Select and inspect the output sink/capacity policy and how conversion is exposed to Swift. Direct bounded writes or controlled capacity could pass H3; repeated whole-container growth or slow cross-language per-element calls would fail it."
+    }
+  ]
+}

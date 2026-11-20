@@ -1,0 +1,327 @@
+{
+  "case_id": "C10",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Java 5 enum types and java.lang.Enum",
+      "candidate_url": "https://docs.oracle.com/javase/1.5.0/docs/guide/language/enums.html",
+      "candidate_claim": "Java 5 enums provide type-specific named singleton constants, declaration-order iteration and comparison, and separation from integers, matching most of the requested semantics.",
+      "gold_matches": [
+        {
+          "gold_id": "P0354-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "하나의 enum class가 named constants와 values/ordering API를 함께 제공하는 구조다. 원문 G01의 container/value 분리를 하지 않는 class 집약 대안에 대응한다."
+        }
+      ],
+      "match_rationale": "한 enum class에 상수·조회·순서 기능을 모으는 G01 구조를 회수한다. Java 컴파일러의 타입 생성을 Python metaclass 대안과 동일시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "관련 값 집합의 불변성",
+          "value": "pass",
+          "reason": "열거형 상수의 닫힌 집합과 추가 필드의 가변성을 구분한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "집합 외 값과 구별",
+          "value": "pass",
+          "reason": "정수와 분리된 type-specific singleton identity다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "의미 있는 순서·비교를 제공하고 무의미한 연산 제한",
+          "value": "pass",
+          "reason": "declaration order와 같은 타입 비교이며 무의미한 숫자 연산을 부여하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Java enum class의 named singleton·values·ordering → Python enum 객체 계약. 동적 runtime membership 검사와 freezing을 구현해야 하며 부가 field의 불변성까지 자동 보장하지 않는다.",
+      "H_assessment_scope": "reference_design: Core member identity, ordering, lookup and iteration.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "P0354-G01"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/0",
+        "runs/A/C10.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Haskell 98 nullary constructors with derived Eq, Ord, Enum and Bounded",
+      "candidate_url": "https://www.haskell.org/onlinereport/derived.html",
+      "candidate_claim": "Haskell 98 nullary constructors with selected derived instances combine distinct named values, declaration order and traversal without automatically granting numeric arithmetic.",
+      "gold_matches": [],
+      "match_rationale": "능력 분리·typed constructor 선례이며 metaclass나 강한 scalar coupling 등 네 대안을 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "관련 값 집합의 불변성",
+          "value": "pass",
+          "reason": "nullary constructor 집합이 고정된다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "집합 외 값과 구별",
+          "value": "pass",
+          "reason": "typed constructor로 외부 값과 분리된다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "의미 있는 순서·비교를 제공하고 무의미한 연산 제한",
+          "value": "pass",
+          "reason": "Eq/Ord/Enum을 선택해 비교·순회와 numeric 연산을 분리한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Haskell nullary constructor와 분리된 typeclass 능력 → Python 값 identity·ordering·traversal 인터페이스. 정적 타입 보장을 runtime 검사로 옮기고 경계 변환 실패를 정의해야 한다.",
+      "H_assessment_scope": "reference_design: Separate comparison, traversal and numeric capabilities.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/1",
+        "runs/A/C10.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Apache Commons Lang 2.1 Enum",
+      "candidate_url": "https://commons.apache.org/proper/commons-lang/javadocs/api-2.1/org/apache/commons/lang/enums/Enum.html",
+      "candidate_claim": "Commons Lang Enum supplies a reusable class-based registry for named constants, lookup, iteration and canonical deserialization without compiler support.",
+      "gold_matches": [
+        {
+          "gold_id": "P0354-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "The selected class-based registry is realized by named constant fields, lookup/iteration helpers and comparable members on the same Enum subclass. It is not the separately maintained registry in B-C10 rank 1."
+        }
+      ],
+      "match_rationale": "Match G01. Ordinary subclassing and helper methods are not a metaclass construction mechanism; neither exposed names nor registry keys imply primitive-value identity.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "관련 값 집합의 불변성",
+          "value": "pass",
+          "reason": "The opened simple-enum example uses a final class with a private constructor and fixed constants. Closing extension was explicitly required by the original adaptation, so it is a supported design invariant rather than a new safeguard."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "집합 외 값과 구별",
+          "value": "pass",
+          "reason": "Class-and-name identity plus canonical deserialization supports distinct named members; the original adaptation requires a closed family."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "의미 있는 순서·비교를 제공하고 무의미한 연산 제한",
+          "value": "pass",
+          "reason": "The original response explicitly calls for aligning creation-order iteration with comparison. It does not propose retaining inconsistent alphabetical/default order unchanged."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map the final/private-construction example to a closed Python family, static named members to canonical values, and registry order to the chosen comparison order. Close subclass extension and align comparison as stated in the original answer; do not transfer the extensible variant unchanged.",
+      "H_assessment_scope": "reference_design: Class-based constant family, registry operations and canonical members; original closure and order-alignment conditions retained.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "P0354-G01"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/2",
+        "runs/A/C10.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA016",
+        "evidence/judgments/reviewer-a-sources.json#RA018"
+      ],
+      "remaining_check": "Confirm the target factory closes construction and extension and uses one documented order. This source-level reference pass does not approve an arbitrary Python subclass implementation."
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Ada 95 enumeration and scalar-type semantics",
+      "candidate_url": "https://www.adaic.org/resources/add_content/standards/95aarm/AARM_HTML/AA-3-5-1.html",
+      "candidate_claim": "Ada 95 enumeration types provide a finite ordered value domain whose literal names and ordinal positions remain distinct from numeric types.",
+      "gold_matches": [],
+      "match_rationale": "순서 인덱스의 존재를 scalar와 강하게 연결하는 G03으로 확대하지 않았다; 숨김 대안 G04도 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "관련 값 집합의 불변성",
+          "value": "pass",
+          "reason": "유한 enum literal domain이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "집합 외 값과 구별",
+          "value": "pass",
+          "reason": "literal은 자신의 타입의 별도 값이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "의미 있는 순서·비교를 제공하고 무의미한 연산 제한",
+          "value": "pass",
+          "reason": "ordinal 순서가 있으며 numeric type과 분리된다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Ada finite ordered domain·typed literal → Python enum semantics. runtime domain 검사와 immutable namespace 저장 구조를 마련해야 한다.",
+      "H_assessment_scope": "reference_design: Finite domain semantics and typed ordering.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/3",
+        "runs/A/C10.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Python Immutable Enumerations Using Duck Punching recipe",
+      "candidate_url": "https://code.activestate.com/recipes/578294-python-immutable-enumerations-using-duck-punching/",
+      "candidate_claim": "This Python recipe supplies property descriptors that reject assignment and deletion of existing named constants, addressing part of the immutability requirement.",
+      "gold_matches": [],
+      "match_rationale": "No primary match. Raw-value exposure was a limitation of a deliberately partial descriptor reference, not a selected strong primitive-coupling design; dynamic properties do not establish the gold metaclass alternative.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "관련 값 집합의 불변성",
+          "value": "pass",
+          "reason": "At the originally stated read-only-attribute scope, the opened recipe protects existing named bindings against ordinary assignment/deletion. This does not establish a closed member universe or deeply immutable payloads."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "집합 외 값과 구별",
+          "value": "not_in_scope",
+          "reason": "The original response explicitly excludes domain isolation and says raw values need wrappers; it did not propose those raw values as the complete enum representation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "의미 있는 순서·비교를 제공하고 무의미한 연산 제한",
+          "value": "not_in_scope",
+          "reason": "Ordered traversal and comparison are explicitly outside the partial descriptor mechanism."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: Only the existing-binding read-only descriptor mechanism originally proposed.",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/4",
+        "runs/A/C10.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA016",
+        "evidence/judgments/reviewer-a-sources.json#RA022"
+      ],
+      "remaining_check": "A complete enum still needs closed membership, domain-specific values and ordering. The reviewer re-open returned HTTP 502, so the baseline successful body read remains the evidence. 정확한 게시 시각은 원 실행의 snippet 외 본문에서 확인되지 않았고 재열람도502여서 root의 unknown을 유지한다."
+    }
+  ]
+}

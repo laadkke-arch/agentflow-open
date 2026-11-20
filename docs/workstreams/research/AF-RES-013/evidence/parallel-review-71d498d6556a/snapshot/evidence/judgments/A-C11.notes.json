@@ -1,0 +1,259 @@
+{
+  "case_id": "C11",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened archived close manual documents closing marked descriptors on successful exec; the original use is explicitly exec rather than fork alone."
+        ],
+        [
+          "pass",
+          "For already-marked descriptors, the OS applies the bit regardless of which library or external module invokes exec, as proposed."
+        ],
+        [
+          "pass",
+          "The original design treats non-shared and deliberately inherited descriptors separately; flags can be selected per descriptor, retaining standard-stream choices."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: per-descriptor exec inheritance policy",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A CLOEXEC primitive alone does not select the gold policy to preserve defaults or change all defaults; no named Perl/Ruby/OCaml/fopen/atfork entity is recovered.",
+      "transfer_mapping": "Map non-shared parent descriptors to FD_CLOEXEC and explicitly retained I/O to unmarked descriptors. OS exec enforces the marked set across launch paths. The original caveats exclude fork-only lifetimes and unmarked external creations and identify the creation-to-mark race; this row is the flag policy, not a race-free constructor claim.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "O_CLOEXEC marks each opened descriptor at creation, supplying the documented constructor-level mechanism."
+        ],
+        [
+          "pass",
+          "The original scope covers file-opening wrappers and participating native modules, independent of the later exec wrapper."
+        ],
+        [
+          "pass",
+          "Selecting the flag for non-shared opens while explicitly mapping intended child I/O preserves the original standard/extra distinction."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: atomic non-inheritable file opening on supporting systems",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "O_CLOEXEC/open flags are not fopen’s e/N string-mode mechanisms and do not themselves choose a global default policy.",
+      "transfer_mapping": "Map file-constructor requests to O_CLOEXEC for non-shared descriptors, retaining deliberate child I/O separately. The original source/response distinguishes supporting systems from unsafe open-then-fcntl fallback; it does not claim sockets, pipes or all platforms are covered.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Opened pipe2 documentation sets CLOEXEC on both endpoints at creation, preventing unintended retained endpoints after exec."
+        ],
+        [
+          "pass",
+          "The descriptor flag works across subsequent exec callers; original scope limits the change to pipe constructors and preserves explicit child mapping."
+        ],
+        [
+          "pass",
+          "Original caveat requires intentional pipe ends to be mapped or have inheritance handled separately, rather than treating all endpoints as ambient standard I/O."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: atomic non-inheritable pipe endpoints",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The gold has no pipe2 entity; this does not imply fopen modes, an atfork callback or a globally selected default.",
+      "transfer_mapping": "Map internal/communication pipe creation to pipe2(O_CLOEXEC); explicitly selected child ends are mapped to the intended I/O before exec. Non-supporting platforms need a separately assessed path and are not silently protected by this Linux reference.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "SOCK_CLOEXEC sets the creation-time inheritance bit for the newly created socket."
+        ],
+        [
+          "pass",
+          "Original use includes standard-library and participating extension socket constructors, rather than only one launcher."
+        ],
+        [
+          "pass",
+          "The original constructor policy selects non-shared sockets and keeps deliberate inheritance decisions explicit; it does not indiscriminately close standard descriptors."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: non-inheritable socket construction",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "This networking constructor is distinct from gold fopen modes and other-language policy examples; no global-default choice was stated.",
+      "transfer_mapping": "Map socket creation to SOCK_CLOEXEC where supported and retain deliberate child I/O explicitly. Other networking constructors and uncooperative external creators remain outside the original narrow constructor audit; applying this as whole-runtime coverage would be invalid.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Opened dup documentation supports dup3(O_CLOEXEC) as a way to keep protected descriptors non-inheritable after duplication."
+        ],
+        [
+          "pass",
+          "The new descriptor’s flag is applied by any later exec path, including external launchers, within the original duplicate-API scope."
+        ],
+        [
+          "pass",
+          "Original response distinguishes protected duplicates from dup/dup2 redirections that intentionally leave child descriptors inheritable."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: preservation of inheritance policy during duplication",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "dup3 is not among the primary gold entities and does not itself select a global policy or callback design.",
+      "transfer_mapping": "Map non-shared duplicates to dup3 with CLOEXEC; map intended child standard-stream redirection to the explicitly chosen dup/dup2 behavior. The original oldfd==newfd and platform boundaries must be retained; replacing dup2 blindly changes behavior.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "fail",
+          "For the original fallback design when atomic creation is unavailable, the opened source explicitly leaves a race for potentially blocking open. Thus it does not provide comprehensive suppression across that fallback scope."
+        ],
+        [
+          "unknown",
+          "The original requires every creator/launcher to honor ForkLock, while external native paths can bypass it; participation of the target external modules is not established."
+        ],
+        [
+          "pass",
+          "The original explicitly retained-descriptor list distinguishes intended child I/O from descriptors marked for closure."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: cooperating runtime fallback lock and explicit child descriptor allowlist",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "P0433-G03",
+          "rationale": "Original rank 6 describes runtime-wide creation-plus-CLOEXEC with explicit child retention; opened ForkLock design comments confirm marking descriptors by default and unmarking only retained ones, matching gold Disable inheritance by default. The lock itself is additional implementation detail, not a second gold item."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The original reason combines descriptor creation plus close-on-exec marking and explicit child selection; the opened implementation confirms default marking then unmarking retained descriptors. This supports the non-inheritance-default structural item, but not the atfork-callback alternative.",
+      "transfer_mapping": "Creator read-lock plus creation/marking maps to target constructor critical sections; fork’s write-lock excludes those sections, and child descriptor selection retains intended I/O. The original boundaries include bypassing native code and blocking opens, so known race and unknown participation are not waived.",
+      "remaining_check": "Enumerate target creators and launchers and inspect blocking-open fallbacks. Unknown cooperation can be resolved by an audit, but the documented unprotected blocking-open path needs a changed configuration before H1 could pass. A pinned historical implementation is still required for historical eligibility.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA001"
+      ]
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "closefrom(3) removes already-open extra descriptors in the controlled child path exactly as proposed."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is explicitly a cleanup layer for launch implementations that can be changed, not complete coverage of unrelated external launchers; the caveat already states that boundary."
+        ],
+        [
+          "pass",
+          "The documented numeric lower bound preserves 0, 1 and 2 while closing descriptors 3 and above."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: controlled child cleanup with standard streams retained",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Closing extra descriptors in a controlled launcher is not the gold atfork callback registry, and no callback registration/lifecycle mechanism was proposed.",
+      "transfer_mapping": "Map the child’s unwanted extra descriptors to closefrom(3) before exec while retaining standard streams. Explicit exceptions are required for deliberately shared extras; uncontrolled launchers and unsupported platforms are not covered, as originally scoped.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Ordered spawn actions and subsequent CLOEXEC processing support the original explicit child-I/O mapping use; the response does not claim all unmarked extras disappear."
+        ],
+        [
+          "not_in_scope",
+          "The original scope is spawn interface mapping, explicitly complementary to creation policy and limited to that launch path."
+        ],
+        [
+          "pass",
+          "Opened POSIX text separately treats descriptors 0/1/2 and ordered descriptor actions, supporting standard/extra-I/O distinction."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: explicit descriptor actions at a spawn interface",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "POSIX spawn actions are not any named gold external item, and the original does not propose atfork callbacks or a global default.",
+      "transfer_mapping": "Map child I/O choices to ordered file actions followed by CLOEXEC cleanup. Unmarked inherited extras can survive and other exec paths bypass the actions; a creation policy is a stated complement, not silently supplied by the reviewer.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 9,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened flag documentation supports default closure of extras in the GLib launch path, the exact example proposed."
+        ],
+        [
+          "not_in_scope",
+          "The original scope is API design for individual high-level launch functions; it explicitly disclaims coverage of other launch paths/external modules."
+        ],
+        [
+          "pass",
+          "Original use and source distinguish standard-stream options from the flag that retains additional descriptors."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: launch-API inheritance controls and migration choices",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "GLib launcher cleanup is not equivalent to the gold change in descriptor-creation default across the runtime. The original also does not identify Ruby, Perl or OCaml.",
+      "transfer_mapping": "Map separate standard-stream flags and extra-descriptor inheritance controls to a target launch API. Preserve the original limitation to that API and the later-version flag set; this example cannot by itself meet whole-runtime cross-path suppression.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    }
+  ]
+}

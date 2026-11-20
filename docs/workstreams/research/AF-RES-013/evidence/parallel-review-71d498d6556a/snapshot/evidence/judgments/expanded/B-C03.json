@@ -1,0 +1,456 @@
+{
+  "case_id": "C03",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "kubectl-nsenter: target resolution and namespace attachment",
+      "candidate_url": "https://github.com/towolf/kubectl-nsenter",
+      "candidate_claim": "Its concrete container-to-PID resolution, namespace entry and rootfs access code can inform the node agent's attachment mechanics.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "pass",
+          "reason": "container→PID 해석과 namespace 진입 및 rootfs 접근이 원 code에 있다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "image 획득은 선택한 node-agent targeting 코드의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "원 응답부터 API admission/audit design을 제공하지 않는다고 명시한다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "runtime-specific PID/rootfs 경로이며 CRI 전체 확장은 별도다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "pass",
+          "reason": "원 응답부터 SSH·host-tool user path를 승인된 node-agent/CRI 작업 안으로 옮길 것을 명시한다. 실제 SSH 도구를 그대로 배포하라는 제안은 아니다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "full-spec admission은 이 targeting 참고의 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "kubectl-nsenter의 target→PID→namespace/rootfs 처리 → authorized node-agent 내부 동작. SSH와 hard-coded containerd path를 대체해야 하며 전체 debug 서비스는 아니다.",
+      "H_assessment_scope": "reference_design: Node-agent targeting, selective namespace entry and filesystem access.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/0",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "netshoot: separately supplied troubleshooting image",
+      "candidate_url": "https://github.com/nicolaka/netshoot",
+      "candidate_claim": "A dedicated toolbox image sharing a target's network namespace can supply debugging tools without rebuilding the application image.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "네트워크 namespace 부분만이며 target filesystem/PID까지 제공한다고 하지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "pass",
+          "reason": "별도 toolbox image를 troubleshooting 때 공급하여 app image 재빌드를 피한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "원 응답은 admission/audit integration을 제공하지 않는다고 구별한다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "CRI abstraction을 이 toolbox image가 제공하지 않는다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "app image 비변경은 확인되지만 node-user authorization 경로까지 제공하는 scope는 아니다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "complete debug spec의 admission 노출은 별도다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "netshoot toolbox와 network sharing → late debug-tool image 공급 부분. target filesystem/PID와 정책·runtime 계약은 추가해야 한다.",
+      "H_assessment_scope": "reference_design: Troubleshooting image packaging and network-namespace attachment.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/1",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "OPA Gatekeeper: inspectable object admission",
+      "candidate_url": "https://github.com/open-policy-agent/gatekeeper",
+      "candidate_claim": "Its object-based admission review and constraint mechanism can guide policy checks over the complete requested debugging specification before execution.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "namespace/filesystem attachment는 admission component의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "tools image 획득은 이 policy reference의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "admission 검사는 지원하지만 resource audit를 API activity log로 오해하지 않는 좁은 범위다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "runtime adapter는 제공하지 않는다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "node-user 실행권한 전체는 이 admission component의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "pass",
+          "reason": "request object와 oldObject를 policy에 노출하며 debug API가 complete spec을 보내도록 제안한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Gatekeeper object-based admission → debug spec 전체의 field 검증. 새 API가 전 필드를 admission으로 전달하도록 연결해야 하고 resource audit와 API audit는 별도다.",
+      "H_assessment_scope": "reference_design: Admission payload shape, old/new-object comparison and policy checks.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/2",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "containerd CRI plugin",
+      "candidate_url": "https://github.com/containerd/containerd",
+      "candidate_claim": "Its CRI implementation and validation references provide a concrete runtime integration target for debugging-container lifecycle support.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "target namespace joining은 README가 보장하지 않는다고 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "본문은 adapter boundary에 한정하며 tools 공급의 full workflow를 제안하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "admission/audit/API visibility는 CRI runtime component 범위 밖이다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "unknown",
+          "reason": "CRI implementation은 확인되지만 요구된 target semantics와 reduced-capability negotiation은 원 응답도 별도 검증으로 남긴다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "end-user node access 경로는 runtime adapter 소개의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "admission-visible spec은 runtime adapter의 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "containerd CRI plugin → node-agent runtime adapter의 구현·conformance 참고. 선택된 debug operation 및 축소 capability 의미가 미확인이라 전체 H4 통과로 세지 않는다.",
+      "H_assessment_scope": "reference_design: Runtime adapter boundaries and CRI conformance.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/3",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "kubectl-trace: on-demand diagnostic workload",
+      "candidate_url": "https://github.com/iovisor/kubectl-trace",
+      "candidate_claim": "Scheduling tracing work as Kubernetes pods offers a reference for API-visible diagnostic work and selecting a target container process.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "trace는 filesystem을 포함한 일반 container inspection을 제공한다고 하지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "pass",
+          "reason": "on-demand diagnostic workload로 도구를 별도 pod에서 실행한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "API-visible pod lifecycle만이며 audit/full admission 계약은 제공하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "CRI 공통 debug semantics는 이 tracing workload 범위 밖이다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "fail",
+          "reason": "선택된 tracing 작업이 privileged 권한과 root namespace를 요구하여 node 권한 없는 debug 경로로 그대로 쓸 수 없다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "full debugging-container spec admission을 제공하는 범위가 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "kubectl-trace pod lifecycle → API-visible diagnostics 참고. root namespace/privilege를 필수로 하는 원 메커니즘은 이 사례의 권한 제약을 위반한다.",
+      "H_assessment_scope": "reference_design: Alternative tracing mechanism and diagnostic workload lifecycle.",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/4",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 6,
+      "candidate_name": "Azure Sidecar pattern",
+      "candidate_url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/sidecar",
+      "candidate_claim": "Separating helper functionality into its own container provides a packaging and isolation model for a debugging environment.",
+      "gold_matches": [],
+      "match_rationale": "선택된 사용 방식은 target-resolution·toolbox·policy·adapter·trace·packaging 부분이다. PodStatus 저장, exec API 이미지 확장, 독립 EphemeralContainer resource, pod-spec mutation, 사전 inactive container, debug-volume 또는 별도 공유-namespace pod라는 정답의 구체 구성을 자동 추론하지 않았다. host에서 nsenter를 실행한 것만으로 host troubleshooting binary를 공급하는 G10을 선택한 것으로 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "container 분리라는 packaging만이며 특정 target namespace/filesystem 연결은 별도다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "원 응답부터 troubleshooting-time insertion을 추가 설계로 남겼다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "admission/audit/API는 companion-container pattern 범위 밖이다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "CRI runtime behavior는 pattern 범위 밖이다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "pass",
+          "reason": "helper를 별도 container에 두는 선택된 packaging 부분은 app image 변경이나 node login을 본질적으로 요구하지 않는다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "full-spec API admission은 packaging pattern 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Sidecar helper separation → app image와 debugging environment의 packaging 경계. lifecycle coupling을 그대로 late insertion으로 간주하지 않으며 이를 풀 API 설계가 별도로 필요하다.",
+      "H_assessment_scope": "reference_design: Companion-container separation and lifecycle tradeoffs.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/5",
+        "runs/B/C03.json#/opened_documents"
+      ],
+      "remaining_check": "좁힌 reference scope를 표시했다. 전체 debug 서비스 구현·audit·CRI 통합·권한 검증은 직접 실행하지 않았으며, H4 unknown은 해당 runtime의 고정 CRI 구현과 capability test로 확인한다."
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "case_id": "C28",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is compiler syntax/qualified lookup, not producing SEL or translating foreign spellings."
+        ],
+        [
+          "pass",
+          "Qualified symbol lookup rejects missing/misspelled declarations and locates the containing type; the opened nameof discussion supports that narrow diagnostic relation."
+        ],
+        [
+          "not_in_scope",
+          "Original caveat explicitly leaves Objective-C spelling and overload metadata outside the nameof mechanism."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: checked qualified-declaration lookup before name emission",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "nameof is not the named Swift type-safe-selector calling convention, @selector spelling choice, magic initializer, implicit Selector conversion or .selector member.",
+      "transfer_mapping": "Map a qualified Swift declaration reference to compiler lookup before emitting any representation. Retain the original fact that nameof gives only the final source name; selector mapping/overload rules need separate components and are not assumed here.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened Objective-C chapter documents constructing the SEL name identifier with @selector."
+        ],
+        [
+          "pass",
+          "The original combines construction with respondsToSelector on the actual receiver, reducing unsupported-target mistakes at runtime while explicitly retaining cross-class selector identity."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is runtime representation/receiver validation and explicitly excludes translating renamed Swift declarations."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: SEL construction and runtime receiver capability validation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The original use cites Objective-C runtime construction, not a proposal to adopt the @selector sigil in Swift. Therefore it does not recover the gold Swift syntax choice; no type-safe calling-convention identity or magic initializer is present.",
+      "transfer_mapping": "Map the resolved method’s Objective-C name to SEL and a dynamic target check to respondsToSelector before invocation. The original notes selectors are shared by name across classes and checks are runtime; neither fact supplies Swift source-name translation.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is typed callback API/diagnostics; it explicitly states that a callback is not SEL and that existing selector APIs need a bridge."
+        ],
+        [
+          "pass",
+          "Opened article/code use class member pointers and signature checks, rejecting misspellings and incompatible target signatures."
+        ],
+        [
+          "not_in_scope",
+          "The original narrow diagnostic reference does not provide the Swift-to-Objective-C name bridge."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: class-qualified callback references and signature diagnostics",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Qt typed member-pointer connections are a different entity from the Swift type-safe-selector proposal. Similar safety goals do not satisfy external-item identity; no exact primary or review syntax choice is selected.",
+      "transfer_mapping": "Map checked member pointers to checked Swift method references and preserve overload disambiguation. Lambdas offer a callback alternative, but the original does not equate callbacks with selector-taking APIs or supply their bridge.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is selected-declaration extraction from an expression, not final SEL construction."
+        ],
+        [
+          "pass",
+          "Additional primary documentation verifies compiler emission of trees from typed expression lambdas; MethodCallExpression exposes MethodInfo and receiver expression for the selected method."
+        ],
+        [
+          "not_in_scope",
+          "The original mechanism extracts method identity; a Swift declaration-to-Objective-C metadata bridge is not supplied by .NET expression trees."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: typed-expression method identity extraction",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Expression-tree extraction does not propose implicit method-to-Selector conversion, a magic .selector member or the named type-safe-selector calling convention.",
+      "transfer_mapping": "Map a checked single-expression lambda to its method-call node, then use selected declaration/receiver metadata rather than re-parsing a caller string. Preserve the expression-tree syntax restrictions; no foreign-runtime conversion is claimed without a separate bridge.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA009",
+        "evidence/judgments/reviewer-a-sources.json#RA010",
+        "evidence/judgments/reviewer-a-sources.json#RA011"
+      ],
+      "date_status": "post_decision",
+      "date_reason": "Decisive reviewer verification of compiler-generated expression trees uses official documentation last updated 2025-10-13; the original current API view was undated and the historical article was blocked."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is declaration bridge metadata, not a complete selector-emission API."
+        ],
+        [
+          "not_in_scope",
+          "The original explicitly notes manually supplied strings still need validation; it is not a typo-proof lookup mechanism by itself."
+        ],
+        [
+          "pass",
+          "The opened export attribute associates a host method declaration with a different Objective-C selector spelling, reducing repeated caller-side name inference in the original metadata design."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: foreign selector spelling stored on the host declaration",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A selector-name attribute is not the gold magic Selector initializer or .selector member, and is not the named type-safe calling convention.",
+      "transfer_mapping": "Map the host declaration to stored Objective-C selector metadata and reuse that association at lookup. The original requires metadata validation and declaration lookup and acknowledges manual strings; it does not claim those checks are already implemented in Swift.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original use is a diagnostic check, not the full emitted-selector representation."
+        ],
+        [
+          "fail",
+          "The check accepts a matching declaration anywhere in visible interfaces/protocols/implementations, so it does not establish the intended receiver class; it only addresses the spelling half of the combined H2 condition."
+        ],
+        [
+          "not_in_scope",
+          "The original explicitly excludes Swift-name translation from this diagnostic mechanism."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: undeclared-selector diagnostic",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "This warning does not select Swift @selector syntax or the named type-safe-selector calling convention.",
+      "transfer_mapping": "Map selector spellings to visible declaration lookup and issue a warning when none exists. The original lookup’s receiver-independent acceptance cannot be promoted to class-specific method selection.",
+      "remaining_check": "A receiver-qualified declaration lookup would be an additional proposed mechanism. Preserve the known H2 limitation and the post-decision GCC 7.4 evidence rather than assuming the failed 4.9.3 page supported it."
+    }
+  ]
+}

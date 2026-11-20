@@ -1,0 +1,121 @@
+{
+  "case_id": "C29",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C29",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Ada package private declarative region",
+      "candidate_url": "https://ada-lang.io/docs/arm/AA-7/AA-7.1/",
+      "candidate_claim": "An explicit private declaration region could provide a model for restricting Swift implementation declarations to their enclosing class or extension while allowing related declarations to remain in one file.",
+      "gold_matches": [],
+      "match_rationale": "원 응답이 선택한 private region/type-private field를 곧바로 기존 파일 private 유지, extra scoped namespace, 기존 private 이름 유지+새 modifier의 세 선택과 동일시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "unknown",
+      "E_reason": "선택 URL의 본문은 열렸지만 스스로 unverified community rendering이라고 표시한다. 공식2022 RM 동일 절의 root 열람도 timeout/503으로 실패하여 technical rule의 일차 원문 확인을 완료하지 못했다. 모조·가짜 링크라고 하지는 않는다.",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "package private region을 class/extension 소유 경계로 대응시키는 설계 참고이며 child-unit 추가 권한은 목표 경계에서 별도 정의한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "선택 범위는 visibility declaration region이며 관련 선언의 파일 분리를 요구하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "표준의 semantic visibility 규칙을 목표 compiler enforcement에 대응시킨다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Ada package/private region → Swift enclosing declaration 경계와 노출 API 구분. child unit 권한을 그대로 가져오지 않는다.",
+      "H_assessment_scope": "reference_design: Language visibility rules and the syntax separating API from implementation.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C29.json#/candidates/0",
+        "runs/B/C29.json#/opened_documents",
+        "evidence/judgments/VERIFICATION.json#J-B29-ADA-OFFICIAL-FAIL"
+      ],
+      "remaining_check": "역사 판에서 선택 기능을 확인하고 Swift 대상 경계·Unicode/ownership의 최소 구현을 검증한다. Ada mirror의 표준 일치 확인은 공식 원문 재열람이 필요하다."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Pony type-private fields",
+      "candidate_url": "https://tutorial.ponylang.io/types/classes",
+      "candidate_claim": "Pony's type-private fields offer a compiler-defined rule that can protect each type's implementation state from neighboring types independently of their physical file placement.",
+      "gold_matches": [],
+      "match_rationale": "원 응답이 선택한 private region/type-private field를 곧바로 기존 파일 private 유지, extra scoped namespace, 기존 private 이름 유지+새 modifier의 세 선택과 동일시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "원래 좁은 범위인 stored field는 declaring type에 private이다. helper method·Swift extension 전체까지 보호한다고 하지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "field privacy가 physical file placement와 독립적이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "underscore는 단순 이름 관례가 아니라 compiler의 접근 규칙으로 읽었다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Pony type-private field → 같은 파일의 이웃 타입으로부터 state를 숨기는 의미 규칙. package-private method를 class-private와 혼동하지 않는다.",
+      "H_assessment_scope": "reference_design: Privacy of stored implementation state and a visible marker with language semantics.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C29.json#/candidates/1",
+        "runs/B/C29.json#/opened_documents"
+      ],
+      "remaining_check": "역사 판에서 선택 기능을 확인하고 Swift 대상 경계·Unicode/ownership의 최소 구현을 검증한다. Ada mirror의 표준 일치 확인은 공식 원문 재열람이 필요하다."
+    }
+  ]
+}

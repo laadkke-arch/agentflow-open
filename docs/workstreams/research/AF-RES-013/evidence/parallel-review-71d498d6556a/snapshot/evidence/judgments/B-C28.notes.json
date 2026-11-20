@@ -1,0 +1,111 @@
+{
+  "case_id": "C28",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원래 선택 범위는 declaration/receiver 검사이며 Swift SEL 생성과 이름 변환은 별도 adaptation이라고 했다."
+        ],
+        [
+          "pass",
+          "열린 README가 intended object의 메서드 존재를 compile-time 확인한다고 설명한다."
+        ],
+        [
+          "not_in_scope",
+          "Swift-facing declaration과 runtime spelling의 mapping은 원 응답에서 미제공 영역으로 분리했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Declaration existence and intended-receiver checking.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "transfer_mapping": "libextobjc receiver-aware selector check → Swift의 의도한 선언 검사. importer의 이름 mapping과 실제 SEL 표현은 별도로 구현한다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답은 Qt runtime signal index의 비교 사례이며 실제 Objective-C SEL bridge는 요구한다고 명시했다."
+        ],
+        [
+          "pass",
+          "class-qualified member reference와 typed checking이 오타·대상 서명 혼동을 줄인다."
+        ],
+        [
+          "not_in_scope",
+          "Swift declaration-to-selector mapping 자체는 원래 좁은 참고 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compiler checking followed by lowering to runtime metadata.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "transfer_mapping": "Qt checked member reference + generated index metadata → 선언 검사 후 runtime identifier lowering. C++ member pointer를 SEL과 동일시하지 않는다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원래 범위는 공통 interface identity와 이름 변환 metadata이며 arbitrary method SEL 생성이 아니다."
+        ],
+        [
+          "not_in_scope",
+          "원래 범위는 cross-language naming이고 임의 imported method의 진단 보장을 주장하지 않는다."
+        ],
+        [
+          "pass",
+          "하나의 interface description에서 언어별 identifier를 생성하여 외부 철자 추론을 mapping에 모은다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Preserving a common identity across language-specific names.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "transfer_mapping": "Djinni shared interface description → importer/generated metadata의 언어별 이름 연결. 기존 임의 Objective-C API에는 추가 generator/importer 경로가 필요하다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원래 범위는 generated symbol surface이고 이 도구가 selector 자체를 생성하지는 않는다."
+        ],
+        [
+          "pass",
+          "class-scoped typed constants를 생성하는 전이에서 missing symbol로 오타를 검출하며 대상별 namespace와 collision 검사를 조건으로 명시한다."
+        ],
+        [
+          "not_in_scope",
+          "method metadata 확보와 외부 이름 mapping은 이 resource generator의 검증 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Generated symbol surface replacing manually entered strings.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "transfer_mapping": "R.swift typed resource accessor → imported method별 class-scoped typed symbol 생성. 실제 method metadata·충돌·API 변경시 regeneration을 마련해야 한다.",
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    }
+  ]
+}

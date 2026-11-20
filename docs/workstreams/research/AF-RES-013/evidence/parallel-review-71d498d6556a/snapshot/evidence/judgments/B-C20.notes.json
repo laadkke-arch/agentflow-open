@@ -1,0 +1,180 @@
+{
+  "case_id": "C20",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "translate/localize API와 대체 backend로 locale별 요구 확장 지점을 제공한다."
+        ],
+        [
+          "pass",
+          "public API와 backend가 외부 library 경계여서 core format syntax가 미완성 기능을 소유할 필요가 없다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Separate library API, translation storage, interpolation, and locale-specific extensions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "I18n backend 분리는 L20n 또는 gettext+formatter 조합을 명시적으로 제시한 것이 아니다.",
+      "transfer_mapping": "Ruby I18n interface/backend split → Rust optional localization API와 교체 backend. 기본 English-oriented backend를 충분한 다국어 구현으로 간주하지 않고 필요한 locale rule을 추가해야 한다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "명시한 좁은 범위인 collation 및 locale별 number/date formatting을 지원한다."
+        ],
+        [
+          "pass",
+          "core-language release와 별도 채택되는 dedicated API 경계를 설명한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Typed collation and number/date formatting services backed by internationalization libraries.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "전용 locale service 경계는 L20n에 기존 format 문법을 맞추는 G03과 다르다.",
+      "transfer_mapping": "ECMA-402 first-edition locale services → basic Rust formatting과 분리한 locale API. resource loading과 message assembly는 추가 layer가 담당해야 한다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "문장 전체와 plural/select branch를 처리하여 실제 문법 변화 요구를 다룬다."
+        ],
+        [
+          "pass",
+          "전용 library가 message assembly를 담당하고 기본 formatter와 분리한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Message assembly and grammatical alternatives outside core formatting syntax.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ICU와 L20n/gettext는 동일한 외부 실체가 아니다.",
+      "transfer_mapping": "ICU MessageFormat → optional Rust message library. locale data·binding·message grammar를 연결하고 parameter formatting을 별도 수행할 수 있다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "선택 범위인 locale convention 데이터를 외부 versioned component로 제공한다."
+        ],
+        [
+          "pass",
+          "locale data 갱신을 core formatting syntax 변경과 분리한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Locale-data dependency and maintenance boundary; historical availability anchored to CLDR 25.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "locale-data 유지 경계는 gold의 세 특정 통합안과 구별된다.",
+      "transfer_mapping": "CLDR release/data boundary → Rust localization library의 독립 locale-data 의존성. 데이터만으로 application translation/runtime을 대체하지 않는다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "실제 번역의 context·복수형 선택과 위치 재배열을 처리하는 구체 구성이 있다."
+        ],
+        [
+          "pass",
+          "catalogue lookup과 보간을 선택적 application library로 분리하므로 core compiler에 불완전한 localization 기제를 남길 필요가 없다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Application-level translation lookup, plural selection, and positional interpolation pipeline.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "rationale": "SCOPE §5는 동일 명시 메커니즘을 일치 근거로 허용한다. 고정 G02는 gettext와 format string의 결합이며 원 후보는 gettext 구현의 context/plural lookup 뒤 sprintf 보간을 실제로 제안했다. 단순 이름 유사성이 아니다.",
+          "match_basis": "same_explicit_mechanism",
+          "external_entity_hit": false
+        }
+      ],
+      "match_rationale": "기본 판정은 명시 메커니즘 일치다. 만약 집계가 외부 항목의 프로젝트 동일성만 허용한다면 해당 축은 miss로 유지해야 한다. 그러한 좁은 동일성 기준을 SCOPE의 mechanism 조항과 혼동하지 않는다. l20n 실체가 아니다. 기존 Rust format 문법을 l20n에 통합하는 설계가 아니다.",
+      "transfer_mapping": "gettext catalogue 선택→localization library, sprintf 보간→기본 formatting. Rust 측 API·catalogue 변환과 올바른 plural metadata가 필요하다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다.",
+      "expected_label": "CONDITIONAL_TRANSFER",
+      "internal_review": {
+        "reviewer": "내부 별도 검토",
+        "model_label": "GPT-6 Astra Pro",
+        "source": "evidence/judgments/SECOND_REVIEW.json",
+        "candidate_id": "B-C20-r5",
+        "resolution": "작업자가 원 응답·고정 규칙을 다시 대조하고 이 검토의 일치·참고 범위 판정을 채택함; 최초 판정은 SECOND_RESOLUTION.json에 보존"
+      },
+      "additional_evidence": [
+        "evidence/judgments/reviewer-second-sources.json#SR2-JED",
+        "evidence/judgments/reviewer-second-sources.json#SR2-GOLD-C20"
+      ]
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "plural/gender-aware message를 compile하여 application에 제공한다."
+        ],
+        [
+          "pass",
+          "parser/compiler/loaders/runtime을 optional 외부 tooling으로 나눈다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: External message compilation, parser, loaders, and runtime dependencies.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ICU MessageFormat compiler는 L20n이나 gettext의 공식 alias가 아니며 기존 Rust format 문법의 L20n 적응도 아니다.",
+      "transfer_mapping": "messageformat compiler/runtime split → Rust 외부 message compiler와 runtime dependency. JavaScript 결과함수 대신 Rust-compatible output 또는 bridge가 필요하다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "필요 locale·formatting module만 로드하는 참조다."
+        ],
+        [
+          "pass",
+          "data와 formatter module을 core syntax와 별도 조합한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Library composition, selective data loading, and reusable or precompiled formatters.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "범용 module/data 분리는 gold의 특정 L20n/gettext 통합과 동일하지 않다.",
+      "transfer_mapping": "Globalize optional modules/CLDR data → Rust application별 localization library composition. data/module version 호환과 필요한 locale 범위를 사용자가 관리해야 한다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "case_id": "C21",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "참조와 복사 값 캡처가 모두 문서화되어 있다. Rust의 소유권·수명 검사를 동일시하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "소비/읽기/변경 전체를 제공한다는 주장은 원 후보가 명시적으로 하지 않았다. 실제 선택한 읽기·변경 구분은 지지된다."
+        ],
+        [
+          "not_in_scope",
+          "구체 closure class와 inline 호출 연산자는 확인되지만 사용자용 전체 dispatch/inlining 선택 모델은 원 후보의 보장 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Capture policy, read/mutate access, callable representation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "CONDITIONAL_TRANSFER는 좁힌 두 설계 축의 참고 유용성만 뜻한다. 전체 H2/H3 통과나 소비형 호출 회수를 뜻하지 않는다. 참조 캡처를 언어 기본값으로 선택한다는 원 제안이 없다. 문서에는 개별 변수 capture clause가 있으나 원 후보는 변수별 borrowing 문법을 특정하지 않았다. receiver 모드 추론이 원 후보에 없다. const 또는 mutable을 구분한다는 설명을 const를 기본값으로 채택한다는 제안으로 확대하지 않는다.",
+      "transfer_mapping": "캡처 정책과 invocation의 읽기/변경 정책을 별개 축으로 설계하는 대응은 구체적이다. 참조 수명, 소비형 호출, Rust 측 dispatch 선택은 별도 설계가 필요하다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다.",
+      "expected_label": "CONDITIONAL_TRANSFER",
+      "internal_review": {
+        "reviewer": "내부 별도 검토",
+        "model_label": "GPT-6 Astra Pro",
+        "source": "evidence/judgments/SECOND_REVIEW.json",
+        "candidate_id": "B-C21-r1",
+        "resolution": "작업자가 원 응답·고정 규칙을 다시 대조하고 이 검토의 일치·참고 범위 판정을 채택함; 최초 판정은 SECOND_RESOLUTION.json에 보존"
+      },
+      "additional_evidence": [
+        "evidence/judgments/reviewer-second-sources.json#SR2-N2859",
+        "evidence/judgments/reviewer-second-sources.json#SR2-GOLD-C21"
+      ]
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답은 closure lifetime/representation에 한정하며 참조·값 capture 구성을 함께 제공한다고 하지 않는다."
+        ],
+        [
+          "unknown",
+          "linear closure ownership과 explicit destruction은 consuming/read/mutate invocation 계약 자체를 정하지 않는다."
+        ],
+        [
+          "unknown",
+          "local closure allocation 제거 예는 있지만 사용자에게 inlining/dispatch 방식을 고르는 제약을 만족하는 규칙은 검증하지 않았다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Environment ownership and lifetime; representation and allocation elimination.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답이 선택한 capture/access/representation 참고를 매칭한다. source에 있다는 이유만으로 per-variable borrowing clause, receiver default 또는 receiver inference를 추가하지 않는다. 언급한 copy/reference 구분만으로 명시적 per-variable borrowing 구문 G05를 선택했다고 보지 않았다.",
+      "transfer_mapping": "ATS linear resource tracking → closure environment lifetime 참고. reusable calls 뒤 destruction과 consuming invocation을 같게 보지 않으며 optimization control은 추가 원문이 필요하다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답은 shared capture와 escaping lifetime에 한정하고 ownership transfer를 직접 제공하지 않는다고 밝혔다."
+        ],
+        [
+          "not_in_scope",
+          "read/write shared environment 부분만이며 consuming-call semantics는 범위 밖이라고 명시했다."
+        ],
+        [
+          "unknown",
+          "scope에 따른 allocation 회피는 확인되지만 inlining/dispatch를 사용자가 통제하는 구체 규칙은 이 제안에서 확립하지 않았다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Shared environment access, escaping lifetime, context-passing representation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답이 선택한 capture/access/representation 참고를 매칭한다. source에 있다는 이유만으로 per-variable borrowing clause, receiver default 또는 receiver inference를 추가하지 않는다. 언급한 copy/reference 구분만으로 명시적 per-variable borrowing 구문 G05를 선택했다고 보지 않았다.",
+      "transfer_mapping": "D context+function delegate와 scope-sensitive storage → callable representation·escape lifetime 참고. GC escape와 Rust ownership을 동일시할 수 없고 central optimization 제약은 미확인이다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "선택한 ordinary capture는 by-reference이며 by-value capture를 이 참고에서 제공한다고 하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "iterator forms는 consuming/read/mutable invocation의 전체 구별이라고 주장하지 않는다."
+        ],
+        [
+          "pass",
+          "inline iterator와 first-class closure iterator의 선택을 사용자가 명시하는 optimization tradeoff다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Callable representation, shared local capture, optimization choice.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답이 선택한 capture/access/representation 참고를 매칭한다. source에 있다는 이유만으로 per-variable borrowing clause, receiver default 또는 receiver inference를 추가하지 않는다. 언급한 copy/reference 구분만으로 명시적 per-variable borrowing 구문 G05를 선택했다고 보지 않았다.",
+      "transfer_mapping": "Nim inline/closure iterator 선택 → Rust callable 표현에서 사용자-visible optimization control 참고. iterator 의미를 일반 receiver mode와 같게 보지 않는다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    }
+  ]
+}

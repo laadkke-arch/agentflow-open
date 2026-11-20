@@ -1,0 +1,467 @@
+{
+  "case_id": "C06",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Docker/Moby private-or-container PID namespace modes",
+      "candidate_url": "https://raw.githubusercontent.com/moby/moby/v17.12.0-ce/daemon/oci_linux.go",
+      "candidate_claim": "Docker's separate private and join-container PID modes could implement an opt-in pod-wide sharing policy while preserving the private PID namespace used by existing images.",
+      "gold_matches": [
+        {
+          "gold_id": "K0495-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "실제 source의 target container ID 해석과 namespace 경로 선택을 pod adapter의 중심으로 제시했다."
+        }
+      ],
+      "match_rationale": "container target을 식별해 namespace를 고르는 G01 메커니즘을 회수한다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "sharing 비활성 때 application별 fresh namespace로 PID1 가정을 유지한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "단일 pod option에서 모든 container 설정을 도출한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "public API에 per-container subgroup을 노출하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "namespace adapter이며 일반 init system은 제안하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Docker private/container-target PID mode → opt-in pod policy의 runtime adapter. 하나의 pod namespace owner를 선택하고 user namespace 동반 join을 검증해야 한다.",
+      "H_assessment_scope": "reference_design: Runtime adapter: retain a fresh PID namespace for every application when sharing is disabled, and resolve one pod namespace owner for all applications when sharing is enabled.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "K0495-G01"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/0",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "OCI Runtime Specification v1.0.0 namespace path contract",
+      "candidate_url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "candidate_claim": "OCI's namespace type-and-path contract could carry the pod's decision consistently to runtimes by selecting either a fresh PID namespace or one shared namespace path.",
+      "gold_matches": [],
+      "match_rationale": "namespace path는 container/sandbox ID라는 G01 API 선택과 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "fresh namespace와 shared path를 구별해 기본 private 정책을 유지한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "모든 application에 한 pod path를 제공한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "public per-container 설정 없이 두 pod 정책을 표현한다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "runtime namespace schema이지 init system이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCI type/path join/create 계약 → pod sharing policy를 runtime에 전달. type 생략의 host inheritance와 path 없는 fresh namespace를 혼동하지 않고 owner lifetime을 정의해야 한다.",
+      "H_assessment_scope": "reference_design: Runtime-neutral representation of the two pod policies; one shared path can be supplied to each application without introducing per-container configuration in the public API.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/1",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Linux PID namespace init and procfs semantics",
+      "candidate_url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "candidate_claim": "Linux's PID namespace rules could define the compatibility and lifecycle contract because PID 1 receives special signal treatment, its exit terminates the namespace, and procfs visibility depends on the mounting namespace.",
+      "gold_matches": [],
+      "match_rationale": "기본 무조건 공유 G02를 권하지 않고 명시적으로 비공유 호환 경로를 제시한다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "shared mode에서 독립 PID1이 불가능함을 밝히고 disabled mode를 호환 경로로 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "pod namespace owner·application PID/procfs 계약의 근거를 제공한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "not_in_scope",
+          "reason": "kernel semantics 참조이며 API subgroup 구성은 제안하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "PID1·signal·procfs의 동작 계약에 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Linux PID1/namespace exit/procfs 규칙 → pod shared-mode compatibility·lifetime 계약. 기존 PID1 이미지에는 private mode를 남기고 procfs mount를 일치시켜야 한다.",
+      "H_assessment_scope": "reference_design: Specify behavior of application PIDs, process enumeration, signal delivery to PID 1, namespace-owner failure, and matching /proc mounts.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/2",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "rkt pod-scoped namespace owner and application launch architecture",
+      "candidate_url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/Documentation/devel/architecture.md",
+      "candidate_claim": "rkt's architecture could inform a pod-scoped namespace owner because its stage1 runs PID 1 for the pod and launches application processes underneath that shared execution environment.",
+      "gold_matches": [],
+      "match_rationale": "rkt shared layout의 일부를 참고하는 제안을 모든 지원 runtime에서 항상 공유하는 G02 정책으로 확대하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "not_in_scope",
+          "reason": "shared-mode namespace owner/launch 구조만 제안하며 기존 app PID1 보장을 제공한다고 하지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "stage1 PID1이 pod 수명과 application을 소유한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "pod당 공통 execution environment이며 subgroup 구성을 제안하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "systemd/nspawn 전체가 아니라 namespace ownership만 가져오도록 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "rkt pod-level PID1 owner → pod namespace 수명과 application entrypoint 분리. 일반 systemd init 기능은 범위 밖이고 PID1 의존 이미지는 별도 private 경로가 필요하다.",
+      "H_assessment_scope": "reference_design: Separate pod lifetime and namespace ownership from individual application entrypoints while retaining per-application resource isolation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/3",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Linux setns PID namespace joining semantics",
+      "candidate_url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man2/setns.2",
+      "candidate_claim": "The setns contract could guide runtime startup ordering because joining a PID namespace changes the namespace of subsequently created children rather than the caller's existing PID identity.",
+      "gold_matches": [],
+      "match_rationale": "kernel PID entry는 container/sandbox ID 인수 설계나 annotation migration 정책과 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "이미 실행 중인 app PID를 바꾸지 않고 launch 때 설정하는 경로다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "선택한 pod PID namespace에서 child를 시작한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "하나의 선택 namespace 안에 applications를 배치하는 adapter 부분이다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "kernel entry/start ordering이며 init 기능이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "setns가 이후 child에만 적용되는 규칙 → pod application 생성 순서. runtime이 올바른 ancestor namespace에 있어야 하고 실행 중 PID namespace 교체로 오해하면 안 된다.",
+      "H_assessment_scope": "reference_design: Implement the child creation and namespace-entry sequence used to start applications inside the selected pod PID namespace.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/4",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "util-linux nsenter for selective namespace-aware operations",
+      "candidate_url": "https://man7.org/linux/man-pages/man1/nsenter.1.html",
+      "candidate_claim": "nsenter could provide a diagnostic or administrative alternative for selected operations by starting a helper in an application's PID namespace while normal application containers retain private namespaces.",
+      "gold_matches": [],
+      "match_rationale": "target process ID로 선택 helper를 실행하는 것은 container/sandbox ID를 담은 pod namespace API 대안과 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "normal applications는 private namespace/PID1을 유지한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "fail",
+          "reason": "선택 helper의 namespace entry만 제공하며 pod 전체 application 상호 process visibility를 구성하지 못한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "지속적인 per-container sharing 설정을 public API에 새로 제공하는 제안은 아니다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "선택 helper 실행이며 general init system이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "nsenter helper → private-mode workload의 선택적 진단. caller 권한과 PID-entry fork가 필요하며 pod-wide sharing을 대체하지 못한다.",
+      "H_assessment_scope": "reference_design: Selective inspection and helper execution for pods whose images must keep private PID namespaces, plus a reference for namespace-entry behavior.",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/5",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "LXC 3.0 explicit namespace clone, keep, and share configuration",
+      "candidate_url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "candidate_claim": "LXC's explicit namespace-sharing configuration could inform validation and compatibility messages by separating namespace creation from inheritance and warning that shared PID namespaces conflict with some init systems.",
+      "gold_matches": [
+        {
+          "gold_id": "K0495-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "LXC의 다른 container를 지정하는 namespace share 설정을 runtime config 참조로 제시했다."
+        }
+      ],
+      "match_rationale": "명시적인 container-sharing target이 G01의 ID 지정 방식에 대응하지만 자료는 사후다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "공유 PID와 init의 충돌을 명시해 compatibility 경고를 제공한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "container targets를 단일 pod 정책 뒤에 감출 것을 명시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "독립 subgroup으로 노출하지 않는 조건이다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "namespace config/validation의 참고이며 general init 도입이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "LXC explicit clone/keep/share target → pod runtime validation과 compatibility 경고. container-level ID는 하나의 pod policy로 제한하고 init 충돌을 설명해야 한다.",
+      "H_assessment_scope": "reference_design: Later comparative evidence for runtime configuration and documentation of the consequences of joining an existing PID namespace.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [
+        "K0495-G01"
+      ],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C06.json#/candidates/6",
+        "runs/A/C06.json#/opened_documents"
+      ],
+      "remaining_check": "2018-03-27 사후 자료이므로 2018-01 결정 전 적중에 넣지 않는다."
+    }
+  ]
+}

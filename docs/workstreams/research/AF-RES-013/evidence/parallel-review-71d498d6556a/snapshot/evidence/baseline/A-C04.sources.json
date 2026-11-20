@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "case_id": "C04",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C04-D02",
+      "url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+      "accessed_at_utc": "2026-11-20 11:10:08 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "kubernetes.io",
+      "version_or_date": "live documentation; no dated snapshot verified",
+      "sections_read": "NodeRestriction section, including follow-up find reads.",
+      "confirmed": "NodeRestriction distinguishes node identities, restricts changes to the caller's Node, and reserves a label namespace for administrator-controlled placement.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D03",
+      "url": "https://kubernetes.io/docs/reference/access-authn-authz/node/",
+      "accessed_at_utc": "2026-11-20 11:10:08 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes Node authorizer",
+      "version_or_date": "live documentation; contains later features",
+      "sections_read": "Overview, required node credentials and NodeRestriction integration.",
+      "confirmed": "Node authorization binds kubelet API access to a named node and limits secret reads to relationships with workloads assigned to that node.",
+      "limits": "It cannot make spoofed placement labels trustworthy; it must be paired with label-write restrictions and distinct authenticated node identities. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D04",
+      "url": "https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/",
+      "accessed_at_utc": "2026-11-20 11:10:08 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes validating admission webhooks",
+      "version_or_date": "live documentation; no dated snapshot verified",
+      "sections_read": "Webhook overview, request object/oldObject, matching, and failure policy via follow-up find reads.",
+      "confirmed": "Validating admission webhooks inspect requests after mutation, can reject writes, receive old and new objects, and can reject requests when the webhook fails.",
+      "limits": "Cover creation and all relevant updates, use a failure policy that rejects unverifiable writes, and avoid node-controlled labels as an opt-out selector. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D06",
+      "url": "https://www.ll.mit.edu/r-d/publications/bootstrapping-and-maintaining-trust-cloud",
+      "accessed_at_utc": "2026-11-20 11:10:31 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Keylime hardware-rooted identity and periodic attestation",
+      "version_or_date": "2016-12-05 conference publication",
+      "sections_read": "Publication date and research summary.",
+      "confirmed": "The 2016 Keylime research describes hardware-rooted node identities and periodic integrity attestation for bare-metal and virtualized cloud nodes.",
+      "limits": "Requires a trustworthy hardware or virtual-TPM chain and meaningful measurements; Kubernetes label integration and revocation handling must be built separately. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D07",
+      "url": "https://www.openpolicyagent.org/ecosystem/entry/kubernetes-validating-admission",
+      "accessed_at_utc": "2026-11-20 11:10:31 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "kubernetes-validating-admission",
+      "version_or_date": "live integration page",
+      "sections_read": "Integration description and outgoing official blog link.",
+      "confirmed": "OPA provides Rego-based Kubernetes admission policy evaluation; this live integration page links a dated explanation of its mechanism.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D08",
+      "url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+      "accessed_at_utc": "2026-11-20 11:10:31 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes RBAC for a dedicated label-management identity",
+      "version_or_date": "live documentation; no dated snapshot verified",
+      "sections_read": "Role and ClusterRole; referring to resources and resourceNames, via follow-up find reads.",
+      "confirmed": "RBAC grants permissions for resources, verbs and selected resource names; permissions are additive and top-level creates cannot be limited by resourceNames.",
+      "limits": "RBAC grants are additive and operate at resource level; restricting individual label keys still requires admission enforcement. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D10",
+      "url": "https://github.com/kubernetes/kubernetes/blob/master/plugin/pkg/admission/noderestriction/admission.go",
+      "accessed_at_utc": "2026-11-20 11:10:40 UTC",
+      "source_type": "public_code",
+      "title": "Kubernetes NodeRestriction admission plugin and public implementation",
+      "version_or_date": "live master branch; no dated commit verified",
+      "sections_read": "Admit, admitNode, getModifiedLabels, getForbiddenLabels, through follow-up find reads.",
+      "confirmed": "The public master implementation checks label changes on both Node creation and update and rejects protected keys, including administrator-reserved namespaces.",
+      "limits": "Use protected keys for sensitive placement; arbitrary node-writable labels remain untrusted, and the node credential format must be recognized. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D11",
+      "url": "https://www.openpolicyagent.org/blog/securing-the-kubernetes-api-with-open-policy-agent-ce93af0552c3",
+      "accessed_at_utc": "2026-11-20 11:10:40 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Open Policy Agent for Kubernetes admission policy",
+      "version_or_date": "2019-02-08 article",
+      "sections_read": "Official OPA article reached from integration page.",
+      "confirmed": "The article discusses policy evaluation over arbitrary Kubernetes objects and existing cluster data; the later focused read verified its date.",
+      "limits": "Node-specific rules must be authored and enforced through the admission path; replicated policy context can be stale, and this evidence is later than cutoff. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D12",
+      "url": "https://www.openpolicyagent.org/blog/securing-the-kubernetes-api-with-open-policy-agent-ce93af0552c3",
+      "accessed_at_utc": "2026-11-20 11:10:56 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Open Policy Agent for Kubernetes admission policy",
+      "version_or_date": "2019-02-08 article",
+      "sections_read": "Reopened article at line 78; date, policy examples and context-aware policy sections.",
+      "confirmed": "The article is dated 2019-02-08 and explains JSON/YAML policy evaluation plus replicated, potentially stale external context.",
+      "limits": "Node-specific rules must be authored and enforced through the admission path; replicated policy context can be stale, and this evidence is later than cutoff. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D13",
+      "url": "https://kubernetes.io/docs/concepts/architecture/cloud-controller/",
+      "accessed_at_utc": "2026-11-20 11:11:21 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Cloud controller manager Node controller",
+      "version_or_date": "live documentation; no dated snapshot verified",
+      "sections_read": "Node controller functions and authorization, via follow-up find read.",
+      "confirmed": "The cloud controller's Node controller obtains provider-side machine information and writes identifiers, labels and addresses to Kubernetes Node objects.",
+      "limits": "Provider attributes do not automatically prove runtime integrity; securely bind the instance to its Node and prevent kubelets from overwriting trusted labels. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D14",
+      "url": "https://kubernetes.io/blog/2018/09/27/kubernetes-1-12-release-announcement/",
+      "accessed_at_utc": "2026-11-20 11:11:21 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubelet TLS bootstrap with individual node credentials",
+      "version_or_date": "2018-09-27 release announcement",
+      "sections_read": "Original article date and Kubelet TLS Bootstrap general-availability section, via follow-up find read.",
+      "confirmed": "The 2018-09-27 release announcement describes automated per-kubelet certificate provisioning and explains why shared node identities impede node lockdown.",
+      "limits": "Certificate approval must bind the correct node identity; authentication alone does not certify a node's security properties or authorize sensitive labels. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C04.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C04-D01",
+      "url": "https://github.com/search?q=repo%3Akubernetes%2Fkubernetes+NodeRestriction&type=code",
+      "accessed_at_utc": "2026-11-20 11:10:08 UTC",
+      "reason": "The public code-search surface returned DisabledError; no native code-search results were obtained.",
+      "recorded_in": "runs/A/C04.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D05",
+      "url": "https://raw.githubusercontent.com/kubernetes/kubernetes/v1.12.0/plugin/pkg/admission/noderestriction/admission.go",
+      "accessed_at_utc": "2026-11-20 11:10:31 UTC",
+      "reason": "Raw source retrieval returned DisabledError; historical implementation details were not verified.",
+      "recorded_in": "runs/A/C04.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C04-D09",
+      "url": "https://github.com/kubernetes/kubernetes/blob/v1.12.0/plugin/pkg/admission/noderestriction/admission.go",
+      "accessed_at_utc": "2026-11-20 11:10:40 UTC",
+      "reason": "Historical GitHub source retrieval returned DisabledError, so it supplied no verified evidence.",
+      "recorded_in": "runs/A/C04.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

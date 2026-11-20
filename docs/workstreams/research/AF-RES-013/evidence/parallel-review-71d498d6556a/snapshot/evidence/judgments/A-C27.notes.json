@@ -1,0 +1,116 @@
+{
+  "case_id": "C27",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "처음부터 full method-name 표기와 runtime selector 값 부분이며 typed callable binding은 별도라고 했다."
+        ],
+        [
+          "pass",
+          "전체 keyword/colon 이름이 label 차이를 보존한다."
+        ],
+        [
+          "pass",
+          "인수 값·타입 없이 이름을 직접 표현한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Source syntax for full method names; separation of the receiver from the selector; external runtime target-action interoperability.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "selector identity는 lens, underscore partial application, 빈 label 생략이라는 대안과 다르다.",
+      "transfer_mapping": "ObjC compound selector → Swift full method-name identity와 외부 runtime 경계. receiver binding·static signature 검사는 별도로 유지해야 한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "named-call placeholder가 anonymous callable을 만든다."
+        ],
+        [
+          "unknown",
+          "동일 타입·label만 다른 overload를 지원하는 규칙은 열린 자료에서 입증되지 않았다."
+        ],
+        [
+          "pass",
+          "forwarding body를 줄이나 일부 expected/placeholder type 표기는 남는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative mechanism based on abbreviated call expressions and anonymous-function generation; overload filtering through named arguments.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "S0021-G02",
+          "rationale": "named argument expression의 underscore placeholder가 anonymous function을 생성하는 일반 partial application 대안이다."
+        }
+      ],
+      "match_rationale": "underscore placeholder를 쓰는 일반 partial application 구조를 직접 회수했다.",
+      "transfer_mapping": "Scala named placeholder anonymous function → Swift compact callable adapter. same-type label-only overload 규칙과 기대 타입을 별도로 검증해야 한다.",
+      "remaining_check": "동일 타입·다른 label만 가진 overload 두 개를 이 규칙으로 구별하는 정식 언어 규칙/예제를 열면 H2가 판정된다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "symbol representation만 제안하고 typed callable·receiver binding은 별도라고 했다."
+        ],
+        [
+          "pass",
+          "모든 keyword segment가 selector identity에 참여한다."
+        ],
+        [
+          "pass",
+          "interned compact symbol literal이 반복 타입 표기를 요구하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compiler and runtime representation of compound names; symbol literals; selector equality and lookup keys.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "명명 표현의 참조이며 세 본문 대안과 동일하지 않다.",
+      "transfer_mapping": "Smalltalk keyword symbol → Swift compound-name key/equality. typed resolution·receiver binding·ambiguity 진단이 별도로 필요하다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "name/arity로 실제 function value를 만든다."
+        ],
+        [
+          "fail",
+          "같은 arity에서 label만 다른 경우를 구별하지 못한다."
+        ],
+        [
+          "pass",
+          "forwarding closure의 반복 인수 선언을 줄인다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compact function-reference grammar; explicit selection information; desugaring into callable values.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "forwarding closure의 축약이지만 underscore placeholder partial application은 아니다.",
+      "transfer_mapping": "Erlang name/arity function reference → compact Swift function-reference grammar 비교. label identity가 없어 핵심 경우는 실패하며 richer key 없이는 대안이 되지 못한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

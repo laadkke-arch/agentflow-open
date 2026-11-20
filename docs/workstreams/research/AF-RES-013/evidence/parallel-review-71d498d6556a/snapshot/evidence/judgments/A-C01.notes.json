@@ -1,0 +1,232 @@
+{
+  "case_id": "C01",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original candidate is the observation/work-dispatch reference, not a cron-expression or recurrence implementation."
+        ],
+        [
+          "pass",
+          "The opened sample-controller sections describe watch notifications, informer cache/indexer reads and key enqueuing; these directly replace repeated API polling."
+        ],
+        [
+          "not_in_scope",
+          "Instrumentation was not part of this candidate’s original scope."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: informer observation and work dispatch for schedule objects and owned Jobs",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No timer data-structure choice is in the original candidate. An event-driven queue does not identify any particular gold timer design.",
+      "transfer_mapping": "Informer callbacks become schedule/owned-Job key enqueues; workers reconcile cached state after initial synchronization. The original response requires idempotent handling of repeated/stale events and restart reconstruction; using callbacks as complete state or skipping synchronization breaks this relation.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Original use maps each calculated next cron occurrence to AddAfter and rechecks the schedule when the worker wakes, retaining recurring controller execution."
+        ],
+        [
+          "pass",
+          "Original use combines delayed keys with immediate informer enqueues rather than periodic API list calls."
+        ],
+        [
+          "not_in_scope",
+          "The original candidate supplies the scheduling queue, not measurement hooks."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: heap-backed delayed keys feeding existing controller reconciliation",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "K0019-G04",
+          "rationale": "runs/A/C01.json raw_response item 2 and opened delaying_queue.go AddAfter/waitingLoop explicitly use a minimum-readyAt heap feeding controller work; this matches the gold heap-based timer/AddAfter design, unlike ordered linear lists or timer trees."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The original raw response explicitly specifies a heap and timer, not merely a generic queue. This is the concrete heap-timer alternative in the gold.",
+      "transfer_mapping": "Next cron time maps to readyAt in the delayed heap; due entries enter ordinary workers while informer events trigger immediate reconciliation. Restart rebuilding and current-spec/owner checks are required because timers are process-local and a later duplicate does not cancel an earlier due time.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA003"
+      ]
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "ParseStandard and Schedule.Next supply recurring next-activation calculation; the original application keeps Job creation in reconciliation and permits callbacks only to enqueue keys."
+        ],
+        [
+          "not_in_scope",
+          "The original scope is cron parsing/next-time calculation, not object observation."
+        ],
+        [
+          "not_in_scope",
+          "Metrics are outside the originally proposed parser scope."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: cron next-occurrence calculation feeding controller keys",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No gold timer representation or other cited entity is identified by a cron parser alone.",
+      "transfer_mapping": "Parse the existing schedule, compute its Next activation, and pass that time to controller enqueueing. The original response preserves cron dialect/timezone/missed-run choices and warns that callback overlap control cannot govern long-lived Kubernetes Jobs; this is a calculation reference, not an overlap-policy replacement.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original scope is queue instrumentation, not recurrence."
+        ],
+        [
+          "not_in_scope",
+          "The original scope does not replace the observation subsystem."
+        ],
+        [
+          "pass",
+          "Opened MetricsProvider implementation provides additions, queue latency and work duration; original use explicitly registers a provider and names the queue, avoiding the no-op default."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: named controller workqueue instrumentation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No gold timer data structure is proposed by the metrics interface.",
+      "transfer_mapping": "Map named workqueue adds/wait/work observations to controller load and processing measurements through a registered provider. Preserve the original distinction between queue additions and successful Jobs and between queue latency and scheduling lateness; those other metrics require separately defined events.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "The alternative framework’s RequeueAfter supports timing, but compatibility with the existing controller-manager and selected libraries is explicitly unresolved and could prevent the proposed adoption."
+        ],
+        [
+          "pass",
+          "The opened framework documentation supplies watched events, shared cached reads and direct API writes."
+        ],
+        [
+          "not_in_scope",
+          "This candidate was scoped to the event/cache/timed-reconciliation framework; metric definitions were a separate candidate."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: alternative framework for watched and timed reconciliation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Timed reconciliation alone does not specify a heap, tree, list or wheel, so no structural timer match is inferred.",
+      "transfer_mapping": "Owned-Job events map to parent reconcile requests; next scheduled occurrence maps to RequeueAfter. Reads can lag writes and reconcile must tolerate that lag. The original compatibility check is retained as decisive rather than assumed.",
+      "remaining_check": "Check the selected controller-runtime/client-go versions and integration into the existing controller-manager. Compatible interfaces would permit conditional design utility; incompatibility would make the proposed framework adoption a constraint mismatch."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "The source documents a secondary completion-status goal, but the original candidate supplies no recurring schedule mechanism. None of the frozen mandatory constraints directly tests successful-completion aggregation; that secondary value is not silently converted into a recurrence pass."
+        ],
+        [
+          "not_in_scope",
+          "The original reference is successful-Job status interpretation, not an informer implementation."
+        ],
+        [
+          "not_in_scope",
+          "Completion timestamps were proposed for status aggregation, not controller throughput/latency measurement."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: secondary successful-completion status aggregation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No timer structure is identified. Documented secondary-prefix usefulness is retained, but cannot satisfy the frozen mandatory-constraint gate by making all constraints out of scope.",
+      "transfer_mapping": "Owned Job Complete conditions and completionTime map to the parent’s greatest observed successful completion timestamp. Ownership, absent timestamps, update conflicts and pruning order remain explicit original boundaries; these timestamps do not prove execution ordering.",
+      "remaining_check": "A recurrence-supporting use would need to be present in the original candidate to satisfy the existing H1 gate; it is not. Evaluate this status-only contribution separately if a future prospectively defined constraint covers it, without changing this frozen candidate or denominator."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is measurement design."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is measurement design, not API observation."
+        ],
+        [
+          "pass",
+          "Opened histogram guidance supports rates from observation counts, average latency from sums/counts and aggregatable distributions; original response maps separate queue/reconcile/schedule-delay events and a success counter."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: controller measurement definitions using histograms and counters",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Metrics guidance does not select any of the gold timer designs.",
+      "transfer_mapping": "Map each defined controller event to a counter or duration observation; keep queue delay, reconcile duration and schedule-to-creation lateness distinct. Choose buckets for the intended latency range and aggregate histogram buckets, not precomputed summary quantiles. This supports measurement, not a performance target.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original use is an instrumentation reference."
+        ],
+        [
+          "not_in_scope",
+          "Observation architecture is outside the originally narrow metric-definition reference."
+        ],
+        [
+          "pass",
+          "The opened versioned package defines result-labeled reconciliation counters and a duration histogram, exactly the narrow throughput/latency instrumentation cited."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: reconciliation count and duration metric definitions",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No timer design match. The later internal package is useful only as a metric reference, as the original response states.",
+      "transfer_mapping": "Map controller/result counter increments and reconcile elapsed time to the target controller’s corresponding events. Reuse the definitions rather than import an internal package; successful Job throughput and schedule accuracy remain distinct, as originally noted.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    }
+  ]
+}

@@ -1,0 +1,373 @@
+{
+  "case_id": "C18",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Python 3.3.5 bytes literals and byte sequences",
+      "candidate_url": "https://docs.python.org/release/3.3.5/reference/lexical_analysis.html",
+      "candidate_claim": "Python's b-prefixed literals combine readable ASCII with escaped arbitrary byte values while keeping binary data distinct from Unicode text.",
+      "gold_matches": [
+        {
+          "gold_id": "R0069-G04",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original rank 1 explicitly uses Python 3.3.5 b-prefixed byte-string syntax with readable ASCII and escaped arbitrary bytes, the named Python byte-string literal precedent in gold Alternatives."
+        }
+      ],
+      "match_rationale": "The candidate identifies Python b-prefixed byte strings and the exact binary/Unicode distinction in the external gold item. No other literal prefix/suffix or macro policy is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "The versioned bytes-literal grammar preserves ASCII and escaped arbitrary byte values separately from Unicode str."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "Companion versioned documentation verifies integer elements in 0..255 and sequence-valued slices; the original explicitly distinguishes a one-byte sequence from its integer element."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map b-prefixed readable ASCII/byte escapes to binary sequence literals and integer indexing to individual byte values, with explicit encoding for text conversion. Preserve the original rejection of direct non-ASCII literal characters and the distinction between a byte and a one-element sequence.",
+      "H_assessment_scope": "reference_design: separate readable binary literals and integer byte elements",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0069-G04"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/0",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Racket 5.3.6 byte strings",
+      "candidate_url": "https://download.racket-lang.org/docs/5.3.6/html/guide/bytestrings.html",
+      "candidate_claim": "Racket's separate byte-string notation preserves readable ASCII and escaped binary bytes while making encoding conversion an explicit operation.",
+      "gold_matches": [],
+      "match_rationale": "Racket is not Python’s external entity; generic numeric byte access does not explicitly select numeric literal patterns as the target design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "The opened byte-string guide distinguishes byte-preserving output and explicit text encoding, without assuming the whole data is Unicode."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "It documents individual bytes as 0..255 integers alongside separate byte-string notation."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map readable ASCII/escaped bytes to binary literals and element access to 0..255 values. Keep text conversion explicit and preserve byte output; a text encoding cannot be silently applied to the entire mixed-format sequence.",
+      "H_assessment_scope": "reference_design: byte integers plus distinct binary-sequence syntax",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/1",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "OCaml 4.01 8-bit characters and strings",
+      "candidate_url": "https://caml.inria.fr/distrib/ocaml-4.01/ocaml-4.01-refman.html",
+      "candidate_claim": "OCaml's single-quoted 8-bit characters and double-quoted sequences provide a matched notation for individual byte values and readable byte strings.",
+      "gold_matches": [],
+      "match_rationale": "The original does not cast runtime bytes to Rust Unicode characters or select the gold a/u8 spelling alternatives. A foreign 8-bit char type is not the same cast mechanism.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "8-bit character/string storage covers raw byte values without requiring globally valid UTF-8; the original deliberately separates this notation from Rust’s Unicode types."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "The source provides single-quoted 8-bit values and double-quoted sequences using consistent escapes."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map single/double quoted 8-bit forms to separate Rust byte and byte-sequence types, not to existing Unicode char/str. Preserve the original upper-byte Latin-1 semantic difference and transfer byte-valued notation only.",
+      "H_assessment_scope": "reference_design: parallel scalar-byte and byte-sequence notation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/2",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Go strings as arbitrary byte sequences",
+      "candidate_url": "https://go.dev/blog/strings",
+      "candidate_claim": "Go demonstrates readable string literals with byte escapes and byte indexing even when the resulting sequence is invalid UTF-8.",
+      "gold_matches": [],
+      "match_rationale": "The original proposes raw-byte storage/inspection and warns about UTF-8 source text/rune iteration; it does not choose UTF-8 encoding of all literal code points as the target byte-literal policy. No structural default is inferred from that caveat.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "Original use selects byte escapes and indexing on strings that may contain invalid UTF-8; it explicitly excludes rune-decoding range iteration from raw-byte interpretation."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "Strings provide sequences and indexing yields individual bytes, both explicitly documented."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map known literal ASCII/byte escapes to raw sequence storage and index operations to byte values. Keep the original distinction from unescaped source Unicode and range-based rune decoding; those text operations cannot stand in for raw-byte inspection.",
+      "H_assessment_scope": "reference_design: arbitrary-byte sequences with byte-level indexing",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/3",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Erlang bit syntax",
+      "candidate_url": "https://www.erlang.org/doc/system/bit_syntax.html",
+      "candidate_claim": "Erlang's bit syntax combines readable string segments, numeric bytes, and explicit-width fields to construct or match mixed-format data.",
+      "gold_matches": [],
+      "match_rationale": "The original chooses rich binary segment composition; merely allowing numeric fields does not select the gold status-quo numeric-literal byte-pattern alternative, and no pattern-capable byte macro is proposed.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "Binary segments and explicit numeric fields compose raw mixed-format data without whole-value Unicode decoding."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "Default eight-bit integer segments and multi-segment binaries address individual byte values and sequences."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map readable ASCII fragments and fixed-width numeric fields to binary segments with explicit byte alignment/endianness. Preserve original size checks; this is a composition/parsing design, not automatic text decoding.",
+      "H_assessment_scope": "reference_design: binary field construction/matching with readable fragments",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/4",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Haskell Data.ByteString.Char8",
+      "candidate_url": "https://downloads.haskell.org/~ghc/7.6.3/docs/html/libraries/bytestring-0.10.0.2/Data-ByteString-Char8.html",
+      "candidate_claim": "ByteString.Char8 supplies pack, singleton, and overloaded string literals as a library route from readable notation to byte storage.",
+      "gold_matches": [],
+      "match_rationale": "Overloaded string literals and singleton do not constitute the gold pattern-capable byte-macro design; no pattern expansion is stated.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "unknown",
+          "reason": "Char8 accepts Char inputs and truncates them to eight bits. The original warns of information loss but supplies no range restriction or validation policy ensuring every proposed source value has byte meaning."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "unknown",
+          "reason": "The original specifically proposes singleton/pack and single-byte sequences; it does not establish a corresponding individual raw-byte value form distinct from a Char or one-element sequence."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map library pack/singleton or overloaded literals to byte storage while keeping the original truncation warning. Neither a new range validator nor a scalar-byte literal conversion is silently added.",
+      "H_assessment_scope": "reference_design: Char-based library construction of byte sequences",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/5",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "Specify whether inputs are restricted to 0..255 and identify the individual-byte value operation. Verified range-safe scalar/sequence uses could pass; unrestricted larger Char inputs demonstrably lose information and would fail H1."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "D hexadecimal strings and byte escapes",
+      "candidate_url": "https://dlang.org/spec/lex.html",
+      "candidate_claim": "D's byte-valued escapes and hexadecimal strings offer complementary readable-text and raw-binary spellings without requiring valid UTF data.",
+      "gold_matches": [],
+      "match_rationale": "The candidate does not propose the specific a prefix/u8 suffix or pattern macro alternatives. Generic escape syntax is not a gold match.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "The opened specification permits invalid UTF data in hex strings and documents byte-valued escapes; original use keeps ordinary source Unicode semantics separate."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "The read character-literal/escape rules cover byte-sized quoted values as well as string/hex sequences in the original byte-escape scope."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map byte-valued escapes to individual byte expressions or string components and hex spelling to arbitrary binary runs. Preserve the original distinction from ordinary Unicode source characters and the reduced readability of hex-only ASCII fragments.",
+      "H_assessment_scope": "reference_design: byte-valued quoted escapes and hexadecimal binary sequences",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C18.json#/candidates/6",
+        "runs/A/C18.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    }
+  ]
+}

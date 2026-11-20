@@ -1,0 +1,320 @@
+{
+  "case_id": "C16",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "C++11/N3337 attributes on statements and declarations",
+      "candidate_url": "https://timsong-cpp.github.io/cppwp/n3337/stmt.stmt",
+      "candidate_claim": "Its grammar attaches attributes directly to compound statements and local declarations, providing a concrete syntax model for block metadata and declaration-specific intentions.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "pass",
+          "reason": "compound statement와 local declaration에 attribute를 붙이는 문법이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "원래 block과 local name 범위 안에 남는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "C++ statement/declaration attribute 위치 → Rust block/let metadata 문법. annotation target별 lint·audit·조건부 의미를 별도로 정의해야 한다.",
+      "H_assessment_scope": "reference_design: Block and local-declaration syntax; external-tool annotation attachment.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/0",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Nimrod 0.9.4 local pragmas, push/pop regions, and when statements",
+      "candidate_url": "https://raw.githubusercontent.com/nim-lang/Nim/v0.9.4/doc/manual.txt",
+      "candidate_claim": "Local-variable pragmas, temporary compiler-setting regions, and compile-time when branches demonstrate three mechanisms for expressing local intentions while retaining surrounding variables.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "pass",
+          "reason": "local variable pragma와 push/pop 영역을 함께 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "when branch와 pragma가 주변 local 변수 범위 안에 남는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Nimrod local pragma·설정 push/pop·when → Rust의 좁은 annotation/conditional 영역. restoration과 target별 지원을 명시해야 한다.",
+      "H_assessment_scope": "reference_design: Variable annotations, regional compiler settings, inline conditional compilation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/1",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "GCC diagnostic push/pop",
+      "candidate_url": "https://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc.pdf",
+      "candidate_claim": "Location-sensitive diagnostic state with push/pop can confine a warning exception to a small source region inside a function and restore surrounding policy.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "pass",
+          "reason": "statement/declaration 주변 source region의 진단 상태를 바꾼다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "함수 추출 없이 주변 변수 범위를 유지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "GCC diagnostic push/pop → Rust 좁은 lint 예외 영역. lexical block과 source-location region의 차이, 누락된 pop 및 지원 진단을 처리해야 한다.",
+      "H_assessment_scope": "reference_design: Narrow lint-allowance regions around statements or declarations.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/2",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Java local-variable @SuppressWarnings",
+      "candidate_url": "https://docs.oracle.com/javase/6/docs/api/java/lang/SuppressWarnings.html",
+      "candidate_claim": "A source-retained annotation targeting local variables shows how a warning allowance can attach to one declaration and compose with enclosing suppression policy.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "not_in_scope",
+          "reason": "처음부터 local declaration만을 위한 부분 참고이며 arbitrary block을 지원한다고 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "local variable 선언에 붙여 함수 복제·인자 전달이 없다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Java LOCAL_VARIABLE SuppressWarnings → Rust let-specific lint annotation. block·conditional compilation은 별도이며 enclosing suppression의 합집합 의미를 고려해야 한다.",
+      "H_assessment_scope": "reference_design: Declaration-specific lint allowances and nested annotation inheritance.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/3",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "C# unsafe and checked/unchecked block contexts",
+      "candidate_url": "https://ecma-international.org/wp-content/uploads/ECMA-334_4th_edition_june_2006.pdf",
+      "candidate_claim": "Explicit unsafe and checking-context blocks demonstrate lexically bounded changes to permissions or analysis policy without extracting code from its enclosing function.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "not_in_scope",
+          "reason": "처음부터 block semantic context만 제안하고 declaration metadata는 별도라고 밝혔다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "enclosing function 내부 block의 권한·검사 정책이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "C# unsafe/checked block context → Rust 좁은 권한·검사 영역. built-in semantics를 확장 annotation과 동일시하지 말고 let metadata를 별도로 설계해야 한다.",
+      "H_assessment_scope": "reference_design: Small-block permission scopes and checking-policy boundaries.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/4",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "D conditional statements and declarations",
+      "candidate_url": "https://dlang.org/spec/version.html",
+      "candidate_claim": "Version, debug, and static-if conditions select inline statements or declarations at compile time, avoiding function duplication or explicit transfer of local state.",
+      "gold_matches": [],
+      "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "블록과 let 선언을 최소한 지원하는 좁은 주석 범위",
+          "value": "pass",
+          "reason": "inline statement 또는 declaration을 조건부 선택한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "함수 전체 복제나 지역변수의 별도 인자 전달 부담을 피할 것",
+          "value": "pass",
+          "reason": "함수 복제·local state 전달 없이 원래 lexical context에서 선택한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "D version/debug/static-if → Rust 지역 조건부 compilation. 제외 branch의 parsing, 추가 scope 부재와 일반 audit metadata 부재를 구분해야 한다.",
+      "H_assessment_scope": "reference_design: Fine-grained conditional compilation within existing lexical context.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C16.json#/candidates/5",
+        "runs/A/C16.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    }
+  ]
+}

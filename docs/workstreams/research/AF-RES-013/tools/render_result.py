@@ -249,6 +249,8 @@ C29는 ‘원 gold 미적중이 곧 유용한 선례 없음’이라는 주장�
 
 **무엇이 어긋나거나 약한가:** 318/342가 CONDITIONAL_TRANSFER이고 원 답변의 부분 참고를 평가했다. C05 B3처럼 실패조건을 적었다는 이유로 필요한 연결을 확인한 것으로 올릴 위험이 실제로 발생했다. 다른 분야 항목1개와 C29의 부분 반례만으로 제품 차별점이나 수요를 증명할 수 없다. AF009의 새 절차 비교 조건도 아직 없다.
 
+**동일 원 실행의 추가 판정 민감도:** 별도 작업공간의 원래 채점을 덮어쓰지 않고 [비교 부록](evidence/parallel-review-71d498d6556a/README.md)에 보존했다. 같은342후보에서 정답 일치 집합이 다른 행23개, 라벨이 다른 행58개다. 본문의 기존 주판정은 A날짜무관23/역사16, B14/5이고, 별도 snapshot은 A22/16, B8/2다. 근접 오답도0과12로 다르다. 다섯 대표행 재검토에서는 처음부터 좁힌 참고 범위, 원 출처에만 등장한 기능, 구조 대안, 명명 alias를 처리하는 경계가 양방향으로 문제였다. 어느 한쪽 전체를 정답으로 확정하거나 평균으로 합치지 않는다. 이 차이는 새로운 검색 실험·독립 모델 재현이 아니며 전체58행의 재판정은 미실시다. 다음 효용 실험 전에 원 응답과004의 동일 규칙으로 이23개 일치/58개 라벨 차이를 먼저 재심해야 한다.
+
 **근거 위치:** §2 Q7–Q8, JUDGMENTS의 H_assessment_scope/remaining_check, ROOT_ADJUDICATIONS, C29 원 응답, M03/M12. **이것이 틀리면 바뀌는 결론:** 정답 밖 조건부 후보를 실제로 적용해도 설계·오류·시간이 개선되지 않으면 ‘참고 가능한 자료의 불완전성’ 이상의 효용 주장은 사라진다. 반대로 새 절차가 같은 비용에서 일관되게 개선하면 그때 추가 가치 근거가 생긴다.
 
 **다음 조사 제안:** “원 gold 회수와 정답 밖 조건부 후보 중 어느 것이 실제 설계 판단을 개선하는가?” 필요한 자료는 최소 **12개 실제 설계 과제**, 원문/새 후보의 가림 조건, 문제별 적용 patch 또는 판단 기록, 사전 정의한 위반·미확인·시간 기준이다. 가능하면 설계자·리뷰어2인 이상이 각 과제를 비교한다. 다른 분야 관계 전이가 명시된 과제4개 이상을 의도 층으로 두되 별도 분모로 보고한다. 기존 A/B와 새 절차를 같은 예산에서 비교하기 전 우위 주장을 하지 않는다.
@@ -264,7 +266,10 @@ C29는 ‘원 gold 미적중이 곧 유용한 선례 없음’이라는 주장�
 
 작성·판정 자료의 기준 커밋은 `{JUDGE_COMMIT}`이며, 원 실행 보존 커밋은 `{RUN_COMMIT}`다. 재계산 명령은 `python docs/workstreams/research/AF-RES-013/tools/analyze_results.py`, 표 재생성은 `python docs/workstreams/research/AF-RES-013/tools/render_result.py`다. JSON 숫자가 기준이며 표·서술이 이를 요약한다.
 """]
-    (ROOT / "RESULT.md").write_text("\n\n".join(out).replace("\n\n\n", "\n\n").rstrip() + "\n")
+    text = "\n\n".join(out).replace("\n\n\n", "\n\n").rstrip() + "\n"
+    disclosure = "**채점판 구분:** 위 표는 기존 원격 판정 `eaa156ced81cc889990a2ce0e7749e43159bb71f`를 유지한 값이다. 같은 원 실행에 대한 별도 채점과 23개 일치·58개 라벨 차이는 [비교 부록](evidence/parallel-review-71d498d6556a/README.md)과 §4의 세 번째 약점에 보존했다. 이 표를 판정자 간 합의 수치로 해석하지 않는다.\n\n"
+    text = text.replace("## §2 세부 질문별 답", disclosure + "## §2 세부 질문별 답", 1)
+    (ROOT / "RESULT.md").write_text(text)
     print(json.dumps({"file":"RESULT.md", "bytes":(ROOT/'RESULT.md').stat().st_size, "table1_rows":len(cases), "table2_rows":len(ROLES), "section4_entries":3}))
 
 

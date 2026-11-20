@@ -1,0 +1,132 @@
+{
+  "case_id": "C06",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "isolated default를 남기고 sharing을 opt-in으로 하여 기존 PID1 이미지의 경로를 보존한다."
+        ],
+        [
+          "pass",
+          "container별 CLI를 하나의 pod-level policy가 uniform하게 생성하도록 명시한다."
+        ],
+        [
+          "pass",
+          "여러 PID subgroup 또는 사용자별 container 설정으로 노출하지 않는다."
+        ],
+        [
+          "pass",
+          "namespace runtime adapter만 제안하며 general init을 도입하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Runtime adapter for a single pod-level sharing policy.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "K0495-G01",
+          "rationale": "원 응답은 explicit namespace-join runtime mode를 제시하고 읽은 source에서 target container ID/name을 사용한다."
+        }
+      ],
+      "match_rationale": "명시 container ID/name target을 고르는 core mechanism이 G01과 일치한다.",
+      "transfer_mapping": "Docker --pid=container target → pod controller 뒤에 숨긴 하나의 namespace owner 선택. join 뒤 PID1 변화와 default private 경로를 설명해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "path 없는 명시 pid entry는 fresh namespace, path는 join으로 구별하여 private default를 유지한다."
+        ],
+        [
+          "pass",
+          "pod policy가 모든 member에 한 shared path를 제공한다."
+        ],
+        [
+          "pass",
+          "public per-container subgroup API를 만들지 않는 하나의 pod 선택이다."
+        ],
+        [
+          "pass",
+          "OCI namespace configuration이며 init system이 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Low-level runtime configuration generated from the pod choice.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace filesystem path는 container/sandbox ID를 API 선택으로 쓰는 G01과 구별한다.",
+      "transfer_mapping": "OCI pid create/join schema → pod policy의 runtime config. type 생략의 runtime namespace inheritance를 fresh creation과 혼동하지 않고 lifetime을 관리해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "원 응답이 legacy PID1을 위해 opt-in sharing을 명시한다. shared mode의 app이 PID1이 아님을 숨기지 않는다."
+        ],
+        [
+          "pass",
+          "pod-level stage가 namespace owner와 application lifecycle을 관리한다."
+        ],
+        [
+          "pass",
+          "한 pod execution environment이며 복수 subgroup을 제안하지 않는다."
+        ],
+        [
+          "pass",
+          "systemd/nspawn의 general supervisor를 가져오지 말고 namespace ownership만 참고하라고 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Pod namespace ownership and startup/lifecycle architecture.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "shared runtime 구조를 참고하는 것과 모든 지원 runtime에서 항상 공유하는 G02 정책은 다르다.",
+      "transfer_mapping": "rkt stage1 PID1/lifecycle → shared pod owner와 app entrypoint 분리. 기존 image는 private path로 남기며 full systemd init 채택으로 확대하지 않는다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "새 child의 namespace 진입 순서를 참고하며 이미 실행 중인 app의 PID를 바꾸는 것으로 제안하지 않는다."
+        ],
+        [
+          "pass",
+          "새 process를 pod의 기존 namespace에 배치하는 runtime 부분이다. 사용자 정책 API 자체를 제공하지 않는다고 명시한다."
+        ],
+        [
+          "pass",
+          "한 pod namespace 안의 child 생성 참고이며 subgroup 구성을 추가하지 않는다."
+        ],
+        [
+          "pass",
+          "namespace/fork/lifecycle의 kernel 계약이며 general init이 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Runtime mechanism and visibility/lifecycle checks.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "target process의 kernel namespace 진입은 container/sandbox ID의 public configuration 선택 및 annotation migration과 다르다. A-C06-r6의 private-namespace 선택 진단과 달리 이 원 응답은 공유 pod 안의 새 process 생성에 범위를 뒀다.",
+      "transfer_mapping": "nsenter target/fork와 PID namespace lifetime → pod runtime의 child 생성 순서. procfs mount와 namespace owner 종료를 처리해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    }
+  ]
+}

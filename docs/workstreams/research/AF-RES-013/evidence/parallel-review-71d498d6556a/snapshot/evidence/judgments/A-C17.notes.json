@@ -1,0 +1,193 @@
+{
+  "case_id": "C17",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "고정/동적 패턴의 공통 matcher interface를 Rust front end 참고로 제시한다."
+        ],
+        [
+          "pass",
+          "C++ template 구문과 compile expansion 비용을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compile-time front end and shared matching interface.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다.",
+      "transfer_mapping": "Xpressive static/runtime interface → Rust 고정 패턴 compile front end와 동적 API의 결합. C++ template 코드를 직접 재사용할 수 없고 구문·컴파일 비용을 재설계해야 한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "RE2 engine을 Rust wrapper로 검색·재사용 pattern에 적용하는 제안이다."
+        ],
+        [
+          "pass",
+          "FFI와 native build 비용 및 제한 dialect를 적었다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Engine implementation and C++ integration option.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "RE2를 wrap/study하는 제안 중 FFI/native build가 필요한 Rust wrapper 사용을 명시했다."
+        }
+      ],
+      "match_rationale": "Rust wrapper를 명시하여 기존 engine binding 대안 G02를 회수했다.",
+      "transfer_mapping": "RE2 C++ engine → Rust FFI binding. native build·소유권·문자열 경계를 연결하고 제한 pattern dialect를 문서화해야 한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "native Rust matcher의 NFA 시작점을 제공한다."
+        ],
+        [
+          "pass",
+          "capture/search/Unicode/diagnostics를 추가해야 하는 배포 비용을 적었다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Native matching engine mechanism.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다.",
+      "transfer_mapping": "Thompson NFA construction/simulation → Rust native matcher 핵심. 교재 구현에 일반 문법·capture·Unicode·진단을 보강해야 한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "PCRE saved pattern을 Rust wrapper에서 재사용한다."
+        ],
+        [
+          "pass",
+          "FFI/build 유지와 version·endianness·JIT serialization 한계를 적었다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Reusable C engine and precompiled-pattern mechanism.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "기존 C engine PCRE와 Rust wrapper의 FFI/build 연결을 구체적으로 제시했다."
+        }
+      ],
+      "match_rationale": "외부 C engine의 Rust wrapper가 G02에 대응한다. PCRE라는 이름만으로 backreference/backtracking G01까지 회수했다고 하지 않았다.",
+      "transfer_mapping": "PCRE compiled pattern 저장/복원 → Rust wrapper의 build-time pattern 처리. ABI/버전/byte order/character table을 맞춰야 하며 JIT data는 저장하지 못한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "fixed pattern/tokenizer 작업의 Rust generated matcher를 제안한다."
+        ],
+        [
+          "pass",
+          "substring/capture를 일반화하는 추가 작업과 현재 backend의 역사 미확인을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Static code generation and lexical scanning.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다.",
+      "transfer_mapping": "re2c의 lexer code generation → Rust 고정 pattern scanner build step. 일반 검색·capture semantics를 따로 만들고 현재 Rust backend를 과거로 소급하지 않아야 한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "compact pattern API를 Rust standard string facility 참고로 제안한다."
+        ],
+        [
+          "pass",
+          "작은 dialect와 byte/locale·UTF-8 차이의 대가를 적었다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Small distribution-provided pattern dialect and API precedent.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다.",
+      "transfer_mapping": "Lua string pattern library → Rust 배포본의 작은 pattern dialect/API. byte/locale 기반 의미를 UTF-8 대상으로 바꾸고 regex 구문 차이를 명시해야 한다.",
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Rust UTF-8 pattern/capture/replace API 자체다."
+        ],
+        [
+          "pass",
+          "lazy runtime initialization과 build-time compilation의 차이를 적었다."
+        ]
+      ],
+      "T": "not_needed",
+      "scope": "reference_design: Later native Rust component and API reference.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다. native Rust crate 재사용은 foreign engine binding 대안과 동일하지 않다.",
+      "transfer_mapping": null,
+      "remaining_check": "2018 crate로 현재 직접 참고는 가능하나 2014 역사적 적중에서 제외한다."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "compiled pattern type과 matching API를 Rust 설계 참고로 제시한다."
+        ],
+        [
+          "pass",
+          "fallible construction 및 runtime panic을 배포 API 선택과 연결했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Standard-library organization and API design.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "기존 engine을 Rust에서 외부 binding하는 안, backreference/assertion backtracking 안, 배포본에서 정규식을 빼는 안과 후보의 실제 사용 방식을 구별했다.",
+      "transfer_mapping": "Go regexp의 compiled type와 fallible/MustCompile API → Rust 배포 library 조직. panic과 runtime validation을 compile-time 보장으로 혼동하지 않아야 한다.",
+      "remaining_check": "2026 문서다. Go 1.2 고정 구현을 열기 전에는 당시 적중으로 쓰지 않는다."
+    }
+  ]
+}

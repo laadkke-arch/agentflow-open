@@ -1,0 +1,154 @@
+{
+  "case_id": "C22",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "ThreadSafe와 Immutable을 분리하고 ordinary shared access와 구별한다."
+        ],
+        [
+          "pass",
+          "Rust의 shared-reference predicate로 한정하며 transfer/깊은 불변성을 추가하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Concurrency-trait vocabulary and its explicit distinction from the vocabulary of ordinary shared access.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "명시적인 최종 ThreadSafe 명명 제안의 핵심 선례다.",
+      "transfer_mapping": "JSR ThreadSafe/Immutable 명명 분리 → Rust concurrency trait의 ThreadSafe 계열 이름. Java 전체 object promise를 옮기지 말고 shared-reference 안전성만 뜻하도록 문서화해야 한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "다른 instance reentrancy와 같은 instance 동시 안전성을 구별한다."
+        ],
+        [
+          "pass",
+          "Reentrant 이름과 특정 locking 구현을 강제하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Precise trait terminology and counterexamples.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "응답의 ThreadSafe 명명 제안을 Qt의 구별로 뒷받침한다.",
+      "transfer_mapping": "Qt same-instance thread safety 구별 → Rust ordinary reference와 concurrency proof의 설명. mutex 예시는 한 구현일 뿐 trait 요구를 강화하면 안 된다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "access qualifier와 parallel-sharing 조건을 나눠 설명한다."
+        ],
+        [
+          "pass",
+          "readable/immutable이 interior-mutability Rust 참조와 같지 않음을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: An alternative conceptual vocabulary separating alias/access capability from concurrency permission.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "별도 qualifier 설계이며 여덟 이름을 이 trait의 후보로 제시하지 않는다.",
+      "transfer_mapping": "reference qualifier와 concurrency permission의 분리 → Rust 참조 용어와 trait 이름 분리. readonly/immutable을 그대로 trait 이름으로 대입하면 의미가 달라진다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "shared ownership과 pointer concurrency·pointee safety를 분리한다."
+        ],
+        [
+          "pass",
+          "reference count 안전성을 pointee나 borrow 안전성으로 확대하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Distinguishing aliasing/ownership vocabulary from safety.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 shared 용어 유지 참고이며 trait Share 유지/참조를 aliasable로 변경하는 리뷰 대안은 제시하지 않았다.",
+      "transfer_mapping": "Boost shared lifetime 어휘와 별도 thread contract → Rust shared reference 용어와 동시 안전성 설명 분리. ownership과 borrowing 차이를 유지해야 한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "ThreadSafe suffix가 ownership/collection 용어와 구별된다."
+        ],
+        [
+          "pass",
+          "component operation 범위의 보장으로 한정한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compositional concurrency-trait naming.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "마지막 ThreadSafe 계열 권고의 명시적 naming 예다.",
+      "transfer_mapping": "Chromium ThreadSafe 합성 이름 → Rust trait의 명시적 safety 이름. reachable state 전체의 안전성을 추가로 주장하면 안 된다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "cross-thread visibility와 single-thread aliasing을 구별한다."
+        ],
+        [
+          "pass",
+          "D shared가 Rust concurrent-sharing safety와 같지 않다고 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative explanatory vocabulary.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "동등하지 않은 설명용 vocabulary이며 eight gold name 중 명명 제안에 해당하지 않는다.",
+      "transfer_mapping": "D thread-shared/thread-local 대비 → Rust concurrency 차원의 설명 어휘. shared가 synchronization 보장을 뜻한다고 바꾸어서는 안 된다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

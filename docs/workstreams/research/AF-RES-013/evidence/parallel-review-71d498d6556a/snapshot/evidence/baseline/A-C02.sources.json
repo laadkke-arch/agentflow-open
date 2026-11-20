@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "case_id": "C02",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C02-D02",
+      "url": "https://man7.org/linux/man-pages/man7/user_namespaces.7.html",
+      "accessed_at_utc": "2026-11-20 11:04:15 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux user namespaces and namespace-scoped capabilities",
+      "version_or_date": "Linux man-pages 6.19; manual dated 2026-02-08; HTML rendering 2026-09-09",
+      "sections_read": "Description; Capabilities; Effect of capabilities; interaction with other namespaces; beginning of UID/GID mappings. Colophon and dated footer.",
+      "confirmed": "User namespaces can present UID 0 internally while mapping to an unprivileged outside UID; capabilities apply to resources governed by the owning user namespace. UID and GID maps are defined through per-process proc files.",
+      "limits": "Create associated resource namespaces under the correct user namespace; kernel vulnerabilities remain possible. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D03",
+      "url": "https://docs.docker.com/engine/security/userns-remap/",
+      "accessed_at_utc": "2026-11-20 11:04:15 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Docker Engine userns-remap",
+      "version_or_date": "Live Docker documentation",
+      "sections_read": "Introduction; About remapping and subordinate user and group IDs; Prerequisites; beginning of Enable userns-remap. Disable namespace remapping; User namespace known limitations.",
+      "confirmed": "Docker remaps workload UID/GID ranges while its daemon remains root, with bind-mount ownership requirements. Its documentation lists incompatibilities with host PID/network sharing and fully privileged mode unless remapping is disabled.",
+      "limits": "Daemon-level configuration does not supply pod allocation policy; bind mounts and fully privileged or host-namespace modes require care. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D05",
+      "url": "https://stgraber.org/2017/06/15/custom-user-mappings-in-lxd-containers/",
+      "accessed_at_utc": "2026-11-20 11:04:44 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "LXD isolated per-container identity maps",
+      "version_or_date": "2017-06-15",
+      "sections_read": "Introduction; Increasing the size of the default map; Per container maps.",
+      "confirmed": "The dated LXD post describes distinct nonoverlapping UID/GID ranges per container through security.idmap.isolated, configurable range size, and the ownership/sharing cost of remapping its filesystem.",
+      "limits": "Requires sufficient subordinate IDs; filesystem remapping costs time and distinct maps complicate shared storage. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D06",
+      "url": "https://docs.podman.io/en/v4.3/markdown/podman-create.1.html",
+      "accessed_at_utc": "2026-11-20 11:04:44 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Podman v4.3 automatic user-namespace allocation",
+      "version_or_date": "Podman v4.3 manual; v4.3.0 release dated 2022-10-22 in opened official archive",
+      "sections_read": "Name, synopsis, description, image transports; --user and --userns=mode including auto options.",
+      "confirmed": "Podman v4.3 documents auto allocation of unique UID/GID ranges from subordinate-ID pools, image-based or explicit range sizing, and joining another container's user namespace.",
+      "limits": "Needs subordinate-ID pools; adapt allocation and lifetime from container scope to pod scope. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D07",
+      "url": "https://docs.kernel.org/filesystems/idmappings.html",
+      "accessed_at_utc": "2026-11-20 11:04:44 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux idmapped mounts",
+      "version_or_date": "Live Linux kernel documentation",
+      "sections_read": "Introduction; Formal notes; Idmappings on idmapped mounts and filesystem versus mount ownership.",
+      "confirmed": "The kernel document explains how idmapped mounts translate ownership per mount, enabling differently mapped containers to access a filesystem without a global recursive ownership rewrite.",
+      "limits": "Requires supporting kernel/filesystem combinations and deliberate sharing policy; it does not itself allocate pod IDs. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D11",
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "accessed_at_utc": "2026-11-20 11:05:03 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Firecracker specialized virtual-machine monitor",
+      "version_or_date": "NSDI 2020; BibTeX year 2020",
+      "sections_read": "Abstract and BibTeX publication metadata.",
+      "confirmed": "The NSDI 2020 paper describes a specialized virtual-machine monitor for isolating container and function workloads. This supplies an alternative virtualization mechanism rather than a UID/GID allocator.",
+      "limits": "Requires a larger runtime architecture change and does not supply the requested host UID/GID allocation policy. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D12",
+      "url": "https://github.com/opencontainers/runc/blob/main/libcontainer/configs/config.go",
+      "accessed_at_utc": "2026-11-20 11:05:25 UTC",
+      "source_type": "public_code",
+      "title": "config.go",
+      "version_or_date": "Live main branch",
+      "sections_read": "IDMap; UIDMappings; GIDMappings; related security configuration fields.",
+      "confirmed": "The actual public runc configuration source defines separate UID and GID mapping lists with container start ID, host start ID, and range size. This source was opened via web-indexed code after direct raw retrieval failed.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D13",
+      "url": "https://github.com/opencontainers/runc/blob/main/libcontainer/example_test.go",
+      "accessed_at_utc": "2026-11-20 11:05:25 UTC",
+      "source_type": "public_code",
+      "title": "runc libcontainer mapping structures and example",
+      "version_or_date": "Live main branch",
+      "sections_read": "UIDMappings and GIDMappings example; container creation and UID 0 process example.",
+      "confirmed": "The libcontainer example maps container IDs beginning at zero to host IDs beginning at 1000 for both UID and GID, then shows creating the container and launching an internal UID 0 process. Its literal host range is example data, not a safe allocation policy for all hosts.",
+      "limits": "Reserve safe host ranges instead of copying the sample host ID; current branch evidence is undated. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D14",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "accessed_at_utc": "2026-11-20 11:05:25 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "OCI runtime-spec user-namespace configuration",
+      "version_or_date": "Live main branch; older tagged version could not be fetched",
+      "sections_read": "Namespaces creation/join behavior; User namespace mappings; example; related devices section.",
+      "confirmed": "The OCI source specifies separate UID/GID mapping arrays with containerID, hostID and size, and namespace creation or joining through type and path. It says filesystem ownership should not be modified merely to realize these mappings.",
+      "limits": "The orchestrator must allocate ranges and handle filesystems; the older tagged document could not be retrieved. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D15",
+      "url": "https://podman.io/release/archive",
+      "accessed_at_utc": "2026-11-20 11:05:50 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "archive",
+      "version_or_date": "Archive entry: Podman v4.3.0, 2022-10-22",
+      "sections_read": "2022 release list.",
+      "confirmed": "The official release archive dates Podman v4.3.0 to 2022-10-22, supporting the availability date of the separately opened v4.3 manual.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D16",
+      "url": "https://opencontainers.org/release-notices/v1-0-2-runtime-spec/",
+      "accessed_at_utc": "2026-11-20 11:05:50 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "opencontainers.org",
+      "version_or_date": "v1.0.2 release notice, 2020-03-27",
+      "sections_read": "Title, explicit notice date, release statement and source release link.",
+      "confirmed": "The official OCI notice dates runtime-spec v1.0.2 to 2020-03-27. It establishes the version date but cannot establish that every detail of the live main-branch document was present then.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C02.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C02-D01",
+      "url": "https://github.com/search?q=repo%3Aopencontainers%2Frunc+UidMappings&type=code",
+      "accessed_at_utc": "2026-11-20 11:04:15 UTC",
+      "reason": "Public unauthenticated GitHub code-search URL returned DisabledError. No code-search results were received.",
+      "recorded_in": "runs/A/C02.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D04",
+      "url": "https://specs.opencontainers.org/runtime-spec/config-linux/?v=v1.0.2",
+      "accessed_at_utc": "2026-11-20 11:04:15 UTC",
+      "reason": "Opened response but substantive body not verified: The page identified the OCI runtime configuration specification but did not expose its substantive body through this fetch. Its visible publication header was November 2025 despite the requested version parameter.",
+      "recorded_in": "runs/A/C02.json",
+      "observation_level": "D3-fetch",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D08",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/v1.0.2/config-linux.md",
+      "accessed_at_utc": "2026-11-20 11:04:44 UTC",
+      "reason": "GitHub's pinned runtime-spec v1.0.2 source URL returned DisabledError.",
+      "recorded_in": "runs/A/C02.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D09",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.2/config-linux.md",
+      "accessed_at_utc": "2026-11-20 11:05:03 UTC",
+      "reason": "The raw pinned OCI v1.0.2 source URL returned DisabledError.",
+      "recorded_in": "runs/A/C02.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C02-D10",
+      "url": "https://raw.githubusercontent.com/opencontainers/runc/main/libcontainer/configs/config.go",
+      "accessed_at_utc": "2026-11-20 11:05:03 UTC",
+      "reason": "The raw public runc configuration source URL returned DisabledError.",
+      "recorded_in": "runs/A/C02.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

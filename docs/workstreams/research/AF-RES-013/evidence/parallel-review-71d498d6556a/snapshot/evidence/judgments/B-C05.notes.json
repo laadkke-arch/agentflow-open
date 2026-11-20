@@ -1,0 +1,278 @@
+{
+  "case_id": "C05",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "원 후보가 로컬 limit만의 한계를 인지하고 aggregate write budget을 명시했다. limiter를 먼저 포화되는 자원에 맞춰야 하는 조건도 source가 지지한다."
+        ],
+        [
+          "pass",
+          "원 후보가 대표 진단과 억제 횟수를 보존하도록 요구한다. 무손실·실제 진단 효과는 검증하지 않았다."
+        ],
+        [
+          "not_in_scope",
+          "admission·write budget 참고이며 저장소나 보존 기간을 옮기는 구성이 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Reporter admission and aggregate API write budget.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 throttle이라는 이름이나 source의 다른 전략을 이용해 서로 다른 gold 대안으로 확장하지 않았다. 기존 dedup 유지라는 구체 조건이 제안되지 않았다. rate cap만의 공통성은 정확한 구조 일치에 부족하다. 현재 source에 기능 중지 예시가 있어도 원 후보가 관리자에 의한 모든 create/update 정지를 제안하지 않았다.",
+      "transfer_mapping": "principal→reporter, service resource bound→총 event API write budget, early rejection→producer admission. global budget 배분·대표 진단 선택·계측은 구현할 조건이다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response",
+        "evidence/judgments/reviewer-second-sources.json#SR2-AZURE-THROTTLING",
+        "evidence/judgments/reviewer-second-sources.json#SR2-GOLD-C05"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다.",
+      "expected_label": "CONDITIONAL_TRANSFER",
+      "internal_review": {
+        "reviewer": "내부 별도 검토",
+        "model_label": "GPT-6 Astra Pro",
+        "source": "evidence/judgments/SECOND_REVIEW.json",
+        "candidate_id": "B-C05-r1",
+        "resolution": "작업자가 원 응답·고정 규칙을 다시 대조하고 이 검토의 일치·참고 범위 판정을 채택함; 최초 판정은 SECOND_RESOLUTION.json에 보존"
+      }
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "bounded grouping table과 timed flush 및 공통 write budget으로 state/write 증가를 제한하는 구성이다."
+        ],
+        [
+          "pass",
+          "counts·timing·meaningful message distinctions를 유지하는 summarization 조건을 명시했다."
+        ],
+        [
+          "pass",
+          "producer-side series semantics이며 외부 persistence나 더 긴 retention은 제안하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Reporter-side grouping and event-series semantics.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "EIP correlation/completeness/aggregation → event series의 grouping key·flush·summary 계약. selection fields와 의미 변화가 grouping 뒤에도 남아야 한다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "message classification과 logger hot path라는 좁은 참고이며 API server 전체 보호를 이 logger가 제공한다고 하지 않는다."
+        ],
+        [
+          "unknown",
+          "message text만 같은 서로 다른 field event가 억제될 수 있다. semantic grouping key가 필요하다고 했으나 실제 분절 규칙은 없다."
+        ],
+        [
+          "pass",
+          "logger를 persistence backend로 채택하는 것이 아니라 typed fields와 sampling 교훈을 전이한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Message classification and reporting hot path.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "zap typed fields/error-flood sampling → producer hot path 참고. fields가 다른 event의 suppression을 막을 구체 grouping/loss policy가 필요하다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답이 이 producer mechanism 자체는 API server를 보호하지 않는다고 명시한다."
+        ],
+        [
+          "unknown",
+          "burst sampling과 nonblocking drop 뒤에 대표 진단을 남길 정책은 조건으로만 제시되어 있다."
+        ],
+        [
+          "pass",
+          "event envelope/producer implementation만 참고하며 etcd 저장을 옮기지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Event envelope and producer-side reporter implementation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "zerolog typed fields/bounded nonblocking writer → producer cost·timestamp 참고. 중복 field와 drop accounting을 다뤄야 하며 진단 대표 보존은 아직 미확인이다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "delivery identity와 semantic identity의 구별에 한정하며 traffic bound를 대신한다고 하지 않는다."
+        ],
+        [
+          "pass",
+          "재전송과 실제 반복 occurrence를 구별하고 의미가 다른 event가 사라지지 않게 다른 grouping identity를 제안한다."
+        ],
+        [
+          "pass",
+          "현재 event persistence에서 dedup semantics만 바꾼다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Event identity, retry semantics, and deduplication.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "Idempotent Receiver의 delivery ID → event retry dedup; 별도 semantic group ID → 실제 occurrence 집계. state expiry/restart를 정하되 두 identity를 같게 두지 않는다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "bounded local buffer와 controlled drain으로 producer blocking·메모리 증가를 제한하는 부분이다."
+        ],
+        [
+          "unknown",
+          "sustained overload의 coalescing/drop·crash loss에 대한 구체 대표 진단 보존 정책은 정하지 않았다."
+        ],
+        [
+          "pass",
+          "durable broker를 채택하면 범위 밖임을 명시하고 local buffer만 제안했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Producer buffering and asynchronous write scheduling.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "Queue-Based Load Leveling → local reporter buffer와 controlled drain. 원 source의 durable broker 저장으로 옮기지 않으며 overflow/loss policy를 추가해야 한다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "반복 실패 write를 끊고 timeout·recovery probe 수를 제한하여 failure amplification을 줄인다."
+        ],
+        [
+          "unknown",
+          "복구 뒤 diagnostic gaps를 설명하라고 했지만 outage 동안 어떤 의미·횟수·시점을 보존하는지 규칙이 없다."
+        ],
+        [
+          "pass",
+          "sink retry 정책이며 persistence/retention을 변경하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Event sink failure handling and retry suppression.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "Circuit Breaker state/probe → event sink retry suppression. reporting failure를 또 event로 쌓는 재귀를 피하고 별도 admission 예산과 결합해야 한다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "selection field/schema에 한정하며 etcd index나 API traffic bound는 제공하지 않는다고 밝혔다."
+        ],
+        [
+          "pass",
+          "application·object·reason·reporter로 자신의 event를 찾고 prose parsing 없이 의미를 구별한다."
+        ],
+        [
+          "pass",
+          "event schema와 list/watch selection만 참고하며 persistence 위치는 그대로다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Event schema and list/watch selection contract.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "Selective Consumer header predicates → event selection contract. 권한과 query/index 비용은 별도 검증해야 한다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    },
+    {
+      "rank": 9,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "occurrence/delivery 및 시간 의미에 한정하며 overload transport는 제안하지 않는다."
+        ],
+        [
+          "pass",
+          "occurrence와 delivery metadata를 구별하고 timing/context를 명시하는 참고다."
+        ],
+        [
+          "pass",
+          "추가 durable delivery나 장기 보존을 제안하지 않고 그 비용을 경계한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Event meaning and timestamp contract.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "일반 aggregation·timestamps·typed fields라는 주제로 timestamp 목록·nested occurrence object·active-voice subject/object라는 구별 구조를 추론하지 않았다. 자동 circuit breaker는 관리자의 수동 전체 panic switch와 다르다.",
+      "transfer_mapping": "Event Message의 occurrence/delivery 구분 → event 의미와 timestamp contract. wire precision은 이 pattern에서 얻지 않으며 contextual detail이 별도로 필요하다.",
+      "additional_evidence": [
+        "runs/B/C05.json#/raw_response"
+      ],
+      "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+    }
+  ]
+}

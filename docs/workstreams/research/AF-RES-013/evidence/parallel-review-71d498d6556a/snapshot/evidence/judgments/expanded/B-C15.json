@@ -1,0 +1,159 @@
+{
+  "case_id": "C15",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C15",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "GCC library builtins with ordinary callable fallbacks",
+      "candidate_url": "https://gcc.gnu.org/onlinedocs/gcc-4.8.2/gcc/Other-Builtins.html",
+      "candidate_claim": "Treat selected operations as recognized ordinary library functions so direct calls can receive intrinsic lowering while function values and nonexpanded calls use an ordinary callable entry point without an ABI-adapter wrapper.",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "실제 ordinary library function을 유지하는 library-backed subset에서 함수 값을 제공한다는 명시적 전이 추론이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "pass",
+          "reason": "direct-call recognition과 일반 호출 fallback이 nominal ABI adapter body를 요구하지 않는 구조다. -O0 zero overhead를 주장하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "GCC recognized ordinary library call → Rust ordinary callable identity와 특별 direct lowering 분리. intrinsic-only/즉시값 연산에는 일반화하지 않는다.",
+      "H_assessment_scope": "reference_design: Public function identity, compiler recognition of direct calls, and ordinary callable fallback for library-backed operations.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C15.json#/candidates/0",
+        "runs/B/C15.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "MSVC intrinsic/function pragmas for dual ordinary and intrinsic implementations",
+      "candidate_url": "https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/intrinsics/compiler-intrinsics.md",
+      "candidate_claim": "Associate supported ordinary function names with intrinsic behavior through compiler metadata while retaining real callable definitions for function values and calls that are not expanded.",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "pass",
+          "reason": "실제 function 구현과 intrinsic 구현을 함께 가진 routine에만 적용 범위를 제한했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "pass",
+          "reason": "함수 이름의 pragma 인식과 일반 호출 복구를 분리하여 naming/ABI wrapper를 없애는 구조다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "MSVC per-function recognition → public callable definition과 직접 호출 lowering을 분리. intrinsic-only 함수 및 부동소수점 의미 차이를 별도 확인한다.",
+      "H_assessment_scope": "reference_design: Per-function intrinsic recognition without an API adapter, explicit ordinary-call fallback, and separation of callable identity from lowering policy.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C15.json#/candidates/1",
+        "runs/B/C15.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C15",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Clang builtin-alias attributes on intrinsic function declarations",
+      "candidate_url": "https://clang.llvm.org/docs/AttributeReference.html",
+      "candidate_claim": "Attach builtin identity to typed function declarations so public intrinsic names can be lowered directly after ordinary overload resolution, avoiding naming-only wrapper bodies.",
+      "gold_matches": [],
+      "match_rationale": "ordinary function 인식은 관련되지만 dedicated attribute와 redeclaration, language-item redeclaration, 별도 intrinsic ABI의 coercion/equivalence라는 각 gold의 핵심 선택을 명시하지 않았다. Clang attribute의 존재만 G01과 합치지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "intrinsic을 정상 함수 값으로 취급할 수 있을 것",
+          "value": "unknown",
+          "reason": "원문이 일반 address-taking/function-value 지원을 확인하지 못했다. selected alias declarations만으로 함수 값을 제공하지 못한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "작은 wrapper와 강제 inlining의 부담을 줄일 것",
+          "value": "pass",
+          "reason": "typed declaration에 builtin identity를 붙여 naming-only wrapper를 줄이는 frontend 기법은 확인된다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Clang builtin-alias declaration → wrapper 없는 이름/내장 연산 연결. Rust ordinary ABI와 callable implementation은 아직 별도 설계가 필요하다.",
+      "H_assessment_scope": "reference_design: Frontend declaration representation and direct-call lowering for intrinsic APIs.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C15.json#/candidates/2",
+        "runs/B/C15.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    }
+  ]
+}

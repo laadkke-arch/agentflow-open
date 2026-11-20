@@ -1,0 +1,181 @@
+{
+  "case_id": "C17",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "native Rust string/capture와 재사용 compiled object가 실제 text matching을 제공한다."
+        ],
+        [
+          "pass",
+          "배포에 포함할 native API·UTF8/bytes 정책을 제안하며 lazy init은 compile-time 처리가 아님을 구별한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: General Rust text search; runtime-supplied patterns; UTF-8 and arbitrary-byte APIs.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "후보는 native API 또는 정적 code generation을 제시했으며 기존 외부 regex library binding·배포 생략·특정 backtracking 기능 조합을 선택하지 않았다.",
+      "transfer_mapping": "Rust regex compiled-object API → distribution supported facade. runtime 패턴 수명·기능 subset·bundling 유지 부담을 정해야 한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "compile/full/partial match 및 capture가 Rust wrapper의 구체 backend가 된다."
+        ],
+        [
+          "pass",
+          "C++ integration과 빠진 backreference/lookaround라는 사용성 대가를 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Backend implementation precedent, runtime compilation, and a comparison point for a Rust API.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "기존 외부 정규식 engine의 Rust wrapper/integration을 원 응답이 직접 제안했다."
+        }
+      ],
+      "match_rationale": "기존 engine을 Rust wrapper로 연결하는 구성이므로 G02다. backtracking이라는 단어만으로 backreference+zero-width assertion을 선택한 내부 엔진 G01까지 추가하지 않는다.",
+      "transfer_mapping": "RE2 wrapped engine → Rust distribution regex API. C++ ABI/build/ownership 경계를 연결해야 한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "기존 C Perl-style matching을 Rust wrapper에서 사용한다."
+        ],
+        [
+          "pass",
+          "native build/maintenance와 backtracking 및 종료된 원 PCRE line을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Foreign-library backend and regex-dialect/API precedent.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "기존 외부 정규식 engine의 Rust wrapper/integration을 원 응답이 직접 제안했다."
+        }
+      ],
+      "match_rationale": "기존 engine을 Rust wrapper로 연결하는 구성이므로 G02다. backtracking이라는 단어만으로 backreference+zero-width assertion을 선택한 내부 엔진 G01까지 추가하지 않는다.",
+      "transfer_mapping": "PCRE C implementation → Rust wrapper와 dialect/API. native dependency와 버전별 기능·maintenance를 확인해야 한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "encoding별 pattern을 수행하는 C engine의 Rust 재사용을 제안한다."
+        ],
+        [
+          "pass",
+          "넓은 encoding/dialect 표면과 native integration 및 유지 종료를 배포 정책으로 설명한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Foreign-library reuse and text/encoding policy design.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "기존 외부 정규식 engine의 Rust wrapper/integration을 원 응답이 직접 제안했다."
+        }
+      ],
+      "match_rationale": "기존 engine을 Rust wrapper로 연결하는 구성이므로 G02다. backtracking이라는 단어만으로 backreference+zero-width assertion을 선택한 내부 엔진 G01까지 추가하지 않는다.",
+      "transfer_mapping": "Oniguruma engine → Rust wrapper 및 encoding policy. historical 5.9.5와 현재 기능을 분리해야 한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "POSIX compile/execute를 Rust-facing matching backend로 사용할 수 있다."
+        ],
+        [
+          "pass",
+          "optional approximate matching·backreference 성능·collation·license/version 대가를 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: C-library reuse, API precedent and an optional fuzzy-search extension.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0042-G02",
+          "rationale": "기존 외부 정규식 engine의 Rust wrapper/integration을 원 응답이 직접 제안했다."
+        }
+      ],
+      "match_rationale": "기존 engine을 Rust wrapper로 연결하는 구성이므로 G02다. backtracking이라는 단어만으로 backreference+zero-width assertion을 선택한 내부 엔진 G01까지 추가하지 않는다.",
+      "transfer_mapping": "TRE C matching interface → Rust wrapper, optional fuzzy search는 최소 목표 밖으로 유지. FFI와 선택 버전 API/license 검증이 필요하다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "정적 regular-language pattern을 state-machine executable code로 만든다."
+        ],
+        [
+          "pass",
+          "runtime parsing을 줄이는 대신 generator/build/code-size/action 의미 비용을 설명한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Static-pattern code generation, scanners and validation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "후보는 native API 또는 정적 code generation을 제시했으며 기존 외부 regex library binding·배포 생략·특정 backtracking 기능 조합을 선택하지 않았다.",
+      "transfer_mapping": "Ragel compile-time generation → Rust build pipeline. C/C++ output FFI 또는 새 Rust backend가 필요하며 기존 regex library binding과 구별한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "정적 regex literal을 compile-time validate하고 matcher를 생성한다."
+        ],
+        [
+          "pass",
+          "C++ template 이식·build-time·generated-code 비용을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compile-time frontend and generated-matcher design precedent.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "후보는 native API 또는 정적 code generation을 제시했으며 기존 외부 regex library binding·배포 생략·특정 backtracking 기능 조합을 선택하지 않았다.",
+      "transfer_mapping": "CTRE compile-time frontend → Rust literal validation와 matcher generation. C++ templates를 바로 재사용할 수 없고 구현이 필요하다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    }
+  ]
+}

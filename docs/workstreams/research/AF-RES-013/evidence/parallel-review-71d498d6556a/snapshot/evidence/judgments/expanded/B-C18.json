@@ -1,0 +1,220 @@
+{
+  "case_id": "C18",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C18",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Go byte-valued strings and hexadecimal byte escapes",
+      "candidate_url": "https://go.dev/blog/strings",
+      "candidate_claim": "Go's arbitrary-byte strings let a programmer combine readable ASCII with hexadecimal byte escapes and retrieve individual bytes without requiring the complete sequence to be Unicode.",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "임의  bytes를 담는 string과 hex escape를 선택하고 rune/range decoding을 구별한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "string sequence와 byte indexing을 함께 확인한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Go arbitrary-byte string → raw byte sequence/individual byte access. UTF-8 source characters와 rune iteration을 raw byte로 착각하지 않는다.",
+      "H_assessment_scope": "reference_design: Readable byte sequences for mixed-encoding protocol or document data, plus individual byte access through indexing.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C18.json#/candidates/0",
+        "runs/B/C18.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "OCaml 4.01 eight-bit characters and shared character/string escape syntax",
+      "candidate_url": "https://ocaml.org/manual/4.01/lex.html",
+      "candidate_claim": "OCaml 4.01's single-quoted eight-bit characters and double-quoted sequences provide a paired scalar-and-sequence literal design with the same readable characters and numeric byte escapes.",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "0..255 character와 string storage를 선택하여 전체 Unicode 검증을 요구하지 않는다. Latin-1 해석은 목표 encoding-neutral 의미에 가져오지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "같은 numeric escape를 쓰는 single/double quoted scalar/sequence를 확인했다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCaml8-bit scalar/sequence → 별도의 byte와 byte-string literal 설계. Unicode char와 혼동하거나 Latin-1 문자 의미를 강제하지 않는다.",
+      "H_assessment_scope": "reference_design: Literal syntax for both individual byte values and readable byte sequences.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C18.json#/candidates/1",
+        "runs/B/C18.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Python bytes literals and integer-valued binary sequences",
+      "candidate_url": "https://docs.python.org/3/reference/lexical_analysis.html",
+      "candidate_claim": "Python's b-prefixed literals separate byte sequences from Unicode strings while allowing readable ASCII and explicit escaped high bytes, with integer-valued indexing for individual bytes.",
+      "gold_matches": [
+        {
+          "gold_id": "R0069-G04",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "후보가 Python의 b-prefixed byte string literal과 임의 byte escape를 명시적으로 선택하여 고정 대안의 Python byte-string syntax와 일치한다. 원 응답은 최신판이므로 사후 적중으로만 센다."
+        }
+      ],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "b-prefix·ASCII+escape가 Unicode text와 분리된 임의 bytes를 보존한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "integer-valued indexing과 sequence slicing을 구별하여 개별 값과 열을 다룬다. 별도 scalar literal은 없다고 명시했다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Python bytes literal/indexing → binary literal과0..255 element 의미. 한 byte sequence와 scalar를 구별하고 Unicode 변환을 explicit하게 둔다.",
+      "H_assessment_scope": "reference_design: Explicit byte-sequence literal marker and a clear scalar-versus-slice API distinction.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [
+        "R0069-G04"
+      ],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C18.json#/candidates/2",
+        "runs/B/C18.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "case_id": "C18",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Nim single-byte character literals and byte-preserving strings",
+      "candidate_url": "https://nim-lang.github.io/Nim/manual.html",
+      "candidate_claim": "Nim pairs single-byte character literals with strings that permit arbitrary binary bytes, using shared readable and escaped notation while keeping Unicode Rune values distinct.",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "전체 입력이 Unicode라는 가정 없이 원시 바이트 의미를 보존할 것",
+          "value": "pass",
+          "reason": "char 한 byte와 UTF-8 convention을 강제하지 않는 string을 사용하여 raw bytes를 보존한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "개별 바이트와 바이트열을 모두 다룰 것",
+          "value": "pass",
+          "reason": "single-byte character와 string sequence의 literal/escape를 함께 제공한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Nim byte char/string → byte scalar/sequence의 짝과 공유 escape. Unicode Rune/iteration을 선택한 raw contract에서 분리한다.",
+      "H_assessment_scope": "reference_design: A paired byte scalar/sequence model, shared escape syntax, and separate opt-in Unicode interpretation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C18.json#/candidates/3",
+        "runs/B/C18.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    }
+  ]
+}

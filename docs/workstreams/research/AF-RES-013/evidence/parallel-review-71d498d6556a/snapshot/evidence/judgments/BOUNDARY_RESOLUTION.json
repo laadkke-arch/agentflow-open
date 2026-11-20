@@ -1,0 +1,739 @@
+{
+  "schema_version": 1,
+  "review_rows": 18,
+  "purpose": "의도적으로 뽑은 일치·제약 경계의 보강; 무작위 재현성 표본이나 역할 분류 신뢰도 연구가 아님",
+  "rows": [
+    {
+      "baseline": "A",
+      "case_id": "C10",
+      "rank": 1,
+      "root_initial": {
+        "rank": 1,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "열거형 상수의 닫힌 집합과 추가 필드의 가변성을 구분한다."
+          ],
+          [
+            "pass",
+            "정수와 분리된 type-specific singleton identity다."
+          ],
+          [
+            "pass",
+            "declaration order와 같은 타입 비교이며 무의미한 숫자 연산을 부여하지 않는다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Core member identity, ordering, lookup and iteration.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "P0354-G01",
+            "rationale": "하나의 enum class가 named constants와 values/ordering API를 함께 제공하는 구조다. 원문 G01의 container/value 분리를 하지 않는 class 집약 대안에 대응한다."
+          }
+        ],
+        "match_rationale": "한 enum class에 상수·조회·순서 기능을 모으는 G01 구조를 회수한다. Java 컴파일러의 타입 생성을 Python metaclass 대안과 동일시하지 않았다.",
+        "transfer_mapping": "Java enum class의 named singleton·values·ordering → Python enum 객체 계약. 동적 runtime membership 검사와 freezing을 구현해야 하며 부가 field의 불변성까지 자동 보장하지 않는다.",
+        "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C10/rank1",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [
+        "P0354-G01"
+      ],
+      "final_H": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C10",
+      "rank": 3,
+      "root_initial": {
+        "rank": 3,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "unknown",
+            "상수를 확장하는 subclass를 허용한다. 후보가 요구한 closed-set 제한을 실제로 어떻게 enforce할지 이 자료에서는 확인하지 못했다."
+          ],
+          [
+            "pass",
+            "class와 member name으로 값 identity를 비교한다."
+          ],
+          [
+            "pass",
+            "비교·조회·순회가 있지만 기본 alphabetical order와 creation iteration order의 차이를 명시한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Library implementation and member registry.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "P0354-G01",
+            "rationale": "class-based named constant registry 안에서 lookup·iteration·value identity를 결합하는 구조를 후보가 구체적으로 제시했다."
+          }
+        ],
+        "match_rationale": "동일 class 중심의 상수 registry·조회·순회가 G01 구조다; 구현 적합성과 이 항목 회수를 분리했다.",
+        "transfer_mapping": "Commons class-based registry·canonical identity → Python library enum. 확장 subclass를 막는 정책과 원하는 ordering override를 검증해야 한다.",
+        "remaining_check": "closed-set을 강제하는 제한이 실제 우회 불가능한지 subclass·새 상수 추가 예제로 검증하면 H1/INSUFFICIENT 판정이 바뀐다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C10/rank3",
+      "decision": "추가 원문RA018의 final class/private constructor 예가 폐쇄된 변형을 제공한다. 원 응답이 요구한 closure/order 조건을 유지하여 H1 unknown을 pass로 보강한다.",
+      "substantive_revision": true,
+      "final_gold_ids": [
+        "P0354-G01"
+      ],
+      "final_H": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C10",
+      "rank": 5,
+      "root_initial": {
+        "rank": 5,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "unknown",
+            "기존 속성 재할당은 막지만 새 속성 추가를 허용하므로 값 집합 전체를 닫는 동작은 확인되지 않았다."
+          ],
+          [
+            "not_in_scope",
+            "처음부터 read-only attribute mechanism만 제안했고 domain wrapper는 미제공이라고 밝혔다."
+          ],
+          [
+            "not_in_scope",
+            "처음부터 비교·순회를 제공한다고 주장하지 않았다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Read-only attribute mechanism only.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "P0354-G03",
+            "rationale": "named property가 일반 underlying 값을 직접 반환하는 방식이며 후보가 외부 값과 분리되지 않는다는 점을 명시했다."
+          }
+        ],
+        "match_rationale": "원 응답이 보통 underlying 값 반환을 명시하므로 G03 scalar 연결 구조를 회수한다. 이 회수가 원래 closed enum 요구의 충족을 뜻하지 않는다.",
+        "transfer_mapping": "property descriptor의 기존 이름 쓰기·삭제 거부 → enum namespace 일부 보호. 새 속성 추가 금지와 별도 값 wrapper·ordering이 필요하다.",
+        "remaining_check": "새 이름 삽입과 외부 raw 값 비교를 차단할 완성된 wrapper/freezing 구현이 제시되면 H1과 적합 판정을 다시 확인한다. 原 응답의 2012 날짜는 검색 metadata만으로 확인했으며 root 재열람도 502였다. 원문 작성일 또는 고정 과거 snapshot을 읽어야 사후 자료로 확정할 수 있다.",
+        "date_status": "unknown"
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C10/rank5",
+      "decision": "raw-value 반환은 원 응답이 선택한 사용 방식이 아니라 제한 설명이다. G03 일치를 제거하고, 원래 readonly-attribute 부분만 DIRECT_DOCUMENTED로 판정한다. 날짜는 snippet만으로 확정하지 않아 unknown 유지.",
+      "substantive_revision": true,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "not_in_scope",
+        "not_in_scope"
+      ],
+      "final_T": "not_needed",
+      "final_date_override": "unknown",
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "B",
+      "case_id": "C10",
+      "rank": 1,
+      "root_initial": null,
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:B-C10/rank1",
+      "decision": "기존 root 판정 없이 별도 내부 검토의 최초 판정을 채택한다. 세 후보 모두 primary gold 일치 없음; membership/ordering의 결정적 공백은 unknown으로 보존한다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "unknown",
+        "unknown",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": "post_decision",
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "B",
+      "case_id": "C10",
+      "rank": 2,
+      "root_initial": null,
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:B-C10/rank2",
+      "decision": "기존 root 판정 없이 별도 내부 검토의 최초 판정을 채택한다. 세 후보 모두 primary gold 일치 없음; membership/ordering의 결정적 공백은 unknown으로 보존한다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": "unknown",
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "B",
+      "case_id": "C10",
+      "rank": 3,
+      "root_initial": null,
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:B-C10/rank3",
+      "decision": "기존 root 판정 없이 별도 내부 검토의 최초 판정을 채택한다. 세 후보 모두 primary gold 일치 없음; membership/ordering의 결정적 공백은 unknown으로 보존한다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "final_T": "mapped",
+      "final_date_override": "unknown",
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C19",
+      "rank": 4,
+      "root_initial": {
+        "rank": 4,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "반복 pattern/guard를 가진 recognition wrapper를 제안한다."
+          ],
+          [
+            "pass",
+            "문법 규칙 이름으로 감쌌으나 Boolean 결과와 binding 비노출 한계를 명시한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Library-level alternative when direct macro invocation in pattern positions is unavailable or undesirable; Boolean recognition or a custom success arm.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "단일 pattern 추상화·view·extractor와, arm 좌변 전체·complete arm·전체 match를 입력으로 감싸는 procedural macro라는 세 대안을 구별했다. 단일 predicate용 declarative matches!를 전체 match 입력을 변환하는 procedural macro G03과 동일시하지 않았다.",
+        "transfer_mapping": "matches!의 whole expression expansion → grammar-named recognition wrapper. parsed component나 custom success arm은 별도이며 arbitrary arm layout을 그대로 유지하지 못한다.",
+        "remaining_check": "G03과의 느슨한 일치 가능성은 내부 별도 검토 대상이다; 원 응답이 임의의 전체 match를 받는 procedural wrapper까지 제시했는지 대조한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C19/rank4",
+      "decision": "내부 검토는 전체 expression 소유 경계를 근거로 G03 일치를 권고했다. root는 고정 원문을 재열람하고 전체 match 입력/새 arm 구문과 Boolean 인식기의 차이를 핵심으로 보아 no-match 유지. 넓은 일치를 채택하면 A 전체 일치+1, 사후 일치+1이며 역사 적중은 불변이다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C26",
+      "rank": 2,
+      "root_initial": {
+        "rank": 2,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "compiler-version predicate를 compile 이전 단계에 쓴다."
+          ],
+          [
+            "pass",
+            "한 파일의 호환 영역 선택이다."
+          ],
+          [
+            "pass",
+            "오래된 compiler의 predicate 존재 guard를 명시한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Compiler-version threshold checks and an optional preprocessing stage in package builds.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "버전 문자열 literal, 비교 연산자 생략, comma-separated version 인수라는 세 구문 선택은 후보의 실제 추천 설명에 명시되지 않았다. 일반 version predicate 존재만으로 인수 표기까지 추정하지 않았다.",
+        "transfer_mapping": "GHC CPP version guard → Swift package의 source compatibility 선택. guard 자체의 이전 compiler 지원과 문자열 lexical interaction을 처리해야 한다.",
+        "remaining_check": "GHC PDF 표지의 2015-07-22를 채점 추가 열람으로 확인했다. 원 실행의 날짜 근거는 snippet이었다는 차이를 보존한다.",
+        "additional_evidence": [
+          "evidence/judgments/VERIFICATION.json#J-C26-GHC-DATE"
+        ]
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C26/rank2",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C25",
+      "rank": 4,
+      "root_initial": {
+        "rank": 4,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "이름 있는 test command·build target 연결을 package adapter에 쓸 수 있다."
+          ],
+          [
+            "pass",
+            "인수·작업 디렉터리·실행 등록이 반복 가능성을 뒷받침한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Framework-independent test registration with arguments, build-target resolution, and working directories.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "XCTest라는 채택된 component, 타 언어 orchestration, result protocol을 찾아도 FooTests 배치·SwiftPM 완전분리·기본 XCTest 없이 protocol만 제공이라는 구체 대안을 자동 회수한 것은 아니다. framework-independent 실행 등록은 default XCTest 제거 결정과 구별했다.",
+        "transfer_mapping": "CTest add_test 실행 등록 → Swift package test runner 계약. Swift dependency/build adapter가 필요하다.",
+        "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C25/rank4",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C25",
+      "rank": 7,
+      "root_initial": {
+        "rank": 7,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "다양한 runner의 결과를 package/CI consumer로 전달하는 좁은 부분이다."
+          ],
+          [
+            "pass",
+            "실패·진단 보존을 공통 결과 stream 조건으로 제시했다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Interoperable test-result reporting across producer and consumer implementations.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "XCTest라는 채택된 component, 타 언어 orchestration, result protocol을 찾아도 FooTests 배치·SwiftPM 완전분리·기본 XCTest 없이 protocol만 제공이라는 구체 대안을 자동 회수한 것은 아니다. 보고 protocol만으로 package/framework 통합 전체의 protocol-only 대안 G03을 제시한 것으로 보지 않았다.",
+        "transfer_mapping": "TAP producer/consumer 결과 stream → Swift test runner와 package manager 사이 결과 계약. build/discovery/execution은 별도이고 failure/diagnostic 손실을 막아야 한다.",
+        "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C25/rank7",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "pass",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C03",
+      "rank": 1,
+      "root_initial": {
+        "rank": 1,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "PID process inspection 부분만 명시했고 mount namespace/filesystem 전체 노출은 제공하지 않는다고 밝혔다."
+          ],
+          [
+            "pass",
+            "별도 tools image를 나중에 시작하며 app image에 도구를 설치하지 않는다."
+          ],
+          [
+            "not_in_scope",
+            "직접 Docker는 Kubernetes admission/audit/API visibility를 제공하지 않는다고 명시했다."
+          ],
+          [
+            "not_in_scope",
+            "Docker runtime primitive만 제안하며 CRI extension은 주장하지 않았다."
+          ],
+          [
+            "not_in_scope",
+            "backend namespace primitive이며 node-user 권한 경로 전체를 제공한다고 주장하지 않았다."
+          ],
+          [
+            "not_in_scope",
+            "debug API/spec의 admission 노출은 처음부터 제안 범위 밖이다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Late acquisition of debugging tools and inspection of a selected running container.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다. 별도 container를 만들었다는 이유로 별도 Kubernetes pod G09로 일치시키지 않았다.",
+        "transfer_mapping": "별도 Docker tools image와 target PID namespace join → 늦게 도구를 공급하는 backend 동작. 권한 있는 runtime mediator, filesystem 접근 및 Kubernetes API/admission/audit는 별도이며 직접 Docker 접근은 완성 해법이 아니다.",
+        "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C03/rank1",
+      "decision": "내부 검토는 복합 H의 선택된 한 부분에 pass를 주었으나 root는 완전한 복합 조건의 pass로 읽히지 않도록 기존 not_in_scope를 유지한다. 나머지 구체 H와 transfer mapping이 있어 CONDITIONAL_TRANSFER 라벨은 같다. 전체 요구의 충족 수로 계산하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "not_in_scope",
+        "pass",
+        "not_in_scope",
+        "not_in_scope",
+        "not_in_scope",
+        "not_in_scope"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C04",
+      "rank": 3,
+      "root_initial": {
+        "rank": 3,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "독립 label controller credential이라는 보조 부분만 제시했고 개별 키 보호는 admission이 필요하다고 밝혔다."
+          ],
+          [
+            "not_in_scope",
+            "credential 분리 참고이며 배치·secret 경로 전체 구현은 주장하지 않았다."
+          ],
+          [
+            "pass",
+            "라벨 관리 controller의 권한 분리로 scheduler 교체가 없다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Separation of controller credentials from kubelet credentials.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+        "transfer_mapping": "RBAC controller 역할·별도 credential → 신뢰 라벨 관리 주체 분리. additive resource 권한만으로 개별 키를 보호하지 못하므로 admission과 결합해야 한다.",
+        "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C04/rank3",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "not_in_scope",
+        "not_in_scope",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C04",
+      "rank": 6,
+      "root_initial": {
+        "rank": 6,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "인증 identity 생성 부분이며 label 권한 자체를 인증서로 보증하지 않았다."
+          ],
+          [
+            "not_in_scope",
+            "등록 credential 부분으로 배치 secret 보호 전체를 주장하지 않았다."
+          ],
+          [
+            "pass",
+            "라벨 쓰기 권한 판정에 쓸 개별 caller identity를 자동 등록에 제공한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Identity establishment during node registration.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+        "transfer_mapping": "per-kubelet certificate → 라벨 쓰기 권한의 신뢰할 수 있는 caller 식별. 올바른 node binding·승인과 별도 label authorization이 필요하다.",
+        "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C04/rank6",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "not_in_scope",
+        "not_in_scope",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C12",
+      "rank": 4,
+      "root_initial": {
+        "rank": 4,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "후보는 여러 lookup 상태의 cache 구성만 제시했고 rebinding 검출은 validity guard가 따로 필요하다고 밝혔다."
+          ],
+          [
+            "not_in_scope",
+            "invalidator 자체를 제안하지 않은 per-site multi-result cache 참고다."
+          ],
+          [
+            "pass",
+            "상태가 많으면 비교와 miss 비용이 커지는 대가를 명시한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Sites encountering several recurring lookup states.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+        "transfer_mapping": "SELF PIC의 per-site 다중 결과 → 여러 namespace/type 상태가 반복되는 cache 형태. 각 entry에 별도 validity guard가 필요하며 PIC만으로 변경을 감지하지 못한다.",
+        "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C12/rank4",
+      "decision": "캐시 재사용의 유효성은 캐시 layout 참고에도 필수 전제다. H1/H2를 범위 밖으로 둘 수 없어 unknown으로 고치고 INSUFFICIENT로 내린다.",
+      "substantive_revision": true,
+      "final_gold_ids": [],
+      "final_H": [
+        "unknown",
+        "unknown",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C16",
+      "rank": 4,
+      "root_initial": {
+        "rank": 4,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "처음부터 local declaration만을 위한 부분 참고이며 arbitrary block을 지원한다고 주장하지 않았다."
+          ],
+          [
+            "pass",
+            "local variable 선언에 붙여 함수 복제·인자 전달이 없다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Declaration-specific lint allowances and nested annotation inheritance.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+        "transfer_mapping": "Java LOCAL_VARIABLE SuppressWarnings → Rust let-specific lint annotation. block·conditional compilation은 별도이며 enclosing suppression의 합집합 의미를 고려해야 한다.",
+        "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C16/rank4",
+      "decision": "내부 검토는 복합 H의 선택된 한 부분에 pass를 주었으나 root는 완전한 복합 조건의 pass로 읽히지 않도록 기존 not_in_scope를 유지한다. 나머지 구체 H와 transfer mapping이 있어 CONDITIONAL_TRANSFER 라벨은 같다. 전체 요구의 충족 수로 계산하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "not_in_scope",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C16",
+      "rank": 5,
+      "root_initial": {
+        "rank": 5,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "not_in_scope",
+            "처음부터 block semantic context만 제안하고 declaration metadata는 별도라고 밝혔다."
+          ],
+          [
+            "pass",
+            "enclosing function 내부 block의 권한·검사 정책이다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Small-block permission scopes and checking-policy boundaries.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "블록 최상위 statement expression으로만 제한하는 안, macro/helper로 흉내내는 안, 조건 내부/외부 attribute 위치 구분 중 어느 구체 선택도 후보가 제시하지 않았다.",
+        "transfer_mapping": "C# unsafe/checked block context → Rust 좁은 권한·검사 영역. built-in semantics를 확장 annotation과 동일시하지 말고 let metadata를 별도로 설계해야 한다.",
+        "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C16/rank5",
+      "decision": "내부 검토는 복합 H의 선택된 한 부분에 pass를 주었으나 root는 완전한 복합 조건의 pass로 읽히지 않도록 기존 not_in_scope를 유지한다. 나머지 구체 H와 transfer mapping이 있어 CONDITIONAL_TRANSFER 라벨은 같다. 전체 요구의 충족 수로 계산하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "not_in_scope",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "A",
+      "case_id": "C02",
+      "rank": 8,
+      "root_initial": {
+        "rank": 8,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "fail",
+            "VM 경계는 요구한 host UID/GID 비특권 대응을 제공하지 않는다."
+          ],
+          [
+            "fail",
+            "pod 범위 ID·capability 정책 대신 별도 VM 구조를 제안한다."
+          ],
+          [
+            "pass",
+            "runtime rootlessness를 요구하지는 않는다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Alternative isolation mechanism, inferred transfer to this problem.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+        "transfer_mapping": "microVM 경계 → 더 넓은 workload 격리 비교. 공유 커널을 바꾸는 큰 구조 변경이 필요하고 원래 ID 정책 문제를 풀지 못한다.",
+        "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:A-C02/rank8",
+      "decision": "일치·라벨을 유지한다. 참고 부분의 범위를 전체 해법의 완결성으로 확대하지 않는다.",
+      "substantive_revision": false,
+      "final_gold_ids": [],
+      "final_H": [
+        "fail",
+        "fail",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    },
+    {
+      "baseline": "B",
+      "case_id": "C02",
+      "rank": 7,
+      "root_initial": {
+        "H": [
+          [
+            "unknown",
+            "application-kernel 격리는 확인했으나 workload UID와 비특권 host UID 대응을 이 후보 근거로 확인하지 못했다."
+          ],
+          [
+            "unknown",
+            "UID/GID와 pod-scoped capability 정책은 원 응답도 별도 설계가 필요하다고 한다."
+          ],
+          [
+            "pass",
+            "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+          ]
+        ],
+        "T": "mapped",
+        "transfer_mapping": "gVisor의 application-kernel 경계 → 넓은 escape-hardening 목표의 runtime 비교. 요구한 ID 정책의 대체품으로 보려면 별도 namespace 매핑·pod 권한 설계가 필요하다.",
+        "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+        "remaining_check": "runsc의 결정 이전 고정 판에서 workload UID/GID의 host 대응과 namespace 소유·capability 경계를 확인해야 한다. 넓은 hardening 목표와 본 접두부의 identity 요구를 분리한다.",
+        "rank": 7,
+        "L": "ok",
+        "E": "supported",
+        "scope": "reference_design: Alternative runtime boundary for incremental hardening against kernel or runtime vulnerabilities.",
+        "link_status": "opened_body",
+        "gold_matches": []
+      },
+      "independent_review_location": "evidence/judgments/BOUNDARY_REVIEW.json:B-C02/rank7",
+      "decision": "넓은 escape hardening을 요구된 ID 매핑 대안으로 제시한 사용 방식은 핵심 H1/H2를 충족하지 않는다. A-C02 rank8과 같은 mismatch로 분류하며 제품 자체의 매핑 불가능성을 주장하지 않는다.",
+      "substantive_revision": true,
+      "final_gold_ids": [],
+      "final_H": [
+        "fail",
+        "fail",
+        "pass"
+      ],
+      "final_T": "mapped",
+      "final_date_override": null,
+      "adjudicator": "작업자"
+    }
+  ],
+  "unresolved_match_sensitivity": [
+    {
+      "baseline": "A",
+      "case_id": "C19",
+      "rank": 4,
+      "possible_gold_id": "R0085-G03",
+      "primary_counted": false,
+      "if_broader_boundary_accepted": "identity hits +1; post-decision hits +1; historical hits unchanged",
+      "next_check": "새 arm 구문·binding을 보존하는 원 후보 wrapper가 원 응답에 실제 제시됐는지 제3의 독립 판정으로 대조"
+    },
+    {
+      "baseline": "B",
+      "case_id": "C22",
+      "rank": 1,
+      "possible_gold_id": "R0123-G08",
+      "primary_counted": false,
+      "if_name_variant_accepted": "identity hits +1; date-unknown hits +1; historical hits unchanged",
+      "next_check": "명명 후보 ConcurrentShareable과 ConcurrentlySharable을 공식 alias 또는 허용 철자 변형으로 볼 명시 근거를 확인"
+    }
+  ]
+}

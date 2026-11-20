@@ -1,0 +1,811 @@
+{
+  "reviewer": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "baseline_budget_included": false,
+  "purpose": "Additional reviewer source verification only; original runs unchanged.",
+  "sources": [
+    {
+      "id": "RA001",
+      "case_ids": [
+        "C11"
+      ],
+      "candidate_ranks": [
+        6
+      ],
+      "url": "https://go.dev/src/syscall/exec_unix.go",
+      "actually_opened_url": "https://go.dev/src/syscall/exec_unix.go",
+      "checked_at_utc": "2026-11-20 12:58:03 UTC",
+      "status": "opened",
+      "published_or_version": "live source; revision date unverified",
+      "sections_read": "ForkLock design comments; constructor-specific fallback rules; ProcAttr.Files",
+      "confirmed": "Source marks descriptors close-on-exec and explicitly retains selected child descriptors. Cooperative read/write locking protects nonblocking creation, but blocking open without atomic flags retains a race.",
+      "evidence_level": "D1 source document/code inspection; no execution",
+      "selection_reason": "Resolve structural default-policy match and known fallback safety boundary.",
+      "limitations": "No historical snapshot or target-module cooperation proof; copyright does not establish revision age.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 12:58:03 UTC",
+      "source_type": "public source code",
+      "title": "Go syscall exec_unix.go",
+      "version_or_date": "live source; revision date unverified",
+      "limits": "No historical snapshot or target-module cooperation proof; copyright does not establish revision age.",
+      "level": "D3-fetch",
+      "used_in": [
+        "A-C11-r6"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true,
+      "level_note": "D3-fetch denotes an inspected live code fetch, not an independently executed implementation; the original descriptive evidence_level field is retained verbatim."
+    },
+    {
+      "id": "RA002",
+      "case_ids": [
+        "C09"
+      ],
+      "candidate_ranks": [
+        6
+      ],
+      "url": "https://srfi.schemers.org/srfi-1/srfi-1.html",
+      "actually_opened_url": "https://srfi.schemers.org/srfi-1/srfi-1.html",
+      "checked_at_utc": "2026-11-20 12:58:03 UTC",
+      "status": "opened",
+      "published_or_version": "live SRFI-1 with errata through 2026-10-03",
+      "sections_read": "Status and Constructors/iota",
+      "confirmed": "iota accepts count with optional start and step and produces a list. Current text includes later errata despite a 1999 final-status date.",
+      "evidence_level": "D1 document inspection; no execution",
+      "selection_reason": "Verify count-versus-end-boundary mismatch without treating a historic idea as a historic retrieved edition.",
+      "limitations": "No end-based adapter is in the original candidate; no pre-cutoff frozen source was established.",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "accessed_at_utc": "2026-11-20 12:58:03 UTC",
+      "source_type": "primary specification",
+      "title": "SRFI-1 list library: iota",
+      "version_or_date": "live SRFI-1 with errata through 2026-10-03",
+      "limits": "No end-based adapter is in the original candidate; no pre-cutoff frozen source was established.",
+      "level": "D1",
+      "used_in": [
+        "A-C09-r6"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA003",
+      "case_ids": [
+        "C01"
+      ],
+      "candidate_ranks": [
+        2
+      ],
+      "url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/delaying_queue.go",
+      "actually_opened_url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/delaying_queue.go",
+      "checked_at_utc": "2026-11-20 12:58:03 UTC",
+      "status": "opened",
+      "published_or_version": "live master; revision date unverified",
+      "sections_read": "waitForPriorityQueue; AddAfter; waitingLoop; insert",
+      "confirmed": "A minimum-ready-time heap feeds due keys into the work queue. AddAfter computes readyAt; duplicate entries retain an earlier due time.",
+      "evidence_level": "D1 source code inspection; no execution",
+      "selection_reason": "Verify the original explicit heap-based timer match and retain restart/spec-change caveats.",
+      "limitations": "Live source does not prove availability by the 2020 decision; no controller integration was run.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 12:58:03 UTC",
+      "source_type": "public source code",
+      "title": "client-go delaying work queue implementation",
+      "version_or_date": "live master; revision date unverified",
+      "limits": "Live source does not prove availability by the 2020 decision; no controller integration was run.",
+      "level": "D3-fetch",
+      "used_in": [
+        "A-C01-r2"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true,
+      "level_note": "D3-fetch denotes an inspected live code fetch, not an independently executed implementation; the original descriptive evidence_level field is retained verbatim."
+    },
+    {
+      "id": "RA004",
+      "case_ids": [
+        "C14"
+      ],
+      "candidate_ranks": [
+        5
+      ],
+      "url": "https://docs.python.org/release/3.6.3/library/typing.html#typing.TYPE_CHECKING",
+      "actually_opened_url": "https://docs.python.org/release/3.6.3/library/typing.html#typing.TYPE_CHECKING",
+      "checked_at_utc": "2026-11-20 13:00:57 UTC",
+      "status": "opened",
+      "attempts": [
+        {
+          "tool": "web open",
+          "status": "inaccessible_unknown",
+          "note": "Web reader reported the base page inaccessible."
+        },
+        {
+          "tool": "urllib HTTP fetch",
+          "status": "opened",
+          "http_status": 200,
+          "note": "Exact candidate anchor present in returned versioned document."
+        }
+      ],
+      "published_or_version": "Python 3.6.3; footer last updated 2017-10-03",
+      "sections_read": "typing.TYPE_CHECKING anchor and footer",
+      "confirmed": "Static checkers treat the guard as true while runtime execution treats it as false. The example uses a quoted forward reference for a type-only dependency.",
+      "evidence_level": "D1 document inspection; no execution",
+      "selection_reason": "Resolve audit difference between candidate fragment and successful base-page open.",
+      "limitations": "This does not supply a runtime dependency or arbitrary-metadata evaluation path; original run failures remain preserved.",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:00:57 UTC",
+      "source_type": "official documentation",
+      "title": "Python 3.6.3 typing.TYPE_CHECKING",
+      "version_or_date": "Python 3.6.3; footer last updated 2017-10-03",
+      "limits": "This does not supply a runtime dependency or arbitrary-metadata evaluation path; original run failures remain preserved.",
+      "level": "D1",
+      "used_in": [
+        "A-C14-r5"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA005",
+      "case_ids": [
+        "C13"
+      ],
+      "candidate_ranks": [
+        7
+      ],
+      "url": "https://lua.org/manual/5.1/manual.html",
+      "actually_opened_url": "https://lua.org/manual/5.1/manual.html",
+      "checked_at_utc": "2026-11-20 13:00:57 UTC",
+      "status": "opened",
+      "published_or_version": "Lua 5.1 Reference Manual; explicit last update 2019-08-29 20:43:58 UTC",
+      "sections_read": "lua_newstate; lua_newthread; lua_State; last-update footer",
+      "confirmed": "Independent states own runtime/allocator data; new coroutine threads instead share global objects. The explicit document update predates the 2023 decision cutoff.",
+      "evidence_level": "D1 document inspection; no execution",
+      "selection_reason": "Verify state-ownership relation and replace copyright-only historical support with an observed page update.",
+      "limitations": "Lua design does not establish CPython extension isolation or a Python interface; no target implementation was run.",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:00:57 UTC",
+      "source_type": "official documentation",
+      "title": "Lua 5.1 Reference Manual",
+      "version_or_date": "Lua 5.1 Reference Manual; explicit last update 2019-08-29 20:43:58 UTC",
+      "limits": "Lua design does not establish CPython extension isolation or a Python interface; no target implementation was run.",
+      "level": "D1",
+      "used_in": [
+        "A-C13-r7"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA006",
+      "case_ids": [
+        "C21"
+      ],
+      "candidate_ranks": [
+        3
+      ],
+      "url": "https://open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1821.htm",
+      "actually_opened_url": null,
+      "checked_at_utc": "2026-11-20 13:04:58 UTC",
+      "status": "inaccessible_unknown",
+      "attempts": [
+        {
+          "tool": "web open",
+          "status": "timeout"
+        },
+        {
+          "tool": "urllib HTTP fetch",
+          "status": "http_503"
+        }
+      ],
+      "published_or_version": "N1821 requested; baseline introduction dated 2005-08-24",
+      "sections_read": "No additional body retrieved; baseline introductory read remains the only opened body evidence.",
+      "confirmed": "Reviewer could not verify decisive receiver-reference-qualification section; failure is not evidence of a fake or missing paper.",
+      "evidence_level": "failed verification; no upgraded evidence",
+      "selection_reason": "Check snippet-only decisive receiver rules.",
+      "limitations": "Detailed mechanism remains unknown; no full text retained.",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:04:58 UTC",
+      "source_type": "failed primary paper fetch",
+      "title": "N1821 requested paper: failed reviewer re-open",
+      "version_or_date": "N1821 requested; baseline introduction dated 2005-08-24",
+      "limits": "Detailed mechanism remains unknown; no full text retained.",
+      "level": "D3-fetch",
+      "used_in": [
+        "A-C21-r3"
+      ],
+      "count_toward_minimum": false,
+      "body_read": false
+    },
+    {
+      "id": "RA007",
+      "case_ids": [
+        "C21"
+      ],
+      "candidate_ranks": [
+        8
+      ],
+      "url": "https://cr.openjdk.org/~dlsmith/jsr335/jsr335-0.9.0.html",
+      "actually_opened_url": "https://cr.openjdk.org/~dlsmith/jsr335/jsr335-0.9.0.html",
+      "checked_at_utc": "2026-11-20 13:04:58 UTC",
+      "status": "opened",
+      "published_or_version": "JSR335 version 0.9.0; only copyright year observed",
+      "sections_read": "Introduction; summary Parts A/B/E; header",
+      "confirmed": "Functional interfaces provide callable contracts while runtime implementation controls allocation/reuse. Capture requires final or effectively-final locals.",
+      "evidence_level": "D1 document inspection; no execution",
+      "selection_reason": "Distinguish implementer freedom from user optimization control and audit copyright-only date.",
+      "limitations": "No independently dated publication/revision of the retrieved fixed version established; date downgraded to unknown.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:04:58 UTC",
+      "source_type": "primary specification",
+      "title": "JSR 335 draft version 0.9.0",
+      "version_or_date": "JSR335 version 0.9.0; only copyright year observed",
+      "limits": "No independently dated publication/revision of the retrieved fixed version established; date downgraded to unknown.",
+      "level": "D1",
+      "used_in": [
+        "A-C21-r8"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA008",
+      "case_ids": [
+        "C24"
+      ],
+      "candidate_ranks": [
+        6
+      ],
+      "url": "https://www.lispworks.com/documentation/HyperSpec/Body/07_a.htm",
+      "actually_opened_url": "https://www.lispworks.com/documentation/HyperSpec/Body/07_a.htm",
+      "checked_at_utc": "2026-11-20 13:04:58 UTC",
+      "status": "opened",
+      "published_or_version": "live HyperSpec 7.1; publication date unknown",
+      "sections_read": "Object Creation and Initialization; initarg/initform declarations and user-supplied methods",
+      "confirmed": "A per-slot initarg declaration exposes selected construction inputs; independent defaults and custom methods provide author-defined initialization stages.",
+      "evidence_level": "D1 document inspection; no execution",
+      "selection_reason": "Check actual property-level opt-in structure rather than generic initializer topic similarity.",
+      "limitations": "No immutable-slot/definite-initialization contract or historical page date verified.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:04:58 UTC",
+      "source_type": "primary specification",
+      "title": "Common Lisp HyperSpec 7.1: Object Creation and Initialization",
+      "version_or_date": "live HyperSpec 7.1; publication date unknown",
+      "limits": "No immutable-slot/definite-initialization contract or historical page date verified.",
+      "level": "D1",
+      "used_in": [
+        "A-C24-r6"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA009",
+      "case_ids": [
+        "C28"
+      ],
+      "candidate_ranks": [
+        4
+      ],
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.linq.expressions.methodcallexpression",
+      "actually_opened_url": "https://learn.microsoft.com/en-us/dotnet/api/system.linq.expressions.methodcallexpression?view=net-11.0",
+      "checked_at_utc": "2026-11-20 13:08:48 UTC",
+      "status": "opened",
+      "published_or_version": "live; publication date unverified",
+      "sections_read": "Definition; Method and Object properties; example",
+      "confirmed": "Method-call nodes retain selected method metadata and an instance expression; the direct example is programmatically constructed.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Verify checked method-identity extraction boundary.",
+      "limitations": "This page alone does not verify compiler generation from typed lambdas; no historical version verified.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:08:48 UTC",
+      "source_type": "official documentation",
+      "title": "MethodCallExpression API",
+      "version_or_date": "live; publication date unverified",
+      "limits": "This page alone does not verify compiler generation from typed lambdas; no historical version verified.",
+      "level": "D1",
+      "used_in": [
+        "A-C28-r4"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA010",
+      "case_ids": [
+        "C28"
+      ],
+      "candidate_ranks": [
+        4
+      ],
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression?view=net-11.0",
+      "actually_opened_url": "https://learn.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression?view=net-11.0",
+      "checked_at_utc": "2026-11-20 13:08:48 UTC",
+      "status": "opened",
+      "published_or_version": "live; publication date unverified",
+      "sections_read": "Expression base-class definition and construction example",
+      "confirmed": "The API supports expression-tree nodes and programmatic factories; example still constructs calls manually.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Follow the original API’s supporting type to check compiler-generation premise.",
+      "limitations": "This read did not settle compiler-generated lambda conversion; no historical version verified.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:08:48 UTC",
+      "source_type": "official documentation",
+      "title": "Expression API",
+      "version_or_date": "live; publication date unverified",
+      "limits": "This read did not settle compiler-generated lambda conversion; no historical version verified.",
+      "level": "D1",
+      "used_in": [
+        "A-C28-r4"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA011",
+      "case_ids": [
+        "C28"
+      ],
+      "candidate_ranks": [
+        4
+      ],
+      "url": "https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/",
+      "actually_opened_url": "https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/",
+      "checked_at_utc": "2026-11-20 13:08:48 UTC",
+      "status": "opened",
+      "published_or_version": "Official C# documentation last updated 2025-10-13",
+      "sections_read": "Compiler-created expression trees; expression-lambda restriction; update footer",
+      "confirmed": "Assigning a lambda to Expression<TDelegate> causes compiler-emitted tree construction; supported nodes include method calls.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Verify original typed-lambda premise with primary body evidence instead of a blocked historical snippet.",
+      "limitations": "Current support is dated after the case cutoff and does not establish a Swift bridge.",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "accessed_at_utc": "2026-11-20 13:08:48 UTC",
+      "source_type": "official documentation",
+      "title": "C# expression trees overview",
+      "version_or_date": "Official C# documentation last updated 2025-10-13",
+      "limits": "Current support is dated after the case cutoff and does not establish a Swift bridge.",
+      "level": "D1",
+      "used_in": [
+        "A-C28-r4"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA012",
+      "case_ids": [
+        "C29"
+      ],
+      "candidate_ranks": [
+        5
+      ],
+      "url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/70116480493c158afc1d815057885ab0615fbebf/proposals/0025-scoped-access-level.md",
+      "actually_opened_url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/70116480493c158afc1d815057885ab0615fbebf/proposals/0025-scoped-access-level.md",
+      "checked_at_utc": "2026-11-20 13:08:48 UTC",
+      "status": "opened",
+      "published_or_version": "Fixed gold SHA 7011648; case metadata says record reflected the Apr1 decision on Apr20",
+      "sections_read": "Alternatives considered, item 2",
+      "confirmed": "The fixed gold alternative wraps APIs in a scoped namespace inside part of a file, introducing grouping and nesting.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Compare actual scoped-namespace structure with the original nested OCaml-module reference.",
+      "limitations": "This is gold interpretation support, not new baseline evidence or a candidate historical-date claim.",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "attempts": [
+        {
+          "tool": "web open",
+          "status": "disabled_error"
+        },
+        {
+          "tool": "urllib HTTP fetch",
+          "status": "opened",
+          "http_status": 200
+        }
+      ],
+      "accessed_at_utc": "2026-11-20 13:08:48 UTC",
+      "source_type": "fixed proposal document",
+      "title": "Swift scoped access level: Alternatives considered",
+      "version_or_date": "Fixed gold SHA 7011648; case metadata says record reflected the Apr1 decision on Apr20",
+      "limits": "This is gold interpretation support, not new baseline evidence or a candidate historical-date claim.",
+      "level": "D1",
+      "used_in": [
+        "A-C29-r5"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA013",
+      "case_ids": [
+        "C30"
+      ],
+      "candidate_ranks": [
+        3
+      ],
+      "url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:)?language=objc",
+      "actually_opened_url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:).md",
+      "checked_at_utc": "2026-11-20 13:09:54 UTC",
+      "status": "opened",
+      "published_or_version": "live; publication date unverified",
+      "sections_read": "Markdown symbol identifier; initializer description; parameters; return value",
+      "confirmed": "The alternate body identifies exactly initWithBytes:length:encoding: and documents a counted, encoding-specific buffer initializer permitting unterminated byte input.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Resolve HTML/Markdown identity and move beyond the baseline metadata-only read.",
+      "limitations": "No verified historical edition, malformed-Unicode policy or Swift-bridge copying cost; do not infer these from availability annotations.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "attempts": [
+        {
+          "tool": "baseline HTML open",
+          "status": "javascript_shell_only"
+        },
+        {
+          "tool": "reviewer Markdown open",
+          "status": "opened_body"
+        }
+      ],
+      "accessed_at_utc": "2026-11-20 13:09:54 UTC",
+      "source_type": "official documentation",
+      "title": "NSString init(bytes:length:encoding:)",
+      "version_or_date": "live; publication date unverified",
+      "limits": "No verified historical edition, malformed-Unicode policy or Swift-bridge copying cost; do not infer these from availability annotations.",
+      "level": "D1",
+      "used_in": [
+        "A-C30-r3"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA014",
+      "case_ids": [
+        "C30"
+      ],
+      "candidate_ranks": [
+        3
+      ],
+      "url": "https://gist.github.com/zwaldowski/5f1a1011ea368e1c833e#file-nsstring-swift",
+      "actually_opened_url": "https://api.github.com/gists/5f1a1011ea368e1c833e",
+      "checked_at_utc": "2026-11-20 13:09:54 UTC",
+      "status": "opened",
+      "published_or_version": "Current gist; updated 2016-09-02; selected raw revision ec9e01a662df3490926e13bd43a68ca6b1999df3",
+      "sections_read": "NSString.swift selected constructor/bridge lines; file metadata",
+      "confirmed": "The gold-linked example uses NSString(bytes:length:encoding:) over a counted UTF-8 buffer and then a Swift String bridge; API metadata reports 2016-01-08 creation and 2016-09-02 update.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Verify exact component/mechanism identity rather than matching solely on NSString’s name.",
+      "limitations": "The current gist revision is not proved to be the original pre-cutoff body; it supports identity only and does not backdate the candidate.",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "attempts": [
+        {
+          "tool": "web open",
+          "status": "inaccessible_unknown"
+        },
+        {
+          "tool": "GitHub public Gist API",
+          "status": "opened",
+          "http_status": 200
+        }
+      ],
+      "accessed_at_utc": "2026-11-20 13:09:54 UTC",
+      "source_type": "public source code",
+      "title": "NSString.swift gist: counted initializer and bridge",
+      "version_or_date": "Current gist; updated 2016-09-02; selected raw revision ec9e01a662df3490926e13bd43a68ca6b1999df3",
+      "limits": "The current gist revision is not proved to be the original pre-cutoff body; it supports identity only and does not backdate the candidate.",
+      "level": "D3-fetch",
+      "used_in": [
+        "A-C30-r3"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true,
+      "level_note": "D3-fetch denotes an inspected live code fetch, not an independently executed implementation; the original descriptive evidence_level field is retained verbatim."
+    },
+    {
+      "id": "RA015",
+      "case_ids": [
+        "C30"
+      ],
+      "candidate_ranks": [
+        5
+      ],
+      "url": "https://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html",
+      "actually_opened_url": "https://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html",
+      "checked_at_utc": "2026-11-20 13:09:54 UTC",
+      "status": "opened",
+      "published_or_version": "live; publication date unverified",
+      "sections_read": "Range overload definitions and exception descriptions",
+      "confirmed": "Exact-range conversion accepts an error policy and documents unsupported-charset/conversion failure, including stop-policy failure on undecodable text.",
+      "evidence_level": "D1 document/code inspection; no execution",
+      "selection_reason": "Verify original policy-sensitive Unicode conversion claim beyond signatures.",
+      "limitations": "No dated old version or allocation/back-end performance measurement established.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "accessed_at_utc": "2026-11-20 13:09:54 UTC",
+      "source_type": "official documentation",
+      "title": "Boost.Locale character set conversion functions",
+      "version_or_date": "live; publication date unverified",
+      "limits": "No dated old version or allocation/back-end performance measurement established.",
+      "level": "D1",
+      "used_in": [
+        "A-C30-r5"
+      ],
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA016",
+      "case_ids": [
+        "C10"
+      ],
+      "candidate_ranks": [
+        1,
+        3,
+        5
+      ],
+      "url": "https://raw.githubusercontent.com/python/peps/e31746e7fc5689491e7ea0d4a1b9c915358b18db/pep-0354.txt",
+      "actually_opened_url": "https://raw.githubusercontent.com/python/peps/e31746e7fc5689491e7ea0d4a1b9c915358b18db/pep-0354.txt",
+      "checked_at_utc": "2026-11-20 13:16:05 UTC",
+      "accessed_at_utc": "2026-11-20 13:16:05 UTC",
+      "status": "opened",
+      "source_type": "fixed proposal document",
+      "title": "PEP 354 alternatives",
+      "published_or_version": "Fixed SHA e31746e7fc5689491e7ea0d4a1b9c915358b18db; calendar version date not independently checked",
+      "version_or_date": "Fixed SHA e31746e7fc5689491e7ea0d4a1b9c915358b18db; calendar version date not independently checked",
+      "sections_read": "Alternatives: single class/object; metaclass; primitive-value coupling; exposed key/index",
+      "confirmed": "The single-class alternative combines enumeration-level and value-level behavior. The metaclass alternative creates each family as a class. Mere exposure of name or ordinal differs from making members operate as ordinary primitives.",
+      "limitations": "Gold interpretation only; not baseline discovery, candidate date evidence, or a source of new candidate uses.",
+      "limits": "Gold interpretation only; not baseline discovery, candidate date evidence, or a source of new candidate uses.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "A-C10-r1",
+        "A-C10-r3",
+        "A-C10-r5",
+        "B-C10-r1",
+        "B-C10-r2",
+        "B-C10-r3"
+      ],
+      "selection_reason": "Disambiguate structural enum matches across A and B.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA017",
+      "case_ids": [
+        "C19"
+      ],
+      "candidate_ranks": [
+        4
+      ],
+      "url": "https://raw.githubusercontent.com/rust-lang/rfcs/59bdf1bd683e2872305a895d60406417c61f182c/active/0000-pattern-macros.md",
+      "actually_opened_url": "https://raw.githubusercontent.com/rust-lang/rfcs/59bdf1bd683e2872305a895d60406417c61f182c/active/0000-pattern-macros.md",
+      "checked_at_utc": "2026-11-20 13:19:57 UTC",
+      "accessed_at_utc": "2026-11-20 13:19:57 UTC",
+      "status": "opened",
+      "source_type": "fixed proposal document",
+      "title": "Rust pattern macros: Drawbacks / alternatives",
+      "published_or_version": "Fixed SHA 59bdf1bd683e2872305a895d60406417c61f182c; calendar revision date not independently checked",
+      "version_or_date": "Fixed SHA 59bdf1bd683e2872305a895d60406417c61f182c; calendar revision date not independently checked",
+      "sections_read": "Drawbacks / alternatives",
+      "confirmed": "The alternative wraps the complete match expression; the author describes procedural implementation difficulty and poor composability. Arm-left-side and whole-arm expansion are distinct alternatives.",
+      "limitations": "Gold interpretation only. It does not show that the later declarative Boolean matches! macro implements arbitrary custom arm syntax.",
+      "limits": "Gold interpretation only. It does not show that the later declarative Boolean matches! macro implements arbitrary custom arm syntax.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "A-C19-r4"
+      ],
+      "selection_reason": "Distinguish the selected expansion boundary from implementation-specific limitations.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true,
+      "attempts": [
+        {
+          "method": "web open",
+          "status": "DisabledError",
+          "body_read": false
+        },
+        {
+          "method": "urllib GET",
+          "status": "HTTP 200",
+          "body_read": true
+        }
+      ]
+    },
+    {
+      "id": "RA018",
+      "case_ids": [
+        "C10"
+      ],
+      "candidate_ranks": [
+        3
+      ],
+      "url": "https://commons.apache.org/proper/commons-lang/javadocs/api-2.1/org/apache/commons/lang/enums/Enum.html",
+      "actually_opened_url": "https://commons.apache.org/proper/commons-lang/javadocs/api-2.1/org/apache/commons/lang/enums/Enum.html",
+      "checked_at_utc": "2026-11-20 13:19:57 UTC",
+      "accessed_at_utc": "2026-11-20 13:19:57 UTC",
+      "status": "opened",
+      "source_type": "official documentation",
+      "title": "Apache Commons Lang 2.1 Enum",
+      "published_or_version": "Versioned 2.1 API; source revision 2005-04-14",
+      "version_or_date": "Versioned 2.1 API; source revision 2005-04-14",
+      "sections_read": "Simple Enums; Subclassed Enums; Nested class Enums; constructor and lookup API",
+      "confirmed": "The simple example places constant members and registry methods in the same final subclass and uses a private constructor. Extension is a separately demonstrated choice; members and registry queries are attached to the enum class.",
+      "limitations": "The read establishes the class/member arrangement, not a Python closed-set implementation or benchmark. Existing baseline ordering caveat remains.",
+      "limits": "The read establishes the class/member arrangement, not a Python closed-set implementation or benchmark. Existing baseline ordering caveat remains.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "A-C10-r3"
+      ],
+      "selection_reason": "Resolve all-in-one-class versus separate-registry boundary.",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA019",
+      "case_ids": [
+        "C26"
+      ],
+      "candidate_ranks": [
+        2
+      ],
+      "url": "https://downloads.haskell.org/ghc/7.10.2/docs/html/users_guide/options-phases.html",
+      "actually_opened_url": "https://downloads.haskell.org/ghc/7.10.2/docs/html/users_guide/options-phases.html",
+      "checked_at_utc": "2026-11-20 13:19:57 UTC",
+      "accessed_at_utc": "2026-11-20 13:19:57 UTC",
+      "status": "opened",
+      "source_type": "official documentation",
+      "title": "GHC 7.10.2 compiler phase options",
+      "published_or_version": "Version-pinned GHC 7.10.2; no calendar publication date rechecked",
+      "version_or_date": "Version-pinned GHC 7.10.2; no calendar publication date rechecked",
+      "sections_read": "4.12.3 version macros and CPP string gaps; 4.12.4 custom preprocessing",
+      "confirmed": "The minimum-version predicate takes comma-separated components and requires an existence guard on older compilers. Preprocessing runs before the compiler proper; lexical interactions are documented.",
+      "limitations": "The original response selected threshold preprocessing, without choosing the target version-argument syntax; source-only syntax does not broaden its gold match. This re-open does not change the baseline date evidence.",
+      "limits": "The original response selected threshold preprocessing, without choosing the target version-argument syntax; source-only syntax does not broaden its gold match. This re-open does not change the baseline date evidence.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "A-C26-r2"
+      ],
+      "selection_reason": "Check whether syntax-specific gold is actually selected by the original candidate.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA020",
+      "case_ids": [
+        "C25"
+      ],
+      "candidate_ranks": [
+        4,
+        7
+      ],
+      "url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/2fdf30579c233ddb26a36a3e1a77bca9d9cef30a/proposals/0019-package-manager-testing.md",
+      "actually_opened_url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/2fdf30579c233ddb26a36a3e1a77bca9d9cef30a/proposals/0019-package-manager-testing.md",
+      "checked_at_utc": "2026-11-20 13:19:57 UTC",
+      "accessed_at_utc": "2026-11-20 13:19:57 UTC",
+      "status": "opened",
+      "source_type": "fixed proposal document",
+      "title": "Swift package manager testing: Alternatives Considered",
+      "published_or_version": "Fixed SHA 2fdf30579c233ddb26a36a3e1a77bca9d9cef30a; calendar revision date not independently checked",
+      "version_or_date": "Fixed SHA 2fdf30579c233ddb26a36a3e1a77bca9d9cef30a; calendar revision date not independently checked",
+      "sections_read": "Alternatives Considered: complete decoupling and protocol without built-in XCTest",
+      "confirmed": "The protocol-only alternative explicitly omits built-in XCTest. The text also permits a future protocol with XCTest as an implementation, so framework-independent protocols do not imply removal of the default framework.",
+      "limitations": "Gold interpretation only; no new candidate use or historical evidence is supplied.",
+      "limits": "Gold interpretation only; no new candidate use or historical evidence is supplied.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "A-C25-r4",
+        "A-C25-r7"
+      ],
+      "selection_reason": "Check protocol compatibility versus the explicit no-default-framework design choice.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true,
+      "attempts": [
+        {
+          "method": "web open",
+          "status": "DisabledError",
+          "body_read": false
+        },
+        {
+          "method": "urllib GET",
+          "status": "HTTP 200",
+          "body_read": true
+        }
+      ]
+    },
+    {
+      "id": "RA021",
+      "case_ids": [
+        "C10"
+      ],
+      "candidate_ranks": [
+        2
+      ],
+      "url": "https://aantron.github.io/better-enums/tutorial/ScopeAndSafety.html",
+      "actually_opened_url": "https://aantron.github.io/better-enums/tutorial/ScopeAndSafety.html",
+      "checked_at_utc": "2026-11-20 13:21:06 UTC",
+      "accessed_at_utc": "2026-11-20 13:21:06 UTC",
+      "status": "opened",
+      "source_type": "official documentation",
+      "title": "Better Enums: Scope and safety",
+      "published_or_version": "Better Enums 0.11.3; copyright 2015-2019 is not a release date",
+      "version_or_date": "Better Enums 0.11.3; copyright 2015-2019 is not a release date",
+      "sections_read": "Scope; Implicit conversion; Default constructor",
+      "confirmed": "Default integral conversion is documented. C++11 strict conversion disables it, and no default constructor is generated unless deliberately enabled.",
+      "limitations": "The selected candidate transfers tables and same-family ordinal comparisons to Python; native C++ defaults are not automatically the proposed target behavior. No historical edition or Python implementation was verified.",
+      "limits": "The selected candidate transfers tables and same-family ordinal comparisons to Python; native C++ defaults are not automatically the proposed target behavior. No historical edition or Python implementation was verified.",
+      "evidence_level": "D1 document inspection; no execution",
+      "level": "D1",
+      "used_in": [
+        "B-C10-r2"
+      ],
+      "selection_reason": "Keep source-default limitations separate from the original translated use.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": true
+    },
+    {
+      "id": "RA022",
+      "case_ids": [
+        "C10"
+      ],
+      "candidate_ranks": [
+        5
+      ],
+      "url": "https://code.activestate.com/recipes/578294-python-immutable-enumerations-using-duck-punching/",
+      "actually_opened_url": null,
+      "checked_at_utc": "2026-11-20 13:21:06 UTC",
+      "accessed_at_utc": "2026-11-20 13:21:06 UTC",
+      "status": "inaccessible_unknown",
+      "source_type": "failed original recipe fetch",
+      "title": "Python immutable enumeration recipe: failed reviewer re-open",
+      "published_or_version": "Requested live recipe; no new version or date verified",
+      "version_or_date": "Requested live recipe; no new version or date verified",
+      "sections_read": "None; HTTP 502",
+      "confirmed": "The reviewer re-open failed with HTTP 502; no mechanism or date was newly confirmed.",
+      "limitations": "Existing baseline body-read summary remains the evidence. This failure does not establish a fabricated source or revoke a prior successful read.",
+      "limits": "Existing baseline body-read summary remains the evidence. This failure does not establish a fabricated source or revoke a prior successful read.",
+      "evidence_level": "failed verification; no upgraded evidence",
+      "level": "D3-fetch",
+      "used_in": [
+        "A-C10-r5"
+      ],
+      "selection_reason": "Attempt to inspect partial read-only-attribute mechanism directly.",
+      "date_status": "unknown",
+      "post_decision": false,
+      "count_toward_minimum": false,
+      "body_read": false,
+      "attempts": [
+        {
+          "method": "web open",
+          "status": "HTTP 502",
+          "body_read": false
+        }
+      ]
+    }
+  ],
+  "required_schema_note": "Additional reviewer reads use required source fields and remain auxiliary. Original field names and timestamps are preserved; failed requests are explicitly not body reads."
+}

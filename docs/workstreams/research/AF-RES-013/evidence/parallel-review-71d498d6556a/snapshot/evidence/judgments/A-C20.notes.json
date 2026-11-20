@@ -1,0 +1,154 @@
+{
+  "case_id": "C20",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "plural/select·순서 재배치 등 whole message 요구를 다룬다."
+        ],
+        [
+          "pass",
+          "별도 library가 문법을 소유해 builtin formatter에 넣지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Whole-message localization, grammatical selection, argument reordering, and locale-aware argument formatting in an optional library.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "ICU는 L20n 또는 gettext entity와 다르다.",
+      "transfer_mapping": "ICU locale-aware message interpreter → optional Rust localization library. binding/구현·resource·locale data 유지가 필요하며 기존 format grammar를 확장할 필요는 없다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "catalog plural rules 뒤 template interpolation을 제시한다."
+        ],
+        [
+          "pass",
+          "translation과 basic value formatting을 분리한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Translation catalogs, translator-specified plural rules and a staged translate-then-format pipeline.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "rationale": "명시한 gettext catalog 선택 후 보통 interpolation이라는 결합이 정답의 gettext+format string 대안이다."
+        }
+      ],
+      "match_rationale": "gettext와 format interpolation의 결합을 직접 제시했다.",
+      "transfer_mapping": "gettext catalog selection → translated template를 먼저 고른 뒤 Rust-compatible formatter에 전달. source fallback·문법 dependency 한계와 runtime template adapter를 확인해야 한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "gender/plural logic을 번역 resource에 둔다."
+        ],
+        [
+          "pass",
+          "core formatting 대신 localization 전용 언어·API 경계를 둔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Translator-owned message logic and an API boundary between application-provided values and language-specific resource evaluation.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G01",
+          "rationale": "Mozilla L20n 자체와 translator-controlled grammatical selection 역할이 일치한다."
+        }
+      ],
+      "match_rationale": "L20n 원문 선례를 명시적으로 회수했다.",
+      "transfer_mapping": "L20n translator-owned resource logic → Rust application값과 독립된 message 평가 경계. parser·translator tooling이 필요하고 Rust 배포 효용을 확인한 것은 아니다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "gettext catalogs·plural rule·locale별 rendering을 결합한다."
+        ],
+        [
+          "pass",
+          "optional library와 output abstraction의 연결이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Library-level integration of translation, deferred rendering and per-output locale choice while reusing a language's output abstractions.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "rationale": "후보가 gettext catalog backend와 일반 value formatting 합성을 직접 설명하므로 동일 gettext 통합 메커니즘의 회수로 판단했다."
+        }
+      ],
+      "match_rationale": "wrapper인 Boost.Locale을 통해서도 gettext와 formatting의 실제 결합을 명시했다.",
+      "transfer_mapping": "Boost.Locale의 gettext-backed delayed rendering → Rust locale-aware output integration. stream/locale interface와 catalog fallback·format 호환을 번역해야 한다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "number/date/collation이라는 좁은 locale 요구를 다룬다."
+        ],
+        [
+          "pass",
+          "기본 format syntax와 별도 service API의 책임 경계를 제시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: An alternative responsibility split: explicit locale-service objects under a dedicated API, with reusable configured formatter instances.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "전용 locale service는 L20n format-string 적응 G03과 다른 책임 분리다.",
+      "transfer_mapping": "ECMA-402 locale-configured formatter objects → 기본 format 기능과 분리된 Rust locale service API. whole-message gender/plural은 범위 밖이며 외부 package 배치가 유일하다는 증거는 아니다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "catalog extraction과 CLDR locale data 서비스를 다룬다."
+        ],
+        [
+          "pass",
+          "core 밖 external package·extensible extractor가 유지한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Message extraction and catalog build tools alongside localized number/date/name services, with extensible extractors for application templates.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "gettext catalog 사용만 언급하고 format interpolation 결합까지 제시하지 않은 tooling 후보이므로 G02 적중을 추가하지 않았다.",
+      "transfer_mapping": "Babel catalog tooling/CLDR services → Rust 외부 localization workflow library. Rust 대응 구현·bridge가 필요하고 whole-message 문법은 별도다.",
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

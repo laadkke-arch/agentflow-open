@@ -1,0 +1,518 @@
+{
+  "schema_version": "AF-RES-013-internal-second-review-v1",
+  "created_at_utc": "2026-11-20T14:17:20Z",
+  "reviewer_label": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "review_type": "separate-context internal boundary review; not baseline generation",
+  "independence_statement": "같은 세션 도구의 별도 내부 문맥 검토다. 사람 검토나 다른 모델 검토가 아니다. 외부학습 기억은 통제하지 못한다.",
+  "blinding": {
+    "read_existing_JUDGMENTS": false,
+    "read_notes_json": false,
+    "read_BOUNDARY_REVIEW_or_RESOLUTION": false,
+    "read_reports_or_aggregate_counts": false,
+    "saw_root_candidate_labels": false,
+    "read_frozen_CASES_role_and_boundary_fields": true,
+    "note": "허용된 frozen CASES의 항목명·역할·boundary_note는 보았다. 기존 후보 판정이나 prior reviewer 결론은 읽지 않았다. raw runs의 지정 사례에서 원 후보 문맥을 읽었고 지정 7행만 판정했다."
+  },
+  "frozen_rule_basis": [
+    "SCOPE §5: concrete structure and core conditions; same explicit mechanism; no generic-principle-name match",
+    "SCOPE §6: L/E/H/T; known mismatch before decisive unknown before conditional transfer; respect narrowed reference scope"
+  ],
+  "input_files_sha256": {
+    "SCOPE.md": "1c29ab371c4b9af55f6e388b51a08bb612edee33eee8dc0e95c20f44945d6ee1",
+    "cases/CASES.json": "357a56fa2ccda152b3f6370e7915e0454c50c6bf22f880d2e06325eedd2ac260",
+    "cases/prefix/C05.md": "f0a322d6b37f37414d19f2e8750045e1a678956e4a1aa644dee2381c4b5d6516",
+    "cases/prefix/C09.md": "d37650afae9c31911e89be26ed745334ffa85a36d802dd2900b380ac917bfb8e",
+    "cases/prefix/C20.md": "253fb05f160daf6801a367e3478acd6188d727cebe14f0f712b1bc885eb97f38",
+    "cases/prefix/C21.md": "f2098d3e45f3ec5084f68f52776b83ad65b8a5c70ce94cb16e42e4eb28867e21",
+    "cases/prefix/C24.md": "3395380042d978f40f21c5b9da16456d93cc614ebd4713c429393eab188aa23d",
+    "runs/B/C24.json": "f0b9b47433d3297f9ebac156c29129714da4a349151085cc015eaa957fbfc9d6",
+    "runs/B/C21.json": "4a2a6bf07539e711deff4b390831e43655372c9a65ff47f90f0a4f8fea83567b",
+    "runs/B/C09.json": "b5e1b241d8cb3cec94ec93e2764f6e4369a89049a5fd079960319da321508bb4",
+    "runs/B/C20.json": "6acea9db385e34c348e4ce7bb518170059d554ce9df2c50c126f7a300997c52c",
+    "runs/A/C05.json": "a323b2d8cc474d684e4ac0f4c7c44d87aaa7a8c1e80a6d28fa656568172e1f54",
+    "runs/B/C05.json": "534f5162007bcc7a4ca219d8d01c493cb5a1acc28743c6ad99fba596c94bf453"
+  },
+  "candidate_reviews": [
+    {
+      "candidate_id": "B-C24-r2",
+      "case_id": "C24",
+      "baseline": "B",
+      "rank": 2,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C24.json: candidates[rank=2] and raw_response candidate 2",
+      "original_candidate_snippet": "non-public attributes can still appear as public builder inputs",
+      "proposed_use_summary": "불변 생성 코드에서 호출자 입력과 작성자가 계산하는 default/derived/lazy 상태를 나누는 참고 설계. 비공개 속성도 공개 builder 입력이 될 수 있음을 원 후보가 직접 주의점으로 명시했다.",
+      "source_ids": [
+        "SR2-IMMUTABLES",
+        "SR2-GOLD-C24"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "생성 구현과 builder가 반복 생성·대입 코드를 줄이는 구조를 확인했다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "생성 결과는 불변이며 derived/lazy 계산을 위해 완성 객체를 일반 가변 상태로 바꾸라고 하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "status": "pass",
+          "reason": "파생 상태는 작성자 계산으로 만들고 직접 입력에서 분리할 수 있다. visibility만으로 숨겨진 상태가 보호된다고 주장하지 않는 조건부 참고다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [
+        {
+          "gold_id": "S0018-G04",
+          "match_kind": "structural_match",
+          "external_entity_hit": false,
+          "reason": "원 후보의 주의점 자체가 낮은 가시성의 속성을 공개 생성 입력으로 합성하는 구조를 명시한다. 이는 gold의 구체 구조·공개 경계와 같다. 적합성을 경고하는 방식으로 회수했더라도 거절된 대안의 회수와 유용성 평가는 분리한다.",
+          "candidate_location": "raw_response candidate 2, non-public attributes caveat",
+          "gold_location": "Allow parameters to be synthesized for properties with a lower access level than the initializer; pinned lines 453-470"
+        }
+      ],
+      "full_problem_solution_established": false,
+      "date_status": "unknown",
+      "strict_historical_hit": false,
+      "transfer_mapping": "입력 속성→생성 builder 인수, derived/lazy 속성→작성자 소유 계산 상태. Swift의 초기화와 접근 제어에 맞추는 후속 구현이 필요하다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "S0018-G01",
+          "reason": "Value.Parameter 등 원문에 있는 선택 표식을 후보가 속성별 memberwise opt-in 설계로 제안하지 않았다."
+        },
+        {
+          "gold_id": "S0018-G05",
+          "reason": "원 후보는 모든 initializer 인수를 수동 선언하고 대입만 합성하는 구조를 제안하지 않았다."
+        }
+      ],
+      "boundary_note": "G04 적중은 공개 노출을 권장했다는 뜻이 아니다. 원 후보가 명시적으로 비교에 가져온 실패조건이므로 출처만 보고 새 기능을 추가한 경우와 다르다.",
+      "candidate_name": "Immutables"
+    },
+    {
+      "candidate_id": "B-C24-r4",
+      "case_id": "C24",
+      "baseline": "B",
+      "rank": 4,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C24.json: candidates[rank=4] and raw_response candidate 4",
+      "original_candidate_snippet": "automatic assignments can compose with author-written derived state",
+      "proposed_use_summary": "제외된 입력 필드와 후처리 훅을 사용해 생성 대입과 작성자 계산을 합성하고, 필요한 경우 frozen 인스턴스를 쓰는 참고 설계.",
+      "source_ids": [
+        "SR2-ATTRS-INIT",
+        "SR2-ATTRS-DATE",
+        "SR2-GOLD-C24"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "필드 선언으로 생성 초기화·대입을 얻는다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "원 후보가 frozen 후처리의 특수 대입 연산을 명시했다. runtime 불변성 범위에서 성립하며 Swift 보장을 검증한 것은 아니다."
+        },
+        {
+          "constraint_id": "H3",
+          "status": "pass",
+          "reason": "init=False와 후처리 훅으로 생성 입력에서 제외한 상태를 작성자가 초기화하는 구조를 확인했다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [],
+      "full_problem_solution_established": false,
+      "date_status": "post_decision",
+      "strict_historical_hit": false,
+      "transfer_mapping": "생성 인수/대입→일반 입력 필드, 제외된 필드→후처리에서 계산하는 상태. frozen 쓰기 규칙을 지키고 Swift 방식으로 별도 구현해야 한다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "S0018-G04",
+          "reason": "private 이름을 공개 인수로 바꾸는 기능은 페이지에 있지만 원 후보가 제안하거나 주의점으로 명시하지 않았다."
+        },
+        {
+          "gold_id": "S0018-G05",
+          "reason": "Custom Init 절의 __attrs_init__ 호출은 source-only 기능이다. 원 후보는 자동 생성 initializer와 post-init을 선택했다."
+        },
+        {
+          "gold_id": "S0018-G01",
+          "reason": "필드 선언·init=False는 저장 속성마다 별도 memberwise 명시 opt-in을 요구하는 구조와 같지 않다."
+        }
+      ],
+      "boundary_note": "일반적인 부분 자동화 유사성은 유용한 전이가 될 수 있지만 특정 gold 구조의 정확한 회수는 아니다.",
+      "candidate_name": "attrs field declarations and initialization hooks"
+    },
+    {
+      "candidate_id": "B-C21-r1",
+      "case_id": "C21",
+      "baseline": "B",
+      "rank": 1,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C21.json: candidates[rank=1] and raw_response candidate 1",
+      "original_candidate_snippet": "separates capture choice from a const or mutable inline call operator",
+      "proposed_use_summary": "복사/참조 캡처와 읽기/변경 invocation을 분리하고 구체 callable 표현을 유지하는 참고. 소비형 호출이 입증되지 않았다고 원 후보가 명시했다.",
+      "source_ids": [
+        "SR2-N2859",
+        "SR2-GOLD-C21"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "참조와 복사 값 캡처가 모두 문서화되어 있다. Rust의 소유권·수명 검사를 동일시하지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "not_in_scope",
+          "reason": "소비/읽기/변경 전체를 제공한다는 주장은 원 후보가 명시적으로 하지 않았다. 실제 선택한 읽기·변경 구분은 지지된다.",
+          "scoped_subchecks": {
+            "read": "pass",
+            "mutate": "pass",
+            "consume": "not_in_scope"
+          }
+        },
+        {
+          "constraint_id": "H3",
+          "status": "not_in_scope",
+          "reason": "구체 closure class와 inline 호출 연산자는 확인되지만 사용자용 전체 dispatch/inlining 선택 모델은 원 후보의 보장 범위 밖이다.",
+          "scoped_subchecks": {
+            "concrete_callable_representation": "pass",
+            "guaranteed_inlining": "not_in_scope",
+            "complete_dispatch_choice_model": "not_in_scope"
+          }
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [],
+      "full_problem_solution_established": false,
+      "date_status": "pre_decision",
+      "strict_historical_hit": false,
+      "transfer_mapping": "캡처 정책과 invocation의 읽기/변경 정책을 별개 축으로 설계하는 대응은 구체적이다. 참조 수명, 소비형 호출, Rust 측 dispatch 선택은 별도 설계가 필요하다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "R0114-G04",
+          "reason": "참조 캡처를 언어 기본값으로 선택한다는 원 제안이 없다."
+        },
+        {
+          "gold_id": "R0114-G05",
+          "reason": "문서에는 개별 변수 capture clause가 있으나 원 후보는 변수별 borrowing 문법을 특정하지 않았다."
+        },
+        {
+          "gold_id": "R0114-G08",
+          "reason": "receiver 모드 추론이 원 후보에 없다."
+        },
+        {
+          "gold_id": "R0114-G09",
+          "reason": "const 또는 mutable을 구분한다는 설명을 const를 기본값으로 채택한다는 제안으로 확대하지 않는다."
+        }
+      ],
+      "boundary_note": "CONDITIONAL_TRANSFER는 좁힌 두 설계 축의 참고 유용성만 뜻한다. 전체 H2/H3 통과나 소비형 호출 회수를 뜻하지 않는다.",
+      "candidate_name": "C++ closure classes with independent capture and invocation mutability"
+    },
+    {
+      "candidate_id": "B-C09-r3",
+      "case_id": "C09",
+      "baseline": "B",
+      "rank": 3,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C09.json: candidates[rank=3] and raw_response candidate 3",
+      "original_candidate_snippet": "optimizing a numeric loop when the induction variable's type and stride direction are known",
+      "proposed_use_summary": "타입·경계·stride가 알려진 숫자 루프에서 최적화 선행조건과 의미 변화 점검을 배우는 참고. 모든 builtin 재정의에 안전하다는 주장을 하지 않았다.",
+      "source_ids": [
+        "SR2-CYTHON-LOOP",
+        "SR2-CYTHON-SEMANTICS",
+        "SR2-GOLD-C09"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "관계식 경계와 명시 stride, range loop가 문서화되어 있다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "숫자 induction 변수를 통한 위치·간격 반복의 구현 참고다."
+        },
+        {
+          "constraint_id": "H3",
+          "status": "pass",
+          "reason": "문법의 가독성/폐기 예정 상태와 builtin 재정의의 미확인 안전성을 원 후보가 고려했다. H3의 고려 요구를 모든 재정의의 의미 보존 증명 요구로 강화하지 않는다.",
+          "scope_limit": "안전한 Python 일반 최적화의 구현을 주장했다면 binding guard와 overflow 의미가 미확인으로 남는다. 여기서는 점검 조건을 제시하는 참고 범위다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [],
+      "full_problem_solution_established": false,
+      "date_status": "post_decision",
+      "strict_historical_hit": false,
+      "transfer_mapping": "타입과 stride 방향→lowering을 제한할 조건, 관계식 경계→표기 비교, overflow 시점→의미 검증 항목. builtin binding의 동일성 검증은 여전히 필요한 조건이며 완료했다고 보지 않는다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "P0204-G01",
+          "reason": "원 제안은 Cython compiler의 loop-lowering 조건이다. 원문 예제의 range 호출을 숫자 list를 만드는 builtin 재사용 부품의 제안으로 바꾸지 않는다."
+        },
+        {
+          "gold_id": "P0204-G02",
+          "reason": "관계식 for-from-by 문법은 시작:끝:간격 extended-slice 구조와 같지 않다."
+        },
+        {
+          "gold_id": "P0204-G03",
+          "reason": "C loop lowering은 xrange형 lazy sequence/generator를 제안한 것이 아니다."
+        },
+        {
+          "gold_id": "P0204-G09",
+          "reason": "C helper를 비공개 API로 유지한다는 경계 선택이 원 후보에 없다."
+        }
+      ],
+      "boundary_note": "재정의 보존을 확인했다고 채점하지 않았다. 결정적 unknown이 되는 범위와 현재의 좁은 참고 범위를 구분했다.",
+      "candidate_name": "Cython typed integer-loop lowering"
+    },
+    {
+      "candidate_id": "B-C20-r5",
+      "case_id": "C20",
+      "baseline": "B",
+      "rank": 5,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C20.json: candidates[rank=5] and raw_response candidate 5",
+      "original_candidate_snippet": "select messages using context and plural rules before a basic formatter interpolates reordered arguments",
+      "proposed_use_summary": "별도 locale catalogue로 domain/context/plural에 맞는 번역을 고르고 기본 formatter로 위치 인수를 보간하는 application library pipeline.",
+      "source_ids": [
+        "SR2-JED",
+        "SR2-GOLD-C20"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "실제 번역의 context·복수형 선택과 위치 재배열을 처리하는 구체 구성이 있다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "catalogue lookup과 보간을 선택적 application library로 분리하므로 core compiler에 불완전한 localization 기제를 남길 필요가 없다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "match_kind": "same_explicit_mechanism",
+          "external_entity_hit": false,
+          "same_project_or_official_alias": false,
+          "reason": "SCOPE §5는 동일 명시 메커니즘을 일치 근거로 허용한다. 고정 G02는 gettext와 format string의 결합이며 원 후보는 gettext 구현의 context/plural lookup 뒤 sprintf 보간을 실제로 제안했다. 단순 이름 유사성이 아니다.",
+          "candidate_location": "name, application_scope and raw_response candidate 5",
+          "gold_location": "Alternatives; pinned lines 93-98",
+          "identity_limit": "Jed는 GNU gettext와 동일 프로젝트가 아니다. 이 적중을 GNU gettext 실체 검색 성공으로 집계하면 안 된다."
+        }
+      ],
+      "full_problem_solution_established": false,
+      "date_status": "unknown",
+      "strict_historical_hit": false,
+      "transfer_mapping": "gettext catalogue 선택→localization library, sprintf 보간→기본 formatting. Rust 측 API·catalogue 변환과 올바른 plural metadata가 필요하다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "R0093-G01",
+          "reason": "l20n 실체가 아니다."
+        },
+        {
+          "gold_id": "R0093-G03",
+          "reason": "기존 Rust format 문법을 l20n에 통합하는 설계가 아니다."
+        }
+      ],
+      "boundary_note": "기본 판정은 명시 메커니즘 일치다. 만약 집계가 외부 항목의 프로젝트 동일성만 허용한다면 해당 축은 miss로 유지해야 한다. 그러한 좁은 동일성 기준을 SCOPE의 mechanism 조항과 혼동하지 않는다.",
+      "candidate_name": "Jed gettext-style lookup followed by interpolation"
+    },
+    {
+      "candidate_id": "A-C05-r1",
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 1,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/A/C05.json: candidates[rank=1] and raw_response candidate 1",
+      "original_candidate_snippet": "Apply the pattern to event requests and their retries, with a separate allowance for essential application diagnostics.",
+      "proposed_use_summary": "Event producer transport의 로컬 admission·retry budget·criticality. 희소 피드백과 반응 지연을 경고하며 hard local ceiling 및 손실 표시를 추가 조건으로 명시했다.",
+      "source_ids": [
+        "SR2-SRE",
+        "SR2-SRE-DATE",
+        "SR2-GOLD-C05"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "실제 평가 범위인 producer 요청·재시도의 비용 증폭을 줄이는 대응과 hard local ceiling이 구체적이다.",
+          "scope_limit": "이는 cluster 전체 트래픽 상한이나 성능 보장이 아니다. 모든 reporter 합계와 API 용량의 검증은 남아 있다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "원 제안이 필수 진단용 allowance와 누락 표시를 요구한다. 모든 event 무손실을 약속하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "status": "not_in_scope",
+          "reason": "transport admission 참고이며 persistence 위치나 retention을 바꾸는 제안이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [],
+      "full_problem_solution_established": false,
+      "date_status": "pre_decision",
+      "strict_historical_hit": false,
+      "transfer_mapping": "클라이언트→event producer, backend→API server, 요청 이력→로컬 admission, retry budget→재시도 제한, criticality→필수 진단 우선순위. 피드백 희소성·지연과 로컬 상한의 한계를 보존한다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "K0383-G01",
+          "reason": "현재 dedup을 그대로 유지한다는 핵심 조건이 없다. throttling/retry만 공유한다고 보존된 dedup+batching/backoff 대안 전체와 일치하지 않는다."
+        },
+        {
+          "gold_id": "K0383-G05",
+          "reason": "적응형 로컬 admission과 retry 제한은 관리자가 모든 event create/update를 정지하는 panic switch가 아니다."
+        }
+      ],
+      "boundary_note": "좁은 전이 참고의 유용성과 완전한 cluster 보호 검증을 분리했다. 이 후보를 전체 event subsystem 대체안으로 평가하지 않는다.",
+      "candidate_name": "Google SRE client-side adaptive throttling and retry budgets"
+    },
+    {
+      "candidate_id": "B-C05-r1",
+      "case_id": "C05",
+      "baseline": "B",
+      "rank": 1,
+      "reviewer": "내부 별도 검토",
+      "model": "GPT-6 Astra Pro",
+      "original_candidate_location": "runs/B/C05.json: candidates[rank=1] and raw_response candidate 1",
+      "original_candidate_snippet": "Combine reporter fairness with an aggregate write budget; local limits alone cannot bound a growing cluster.",
+      "proposed_use_summary": "Reporter별 공정성과 전체 API write budget을 결합하고 대표 진단 및 suppression count를 보존하는 admission 참고 설계.",
+      "source_ids": [
+        "SR2-AZURE-THROTTLING",
+        "SR2-GOLD-C05"
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H_assessment_scope": "reference_design",
+      "H": [
+        {
+          "constraint_id": "H1",
+          "status": "pass",
+          "reason": "원 후보가 로컬 limit만의 한계를 인지하고 aggregate write budget을 명시했다. limiter를 먼저 포화되는 자원에 맞춰야 하는 조건도 source가 지지한다."
+        },
+        {
+          "constraint_id": "H2",
+          "status": "pass",
+          "reason": "원 후보가 대표 진단과 억제 횟수를 보존하도록 요구한다. 무손실·실제 진단 효과는 검증하지 않았다."
+        },
+        {
+          "constraint_id": "H3",
+          "status": "not_in_scope",
+          "reason": "admission·write budget 참고이며 저장소나 보존 기간을 옮기는 구성이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "gold_matches": [],
+      "full_problem_solution_established": false,
+      "date_status": "post_decision",
+      "strict_historical_hit": false,
+      "transfer_mapping": "principal→reporter, service resource bound→총 event API write budget, early rejection→producer admission. global budget 배분·대표 진단 선택·계측은 구현할 조건이다.",
+      "excluded_match_extensions": [
+        {
+          "gold_id": "K0383-G01",
+          "reason": "기존 dedup 유지라는 구체 조건이 제안되지 않았다. rate cap만의 공통성은 정확한 구조 일치에 부족하다."
+        },
+        {
+          "gold_id": "K0383-G05",
+          "reason": "현재 source에 기능 중지 예시가 있어도 원 후보가 관리자에 의한 모든 create/update 정지를 제안하지 않았다."
+        }
+      ],
+      "boundary_note": "일반 throttle이라는 이름이나 source의 다른 전략을 이용해 서로 다른 gold 대안으로 확장하지 않았다.",
+      "candidate_name": "Azure Throttling pattern"
+    }
+  ],
+  "gold_role_boundary_review": {
+    "case_id": "C05",
+    "gold_id": "K0383-G06",
+    "reviewer": "내부 별도 검토",
+    "model": "GPT-6 Astra Pro",
+    "source_ids": [
+      "SR2-GOLD-C05"
+    ],
+    "section": "Pivoting towards more machine readable Events by introducing stricter structure; pinned lines 375-376",
+    "primary_role_under_unchanged_scope": "다른 분야 원리",
+    "term_only": false,
+    "frozen_role_observed_in_CASES": "같은 분야의 다른 설계",
+    "frozen_CASES_modified": false,
+    "borrowed_structure": "능동 구문에서 누가 능동 구성요소이고 무엇이 직접·간접 대상인지를 구분하는 관계를 event 필드의 역할 대응으로 옮긴다. 원문은 이 대응을 강제하면 자동 소비자가 각 필드가 가리키는 대상을 확실히 알 수 있다고 설명한다.",
+    "terminology_only_boundary": "능동태나 object라는 단어만 붙이는 경우라면 term_only가 맞다. 이 절은 역할을 구별하는 schema 규칙과 machine-readability라는 작동 목적을 함께 제시한다.",
+    "scope_rule_application": "SCOPE §5는 비소프트웨어 원리 또는 서로 다른 소프트웨어 영역의 관계를 명시적으로 옮긴 경우를 허용한다. 자연어 문법의 역할 관계→분산 시스템 event schema는 그 기능 기준에 들어간다. 원문 저자가 별도 언어학 문헌을 인용했다는 주장은 아니다.",
+    "external_citation_absence_relevance": "외부 인용이 없다는 점은 어떤 이론·학파·연구를 사용했는지 또는 그 효과를 입증하는지를 제한한다. 그러나 고정 역할 규칙은 외부 인용을 다른 분야 원리의 필요조건으로 정하지 않았으므로 그것만으로 이 역할을 배제할 수 없다.",
+    "legitimate_boundary_alternative": {
+      "role": "같은 분야의 다른 설계",
+      "rationale": "관용적인 문법 역할을 차용한 ad hoc schema 설계로 보고 독립 원리 적용까지는 주장하지 않는 보수적 읽기는 가능하다. 다만 term_only 판정은 필드 대응과 자동 소비 목적을 누락하므로 본 검토의 우선 판정으로 삼지 않는다."
+    },
+    "precise_limits": [
+      "원문은 실제 field 이름, 문법 전체, parser, 검증된 기계 이해 효과를 제공하지 않는다.",
+      "active component를 문법의 행위자/주어 역할에 대응시킨다는 표현은 문단의 기능에 대한 연구자 해석이며 subject라는 단어를 원문 직접 인용으로 꾸미지 않는다.",
+      "제안은 거절되었다. 회수·역할 코딩은 채택·성공·사용자 수요 증거와 별개다."
+    ],
+    "substantive_disagreement": "고정 boundary_note가 외부 학문 인용 부재와 용어/구조 비유를 근거로 strict distant에서 배제한 부분은 SCOPE의 기능 기준보다 더 좁다. 변경 없는 규칙을 적용할 때 역할 오류 수정이 타당하며, 원래 값과 이 해석을 각각 보존해야 한다.",
+    "inter_rater_reliability_measured": false
+  },
+  "substantive_boundary_positions": [
+    "원 후보가 명시한 실패조건·주의점도 회수 내용이 될 수 있다. B-C24-r2의 비공개 속성 공개 입력은 그 사례다.",
+    "페이지에만 있는 private-argument 처리, 수동 initializer helper, 캡처 기본값/변수별 문법은 원 후보에 자동 추가하지 않는다.",
+    "Jed는 gettext+보간의 명시 메커니즘 일치로 인정하지만 GNU gettext 실체 동일성은 부정한다. 두 축은 합치지 않는다.",
+    "모든 L/E/H/T 판정은 원래 좁힌 reference_design 범위다. H2/H3 전체를 다루지 않는 C++ 후보를 완전 설계로 승격하지 않는다.",
+    "C05-G06은 작동 목적을 가진 문법 관계의 필드 대응으로 판단해 다른 분야 원리를 우선한다. frozen CASES는 이 검토가 수정하지 않는다."
+  ],
+  "non_actions": [
+    "No new baseline candidates",
+    "No gold additions or removals",
+    "No frozen CASES edits",
+    "No role inter-rater reliability calculation",
+    "No commits"
+  ],
+  "source_ledger": "evidence/judgments/reviewer-second-sources.json",
+  "runtime_observation": "not_performed"
+}

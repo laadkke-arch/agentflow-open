@@ -1,0 +1,150 @@
+{
+  "case_id": "C09",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "start/bound/direction/stride가 명시된 arithmetic clause다."
+        ],
+        [
+          "pass",
+          "index와 일정 stride 반복에 직접 대응한다."
+        ],
+        [
+          "pass",
+          "가독성과 Python binding을 구별하며 fixed construct 또는 proven binding/guard/fallback 필요를 원 응답에서 고려한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Syntax and semantics for position-based and regularly spaced iteration.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "다른 언어의 range 이름이나 일반 lazy iterator를 Python range/xrange의 공식 alias로 보지 않는다. 확장 slice의 콜론 구문·tuple range·list flattening·입력 타입 보존·C API 공개 경계라는 구별 선택도 원 응답에서 명시하지 않았다.",
+      "transfer_mapping": "CL LOOP arithmetic clauses → Python compiler-visible stepping grammar. 언어 크기·endpoint/evaluation/mutation·binding 규칙을 명시해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "숫자 driver에 bound/direction/stride를 지정한다."
+        ],
+        [
+          "pass",
+          "numeric driver와 element driver를 함께 써 position pairing을 한다."
+        ],
+        [
+          "pass",
+          "readable named driver를 제안하며 Lisp macro 확장이 Python runtime rebinding을 대체하지 못함을 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Readable, extensible iteration notation and a compiler-visible representation of numeric stepping.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "다른 언어의 range 이름이나 일반 lazy iterator를 Python range/xrange의 공식 alias로 보지 않는다. 확장 slice의 콜론 구문·tuple range·list flattening·입력 타입 보존·C API 공개 경계라는 구별 선택도 원 응답에서 명시하지 않았다.",
+      "transfer_mapping": "Iterate numeric+element driver → 명시적 index/element traversal. Lisp code walking을 직접 적용할 수 없고 동적 이름 규칙을 보존해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "관계식 경계와 명시 stride, range loop가 문서화되어 있다."
+        ],
+        [
+          "pass",
+          "숫자 induction 변수를 통한 위치·간격 반복의 구현 참고다."
+        ],
+        [
+          "pass",
+          "문법의 가독성/폐기 예정 상태와 builtin 재정의의 미확인 안전성을 원 후보가 고려했다. H3의 고려 요구를 모든 재정의의 의미 보존 증명 요구로 강화하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Optimization conditions, bounds-and-stride notation, and semantic checks before loop lowering.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "재정의 보존을 확인했다고 채점하지 않았다. 결정적 unknown이 되는 범위와 현재의 좁은 참고 범위를 구분했다. 원 제안은 Cython compiler의 loop-lowering 조건이다. 원문 예제의 range 호출을 숫자 list를 만드는 builtin 재사용 부품의 제안으로 바꾸지 않는다. 관계식 for-from-by 문법은 시작:끝:간격 extended-slice 구조와 같지 않다. C loop lowering은 xrange형 lazy sequence/generator를 제안한 것이 아니다. C helper를 비공개 API로 유지한다는 경계 선택이 원 후보에 없다.",
+      "transfer_mapping": "타입과 stride 방향→lowering을 제한할 조건, 관계식 경계→표기 비교, overflow 시점→의미 검증 항목. builtin binding의 동일성 검증은 여전히 필요한 조건이며 완료했다고 보지 않는다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다.",
+      "expected_label": "CONDITIONAL_TRANSFER",
+      "internal_review": {
+        "reviewer": "내부 별도 검토",
+        "model_label": "GPT-6 Astra Pro",
+        "source": "evidence/judgments/SECOND_REVIEW.json",
+        "candidate_id": "B-C09-r3",
+        "resolution": "작업자가 원 응답·고정 규칙을 다시 대조하고 이 검토의 일치·참고 범위 판정을 채택함; 최초 판정은 SECOND_RESOLUTION.json에 보존"
+      },
+      "additional_evidence": [
+        "evidence/judgments/reviewer-second-sources.json#SR2-CYTHON-LOOP",
+        "evidence/judgments/reviewer-second-sources.json#SR2-CYTHON-SEMANTICS",
+        "evidence/judgments/reviewer-second-sources.json#SR2-GOLD-C09"
+      ]
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "start/stop/step·descending range를 제공한다."
+        ],
+        [
+          "pass",
+          "indexable range와 enumerate adapter가 position iteration을 나눈다."
+        ],
+        [
+          "pass",
+          "C++ binding/lifetime과 Python 동적 이름 차이, zero-step 의미를 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compact range representation, stride iteration, and exposing element positions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "다른 언어의 range 이름이나 일반 lazy iterator를 Python range/xrange의 공식 alias로 보지 않는다. 확장 slice의 콜론 구문·tuple range·list flattening·입력 타입 보존·C API 공개 경계라는 구별 선택도 원 응답에서 명시하지 않았다.",
+      "transfer_mapping": "CPPItertools range/enumerate → 숫자열 생성과 element position을 조합하는 API. zero step과 lifetime·dynamic binding을 목표 언어에 맞게 정의해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "numeric_range가 start/stop/step과 negative step, zero rejection을 제공한다."
+        ],
+        [
+          "pass",
+          "islice_extended와 숫자열 생성을 구별하여 stride selection을 지원한다."
+        ],
+        [
+          "pass",
+          "callable rebinding과 buffering/precision/mutation을 명시하며 구문 전용 의미와 API 호출을 구별한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Library-level range objects and selecting regularly spaced elements.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "다른 언어의 range 이름이나 일반 lazy iterator를 Python range/xrange의 공식 alias로 보지 않는다. 확장 slice의 콜론 구문·tuple range·list flattening·입력 타입 보존·C API 공개 경계라는 구별 선택도 원 응답에서 명시하지 않았다.",
+      "transfer_mapping": "more-itertools numeric progression/iterable selection → Python library 수준의 두 작업 분리. 함수 이름은 재정의 가능하고 slicing buffer 비용을 확인해야 한다.",
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    }
+  ]
+}

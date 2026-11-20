@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "case_id": "C01",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C01-D01",
+      "url": "https://grep.app/api/search?q=NewDelayingQueue%20AddAfter",
+      "accessed_at_utc": "2026-11-20T12:42:07.634397+00:00",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live",
+      "sections_read": "Public unauthenticated JSON search response",
+      "confirmed": "Native code-search endpoint was reachable and returned zero matches.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D02",
+      "url": "https://github.com/kubernetes/sample-controller/blob/master/docs/controller-client-go.md",
+      "accessed_at_utc": "2026-11-20 12:42:25 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes sample-controller informer/indexer/workqueue pattern",
+      "version_or_date": "master (live)",
+      "sections_read": "client-go components; Custom Controller components",
+      "confirmed": "Describes watch-based observation, informer cache/indexer retrieval, and handlers enqueuing resource keys for worker processing.",
+      "limits": "The design must tolerate stale cache observations and repeated notifications, wait for initial cache synchronization, and reconstruct work after restart; the opened source is live and does not establish availability by the cutoff. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D09",
+      "url": "https://prometheus.io/docs/practices/histograms/",
+      "accessed_at_utc": "2026-11-20 12:42:45 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Prometheus histogram and summary guidance",
+      "version_or_date": "live",
+      "sections_read": "Count and sum of observations; bucketing; quantiles; aggregation",
+      "confirmed": "Histograms expose observation counts and sums for throughput and average latency, and bucketed distributions can be aggregated for quantiles; summary quantiles cannot be meaningfully averaged across workers.",
+      "limits": "Choose buckets for the latency range and do not average summary quantiles across workers; the current document also discusses newer native histograms, whose availability is not established by this live page for the cutoff. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D10",
+      "url": "https://grep.app/api/search?q=NewDelayingQueue&f.repo=kubernetes%2Fclient-go",
+      "accessed_at_utc": "2026-11-20T12:42:46.016989+00:00",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live",
+      "sections_read": "Public JSON search result repository/path metadata",
+      "confirmed": "Native public unauthenticated code search found two files for the delaying-queue implementation and tests in kubernetes/client-go.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D11",
+      "url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/delaying_queue.go",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "public_code",
+      "title": "client-go delaying work queue",
+      "version_or_date": "live default branch",
+      "sections_read": "AddAfter; waitingLoop; heap insertion",
+      "confirmed": "AddAfter places keys into a timer-driven heap and transfers due items into the work queue; duplicate future entries retain the earlier due time.",
+      "limits": "The queue is process-local and must be rebuilt after restart; its duplicate-key insertion keeps the earlier due time, so each wake must recheck current schedule and ownership rather than assuming a pending timer was canceled by a spec change. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D12",
+      "url": "https://github.com/kubernetes/client-go/blob/master/util/workqueue/metrics.go",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "public_code",
+      "title": "client-go workqueue MetricsProvider",
+      "version_or_date": "live default branch",
+      "sections_read": "MetricsProvider; newQueueMetrics",
+      "confirmed": "The queue defines depth, adds, latency, processing-duration, unfinished-work, longest-worker, and retry metrics; the default provider is a no-op.",
+      "limits": "The default provider is a no-op and unnamed queues do not emit these metrics; queue additions are not equivalent to successful Job creations, and queue latency does not measure lateness relative to the cron schedule. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D13",
+      "url": "https://github.com/robfig/cron",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "cron",
+      "version_or_date": "live default branch",
+      "sections_read": "Repository overview",
+      "confirmed": "Public primary repository identifies this as a Go cron library; detailed behavior is verified through its Go package documentation.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D14",
+      "url": "https://github.com/kubernetes-sigs/controller-runtime/blob/main/doc.go",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "public_code",
+      "title": "controller-runtime shared cache and RequeueAfter reconciliation",
+      "version_or_date": "live default branch",
+      "sections_read": "Clients and Caches; Reconcilers",
+      "confirmed": "The manager's default client reads from a shared local cache and writes to the API; watch events can enqueue owner reconciliation and cached reads are not immediately coherent after writes.",
+      "limits": "A cached read immediately after an API write is not guaranteed to see that write; adopting a framework also requires checking compatibility with the existing controller-manager and selected Kubernetes libraries. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D15",
+      "url": "https://github.com/kubernetes-sigs/controller-runtime/blob/main/pkg/reconcile/reconcile.go",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "public_code",
+      "title": "reconcile.go",
+      "version_or_date": "live default branch",
+      "sections_read": "Result.RequeueAfter; Reconciler",
+      "confirmed": "RequeueAfter schedules the next reconciliation after a duration; reconciliation is level-based and errors are retried with backoff.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D16",
+      "url": "https://kubernetes.io/docs/reference/kubernetes-api/batch/job-v1/",
+      "accessed_at_utc": "2026-11-20 12:43:04 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes JobStatus completionTime and Complete condition",
+      "version_or_date": "live",
+      "sections_read": "JobStatus.completionTime and conditions",
+      "confirmed": "Job completionTime is a UTC timestamp set only on success; Complete=True is the successful terminal condition, and completion timestamps do not guarantee cross-operation order.",
+      "limits": "Validate owner identity, handle absent timestamps and conflicting status updates, and persist the aggregate before completed Jobs are pruned; timestamps are not guaranteed to establish operation order. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D17",
+      "url": "https://pkg.go.dev/github.com/robfig/cron/v3",
+      "accessed_at_utc": "2026-11-20 12:43:24 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "robfig/cron v3.0.1 parser and Schedule.Next",
+      "version_or_date": "v3.0.1; published 2020-01-04",
+      "sections_read": "Version publication; ParseStandard; Schedule.Next; SpecSchedule.Next",
+      "confirmed": "Version v3.0.1 is published January 4, 2020; standard five-field cron parsing yields a Schedule whose Next method calculates the next activation time, returning zero when no matching future time is found.",
+      "limits": "Preserve the existing API's cron dialect, timezone and missed-run behavior; in-process cron wrappers do not enforce overlap policies for Kubernetes Jobs that continue running after a callback returns. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D18",
+      "url": "https://pkg.go.dev/sigs.k8s.io/controller-runtime%40v0.25.2/pkg/internal/controller/metrics",
+      "accessed_at_utc": "2026-11-20 12:43:50 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "controller-runtime v0.25.2 reconciliation metrics implementation",
+      "version_or_date": "v0.25.2; published 2026-09-30",
+      "sections_read": "Version publication; ReconcileTotal; ReconcileTime",
+      "confirmed": "Version v0.25.2 is published September 30, 2026; its controller metrics include reconciliation counts by controller/result and a reconciliation-duration histogram.",
+      "limits": "This is explicitly post-cutoff evidence published in 2026, and the package is internal implementation code rather than a public import contract; these measures still do not establish successful Job throughput or schedule accuracy. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C01.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C01-D03",
+      "url": "https://github.com/kubernetes/client-go/blob/v0.19.0/util/workqueue/delaying_queue.go",
+      "accessed_at_utc": "2026-11-20 12:42:25 UTC",
+      "reason": "The web open tool could not fetch this versioned GitHub source page.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D04",
+      "url": "https://github.com/robfig/cron/tree/v3.0.0",
+      "accessed_at_utc": "2026-11-20 12:42:25 UTC",
+      "reason": "The web open tool could not fetch this versioned GitHub repository page.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D05",
+      "url": "https://pkg.go.dev/k8s.io/client-go@v0.19.0/util/workqueue",
+      "accessed_at_utc": "2026-11-20 12:42:45 UTC",
+      "reason": "No page content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D06",
+      "url": "https://pkg.go.dev/github.com/robfig/cron/v3@v3.0.0",
+      "accessed_at_utc": "2026-11-20 12:42:45 UTC",
+      "reason": "No page content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D07",
+      "url": "https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.6.2",
+      "accessed_at_utc": "2026-11-20 12:42:45 UTC",
+      "reason": "No page content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D08",
+      "url": "https://pkg.go.dev/k8s.io/api@v0.19.0/batch/v1",
+      "accessed_at_utc": "2026-11-20 12:42:45 UTC",
+      "reason": "No page content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D19",
+      "url": "https://raw.githubusercontent.com/kubernetes/client-go/v0.19.0/util/workqueue/delaying_queue.go",
+      "accessed_at_utc": "2026-11-20 12:43:50 UTC",
+      "reason": "No content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C01-D20",
+      "url": "https://proxy.golang.org/k8s.io/client-go/@v/v0.19.0.info",
+      "accessed_at_utc": "2026-11-20 12:43:50 UTC",
+      "reason": "No content was retrieved.",
+      "recorded_in": "runs/A/C01.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

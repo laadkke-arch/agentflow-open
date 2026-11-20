@@ -1,0 +1,291 @@
+{
+  "case_id": "C04",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "OPA/Gatekeeper admission enforcement",
+      "candidate_url": "https://open-policy-agent.github.io/gatekeeper/website/docs/",
+      "candidate_claim": "Gatekeeper's admission context can authorize trusted Node-label mutations by authenticated caller and old/new values before those labels influence workload placement.",
+      "gold_matches": [],
+      "match_rationale": "파일/flag 저장, API object에 allowed-label 설정, 위반 label 허용 후 NoSchedule taint, 모든 임의 label 금지 중 어느 정책 선택도 원 응답이 구별하여 제안하지 않는다. Gatekeeper 자료에 CRD가 존재한다는 이유만으로 label-policy 저장 선택 G02를 원 응답에 사후 추가하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "원 응답은 독립 신뢰 작성자·인증·검증 경계가 보호 label을 통제하도록 하고 node 자기 주장만으로 통과시키지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "원 응답은 sensitive selector가 보호 key에 의존하도록 연결하고 임의 trusted placement identity 획득을 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "Node label 쓰기 권한 경계에 적용하며 scheduler 전체 교체를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Gatekeeper의 admission caller/old-new object와 validation → 보호 Node label 변경 권한. create·update·삭제 경로와 policy/webhook 설정을 모두 보호하고 fail-closed의 registration 복구 절차를 마련해야 한다.",
+      "H_assessment_scope": "reference_design: Validate Node creation and updates, including adding, changing, or removing protected keys; preserve permitted self-registration metadata.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/0",
+        "runs/B/C04.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 대응·실패 전제 판정이다. 실제 Node write 경로·policy 보호·우회·fail-closed 복구를 구현하고 공격 시나리오로 검증해야 한다. date unknown은 결정 전 판을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "XACML 3.0: authenticated namespace ownership and deny-biased enforcement",
+      "candidate_url": "https://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html",
+      "candidate_claim": "XACML's issuer-specific namespaces and authenticated-source checks can inform reserving placement-label prefixes to trusted writers while retaining ordinary self-reported labels.",
+      "gold_matches": [],
+      "match_rationale": "파일/flag 저장, API object에 allowed-label 설정, 위반 label 허용 후 NoSchedule taint, 모든 임의 label 금지 중 어느 정책 선택도 원 응답이 구별하여 제안하지 않는다. Gatekeeper 자료에 CRD가 존재한다는 이유만으로 label-policy 저장 선택 G02를 원 응답에 사후 추가하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "원 응답은 독립 신뢰 작성자·인증·검증 경계가 보호 label을 통제하도록 하고 node 자기 주장만으로 통과시키지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "원 응답은 sensitive selector가 보호 key에 의존하도록 연결하고 임의 trusted placement identity 획득을 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "Node label 쓰기 권한 경계에 적용하며 scheduler 전체 교체를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "XACML의 인증된 namespace owner·deny-biased enforcement → label-key prefix별 신뢰된 작성자 권한. 표준은 policy ID에 관한 것이므로 실제 label 권한 검사를 구현해야 한다.",
+      "H_assessment_scope": "reference_design: Authorize protected label-key writes at the API boundary, with explicit denial for untrusted writers or unresolved decisions.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/1",
+        "runs/B/C04.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 대응·실패 전제 판정이다. 실제 Node write 경로·policy 보호·우회·fail-closed 복구를 구현하고 공격 시나리오로 검증해야 한다. date unknown은 결정 전 판을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "NIST SP 800-162 (2014): authoritative attribute management",
+      "candidate_url": "https://csrc.nist.gov/files/pubs/sp/800/162/final/docs/nist.sp.800-162-201401.pdf",
+      "candidate_claim": "NIST's attribute-authority, validation, and provenance requirements can separate trusted placement metadata from inventory asserted by a node.",
+      "gold_matches": [],
+      "match_rationale": "파일/flag 저장, API object에 allowed-label 설정, 위반 label 허용 후 NoSchedule taint, 모든 임의 label 금지 중 어느 정책 선택도 원 응답이 구별하여 제안하지 않는다. Gatekeeper 자료에 CRD가 존재한다는 이유만으로 label-policy 저장 선택 G02를 원 응답에 사후 추가하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "원 응답은 독립 신뢰 작성자·인증·검증 경계가 보호 label을 통제하도록 하고 node 자기 주장만으로 통과시키지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "원 응답은 sensitive selector가 보호 key에 의존하도록 연결하고 임의 trusted placement identity 획득을 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "Node label 쓰기 권한 경계에 적용하며 scheduler 전체 교체를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "NIST ABAC의 attribute authority·validation·provenance → 노드의 자기 보고 inventory와 보호 placement attribute 구분. 권한 있는 관리자와 scheduler selector의 신뢰 집합을 연결해야 한다.",
+      "H_assessment_scope": "reference_design: Define permitted label issuers and values, and preserve accountable changes to trusted scheduling attributes.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/2",
+        "runs/B/C04.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 대응·실패 전제 판정이다. 실제 Node write 경로·policy 보호·우회·fail-closed 복구를 구현하고 공격 시나리오로 검증해야 한다. date unknown은 결정 전 판을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "SPIRE: independently attested node identity and attributes",
+      "candidate_url": "https://spiffe.io/docs/latest/spire-about/spire-concepts/",
+      "candidate_claim": "SPIRE's server-verified node proofs and platform-derived selectors can inform automatic registration in which a trusted controller, rather than a node's assertion, grants placement identity.",
+      "gold_matches": [],
+      "match_rationale": "파일/flag 저장, API object에 allowed-label 설정, 위반 label 허용 후 NoSchedule taint, 모든 임의 label 금지 중 어느 정책 선택도 원 응답이 구별하여 제안하지 않는다. Gatekeeper 자료에 CRD가 존재한다는 이유만으로 label-policy 저장 선택 G02를 원 응답에 사후 추가하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "원 응답은 독립 신뢰 작성자·인증·검증 경계가 보호 label을 통제하도록 하고 node 자기 주장만으로 통과시키지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "원 응답은 sensitive selector가 보호 key에 의존하도록 연결하고 임의 trusted placement identity 획득을 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "Node label 쓰기 권한 경계에 적용하며 scheduler 전체 교체를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SPIRE server의 독립적인 node proof 검증·platform selector → 별도 controller가 신뢰 label을 부여하는 입력. 증명 원천을 node가 바꾸지 못해야 하며 attestation이 지속적인 비침해 상태를 보장하지 않는다.",
+      "H_assessment_scope": "reference_design: Supply independently verified node attributes to a separate label-authorizing controller.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/3",
+        "runs/B/C04.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 대응·실패 전제 판정이다. 실제 Node write 경로·policy 보호·우회·fail-closed 복구를 구현하고 공격 시나리오로 검증해야 한다. date unknown은 결정 전 판을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "Azure Gatekeeper pattern: a protected registration boundary",
+      "candidate_url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/gatekeeper",
+      "candidate_claim": "The Gatekeeper pattern can separate untrusted registration input from the privileged component that writes trusted placement labels.",
+      "gold_matches": [],
+      "match_rationale": "파일/flag 저장, API object에 allowed-label 설정, 위반 label 허용 후 NoSchedule taint, 모든 임의 label 금지 중 어느 정책 선택도 원 응답이 구별하여 제안하지 않는다. Gatekeeper 자료에 CRD가 존재한다는 이유만으로 label-policy 저장 선택 G02를 원 응답에 사후 추가하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "원 응답은 독립 신뢰 작성자·인증·검증 경계가 보호 label을 통제하도록 하고 node 자기 주장만으로 통과시키지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "원 응답은 sensitive selector가 보호 key에 의존하도록 연결하고 임의 trusted placement identity 획득을 제한한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "Node label 쓰기 권한 경계에 적용하며 scheduler 전체 교체를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Azure Gatekeeper의 제한된 검증 인터페이스와 보호 backend → 등록 요청 검증과 신뢰 label writer 분리. 직접 쓰기 우회를 막고 구체 label 정책과 가용성 처리를 추가해야 한다.",
+      "H_assessment_scope": "reference_design: Centralize label validation while exposing a limited registration interface and protecting the trusted metadata writer.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/4",
+        "runs/B/C04.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 대응·실패 전제 판정이다. 실제 Node write 경로·policy 보호·우회·fail-closed 복구를 구현하고 공격 시나리오로 검증해야 한다. date unknown은 결정 전 판을 대조해야 한다."
+    }
+  ]
+}

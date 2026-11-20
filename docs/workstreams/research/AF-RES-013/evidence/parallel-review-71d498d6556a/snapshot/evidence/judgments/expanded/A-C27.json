@@ -1,0 +1,244 @@
+{
+  "case_id": "C27",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C27",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Objective-C compound selector literals and SEL values",
+      "candidate_url": "https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjectiveC/Chapters/ocSelectors.html",
+      "candidate_claim": "Objective-C selector literals preserve the complete keyword name without argument values or parameter types, providing a direct model for distinguishing label-different methods and passing the selected name to an external object runtime.",
+      "gold_matches": [],
+      "match_rationale": "selector identity는 lens, underscore partial application, 빈 label 생략이라는 대안과 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 오버로드를 함수 값으로 참조",
+          "value": "not_in_scope",
+          "reason": "처음부터 full method-name 표기와 runtime selector 값 부분이며 typed callable binding은 별도라고 했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "동일 타입·다른 레이블의 경우 처리",
+          "value": "pass",
+          "reason": "전체 keyword/colon 이름이 label 차이를 보존한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "반복 코드와 불필요한 타입 표기 감소",
+          "value": "pass",
+          "reason": "인수 값·타입 없이 이름을 직접 표현한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "ObjC compound selector → Swift full method-name identity와 외부 runtime 경계. receiver binding·static signature 검사는 별도로 유지해야 한다.",
+      "H_assessment_scope": "reference_design: Source syntax for full method names; separation of the receiver from the selector; external runtime target-action interoperability.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C27.json#/candidates/0",
+        "runs/A/C27.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C27",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Scala named-argument placeholder anonymous functions",
+      "candidate_url": "https://docs.scala-lang.org/sips/1.html",
+      "candidate_claim": "Scala's named-argument placeholder functions suggest a compact adapter syntax that preserves the desired argument labels while constructing a callable without a handwritten forwarding body.",
+      "gold_matches": [
+        {
+          "gold_id": "S0021-G02",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "named argument expression의 underscore placeholder가 anonymous function을 생성하는 일반 partial application 대안이다."
+        }
+      ],
+      "match_rationale": "underscore placeholder를 쓰는 일반 partial application 구조를 직접 회수했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 오버로드를 함수 값으로 참조",
+          "value": "pass",
+          "reason": "named-call placeholder가 anonymous callable을 만든다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "동일 타입·다른 레이블의 경우 처리",
+          "value": "unknown",
+          "reason": "동일 타입·label만 다른 overload를 지원하는 규칙은 열린 자료에서 입증되지 않았다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "반복 코드와 불필요한 타입 표기 감소",
+          "value": "pass",
+          "reason": "forwarding body를 줄이나 일부 expected/placeholder type 표기는 남는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Scala named placeholder anonymous function → Swift compact callable adapter. same-type label-only overload 규칙과 기대 타입을 별도로 검증해야 한다.",
+      "H_assessment_scope": "reference_design: Alternative mechanism based on abbreviated call expressions and anonymous-function generation; overload filtering through named arguments.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "S0021-G02"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C27.json#/candidates/1",
+        "runs/A/C27.json#/opened_documents"
+      ],
+      "remaining_check": "동일 타입·다른 label만 가진 overload 두 개를 이 규칙으로 구별하는 정식 언어 규칙/예제를 열면 H2가 판정된다."
+    },
+    {
+      "case_id": "C27",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Squeak Smalltalk interned keyword-selector symbols",
+      "candidate_url": "https://wiki.squeak.org/squeak/uploads/SqueakLanguageRef.3.html",
+      "candidate_claim": "Squeak's interned keyword-selector symbols provide a compact value representation in which every label segment participates in the selector's identity, helping represent and compare full method names independently of argument types.",
+      "gold_matches": [],
+      "match_rationale": "명명 표현의 참조이며 세 본문 대안과 동일하지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 오버로드를 함수 값으로 참조",
+          "value": "not_in_scope",
+          "reason": "symbol representation만 제안하고 typed callable·receiver binding은 별도라고 했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "동일 타입·다른 레이블의 경우 처리",
+          "value": "pass",
+          "reason": "모든 keyword segment가 selector identity에 참여한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "반복 코드와 불필요한 타입 표기 감소",
+          "value": "pass",
+          "reason": "interned compact symbol literal이 반복 타입 표기를 요구하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Smalltalk keyword symbol → Swift compound-name key/equality. typed resolution·receiver binding·ambiguity 진단이 별도로 필요하다.",
+      "H_assessment_scope": "reference_design: Compiler and runtime representation of compound names; symbol literals; selector equality and lookup keys.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C27.json#/candidates/2",
+        "runs/A/C27.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C27",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Erlang function references qualified by name and arity",
+      "candidate_url": "https://www.erlang.org/docs/17/pdf/otp-system-documentation.pdf",
+      "candidate_claim": "Erlang's fun Name/Arity and fun Module:Name/Arity forms show how a small amount of identifying information can construct a function value while eliminating a repetitive forwarding closure.",
+      "gold_matches": [],
+      "match_rationale": "forwarding closure의 축약이지만 underscore placeholder partial application은 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 오버로드를 함수 값으로 참조",
+          "value": "pass",
+          "reason": "name/arity로 실제 function value를 만든다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "동일 타입·다른 레이블의 경우 처리",
+          "value": "fail",
+          "reason": "같은 arity에서 label만 다른 경우를 구별하지 못한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "반복 코드와 불필요한 타입 표기 감소",
+          "value": "pass",
+          "reason": "forwarding closure의 반복 인수 선언을 줄인다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Erlang name/arity function reference → compact Swift function-reference grammar 비교. label identity가 없어 핵심 경우는 실패하며 richer key 없이는 대안이 되지 못한다.",
+      "H_assessment_scope": "reference_design: Compact function-reference grammar; explicit selection information; desugaring into callable values.",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C27.json#/candidates/3",
+        "runs/A/C27.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

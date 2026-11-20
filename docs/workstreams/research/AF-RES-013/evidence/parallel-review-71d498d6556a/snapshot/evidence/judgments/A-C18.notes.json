@@ -1,0 +1,174 @@
+{
+  "case_id": "C18",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The versioned bytes-literal grammar preserves ASCII and escaped arbitrary byte values separately from Unicode str."
+        ],
+        [
+          "pass",
+          "Companion versioned documentation verifies integer elements in 0..255 and sequence-valued slices; the original explicitly distinguishes a one-byte sequence from its integer element."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: separate readable binary literals and integer byte elements",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0069-G04",
+          "rationale": "Original rank 1 explicitly uses Python 3.3.5 b-prefixed byte-string syntax with readable ASCII and escaped arbitrary bytes, the named Python byte-string literal precedent in gold Alternatives."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The candidate identifies Python b-prefixed byte strings and the exact binary/Unicode distinction in the external gold item. No other literal prefix/suffix or macro policy is inferred.",
+      "transfer_mapping": "Map b-prefixed readable ASCII/byte escapes to binary sequence literals and integer indexing to individual byte values, with explicit encoding for text conversion. Preserve the original rejection of direct non-ASCII literal characters and the distinction between a byte and a one-element sequence.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened byte-string guide distinguishes byte-preserving output and explicit text encoding, without assuming the whole data is Unicode."
+        ],
+        [
+          "pass",
+          "It documents individual bytes as 0..255 integers alongside separate byte-string notation."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: byte integers plus distinct binary-sequence syntax",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Racket is not Python’s external entity; generic numeric byte access does not explicitly select numeric literal patterns as the target design.",
+      "transfer_mapping": "Map readable ASCII/escaped bytes to binary literals and element access to 0..255 values. Keep text conversion explicit and preserve byte output; a text encoding cannot be silently applied to the entire mixed-format sequence.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "8-bit character/string storage covers raw byte values without requiring globally valid UTF-8; the original deliberately separates this notation from Rust’s Unicode types."
+        ],
+        [
+          "pass",
+          "The source provides single-quoted 8-bit values and double-quoted sequences using consistent escapes."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: parallel scalar-byte and byte-sequence notation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The original does not cast runtime bytes to Rust Unicode characters or select the gold a/u8 spelling alternatives. A foreign 8-bit char type is not the same cast mechanism.",
+      "transfer_mapping": "Map single/double quoted 8-bit forms to separate Rust byte and byte-sequence types, not to existing Unicode char/str. Preserve the original upper-byte Latin-1 semantic difference and transfer byte-valued notation only.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Original use selects byte escapes and indexing on strings that may contain invalid UTF-8; it explicitly excludes rune-decoding range iteration from raw-byte interpretation."
+        ],
+        [
+          "pass",
+          "Strings provide sequences and indexing yields individual bytes, both explicitly documented."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: arbitrary-byte sequences with byte-level indexing",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The original proposes raw-byte storage/inspection and warns about UTF-8 source text/rune iteration; it does not choose UTF-8 encoding of all literal code points as the target byte-literal policy. No structural default is inferred from that caveat.",
+      "transfer_mapping": "Map known literal ASCII/byte escapes to raw sequence storage and index operations to byte values. Keep the original distinction from unescaped source Unicode and range-based rune decoding; those text operations cannot stand in for raw-byte inspection.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Binary segments and explicit numeric fields compose raw mixed-format data without whole-value Unicode decoding."
+        ],
+        [
+          "pass",
+          "Default eight-bit integer segments and multi-segment binaries address individual byte values and sequences."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: binary field construction/matching with readable fragments",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The original chooses rich binary segment composition; merely allowing numeric fields does not select the gold status-quo numeric-literal byte-pattern alternative, and no pattern-capable byte macro is proposed.",
+      "transfer_mapping": "Map readable ASCII fragments and fixed-width numeric fields to binary segments with explicit byte alignment/endianness. Preserve original size checks; this is a composition/parsing design, not automatic text decoding.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "Char8 accepts Char inputs and truncates them to eight bits. The original warns of information loss but supplies no range restriction or validation policy ensuring every proposed source value has byte meaning."
+        ],
+        [
+          "unknown",
+          "The original specifically proposes singleton/pack and single-byte sequences; it does not establish a corresponding individual raw-byte value form distinct from a Char or one-element sequence."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Char-based library construction of byte sequences",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Overloaded string literals and singleton do not constitute the gold pattern-capable byte-macro design; no pattern expansion is stated.",
+      "transfer_mapping": "Map library pack/singleton or overloaded literals to byte storage while keeping the original truncation warning. Neither a new range validator nor a scalar-byte literal conversion is silently added.",
+      "remaining_check": "Specify whether inputs are restricted to 0..255 and identify the individual-byte value operation. Verified range-safe scalar/sequence uses could pass; unrestricted larger Char inputs demonstrably lose information and would fail H1."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened specification permits invalid UTF data in hex strings and documents byte-valued escapes; original use keeps ordinary source Unicode semantics separate."
+        ],
+        [
+          "pass",
+          "The read character-literal/escape rules cover byte-sized quoted values as well as string/hex sequences in the original byte-escape scope."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: byte-valued quoted escapes and hexadecimal binary sequences",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "The candidate does not propose the specific a prefix/u8 suffix or pattern macro alternatives. Generic escape syntax is not a gold match.",
+      "transfer_mapping": "Map byte-valued escapes to individual byte expressions or string components and hex spelling to arbitrary binary runs. Preserve the original distinction from ordinary Unicode source characters and the reduced readability of hex-only ASCII fragments.",
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    }
+  ]
+}

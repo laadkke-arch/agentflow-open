@@ -1,0 +1,182 @@
+{
+  "case_id": "C09",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened arithmetic-sequence grammar supplies start and terminal values with a step inferred from the first two values."
+        ],
+        [
+          "pass",
+          "The resulting numeric sequence can supply index and strided iteration as proposed."
+        ],
+        [
+          "pass",
+          "Original response identifies compact syntax, Prelude-bound lowering and the remaining Enum overloading restriction; it does not assume spelling alone permits primitive optimization."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: arithmetic-sequence syntax and fixed lowering bindings",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary gold entity is Haskell. Enum overloading alone does not propose the gold choice to preserve input-value types, and no slice/tuple/mixed-list design is stated.",
+      "transfer_mapping": "Map source start/second/end notation to target numeric index sequences and its specified Prelude binding to compiler-generated enumeration operations. The original caveats require choosing inclusive/exclusive bounds, treating zero increments and preserving overloaded Enum behavior rather than assuming integer arithmetic.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "LOOP from/below-or-to/by clauses explicitly express initial value, boundary and stride."
+        ],
+        [
+          "pass",
+          "The original use is position-based/every-nth-element looping, supported by arithmetic iteration clauses."
+        ],
+        [
+          "unknown",
+          "The original candidate says Python binding/mutation semantics still need deliberate adaptation; no particular lowering binding or rebinding behavior was selected for this proposed grammar."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: readable arithmetic-loop clauses",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Readable LOOP clauses are not the Python slice syntax, tuple-range, mixed-list or flattening choices in the gold.",
+      "transfer_mapping": "Map from/to-or-below/by to start/boundary/stride of index iteration. The original limits distinguish loop control from a first-class sequence and leave target binding semantics unsettled; a readable grammar alone does not settle optimizer assumptions.",
+      "remaining_check": "Specify and validate the intended target lowering binding for these LOOP-like clauses. Fixed compiler operations or a proven/guarded binding could support conditional transfer; arbitrary rebound helpers would preserve the original optimization limitation."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened Python 2.0 range/xrange entries document start/stop/step, exclusive stop and zero-step rejection."
+        ],
+        [
+          "pass",
+          "Both supply numeric positions for ordinary and strided loops; xrange avoids storing the full sequence."
+        ],
+        [
+          "pass",
+          "The original candidate explicitly retains nested-call readability and name-rebinding limitations and requires binding proof/guard before optimization. The constraint asks these effects to be considered, not eliminated."
+        ]
+      ],
+      "T": "not_needed",
+      "scope": "proposed_configuration: existing Python 2.0 range/xrange as compatibility baseline",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "P0204-G01",
+          "rationale": "Original candidate reason and raw item 3 explicitly use Python 2.0 range(start, stop, step), the same built-in mechanism discussed in gold List ranges."
+        },
+        {
+          "gold_id": "P0204-G03",
+          "rationale": "Original candidate separately names xrange and contrasts on-demand numeric generation with materialized lists, matching the independent lazy xrange-type item in gold Open issues."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The candidate explicitly names and compares both independent Python built-ins and their eager/lazy mechanisms; neither is inferred from a broader project name.",
+      "transfer_mapping": null,
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "DO directly specifies start, terminal value and increment, evaluated on loop entry."
+        ],
+        [
+          "pass",
+          "The original proposal uses it as a compiler-visible counted-iteration design, supported by the opened DO rules."
+        ],
+        [
+          "pass",
+          "Compiler-visible loop syntax and once-evaluated bounds address the lowering/readability concern without an arbitrary ordinary range helper; original caveats preserve variable-mutation and overflow limitations."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: counted-loop syntax and entry-time evaluation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "FORTRAN DO is not an identified primary gold item and does not state the gold tuple/slice/container alternatives.",
+      "transfer_mapping": "Map DO’s entry-time start/limit/increment to target counted iteration and a fixed number of iterations. Preserve the original inclusive-bound, loop-variable mutation and overflow caveats; do not equate this control construct with a first-class Python sequence.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Initialization, stop test and update express start, end condition and step for numeric index iteration."
+        ],
+        [
+          "pass",
+          "The opened do example and original use cover index-driven mutation without allocating a numeric list."
+        ],
+        [
+          "pass",
+          "Original use explicitly applies hygienic generated references while retaining ordinary semantics for user operators and locally shadowable syntax; verbosity and reevaluation are acknowledged."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: index iteration with definition-site helper bindings",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Scheme do and hygiene are not the named Python range/xrange entities or any specific gold container/slice design.",
+      "transfer_mapping": "Map initialization/test/update to index traversal and definition-site inserted references to compiler-generated helper binding. The original distinctions prohibit silently changing repeated evaluation to precomputed bounds or ignoring shadowed user operators.",
+      "remaining_check": "No decisive document-level uncertainty within this original narrow scope. Implementation and historical-version verification remain unperformed."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "fail",
+          "The proposed API accepts count/start/step, not the required end-boundary form; original response acknowledges extra end-to-count arithmetic and supplies no adapted end-based form."
+        ],
+        [
+          "pass",
+          "When count is known, the returned numeric list supports regular positional iteration."
+        ],
+        [
+          "pass",
+          "Original response explicitly recognizes eager allocation, ordinary-name rebinding and the extra arithmetic/readability cost."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: count-based progression API and implementation reference",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "iota is a different entity from range/xrange. Its ordinary function form or numeric type support does not state the gold input-type-preservation or C-API visibility choices.",
+      "transfer_mapping": "The original mapping covers known-count positions only: count becomes list length and start/step become successive values. End-based conversion and binding-safe optimization remain outside this supplied design; therefore this mapping does not remove the known H1 mismatch.",
+      "remaining_check": "An explicit end-to-count adapter with descending/zero-step and rounding semantics would be a different proposed configuration. Preserve the present mismatch; a historical snapshot is additionally required to establish pre-cutoff evidence.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA002"
+      ]
+    }
+  ]
+}

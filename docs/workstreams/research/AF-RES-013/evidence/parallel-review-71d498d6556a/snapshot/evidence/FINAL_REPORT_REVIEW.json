@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "task": "AF-RES-013 final RESULT consistency review",
+  "review_type": "read-only report and preserved-evidence consistency review",
+  "reviewer": "내부 별도 검토",
+  "model": "GPT-6 Astra Pro",
+  "reviewed_at_utc": "2026-11-20T15:27:29.788758+00:00",
+  "outcome": "pass_with_localized_editorial_findings",
+  "blocking_findings": [],
+  "primary_counts_or_judgments_changed": false,
+  "scope": {
+    "owned_path": "docs/workstreams/research/AF-RES-013/",
+    "files_written": [
+      "evidence/FINAL_REPORT_REVIEW.json"
+    ],
+    "other_workstreams_read": false,
+    "external_research_performed": false,
+    "method": "Read the report and assigned evidence, compare displayed counts and distinctions to preserved aggregates and resolutions, check local Markdown targets, and review per-question evidence coverage. This does not independently rejudge candidates or repeat the external-source audit."
+  },
+  "findings": [
+    {
+      "id": "FR-01",
+      "severity": "minor_label_inconsistency",
+      "status": "open_at_review_snapshot",
+      "location": "RESULT.md §2 Q2, family table header",
+      "observed": "A 실체/결정 전 | B 실체/결정 전",
+      "finding": "The table contains all item-identity hits, including internal structural choices. Its A column sums to 22 and its B column to 8, whereas external-entity hits elsewhere are 12 and 2. The word 실체 therefore gives this table a different apparent unit from its actual data.",
+      "evidence": [
+        "evidence/AGGREGATES.json#/families",
+        "evidence/AGGREGATES.json#/match_kinds"
+      ],
+      "proposed_resolution": "Change only the header to A 동일/결정 전 | B 동일/결정 전.",
+      "effect_on_counts": "None."
+    },
+    {
+      "id": "FR-02",
+      "severity": "minor_category_description",
+      "status": "open_at_review_snapshot",
+      "location": "RESULT.md §2 Q4, first paragraph",
+      "observed": "다른 프로그래밍 언어의 문법12항목",
+      "finding": "The 12 items in 다른 언어·생태계 are not all syntax items. They include C11's descriptor-inheritance APIs/policies and C31's RPM/Debian packaging rules.",
+      "evidence": [
+        "cases/CASES.json C11 P0433-G06–G10",
+        "cases/CASES.json C31 P0386-G04–G05",
+        "evidence/AGGREGATES.json#/roles/다른 언어·생태계"
+      ],
+      "proposed_resolution": "Replace the phrase with 다른 언어·생태계의 12항목.",
+      "effect_on_counts": "None."
+    },
+    {
+      "id": "FR-03",
+      "severity": "minor_literal_evidence_coverage",
+      "status": "open_at_review_snapshot",
+      "location": "RESULT.md §2 Q1",
+      "finding": "Q1 has direct template/history evidence and specific empty-section counterexamples, but no explicit A/B execution count inside the subsection. The section-wide introduction and Q2 provide those counts. Under the requested literal per-question execution-count-plus-specific-case check, a short bridge is still needed.",
+      "evidence": [
+        "RESULT.md §2 introduction",
+        "RESULT.md §2 Q1",
+        "RESULT.md §2 Q2"
+      ],
+      "proposed_resolution": "Tie Q1's template distinction to already reported execution/corpus counts and one existing case, or explicitly cross-reference the relevant result row. Do not add research or alter counts.",
+      "effect_on_counts": "None."
+    },
+    {
+      "id": "FR-04",
+      "severity": "minor_literal_evidence_coverage",
+      "status": "open_at_review_snapshot",
+      "location": "RESULT.md §2 Q8",
+      "finding": "Q8 cites AGGREGATES and includes the distant-role 1-item/0-hit result, but its broader conclusions are not illustrated by a named executed C-case in that subsection. CoDel is named but is explicitly outside the sample. The necessary execution counts and cases are already present in Q5–Q7 and Table 3.",
+      "evidence": [
+        "RESULT.md §1 Table 3",
+        "RESULT.md §2 Q5–Q8",
+        "evidence/AGGREGATES.json#/union"
+      ],
+      "proposed_resolution": "Add a brief reference to an existing executed example such as C25's catalogue tools versus its three specific alternatives, together with the applicable observed count. Retain the absence of a new-method/human-translation comparison.",
+      "effect_on_counts": "None."
+    }
+  ],
+  "verified_findings": [
+    {
+      "id": "VF-01",
+      "check": "Required order and tables",
+      "status": "pass",
+      "detail": "RESULT begins with §1 and Tables 1, 2, 3, followed in order by §2, §3, §4, §5. Table 1 has 31 case rows, Table 2 has all six role categories, and Table 3 contains claims, evidence addresses, checked content, attempted rebuttals, and remaining uncertainty."
+    },
+    {
+      "id": "VF-02",
+      "check": "Exactly three weaknesses",
+      "status": "pass",
+      "detail": "§4 has exactly 4.1, 4.2, 4.3. Each gives the weakness, evidence locations, the conclusion that would change if it were wrong, and a concrete next investigation with a minimum proposed design."
+    },
+    {
+      "id": "VF-03",
+      "check": "Case table versus aggregate data",
+      "status": "pass",
+      "detail": "All 31 rows agree on family, decision date, role tuple, A/B identity and historical hits, nongold useful numerator/denominator and historical count, near misses, broken/fake links, exposure records, postdecision rows, date-unknown rows, and insufficient rows. All 93 common/A-only/B-only missed-item partitions match the aggregate gold IDs.",
+      "checks": {
+        "numeric_or_categorical_field_comparisons": 589,
+        "missed_item_partition_comparisons": 93,
+        "discrepancies": 0
+      },
+      "note": "The final missed-item check uses the actual A만/B만 boundaries; slashes inside a gold title are not treated as list separators."
+    },
+    {
+      "id": "VF-04",
+      "check": "Main denominator and totals",
+      "status": "pass",
+      "detail": "31 cases and 176 distinct case/gold-item pairs remain the main denominator. A is 22 identity hits and 16 historical hits; B is 8 and 2. The role and family denominators both sum to 176. Candidate-label and candidate-date totals are A 204 and B 138. The A+B post hoc pool union is 24 identity and 16 historical hits, not a combined-system run."
+    },
+    {
+      "id": "VF-05",
+      "check": "Role correction and frozen value",
+      "status": "pass",
+      "detail": "Table 1, Table 2, Table 3, Q3–Q4, COUNTEREXAMPLES, and limitations agree on corrected 1/176, frozen 0/176, and broadened PySizer sensitivity 2/176. C05-G06 is structure transfer rather than a claimed external linguistics citation. A/B recovery is 0/1 after correction, 0/0 undefined for the frozen role, and 0/2 under the broad boundary. The correction changes neither the 176-item denominator nor matching judgments."
+    },
+    {
+      "id": "VF-06",
+      "check": "Jed mechanism versus project identity",
+      "status": "pass",
+      "detail": "Q7 explicitly says Jed is not the GNU gettext project. The retained G02 match is the same explicit lookup-then-interpolation mechanism, with external_entity_hit false in SECOND_RESOLUTION. Excluding this unknown-date mechanism match gives B 7/176 while historical hits remain 2/176. The report warns that the external-entity category total does not exclusively count identical projects."
+    },
+    {
+      "id": "VF-07",
+      "check": "Second-resolution consistency",
+      "status": "pass",
+      "detail": "The report follows the seven-row resolution: it does not infer current dedup preservation into A/B C05 or builtin range identity into B-C09, and it recognizes the explicit nonpublic-attribute/public-builder warning in B-C24 as recovery of a rejected structural alternative. Matching remains separate from usefulness and recommendation."
+    },
+    {
+      "id": "VF-08",
+      "check": "Conditional nongold usefulness",
+      "status": "pass",
+      "detail": "A 146/178 and B 105/126 count candidate rows, not distinct successful implementations. Historical useful rows are 79 and 32; narrowed-H useful rows are 50 and 28; all-H-pass rows are 96 and 77. The report states that no actual designer-verified superiority was observed, retains unknown/violated H outside useful counts, and separates limited reference usefulness from whole-design constraint satisfaction."
+    },
+    {
+      "id": "VF-09",
+      "check": "Historical evidence and availability",
+      "status": "pass",
+      "detail": "Identity and verified predecision evidence are separated. A dates are 105 predecision, 23 postdecision, 76 unknown; B dates are 37, 34, 67. Date unknown is not recast as historical nonexistence or postdecision evidence. Project age is not used to backdate particular features, with attrs in C24 as an explicit example. Current-search discovery is not claimed to reproduce past-web availability."
+    },
+    {
+      "id": "VF-10",
+      "check": "Missing content versus inaccessible content",
+      "status": "pass",
+      "detail": "COUNTEREXAMPLES separates directly observed empty/missing sections from failed retrievals and search-snippet false positives. SOURCE_QUALITY_REVIEW distinguishes M16's failed repeat access from an earlier successful reading, and S25's failed JSON access from successful HTML/thread readings. RESULT does not count access failures as invented links or historical absence."
+    },
+    {
+      "id": "VF-11",
+      "check": "Reversals",
+      "status": "pass",
+      "detail": "RESULT, COUNTEREXAMPLES, and REVERSALS agree on six adopted replacements/partial reversals and three rejected/draft replacements. Related predecision mechanisms are separated from exact reversal reasons, future requirements, and prediction accuracy. C07's empty-input issue is not inferred from generic zip examples; C11 remains outside the adopted-reversal denominator."
+    },
+    {
+      "id": "VF-12",
+      "check": "Exposure and single-run limits",
+      "status": "pass",
+      "detail": "Recorded exposure events are not all labeled proven leakage. The conservative no-recorded-exposure subsets match AGGREGATES: A 18 cases/93 items/12 identity/8 historical; B 13/60/3/1. They are not treated as randomized controls or estimates of training-memory leakage. Fresh contexts are not presented as physical isolation or removal of model memory."
+    },
+    {
+      "id": "VF-13",
+      "check": "Source-quality audit integration",
+      "status": "pass",
+      "detail": "The report preserves 26 noncase documents, 14 site groups, maximum three per site, and the declared noncase-only scope of the site cap. It keeps 31 historical proposals separate. Five substantive review documents are distinguished from M25's decision announcement. NTCIR's 30 submitted runs are not mislabeled 30 teams/systems. The source audit's documented corrections do not inflate source counts."
+    },
+    {
+      "id": "VF-14",
+      "check": "009 sufficient-baseline hypotheses",
+      "status": "pass",
+      "detail": "The report does not turn low gold recovery into proof of product demand or an official rejection of either 009 alternative. It states the missing new-procedure arm, human-translation arm, designer review cost/effect, and maintenance-value test. The A+B union remains a descriptive post hoc pool statistic."
+    },
+    {
+      "id": "VF-15",
+      "check": "Local Markdown targets",
+      "status": "pass",
+      "detail": "Checked all inline local Markdown paths and Markdown heading fragments in RESULT, COUNTEREXAMPLES, and REVERSALS. All targets resolve at the reviewed snapshot.",
+      "local_links_checked": {
+        "RESULT.md": 60,
+        "COUNTEREXAMPLES.md": 3,
+        "REVERSALS.md": 20,
+        "total": 83
+      },
+      "broken_targets": []
+    }
+  ],
+  "per_question_evidence": [
+    {
+      "question": "Q1",
+      "status": "localized_bridge_requested",
+      "quantitative_or_execution_evidence": "Four-family template/history comparison; section-wide A/B totals and Q2 counts are nearby but not explicitly brought into Q1.",
+      "specific_case_evidence": "K265 empty Alternatives, K177 unfilled instructions, Rust90 missing comparison section, and Rust438/1300 false-positive snippets.",
+      "finding_id": "FR-03"
+    },
+    {
+      "question": "Q2",
+      "status": "pass_with_label_correction",
+      "quantitative_or_execution_evidence": "31 cases, 176 items, family table, six adopted reversals, original-30 sensitivity.",
+      "specific_case_evidence": "C31 segmentation repair and C14 decision-date correction.",
+      "finding_id": "FR-01"
+    },
+    {
+      "question": "Q3",
+      "status": "pass",
+      "quantitative_or_execution_evidence": "Six role counts, 34 external versus 142 structural items, seven review entries/six novel/182 expanded pool.",
+      "specific_case_evidence": "C17 binding strategy, C26 three version syntax choices, C22/28 review additions."
+    },
+    {
+      "question": "Q4",
+      "status": "pass_with_category_description_correction",
+      "quantitative_or_execution_evidence": "Corrected 1/176, family breakdown, A/B 0/1, frozen 0 and broad 2 sensitivity.",
+      "specific_case_evidence": "C05-G06 active-voice schema transfer, PySizer boundary, P433 sterile and C22 Atom, outside-sample CoDel.",
+      "finding_id": "FR-02"
+    },
+    {
+      "question": "Q5",
+      "status": "pass",
+      "quantitative_or_execution_evidence": "31 runs, 204 candidates, query/open ranges, 14/31 successful code-search HTTP responses, 22/176 and 16/176.",
+      "specific_case_evidence": "C20 localization, C17 bindings, C26 version predicate, C23 pointer references."
+    },
+    {
+      "question": "Q6",
+      "status": "pass",
+      "quantitative_or_execution_evidence": "31 runs, 138 candidates, query/open ranges, 8/176 and 2/176, 24/176 union and two B-only items.",
+      "specific_case_evidence": "C25 test tools, C19 macro scope, C24 attrs feature dates, C27 overload failure, C10 procedural deviation."
+    },
+    {
+      "question": "Q7",
+      "status": "pass",
+      "quantitative_or_execution_evidence": "Full four-label table, nongold counts, narrowed-H counts, seven second-review rows, Jed sensitivity, final-link counts.",
+      "specific_case_evidence": "C05, C09, C24, Jed C20, RPython C12, gVisor C02, C27 arity, C23 pointer contracts."
+    },
+    {
+      "question": "Q8",
+      "status": "localized_bridge_requested",
+      "quantitative_or_execution_evidence": "Distant-role 1 item/A-B 0 hits and an AGGREGATES citation; overall A/B numerical evidence is in Table 3 and Q5–Q7.",
+      "specific_case_evidence": "No named executed C-case in Q8 itself; named CoDel is outside the sample.",
+      "finding_id": "FR-04"
+    }
+  ],
+  "limitations": [
+    "This is an internal separate review by the same session model, not a human or independent-model reliability study.",
+    "No candidate was rejudged, no main count was changed, and no broad research was added.",
+    "Links were checked for local path/heading existence; external URLs were not freshly fetched.",
+    "Arithmetic checks compare the report to its preserved aggregates; they are not an independent reconstruction of all candidate judgments.",
+    "The root agent may revise RESULT while publishing. The hashes below identify the reviewed snapshot; localized wording fixes can be verified without repeating candidate evaluation."
+  ],
+  "input_sha256_at_review": {
+    "RESULT.md": "88c4b5309ff0b6b1e161931c9e8793a049b5ff0fadffc7daae88dd269e4ec39c",
+    "evidence/AGGREGATES.json": "22cc884d68b67b4d19389517b185d96b6cc6c2808adf0da0e6abc1ae0381fd9d",
+    "evidence/ROLE_CORRECTIONS.json": "4becb948a4971e74549fd7ea2f5035b6b96ee60852b89df6174305df3e2fdf14",
+    "evidence/judgments/SECOND_RESOLUTION.json": "5434129af679e459a391e61db5af3e7f7cf77d4bd011a40b03b8e5a5a15a3f9a",
+    "COUNTEREXAMPLES.md": "061590efeca1489a880edda947d2855492e9158a4c2a3bf24fef7204d61de745",
+    "REVERSALS.md": "a204fe26207c0f9ab8859c54d4f116e1d1e4772bf127b69666d0dd5aa55e0aa6",
+    "evidence/SOURCE_QUALITY_REVIEW.json": "3671bf21362fffe8cd08ec607b88c5c195dfe78900b119db3ca11ad3b1c9a90a",
+    "cases/CASES.json": "18524c68bd06e16d6a458eccf08d657363d2b38fb8fb6cc74e949ee0aff1094e",
+    "SCOPE.md": "1c29ab371c4b9af55f6e388b51a08bb612edee33eee8dc0e95c20f44945d6ee1"
+  }
+}

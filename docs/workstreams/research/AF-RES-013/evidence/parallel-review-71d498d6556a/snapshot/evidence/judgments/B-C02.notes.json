@@ -1,0 +1,196 @@
+{
+  "case_id": "C02",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Linux user namespace의 ID 변환과 소유권별 capability 검사 → pod identity 경계. pod의 namespace 소유 관계와 파일 접근 권한을 맞춰야 하며 공유 커널 취약점 제거를 주장하지 않는다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Pod identity boundary and capability checks; use a pod-owned user namespace with appropriate ownership of its other namespaces.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCI uidMappings/gidMappings의 containerID·hostID·size와 기존 namespace path → pod 범위를 runtime 구성에 전달. 할당·수명주기 정책은 orchestrator가 별도 결정해야 한다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Translate a pod's allocated ranges into container-runtime configuration; namespace paths can connect containers to an existing namespace.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Podman의 자동 disjoint UID/GID 범위와 pod namespace 상속 → pod 범위 할당·mapping 크기 설계. subordinate-ID pool과 volume 소유권을 맞추고 pod 참여 container에 별도 매핑을 주지 않는다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Range allocation and mapping-size policy; the rootful mapping path is relevant without requiring an unprivileged kubelet or runtime.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Sysbox의 양쪽 ID 매핑·userns 내부 capability와 exclusive range 조건 → runtime enforcement 참고. CE/EE 범위 차이와 exhaustion 시 재사용 정책을 확인하고 공유 namespace에 맞춰야 한다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Runtime enforcement, range exhaustion policy, and compatibility handling for mounted files.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "LXC의 inside/outside UID/GID map와 privileged helper 경계 → container runtime의 매핑 설치. pod 공유·disjoint allocation은 추가 연결이고 kubelet rootlessness 요구로 바꾸지 않는다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Mapping setup, privileged helper boundaries, and compatibility restrictions for a container runtime.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "pass",
+          "사용자 namespace에서 workload root를 비특권 host UID에 연결하는 문서상 매핑을 사용한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 양쪽을 매핑하며, pod의 다른 namespace를 소유하는 user namespace와 capability 경계를 연결하는 참고 범위다."
+        ],
+        [
+          "pass",
+          "kubelet/runtime 자체를 rootless로 바꾸자는 제안은 아니다."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "NsJail의 별도 UID/GID 범위·capability retention·seccomp → workload process의 매핑 설정 참고. pod namespace 공유와 lifecycle 통합을 추가해야 하며 단독 pod runtime으로 주장하지 않는다.",
+      "match_rationale": "세 정답의 구별 요소는 전체 파일 소유권 변경, 64K 예약을 위한 pod 수 제한, mapping 선택 권한을 runtime에 위임하는 정책이다. ID mapping 기능·범위 할당 구현만으로 이 정책 선택을 회수했다고 보지 않는다.",
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Prototype and reference implementation for mapping and capability setup around workload processes.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "remaining_check": "문서상 참고 설계 판정이다. 실제 Swift 또는 pod 구현에서 연결 전제를 검증하지 않았다. 날짜 unknown은 결정 이전 고정 판의 해당 기능을 열어 확인해야 한다."
+    },
+    {
+      "H": [
+        [
+          "fail",
+          "The selected alternative substitutes a application-kernel isolation boundary for the required workload-to-host UID/GID correspondence. No such identity-mapping use is proposed; broader escape hardening does not fulfill that required mechanism."
+        ],
+        [
+          "fail",
+          "The proposed alternative does not specify both user/group identity mappings and pod-scoped capability semantics. Its acknowledged absence of the requested mapping role cannot be removed by recasting it as the whole identity solution."
+        ],
+        [
+          "pass",
+          "The original use does not require changing the privilege of the kubelet or container runtime itself."
+        ]
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map the isolated guest/application-kernel boundary to reduced exposure of the host kernel as the original broader-hardening rationale. That relation is real secondary utility, but it does not supply the mandatory identity and capability mapping design.",
+      "match_rationale": "No primary match. Neither alternative selects filesystem chown, a 64K range/pod-count policy, or delegation of ID mapping choice to runtimes.",
+      "remaining_check": "A distinct original proposal combining this runtime with explicit workload-to-host UID/GID and pod capability semantics would need separate assessment. Do not infer those settings from the project name or claim that the product can never implement them.",
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "scope": "reference_design: Alternative isolation boundary for broader hardening; evaluated as the alternative originally proposed, without inventing a UID/GID mapping component.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "additional_evidence": [],
+      "internal_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      }
+    }
+  ]
+}

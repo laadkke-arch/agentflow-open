@@ -1,0 +1,493 @@
+{
+  "case_id": "C24",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Dart initializing-formal parameters and initializer lists",
+      "candidate_url": "https://ecma-international.org/wp-content/uploads/ECMA-408_4th_edition_december_2015.pdf",
+      "candidate_claim": "Dart's initializing formals remove repetitive argument-to-field assignments inside authored constructors while initializer lists retain explicit control of other state.",
+      "gold_matches": [],
+      "match_rationale": "The parameter-list/assignment mechanism resembles S0018-G05, but that frozen item is an external referenced Swift discussion: Dart is not the same identity. The original also does not opt properties into synthesized parameters.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Initializing formals remove repeated argument-to-field assignment code in authored constructors."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "The opened specification permits final-field initialization and constrains duplicate initialization."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "pass",
+          "reason": "Original use combines selected automatic formals with author-written initializer lists for remaining state."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map selected constructor inputs directly to same-class fields while other fields remain in explicit initializer lists. Preserve the original final/single-initialization rules and the fact that every constructor still declares its inputs; the design reduces assignment boilerplate, not all M×N parameter declarations.",
+      "H_assessment_scope": "reference_design: selected initializing formals plus manual initializer lists",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/0",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Lombok required/all-arguments constructor generation",
+      "candidate_url": "https://projectlombok.org/features/constructor",
+      "candidate_claim": "Lombok demonstrates generating field-assignment constructors alongside custom constructors, with explicit access levels and selection based on uninitialized final or non-null fields.",
+      "gold_matches": [],
+      "match_rationale": "Selection by final/non-null status is not an explicit property-by-property memberwise opt-in policy; access modifiers alone do not identify the private-argument-synthesis alternative.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Lombok generates field-assigning constructors and selects required fields from uninitialized final/non-null declarations."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "Uninitialized final fields are constructor inputs and initialized final fields are excluded by the opened implementation, preserving immutable fields."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "unknown",
+          "reason": "Coexistence of generated and authored constructors is documented, but the original does not specify the path that combines a selected generated subset with manual private-state initialization within the same construction."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map eligible fields to generated assignment constructors while retaining authored constructors subject to signature checks. The original coexistence relation does not establish the desired mixed path for hidden state.",
+      "H_assessment_scope": "reference_design: generated constructor field selection and coexistence",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/1",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "Show the original intended generated/delegating constructor path and where private state is manually initialized exactly once. A documented mixed path could pass H3; merely having separate constructors does not prove it."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Scala case-class construction and generated copy",
+      "candidate_url": "https://www.scala-lang.org/downloads/distrib/files/website/doc/ScalaReference.pdf",
+      "candidate_claim": "Scala case classes generate immutable-by-default parameter fields and construction/copy methods, reducing assignments and supporting replacement values without mutating an existing object.",
+      "gold_matches": [
+        {
+          "gold_id": "S0018-G07",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original candidate reason and Scala 2.9 section 5.3.2 use case-class parameter declarations as stored val fields, the same named ecosystem and type-parameter/property mechanism in the gold comparison."
+        }
+      ],
+      "match_rationale": "The candidate explicitly uses Scala’s type-header parameter fields, the relevant mechanism in the Scala gold item; generated copy is extra evidence, not a second gold match.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Case-class parameter fields and generated construction/copy operations reduce repeated assignments and replacement-value boilerplate."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "First-section parameters are val by default and replacement values avoid mutating the existing object."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "unknown",
+          "reason": "The original explicitly says hidden implementation state needs a separately controlled representation, but does not supply that representation or its initialization path."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map constructor header parameters to immutable stored properties and generated construction/copy to fresh values. Preserve the original coupling with accessors/value semantics; hidden-state representation remains unresolved.",
+      "H_assessment_scope": "reference_design: case-class parameter properties and immutable replacement values",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "S0018-G07"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/2",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "Specify how private non-parameter state is initialized on each construction/copy path without exposing it or duplicating initialization. That evidence would decide H3."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Immutables generated values with default, derived, and lazy attributes",
+      "candidate_url": "https://immutables.github.io/immutable.html",
+      "candidate_claim": "Immutables separates caller-supplied attributes from author-computed derived or lazy attributes while generating immutable implementations and construction helpers.",
+      "gold_matches": [],
+      "match_rationale": "Generic field/attribute selection does not identify a frozen memberwise participation/default/access-level alternative.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Generated implementations/builders reduce manual construction code from declarative supplied/default/derived attributes."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "The documented generated value implementation is immutable; lazy/default differences are explicitly bounded."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "unknown",
+          "reason": "Non-settable derived/lazy attributes establish author-computed state, but the original/source summary does not establish that the intended private implementation state remains hidden from the generated public API."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map caller inputs to settable attributes and author computations to derived/default/lazy definitions. Preserve dependency-cycle detection and lazy equality semantics; the visibility of hidden state remains a separate unresolved requirement.",
+      "H_assessment_scope": "reference_design: generated immutable values with authored derived state",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/3",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "Inspect visibility and generated API treatment for the intended private derived attributes. Hidden, manually computed state combined with public inputs would pass H3; publicly exposing all such state would not."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Kotlin primary-constructor properties and initializer blocks",
+      "candidate_url": "https://kotlinlang.org/docs/classes.html",
+      "candidate_claim": "Kotlin combines read-only constructor properties, defaults, ordinary parameters, and authored initializer blocks to centralize automatic assignments and custom initialization.",
+      "gold_matches": [
+        {
+          "gold_id": "S0018-G06",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original candidate specifically proposes Kotlin primary-constructor property parameters and additional initializer blocks, matching the named Kotlin type-parameter/property syntax compared in gold."
+        }
+      ],
+      "match_rationale": "Identity and relevant type-header property mechanism both match Kotlin’s primary gold comparison; this is not a match based solely on the language name.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Constructor property parameters perform automatic assignments and initializer blocks centralize additional setup."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "val parameters and read-only body state preserve immutable bindings, with the original warning that read-only is not deep immutability."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "pass",
+          "reason": "Original use explicitly combines property parameters, ordinary inputs and authored initializer blocks for additional state."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map selected constructor parameters to stored properties and use ordinary parameters/body initializers for author-controlled remaining state. Preserve observable initialization order and shallow read-only semantics; no actual Swift implementation is claimed.",
+      "H_assessment_scope": "reference_design: property parameters with authored body initialization",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "S0018-G06"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/4",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Common Lisp declarative slot initialization and initialization protocol",
+      "candidate_url": "https://www.lispworks.com/documentation/HyperSpec/Body/07_a.htm",
+      "candidate_claim": "Common Lisp separates selected initialization arguments, default slot forms, and customizable initialization methods, allowing automatic slot filling plus author-owned setup.",
+      "gold_matches": [
+        {
+          "gold_id": "S0018-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "Original candidate application_scope says opt-in inputs; HyperSpec 7.1 specifically uses a per-slot :initarg declaration to participate in constructor input, the same property-selection relation as the gold explicit opt-in alternative."
+        }
+      ],
+      "match_rationale": "The original application scope explicitly selects opt-in inputs; the opened :initarg slot declaration opts each selected slot into construction input, matching the property opt-in structure.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Declared initargs/default forms automate slot filling and customizable methods retain author-owned setup."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "unknown",
+          "reason": "The opened protocol does not impose immutable slots or definite single initialization, and the original explicitly leaves those additional target rules unspecified."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "pass",
+          "reason": "Explicitly selected initarg slots, independent initforms and user initialization methods support the original automatic/manual division."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a declared slot initarg to an explicitly participating property, initform to an author default, and initialize-instance hooks to custom setup. The original requires additional immutable/definite-initialization rules; no such safety rule is supplied by the reviewer.",
+      "H_assessment_scope": "reference_design: explicit slot input selection and staged custom initialization",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "S0018-G01"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/5",
+        "runs/A/C24.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA008"
+      ],
+      "remaining_check": "Specify and verify when automatic and custom phases may initialize a Swift let property and prohibit reassignment. That missing contract decides H2; the current CLOS protocol alone does not."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Lombok builders targeted at a constructor or factory method",
+      "candidate_url": "https://projectlombok.org/features/Builder",
+      "candidate_claim": "A generated builder can collect selected inputs separately and invoke an author-chosen constructor or factory to produce the final object.",
+      "gold_matches": [],
+      "match_rationale": "The original chooses constructor/factory targeting, not a global initializer participation rule or property-level synthesized memberwise modifier.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Generated builder methods collect selected inputs without hand-writing the staging API and invoke a chosen final construction path."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "Mutable staging is separate from the final constructed object; the original targets an authored constructor/factory rather than post-construction mutation of final fields."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "pass",
+          "reason": "Selecting a constructor/factory preserves its author-owned private setup while the builder handles the exposed inputs."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map selected target parameters to builder inputs and build to the chosen constructor/factory. Keep mutation in the staging object and retain final validation/private setup in the target; class-level generation conflicts and later feature dates remain original limits.",
+      "H_assessment_scope": "reference_design: generated input collector delegating to an authored constructor/factory",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/6",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 8,
+      "candidate_name": "attrs 16.1.0 generated initializers with excluded fields and frozen instances",
+      "candidate_url": "https://www.attrs.org/en/16.1.0/api.html",
+      "candidate_claim": "attrs combines per-field initializer inclusion, defaults/factories, conversion/validation, and frozen instances to automate selected inputs while initializing internal state.",
+      "gold_matches": [],
+      "match_rationale": "Per-field inclusion/exclusion is not enough for the gold explicit opt-in default: the original does not select that participation policy. The known later feature dates are retained.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "초기화 반복 코드 감소",
+          "value": "pass",
+          "reason": "Generated initializers automate included fields, defaults/factories and validation/conversion."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "불변 속성 사용을 방해하지 않음",
+          "value": "pass",
+          "reason": "The selected version documents frozen instances, and the original explicitly limits this to best-effort runtime freezing rather than compiler-enforced deep immutability."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "일부 멤버 자동화와 사적 구현 상태의 수동 초기화를 병행",
+          "value": "pass",
+          "reason": "init=False fields initialized by supplied defaults/factories preserve author-controlled internal state beside generated caller inputs."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map included fields to generated input assignments, excluded fields to author-defined factories/defaults, and post-init mutation restriction to frozen instances. Preserve the original runtime-freezing limitation and 2016 feature introduction dates; this is later documentary utility.",
+      "H_assessment_scope": "reference_design: included constructor fields and excluded defaulted internal state",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C24.json#/candidates/7",
+        "runs/A/C24.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    }
+  ]
+}

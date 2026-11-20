@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "case_id": "C03",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C03-D02",
+      "url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "accessed_at_utc": "2026-11-20 12:28:04 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Docker containers sharing a target container's PID namespace",
+      "version_or_date": "live",
+      "sections_read": "Description and options; PID detail subsequently retrieved",
+      "confirmed": "The run interface creates a container from a separate image and exposes namespace and capability controls.",
+      "limits": "Direct Docker access requires runtime authority and does not provide Kubernetes admission, audit, or API visibility; PID sharing alone does not expose the target mount namespace, and tracing may require explicit capabilities and seccomp allowances. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D03",
+      "url": "https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/",
+      "accessed_at_utc": "2026-11-20 12:28:04 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "CRI ImageService, RuntimeService, and PodSandbox lifecycle",
+      "version_or_date": "2016-12-19",
+      "sections_read": "Initial page retrieval; article body subsequently retrieved",
+      "confirmed": "The official introductory CRI article was reachable; the later in-page retrieval confirmed its dated architecture description.",
+      "limits": "The introductory interface does not establish support for arbitrary per-container namespace targeting or filesystem access; hypervisor sandboxes and runtimes with fewer facilities need explicit capability limitations, and Kubernetes API/admission integration remains separate. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D04",
+      "url": "https://grep.app/api/search?q=--pid%3Dcontainer",
+      "accessed_at_utc": "2026-11-20T12:28:05.186093+00:00",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live code index",
+      "sections_read": "Unauthenticated API search response: hit count and visible code snippets",
+      "confirmed": "HTTP 200 returned 103 matches; a visible concourse/concourse hack/trace snippet uses --pid=container. The printed response was truncated and was not treated as full-source verification.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D05",
+      "url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "accessed_at_utc": "2026-11-20 12:28:15 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Docker containers sharing a target container's PID namespace",
+      "version_or_date": "live",
+      "sections_read": "find: Joining another; PID and IPC settings; capability discussion",
+      "confirmed": "Docker documents a separate Alpine tools container joining another container's PID namespace, with an example using SYS_PTRACE and a relaxed seccomp profile; IPC joining has its own conditions.",
+      "limits": "Direct Docker access requires runtime authority and does not provide Kubernetes admission, audit, or API visibility; PID sharing alone does not expose the target mount namespace, and tracing may require explicit capabilities and seccomp allowances. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D06",
+      "url": "https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/",
+      "accessed_at_utc": "2026-11-20 12:28:15 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "CRI ImageService, RuntimeService, and PodSandbox lifecycle",
+      "version_or_date": "2016-12-19",
+      "sections_read": "find: December; overview and Pod/container lifecycle sections",
+      "confirmed": "The article is dated December 19, 2016 and describes ImageService, RuntimeService, Create/Start/Stop/Remove container operations, and exec/attach/port-forward. Containers can be created independently after a PodSandbox starts, and that sandbox can represent Linux namespaces or a virtual machine.",
+      "limits": "The introductory interface does not establish support for arbitrary per-container namespace targeting or filesystem access; hypervisor sandboxes and runtimes with fewer facilities need explicit capability limitations, and Kubernetes API/admission integration remains separate. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D08",
+      "url": "https://man7.org/linux/man-pages/man2/setns.2.html",
+      "accessed_at_utc": "2026-11-20 12:28:57 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "setns.2.html",
+      "version_or_date": "Live page; search metadata reports publication nine months before this November 2026 retrieval",
+      "sections_read": "Description, namespace types, and historical kernel-version annotations",
+      "confirmed": "setns can associate a thread with a namespace identified by a /proc/pid/ns file descriptor; its effects and required permissions depend on namespace type. The live documentation also describes newer pidfd operations, which are not evidence of availability by the cutoff.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D09",
+      "url": "https://man7.org/linux/man-pages/man5/proc_pid_root.5.html",
+      "accessed_at_utc": "2026-11-20 12:28:57 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux /proc/pid/root filesystem view",
+      "version_or_date": "Linux man-pages 6.19; 2026-02-08; HTML obtained 2026-09-09",
+      "sections_read": "Description, namespace example, access check, and colophon",
+      "confirmed": "/proc/pid/root provides the target process's filesystem view, including its mount namespace, and access is controlled by a ptrace read-credentials check. The retrieved page identifies Linux man-pages 6.19 and a February 8, 2026 page date.",
+      "limits": "Requires target-process visibility and permission under ptrace credential checks; it is Linux-specific, is not automatically read-only, and some process-exit states make the path unavailable. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D10",
+      "url": "https://kubernetes.io/blog/2018/01/extensible-admission-is-beta/",
+      "accessed_at_utc": "2026-11-20 12:28:57 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes mutating and validating admission webhooks",
+      "version_or_date": "2018-01-11",
+      "sections_read": "Initial page retrieval; substantive article section subsequently retrieved",
+      "confirmed": "The official historical admission-webhook article was reachable.",
+      "limits": "The debugging API must actually submit the complete relevant object through an admission-covered operation and configure matching rules; an opaque command stream or direct runtime operation would not acquire these properties automatically. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D11",
+      "url": "https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/",
+      "accessed_at_utc": "2026-11-20 12:28:57 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes API audit logging and RBAC",
+      "version_or_date": "2018-07-18",
+      "sections_read": "Initial page retrieval; audit section subsequently retrieved",
+      "confirmed": "The official July 2018 article was reachable; its audit discussion was subsequently inspected.",
+      "limits": "Audit policy must cover the new resource or subresource at the required level, and API audit records are not a transcript of every action inside an interactive shell; a persisted inspectable container record is a separate design requirement. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D12",
+      "url": "https://specs.opencontainers.org/runtime-spec/config-linux/",
+      "accessed_at_utc": "2026-11-20 12:29:16 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "specs.opencontainers.org",
+      "version_or_date": "2025-11",
+      "sections_read": "Publication metadata and source link only",
+      "confirmed": "The page reports November 2025 publication and points to the runtime-spec repository, but the retrieved text did not contain the substantive specification.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D13",
+      "url": "https://kubernetes.io/blog/2018/01/extensible-admission-is-beta/",
+      "accessed_at_utc": "2026-11-20 12:29:16 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes mutating and validating admission webhooks",
+      "version_or_date": "2018-01-11",
+      "sections_read": "find: What is Admission?; mutation, validation, and webhooks",
+      "confirmed": "Admission runs after authorization and before persistence, can inspect the complete request body for most requests, and validates after mutation. The dated article describes extensible webhooks introduced as beta in Kubernetes 1.9.",
+      "limits": "The debugging API must actually submit the complete relevant object through an admission-covered operation and configure matching rules; an opaque command stream or direct runtime operation would not acquire these properties automatically. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D14",
+      "url": "https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/",
+      "accessed_at_utc": "2026-11-20 12:29:16 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Kubernetes API audit logging and RBAC",
+      "version_or_date": "2018-07-18",
+      "sections_read": "find: Audit Logging; RBAC and customizable API logging section",
+      "confirmed": "The article describes fine-grained API authorization and configurable audit logging at metadata and payload levels. The specific logging behavior still depends on the configured audit policy.",
+      "limits": "Audit policy must cover the new resource or subresource at the required level, and API audit records are not a transcript of every action inside an interactive shell; a persisted inspectable container record is a separate design requirement. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D15",
+      "url": "https://man7.org/linux/man-pages/man2/setns.2.html",
+      "accessed_at_utc": "2026-11-20 12:29:16 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "setns.2.html",
+      "version_or_date": "Live page; search metadata reports publication nine months before this November 2026 retrieval",
+      "sections_read": "find: Mount namespaces; mount, PID, network, IPC, and UTS permission restrictions",
+      "confirmed": "Entering mount namespaces requires capabilities in relevant user namespaces; entering a PID namespace changes the namespace for subsequent children rather than the caller itself. These restrictions make setns a runtime implementation primitive, not a directly unprivileged user API.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D16",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:29:29 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "OCI Runtime Specification namespace path entries",
+      "version_or_date": "live main branch",
+      "sections_read": "Linux configuration and namespaces",
+      "confirmed": "The public specification source describes namespace types; the namespace-path semantics were subsequently inspected.",
+      "limits": "This is a Linux runtime configuration mechanism, not a CRI extension or user-facing authorization scheme; the node/runtime must resolve and constrain namespace handles, and omitted namespace types inherit the runtime's namespace. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D18",
+      "url": "https://github.com/util-linux/util-linux/blob/master/sys-utils/nsenter.c",
+      "accessed_at_utc": "2026-11-20 12:29:29 UTC",
+      "source_type": "public_code",
+      "title": "util-linux nsenter implementation and Linux setns semantics",
+      "version_or_date": "live master branch",
+      "sections_read": "Source file metadata; actual implementation subsequently retrieved",
+      "confirmed": "The public nsenter C source was reachable; its namespace entry functions were inspected through an in-page retrieval.",
+      "limits": "Direct use normally needs kernel capabilities and node/process access, so it must remain behind an authorized node-agent/runtime operation rather than require administrators to log into nodes; current code and supporting manual pages include later features. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D19",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:29:46 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "OCI Runtime Specification namespace path entries",
+      "version_or_date": "live main branch",
+      "sections_read": "find: If `path`; namespace path and omission semantics",
+      "confirmed": "A namespace entry with a path makes the runtime join that namespace and requires a matching type; omitted paths request newly created namespaces. Omitted namespace types inherit the runtime namespace, so omission needs deliberate handling.",
+      "limits": "This is a Linux runtime configuration mechanism, not a CRI extension or user-facing authorization scheme; the node/runtime must resolve and constrain namespace handles, and omitted namespace types inherit the runtime's namespace. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D20",
+      "url": "https://github.com/util-linux/util-linux/blob/master/sys-utils/nsenter.c",
+      "accessed_at_utc": "2026-11-20 12:29:46 UTC",
+      "source_type": "public_code",
+      "title": "util-linux nsenter implementation and Linux setns semantics",
+      "version_or_date": "live master branch; copyright range extends through 2023",
+      "sections_read": "find: setns(; do_setns, enter_namespaces, descriptor opening, fork and root handling",
+      "confirmed": "The implementation opens namespace and directory descriptors, invokes setns with error handling, and forks when needed for PID namespace entry; changing the root directory is a separate operation. The live code also contains later pidfd and cgroup facilities, so it is not a verified historical snapshot.",
+      "limits": "Direct use normally needs kernel capabilities and node/process access, so it must remain behind an authorized node-agent/runtime operation rather than require administrators to log into nodes; current code and supporting manual pages include later features. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C03.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C03-D01",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/v1.0.1/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:28:04 UTC",
+      "reason": "The web retrieval tool returned DisabledError; historical content was not verified.",
+      "recorded_in": "runs/A/C03.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D07",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.1/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:28:57 UTC",
+      "reason": "The raw historical specification fetch also returned DisabledError; the version was not verified.",
+      "recorded_in": "runs/A/C03.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C03-D17",
+      "url": "https://github.com/rkt/rkt/blob/master/Documentation/devel/pod-lifecycle.md",
+      "accessed_at_utc": "2026-11-20 12:29:29 UTC",
+      "reason": "The primary rkt lifecycle document returned DisabledError. Search results exposed a mirrored primary-document excerpt about adding applications to mutable pods, but this was not promoted to a verified candidate.",
+      "recorded_in": "runs/A/C03.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

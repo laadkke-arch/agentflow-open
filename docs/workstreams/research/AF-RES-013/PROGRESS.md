@@ -1,8 +1,8 @@
 # AF-RES-013 진행
 
 source_commit: a18d8d2e1575d9b679442134fd0f6f8e17423bfe.
-현재: 재개 SHA caa2a814727dd485ed0eb9bb8530d6b16fab9584의 A31/B31 원 응답을 보존한 채 342개 후보 판정과 경계36행 내부 교차검토를 마쳤다.
-다음: 판정 묶음을 원격 보존한 뒤 RESULT·출처 통합, SELF_CHECK, 마지막 HANDOFF 단독 커밋과 원격 본문 대조를 진행한다. 아래는 초기부터의 변경 기록이다.
+현재: 원격 eb569f07의 주보고서·차단 판단을 유지하고, 같은342후보에 대한 별도 작업공간의 판정 차이를 원본 snapshot과 비교 부록으로 보존했다.
+다음: 비교 부록 커밋, 무결성·계약 재검사와 SELF_CHECK 보완, 마지막 HANDOFF 단독 커밋 및 원격 본문 대조. 전체 인수는 SITE_CAP_CASES로 BLOCKED다.
 manifest의 freshness_at_start=local_only는 CLI에 명시 local ref를 준 결과다. 별도 git ls-remote와 clone에서 같은 원격 SHA를 직접 확인했다.
 초기 manifest 생성 rev-parse 실패는 의존 branch refs를 fetch하여 해결했다. 외부 API 직접 read-only curl 200 확인, web KEP template 한 주소 실패는 제외 기록 예정.
 
@@ -113,3 +113,11 @@ P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 �
 - 전체 인수 상태는 BLOCKED다. SITE_CAP_CASES: 독립 제안31개가 GitHub 한 사이트라 문자적 최대3개 산입 조건에서 사례 최소30을 충족하지 못한다. 사전 SAMPLING의 비사례 한정 해석을 사용자 승인 예외로 바꾸지 않는다. 실제 연구 결과가 사라진다는 뜻은 아니며 acceptance_evidence에 예/아니오와 근거를 분리한다.
 - 다음 첫 행동은 진행 담당이 최초 SAMPLING과 요청의 사이트 규칙·실제 호스트 수를 대조하여 인수 처리를 기록하는 것이다. 문자적 규칙을 유지하려면 별도 사전 고정한 최소10사이트·30적격사례와 실행이 필요하다. 현재 결과를 소급 재선정하지 않았다.
 - 다음 마지막 절차는 사용자의 차단 인계 규칙에 따른 HANDOFF 단독 커밋·원격 게시 및 원격 본문 대조다. 정식 완료·인수 통과로 보고하지 않는다.
+
+
+## 원격 후속 결과 발견과 병렬 검토 보존
+
+- 이 작업공간 `/workspace/scratch/71d498d6556a/agentflow-open`의 준비 기준은 `caa2a814727dd485ed0eb9bb8530d6b16fab9584`였다. 원격 ref의 expected-parent 갱신 실패 뒤 새로 fetch하여, 별도 작업공간의 후속 결과와 차단 HANDOFF `eb569f07a3a34ffacf114384ae9b06ad062f5396`(2026-11-20 15:47:26 UTC)를 확인했다. 그 커밋·PROGRESS·HANDOFF·RESULT·코딩 변경을 먼저 읽고 유지했다. 강제 갱신하거나 기존 결과를 초기화하지 않았다.
+- 기존 주판정은 A23/176·역사16, B14/176·역사5다. 이 작업공간의 별도 채점 A22/16·B8/2를 주점수로 덮어쓰지 않았다. 동일342후보에서 일치23행·라벨58행이 다르며, 다섯 대표행 검토에서는 어느 한쪽을 일괄 채택할 근거가 없었다. `evidence/parallel-review-71d498d6556a/`에230파일의 원본 delta·hash·전체 비교를 보존한다. 새로운 baseline 실행이나 독립 모델 재현으로 세지 않는다.
+- 별도 snapshot의 SELF_CHECK/FINAL_VALIDATION은 준비 중 상태이며 현행 인수 판단을 대체하지 않는다. 원격의 `BLOCKED — SITE_CAP_CASES`를 유지한다. 비사례 상한의 사전 해석은 사용자 예외 승인이 아니며, 사례31개에 문자적으로 적용하면3/30이다.
+- 다음: 비교 부록·주보고서의 이견 고지 커밋, 기존 산출물과 부록 무결성 재검사 및 SELF_CHECK 보완 커밋, 마지막 HANDOFF 단독 커밋과 해당 SHA 원격 본문 비교.

@@ -1,0 +1,291 @@
+{
+  "case_id": "C26",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C26",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "PreForM: conditional source preprocessing",
+      "candidate_url": "https://github.com/szaghi/PreForM",
+      "candidate_claim": "A package build could use its conditional directives to remove version-incompatible syntax before the language compiler parses a single maintained source tree.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 버전 값의 문자열 리터럴·비교연산자 없는 숫자·쉼표로 분리한 인수라는 표현 선택을 제시하지 않았다. version handling이라는 주제만으로 이 세 문법 대안을 적중시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "선택 안 된 source를 parser 이전에 제거하는 conditional directive가 문법 차이를 처리한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "한 authored tree 안의 조건부 fragment를 선택한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "package build가 target compiler version symbol을 주는 구체 연결을 제시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "PreForM preprocessing → Swift package의 compiler 이전 source selection. 정확한 version symbol과 external build step을 추가해야 한다.",
+      "H_assessment_scope": "reference_design: Transferable preprocessing mechanism for selecting source fragments before compilation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C26.json#/candidates/0",
+        "runs/B/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 Swift 구현·성공 빌드는 직접 실행하지 않았다. 날짜 unknown은 2016-01-21 이전 고정 판의 선택 메커니즘을 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Python-Future: one compatible codebase plus syntax conversion",
+      "candidate_url": "https://python-future.org/index.html",
+      "candidate_claim": "Its shared-source compatibility layer and futurize/pasteurize conversion approach provide a concrete model for normalizing version-specific syntax into one source representation supported across language versions.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 버전 값의 문자열 리터럴·비교연산자 없는 숫자·쉼표로 분리한 인수라는 표현 선택을 제시하지 않았다. version handling이라는 주제만으로 이 세 문법 대안을 적중시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "futurize/pasteurize와 syntax helper로 공통 문법으로 정규화하는 예가 있다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "하나의 source representation을 구버전·신버전에서 유지한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "source package에 compatibility helper와 conversion tooling을 적용한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Python-Future common grammar/helper → Swift-specific source conversion. 새 문법에 구버전 equivalent가 있는지와 semantics를 확인해야 한다.",
+      "H_assessment_scope": "reference_design: Shared grammar, compatibility helpers, and automated source conversion for source-distributed packages.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C26.json#/candidates/1",
+        "runs/B/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 Swift 구현·성공 빌드는 직접 실행하지 않았다. 날짜 unknown은 2016-01-21 이전 고정 판의 선택 메커니즘을 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Babel: downlevel source-to-source compilation",
+      "candidate_url": "https://github.com/babel/babel",
+      "candidate_claim": "Its compilation of newer JavaScript features into supported older forms illustrates how one authored source tree can generate syntax accepted by different compiler targets.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 버전 값의 문자열 리터럴·비교연산자 없는 숫자·쉼표로 분리한 인수라는 표현 선택을 제시하지 않았다. version handling이라는 주제만으로 이 세 문법 대안을 적중시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "새 syntax를 지원되는 옛 syntax로 lowering하는 compiler 단계다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "한 authored tree에서 target별 generated output을 만든다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "소스 패키지 build pipeline에 target별 transformation을 연결한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Babel source-to-source lowering → Swift 버전별 transformation pass. 별도 authored branch는 줄여도 generated output이 동일하다는 주장은 아니다.",
+      "H_assessment_scope": "reference_design: Alternative build-stage transformation mechanism.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C26.json#/candidates/2",
+        "runs/B/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 Swift 구현·성공 빌드는 직접 실행하지 않았다. 날짜 unknown은 2016-01-21 이전 고정 판의 선택 메커니즘을 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Python-Modernize: automated conversion to a shared syntax subset",
+      "candidate_url": "https://github.com/mitsuhiko/python-modernize",
+      "candidate_claim": "Its source fixers offer a model for rewriting old syntax into a common form so package authors can maintain a single codebase that remains usable on both older and newer language versions.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 버전 값의 문자열 리터럴·비교연산자 없는 숫자·쉼표로 분리한 인수라는 표현 선택을 제시하지 않았다. version handling이라는 주제만으로 이 세 문법 대안을 적중시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "pass",
+          "reason": "실제 exception/import/metaclass fixer로 common subset을 만드는 방식을 문서화한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "공통 코드와 helper로 authored tree 분리를 줄인다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "author-time migration과 six dependency를 source package에 배치한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Python-Modernize fixers → Swift source migration/common syntax. 도구가 호환성을 보증하지 않으므로 선택한 변환별 semantic/build 검증이 필요하다.",
+      "H_assessment_scope": "reference_design: Author-time migration tooling with compatibility helpers.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C26.json#/candidates/3",
+        "runs/B/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 Swift 구현·성공 빌드는 직접 실행하지 않았다. 날짜 unknown은 2016-01-21 이전 고정 판의 선택 메커니즘을 확인한다."
+    },
+    {
+      "case_id": "C26",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "Six 1.10.0: a distributable compatibility module",
+      "candidate_url": "https://pypi.org/project/six/1.10.0/",
+      "candidate_claim": "Its small compatibility module shows how source packages can centralize version differences behind shared helper calls instead of duplicating whole source trees.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 버전 값의 문자열 리터럴·비교연산자 없는 숫자·쉼표로 분리한 인수라는 표현 선택을 제시하지 않았다. version handling이라는 주제만으로 이 세 문법 대안을 적중시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "언어 버전에 따른 문법 차이 처리",
+          "value": "not_in_scope",
+          "reason": "원 응답은 두 parser가 모두 읽는 source 형태의 compatibility helper로 범위를 제한하며 unknown grammar를 처리하지 못한다고 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "별도 소스 트리 증가를 줄임",
+          "value": "pass",
+          "reason": "한 single-file module 뒤에 version 차이를 모은다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "소스 배포 패키지의 여러 버전 빌드 지원",
+          "value": "pass",
+          "reason": "source package가 작은 compatibility component를 함께 배포하는 구성이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Six shared helper layer → 공통 parseable Swift syntax에서 version-specific calls를 감싼 호환 부품. parser 차이는 별도 rewrite/preprocess가 필요하다.",
+      "H_assessment_scope": "reference_design: Packaging-friendly compatibility layer where both versions can parse the chosen source form.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C26.json#/candidates/4",
+        "runs/B/C26.json#/opened_documents"
+      ],
+      "remaining_check": "대상 Swift 구현·성공 빌드는 직접 실행하지 않았다. 날짜 unknown은 2016-01-21 이전 고정 판의 선택 메커니즘을 확인한다."
+    }
+  ]
+}

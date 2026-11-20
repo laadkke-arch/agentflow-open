@@ -1,0 +1,366 @@
+{
+  "case_id": "C31",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Python distutils StrictVersion and LooseVersion",
+      "candidate_url": "https://raw.githubusercontent.com/python/cpython/v2.6.4/Lib/distutils/version.py",
+      "candidate_claim": "These existing Python parsers and comparators provide a concrete starting point for both constrained numeric/prerelease versions and permissive legacy strings, including date-like versions.",
+      "gold_matches": [
+        {
+          "gold_id": "P0386-G01",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original rank 1 explicitly names LooseVersion, its permissive numeric/text token comparison and legacy forms, matching the gold Distutils LooseVersion item."
+        },
+        {
+          "gold_id": "P0386-G02",
+          "match_kind": "external_entity",
+          "match_basis": "external_entity",
+          "external_entity_hit": null,
+          "rationale": "Original rank 1 separately names StrictVersion and its two/three-component alpha/beta parsing, matching the distinct gold StrictVersion item."
+        }
+      ],
+      "match_rationale": "Both named external items and their independent parsing/order mechanisms are explicitly present. Recovering them does not approve the known loose-ordering error.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "The opened tagged implementations supply parsers and comparison results that can underlie dependency-bound checks."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "unknown",
+          "reason": "Legacy/date-like Python forms are documented, but the original does not provide a translation or compatibility rule for OS packaging environments."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "fail",
+          "reason": "LooseVersion’s documented tuple order can put a prerelease after its final release. The original identifies this known semantic-ordering error, so parser acceptance cannot be scored as correct actual ordering."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map existing parser/comparator outputs to version-order regression cases and compare constrained versus permissive syntax. The original caveat makes the loose prerelease inversion a negative baseline; no repaired ordering or OS adapter is supplied.",
+      "H_assessment_scope": "reference_design: existing strict/loose comparators and regression baseline",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "P0386-G01",
+        "P0386-G02"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/0",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "Retain prerelease/release counterexamples and define explicit OS translation plus corrected ordering as a new configuration. The original unmodified loose comparator cannot be approved merely because it parses legacy strings."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Debian version ordering and epoch/upstream/revision structure",
+      "candidate_url": "https://www.debian.org/doc/debian-policy/ch-controlfields",
+      "candidate_claim": "Debian supplies an explicit comparison algorithm and separates upstream versions, distribution revisions and numbering-scheme changes, directly informing interoperable package ordering.",
+      "gold_matches": [],
+      "match_rationale": "Generic Debian field/revision semantics do not identify the gold specific hyphen disagreement with setuptools: that separator conflict is absent from the original candidate.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "A deterministic comparator supplies the order relation needed by dependency inequalities."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "Epoch/upstream/revision components explicitly address distribution repackaging and upstream numbering changes; the original requires translation of Python versions."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "The opened policy supplies numeric epoch comparison and alternating text/numeric rules, not merely a proposed spelling grammar."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map upstream identity to upstream version, distribution changes to revision, and numbering-scheme resets to an explicit epoch; use the documented ordering for translated values. The original character/tilde/revision distinctions require a declared adapter, not silent cross-ecosystem equivalence.",
+      "H_assessment_scope": "reference_design: distribution version adapter and deterministic comparator",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/1",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Apache Ivy 2.1.0 LatestStrategy and dependency ranges",
+      "candidate_url": "https://ant.apache.org/ivy/history/2.1.0/settings/latest-strategies.html",
+      "candidate_claim": "Ivy combines configurable version comparators and qualifier meanings with inclusive/exclusive dependency ranges, offering a way to accommodate multiple existing version conventions.",
+      "gold_matches": [],
+      "match_rationale": "Ivy is neither a named Distutils/setuptools entity nor either specific RPM/Debian interoperability incident in the gold.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "Versioned dependency documentation includes inclusive/exclusive bounds alongside selected comparison strategies."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "Configurable qualifier meanings accommodate existing conventions while the original explicitly requires producer/consumer policy agreement."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "The selected semantic revision comparator supplies actual ordering; original response explicitly rejects upload/date-based latest as a substitute for semantic order."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map each declared version policy to a shared comparator/qualifier configuration and evaluate interval endpoints with that same strategy. Preserve the original consistency requirement and exclude the separate date-based strategy for semantic ordering.",
+      "H_assessment_scope": "reference_design: shared comparison strategy plus dependency-bound evaluation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/2",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "RPM epoch/version/release ordering and rpmvercmp",
+      "candidate_url": "https://fedoraproject.org/wiki/Tools/RPM/VersionComparison",
+      "candidate_claim": "RPM demonstrates a distribution-oriented comparator that orders epoch, version and release using numeric and alphabetic segments, providing a second operating-system interoperability model.",
+      "gold_matches": [],
+      "match_rationale": "The original does not identify the gold date-based-version-to-small-major transition; mentioning RPM or epochs alone does not recover that concrete structural incident.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "RPM’s epoch/version/release comparison can underpin distribution dependency ordering."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "Original scope is an OS adapter and explicitly considers malformed-label and absent-epoch edge cases."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "unknown",
+          "reason": "The opened account documents undefined/asymmetric behavior for some labels, but no target legacy-string mapping/domain establishes that those cases are excluded from the proposed adapter."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map valid RPM components to epoch/version/release and compare numeric/alphabetic runs. The original malformed-label and absent-epoch behavior remains a domain prerequisite, not an assumed safe comparison of arbitrary Python strings.",
+      "H_assessment_scope": "reference_design: RPM comparison adapter with explicit edge cases",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/3",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "Specify the accepted translated-version domain and test ordering asymmetry/absent-epoch cases against the intended labels. A domain with consistent documented ordering could support conditional use; admitting known asymmetric labels would fail H3."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "RubyGems Gem::Version and Gem::Requirement",
+      "candidate_url": "https://docs.ruby-lang.org/en/master/Gem/Version.html",
+      "candidate_claim": "RubyGems provides comparable version objects with prerelease ordering and a separate requirement evaluator that combines comparison operators into dependency constraints.",
+      "gold_matches": [],
+      "match_rationale": "RubyGems is not setuptools or Distutils; similarity of parse/compare APIs is not external-entity identity.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "The opened Version/Requirement pair provides comparisons and conjunctions of operator/version bounds."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "Original response explicitly recognizes Ruby-specific syntax/prerelease policy and required adaptation of arbitrary legacy spellings rather than declaring ecosystem equivalence."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "Numeric components and prerelease segments have executable documented comparison rules."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a parsed version object to an ordered value and a dependency declaration to a conjunction of Requirement predicates. Keep parsing/qualifier adaptation explicit for legacy and OS consumers; this is an API/ordering design, not proof that every external label already translates.",
+      "H_assessment_scope": "reference_design: comparable version objects and separate requirement predicates",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/4",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Apache Maven ComparableVersion",
+      "candidate_url": "https://maven.apache.org/ref/4-LATEST/compat/maven-artifact/apidocs/org/apache/maven/artifact/versioning/ComparableVersion.html",
+      "candidate_claim": "ComparableVersion provides an implemented parser, canonical form and comparator for mixed numeric/text versions with explicit qualifier precedence, supplying a concrete normalization and ordering design.",
+      "gold_matches": [],
+      "match_rationale": "Maven is a different entity from the gold Python parsers; generic separator differences are not the particular Debian hyphen or RPM date-transition alternatives.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "The original narrow comparator/canonicalization component provides an order relation that can support compatibility bounds; it does not claim the snippet-only POM range syntax was verified."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "Original caveat explicitly distinguishes Maven’s separator/qualifier order from Python, Debian and RPM expectations."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "The opened implementation API exposes canonicalization/comparison and defined precedence for known and unknown qualifiers."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map accepted labels to numeric/text canonical components and compare using explicit qualifier precedence before evaluating bounds. Preserve the original ecosystem-order differences and avoid assuming normalization alone preserves every author’s intended release order.",
+      "H_assessment_scope": "reference_design: canonical comparison representation for mixed numeric/text labels",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C31.json#/candidates/5",
+        "runs/A/C31.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary uncertainty within the original narrow reference scope; implementation transfer and runtime utility were not observed."
+    }
+  ]
+}

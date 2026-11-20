@@ -1,0 +1,161 @@
+{
+  "case_id": "C25",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "package command가 build와 test harness를 함께 조율하는 참조다."
+        ],
+        [
+          "pass",
+          "필터와 고정 working directory를 포함한 공통 실행 절차가 반복 가능한 테스트 목적에 대응한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Command orchestration, filtering, predictable working directories, and optional custom harnesses.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "Cargo compile/test orchestration → Swift package test driver. Rust attribute·doc-test 대신 Swift compiler와 runner를 연결해야 한다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift test executable과 CLI entry point를 package command가 호출하는 구체 부품이다."
+        ],
+        [
+          "pass",
+          "suite 결과·선택·exit status를 package 결과로 전달한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Test cases, suite execution, selection/listing, and process status.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "XCTest executable/exit status → Swift package test lifecycle. toolchain 호환성과 호출 연결을 확인해야 하며 현재 통합을 2016년으로 소급하지 않는다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "서로 다른 test runner의 결과를 package consumer가 집계하는 한정된 연결이다."
+        ],
+        [
+          "pass",
+          "test plan과 결과 수 비교로 incomplete run을 감지하는 목적이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Runner/reporting boundary, pass/fail records, test plans, skip markers and diagnostics.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "TAP producer/result plan → Swift package reporting boundary. build·discovery·process exit policy는 별도로 설계해야 하며 default XCTest 제거를 함의하지 않는다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift test-only dependency와 authoring DSL을 package test workflow에 연결한다."
+        ],
+        [
+          "pass",
+          "구조화한 예제와 재사용 test group으로 테스트 유지 목적을 설명한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Test authoring and test-target dependencies.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "Quick test authoring/runtime → Swift package test target. Swift compiler 호환성을 맞추고 배포 application binary에 test framework가 들어가지 않게 해야 한다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "의존성 재설치와 test 실행을 package publication에 연결하는 lifecycle 참조다."
+        ],
+        [
+          "pass",
+          "공개 전 test failure를 확인하는 maintainer gate를 제안한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Maintainer-side publication checks and failure handling.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "np release checks → Swift package maintainer publication checks. Node-specific tooling을 번역해야 하며 skip 옵션이 있어 registry 전체 보증은 아니다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "package dependency와 ordinary suite 안에 property test를 배치한다."
+        ],
+        [
+          "pass",
+          "생성 입력으로 invariants와 회귀를 검사하는 구체 목적이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Property tests for algorithms, data structures and reusable library behavior.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "SwiftCheck generators/properties → Swift package test suite. 의미 있는 properties와 random failure 재현을 정의해야 하며 orchestration은 별도다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift runner의 report 선택을 package test command에 연결하는 제안이다."
+        ],
+        [
+          "pass",
+          "같은 test 정의에서 사람·기계용 결과를 제공해 failure 관측을 돕는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative Swift runner and reporter integration.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "transfer_mapping": "Spectre runner/reporter → Swift package test output adapter. 선택한 환경변수 기능은 2021년 사후 자료이며 2016년 지원으로 취급하지 않는다.",
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    }
+  ]
+}

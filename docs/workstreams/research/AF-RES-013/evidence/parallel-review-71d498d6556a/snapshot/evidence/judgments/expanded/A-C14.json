@@ -1,0 +1,385 @@
+{
+  "case_id": "C14",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "CPython 3.6.3 _ForwardRef and get_type_hints",
+      "candidate_url": "https://raw.githubusercontent.com/python/cpython/v3.6.3/Lib/typing.py",
+      "candidate_claim": "Its existing string-to-code wrapper and explicit namespace resolver provide a concrete component for resolving annotation names after their definitions exist.",
+      "gold_matches": [],
+      "match_rationale": "This is neither a second annotation-text dictionary nor the specific policy of passing literal strings verbatim. No gold local-state lambda or module-only class-scope choice is in the original use.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "pass",
+          "reason": "Versioned source compiles a string before its referenced names exist and resolves it later using supplied namespaces."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "The original separates compilation from later evaluation and explicitly retains remaining compilation/import costs."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "It is an optional typing-library mechanism; the original does not require every annotation or program to be typed."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "not_in_scope",
+          "reason": "Original scope is representation/resolution of type forward references; it expressly states the type validator cannot be the general arbitrary-annotation evaluator."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map quoted type-expression text to a compiled representation, then evaluate it in explicit namespaces after definitions exist. Preserve original namespace and quoting requirements and do not route arbitrary metadata through its type validator; that would exceed this component’s scope.",
+      "H_assessment_scope": "reference_design: delayed type-forward-reference component",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/0",
+        "runs/A/C14.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "SQLAlchemy 1.1.15 deferred relationship arguments",
+      "candidate_url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/relationships.py",
+      "candidate_claim": "Its delayed callable and registry-backed string resolution show how Python declarations can refer to later-defined classes and compute configuration when a consumer first needs it.",
+      "gold_matches": [],
+      "match_rationale": "A delayed callable/registry is not the gold annotation-lambda design preserving function-local state. The original does not commit to captured locals, module-only class names or parallel annotation dictionaries.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "pass",
+          "reason": "Opened relationship code permits callable/string references to classes declared later and resolves them at mapper initialization."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "Consumer-triggered configuration defers the relevant work beyond declaration/import construction."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "The reference is a declaration-metadata lifecycle and does not impose type checking on Python code."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "unknown",
+          "reason": "The original warns that accepted ORM metadata restrictions cannot be inherited, but supplies no general annotation-value acceptance/error contract; arbitrary runtime annotation preservation is therefore unverified."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map registry lookup and consumer initialization to explicit annotation namespace/resolution events. Original scope-retention/error-timing and ORM-value restrictions remain unresolved; these cannot be replaced by an assumed general evaluator.",
+      "H_assessment_scope": "reference_design: delayed declaration-metadata resolution and lookup namespaces",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/1",
+        "runs/A/C14.json#/opened_documents"
+      ],
+      "remaining_check": "Define the target annotation evaluator’s accepted values, scope retention and failure timing. Unrestricted value evaluation with documented lookup could support conditional transfer; retaining ORM/type restrictions would fail H4."
+    },
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "SRFI 45 delay, lazy, and force",
+      "candidate_url": "https://srfi.schemers.org/srfi-45/srfi-45.html",
+      "candidate_claim": "Its promises defer arbitrary expressions and memoize their results, offering a general annotation-value mechanism that can avoid import-time execution while retaining non-type uses.",
+      "gold_matches": [],
+      "match_rationale": "Although promises may capture environments, the original does not select the gold policy of retaining Python function-local state in annotation lambdas. Generic delayed computation is not that exact design choice.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "pass",
+          "reason": "The opened promise example creates delayed computation before a later variable definition and forces it afterward."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "Delayed forcing moves expression execution out of the initial declaration/import and memoizes the result; representation costs remain explicit."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "Promises apply to optional arbitrary computations and do not introduce mandatory type checking."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "pass",
+          "reason": "The source evaluates arbitrary values rather than a type-only language, supporting the original general annotation-value use."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map an annotation expression to a promise and a runtime metadata read to force; memoization maps repeated reads to the same computed result. The original requires explicit environment lifetime, side-effect, cycle and exception semantics and bounded-space forcing; this is the evaluation mechanism, not observed Python integration.",
+      "H_assessment_scope": "reference_design: call-by-need annotation expression evaluation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/2",
+        "runs/A/C14.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Angular 4.4.6 forwardRef and resolveForwardRef",
+      "candidate_url": "https://raw.githubusercontent.com/angular/angular/4.4.6/packages/core/src/di/forward_ref.ts",
+      "candidate_claim": "Its marked zero-argument callback defers reference lookup and its resolver passes ordinary values through, providing a small explicit opt-in pattern for forward references.",
+      "gold_matches": [],
+      "match_rationale": "A zero-argument callback alone does not select the gold Python function-local-state-retention policy; the original leaves Python scope adaptation open.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "pass",
+          "reason": "Tagged code marks a zero-argument callback and invokes it only at explicit resolution, permitting later-defined bindings when resolution occurs afterward."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "The callback delays lookup/computation; the original correctly states no memoization and does not claim repeated reads are free."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "Explicit wrappers are opt-in and ordinary values pass through, preserving optional use."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "pass",
+          "reason": "The opened code has unrestricted callback result types and ordinary-value passthrough, supporting a value-level mechanism beyond mandatory type checking."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a marked callback to a delayed annotation value and resolve only after its bindings exist, passing ordinary metadata through unchanged. Preserve no-memoization behavior and the original explicit wrapper/scope boundaries; early resolution or repeated side effects are failure conditions.",
+      "H_assessment_scope": "reference_design: opt-in deferred callback and ordinary-value passthrough",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/3",
+        "runs/A/C14.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Python 3.6.3 TYPE_CHECKING import guards",
+      "candidate_url": "https://docs.python.org/release/3.6.3/library/typing.html#typing.TYPE_CHECKING",
+      "candidate_claim": "This existing checker-only branch mechanism can keep dependencies needed solely for type descriptions from being imported during ordinary execution.",
+      "gold_matches": [],
+      "match_rationale": "An import guard does not remove annotation dictionaries with -O, preserve literal-string contents as a policy, or choose any other gold design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "not_in_scope",
+          "reason": "The original scope is import-cost reduction complementary to quoted/deferred references; it does not claim to solve forward-name resolution by itself."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "The exact versioned TYPE_CHECKING anchor documents a checker-true/runtime-false branch that suppresses imports needed only for static analysis."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "The guard is optional and leaves ordinary dynamic execution independent of type-checker-only imports."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "not_in_scope",
+          "reason": "The original explicitly excludes furnishing arbitrary runtime annotation values and warns that runtime consumers need dependencies through another path."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: checker-only import guard for type-only dependencies",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/4",
+        "runs/A/C14.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA004"
+      ],
+      "remaining_check": "The exact fragment was verified with HTTP 200 and an existing anchor after the web reader failed. Runtime consumers still need an explicitly separate dependency path if this narrow guard is composed with them."
+    },
+    {
+      "case_id": "C14",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Mypy .pyi stub files",
+      "candidate_url": "https://mypy.readthedocs.io/en/latest/stubs.html",
+      "candidate_claim": "Separate type-interface files offer a tooling-only route to keep type descriptions outside executable module bodies while preserving optional checking.",
+      "gold_matches": [],
+      "match_rationale": "Separate .pyi files are not the gold dual __annotations_text__/lazy __annotations__ design: no runtime companion mapping is proposed.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "아직 정의되지 않은 이름 참조 처리",
+          "value": "pass",
+          "reason": "External interface descriptions allow the checker to describe names independently of runtime execution, within the original tooling-only scope."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "import 계산 비용 고려",
+          "value": "pass",
+          "reason": "Keeping static descriptions out of executable module bodies avoids executing those descriptions during import."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "타입 힌트를 의무화하지 않음",
+          "value": "pass",
+          "reason": "Separate stubs preserve optional static checking, as proposed."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "타입 검사 외 annotation 사용 보존",
+          "value": "fail",
+          "reason": "The proposed external-storage alternative does not expose its annotation metadata to arbitrary runtime consumers; the original explicitly acknowledges this missing runtime facility and supplies no preserved runtime path."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Move static type declarations to .pyi files selected by the checker while runtime modules contain implementations. The original tradeoff duplicates interfaces and provides no arbitrary runtime annotation metadata, so the mapping does not satisfy H4.",
+      "H_assessment_scope": "reference_design: separate tooling-only type-interface storage",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C14.json#/candidates/5",
+        "runs/A/C14.json#/opened_documents"
+      ],
+      "remaining_check": "A separate runtime-metadata path would be a new proposed configuration and must be assessed independently; do not silently add it to this tooling-only candidate. A verified historical stub document is also still needed."
+    }
+  ]
+}

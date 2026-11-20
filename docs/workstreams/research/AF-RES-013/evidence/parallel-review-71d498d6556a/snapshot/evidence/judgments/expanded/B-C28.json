@@ -1,0 +1,234 @@
+{
+  "case_id": "C28",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C28",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "libextobjc — EXTSelectorChecking",
+      "candidate_url": "https://github.com/jspahrsummers/libextobjc",
+      "candidate_claim": "Its receiver-aware compile-time selector check could inform a Swift expression that rejects a method identifier when the intended object does not declare that method.",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 Objective-C 메서드 식별 값 생성",
+          "value": "not_in_scope",
+          "reason": "원래 선택 범위는 declaration/receiver 검사이며 Swift SEL 생성과 이름 변환은 별도 adaptation이라고 했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "오타와 대상 혼동 감소",
+          "value": "pass",
+          "reason": "열린 README가 intended object의 메서드 존재를 compile-time 확인한다고 설명한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "서로 다른 표면 이름 대응 부담 고려",
+          "value": "not_in_scope",
+          "reason": "Swift-facing declaration과 runtime spelling의 mapping은 원 응답에서 미제공 영역으로 분리했다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "libextobjc receiver-aware selector check → Swift의 의도한 선언 검사. importer의 이름 mapping과 실제 SEL 표현은 별도로 구현한다.",
+      "H_assessment_scope": "reference_design: Declaration existence and intended-receiver checking.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C28.json#/candidates/0",
+        "runs/B/C28.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C28",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Qt 5 — typed signal/slot references and generated metadata mapping",
+      "candidate_url": "https://woboq.com/blog/how-qt-signals-slots-work-part2-qt5.html",
+      "candidate_claim": "Qt's checked member references and generated mapping to runtime signal indices provide a precedent for validating a class-qualified source declaration before producing an external runtime identifier.",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 Objective-C 메서드 식별 값 생성",
+          "value": "not_in_scope",
+          "reason": "원 응답은 Qt runtime signal index의 비교 사례이며 실제 Objective-C SEL bridge는 요구한다고 명시했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "오타와 대상 혼동 감소",
+          "value": "pass",
+          "reason": "class-qualified member reference와 typed checking이 오타·대상 서명 혼동을 줄인다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "서로 다른 표면 이름 대응 부담 고려",
+          "value": "not_in_scope",
+          "reason": "Swift declaration-to-selector mapping 자체는 원래 좁은 참고 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Qt checked member reference + generated index metadata → 선언 검사 후 runtime identifier lowering. C++ member pointer를 SEL과 동일시하지 않는다.",
+      "H_assessment_scope": "reference_design: Compiler checking followed by lowering to runtime metadata.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C28.json#/candidates/1",
+        "runs/B/C28.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C28",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Djinni — generated cross-language interfaces",
+      "candidate_url": "https://github.com/dropbox/djinni",
+      "candidate_claim": "Its shared interface descriptions and generated language-specific identifiers suggest keeping method identity and naming conversions in generated metadata instead of asking developers to reconstruct foreign spellings.",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 Objective-C 메서드 식별 값 생성",
+          "value": "not_in_scope",
+          "reason": "원래 범위는 공통 interface identity와 이름 변환 metadata이며 arbitrary method SEL 생성이 아니다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "오타와 대상 혼동 감소",
+          "value": "not_in_scope",
+          "reason": "원래 범위는 cross-language naming이고 임의 imported method의 진단 보장을 주장하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "서로 다른 표면 이름 대응 부담 고려",
+          "value": "pass",
+          "reason": "하나의 interface description에서 언어별 identifier를 생성하여 외부 철자 추론을 mapping에 모은다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Djinni shared interface description → importer/generated metadata의 언어별 이름 연결. 기존 임의 Objective-C API에는 추가 generator/importer 경로가 필요하다.",
+      "H_assessment_scope": "reference_design: Preserving a common identity across language-specific names.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C28.json#/candidates/2",
+        "runs/B/C28.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C28",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "R.swift — generated typed identifiers for string-addressed resources",
+      "candidate_url": "https://github.com/mac-cain13/R.swift",
+      "candidate_claim": "Its generated, compiler-checked resource accessors suggest generating class-scoped Swift constants for imported method identifiers so misspellings become missing-symbol errors.",
+      "gold_matches": [],
+      "match_rationale": "libextobjc/Qt의 typed check는 같은 논의 스레드의 type-safe selector 호출 규약 G01의 공식 alias가 아니다. @selector 문법 선택과 특수 Selector initializer도 원 응답의 제안으로 선택하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의도한 Objective-C 메서드 식별 값 생성",
+          "value": "not_in_scope",
+          "reason": "원래 범위는 generated symbol surface이고 이 도구가 selector 자체를 생성하지는 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "오타와 대상 혼동 감소",
+          "value": "pass",
+          "reason": "class-scoped typed constants를 생성하는 전이에서 missing symbol로 오타를 검출하며 대상별 namespace와 collision 검사를 조건으로 명시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "서로 다른 표면 이름 대응 부담 고려",
+          "value": "not_in_scope",
+          "reason": "method metadata 확보와 외부 이름 mapping은 이 resource generator의 검증 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "R.swift typed resource accessor → imported method별 class-scoped typed symbol 생성. 실제 method metadata·충돌·API 변경시 regeneration을 마련해야 한다.",
+      "H_assessment_scope": "reference_design: Generated symbol surface replacing manually entered strings.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C28.json#/candidates/3",
+        "runs/B/C28.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 원 응답의 선택 범위만 판정했다. unknown은 해당 callable 구현·경계 API를 확인하고 최소 실행으로 검증한다. 날짜 unknown은 결정 전 고정판의 선택 기능을 확인한다."
+    }
+  ]
+}

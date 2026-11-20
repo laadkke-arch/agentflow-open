@@ -1,0 +1,220 @@
+{
+  "case_id": "C08",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C08",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Haskell 98 list comprehensions",
+      "candidate_url": "https://www.inf.ufes.br/~raulh/ufes/teaching/courses/ds/haskell/haskell98-report/exps.html",
+      "candidate_claim": "An output expression combined with generators and Boolean guards provides a direct model for concise list construction with selection and dependent nested iteration.",
+      "gold_matches": [],
+      "match_rationale": "Haskell comprehension은 Python map/filter builtins와 동일 외부 항목이 아니며 명시적 for-loop 대체 자체도 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "output expression과 generator로 리스트를 만든다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "열린 보충 report의 guard와 nested evaluation이 생성·선택 메커니즘을 지지한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Haskell generator/guard 표현식 → Python list 생성 문법. eagerness·binding·실패 pattern semantics를 별도로 결정해야 한다.",
+      "H_assessment_scope": "reference_design: Expression grammar and semantics for constructing a list; translation into map, filter, concatenation, and conditionals.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C08.json#/candidates/0",
+        "runs/A/C08.json#/opened_documents"
+      ],
+      "remaining_check": "1999 고정 Expressions §3.11 전체를 열어 guard·nested semantics까지 확인해야 역사적 유용성으로 승격할 수 있다. 현재 opened 1999 grammar와 날짜 미확인 1.3 상세 corroboration을 구별했다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Common Lisp LOOP collect/append with conditional clauses",
+      "candidate_url": "https://www.cs.cmu.edu/Groups/AI/util/html/cltl/clm/node246.html",
+      "candidate_claim": "LOOP's iteration clauses, conditional collection, and list-valued append clauses show how to return a filtered, transformed list without manual accumulator management.",
+      "gold_matches": [
+        {
+          "gold_id": "P0202-G06",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "LOOP의 multiple for clauses advancing together라는 구체 의미가 같은 위치 병렬 결합 대안에 대응한다."
+        }
+      ],
+      "match_rationale": "후보가 여러 for clause의 병렬 전진을 명시해 G06 의미 대안을 회수한다. 자동 collect를 명시적 중첩 for-loop 대안으로 확대하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "collect/append가 새 list 결과를 반환한다; destructive nconc를 제외했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "conditional clauses와 inner list append로 선택·반복을 표현한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Lisp LOOP collect/conditional/append → Python list-building form. 여러 for의 병렬 전진과 중첩 iteration을 구분하며 destructive nconc를 제외해야 한다.",
+      "H_assessment_scope": "reference_design: A list-building loop form, conditional emission, and flattening of inner list results.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "P0202-G06"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C08.json#/candidates/1",
+        "runs/A/C08.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "SRFI 1 filter-map and append-map combinators",
+      "candidate_url": "https://srfi.schemers.org/srfi-1/srfi-1.html",
+      "candidate_claim": "Combining filter-map with nested append-map offers a library-level mechanism for conditional element generation and flattening repeated inner traversals into a new list.",
+      "gold_matches": [],
+      "match_rationale": "Scheme의 filter-map/append-map은 Python map/filter builtins와 동일 항목이 아니고, 다중 list 인수는 multiple for 구문 대안과 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "filter-map/append-map이 새 list를 구성한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "조건 생성과 inner list flattening을 구체적으로 결합한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Scheme filter-map + nested append-map → 조건부 list 생성과 flattening. false 값을 보존하려면 filter와 map 분리, 평가 순서 및 명시 nesting을 정해야 한다.",
+      "H_assessment_scope": "reference_design: An alternative based on higher-order list functions, with a public reference implementation at https://github.com/scheme-requests-for-implementation/srfi-1/blob/master/srfi-1-reference.scm.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C08.json#/candidates/2",
+        "runs/A/C08.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C08",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Erlang list comprehensions and generator-variable scope",
+      "candidate_url": "https://www.erlang.org/docs/25/programming_examples/list_comprehensions.html",
+      "candidate_claim": "Erlang's list expression combines multiple generators and filters while defining local generator bindings, providing a concrete model for nested list construction and variable-scope decisions.",
+      "gold_matches": [],
+      "match_rationale": "Erlang comprehension은 정답의 개별 Python builtin 또는 거절 구문과 동일하지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "새 리스트 생성에 적용",
+          "value": "pass",
+          "reason": "list-valued expression을 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "반복에 따른 원소 생성과 조건 선택 지원",
+          "value": "pass",
+          "reason": "multiple generators와 filters 및 Cartesian 예제가 확인된다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Erlang generator/filter와 scope 규칙 → Python list comprehension의 의미 참고. pattern matching·binding escape 차이를 결정해야 한다.",
+      "H_assessment_scope": "reference_design: List-building syntax, Cartesian combinations, conditional selection, and scope rules.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C08.json#/candidates/3",
+        "runs/A/C08.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    }
+  ]
+}

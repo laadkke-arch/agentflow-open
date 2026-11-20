@@ -1,0 +1,535 @@
+{
+  "case_id": "C03",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Docker containers sharing a target container's PID namespace",
+      "candidate_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "candidate_claim": "A separately started tools image can join the target container's PID namespace to inspect its processes without installing tools in the application image.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다. 별도 container를 만들었다는 이유로 별도 Kubernetes pod G09로 일치시키지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "PID process inspection 부분만 명시했고 mount namespace/filesystem 전체 노출은 제공하지 않는다고 밝혔다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "pass",
+          "reason": "별도 tools image를 나중에 시작하며 app image에 도구를 설치하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "직접 Docker는 Kubernetes admission/audit/API visibility를 제공하지 않는다고 명시했다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "Docker runtime primitive만 제안하며 CRI extension은 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "backend namespace primitive이며 node-user 권한 경로 전체를 제공한다고 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "debug API/spec의 admission 노출은 처음부터 제안 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "별도 Docker tools image와 target PID namespace join → 늦게 도구를 공급하는 backend 동작. 권한 있는 runtime mediator, filesystem 접근 및 Kubernetes API/admission/audit는 별도이며 직접 Docker 접근은 완성 해법이 아니다.",
+      "H_assessment_scope": "reference_design: Late acquisition of debugging tools and inspection of a selected running container.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/0",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "OCI Runtime Specification namespace path entries",
+      "candidate_url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "candidate_claim": "The OCI namespace schema supplies a concrete runtime mechanism for joining selected existing namespaces while configuring a new debugging container independently.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "pass",
+          "reason": "type/path로 선택한 기존 namespace에 합류하는 runtime 계약이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "image 획득·수명은 이 namespace schema의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "user-facing API 권한은 제공하지 않는다고 밝혔다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "OCI mechanism이며 CRI 확장은 제공하지 않는다고 명시했다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "node/runtime의 handle 해석·권한 연결이 별도인 backend schema다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "admission-visible debug spec API는 별도다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCI namespace path → target-container identity를 runtime namespace handle로 변환하는 계약. handle 권한·type 일치 및 생략된 namespace의 inheritance를 통제해야 한다.",
+      "H_assessment_scope": "reference_design: Translating a target-container identity into a runtime's namespace configuration.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/1",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "CRI ImageService, RuntimeService, and PodSandbox lifecycle",
+      "candidate_url": "https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/",
+      "candidate_claim": "CRI's separate image and container lifecycle services offer the abstraction through which a kubelet could pull a tools image and create, start, observe, attach to, and remove a debugging container in an existing sandbox.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "임의 per-container targeting/filesystem 접근을 intro CRI가 보장하지 않는다고 명시했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "pass",
+          "reason": "image service와 sandbox 이후 container create/start가 늦은 tools image 획득을 지원한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "API/admission 통합은 별도라고 명시했다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "pass",
+          "reason": "ImageService/RuntimeService와 다른 sandbox 구현의 축소 capability를 구별한다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "node-agent backend lifecycle이며 end-user 권한 UI는 별도다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "전체 spec의 user API 노출은 별도다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "CRI image/container lifecycle → 기존 sandbox의 debug container 생성·관찰·정리. target namespace/파일시스템 능력 차이와 API/admission 경계를 추가해야 한다.",
+      "H_assessment_scope": "reference_design: Runtime-independent node-agent integration and lifecycle management.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/2",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "util-linux nsenter implementation and Linux setns semantics",
+      "candidate_url": "https://github.com/util-linux/util-linux/blob/master/sys-utils/nsenter.c",
+      "candidate_claim": "The nsenter source provides an implementation reference for opening namespace descriptors, entering chosen namespaces, handling errors, and creating a child for PID namespace entry.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다. 실행 파일을 node에서 가져오는 debug 도구 배치 G10 자체를 제안한 것은 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "pass",
+          "reason": "namespace descriptor/setns 및 root 변경의 별도 처리를 문서·코드로 확인한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "디버깅 도구의 image 획득은 이 kernel-entry 구현 참고의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "API admission/audit는 별도 backend 경계다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "Linux entry code이며 CRI abstraction 자체는 제공하지 않는다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "pass",
+          "reason": "원 응답부터 관리자 node login 대신 승인된 node-agent/runtime operation 내부에 둘 것을 명시한다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "full specification API는 kernel-entry code의 범위 밖이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "nsenter namespace descriptor·setns·fork 순서 → 승인된 node/runtime의 namespace entry. end-user에게 node login을 요구하지 않는 mediator 뒤에 두고 filesystem root 변경을 구별해야 한다.",
+      "H_assessment_scope": "reference_design: Linux node/runtime implementation and the distinction between namespace entry and changing a process's filesystem root.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/3",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Linux /proc/pid/root filesystem view",
+      "candidate_url": "https://man7.org/linux/man-pages/man5/proc_pid_root.5.html",
+      "candidate_claim": "Once the debugger can address an allowed target process, /proc/pid/root provides a way to inspect that process's filesystem view while keeping the debugger's own tool filesystem.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "pass",
+          "reason": "target process의 mount/filesystem view를 debug tool root와 분리해 읽는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "도구 이미지 공급은 이 filesystem primitive의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "not_in_scope",
+          "reason": "API/admission/audit는 별도다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "Linux-specific primitive로 CRI 전반 지원을 주장하지 않는다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "allowed target process와 ptrace credential이라는 backend 전제를 밝히며 user-facing authorization은 주장하지 않는다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "spec 전달 API는 별도다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "proc pid root의 process filesystem view → own-tool filesystem을 유지하는 inspector. process visibility·ptrace credential·종료 경쟁·읽기 전용 아님을 제어해야 한다.",
+      "H_assessment_scope": "reference_design: Filesystem inspection as an alternative to replacing the debugger's root with the application's minimal filesystem.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/4",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Kubernetes mutating and validating admission webhooks",
+      "candidate_url": "https://kubernetes.io/blog/2018/01/extensible-admission-is-beta/",
+      "candidate_claim": "Admission's request-body inspection and validation-after-mutation model can enforce policy on the full debugging-container specification before the API persists an authorized request.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "namespace/filesystem entry는 API policy 부분의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "image 획득은 admission reference가 구현하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "pass",
+          "reason": "인가 후·저장 전 complete request 검사와 mutation 후 validation을 다룬다; audit 부분은 별도다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "runtime lifecycle과 capability는 별도다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "backend debug 실행은 이 API policy reference의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "pass",
+          "reason": "원 응답부터 image/command/privilege/namespace를 포함하는 complete object를 admission-covered operation에 보내도록 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Kubernetes full-body validating admission → debug container spec 정책 검사. opaque command 대신 full object가 거치는 operation과 matching rules를 설계해야 한다.",
+      "H_assessment_scope": "reference_design: Making image, commands, privileges, namespace targeting, and other relevant debugging-container fields inspectable by admission.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/5",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Kubernetes API audit logging and RBAC",
+      "candidate_url": "https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/",
+      "candidate_claim": "Fine-grained API authorization plus configurable request and payload audit records supplies a basis for identifying who requested debugging and recording the submitted operation.",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Inspect the namespaces and filesystems of individual running containers.",
+          "value": "not_in_scope",
+          "reason": "runtime inspection primitive가 아닌 authorization/traceability 부분이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration.",
+          "value": "not_in_scope",
+          "reason": "도구 획득은 API audit 부분의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Respect admission control and audit logging and make the debugging activity visible through the API.",
+          "value": "pass",
+          "reason": "fine-grained API authorization과 metadata/payload audit를 제시하며 interactive shell transcript와 구별한다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "Support container runtimes through CRI, with reduced capabilities permitted.",
+          "value": "not_in_scope",
+          "reason": "runtime abstraction은 별도다."
+        },
+        {
+          "constraint_id": "H5",
+          "constraint": "Do not require administrative access to the node or inherently modify the running application image.",
+          "value": "not_in_scope",
+          "reason": "node runtime 실행 경로는 이 API audit 부분의 범위 밖이다."
+        },
+        {
+          "constraint_id": "H6",
+          "constraint": "Make the complete debugging container specification inspectable by admission control.",
+          "value": "not_in_scope",
+          "reason": "persisted full spec record를 audit만으로 제공한다고 하지 않았다."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: Authorization and traceability for an API-visible debugging request.",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/6",
+        "runs/A/C03.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    }
+  ]
+}

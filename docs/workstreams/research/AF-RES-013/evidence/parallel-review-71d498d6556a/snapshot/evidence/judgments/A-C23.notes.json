@@ -1,0 +1,189 @@
+{
+  "case_id": "C23",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift 주소 표현의 참조 계약으로 제시했다."
+        ],
+        [
+          "pass",
+          "C 정수 인자에 주소를 전달하는 계약을 직접 다룬다."
+        ],
+        [
+          "pass",
+          "임의 정수 변경의 포인터 유효성을 보장하지 않는다고 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Address integer representation and C interoperability.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "C의 pointer-holding integer와 왕복 계약 → Swift 주소 정수 표현 및 C ABI 경계. 정수 폭과 구현 정의 매핑을 명시해야 하며 변형한 주소의 유효성은 별도다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift frontend의 변환 연산을 내리는 IR 메커니즘이다."
+        ],
+        [
+          "not_in_scope",
+          "후보는 compiler lowering만 제시했으므로 C 호출 규약은 범위 밖이다."
+        ],
+        [
+          "pass",
+          "폭 변경의 절단·확장과 유효 포인터 규칙의 별도 필요를 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compiler lowering of pointer/integer conversion.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "LLVM ptrtoint/inttoptr → Swift 변환 API의 IR lowering. frontend가 폭·포인터 유효성 규칙을 정해야 하며 단순 비트 변환이 안전성을 주지 않는다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Swift의 명시적인 저수준 API 모양을 위한 참조다."
+        ],
+        [
+          "not_in_scope",
+          "후보는 변환 표현식 계약만 제시했고 C 호출 구현은 주장하지 않았다."
+        ],
+        [
+          "pass",
+          "동일 포인터 타입의 왕복과 임의 주소 수정의 차이를 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Language API shape and conversion contract.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "C++ 명시적 reinterpret_cast와 충분히 넓은 정수 → Swift 명시적 변환 표현식 설계. 구현 정의 매핑과 변형 주소의 유효성 한계를 유지해야 한다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "문제의 정렬 검사 부분을 좁게 다룬다."
+        ],
+        [
+          "not_in_scope",
+          "정렬 검사 보조 함수의 제안이며 C 호출 전체의 대체를 주장하지 않았다."
+        ],
+        [
+          "pass",
+          "보조 함수가 포인터의 전반적 안전성을 준다고 주장하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Focused alternative for alignment operations.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "Boost의 정렬 검사·버퍼 정렬 보조 함수 → Swift 정렬 사용례의 전용 API. C++ 인터페이스를 번역해야 하며 tagging과 일반 비트 연산을 대신하지 않는다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "주소 태깅 사용례의 pointer/integer packing을 다룬다."
+        ],
+        [
+          "not_in_scope",
+          "tagged pointer wrapper만 제시했으므로 외부 호출 ABI는 범위 밖이다."
+        ],
+        [
+          "pass",
+          "사용 가능한 정렬 하위 비트와 tag 폭의 전제를 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Pointer tagging and alignment-aware bit packing.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "PointerIntPair의 mask·shift·untag extraction → Swift 재사용 태깅 wrapper. 정렬로 확보한 하위 비트 범위만 쓰고 외부 전달 전에 원래 포인터를 추출해야 한다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "주소 크기 정수와 raw pointer cast가 Swift의 주소 연산 문법 참고가 된다."
+        ],
+        [
+          "not_in_scope",
+          "제안 범위는 변환 표현식과 정수 타입이며 C ABI 구현은 포함하지 않는다."
+        ],
+        [
+          "pass",
+          "비트 동일성만으로 역참조 권한을 얻지 못함을 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Conversion expression ergonomics and address-sized integer choice.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "Rust raw pointer↔usize의 명시적 변환 → Swift 주소 정수 연산 표현식. 폭 손실·유효성·별칭 규칙을 별도로 정해야 한다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "주소 연산과 정렬 마스킹 패턴을 제시했다."
+        ],
+        [
+          "pass",
+          "syscall 정수 인자 전달을 외부 호출의 구체 참조로 제시했다."
+        ],
+        [
+          "pass",
+          "Go의 수명과 같은 표현식 제한을 그대로 Swift에 옮길 수 없음을 밝혔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Address operations and lifetime-sensitive foreign calls.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "어느 후보도 intValue 메서드, 포인터 타입에 모든 산술·비트 API 추가, 복잡한 코드를 C로 이동하는 세 대안을 제시하지 않는다. 같은 C 이름만으로 C 오프로딩 대안에 일치시키지 않았다.",
+      "transfer_mapping": "Go unsafe.Pointer↔uintptr의 주소 연산 및 syscall 패턴 → Swift 주소 조작·외부 인자 계약. Go GC 규칙과 Swift 수명 규칙의 차이를 따로 번역해야 하며 임의 저장한 정수 주소의 생존을 보장하지 않는다.",
+      "remaining_check": "Swift 구현·ABI·수명 테스트는 수행하지 않음; 실제 도입 효용은 구현 후 해당 사용례로 검증해야 한다."
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "case_id": "C29",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "For the original class/template access-domain reference, private/private[this] restrict member access by declaration/receiver context rather than by file."
+        ],
+        [
+          "pass",
+          "Enclosing-template boundaries allow neighboring related types in one source file without granting them file-wide access."
+        ],
+        [
+          "pass",
+          "The opened specification defines compiler-checked access restrictions and explicit modifiers."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: enclosing-declaration and receiver-sensitive access domains",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A tighter private modifier in Scala does not state the gold decision to keep Swift’s old private spelling and add a new modifier. No naming migration policy is inferred.",
+      "transfer_mapping": "Map enclosing-template ownership to the target protected declaration context, with receiver-sensitive rules only where intentionally chosen. The original companion/extension boundaries require explicit specification; it does not assert that all Scala exceptions fit Swift unchanged.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "A type owns its private members and grants explicit friendship to chosen cooperating helpers; unrelated neighboring types are excluded."
+        ],
+        [
+          "pass",
+          "Access is independent of sharing a translation unit, preserving one-file organization at this narrow type-owned boundary."
+        ],
+        [
+          "pass",
+          "The opened N3337 access rules are enforced semantically, and friendship is an explicit declaration."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: type-owned privacy plus explicit cooperation grants",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Explicit friends are not file-scoped privacy, a new Swift modifier naming policy or a scoped namespace wrapper.",
+      "transfer_mapping": "Map private declarations to the owning type and cooperation to explicit friend-like permission. The original warns that type-wide privilege includes out-of-class member definitions and would not independently protect separate extension blocks; this is a type-owned reference, not a promised lexical-extension model.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened SE8 rule rejects access from a separate neighboring top-level class to private implementation members."
+        ],
+        [
+          "pass",
+          "The protection boundary is the declaring top-level type, not the source file, so related types may remain colocated."
+        ],
+        [
+          "pass",
+          "The rule defines static accessibility for members and constructors, rather than naming conventions."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: static declaring-type access domain",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Java private is not a proposal to retain old Swift names/add a modifier or wrap code in a scoped namespace.",
+      "transfer_mapping": "Map a reference’s enclosing top-level type to the owner domain used by the access checker. Retain nested-type sharing as an explicit original boundary; Java supplies no Swift-style extension rule and that is not silently imported.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Private access belongs to the declaring type and excludes unrelated neighbors; partial declarations deliberately share that owner domain."
+        ],
+        [
+          "pass",
+          "Multiple partial declaration blocks are permitted without using separate files as the protection mechanism."
+        ],
+        [
+          "pass",
+          "The dated standard gives private accessibility domains and partial-type membership as compiler rules."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: type privacy shared across explicit partial declarations",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Partial declarations are not a scoped namespace enclosing unrelated APIs, and no Swift modifier renaming/default policy is proposed.",
+      "transfer_mapping": "Map related implementation blocks to one declared type and use its private domain across them while excluding unrelated types. Original caveat preserves that partial blocks do not protect their internals from each other; whether Swift extensions should share privilege is an explicit adaptation boundary.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened constrained signature exposes selected operations and makes an omitted helper inaccessible through the structure’s interface."
+        ],
+        [
+          "pass",
+          "The original explicitly uses a local nested implementation compartment inside one file, so file splitting is unnecessary."
+        ],
+        [
+          "pass",
+          "The documented lookup of the hidden helper is rejected, providing compiler-enforced hiding rather than convention."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: nested implementation namespace constrained by an explicit interface",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "S0025-G02",
+          "rationale": "Original rank 5 says nested implementation modules and explicit interfaces within one file; fixed proposal Alternatives item 2 proposes a scoped namespace to hide APIs in part of the file, accepting the same extra grouping/nesting structure."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The candidate explicitly wraps local implementation in a nested module/signature compartment; the fixed gold alternative is a scoped namespace hiding APIs in part of the file. This is a structural match with an additional grouping layer, not a mere privacy-topic overlap.",
+      "transfer_mapping": "Map a nested structure to a scoped implementation group and constrain it at definition using a signature exporting only intended APIs. The original requires the unconstrained structure to remain inaccessible and accepts the additional interface/grouping burden.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA012"
+      ]
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Secret/selective export distinguishes hidden features from deliberately available collaborator-facing features using explicit client sets."
+        ],
+        [
+          "pass",
+          "The original transfers the access-domain relation, not Eiffel’s source-file organization, so no separate-file requirement is introduced."
+        ],
+        [
+          "pass",
+          "The dated standard’s export-call validity rejects unauthorized feature access."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: declaration client sets for hidden and shared implementation features",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Selective client sets are not the gold scoped namespace grouping or old-name/new-modifier migration policy.",
+      "transfer_mapping": "Map a feature’s allowed client set to declaration access permissions; empty/secret export protects internal helpers and selected classes permit intended cooperation. Preserve descendant privileges and qualified-call semantics from the original caveat rather than equating them with strict lexical privacy.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened semantic-analysis code associates access with declarations and checks the use context against the owner context."
+        ],
+        [
+          "pass",
+          "The illustrated check uses declaration contexts rather than filename separation."
+        ],
+        [
+          "pass",
+          "The code’s accept/reject path is a concrete compiler enforcement mechanism for access metadata."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: declaration metadata and semantic access-check implementation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "This implementation reference does not choose the gold namespace, file-splitting or modifier-name alternatives.",
+      "transfer_mapping": "Map stored access metadata and enclosing-context traversal to the target compiler’s selected access domain, producing diagnostics for unauthorized references. The original C++ inheritance/friendship rules are not assumed to define Swift extension semantics; no build/execution evidence is claimed.",
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    }
+  ]
+}

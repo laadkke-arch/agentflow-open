@@ -1,0 +1,163 @@
+{
+  "case_id": "C11",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "exec에서 CLOEXEC descriptor를 닫는 OS 기능으로 의도하지 않은 전달을 다룬다."
+        ],
+        [
+          "pass",
+          "이미 flag를 설정한 fd는 launcher 종류와 무관하게 exec 경계에서 적용한다. 모든 creator·duplicate 경로 참여가 조건이다."
+        ],
+        [
+          "pass",
+          "원 응답이 0·1·2 및 explicitly passed extras를 구별하고 descriptor별 flag를 선택한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: A descriptor-level inheritance policy across standard-library and extension-module execution paths, while treating standard input/output/error (0, 1, 2) and explicitly passed additional descriptors separately.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "fcntl descriptor flag → 여러 exec 경로에 공통인 상속 정책. 생성후 설정 경합과 fork-only 복사를 별도 문제로 남긴다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "생성과 동시에 O_CLOEXEC를 설정하여 creation/flag 간 exec 경합을 제거한다."
+        ],
+        [
+          "pass",
+          "regular-file/directory acquisition과 참여하는 native module이라는 원래 범위에서 여러 후속 exec 경로에 적용한다."
+        ],
+        [
+          "pass",
+          "의도한 child I/O는 예외 처리한다는 전체 원 응답의 계약을 유지한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Regular-file and directory descriptor acquisition in a common runtime layer and cooperating native modules.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "open/openat O_CLOEXEC → 공통 파일 생성 계층의 비상속 생성. platform support·모든 생성 경로 coverage와 intentional inheritance를 점검한다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "pipe2가 두 endpoint를 creation-time CLOEXEC로 생성한다."
+        ],
+        [
+          "pass",
+          "process wrapper/runtime/native pipe creator에 적용하고 뒤의 exec caller와 분리한다."
+        ],
+        [
+          "pass",
+          "child standard stream으로 의도한 endpoint를 명시적으로 매핑한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Pipes created by process wrappers, runtime internals and native modules.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "pipe2(O_CLOEXEC) → 보조 pipe 생성시 비상속. 두 endpoint 및 의도한 stdio 전달과 미지원 플랫폼을 별도로 처리한다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "SOCK_CLOEXEC가 socket 생성시 상속 flag를 설정한다."
+        ],
+        [
+          "pass",
+          "참여하는 network extension의 socket 생성 경로와 후속 launcher를 구별한다. 다른 socket-producing API coverage는 범위 밖으로 명시했다."
+        ],
+        [
+          "pass",
+          "의도한 descriptor passing과 표준 입출력을 별도 계약으로 둔다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: New socket descriptors opened by the runtime or cooperating networking extensions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "SOCK_CLOEXEC → socket constructor 정책. accept 등 다른 creator와 미지원 플랫폼으로 암묵 확장하지 않는다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "dup3가 새 descriptor에 CLOEXEC를 설정하여 duplicate에서 보호가 풀리는 것을 막는다."
+        ],
+        [
+          "pass",
+          "runtime/extension duplicate 경로에서 생성된 flag는 이후 exec 경로에 공통 적용된다."
+        ],
+        [
+          "pass",
+          "원 응답은 stdio remapping과 extra duplicate의 상속 요구가 다름을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Descriptor copies and remapping performed by low-level runtime or extension code.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "dup3(O_CLOEXEC) → duplicate 정책 보존. equal fd 오류와 dup/dup2 표준 스트림의 의도된 의미를 유지한다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "ordered file actions와 뒤의 CLOEXEC 처리가 의도한 child descriptor 조정을 제공한다."
+        ],
+        [
+          "not_in_scope",
+          "이 후보는 configured spawn call에 한정한 보완이며 다른 launcher coverage를 주장하지 않는다."
+        ],
+        [
+          "pass",
+          "standard stream과 extra descriptor를 별도로 선언하고 순서를 지정한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: A complementary launch-time contract for opening, closing or remapping descriptors and preserving deliberately configured standard streams.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답의 CLOEXEC primitive 선택만으로 runtime의 전역 default를 바꾸거나 그대로 유지하는 gold 정책을 추론하지 않는다. fcntl/open/pipe/socket/dup/spawn은 fopen e/N, atfork callback, Perl/Ruby/OCaml의 해당 실체가 아니다.",
+      "transfer_mapping": "posix_spawn file actions → launch-specific descriptor mapping contract. 다른 launcher는 별도 creation policy를 필요로 한다.",
+      "remaining_check": "각 reference 범위의 문서 조건만 판정했다. 대상 runtime의 모든 creator·launcher inventory와 stdio 예외를 실제 실행으로 검증해야 하며 사후 Linux 자료는 결정 전 판으로 재확인한다."
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "case_id": "C29",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Scala 2 enclosing-template private and private[this]",
+      "candidate_url": "https://scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html",
+      "candidate_claim": "Scala's explicit enclosing-template and object-local access modifiers provide a compiler-checkable model for hiding an implementation member without using its source file as the protection boundary.",
+      "gold_matches": [],
+      "match_rationale": "A tighter private modifier in Scala does not state the gold decision to keep Swift’s old private spelling and add a new modifier. No naming migration policy is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "For the original class/template access-domain reference, private/private[this] restrict member access by declaration/receiver context rather than by file."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "Enclosing-template boundaries allow neighboring related types in one source file without granting them file-wide access."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The opened specification defines compiler-checked access restrictions and explicit modifiers."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map enclosing-template ownership to the target protected declaration context, with receiver-sensitive rules only where intentionally chosen. The original companion/extension boundaries require explicit specification; it does not assert that all Scala exceptions fit Swift unchanged.",
+      "H_assessment_scope": "reference_design: enclosing-declaration and receiver-sensitive access domains",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/0",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "C++ private members with explicit friendship (N3337)",
+      "candidate_url": "https://timsong-cpp.github.io/cppwp/n3337/class.access",
+      "candidate_claim": "C++ private members and explicit friend grants distinguish implementation-only access from intentional cooperation between related types even when their declarations share a translation unit.",
+      "gold_matches": [],
+      "match_rationale": "Explicit friends are not file-scoped privacy, a new Swift modifier naming policy or a scoped namespace wrapper.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "A type owns its private members and grants explicit friendship to chosen cooperating helpers; unrelated neighboring types are excluded."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "Access is independent of sharing a translation unit, preserving one-file organization at this narrow type-owned boundary."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The opened N3337 access rules are enforced semantically, and friendship is an explicit declaration."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map private declarations to the owning type and cooperation to explicit friend-like permission. The original warns that type-wide privilege includes out-of-class member definitions and would not independently protect separate extension blocks; this is a type-owned reference, not a promised lexical-extension model.",
+      "H_assessment_scope": "reference_design: type-owned privacy plus explicit cooperation grants",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/1",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Java SE8 private accessibility rules",
+      "candidate_url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html",
+      "candidate_claim": "Java's private-access rule supplies a precise static boundary that prevents a separate neighboring top-level class from using another class's implementation members merely because both are in one file.",
+      "gold_matches": [],
+      "match_rationale": "Java private is not a proposal to retain old Swift names/add a modifier or wrap code in a scoped namespace.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "The opened SE8 rule rejects access from a separate neighboring top-level class to private implementation members."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "The protection boundary is the declaring top-level type, not the source file, so related types may remain colocated."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The rule defines static accessibility for members and constructors, rather than naming conventions."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a reference’s enclosing top-level type to the owner domain used by the access checker. Retain nested-type sharing as an explicit original boundary; Java supplies no Swift-style extension rule and that is not silently imported.",
+      "H_assessment_scope": "reference_design: static declaring-type access domain",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/2",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "C# private accessibility plus partial type declarations (ECMA-334)",
+      "candidate_url": "https://www.ecma-international.org/wp-content/uploads/ECMA-334_4th_edition_june_2006.pdf",
+      "candidate_claim": "C# combines private access tied to a declaring type with partial declarations, providing a model for keeping implementation organization flexible while denying access from unrelated neighboring types.",
+      "gold_matches": [],
+      "match_rationale": "Partial declarations are not a scoped namespace enclosing unrelated APIs, and no Swift modifier renaming/default policy is proposed.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "Private access belongs to the declaring type and excludes unrelated neighbors; partial declarations deliberately share that owner domain."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "Multiple partial declaration blocks are permitted without using separate files as the protection mechanism."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The dated standard gives private accessibility domains and partial-type membership as compiler rules."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map related implementation blocks to one declared type and use its private domain across them while excluding unrelated types. Original caveat preserves that partial blocks do not protect their internals from each other; whether Swift extensions should share privilege is an explicit adaptation boundary.",
+      "H_assessment_scope": "reference_design: type privacy shared across explicit partial declarations",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/3",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "OCaml module signatures and constrained structures",
+      "candidate_url": "https://ocaml.org/manual/4.00/ocaml-4.00-refman.pdf",
+      "candidate_claim": "An OCaml signature can expose only selected operations of a local structure and make omitted helpers unnameable through that interface, offering a separate compiler-enforced implementation compartment within one source file.",
+      "gold_matches": [
+        {
+          "gold_id": "S0025-G02",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "Original rank 5 says nested implementation modules and explicit interfaces within one file; fixed proposal Alternatives item 2 proposes a scoped namespace to hide APIs in part of the file, accepting the same extra grouping/nesting structure."
+        }
+      ],
+      "match_rationale": "The candidate explicitly wraps local implementation in a nested module/signature compartment; the fixed gold alternative is a scoped namespace hiding APIs in part of the file. This is a structural match with an additional grouping layer, not a mere privacy-topic overlap.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "The opened constrained signature exposes selected operations and makes an omitted helper inaccessible through the structure’s interface."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "The original explicitly uses a local nested implementation compartment inside one file, so file splitting is unnecessary."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The documented lookup of the hidden helper is rejected, providing compiler-enforced hiding rather than convention."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a nested structure to a scoped implementation group and constrain it at definition using a signature exporting only intended APIs. The original requires the unconstrained structure to remain inaccessible and accepts the additional interface/grouping burden.",
+      "H_assessment_scope": "reference_design: nested implementation namespace constrained by an explicit interface",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "S0025-G02"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/4",
+        "runs/A/C29.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA012"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Eiffel secret and selective feature export (ECMA-367)",
+      "candidate_url": "https://www.ecma-international.org/wp-content/uploads/ECMA-367_2nd_edition_june_2006.pdf",
+      "candidate_claim": "Eiffel's explicit client sets separate secret implementation features from features available to chosen collaborating classes, providing a compiler-enforced alternative to granting every declaration in a file access.",
+      "gold_matches": [],
+      "match_rationale": "Selective client sets are not the gold scoped namespace grouping or old-name/new-modifier migration policy.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "Secret/selective export distinguishes hidden features from deliberately available collaborator-facing features using explicit client sets."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "The original transfers the access-domain relation, not Eiffel’s source-file organization, so no separate-file requirement is introduced."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The dated standard’s export-call validity rejects unauthorized feature access."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a feature’s allowed client set to declaration access permissions; empty/secret export protects internal helpers and selected classes permit intended cooperation. Preserve descendant privileges and qualified-call semantics from the original caveat rather than equating them with strict lexical privacy.",
+      "H_assessment_scope": "reference_design: declaration client sets for hidden and shared implementation features",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/5",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    },
+    {
+      "case_id": "C29",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Clang SemaAccess.cpp access-checking implementation",
+      "candidate_url": "https://llvm.googlesource.com/clang/%2B/master/lib/Sema/SemaAccess.cpp",
+      "candidate_claim": "Clang's public semantic-analysis code provides a concrete implementation reference for storing declaration access, walking enclosing declaration contexts, and accepting or rejecting a private-member reference.",
+      "gold_matches": [],
+      "match_rationale": "This implementation reference does not choose the gold namespace, file-splitting or modifier-name alternatives.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "클래스·확장 구현 세부의 바깥 사용 제한",
+          "value": "pass",
+          "reason": "The opened semantic-analysis code associates access with declarations and checks the use context against the owner context."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "관련 타입의 파일 분리를 강제하지 않음",
+          "value": "pass",
+          "reason": "The illustrated check uses declaration contexts rather than filename separation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "컴파일러가 숨김 의도를 강제",
+          "value": "pass",
+          "reason": "The code’s accept/reject path is a concrete compiler enforcement mechanism for access metadata."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map stored access metadata and enclosing-context traversal to the target compiler’s selected access domain, producing diagnostics for unauthorized references. The original C++ inheritance/friendship rules are not assumed to define Swift extension semantics; no build/execution evidence is claimed.",
+      "H_assessment_scope": "reference_design: declaration metadata and semantic access-check implementation",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C29.json#/candidates/6",
+        "runs/A/C29.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level unknown within the original narrow reference scope. A full Swift implementation and runtime validation were not performed."
+    }
+  ]
+}

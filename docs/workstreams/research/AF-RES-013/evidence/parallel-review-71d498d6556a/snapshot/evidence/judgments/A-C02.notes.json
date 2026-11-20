@@ -1,0 +1,220 @@
+{
+  "case_id": "C02",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "내부 UID 0을 외부 비특권 ID에 대응하는 문서 계약이다."
+        ],
+        [
+          "pass",
+          "UID/GID와 소유 namespace 범위 capability를 설명한다."
+        ],
+        [
+          "pass",
+          "런타임의 비특권 실행을 전제로 하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Kernel isolation primitive; a pod namespace is a transfer inference.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+      "transfer_mapping": "user namespace의 UID/GID 매핑과 capability 소유 관계 → pod 격리. pod 구성원에게 같은 namespace와 안전한 host ID 범위를 제공해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "containerID/hostID 범위로 필요한 대응을 표현한다."
+        ],
+        [
+          "pass",
+          "두 ID 배열과 namespace path를 pod 범위에 연결할 수 있다."
+        ],
+        [
+          "pass",
+          "runtime rootless 전환이 아니라 설정 전달 계약이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Interoperability contract between allocation policy and runtime setup.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+      "transfer_mapping": "OCI ID 범위와 namespace path → pod allocator와 runtime 사이의 명시적 전달 계약. 실제 범위 할당 및 filesystem 정책은 별도다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "분리된 host ID 블록을 workload ID에 대응한다."
+        ],
+        [
+          "pass",
+          "UID와 GID 블록의 비중복 할당을 다루는 좁은 참고다; 전체 pod capability 구현은 주장하지 않았다."
+        ],
+        [
+          "pass",
+          "런타임 rootless 요구를 추가하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Range-allocation and exhaustion behavior.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다. 런타임 알고리즘을 참고한다는 것과 Kubelet 대신 런타임에 정책 권한을 위임하는 결정은 구별했다.",
+      "transfer_mapping": "LXD의 per-container 비중복 ID 블록·고갈 처리 → pod 범위 할당 정책. pod 생명주기·저장소 공유·하위 ID 풀 크기 적응이 필요하다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "auto가 host subordinate ID 범위를 선택한다."
+        ],
+        [
+          "pass",
+          "UID/GID를 함께 할당하며 기존 namespace 합류를 다룬다."
+        ],
+        [
+          "pass",
+          "container remap과 runtime rootless를 동일시하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Automatic range selection; joining an existing container namespace.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다. Podman allocator의 존재만으로 정책 권한 위임 대안을 제시했다고 보지 않았다.",
+      "transfer_mapping": "Podman auto의 범위 선택 및 namespace 합류 → pod 단위 allocator. container 수명에서 pod 수명으로 바꾸고 범위 고갈·공유를 정의해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "container root와 host 비특권 범위 대응이 문서에 명시된다."
+        ],
+        [
+          "pass",
+          "UID/GID remap 부분을 제시하고 pod 정책은 별도라고 밝힌다."
+        ],
+        [
+          "pass",
+          "daemon은 privileged로 남는다고 구별한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Workload remapping independent of runtime rootlessness.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+      "transfer_mapping": "Docker daemon 수준 userns-remap → workload remap과 daemon rootlessness의 분리 설계. pod별 할당과 bind mount·host namespace 제한을 따로 정해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "파일시스템 소유권 호환만 좁게 제안했고 전체 workload 격리는 주장하지 않았다."
+        ],
+        [
+          "pass",
+          "mount마다 다른 user/group 소유권 대응을 다룬다."
+        ],
+        [
+          "pass",
+          "runtime rootlessness와 무관한 storage 계약이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Root-filesystem and volume ownership compatibility.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다. idmapped mount는 chown 대안과 반대 메커니즘이다.",
+      "transfer_mapping": "idmapped mount의 mount별 소유권 변환 → 서로 다른 ID를 쓰는 pod의 volume 접근. 지원 filesystem과 공유 정책을 확인해야 하며 ID allocator를 대체하지 않는다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "내부 UID 0과 외부 ID 범위의 구성 예가 열린 코드에 있다."
+        ],
+        [
+          "pass",
+          "별도 UID/GID 맵을 container 생성에 연결한다."
+        ],
+        [
+          "pass",
+          "비특권 runtime 자체를 요구하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Runtime implementation and configuration example.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+      "transfer_mapping": "libcontainer ID map 구조·생성 예 → pod runtime adapter. 예시 host ID를 그대로 쓰지 말고 안전한 범위와 pod namespace 수명을 제공해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "fail",
+          "VM 경계는 요구한 host UID/GID 비특권 대응을 제공하지 않는다."
+        ],
+        [
+          "fail",
+          "pod 범위 ID·capability 정책 대신 별도 VM 구조를 제안한다."
+        ],
+        [
+          "pass",
+          "runtime rootlessness를 요구하지는 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative isolation mechanism, inferred transfer to this problem.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "세 정답은 전체 파일 chown, pod 수 제한, 런타임에 ID 선택 권한 위임이다. 후보의 커널 메커니즘·할당 알고리즘·구성 예는 해당 정책 선택을 명시하지 않아 같은 것으로 처리하지 않았다.",
+      "transfer_mapping": "microVM 경계 → 더 넓은 workload 격리 비교. 공유 커널을 바꾸는 큰 구조 변경이 필요하고 원래 ID 정책 문제를 풀지 못한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다.",
+      "internal_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      }
+    }
+  ]
+}

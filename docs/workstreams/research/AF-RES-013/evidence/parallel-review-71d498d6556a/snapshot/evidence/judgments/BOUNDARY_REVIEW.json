@@ -1,0 +1,835 @@
+{
+  "schema_version": 1,
+  "reviewer": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "review_kind": "independent initial boundary decisions",
+  "existing_other_judgments_read": false,
+  "original_runs_modified": false,
+  "protocol_commit": "2b798c7d2b7355b649691c18de196104ceabb0f0",
+  "method": "Read assigned cases, prefixes, original raw responses and actual opened-document summaries; re-opened primary sources only for ambiguous boundaries. No root notes, other reviewers' notes, JUDGMENTS.json or researcher conclusions were read.",
+  "scope_rule": "Reference-design H applies only to the use originally proposed. Component passes do not certify a complete solution. Missing prerequisites essential to the selected part remain unknown; explicit alternative mechanisms cannot waive the central required mechanism.",
+  "composite_constraint_rule": "For original component scopes that address only a named slice of a composite requirement, the reason explicitly identifies that slice and withholds full-design completeness. C03 and C16 therefore require careful scoped reading; they must not be reported as complete alternatives satisfying every requested feature.",
+  "judgments": [
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Java 5 enum types and java.lang.Enum",
+      "candidate_url": "https://docs.oracle.com/javase/1.5.0/docs/guide/language/enums.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Named singleton members form a fixed family in the documented Java model. The original transfer explicitly requires Python freezing; this is a member-set design pass, not a claim that arbitrary payload fields are immutable."
+        ],
+        [
+          "pass",
+          "Members have their own enum-family type and are separated from integers and unrelated families."
+        ],
+        [
+          "pass",
+          "Declaration order supplies iteration and same-family comparison without ordinary numeric arithmetic."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Enum-family identity, declared membership and order, with runtime domain checks and freezing on transfer.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "P0354-G01",
+          "match_kind": "structural_design",
+          "rationale": "The enum family and its named singleton member fields inhabit the same enum-class abstraction. The original use selects that class-based family/member design, unlike a separate generic container of values."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "Match G01 only. Compiler-created enum classes do not establish the metaclass mechanism in G02. Exposing ordinal/name metadata is not the primitive-value coupling of G03.",
+      "transfer_mapping": "Map the enum class to a Python family, its constants to canonical members, and declaration order to comparison/iteration. Preserve domain checks and freeze the family as the original response requires; mutable added payloads or implicit numeric equality fall outside this model.",
+      "remaining_check": "Before implementation approval, specify the Python construction/freezing path and test cross-family comparison and mutation; no runtime success is claimed.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016"
+      ],
+      "evidence_locations": [
+        "runs/A/C10.json: candidates rank 1, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "One class per family is evidence only when the member and family behavior are actually combined, as in this selected enum model.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Apache Commons Lang 2.1 Enum",
+      "candidate_url": "https://commons.apache.org/proper/commons-lang/javadocs/api-2.1/org/apache/commons/lang/enums/Enum.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened simple-enum example uses a final class with a private constructor and fixed constants. Closing extension was explicitly required by the original adaptation, so it is a supported design invariant rather than a new safeguard."
+        ],
+        [
+          "pass",
+          "Class-and-name identity plus canonical deserialization supports distinct named members; the original adaptation requires a closed family."
+        ],
+        [
+          "pass",
+          "The original response explicitly calls for aligning creation-order iteration with comparison. It does not propose retaining inconsistent alphabetical/default order unchanged."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Class-based constant family, registry operations and canonical members; original closure and order-alignment conditions retained.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "P0354-G01",
+          "match_kind": "structural_design",
+          "rationale": "The selected class-based registry is realized by named constant fields, lookup/iteration helpers and comparable members on the same Enum subclass. It is not the separately maintained registry in B-C10 rank 1."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "Match G01. Ordinary subclassing and helper methods are not a metaclass construction mechanism; neither exposed names nor registry keys imply primitive-value identity.",
+      "transfer_mapping": "Map the final/private-construction example to a closed Python family, static named members to canonical values, and registry order to the chosen comparison order. Close subclass extension and align comparison as stated in the original answer; do not transfer the extensible variant unchanged.",
+      "remaining_check": "Confirm the target factory closes construction and extension and uses one documented order. This source-level reference pass does not approve an arbitrary Python subclass implementation.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016",
+        "evidence/judgments/reviewer-a-sources.json#RA018"
+      ],
+      "evidence_locations": [
+        "runs/A/C10.json: candidates rank 3, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "The source demonstrates a closed variant; its separate extensible examples do not force a failure for the explicitly closed adaptation.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Python Immutable Enumerations Using Duck Punching recipe",
+      "candidate_url": "https://code.activestate.com/recipes/578294-python-immutable-enumerations-using-duck-punching/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "At the originally stated read-only-attribute scope, the opened recipe protects existing named bindings against ordinary assignment/deletion. This does not establish a closed member universe or deeply immutable payloads."
+        ],
+        [
+          "not_in_scope",
+          "The original response explicitly excludes domain isolation and says raw values need wrappers; it did not propose those raw values as the complete enum representation."
+        ],
+        [
+          "not_in_scope",
+          "Ordered traversal and comparison are explicitly outside the partial descriptor mechanism."
+        ]
+      ],
+      "T": "not_needed",
+      "scope": "reference_design: Only the existing-binding read-only descriptor mechanism originally proposed.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Raw-value exposure was a limitation of a deliberately partial descriptor reference, not a selected strong primitive-coupling design; dynamic properties do not establish the gold metaclass alternative.",
+      "transfer_mapping": null,
+      "remaining_check": "A complete enum still needs closed membership, domain-specific values and ordering. The reviewer re-open returned HTTP 502, so the baseline successful body read remains the evidence.",
+      "runtime_observation": "not_performed",
+      "date_status": "post_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016",
+        "evidence/judgments/reviewer-a-sources.json#RA022"
+      ],
+      "evidence_locations": [
+        "runs/A/C10.json: candidates rank 5, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "Do not rescore this as a complete enum alternative or infer full set immutability from the scoped H1 pass. Its useful part was narrow in the original response.",
+      "label": "DIRECT_DOCUMENTED"
+    },
+    {
+      "case_id": "C10",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "attrs frozen value classes with type-checked ordering",
+      "candidate_url": "https://github.com/python-attrs/attrs",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "Frozen instances and a proposed immutable registry do not establish construction control or a closed member universe; these decisive mechanisms are explicitly left custom."
+        ],
+        [
+          "unknown",
+          "Same-type field equality distinguishes other types, but newly constructed outside-registry instances can still share the same fields. Canonicalization and membership rules remain unspecified."
+        ],
+        [
+          "pass",
+          "The original translation selects ordinal-only same-family ordering and does not inherit numeric arithmetic."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Frozen value classes plus a separate immutable ordered registry, with missing construction/canonicalization retained.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. The original application explicitly separates value classes from the registry, so a distinct class per family alone does not match G01. It supplies no metaclass and does not select primitive coupling or hidden keys.",
+      "transfer_mapping": "Map frozen class fields to member name/ordinal and type checks to family comparisons; the registry supplies allowed-member order. Construction, canonicalization and closed membership must be specified before the mapped design can satisfy H1/H2.",
+      "remaining_check": "Read a concrete proposed constructor/registry contract that rejects or canonicalizes outside-set instances; without it the family may remain open or admit equality with nonmembers.",
+      "runtime_observation": "not_performed",
+      "date_status": "post_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016"
+      ],
+      "evidence_locations": [
+        "runs/B/C10.json: candidates rank 1, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "Keep the useful value-class component but retain the decisive unknown. Do not invent a closed constructor or equate class-per-family with the all-in-one gold design.",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "case_id": "C10",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Better Enums declaration-generated enum tables",
+      "candidate_url": "https://aantron.github.io/better-enums/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "At the selected generated-table design scope, a declaration fixes the named member table and indices. Its transfer must preserve that fixed table rather than expose a mutable membership registry."
+        ],
+        [
+          "pass",
+          "The original target use explicitly selects same-family comparisons and rejects duplicate backing values. It warns against default integral conversion instead of recommending that default as target semantics."
+        ],
+        [
+          "pass",
+          "Declaration indices supply order, while the original target restricts comparison to the family; the native numeric conversion is not part of the selected translation."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Generated member table and index lookup transferred to a Python factory with the original same-family and duplicate-rejection conditions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Single-declaration table generation does not itself choose the combined family/value class structure or a metaclass. A warning that native integral conversion is unsafe is not a proposal to adopt the primitive-coupling alternative.",
+      "transfer_mapping": "Map generated name/member tables and indices to fixed Python factory output; use the originally specified family gate and ordinal comparisons, and reject duplicate backing values. If directly adopting C++, the documented strict-conversion setting requires C++11; no native default conversion is approved.",
+      "remaining_check": "Specify the target table/freezing and lookup construction paths before implementation approval, preserving the stated family gate and duplicate rejection. Do not reinterpret this reference pass as evidence that unconfigured C++ defaults meet isolation.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016",
+        "evidence/judgments/reviewer-a-sources.json#RA021"
+      ],
+      "evidence_locations": [
+        "runs/B/C10.json: candidates rank 2, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "Default integral conversion is a documented source limitation, but the proposed use is the translated table design. It is not a known violation in that selected use.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C10",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Magic Enum metadata sequences and optional operators",
+      "candidate_url": "https://github.com/Neargye/magic_enum",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "The original response explicitly leaves the closed Python member universe to further design; immutable metadata alone does not settle it."
+        ],
+        [
+          "unknown",
+          "Alias collapse and membership/conversion policy are unresolved for the target symbolic values. Checked metadata lookup does not by itself define distinct canonical members."
+        ],
+        [
+          "unknown",
+          "The response explicitly leaves the target order policy to design. Separating optional flag operators is useful but does not supply the required meaningful ordering."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Metadata/lookup API separation, with target membership and order policies explicitly unresolved.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Explicit metadata and deliberate conversions are not strong ordinary-primitive identity; the fixed gold itself permits names and indices. No single-class or metaclass choice is made.",
+      "transfer_mapping": "Map metadata sequences to traversal and checked lookup to identification, keeping flag-only operators separate. A target order, alias policy and closed-member construction are required connections not supplied by the original response.",
+      "remaining_check": "Read the proposed target order, alias and constructor policies. Their definitions can resolve H1-H3; no runtime measurement is needed merely to settle those missing design premises.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA016"
+      ],
+      "evidence_locations": [
+        "runs/B/C10.json: candidates rank 3, raw_response and opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json: C10"
+      ],
+      "boundary_reason": "An API reference can have secondary value while the decisive target policies remain unknown.",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "case_id": "C19",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Whole-match expression macros, illustrated by Rust matches!",
+      "candidate_url": "https://github.com/rust-lang/rust/blob/main/library/core/src/macros/mod.rs",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The original use packages a recurring recognizer behind a grammar-named macro owning its whole match expression; the opened source confirms that expansion boundary."
+        ],
+        [
+          "pass",
+          "Grammar-named recognition helpers can retain a readable specification-to-code relationship within the explicitly limited Boolean/custom-success-arm scope."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Whole-match wrapper for recurring recognition patterns; Boolean result and lack of exported bindings remain explicit limitations.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0085-G03",
+          "match_kind": "structural_design",
+          "rationale": "The original candidate explicitly chooses ownership of the complete match expression instead of invocation in a pattern position. That is the core wrapper boundary of the gold alternative; the later declarative Boolean example has less expressive scope than the original procedural proposal."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "Match G03 at the structural expansion-boundary level only. Do not match G01/G02 merely because the generated whole match contains arms. The source does not prove arbitrary new arm syntax or composability.",
+      "transfer_mapping": "Map a recurring grammar recognizer to a named expression macro whose expansion owns a complete match. Keep input evaluation and hygiene explicit; exporting bindings or preserving an arbitrary user-written arm layout requires the custom wrapper already noted, and is not demonstrated by matches!.",
+      "remaining_check": "If full parser bindings or custom arm syntax are required, inspect a concrete wrapper/parser and its composability. The current narrow recognition use does not demonstrate those broader capabilities.",
+      "runtime_observation": "not_performed",
+      "date_status": "post_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA017"
+      ],
+      "evidence_locations": [
+        "runs/A/C19.json: candidates rank 4, raw_response and opened_documents",
+        "cases/prefix/C19.md",
+        "cases/CASES.json: C19"
+      ],
+      "boundary_reason": "The fixed gold describes procedural implementation difficulty, while the selected later example is declarative and Boolean. The structural match concerns whole-expression ownership, not equivalence of those implementations.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C26",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "GHC CPP compiler-version predicates",
+      "candidate_url": "https://downloads.haskell.org/ghc/7.10.2/docs/html/users_guide/options-phases.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Version predicates and preprocessing select a compatible source section before the compiler proper; the source documents lexical interactions that the original response preserves."
+        ],
+        [
+          "pass",
+          "Conditional compatibility sections remain in one maintained package source rather than requiring a separate version tree."
+        ],
+        [
+          "pass",
+          "The original design maps compiler-version guards and an existence check to package builds across versions."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Compiler-version preprocessing and guarded predicate availability, without selecting the target version-literal syntax.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. The source has comma-separated predicate arguments, but the original candidate selected threshold checks and preprocessing, not that syntax as the target version representation. It also does not select a string literal or ambiguous operator-free version check.",
+      "transfer_mapping": "Map compiler version metadata to a build predicate, compatible sections to preparse selection, and predicate-existence guards to older-toolchain behavior. The target must handle its own lexical rules and preserve usable source locations; runtime branching cannot replace preparse selection.",
+      "remaining_check": "For implementation approval, specify inactive-text lexical treatment and absent-predicate fallback. A new original-use statement selecting comma-separated version arguments would be needed for G03; a reviewer must not supply it retroactively.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA019"
+      ],
+      "evidence_locations": [
+        "runs/A/C26.json: candidates rank 2, raw_response and opened_documents",
+        "cases/prefix/C26.md",
+        "cases/CASES.json: C26"
+      ],
+      "boundary_reason": "A syntax appearing in a selected source is not automatically a syntax choice in the candidate recommendation.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C25",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "CTest and CMake add_test",
+      "candidate_url": "https://cmake.org/cmake/help/v3.0/command/add_test.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Named executable registration and target resolution map directly to the package-managed test invocation stage; the original answer retains package compilation/dependency integration as adapter work."
+        ],
+        [
+          "pass",
+          "A stable invocation contract supports repeatable regression execution and usable failure handling, which is the stated reliability purpose rather than a measured ecosystem outcome."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Framework-independent invocation and registration, integrated with package compilation and dependencies.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. A shared runner contract does not imply removing built-in XCTest. The original use keeps package integration and proposes no particular test-directory layout.",
+      "transfer_mapping": "Map named CTest commands, arguments and working directories to package test targets. Resolve executable build targets and arrange dependencies through the package adapter, retaining command failure and diagnostics. This is not a complete Swift dependency manager.",
+      "remaining_check": "Before implementation approval, specify the adapter build/dependency and exit-status contract. No choice about omitting a default XCTest runtime was made in the original response.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA020"
+      ],
+      "evidence_locations": [
+        "runs/A/C25.json: candidates rank 4, raw_response and opened_documents",
+        "cases/prefix/C25.md",
+        "cases/CASES.json: C25"
+      ],
+      "boundary_reason": "The protocol-only gold includes an explicit absence of built-in XCTest; general framework independence is compatible with retaining that default.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C25",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Test Anything Protocol (TAP)",
+      "candidate_url": "https://testanything.org/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The originally narrow result-stream use maps producers to Swift test runners and consumers to package/CI aggregation. It contributes reporting within the package workflow without claiming discovery or execution."
+        ],
+        [
+          "pass",
+          "Common failure/result reporting supports consistent regression visibility; adapter preservation of failure status and diagnostics is an explicit condition."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Only interoperable test-result reporting, as originally scoped.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. TAP can coexist with any runner or built-in XCTest. Neither complete testing/SwiftPM separation nor removal of the default framework is selected.",
+      "transfer_mapping": "Map TAP producers to test executables and a consumer to package/CI reporting. Preserve failure status and diagnostics across adapters; discovery, build and execution require other already acknowledged components.",
+      "remaining_check": "Verify the adapter retains failure counts, process failures and diagnostics before operational approval. This reporting component does not settle the chosen runner or default framework.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA020"
+      ],
+      "evidence_locations": [
+        "runs/A/C25.json: candidates rank 7, raw_response and opened_documents",
+        "cases/prefix/C25.md",
+        "cases/CASES.json: C25"
+      ],
+      "boundary_reason": "Do not infer a no-default-framework architecture from the existence of an interoperable reporting protocol.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Docker containers sharing a target container's PID namespace",
+      "candidate_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "At the original process-inspection scope, a separate tools container shares the selected target PID namespace. Filesystem access is explicitly excluded from this mechanism, so this pass is not proof of the full namespaces-plus-filesystem experience."
+        ],
+        [
+          "pass",
+          "The tools image is acquired and started at troubleshooting time, independently of the existing application image."
+        ],
+        [
+          "not_in_scope",
+          "The original candidate is the namespace/tools-image component and expressly lacks Kubernetes admission/audit/API visibility; it was not offered as a complete user-facing operation."
+        ],
+        [
+          "not_in_scope",
+          "CRI portability is not supplied by the Docker-specific reference and was outside its stated component scope."
+        ],
+        [
+          "pass",
+          "The proposed reference keeps tools out of the application image. The original response maps runtime operations behind the authorized node agent, so direct administrative Docker access is not the proposed end-user interface."
+        ],
+        [
+          "not_in_scope",
+          "Admission inspection of a complete debugger specification belongs to the separate API layer, explicitly absent from this original component."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Late tools-image acquisition and PID-namespace process inspection behind the original response's authorized node-agent operation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. A separate Docker container does not choose a separate Kubernetes debug Pod, and it is not a host-binary exec or image parameter on the Kubernetes exec API.",
+      "transfer_mapping": "Map the target container PID namespace to the debugging container join operation, and the separate tools image to late tool acquisition. Use the original API/node-agent mediation for runtime authority; tracing capabilities and filesystem access require separate checks. Direct user Docker access would fail the requested governance boundary.",
+      "remaining_check": "A complete debugging design still needs target filesystem access, an admission-visible specification, persisted activity, audit policy and CRI behavior. None is certified by this component row. ",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C03.json: candidates rank 1, raw_response and opened_documents",
+        "cases/prefix/C03.md",
+        "cases/CASES.json: C03"
+      ],
+      "boundary_reason": "Respect the original complementary-component scope. A direct-Docker configuration would have different H results and must not be silently substituted for this reference use.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Kubernetes RBAC for a dedicated label-management identity",
+      "candidate_url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original use is credential/resource separation and explicitly defers individual trusted-label enforcement to admission; it is not a standalone anti-spoofing policy."
+        ],
+        [
+          "not_in_scope",
+          "Direct workload-secret confinement is outside the originally narrow controller-credential reference."
+        ],
+        [
+          "pass",
+          "ClusterRole and binding permissions authorize the selected controller's Node writes without replacing scheduling; this is the named authorization component."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Dedicated label-manager credentials and resource-level authorization only.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. General RBAC role objects are not an original choice to store the allowed-label policy in an API object; no label allowlist or taint architecture is selected.",
+      "transfer_mapping": "Map the separate controller identity to Node write grants and keep kubelet credentials distinct. The original response requires admission checks where kubelets retain Node write access; additive RBAC grants cannot enforce a per-label deny rule.",
+      "remaining_check": "Inspect the admission rule and bypass paths before claiming prevention of trusted-label spoofing. The component-level pass does not certify that broader result.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C04.json: candidates rank 3, raw_response and opened_documents",
+        "cases/prefix/C04.md",
+        "cases/CASES.json: C04"
+      ],
+      "boundary_reason": "The explicit narrow use permits H1/H2 scope exclusions. Calling RBAC alone a complete label restriction would be a different and failing use.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Kubelet TLS bootstrap with individual node credentials",
+      "candidate_url": "https://kubernetes.io/blog/2018/09/27/kubernetes-1-12-release-announcement/",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original use establishes caller identity and explicitly says authentication does not certify security properties or authorize trusted labels."
+        ],
+        [
+          "not_in_scope",
+          "Secret exposure through placement is not controlled by this identity-establishment component alone."
+        ],
+        [
+          "pass",
+          "Individual kubelet credentials provide the caller identity consumed by node-specific authorization during registration, without replacing the scheduler."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Registration-time node identity as a prerequisite to label authorization, not authorization itself.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Certificate bootstrap does not choose any allowed-label policy storage, allowlist, or taint alternative.",
+      "transfer_mapping": "Map a separately issued kubelet credential to the authenticated node principal used by authorization/admission. Certificate approval must bind the correct node; possession alone cannot justify a sensitive placement label.",
+      "remaining_check": "Check approval identity binding and the downstream label-write rule before making any anti-spoofing claim. The source establishes the identity component, not those policies.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C04.json: candidates rank 6, raw_response and opened_documents",
+        "cases/prefix/C04.md",
+        "cases/CASES.json: C04"
+      ],
+      "boundary_reason": "Do not waive a wrong certificate binding inside the selected identity use. No wrong binding is shown; the documented issuance relationship and its original required condition support a reference mapping.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "SELF polymorphic inline caches",
+      "candidate_url": "https://bibliography.selflanguage.org/pics.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "Reusing cached outcomes across mutable namespace states requires guards that distinguish rebinding. The original candidate says PICs alone do not provide them; their complete mutation coverage is not supplied."
+        ],
+        [
+          "unknown",
+          "The essential validity/invalidation mechanism is explicitly missing, so matching a recurring receiver/state does not establish that a cached binding is still valid."
+        ],
+        [
+          "pass",
+          "Small per-site caches and the original warning about more tests/misses directly consider the cost of checking. No target speedup is asserted."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Several cached lookup outcomes per site, with the decisive rebinding guard left unresolved.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. SELF PICs are not the named CPython method-cache patch or any of the specific dict-version alternatives. Generic lookup caching is insufficient identity/mechanism evidence for those gold items.",
+      "transfer_mapping": "Map observed lookup states to per-site entries and misses to generic lookup. This can reduce repeated lookups only when a validity guard covers mutations; the original answer identifies but does not supply that decisive connection.",
+      "remaining_check": "Read a concrete guard or invalidation contract covering replacement and deletion of the relevant Python bindings. If it cannot distinguish a mutation, the selected reuse would violate H1; complete coverage could resolve H1/H2.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C12.json: candidates rank 4, raw_response and opened_documents",
+        "cases/prefix/C12.md",
+        "cases/CASES.json: C12"
+      ],
+      "boundary_reason": "Narrow cache layout does not make validity optional: it is a prerequisite for the proposed reuse, so H1/H2 must remain unknown rather than not_in_scope.",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Java local-variable @SuppressWarnings",
+      "candidate_url": "https://docs.oracle.com/javase/6/docs/api/java/lang/SuppressWarnings.html",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The source supports the originally selected local-declaration slice through LOCAL_VARIABLE annotations and enclosing-suppression composition. Arbitrary block coverage is expressly outside this component, so this pass does not certify the full combined minimum."
+        ],
+        [
+          "pass",
+          "The annotation stays on the local declaration within the existing function, requiring neither function duplication nor manual passing of local state."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Declaration-specific lint suppression only, as originally stated.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. A Java local-variable annotation is not a macro/helper approximation, a restriction to statement expressions, or a choice between interior/exterior conditional attributes.",
+      "transfer_mapping": "Map a local-variable annotation to a Rust let-declaration lint allowance and its nesting rule to composition with enclosing policy. Define supported lint names/targets; arbitrary blocks and conditional compilation require separate mechanisms already excluded by the original use.",
+      "remaining_check": "A full target design must add block support and any required conditional-compilation semantics. This row supports only the original declaration-level component.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C16.json: candidates rank 4, raw_response and opened_documents",
+        "cases/prefix/C16.md",
+        "cases/CASES.json: C16"
+      ],
+      "boundary_reason": "The candidate never claimed the complete block-plus-let solution. Treat the scoped relationship as useful while explicitly withholding completeness of the combined H1 requirement.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C16",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "C# unsafe and checked/unchecked block contexts",
+      "candidate_url": "https://ecma-international.org/wp-content/uploads/ECMA-334_4th_edition_june_2006.pdf",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The source supports the originally selected small-block slice with lexical unsafe and checking contexts. Declaration metadata and extensible annotations are explicitly outside this component, so the combined block-plus-let minimum is not certified."
+        ],
+        [
+          "pass",
+          "Inline lexical blocks retain enclosing local state and avoid function extraction or whole-function duplication."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Small-block permission/checking-policy boundaries only.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Built-in lexical contexts are not the gold macro/helper approximation or either exact attribute-placement alternative.",
+      "transfer_mapping": "Map the lexical context boundary to a small Rust block's permission or checking policy. Preserve nesting/restoration semantics; extensible audit metadata, declaration annotations and proof of safety are not provided by this source.",
+      "remaining_check": "A full target design still needs the declaration component and semantics for each annotation/tool. No claim of a complete annotation system or verified safety is made.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C16.json: candidates rank 5, raw_response and opened_documents",
+        "cases/prefix/C16.md",
+        "cases/CASES.json: C16"
+      ],
+      "boundary_reason": "A block-only reference was narrow from the original answer. The scoped H1 pass records that component relationship and must not be read as complete support for blocks and local declarations.",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "case_id": "C02",
+      "baseline": "A",
+      "rank": 8,
+      "candidate_name": "Firecracker specialized virtual-machine monitor",
+      "candidate_url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "fail",
+          "The selected alternative substitutes a virtual-machine isolation boundary for the required workload-to-host UID/GID correspondence. No such identity-mapping use is proposed; broader escape hardening does not fulfill that required mechanism."
+        ],
+        [
+          "fail",
+          "The proposed alternative does not specify both user/group identity mappings and pod-scoped capability semantics. Its acknowledged absence of the requested mapping role cannot be removed by recasting it as the whole identity solution."
+        ],
+        [
+          "pass",
+          "The original use does not require changing the privilege of the kubelet or container runtime itself."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative isolation boundary for broader hardening; evaluated as the alternative originally proposed, without inventing a UID/GID mapping component.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Neither alternative selects filesystem chown, a 64K range/pod-count policy, or delegation of ID mapping choice to runtimes.",
+      "transfer_mapping": "Map the isolated guest/application-kernel boundary to reduced exposure of the host kernel as the original broader-hardening rationale. That relation is real secondary utility, but it does not supply the mandatory identity and capability mapping design.",
+      "remaining_check": "A distinct original proposal combining this runtime with explicit workload-to-host UID/GID and pod capability semantics would need separate assessment. Do not infer those settings from the project name or claim that the product can never implement them.",
+      "runtime_observation": "not_performed",
+      "date_status": "pre_decision",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/A/C02.json: candidates rank 8, raw_response and opened_documents",
+        "cases/prefix/C02.md",
+        "cases/CASES.json: C02"
+      ],
+      "boundary_reason": "Apply the same result to A and B. These are alternative mechanisms for a broader goal, not originally scoped pieces of the required mapping design; using not_in_scope for H1/H2 would waive the central mandatory mechanism.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH"
+    },
+    {
+      "case_id": "C02",
+      "baseline": "B",
+      "rank": 7,
+      "candidate_name": "gVisor application-kernel isolation",
+      "candidate_url": "https://github.com/google/gvisor",
+      "judge": "내부 별도 검토",
+      "model_label": "GPT-6 Astra Pro",
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "fail",
+          "The selected alternative substitutes a application-kernel isolation boundary for the required workload-to-host UID/GID correspondence. No such identity-mapping use is proposed; broader escape hardening does not fulfill that required mechanism."
+        ],
+        [
+          "fail",
+          "The proposed alternative does not specify both user/group identity mappings and pod-scoped capability semantics. Its acknowledged absence of the requested mapping role cannot be removed by recasting it as the whole identity solution."
+        ],
+        [
+          "pass",
+          "The original use does not require changing the privilege of the kubelet or container runtime itself."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Alternative isolation boundary for broader hardening; evaluated as the alternative originally proposed, without inventing a UID/GID mapping component.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No primary match. Neither alternative selects filesystem chown, a 64K range/pod-count policy, or delegation of ID mapping choice to runtimes.",
+      "transfer_mapping": "Map the isolated guest/application-kernel boundary to reduced exposure of the host kernel as the original broader-hardening rationale. That relation is real secondary utility, but it does not supply the mandatory identity and capability mapping design.",
+      "remaining_check": "A distinct original proposal combining this runtime with explicit workload-to-host UID/GID and pod capability semantics would need separate assessment. Do not infer those settings from the project name or claim that the product can never implement them.",
+      "runtime_observation": "not_performed",
+      "date_status": "unknown",
+      "additional_evidence": [],
+      "evidence_locations": [
+        "runs/B/C02.json: candidates rank 7, raw_response and opened_documents",
+        "cases/prefix/C02.md",
+        "cases/CASES.json: C02"
+      ],
+      "boundary_reason": "Apply the same result to A and B. These are alternative mechanisms for a broader goal, not originally scoped pieces of the required mapping design; using not_in_scope for H1/H2 would waive the central mandatory mechanism.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH"
+    }
+  ],
+  "summary": {
+    "candidate_rows": 18,
+    "labels": {
+      "CONDITIONAL_TRANSFER": 12,
+      "DIRECT_DOCUMENTED": 1,
+      "INSUFFICIENT": 3,
+      "SURFACE_OR_CONSTRAINT_MISMATCH": 2
+    },
+    "matched_rows": 3,
+    "distinct_primary_gold_ids": [
+      "P0354-G01",
+      "R0085-G03"
+    ]
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "case_id": "C21",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is callable representation/static dispatch, not capture construction."
+        ],
+        [
+          "not_in_scope",
+          "Original use distinguishes const/mutable invocation only; it does not claim the complete consuming/read/mutate receiver calculus."
+        ],
+        [
+          "pass",
+          "A concrete closure class and nonvirtual call operator give a statically known representation and specialization path; the original correctly distinguishes this from guaranteed machine-code inlining."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: concrete closure type and static call-operator dispatch",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Generic call operators are not the gold general trait/tuple-argument syntax sugar. The original also does not propose a receiver default or trait rename.",
+      "transfer_mapping": "Map each closure to a concrete environment class with a nonvirtual callable method, retaining concrete types for static dispatch/specialization. The original const/mutable distinction is informative but not scored as all three modes; referenced objects need separate mutation rules and inline spelling is not an inlining guarantee.",
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Original candidate explicitly supports per-member reference initialization and copied/moved values, covering both requested capture categories."
+        ],
+        [
+          "not_in_scope",
+          "The original expressly limits this mechanism to environment construction, not whether invocation consumes it."
+        ],
+        [
+          "not_in_scope",
+          "Dispatch/inlining selection is outside the original capture-construction scope."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: independently selected reference/value capture for each environment field",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0114-G05",
+          "rationale": "Original N3648 candidate reason/application scope selects each environment field independently, including explicit reference capture, matching gold per-variable borrowing capture clauses rather than only a topic overlap."
+        }
+      ],
+      "review_matches": [],
+      "match_rationale": "The original explicitly chooses per-member capture clauses, including reference capture; that is the core structure of the per-variable borrowing-capture alternative. No default-capture policy is inferred.",
+      "transfer_mapping": "Map each capture initializer to a target environment field acquired by reference, copy or move. Reference lifetimes must remain bounded and invocation ownership remains separately specified; moving a field into the environment is not itself consuming invocation.",
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "unknown",
+      "H": [
+        [
+          "not_in_scope",
+          "Original scope is invocation receiver contracts, not capture choice."
+        ],
+        [
+          "unknown",
+          "Only the introduction was opened in the run; decisive lvalue/rvalue receiver rules were snippet-based. Reviewer reopens timed out/returned 503, and rvalue qualification alone is not a documented consuming-use contract."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is receiver access, not dispatch policy."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: receiver qualifications for callable-environment access",
+      "link_status": "opened_body_partial",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No receiver default or automatic inference is selected, so no gold match follows from merely discussing receiver modes.",
+      "transfer_mapping": "The original intended mapping is const receiver to read access, mutable lvalue receiver to mutation, and rvalue receiver to potentially consuming access. The source details and one-shot/ownership connection remain unverified; the mapping is not treated as proven.",
+      "remaining_check": "Read N1821’s receiver-qualification rules from an accessible original and specify the ownership rule that turns rvalue access into consuming invocation. Supported rules plus that connection could enable conditional transfer; mere rvalue callability cannot establish H2.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA006"
+      ]
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The opened wrapper supports copied callable targets and ref/cref retained targets, so the original interface offers value and reference storage choices."
+        ],
+        [
+          "not_in_scope",
+          "The original interface reference does not claim a consuming/read/mutate receiver type system; cloning is explicitly distinguished from unique ownership."
+        ],
+        [
+          "pass",
+          "The candidate explicitly proposes an optional common runtime-dispatch wrapper across concrete callable types, leaving concrete representation as the alternative choice."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: optional erased callable interface and stored-target ownership choices",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Signature-based type erasure is not gold general trait tuple syntax, trait renaming or default-capture design.",
+      "transfer_mapping": "Map concrete callables to an optional common signature wrapper; store a cloned target or explicit reference wrapper as chosen. Reference lifetimes remain external and erasure can obscure optimization; the original does not force every callable into this representation.",
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Archived Blocks documentation supports constant value captures and shared mutable by-reference cells, with explicit escape copying."
+        ],
+        [
+          "not_in_scope",
+          "Original scope is capture/lifetime/runtime layout and expressly does not supply exclusive borrowing or consuming invocation."
+        ],
+        [
+          "not_in_scope",
+          "The original focuses on escape storage management, not user selection of dispatch/inlining policy."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: capture mode separated from escape storage lifetime",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Constant ordinary captures and __block cells do not state a whole-language by-value-only or by-reference-default choice. No gold default is inferred.",
+      "transfer_mapping": "Map value fields and shared by-reference cells to target capture storage, then map explicit block copying to longer-lived storage and copy/dispose cleanup. The original distinguishes runtime-managed sharing from exclusive ownership and consuming invocation; supplementary live code is not backdated.",
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original scope is context representation/allocation, not a complete pair of capture modes."
+        ],
+        [
+          "not_in_scope",
+          "The original does not propose a consuming/read/mutate receiver calculus."
+        ],
+        [
+          "unknown",
+          "Documented scope cases avoid allocation, but the candidate supplies no user-controlled static/dynamic dispatch or inlining choice. Allocation control alone does not establish this frozen H3 requirement."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: context-pointer representation and scope-dependent allocation",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No default capture, receiver inference or other exact gold design choice is stated.",
+      "transfer_mapping": "Map a callable to a function/context pair and use the documented scope boundary to select nonescaping storage. Escaping GC contexts and allocation avoidance are the original contribution; they do not supply a dispatch-control contract.",
+      "remaining_check": "Verify an explicit user-level dispatch/inlining control in the original proposed representation. Without such evidence, retain its secondary allocation-policy value without turning it into an H3 pass."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original deliberately limits this reference to short-lived borrowed callbacks and does not claim value/owned captures."
+        ],
+        [
+          "not_in_scope",
+          "The original expressly excludes a read/mutate/consume type distinction."
+        ],
+        [
+          "unknown",
+          "A trampoline function-pointer representation is documented, but the original gives no user choice controlling dispatch/inlining beyond that representation."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: nonescaping borrowed callbacks through trampolines",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A narrow borrowed-callback example does not propose by-reference capture as the whole closure language default. No gold default or proc syntax is recovered.",
+      "transfer_mapping": "Map an enclosing activation to a borrowed callback context and trampoline to a function-pointer entry. The original prohibits escape beyond that activation and does not provide ownership; no unmentioned static-dispatch alternative is added.",
+      "remaining_check": "A concrete dispatch-control relation in the original use would be needed for H3. Preserve the source’s useful lifetime counterexample separately; escaping or owned use would be a different, known-invalid configuration."
+    },
+    {
+      "rank": 8,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "The original narrow use is callable abstraction boundaries; it explicitly disclaims mutable local borrowing and consuming ownership."
+        ],
+        [
+          "not_in_scope",
+          "The original does not offer the complete environment-access calculus."
+        ],
+        [
+          "fail",
+          "The cited relation leaves allocation/representation choices to the implementation; that is not the required programmer control over inlining/dispatch. No such user control appears in the original candidate."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: functional-interface contract with implementation freedom",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Functional interfaces alone do not select callable-trait tuple syntax or a trait rename. Effectively-final captures are not an original proposal to make all Rust closures by-value-only.",
+      "transfer_mapping": "Map callable instances to a public functional-interface method contract while the implementation chooses allocation/reuse. The original relation gives implementer freedom; it cannot be silently upgraded to programmer dispatch/inlining control.",
+      "remaining_check": "A user-visible static/erased dispatch or optimization choice would require an additional proposed design. Historical date is also unknown because the verified fixed-version page supplies only a copyright year.",
+      "additional_evidence": [
+        "evidence/judgments/reviewer-a-sources.json#RA007"
+      ],
+      "date_status": "unknown"
+    }
+  ]
+}

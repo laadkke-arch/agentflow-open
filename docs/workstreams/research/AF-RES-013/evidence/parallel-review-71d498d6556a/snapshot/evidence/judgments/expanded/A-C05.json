@@ -1,0 +1,414 @@
+{
+  "case_id": "C05",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Google SRE client-side adaptive throttling and retry budgets",
+      "candidate_url": "https://sre.google/sre-book/handling-overload/",
+      "candidate_claim": "Client-side rejection based on recent backend acceptance, combined with retry budgets and criticality-aware shedding, could reduce event traffic before it consumes API-server resources during an overload.",
+      "gold_matches": [],
+      "match_rationale": "좁은 전이 참고의 유용성과 완전한 cluster 보호 검증을 분리했다. 이 후보를 전체 event subsystem 대체안으로 평가하지 않는다. 현재 dedup을 그대로 유지한다는 핵심 조건이 없다. throttling/retry만 공유한다고 보존된 dedup+batching/backoff 대안 전체와 일치하지 않는다. 적응형 로컬 admission과 retry 제한은 관리자가 모든 event create/update를 정지하는 panic switch가 아니다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "pass",
+          "reason": "실제 평가 범위인 producer 요청·재시도의 비용 증폭을 줄이는 대응과 hard local ceiling이 구체적이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "pass",
+          "reason": "원 제안이 필수 진단용 allowance와 누락 표시를 요구한다. 모든 event 무손실을 약속하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "not_in_scope",
+          "reason": "transport admission 참고이며 persistence 위치나 retention을 바꾸는 제안이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "클라이언트→event producer, backend→API server, 요청 이력→로컬 admission, retry budget→재시도 제한, criticality→필수 진단 우선순위. 피드백 희소성·지연과 로컬 상한의 한계를 보존한다.",
+      "H_assessment_scope": "reference_design: Event producer transport, local request admission, retry policy and prioritization of diagnostic traffic.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "reviewer": "내부 별도 검토",
+        "model_label": "GPT-6 Astra Pro",
+        "source": "evidence/judgments/SECOND_REVIEW.json",
+        "candidate_id": "A-C05-r1",
+        "resolution": "작업자가 원 응답·고정 규칙을 다시 대조하고 이 검토의 일치·참고 범위 판정을 채택함; 최초 판정은 SECOND_RESOLUTION.json에 보존"
+      },
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/0",
+        "runs/A/C05.json#/opened_documents",
+        "evidence/judgments/reviewer-second-sources.json#SR2-SRE",
+        "evidence/judgments/reviewer-second-sources.json#SR2-SRE-DATE",
+        "evidence/judgments/reviewer-second-sources.json#SR2-GOLD-C05"
+      ],
+      "remaining_check": "hard ceiling과 representative diagnostic/loss 표시 정책을 정한 뒤 과부하·희소 client trace로 확인하면 H1/H2가 바뀐다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Logback 1.2.3 AsyncAppenderBase bounded queue and nonblocking overflow",
+      "candidate_url": "https://raw.githubusercontent.com/qos-ch/logback/v_1.2.3/logback-core/src/main/java/ch/qos/logback/core/AsyncAppenderBase.java",
+      "candidate_claim": "A bounded asynchronous queue with an explicit nonblocking overflow path provides a concrete model for preventing event publication from blocking scheduler or controller work or consuming unbounded memory.",
+      "gold_matches": [],
+      "match_rationale": "bounded queue handoff 자체는 dedup 유지+rate/backoff 강화나 나머지 구체 저장/문법 대안과 같지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "pass",
+          "reason": "고정 크기 queue와 명시적 neverBlock 경로로 producer blocking·메모리 증가를 제한하는 부분을 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "unknown",
+          "reason": "무차별 overflow drop에서 최초 actionable failure를 보존할 정책이 아직 없다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "producer queue이며 etcd 밖 저장이나 보존 기간 변경을 주장하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Logback bounded queue/nonblocking offer → Go event producer와 worker handoff. blocking default를 바꾸고 representative failure/loss 보고 및 shutdown flush 정책을 정해야 한다.",
+      "H_assessment_scope": "reference_design: Producer-side buffer, worker handoff, shutdown behavior and overflow contract.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/1",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "queue overflow 시 최초·대표 진단과 drop 수를 어떻게 보존할지 구현·trace로 확인하면 H2/INSUFFICIENT 판정이 바뀐다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "systemd v234 structured journal fields",
+      "candidate_url": "https://raw.githubusercontent.com/systemd/systemd/v234/man/systemd.journal-fields.xml",
+      "candidate_claim": "Separating human-readable text, stable message-type identity, origin and subject metadata, and microsecond source and receive timestamps gives a concrete vocabulary for unambiguous event semantics and structured filtering.",
+      "gold_matches": [],
+      "match_rationale": "subject/reporter metadata 구별을 자연어 active-voice 문법 강제 G06과 동일시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "not_in_scope",
+          "reason": "schema/identity 참고이며 load-bound transport는 제안하지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "pass",
+          "reason": "human MESSAGE와 stable ID·origin/subject·timestamp 종류를 분리한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "journald persistence로 이전하지 않고 fields만 번역한다고 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "journal human text/type ID/origin/subject/time → Kubernetes event schema. trusted metadata를 object UID/authenticated reporter에 연결하고 monotonic clock identity를 보존해야 한다.",
+      "H_assessment_scope": "reference_design: Event schema, identity used for grouping, provenance, subject-versus-reporter distinction and timestamp interpretation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/2",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "RFC 5424 structured event-message semantics and fractional timestamps",
+      "candidate_url": "https://datatracker.ietf.org/doc/html/rfc5424",
+      "candidate_claim": "RFC 5424 supplies a published model for keeping message type and structured parameters separate from display text while representing timestamps with fractional seconds and explicit time-quality information.",
+      "gold_matches": [],
+      "match_rationale": "structured schema만으로 active-voice subject/object G06이거나 occurrence timestamp list G02라고 세지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "not_in_scope",
+          "reason": "event schema와 timestamp 의미에 한정된 참고다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "pass",
+          "reason": "type ID·structured parameters·display text 및 precision/accuracy를 구별한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "Kubernetes persistence·retention 변경을 제안하지 않았다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "RFC 5424 message type/structured parameter/time quality → event grouping key와 timestamp 의미. type ID만 같다고 다른 parameter를 합치지 말고 precision을 total order로 읽지 않아야 한다.",
+      "H_assessment_scope": "reference_design: Event field definitions, parameter-aware deduplication keys and timestamp precision.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/3",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "client-go v4.0.0 EventCorrelator and EventAggregator",
+      "candidate_url": "https://raw.githubusercontent.com/kubernetes/client-go/v4.0.0/tools/record/events_cache.go",
+      "candidate_claim": "The existing correlator supplies directly relevant code for bounded LRU tracking, event identity, repeated-event counts and aggregation of messages sharing a source, object, type and reason.",
+      "gold_matches": [],
+      "match_rationale": "default filter가 아무 것도 버리지 않는 source를 확인한 기존 aggregator다. rate/backoff를 보강한 G01과 같지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "not_in_scope",
+          "reason": "원 응답은 bounded LRU·counting 부분이며 API write-rate bound가 아님을 명시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "unknown",
+          "reason": "다른 메시지 병합과 LRU eviction에서 앱 진단을 보존하는 정책이 미확인이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "기존 event patch 저장 경로를 쓰며 외부 persistence로 이동하지 않는다."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: Producer-side aggregation and duplicate counting, with existing Kubernetes event patch behavior as an implementation starting point.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/4",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "같은 reason·다른 message와 eviction trace에서 representative 진단이 보존되는지 확인하고, 별도 rate bound를 구현해야 전체 event 보고 개선을 주장할 수 있다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Prometheus Alertmanager label grouping and separate notification intervals",
+      "candidate_url": "https://prometheus.io/docs/alerting/latest/configuration/",
+      "candidate_claim": "Explicit label-based grouping with separate first-notification, group-update and repeat intervals offers a model for publishing bounded event-series summaries whose grouping criteria remain inspectable.",
+      "gold_matches": [],
+      "match_rationale": "summary cadence 참고이며 nested occurrence timestamp object나 operator log-grep link 대안과 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "unknown",
+          "reason": "group별 interval만으로 많은 distinct group의 global budget을 제한하지 못한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "unknown",
+          "reason": "first delay가 짧은 실패를 숨길 수 있어 대표 진단·최초 보고 정책이 미확인이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "alert service로 저장을 옮기지 않고 grouping/interval만 전이한다고 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Alertmanager explicit group key와 first/update/repeat 간격 → event series coalescing. global group cardinality budget과 short-lived failure 보존 정책이 필요하다.",
+      "H_assessment_scope": "reference_design: Coalescing policy, first-occurrence latency and repeat-summary cadence; selected labels suggest explicit queryable grouping dimensions.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/5",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "많은 distinct group과 first-delay보다 짧은 실패 입력으로 global rate와 진단 보존 정책을 확인하면 H1/H2가 바뀐다."
+    },
+    {
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "rsyslog repeated-message reduction and its documented failure modes",
+      "candidate_url": "https://docs.rsyslog.com/doc/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "candidate_claim": "The documented duplicate identity and failures of prose-only repetition summaries provide a concrete check against merging different reporters or making aggregated events impossible for tools to interpret.",
+      "gold_matches": [],
+      "match_rationale": "identity/counter 표현 참고이며 일곱 정답의 구체 설계 선택과 같지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Event reporting must not cause or worsen cluster performance failures.",
+          "value": "not_in_scope",
+          "reason": "duplicate identity와 결과 표현의 실패 사례에 한정했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Preserve an application developer’s ability to understand events about their application.",
+          "value": "pass",
+          "reason": "origin을 포함한 identity와 structured count를 보존해 overmerge/prose-only 손실을 피하도록 제시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Moving persistence outside etcd or retaining events longer is outside this decision.",
+          "value": "pass",
+          "reason": "rsyslog로 persistence 이동이 아닌 교훈만 전이한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "rsyslog duplicate identity·prose summary 실패 → event reporter-aware grouping와 machine-readable count. 무조건 같은 메시지로 묶지 말고 origin/identity와 진단 의미를 보존해야 한다.",
+      "H_assessment_scope": "reference_design: Definition of duplicate identity, representation of repeat counts and preservation of machine-readable diagnostics.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/6",
+        "runs/A/C05.json#/opened_documents"
+      ],
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+{
+  "case_id": "C25",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Cargo package test command",
+      "candidate_url": "https://doc.rust-lang.org/cargo/commands/cargo-test.html",
+      "candidate_claim": "Cargo's package-level test command offers a model for compiling and running Swift package tests through the same tool that manages the package.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "package command가 build와 test harness를 함께 조율하는 참조다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "필터와 고정 working directory를 포함한 공통 실행 절차가 반복 가능한 테스트 목적에 대응한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Cargo compile/test orchestration → Swift package test driver. Rust attribute·doc-test 대신 Swift compiler와 runner를 연결해야 한다.",
+      "H_assessment_scope": "reference_design: Command orchestration, filtering, predictable working directories, and optional custom harnesses.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/0",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "swift-corelibs-xctest",
+      "candidate_url": "https://github.com/swiftlang/swift-corelibs-xctest",
+      "candidate_claim": "XCTest provides a Swift test runtime and a command-line entry point whose result can become the package manager's test outcome.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "Swift test executable과 CLI entry point를 package command가 호출하는 구체 부품이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "suite 결과·선택·exit status를 package 결과로 전달한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "XCTest executable/exit status → Swift package test lifecycle. toolchain 호환성과 호출 연결을 확인해야 하며 현재 통합을 2016년으로 소급하지 않는다.",
+      "H_assessment_scope": "reference_design: Test cases, suite execution, selection/listing, and process status.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/1",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Test Anything Protocol version 13",
+      "candidate_url": "https://testanything.org/tap-version-13-specification.html",
+      "candidate_claim": "TAP supplies a shared result format so a Swift package test command could aggregate different frameworks and recognize incomplete test runs.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "서로 다른 test runner의 결과를 package consumer가 집계하는 한정된 연결이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "test plan과 결과 수 비교로 incomplete run을 감지하는 목적이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "TAP producer/result plan → Swift package reporting boundary. build·discovery·process exit policy는 별도로 설계해야 하며 default XCTest 제거를 함의하지 않는다.",
+      "H_assessment_scope": "reference_design: Runner/reporting boundary, pass/fail records, test plans, skip markers and diagnostics.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/2",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Quick",
+      "candidate_url": "https://github.com/Quick/Quick",
+      "candidate_claim": "Quick could make package tests easier to maintain through structured Swift examples and reusable test groups invoked by the package's test workflow.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "Swift test-only dependency와 authoring DSL을 package test workflow에 연결한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "구조화한 예제와 재사용 test group으로 테스트 유지 목적을 설명한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Quick test authoring/runtime → Swift package test target. Swift compiler 호환성을 맞추고 배포 application binary에 test framework가 들어가지 않게 해야 한다.",
+      "H_assessment_scope": "reference_design: Test authoring and test-target dependencies.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/3",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "np publication workflow",
+      "candidate_url": "https://github.com/sindresorhus/np",
+      "candidate_claim": "np demonstrates a release workflow that reinstalls dependencies and runs tests before publication, suggesting a package release check for ecosystem reliability.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "의존성 재설치와 test 실행을 package publication에 연결하는 lifecycle 참조다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "공개 전 test failure를 확인하는 maintainer gate를 제안한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "np release checks → Swift package maintainer publication checks. Node-specific tooling을 번역해야 하며 skip 옵션이 있어 registry 전체 보증은 아니다.",
+      "H_assessment_scope": "reference_design: Maintainer-side publication checks and failure handling.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/4",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 6,
+      "candidate_name": "SwiftCheck",
+      "candidate_url": "https://github.com/typelift/SwiftCheck",
+      "candidate_claim": "SwiftCheck could expand package regression coverage by generating inputs for invariants within the package's ordinary test suite.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "package dependency와 ordinary suite 안에 property test를 배치한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "생성 입력으로 invariants와 회귀를 검사하는 구체 목적이다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SwiftCheck generators/properties → Swift package test suite. 의미 있는 properties와 random failure 재현을 정의해야 하며 orchestration은 별도다.",
+      "H_assessment_scope": "reference_design: Property tests for algorithms, data structures and reusable library behavior.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/5",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    },
+    {
+      "case_id": "C25",
+      "baseline": "B",
+      "rank": 7,
+      "candidate_name": "Spectre configurable runner/reporters (later evidence)",
+      "candidate_url": "https://github.com/kylef/Spectre",
+      "candidate_claim": "Spectre's configurable reporting illustrates how a Swift package test workflow could expose readable or machine-consumable output without changing test definitions.",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 Sources 옆 FooTests 배치, SwiftPM과 테스트 완전 분리, 기본 XCTest 없이 protocol만 제공이라는 세 구별 대안을 선택하지 않았다. 관련 framework·runner·reporting 발견만으로 그 결정을 회수했다고 세지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Swift 패키지 관리 작업과 테스트 통합",
+          "value": "pass",
+          "reason": "Swift runner의 report 선택을 package test command에 연결하는 제안이다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "안정성과 신뢰성 개선 목적",
+          "value": "pass",
+          "reason": "같은 test 정의에서 사람·기계용 결과를 제공해 failure 관측을 돕는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Spectre runner/reporter → Swift package test output adapter. 선택한 환경변수 기능은 2021년 사후 자료이며 2016년 지원으로 취급하지 않는다.",
+      "H_assessment_scope": "reference_design: Alternative Swift runner and reporter integration.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C25.json#/candidates/6",
+        "runs/B/C25.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+    }
+  ]
+}

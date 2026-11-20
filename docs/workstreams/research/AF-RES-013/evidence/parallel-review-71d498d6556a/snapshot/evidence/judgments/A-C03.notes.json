@@ -1,0 +1,278 @@
+{
+  "case_id": "C03",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "PID process inspection 부분만 명시했고 mount namespace/filesystem 전체 노출은 제공하지 않는다고 밝혔다."
+        ],
+        [
+          "pass",
+          "별도 tools image를 나중에 시작하며 app image에 도구를 설치하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "직접 Docker는 Kubernetes admission/audit/API visibility를 제공하지 않는다고 명시했다."
+        ],
+        [
+          "not_in_scope",
+          "Docker runtime primitive만 제안하며 CRI extension은 주장하지 않았다."
+        ],
+        [
+          "not_in_scope",
+          "backend namespace primitive이며 node-user 권한 경로 전체를 제공한다고 주장하지 않았다."
+        ],
+        [
+          "not_in_scope",
+          "debug API/spec의 admission 노출은 처음부터 제안 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Late acquisition of debugging tools and inspection of a selected running container.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다. 별도 container를 만들었다는 이유로 별도 Kubernetes pod G09로 일치시키지 않았다.",
+      "transfer_mapping": "별도 Docker tools image와 target PID namespace join → 늦게 도구를 공급하는 backend 동작. 권한 있는 runtime mediator, filesystem 접근 및 Kubernetes API/admission/audit는 별도이며 직접 Docker 접근은 완성 해법이 아니다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다.",
+      "internal_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      }
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "type/path로 선택한 기존 namespace에 합류하는 runtime 계약이다."
+        ],
+        [
+          "not_in_scope",
+          "image 획득·수명은 이 namespace schema의 범위 밖이다."
+        ],
+        [
+          "not_in_scope",
+          "user-facing API 권한은 제공하지 않는다고 밝혔다."
+        ],
+        [
+          "not_in_scope",
+          "OCI mechanism이며 CRI 확장은 제공하지 않는다고 명시했다."
+        ],
+        [
+          "not_in_scope",
+          "node/runtime의 handle 해석·권한 연결이 별도인 backend schema다."
+        ],
+        [
+          "not_in_scope",
+          "admission-visible debug spec API는 별도다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Translating a target-container identity into a runtime's namespace configuration.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "transfer_mapping": "OCI namespace path → target-container identity를 runtime namespace handle로 변환하는 계약. handle 권한·type 일치 및 생략된 namespace의 inheritance를 통제해야 한다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "임의 per-container targeting/filesystem 접근을 intro CRI가 보장하지 않는다고 명시했다."
+        ],
+        [
+          "pass",
+          "image service와 sandbox 이후 container create/start가 늦은 tools image 획득을 지원한다."
+        ],
+        [
+          "not_in_scope",
+          "API/admission 통합은 별도라고 명시했다."
+        ],
+        [
+          "pass",
+          "ImageService/RuntimeService와 다른 sandbox 구현의 축소 capability를 구별한다."
+        ],
+        [
+          "not_in_scope",
+          "node-agent backend lifecycle이며 end-user 권한 UI는 별도다."
+        ],
+        [
+          "not_in_scope",
+          "전체 spec의 user API 노출은 별도다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Runtime-independent node-agent integration and lifecycle management.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "transfer_mapping": "CRI image/container lifecycle → 기존 sandbox의 debug container 생성·관찰·정리. target namespace/파일시스템 능력 차이와 API/admission 경계를 추가해야 한다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "namespace descriptor/setns 및 root 변경의 별도 처리를 문서·코드로 확인한다."
+        ],
+        [
+          "not_in_scope",
+          "디버깅 도구의 image 획득은 이 kernel-entry 구현 참고의 범위 밖이다."
+        ],
+        [
+          "not_in_scope",
+          "API admission/audit는 별도 backend 경계다."
+        ],
+        [
+          "not_in_scope",
+          "Linux entry code이며 CRI abstraction 자체는 제공하지 않는다."
+        ],
+        [
+          "pass",
+          "원 응답부터 관리자 node login 대신 승인된 node-agent/runtime operation 내부에 둘 것을 명시한다."
+        ],
+        [
+          "not_in_scope",
+          "full specification API는 kernel-entry code의 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Linux node/runtime implementation and the distinction between namespace entry and changing a process's filesystem root.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다. 실행 파일을 node에서 가져오는 debug 도구 배치 G10 자체를 제안한 것은 아니다.",
+      "transfer_mapping": "nsenter namespace descriptor·setns·fork 순서 → 승인된 node/runtime의 namespace entry. end-user에게 node login을 요구하지 않는 mediator 뒤에 두고 filesystem root 변경을 구별해야 한다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "target process의 mount/filesystem view를 debug tool root와 분리해 읽는다."
+        ],
+        [
+          "not_in_scope",
+          "도구 이미지 공급은 이 filesystem primitive의 범위 밖이다."
+        ],
+        [
+          "not_in_scope",
+          "API/admission/audit는 별도다."
+        ],
+        [
+          "not_in_scope",
+          "Linux-specific primitive로 CRI 전반 지원을 주장하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "allowed target process와 ptrace credential이라는 backend 전제를 밝히며 user-facing authorization은 주장하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "spec 전달 API는 별도다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Filesystem inspection as an alternative to replacing the debugger's root with the application's minimal filesystem.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "transfer_mapping": "proc pid root의 process filesystem view → own-tool filesystem을 유지하는 inspector. process visibility·ptrace credential·종료 경쟁·읽기 전용 아님을 제어해야 한다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "rank": 6,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "namespace/filesystem entry는 API policy 부분의 범위 밖이다."
+        ],
+        [
+          "not_in_scope",
+          "image 획득은 admission reference가 구현하지 않는다."
+        ],
+        [
+          "pass",
+          "인가 후·저장 전 complete request 검사와 mutation 후 validation을 다룬다; audit 부분은 별도다."
+        ],
+        [
+          "not_in_scope",
+          "runtime lifecycle과 capability는 별도다."
+        ],
+        [
+          "not_in_scope",
+          "backend debug 실행은 이 API policy reference의 범위 밖이다."
+        ],
+        [
+          "pass",
+          "원 응답부터 image/command/privilege/namespace를 포함하는 complete object를 admission-covered operation에 보내도록 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Making image, commands, privileges, namespace targeting, and other relevant debugging-container fields inspectable by admission.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "transfer_mapping": "Kubernetes full-body validating admission → debug container spec 정책 검사. opaque command 대신 full object가 거치는 operation과 matching rules를 설계해야 한다.",
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    },
+    {
+      "rank": 7,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "runtime inspection primitive가 아닌 authorization/traceability 부분이다."
+        ],
+        [
+          "not_in_scope",
+          "도구 획득은 API audit 부분의 범위 밖이다."
+        ],
+        [
+          "pass",
+          "fine-grained API authorization과 metadata/payload audit를 제시하며 interactive shell transcript와 구별한다."
+        ],
+        [
+          "not_in_scope",
+          "runtime abstraction은 별도다."
+        ],
+        [
+          "not_in_scope",
+          "node runtime 실행 경로는 이 API audit 부분의 범위 밖이다."
+        ],
+        [
+          "not_in_scope",
+          "persisted full spec record를 audit만으로 제공한다고 하지 않았다."
+        ]
+      ],
+      "T": "not_needed",
+      "scope": "reference_design: Authorization and traceability for an API-visible debugging request.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "namespace·runtime·admission의 구성 부품과, 새로운 resource/API/spec 배치·사전 도구 준비·별도 debug pod라는 정답 설계 선택을 구별했다.",
+      "transfer_mapping": null,
+      "remaining_check": "실제 통합·runtime 관측은 없다. 제안한 좁은 부분의 연결과 실패 조건을 구현해 확인하고, 날짜 미확인은 결정 전 고정 판으로 검증한다."
+    }
+  ]
+}

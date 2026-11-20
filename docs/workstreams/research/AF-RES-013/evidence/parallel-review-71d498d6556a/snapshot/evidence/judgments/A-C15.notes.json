@@ -1,0 +1,123 @@
+{
+  "case_id": "C15",
+  "baseline": "A",
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The selected library-equivalent operations retain ordinary callable symbols; current supporting GCC documentation explicitly confirms type/address identity for the corresponding library function."
+        ],
+        [
+          "pass",
+          "Direct-call recognition and ordinary library-call fallback avoid an extra source wrapper and its mandatory inlining at the reference-design level, even when no instruction substitution is made."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: recognized direct calls plus ordinary library-function fallback",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "No dedicated intrinsic attribute/redeclaration, language-item redeclaration or retained intrinsic-ABI coercion is proposed. Same callable symbol is not automatically the gold nominal-ABI-equivalence design.",
+      "transfer_mapping": "Map a library-equivalent intrinsic to an ordinary callable symbol and compiler-recognized direct calls. Fall back to that symbol when recognition is not used, eliminating the extra wrapper layer; the original excludes instruction-only primitives without callable implementations and makes no debug-build instruction-count claim.",
+      "remaining_check": "Verify callable implementations and lowering for the specific target intrinsic set before implementation claims. Same-address wording was read only in current supporting documentation, so historical eligibility of that exact stronger claim remains unverified."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "OCaml 4.01 section 19.1.1 documents external bindings as typed function values with curried behavior."
+        ],
+        [
+          "pass",
+          "Manifest externals in client-visible signatures allow direct primitive calls rather than calls through an OCaml wrapper; this is explicit documentary evidence of reducing the wrapper layer."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: public primitive metadata with ordinary function typing",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Manifest external metadata does not itself state a redeclarable intrinsic attribute or language item, and the original does not retain/coerce Rust’s nominal intrinsic ABI.",
+      "transfer_mapping": "Map an ordinary function signature to primitive implementation metadata visible to clients; direct known calls select the primitive while function values retain callable behavior. Original FFI/object/closure differences and possible adapters for indirect uses remain boundaries; no Rust runtime performance was observed.",
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "The opened GHC note verifies GHCi wrapper use but explicitly says routing native unsaturated primitive uses to wrappers still needs work; ordinary function-value behavior for the proposed native path is not established."
+        ],
+        [
+          "unknown",
+          "Generating wrappers centrally reduces manual duplication, but the retrieved mechanism does not establish reduced forced-inlining/runtime wrapper burden in unoptimized native builds."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: centrally generated callable primitive wrappers",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "A generated wrapper module is not a gold intrinsic attribute, redeclarable language item or intrinsic-ABI equivalence mechanism.",
+      "transfer_mapping": "Map primitive descriptions to centrally generated curried entry points and keep direct primitive lowering distinct. The original explicitly limits verified behavior to GHCi and leaves native unsaturated routing and wrapper cost unproved.",
+      "remaining_check": "Inspect the native pipeline handling an unsaturated primitive and its unoptimized call path. Demonstrated direct/function-value routing without the original extra inlining burden would support conditional utility; persistent mandatory wrappers would fail H2."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "The source permits an ordinary function definition and a compiler macro under the same name, retaining function-value behavior."
+        ],
+        [
+          "unknown",
+          "Compiler-macro expansion can be declined or omitted; the original expressly says unoptimized wrapper-free behavior needs an additional compiler policy not established by this mechanism."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: separate ordinary function binding and call-expansion metadata",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Compiler macros attach rewriting behavior but the original does not propose redeclarable intrinsic attributes/items or nominal ABI coercion.",
+      "transfer_mapping": "Map direct-call syntax to optional compiler expansion while indirect calls retain the normal function binding. An explicit policy ensuring appropriate lowering at no optimization is still required; discretionary expansion cannot be assumed to remove the stated burden.",
+      "remaining_check": "Specify and inspect the target compiler’s no-optimization expansion policy. Guaranteed lowering for the relevant direct calls could support conditional use; omitted expansion with remaining wrapper cost would fail H2."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "Go math/bits provides normal public functions with executable fallback bodies, preserving callable function values."
+        ],
+        [
+          "unknown",
+          "The original explicitly leaves architecture/release coverage and optimization-disabled substitution unverified; the required absence of mandatory wrapper inlining in that configuration is not established."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: ordinary function bodies with compiler intrinsic recognition",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "review_matches": [],
+      "match_rationale": "Ordinary Go functions with recognized calls do not state any of the three gold Rust-specific declaration/ABI choices.",
+      "transfer_mapping": "Map ordinary public fallback functions to indirect calls and compiler recognition to direct instruction selection. Keep the original architecture/release limits and post-decision provenance; no-optimization behavior remains a decisive check.",
+      "remaining_check": "Inspect code generation for the required target architecture with optimization disabled and compare recognized direct versus function-value calls. Wrapper-free direct lowering would support conditional utility; an inline-only optimization path would fail H2."
+    }
+  ]
+}

@@ -1,0 +1,474 @@
+{
+  "case_id": "C21",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "C++ closure objects and generic call operators (N3649)",
+      "candidate_url": "https://open-std.org/JTC1/SC22/WG21/docs/papers/2013/n3649.html",
+      "candidate_claim": "Concrete closure classes with nonvirtual call operators provide an optimization-friendly representation and distinguish const invocation from mutable invocation.",
+      "gold_matches": [],
+      "match_rationale": "Generic call operators are not the gold general trait/tuple-argument syntax sugar. The original also does not propose a receiver default or trait rename.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "Original scope is callable representation/static dispatch, not capture construction."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "Original use distinguishes const/mutable invocation only; it does not claim the complete consuming/read/mutate receiver calculus."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "pass",
+          "reason": "A concrete closure class and nonvirtual call operator give a statically known representation and specialization path; the original correctly distinguishes this from guaranteed machine-code inlining."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map each closure to a concrete environment class with a nonvirtual callable method, retaining concrete types for static dispatch/specialization. The original const/mutable distinction is informative but not scored as all three modes; referenced objects need separate mutation rules and inline spelling is not an inlining guarantee.",
+      "H_assessment_scope": "reference_design: concrete closure type and static call-operator dispatch",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/0",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "C++ generalized lambda capture (N3648)",
+      "candidate_url": "https://open-std.org/JTC1/SC22/WG21/docs/papers/2013/n3648.html",
+      "candidate_claim": "Per-member initialization supports explicit reference capture and moved values, offering a model for independently choosing how each environment field is acquired.",
+      "gold_matches": [
+        {
+          "gold_id": "R0114-G05",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "Original N3648 candidate reason/application scope selects each environment field independently, including explicit reference capture, matching gold per-variable borrowing capture clauses rather than only a topic overlap."
+        }
+      ],
+      "match_rationale": "The original explicitly chooses per-member capture clauses, including reference capture; that is the core structure of the per-variable borrowing-capture alternative. No default-capture policy is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "pass",
+          "reason": "Original candidate explicitly supports per-member reference initialization and copied/moved values, covering both requested capture categories."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original expressly limits this mechanism to environment construction, not whether invocation consumes it."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "not_in_scope",
+          "reason": "Dispatch/inlining selection is outside the original capture-construction scope."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map each capture initializer to a target environment field acquired by reference, copy or move. Reference lifetimes must remain bounded and invocation ownership remains separately specified; moving a field into the environment is not itself consuming invocation.",
+      "H_assessment_scope": "reference_design: independently selected reference/value capture for each environment field",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0114-G05"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/1",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "C++ receiver reference qualification (N1821)",
+      "candidate_url": "https://open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1821.htm",
+      "candidate_claim": "Qualified lvalue and rvalue receivers offer a prior mechanism to distinguish read-only, mutable, and potentially consuming access to a callable environment.",
+      "gold_matches": [],
+      "match_rationale": "No receiver default or automatic inference is selected, so no gold match follows from merely discussing receiver modes.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "unknown",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "Original scope is invocation receiver contracts, not capture choice."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "unknown",
+          "reason": "Only the introduction was opened in the run; decisive lvalue/rvalue receiver rules were snippet-based. Reviewer reopens timed out/returned 503, and rvalue qualification alone is not a documented consuming-use contract."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "not_in_scope",
+          "reason": "Original scope is receiver access, not dispatch policy."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "The original intended mapping is const receiver to read access, mutable lvalue receiver to mutation, and rvalue receiver to potentially consuming access. The source details and one-shot/ownership connection remain unverified; the mapping is not treated as proven.",
+      "H_assessment_scope": "reference_design: receiver qualifications for callable-environment access",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body_partial",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/2",
+        "runs/A/C21.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA006"
+      ],
+      "remaining_check": "Read N1821’s receiver-qualification rules from an accessible original and specify the ownership rule that turns rvalue access into consuming invocation. Supported rules plus that connection could enable conditional transfer; mere rvalue callability cannot establish H2."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Boost.Function 1.55.0",
+      "candidate_url": "https://www.boost.org/doc/libs/1_55_0/doc/html/function/tutorial.html",
+      "candidate_claim": "A signature-based callable wrapper with cloned targets or ref/cref targets provides an optional common dispatch interface across concrete callable types.",
+      "gold_matches": [],
+      "match_rationale": "Signature-based type erasure is not gold general trait tuple syntax, trait renaming or default-capture design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "pass",
+          "reason": "The opened wrapper supports copied callable targets and ref/cref retained targets, so the original interface offers value and reference storage choices."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original interface reference does not claim a consuming/read/mutate receiver type system; cloning is explicitly distinguished from unique ownership."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "pass",
+          "reason": "The candidate explicitly proposes an optional common runtime-dispatch wrapper across concrete callable types, leaving concrete representation as the alternative choice."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map concrete callables to an optional common signature wrapper; store a cloned target or explicit reference wrapper as chosen. Reference lifetimes remain external and erasure can obscure optimization; the original does not force every callable into this representation.",
+      "H_assessment_scope": "reference_design: optional erased callable interface and stored-target ownership choices",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/3",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Clang/Apple Blocks language and ABI",
+      "candidate_url": "https://releases.llvm.org/3.4/tools/clang/docs/BlockLanguageSpec.html",
+      "candidate_claim": "Constant value captures, mutable __block cells, and explicit copying to longer-lived storage illustrate how capture behavior and escape lifetime can be separated.",
+      "gold_matches": [],
+      "match_rationale": "Constant ordinary captures and __block cells do not state a whole-language by-value-only or by-reference-default choice. No gold default is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "pass",
+          "reason": "Archived Blocks documentation supports constant value captures and shared mutable by-reference cells, with explicit escape copying."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "Original scope is capture/lifetime/runtime layout and expressly does not supply exclusive borrowing or consuming invocation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "not_in_scope",
+          "reason": "The original focuses on escape storage management, not user selection of dispatch/inlining policy."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map value fields and shared by-reference cells to target capture storage, then map explicit block copying to longer-lived storage and copy/dispose cleanup. The original distinguishes runtime-managed sharing from exclusive ownership and consuming invocation; supplementary live code is not backdated.",
+      "H_assessment_scope": "reference_design: capture mode separated from escape storage lifetime",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/4",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive documentary unknown within this original narrow reference scope; language integration and runtime behavior were not tested."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "D delegates and scope closure contexts",
+      "candidate_url": "https://dlang.org/spec/function.html",
+      "candidate_claim": "A function/context pointer pair with allocation avoided in documented scope cases provides an alternative representation for escaping and local closures.",
+      "gold_matches": [],
+      "match_rationale": "No default capture, receiver inference or other exact gold design choice is stated.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original scope is context representation/allocation, not a complete pair of capture modes."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original does not propose a consuming/read/mutate receiver calculus."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "unknown",
+          "reason": "Documented scope cases avoid allocation, but the candidate supplies no user-controlled static/dynamic dispatch or inlining choice. Allocation control alone does not establish this frozen H3 requirement."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a callable to a function/context pair and use the documented scope boundary to select nonescaping storage. Escaping GC contexts and allocation avoidance are the original contribution; they do not supply a dispatch-control contract.",
+      "H_assessment_scope": "reference_design: context-pointer representation and scope-dependent allocation",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/5",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "Verify an explicit user-level dispatch/inlining control in the original proposed representation. Without such evidence, retain its secondary allocation-policy value without turning it into an H3 pass."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "GNU C nested functions in GCC 4.9.0",
+      "candidate_url": "https://gcc.gnu.org/onlinedocs/gcc-4.9.0/gcc/Nested-Functions.html",
+      "candidate_claim": "Nested functions passed through trampolines demonstrate callbacks that directly access local variables while the enclosing activation remains alive.",
+      "gold_matches": [],
+      "match_rationale": "A narrow borrowed-callback example does not propose by-reference capture as the whole closure language default. No gold default or proc syntax is recovered.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original deliberately limits this reference to short-lived borrowed callbacks and does not claim value/owned captures."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original expressly excludes a read/mutate/consume type distinction."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "unknown",
+          "reason": "A trampoline function-pointer representation is documented, but the original gives no user choice controlling dispatch/inlining beyond that representation."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map an enclosing activation to a borrowed callback context and trampoline to a function-pointer entry. The original prohibits escape beyond that activation and does not provide ownership; no unmentioned static-dispatch alternative is added.",
+      "H_assessment_scope": "reference_design: nonescaping borrowed callbacks through trampolines",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/6",
+        "runs/A/C21.json#/opened_documents"
+      ],
+      "remaining_check": "A concrete dispatch-control relation in the original use would be needed for H3. Preserve the source’s useful lifetime counterexample separately; escaping or owned use would be a different, known-invalid configuration."
+    },
+    {
+      "case_id": "C21",
+      "baseline": "A",
+      "rank": 8,
+      "candidate_name": "Java functional-interface lambdas (JSR 335 v0.9.0)",
+      "candidate_url": "https://cr.openjdk.org/~dlsmith/jsr335/jsr335-0.9.0.html",
+      "candidate_claim": "Targeting a callable interface while leaving object allocation and reuse flexible separates the public invocation contract from concrete closure representation.",
+      "gold_matches": [],
+      "match_rationale": "Functional interfaces alone do not select callable-trait tuple syntax or a trait rename. Effectively-final captures are not an original proposal to make all Rust closures by-value-only.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "참조 캡처와 값 캡처를 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original narrow use is callable abstraction boundaries; it explicitly disclaims mutable local borrowing and consuming ownership."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "소비/읽기/변경 방식의 environment 접근을 모두 지원할 것",
+          "value": "not_in_scope",
+          "reason": "The original does not offer the complete environment-access calculus."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "사용자에게 inlining/dispatch 최적화 통제를 줄 것",
+          "value": "fail",
+          "reason": "The cited relation leaves allocation/representation choices to the implementation; that is not the required programmer control over inlining/dispatch. No such user control appears in the original candidate."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map callable instances to a public functional-interface method contract while the implementation chooses allocation/reuse. The original relation gives implementer freedom; it cannot be silently upgraded to programmer dispatch/inlining control.",
+      "H_assessment_scope": "reference_design: functional-interface contract with implementation freedom",
+      "runtime_observation": "not_performed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": true,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C21.json#/candidates/7",
+        "runs/A/C21.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA007"
+      ],
+      "remaining_check": "A user-visible static/erased dispatch or optimization choice would require an additional proposed design. Historical date is also unknown because the verified fixed-version page supplies only a copyright year."
+    }
+  ]
+}

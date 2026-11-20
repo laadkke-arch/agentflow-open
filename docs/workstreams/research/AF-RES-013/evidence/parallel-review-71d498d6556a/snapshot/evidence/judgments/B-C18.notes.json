@@ -1,0 +1,100 @@
+{
+  "case_id": "C18",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "임의  bytes를 담는 string과 hex escape를 선택하고 rune/range decoding을 구별한다."
+        ],
+        [
+          "pass",
+          "string sequence와 byte indexing을 함께 확인한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Readable byte sequences for mixed-encoding protocol or document data, plus individual byte access through indexing.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "transfer_mapping": "Go arbitrary-byte string → raw byte sequence/individual byte access. UTF-8 source characters와 rune iteration을 raw byte로 착각하지 않는다.",
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "0..255 character와 string storage를 선택하여 전체 Unicode 검증을 요구하지 않는다. Latin-1 해석은 목표 encoding-neutral 의미에 가져오지 않는다."
+        ],
+        [
+          "pass",
+          "같은 numeric escape를 쓰는 single/double quoted scalar/sequence를 확인했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Literal syntax for both individual byte values and readable byte sequences.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "transfer_mapping": "OCaml8-bit scalar/sequence → 별도의 byte와 byte-string literal 설계. Unicode char와 혼동하거나 Latin-1 문자 의미를 강제하지 않는다.",
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "b-prefix·ASCII+escape가 Unicode text와 분리된 임의 bytes를 보존한다."
+        ],
+        [
+          "pass",
+          "integer-valued indexing과 sequence slicing을 구별하여 개별 값과 열을 다룬다. 별도 scalar literal은 없다고 명시했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Explicit byte-sequence literal marker and a clear scalar-versus-slice API distinction.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "R0069-G04",
+          "rationale": "후보가 Python의 b-prefixed byte string literal과 임의 byte escape를 명시적으로 선택하여 고정 대안의 Python byte-string syntax와 일치한다. 원 응답은 최신판이므로 사후 적중으로만 센다."
+        }
+      ],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "transfer_mapping": "Python bytes literal/indexing → binary literal과0..255 element 의미. 한 byte sequence와 scalar를 구별하고 Unicode 변환을 explicit하게 둔다.",
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "char 한 byte와 UTF-8 convention을 강제하지 않는 string을 사용하여 raw bytes를 보존한다."
+        ],
+        [
+          "pass",
+          "single-byte character와 string sequence의 literal/escape를 함께 제공한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: A paired byte scalar/sequence model, shared escape syntax, and separate opt-in Unicode interpretation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "외부 Python b-prefixed syntax를 제외하면 일반 foreign-byte literal은 numeric pattern, byte→char cast, macro pattern, 특정 a/u8 표기, 모든 code point UTF-8 정책과 동일하지 않다. 원 응답의 경고를 선택 정책으로 바꾸지 않는다.",
+      "transfer_mapping": "Nim byte char/string → byte scalar/sequence의 짝과 공유 escape. Unicode Rune/iteration을 선택한 raw contract에서 분리한다.",
+      "remaining_check": "문서상 참고 범위 판정이며 Rust 구현·성능은 실행하지 않았다. 사후 자료는 결정 전 정확 판의 해당 syntax와 scalar behavior를 확인해야 한다."
+    }
+  ]
+}

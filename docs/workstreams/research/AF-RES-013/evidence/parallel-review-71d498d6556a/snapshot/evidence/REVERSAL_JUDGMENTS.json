@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "case_id": "C07",
+      "canonical_id": "P0201",
+      "original_decision_date": "2000-08-03",
+      "adopted_reversal": true,
+      "followup": [
+        {
+          "type": "partial_reversal_after_adoption",
+          "url": "https://github.com/python/peps/blob/6e249d895555a5e330718a661678ef3827fa708a/pep-0201.txt",
+          "pinned_version": "6e249d895555a5e330718a661678ef3827fa708a",
+          "date": "2003-08-02",
+          "scope": "Python 2.4에서 인수 없는 호출이 TypeError 대신 빈 목록을 반환하도록 변경. 가변 인수 펼침을 이용한 역변환·행열 전치의 빈 입력을 처리한다. 전체 zip 설계의 폐기는 아니다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "observation": "위치별 결합과 shortest-input 의미를 찾았지만, 인수 0개 호출·빈 전치·가변 인수 역변환의 문제를 원 응답에서 제기하지 않았다. 고정 arity 예는 이 edge case의 회수가 아니다.",
+        "timing": "Haskell/ML 사전자료; SRFI live판 등은 별도 시간 한계.",
+        "assessment": "후속 번복의 직접 이유 미회수"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "observation": "Common Lisp map/LOOP와 R5RS map/for-each의 위치별 반복, zip_offset의 padding을 비교하지만 인수 없는 호출·빈 전치·가변 인수 역변환의 후속 문제를 제기하지 않았다.",
+        "timing": "Common Lisp와 R5RS는 사전 자료, zip_offset 날짜 unknown. 관련 loop 자체의 시점과 후속 edge case 회수를 구별한다.",
+        "assessment": "후속 번복의 직접 이유 미회수"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C12",
+      "canonical_id": "P0509",
+      "original_decision_date": "2016-09-08",
+      "adopted_reversal": true,
+      "followup": [
+        {
+          "type": "adopted_specification_rescinded",
+          "url": "https://github.com/python/peps/blob/ab15de6ab836f41e6be797b4de380a0233066ce8/pep-0699.rst",
+          "pinned_version": "ab15de6ab836f41e6be797b4de380a0233066ce8",
+          "date": "2023-01-18",
+          "scope": "PEP699가 PEP509의 dict 버전 필드 사양을 철회하고 구현 세부로 재분류. 3.11 특수화는 다른 가드를 사용하며 후속 write watcher 등의 재사용을 허용한다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          2,
+          4,
+          7
+        ],
+        "observation": "SELF dependency list라는 mutation-triggered invalidation 원리는 사전 자료로 찾았다. JSC watchpoint는 2020년 사후 자료다. 3.11 specialization이 다른 guard를 사용하게 되어 dict version field를 유지할 필요가 줄었다는 후속 상황 자체는 원 응답에 없다.",
+        "timing": "SELF1989/1991 사전; JSC2020 사후.",
+        "assessment": "연관 메커니즘 부분 회수; 미래 구현 변경 이유의 예측은 아님"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "observation": "Truffle assumption과 V8 hidden-class/inline-cache 구조, RPython JIT와 cache-aside를 찾았다. Python3.11의 guard 사용 변화나 dict version field가 구현 세부로 돌아가는 이유는 원 응답에 없다.",
+        "timing": "Truffle2017은 사후, V8/RPython 등은 날짜 unknown.",
+        "assessment": "인접 캐시 무효화 구조; 후속 구현 변경 이유 미회수"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C14",
+      "canonical_id": "P0563",
+      "original_decision_date": "2017-12-04",
+      "adopted_reversal": true,
+      "followup": [
+        {
+          "type": "adopted_design_replaced",
+          "url": "https://github.com/python/peps/blob/a111ec493be2d52356c1451f074e4a7c70d9ad82/pep-0649.rst",
+          "pinned_version": "a111ec493be2d52356c1451f074e4a7c70d9ad82",
+          "date": "2023-05-16",
+          "scope": "PEP649의 Accepted 판은 문자열화가 런타임 사용자에게 준 문제를 지적하고 계산 함수+descriptor로 지연 평가한다. 2017년 lambda 대안의 잘못된 기각을 별도 절에서 재검토한다. 모든 이전 lambda 구현과 동일하다고 보지는 않는다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          2,
+          3,
+          4
+        ],
+        "observation": "SQLAlchemy의 callable 지연·SRFI45 promise·Angular의 zero-argument callback을 사전 원문으로 찾았다. 이는 후속 계산 함수 설계에 인접하지만, PEP649의 class scope 처리·descriptor 및 2017년 lambda 기각 논증 재검토는 제시하지 않았다. 기존 gold의 함수 지역 상태 유지 조건까지 회수한 것으로 보지 않는다.",
+        "timing": "각각2017-11-03,2004,2017-10-18 자료로 결정 이전 확인.",
+        "assessment": "후속 설계 방향에 인접한 사전 메커니즘; 정확한 반전 논증 미회수"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3
+        ],
+        "observation": "Effect description/performer와 SymPy symbolic representation으로 평가 지연 방향을 찾았으나, function-local 상태를 보관하는 lambda의 기각 논증이나 class scope·descriptor 해법을 제시하지 않았다. mypy는 독립 optional consumer일 뿐이다.",
+        "timing": "Effect/SymPy 날짜 unknown, mypy의 checking/execution 분리는2014 사전.",
+        "assessment": "일반 표현/평가 분리; 정확한 반전 논증 미회수"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C21",
+      "canonical_id": "R0114",
+      "original_decision_date": "2014-07-30",
+      "adopted_reversal": true,
+      "followup": {
+        "id": "Rust RFC 0231",
+        "url": "https://raw.githubusercontent.com/rust-lang/rfcs/2e7023d11a34f7718f248000edd6f1b8e7e189c1/active/0000-upvar-capture-inference.md",
+        "pinned_version": "2e7023d11a34f7718f248000edd6f1b8e7e189c1",
+        "kind": "partial_reversal",
+        "decision_date": "2014-09-18",
+        "decision_event_url": "https://api.github.com/repos/rust-lang/rfcs/pulls/231",
+        "reversed_scope": "The by-value default and explicit capture/self annotations are replaced by inferred capture/receiver modes and an explicit escaping/value-capture form. The recovered predecision follow-up names that form proc(); the later preserved text uses move ||. Callable-trait unification is not overturned.",
+        "reason_for_change": "Specifying ref and self/capture modes is inconvenient; inference removes line-noise while retaining explicit escaping/value-capture control.",
+        "gold_items_relevant_to_reversal": [
+          "R0114-G04",
+          "R0114-G08",
+          "R0114-G01"
+        ],
+        "followup_not_in_baseline_input": true,
+        "snapshot_limit": "후속 PR head와 현재 보존본문의 escaping 문법이 다르므로 특정 keyword의 수락시점을 단정하지 않는다. 공통되는 capture/receiver 추론 변경만 reversal로 센다."
+      },
+      "A": {
+        "ranks": [
+          1,
+          2,
+          5,
+          8
+        ],
+        "observation": "capture 구축·invocation·representation을 분리하고 명시 per-variable capture를 찾았다. capture/receiver mode를 사용 방식에서 추론해 annotation 부담을 줄이는 후속 변경은 원 응답에 제시하지 않았다.",
+        "timing": "C++2013·Clang3.4·Java2013 등 사전 자료, D live는 unknown.",
+        "assessment": "관련 설계 비교는 회수했으나 후속 추론 정책 미회수"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "observation": "명시적 C++ capture·ATS linear value·D lifetime·Nim iterator representation을 비교했다. capture와 receiver mode를 사용에서 추론하여 ref/self annotation 부담을 줄이는 후속 정책은 없다.",
+        "timing": "C++2012 사전 자료를 포함하지만 나머지 live/사후 구분은 runs/B/C21.json.",
+        "assessment": "관련 구조는 회수했으나 후속 추론 정책 미회수"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C29",
+      "canonical_id": "S0025",
+      "original_decision_date": "2016-04-01",
+      "adopted_reversal": true,
+      "followup": [
+        {
+          "type": "partial_reversal_after_adoption",
+          "url": "https://github.com/swiftlang/swift-evolution/blob/17bc96ea9f23b1becfe91bfd72bd0c006390fd58/proposals/0169-improve-interaction-between-private-declarations-and-extensions.md",
+          "pinned_version": "17bc96ea9f23b1becfe91bfd72bd0c006390fd58",
+          "date": "2017-04-18",
+          "decision_url": "https://forums.swift.org/t/accepted-se-0169-improve-interaction-between-private-declarations-and-extensions/5692/1",
+          "scope": "동일 파일 안 동일 타입의 extensions를 하나의 private 접근 scope로 본다. lexical scope만 허용하던 SE0025 경계를 부분적으로 넓힌다. 다른 파일·다른 타입의 모든 접근을 허용하는 전면 폐기는 아니다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          4
+        ],
+        "observation": "C# partial declaration들이 같은 타입의 private 권한을 공유한다는2006년 원리를 명시했고, Swift extensions가 권한을 공유할지는 결정할 쟁점으로 남겼다. 이는 후속 SE0169의 같은 타입 extension 공유 구조와 가깝다. C#의 범위는 Swift의 동일 파일 제한과 같지 않고, 실제 Swift 사용자 불편·최종 정책을 예상했다고 볼 수 없다.",
+        "timing": "ECMA-334 4th edition2006 사전 원문.",
+        "assessment": "후속 공유 구조에 대한 사전 선례 발견; 동일한 결정·이유 예측은 아님"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2
+        ],
+        "observation": "Ada private declarative region과 Pony type-private fields를 찾았지만 같은 파일의 같은 타입 extension들이 private 권한을 공유하는 후속 정책은 제시하지 않았다. Ada의 child-unit 권한은 Swift의 정확한 경계와 다르고 공식 원문의 보완 열람도 실패했다.",
+        "timing": "Ada2022 mirror 사후, Pony live 날짜 unknown.",
+        "assessment": "후속 공유 구조와 번복 이유 미회수; 사전 근거도 미확인"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C31",
+      "canonical_id": "P0386",
+      "original_decision_date": "2010-03-21",
+      "adopted_reversal": true,
+      "followup": [
+        {
+          "type": "adopted_specification_replaced",
+          "url": "https://github.com/python/peps/blob/df28da700d4b378bb6dd6f8d8cd67e54c6816c68/pep-0440.txt",
+          "pinned_version": "df28da700d4b378bb6dd6f8d8cd67e54c6816c68",
+          "date": "2014-08-22",
+          "scope": "PEP440 수락과 함께 PEP386이 Superseded로 변경. 개발 버전 정렬 순서, 날짜 버전·version epoch·local identifier·호환 릴리스 범위를 확장하여 기존 표기의 이전 문제를 다룬다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "observation": "LooseVersion의 prerelease 정렬 오류와 date-like legacy 문자열, Ivy의 qualifier·dependency range를 사전 자료로 찾았다. Debian epoch와 RPM의 생태계 비교는 live/date-unknown 자료였다. PEP440의 local identifier·전체 migration 정책을 정확히 제안한 것은 아니다.",
+        "timing": "CPython2.6.4·Ivy2.1.0은2009 사전; 나머지는 unknown.",
+        "assessment": "후속 문제의 일부를 설명하는 사전 비교 요소; 전체 대체안 회수 아님"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2
+        ],
+        "observation": "Repology의 여러 release marker·prefix bound와 SemVer의 prerelease/metadata/compatibility contract를 비교했다. 날짜 표기와 distribution revision의 mismatch는 경고했으나 PEP440의 epoch·local identifier·개발 릴리스 순서와 전체 migration 해법을 제시하지 않았다.",
+        "timing": "주 mechanism/spec는 날짜 unknown, supplementary author discussion2022·catalogue2019/2022는 사후. 결정 전 존재를 확인하지 못함.",
+        "assessment": "인접 순서/정규화 비교; 후속 대체 이유의 사전 회수 미확인"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C10",
+      "canonical_id": "P0354",
+      "original_decision_date": "2007-05-18",
+      "adopted_reversal": false,
+      "followup": [
+        {
+          "type": "rejected_proposal_replaced",
+          "url": "https://github.com/python/peps/blob/4434e728a7db24540d581f52e96570ca1230356e/peps/pep-0435.rst",
+          "pinned_version": "4434e728a7db24540d581f52e96570ca1230356e",
+          "date": "2013-05-10",
+          "scope": "기각된 열거형 제안을 PEP435로 대체. 2007년 제안이 먼저 채택되었다고 보지 않는다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "observation": "Java·Haskell·Commons Lang·Ada의 유한 명명 값과 비교 정책을 찾았다. 이는2013년 enum 제안과 비교할 재료지만, 처음 PEP354는 채택되지 않아 채택 후 번복 분모에 넣지 않는다.",
+        "timing": "Haskell2002·Commons2005·Ada1995/2000 사전; Java판의 정확 날짜 unknown.",
+        "assessment": "기각 후 대체의 인접 선례; adopted reversal 아님"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3
+        ],
+        "observation": "attrs frozen values, Better Enums의 declaration-generated tables, Magic Enum의 metadata sequences/optional operators를 비교했으나 Python 후속 enum 정책을 재현하지 않았다. 원안은 먼저 기각되었으므로 adopted reversal이 아니다.",
+        "timing": "현 attrs 자료 사후, Better Enums 등 날짜 unknown.",
+        "assessment": "기각 후 대체의 참고; 채택 번복 분모 밖"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C11",
+      "canonical_id": "P0433",
+      "original_decision_date": "2013-08-28",
+      "adopted_reversal": false,
+      "followup": [
+        {
+          "type": "draft_replaced",
+          "url": "https://github.com/python/peps/blob/4434e728a7db24540d581f52e96570ca1230356e/peps/pep-0446.rst",
+          "pinned_version": "4434e728a7db24540d581f52e96570ca1230356e",
+          "date": "2013-08-28",
+          "scope": "기본 상속을 유지하는 선택적 제안 대신 기본 비상속과 원자적 생성으로 바꾼 PEP446. 원 제안의 선행 채택은 없다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          2,
+          6
+        ],
+        "observation": "O_CLOEXEC의 원자적 생성이 생성 후 flag 설정의 경쟁을 피한다는2013년 이전 자료를 찾았다. Go의 협력 lock·retained descriptor 정책도 찾았으나 live 판이다. 전역 기본값을 비상속으로 바꾸는 후속 정책 전부와 동등하다고 보지 않는다.",
+        "timing": "OpenBSD5.3 open2013 사전; Go live unknown.",
+        "assessment": "후속 안전 논거의 원자적 생성 요소 회수; 원안은 Draft라 adopted reversal 아님"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "observation": "fcntl flag·atomic O_CLOEXEC/pipe2/socket/dup3와 spawn file-actions를 찾았다. 생성과 별도 flag 설정 사이의 경쟁을 피한다는 후속 안전 논거는 포함되지만 해당 원자적 생성의 열린 근거는 사후 Linux manual이다. default 비상속으로의 전체 정책 변경은 명시하지 않았다.",
+        "timing": "fcntl1994/spawn2007은 사전, atomic constructor manual2025/2026은 사후.",
+        "assessment": "후속 안전 요소를 사후 자료로 회수; 최초 Draft 대체임"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    },
+    {
+      "case_id": "C13",
+      "canonical_id": "P0554",
+      "original_decision_date": "2023-11-28",
+      "adopted_reversal": false,
+      "followup": [
+        {
+          "type": "draft_replaced",
+          "url": "https://github.com/python/peps/blob/6aeaba7f23a1ce373e099a2b35db9525dbb11f6d/peps/pep-0734.rst",
+          "pinned_version": "6aeaba7f23a1ce373e099a2b35db9525dbb11f6d",
+          "date": "2023-11-28",
+          "scope": "장기간 Draft였던 API를 더 작은 PEP734 제안으로 교체. PEP734의 최종 수락은 2025년이므로 이 사례의 결정 창 밖이며 선행 채택 후 번복으로 세지 않는다."
+        }
+      ],
+      "A": {
+        "ranks": [
+          1,
+          2,
+          6,
+          7
+        ],
+        "observation": "기존 CPython lifecycle·module state·byte-message API와 Lua state를 찾았다. 더 작은 후속 Python API로 범위를 줄인 판단 자체를 원 응답이 재현하지는 않았다. 원안은 오랜 Draft 뒤 대체되었으므로 채택 번복 분모에 넣지 않는다.",
+        "timing": "Lua 고정5.1 manual pre; CPython live unknown/2026 사후.",
+        "assessment": "기존 부품 비교; Draft 대체와 채택 번복 분리"
+      },
+      "B": {
+        "ranks": [
+          1,
+          2,
+          3
+        ],
+        "observation": "Jep subinterpreter integration·Lupa independent states·message channel을 찾았으나 Python 후속 API 범위를 줄인 이유를 재현하지 않았다. 상태 격리/ownership에 미확인이 남는다.",
+        "timing": "각 선택 기능의 시점은 unknown으로 보존.",
+        "assessment": "기존 부품 비교; Draft 대체와 채택 번복 분리"
+      },
+      "judge": "작업자",
+      "coding_scope": "후속 이유와 원 응답의 정성 대조; gold 분모·항목 일치를 바꾸지 않는 post-hoc 분석"
+    }
+  ],
+  "limits": "이것은 사전 등록된 미래 예측 정확도 지표가 아니다. 미래의 요구·구현 변경을 입력으로 알 수 있었던 것처럼 다루지 않는다. 관련 원리와 반전 이유·정확한 새 설계를 구별한다."
+}

@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "case_id": "C05",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C05-D01",
+      "url": "https://grep.app/api/search?q=EventSourceObjectSpamFilter",
+      "accessed_at_utc": "2026-11-20 12:32:24 UTC",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live search index",
+      "sections_read": "Search metadata and first returned code-hit snippets",
+      "confirmed": "Native public code search returned actual Go code hits for per-source/per-object event throttling and correlator options. This endpoint was discovery evidence only, not a verified historical implementation.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D02",
+      "url": "https://datatracker.ietf.org/doc/html/rfc5424",
+      "accessed_at_utc": "2026-11-20 12:32:54 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "RFC 5424 structured event-message semantics and fractional timestamps",
+      "version_or_date": "RFC 5424, March 2009",
+      "sections_read": "Publication metadata, introduction; find reads at 2026-11-20 12:33:35 UTC for TIME-SECFRAC MUST, The MSGID SHOULD, and name-value pairs (sections 6.2.3, 6.2.7, 6.3)",
+      "confirmed": "RFC 5424 separates origin/application/process fields, a message-type identifier and extensible structured parameters from free text; its timestamp syntax permits up to six fractional digits and a time-quality indicator.",
+      "limits": "The RFC does not define Kubernetes grouping, indexes or event-delivery guarantees; identical type identifiers do not make all parameter values interchangeable, and timestamp precision does not establish clock accuracy or total order. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D03",
+      "url": "https://rsyslog-doc-v5.readthedocs.io/en/v5-stable/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "accessed_at_utc": "2026-11-20 12:32:54 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "rsconf1_repeatedmsgreduction.html",
+      "version_or_date": "v5-stable; page footer 2008–2014",
+      "sections_read": "RepeatedMsgReduction description and example",
+      "confirmed": "Version 5 documentation supports reducing consecutive repeated messages and allows disabling it to log every message. This page does not itself establish the complete modern identity key or rate-limit behavior.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D05",
+      "url": "https://logback.qos.ch/manual/appenders-async-sift.html",
+      "accessed_at_utc": "2026-11-20 12:33:35 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "appenders-async-sift.html",
+      "version_or_date": "live manual",
+      "sections_read": "AsyncAppender section; find read at 2026-11-20 12:34:20 UTC for AsyncAppender logs",
+      "confirmed": "AsyncAppender has a fixed-size queue, optional lower-priority discarding, and an explicit neverBlock overflow mode. The default can block once full, so merely making event reporting asynchronous does not guarantee isolation.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D06",
+      "url": "https://sre.google/sre-book/handling-overload/",
+      "accessed_at_utc": "2026-11-20 12:33:35 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Google SRE client-side adaptive throttling and retry budgets",
+      "version_or_date": "First-edition SRE book chapter; book dated 2016 by Google Research, live online copy",
+      "sections_read": "Client-Side Throttling, Criticality, Deciding to Retry; find read at 2026-11-20 12:34:20 UTC for Client-Side Throttling",
+      "confirmed": "The SRE chapter describes local adaptive rejection based on accepted/attempted request history, criticality-aware shedding, and both per-request and per-client retry budgets. It explains that server-side rejection itself can consume enough resources to overload a backend.",
+      "limits": "This is a pattern to adapt, not a Kubernetes event component; sparse clients have weak feedback, reaction is delayed, and an independent hard local ceiling plus a developer-visible loss indicator would still be needed. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D07",
+      "url": "https://docs.rsyslog.com/doc/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "accessed_at_utc": "2026-11-20 12:33:35 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "rsyslog repeated-message reduction and its documented failure modes",
+      "version_or_date": "live rsyslog 8 daily stable documentation",
+      "sections_read": "What is a repeated message and Discussion; find read at 2026-11-20 12:34:20 UTC for What is a repeated message",
+      "confirmed": "Current rsyslog identifies duplicates using message, host, process and application, and documents historical over-merging when origin was ignored. It warns that prose-only repeat summaries can break machine analysis.",
+      "limits": "The rsyslog documentation discourages its legacy reduction format; use the lesson to retain structured message identity and counts rather than copying a free-text repetition notice. The current page's exact historical content is unverified. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D08",
+      "url": "https://raw.githubusercontent.com/kubernetes/client-go/v4.0.0/tools/record/events_cache.go",
+      "accessed_at_utc": "2026-11-20 12:33:35 UTC",
+      "source_type": "public_code",
+      "title": "client-go v4.0.0 EventCorrelator and EventAggregator",
+      "version_or_date": "client-go tag v4.0.0",
+      "sections_read": "Complete source; getEventKey, EventAggregatorByReasonFunc, EventAggregate, eventObserve and NewEventCorrelator",
+      "confirmed": "The v4.0.0 implementation keeps bounded LRU state, groups differing messages by source/object/type/reason and counts duplicate events through patches; its default filter skips nothing. Unlike current search snippets, this version contains no EventSourceObjectSpamFilter, so aggregation alone is not an API request-rate limit.",
+      "limits": "The inspected version's default filter drops no events, and duplicate counting still creates updates, so it is not a write-rate bound; grouping distinct messages can erase distinctions and LRU eviction can split a series. The release date of this tag was not verified. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D2",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D09",
+      "url": "https://raw.githubusercontent.com/systemd/systemd/v234/man/systemd.journal-fields.xml",
+      "accessed_at_utc": "2026-11-20 12:33:35 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "systemd v234 structured journal fields",
+      "version_or_date": "systemd v234, released 2017-07-12 per original announcement",
+      "sections_read": "Complete versioned manual source; user fields, trusted fields, object fields and address fields",
+      "confirmed": "The v234 manual separates human-readable MESSAGE from MESSAGE_ID and structured origin/object metadata, and distinguishes source time, receive time, monotonic time and boot identity. Both source and receive timestamps use microseconds.",
+      "limits": "Journal metadata often relies on a local privileged collector and must be translated to Kubernetes object UIDs and authenticated reporters; monotonic time is useful only with its clock or boot identity, and adopting these fields does not require moving persistence to journald. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D11",
+      "url": "https://prometheus.io/docs/alerting/latest/configuration/",
+      "accessed_at_utc": "2026-11-20 12:34:46 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Prometheus Alertmanager label grouping and separate notification intervals",
+      "version_or_date": "live latest documentation",
+      "sections_read": "Route grouping, group_wait, group_interval and repeat_interval; find read at 2026-11-20 12:35:20 UTC for How long to wait before sending the first notification",
+      "confirmed": "Alertmanager groups alerts by selected labels and separates the delay before first notification, cadence for group changes, and repeat notification interval. The documentation explicitly notes that increasing the first delay can hide short-lived alerts.",
+      "limits": "Alertmanager handles alert notifications rather than Kubernetes event persistence; only the mechanism should be transferred within the stated boundary, and a long initial delay can conceal short-lived failures while many distinct groups can still overwhelm a global budget. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D12",
+      "url": "https://logback.qos.ch/news-archive.html",
+      "accessed_at_utc": "2026-11-20 12:34:46 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "news-archive.html",
+      "version_or_date": "live archive with dated release entries",
+      "sections_read": "Version 1.2.3 release entry; find read at 2026-11-20 12:35:20 UTC for 2017-03-30",
+      "confirmed": "The relevant historical release entry dates Logback 1.2.3 to 2017-03-30. This dates the independently opened v_1.2.3 implementation, rather than assuming the entire live manual existed then.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D13",
+      "url": "https://sre.google/books/",
+      "accessed_at_utc": "2026-11-20 12:34:46 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "sre.google",
+      "version_or_date": "live books overview, including newer editions",
+      "sections_read": "Book list and first-edition description",
+      "confirmed": "The current Google SRE book page links the original online edition and its Google Books record; this live page alone supplies no precise first-edition publication date.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D14",
+      "url": "https://raw.githubusercontent.com/qos-ch/logback/v_1.2.3/logback-core/src/main/java/ch/qos/logback/core/AsyncAppenderBase.java",
+      "accessed_at_utc": "2026-11-20 12:34:47 UTC",
+      "source_type": "public_code",
+      "title": "Logback 1.2.3 AsyncAppenderBase bounded queue and nonblocking overflow",
+      "version_or_date": "Logback v_1.2.3",
+      "sections_read": "Complete source; queue allocation, append, put, neverBlock and shutdown",
+      "confirmed": "Version 1.2.3 uses a fixed-size ArrayBlockingQueue; neverBlock selects a nonblocking offer, otherwise the caller waits for capacity, and the worker has a configurable maximum shutdown flush time.",
+      "limits": "The Java implementation is a mechanism reference for a Go system; its default blocks on a full queue, and indiscriminate dropping could hide the first actionable failure, so the adaptation needs explicit loss reporting and a policy for retaining representative diagnostics. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D16",
+      "url": "https://www.mail-archive.com/systemd-devel%40lists.freedesktop.org/msg38852.html",
+      "accessed_at_utc": "2026-11-20 12:35:20 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "msg38852.html",
+      "version_or_date": "Original announcement 2017-07-12, mirrored from systemd-devel",
+      "sections_read": "Original release announcement header, release link and change list",
+      "confirmed": "The systemd 234 release announcement is dated 2017-07-12 and links the v234 release, establishing availability before the cutoff for the opened v234 journal-field source.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D18",
+      "url": "https://research.google/pubs/site-reliability-engineering-how-google-runs-production-systems/",
+      "accessed_at_utc": "2026-11-20 12:35:44 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "research.google",
+      "version_or_date": "Original book, 2016",
+      "sections_read": "Book title, publisher/year and abstract",
+      "confirmed": "Google Research's bibliographic record identifies the original Site Reliability Engineering book as an O'Reilly publication from 2016, supporting pre-cutoff availability of the first-edition overload chapter.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C05.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C05-D04",
+      "url": "https://github.com/kubernetes/client-go/blob/v4.0.0/tools/record/events_cache.go",
+      "accessed_at_utc": "2026-11-20 12:32:54 UTC",
+      "reason": "The web opener returned DisabledError for the GitHub blob page; no code was read from this attempt.",
+      "recorded_in": "runs/A/C05.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D10",
+      "url": "https://pkg.go.dev/k8s.io/client-go@v4.0.0+incompatible/tools/record",
+      "accessed_at_utc": "2026-11-20 12:34:20 UTC",
+      "reason": "The web opener reported that this versioned pkg.go.dev URL was inaccessible; no package date was verified.",
+      "recorded_in": "runs/A/C05.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D15",
+      "url": "https://api.github.com/repos/kubernetes/client-go/releases/tags/v4.0.0",
+      "accessed_at_utc": "2026-11-20 12:34:47 UTC",
+      "reason": "The unauthenticated GitHub releases API returned HTTP 404, so this request did not verify the v4.0.0 date.",
+      "recorded_in": "runs/A/C05.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C05-D17",
+      "url": "https://books.google.com/books?id=81UrjwEACAAJ",
+      "accessed_at_utc": "2026-11-20 12:35:20 UTC",
+      "reason": "The Google Books link redirected to a country-specific URL that the opener could not access; this attempt did not verify the first edition's date.",
+      "recorded_in": "runs/A/C05.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "resolved_at_utc": "2026-11-20T14:19:54.871048+00:00",
+  "resolver": "작업자",
+  "reviewer": "내부 별도 검토",
+  "rows": [
+    {
+      "candidate_id": "B-C24-r2",
+      "initial_root_judgment": {
+        "rank": 2,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "immutable implementation과 builder를 생성한다."
+          ],
+          [
+            "pass",
+            "생성 결과는 immutable이며 derived/default/lazy state를 작성자가 정의한다."
+          ],
+          [
+            "pass",
+            "client-supplied attributes와 author-computed state를 구별한다. visibility만으로 제외되지 않는 조건은 명시했다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Immutable construction with a division between supplied and computed attributes.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "Kotlin/Scala 실체나 property별 memberwise opt-in, initializer 전체 자동 참여/opt-out, 인수 수동·대입만 합성이라는 구별 선택은 원 응답에 없다. builder의 존재만으로 이 세부 선택을 추론하지 않는다. Non-public attribute의 public builder 입력 노출은 원 응답의 피해야 할 caveat이며 그 노출을 사용 방식으로 선택하지 않아 G04의 주 적중으로는 세지 않는다. 이 경계는 추가 내부 검토 대상으로 보존한다.",
+        "transfer_mapping": "Immutables supplied/derived/lazy attribute 구분 → Swift 자동 입력 속성과 수동 implementation state. non-public builder exposure를 막을 선택 규칙과 definite initialization을 추가해야 한다.",
+        "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C24-r2",
+      "final_gold_matches": [
+        {
+          "gold_id": "S0018-G04",
+          "rationale": "원 후보의 주의점 자체가 낮은 가시성의 속성을 공개 생성 입력으로 합성하는 구조를 명시한다. 이는 gold의 구체 구조·공개 경계와 같다. 적합성을 경고하는 방식으로 회수했더라도 거절된 대안의 회수와 유용성 평가는 분리한다.",
+          "match_basis": "structural_match",
+          "external_entity_hit": false
+        }
+      ],
+      "final_H": [
+        [
+          "pass",
+          "생성 구현과 builder가 반복 생성·대입 코드를 줄이는 구조를 확인했다."
+        ],
+        [
+          "pass",
+          "생성 결과는 불변이며 derived/lazy 계산을 위해 완성 객체를 일반 가변 상태로 바꾸라고 하지 않는다."
+        ],
+        [
+          "pass",
+          "파생 상태는 작성자 계산으로 만들고 직접 입력에서 분리할 수 있다. visibility만으로 숨겨진 상태가 보호된다고 주장하지 않는 조건부 참고다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "B-C24-r4",
+      "initial_root_judgment": {
+        "rank": 4,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "field declaration에서 initializer assignments를 만들고 post-init을 호출한다."
+          ],
+          [
+            "pass",
+            "frozen instance를 유지하며 init 중 특별 assignment를 쓰는 명시 경로가 있다. Swift의 정적 불변 보증을 그대로 제공한다고 하지는 않는다."
+          ],
+          [
+            "pass",
+            "입력에서 제외한 field와 post-init의 derived state를 generated initialization에 조합한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Mixed generated/manual initialization with excluded input fields and optional frozen instances.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "Kotlin/Scala 실체나 property별 memberwise opt-in, initializer 전체 자동 참여/opt-out, 인수 수동·대입만 합성이라는 구별 선택은 원 응답에 없다. builder의 존재만으로 이 세부 선택을 추론하지 않는다. field 선언 및 init=False 제외는 property별 memberwise 명시 opt-in과 같은 선택이라고 자동 인정하지 않는다.",
+        "transfer_mapping": "attrs generated initialization+post-init → Swift 자동 할당과 수동 derived state의 순서. runtime best-effort frozen semantics를 Swift static initialization 규칙으로 번역해야 한다.",
+        "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C24-r4",
+      "final_gold_matches": [],
+      "final_H": [
+        [
+          "pass",
+          "필드 선언으로 생성 초기화·대입을 얻는다."
+        ],
+        [
+          "pass",
+          "원 후보가 frozen 후처리의 특수 대입 연산을 명시했다. runtime 불변성 범위에서 성립하며 Swift 보장을 검증한 것은 아니다."
+        ],
+        [
+          "pass",
+          "init=False와 후처리 훅으로 생성 입력에서 제외한 상태를 작성자가 초기화하는 구조를 확인했다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "B-C21-r1",
+      "initial_root_judgment": {
+        "rank": 1,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "copy와 reference capture를 모두 명시하여 두 environment 구성 범주를 지원한다."
+          ],
+          [
+            "not_in_scope",
+            "read/mutable invocation만 선택한 부분 참고이며 consuming invocation은 확인하지 못했다고 밝혔다."
+          ],
+          [
+            "pass",
+            "concrete closure class와 inline nonvirtual call operator를 유지하는 표현 선택이다. inline은 실제 기계 코드 inline 보장이 아니다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Capture policy, read/mutate access, callable representation.",
+        "link_status": "opened_body",
+        "gold_matches": [],
+        "match_rationale": "원 응답이 선택한 capture/access/representation 참고를 매칭한다. source에 있다는 이유만으로 per-variable borrowing clause, receiver default 또는 receiver inference를 추가하지 않는다. 언급한 copy/reference 구분만으로 명시적 per-variable borrowing 구문 G05를 선택했다고 보지 않았다.",
+        "transfer_mapping": "C++ capture construction과 const/mutable call operator 분리 → Rust capture와 environment access를 분리해 검토. reference lifetime을 보존해야 하며 consuming receiver는 별도다.",
+        "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C21-r1",
+      "final_gold_matches": [],
+      "final_H": [
+        [
+          "pass",
+          "참조와 복사 값 캡처가 모두 문서화되어 있다. Rust의 소유권·수명 검사를 동일시하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "소비/읽기/변경 전체를 제공한다는 주장은 원 후보가 명시적으로 하지 않았다. 실제 선택한 읽기·변경 구분은 지지된다."
+        ],
+        [
+          "not_in_scope",
+          "구체 closure class와 inline 호출 연산자는 확인되지만 사용자용 전체 dispatch/inlining 선택 모델은 원 후보의 보장 범위 밖이다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "B-C09-r3",
+      "initial_root_judgment": {
+        "rank": 3,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "C integer induction variable와 알려진 step direction 아래 range loop를 lowering한다."
+          ],
+          [
+            "pass",
+            "numeric loop를 machine-level index progression으로 만드는 참조다."
+          ],
+          [
+            "pass",
+            "원 응답은 overflow timing·deprecated syntax·builtin rebinding 미확인을 분리하고 proven binding 또는 guard/fallback을 요구한다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Optimization conditions, bounds-and-stride notation, and semantic checks before loop lowering.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "P0204-G01",
+            "rationale": "원 응답과 검증된 Language Basics가 Python range 호출을 숫자 loop의 입력으로 선택한다. 현 문서이므로 사후 자료 적중으로만 센다."
+          }
+        ],
+        "match_rationale": "현재 Cython의 Python builtin range 사용/인식이라는 선택을 통해 동일 range 실체 G01을 회수한다. Cython 자체와 모든 lazy-range library를 range로 합치지는 않는다.",
+        "transfer_mapping": "Cython range-loop lowering → Python numeric iteration optimization의 조건 비교. 동적 이름을 spelling만 보고 치환하지 않으며 overflow timing을 검증해야 한다.",
+        "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C09-r3",
+      "final_gold_matches": [],
+      "final_H": [
+        [
+          "pass",
+          "관계식 경계와 명시 stride, range loop가 문서화되어 있다."
+        ],
+        [
+          "pass",
+          "숫자 induction 변수를 통한 위치·간격 반복의 구현 참고다."
+        ],
+        [
+          "pass",
+          "문법의 가독성/폐기 예정 상태와 builtin 재정의의 미확인 안전성을 원 후보가 고려했다. H3의 고려 요구를 모든 재정의의 의미 보존 증명 요구로 강화하지 않는다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "B-C20-r5",
+      "initial_root_judgment": {
+        "rank": 5,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "context·plural metadata로 catalog message를 고른 뒤 positional interpolation한다."
+          ],
+          [
+            "pass",
+            "application-level catalog와 formatter pipeline이 core 언어 밖에 있다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Application-level translation lookup, plural selection, and positional interpolation pipeline.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "R0093-G02",
+            "rationale": "원 응답과 본문에 gettext-style domain/context/plural catalog 선택 후 sprintf형 positional interpolation이라는 결합이 명시된다. 이는 gold의 gettext와 format string 통합 메커니즘을 다른 runtime에서 구현한 사례다."
+          }
+        ],
+        "match_rationale": "Jed를 단순히 유사 localization으로 세지 않고, 원 응답이 gettext catalog 의미와 lookup-then-interpolation을 명시했으므로 같은 특정 조합으로 매칭한다.",
+        "transfer_mapping": "Jed gettext-compatible lookup → translated template 선택 후 Rust-compatible formatter로 reordered values 전달. PO→JSON 변환·plural metadata·format 호환을 확인해야 한다.",
+        "remaining_check": "문서상 제안된 참고 범위의 판정이며 대상 구현과 설계자 효용은 직접 관측하지 않았다. 날짜 unknown은 결정일 전 고정 판에서 선택된 메커니즘을 확인해야 한다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C20-r5",
+      "final_gold_matches": [
+        {
+          "gold_id": "R0093-G02",
+          "rationale": "SCOPE §5는 동일 명시 메커니즘을 일치 근거로 허용한다. 고정 G02는 gettext와 format string의 결합이며 원 후보는 gettext 구현의 context/plural lookup 뒤 sprintf 보간을 실제로 제안했다. 단순 이름 유사성이 아니다.",
+          "match_basis": "same_explicit_mechanism",
+          "external_entity_hit": false
+        }
+      ],
+      "final_H": [
+        [
+          "pass",
+          "실제 번역의 context·복수형 선택과 위치 재배열을 처리하는 구체 구성이 있다."
+        ],
+        [
+          "pass",
+          "catalogue lookup과 보간을 선택적 application library로 분리하므로 core compiler에 불완전한 localization 기제를 남길 필요가 없다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "A-C05-r1",
+      "initial_root_judgment": {
+        "rank": 1,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "unknown",
+            "adaptive feedback 지연과 sparse client 한계가 있어 독립 hard local ceiling이 필요하지만 구체 설정·작동은 미확인이다."
+          ],
+          [
+            "unknown",
+            "shedding 뒤 developer-visible loss indicator가 필요하나 보존 정책은 제시되지 않았다."
+          ],
+          [
+            "pass",
+            "producer admission/retry mechanism이며 persistence 위치·기간을 바꾸지 않는다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Event producer transport, local request admission, retry policy and prioritization of diagnostic traffic.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "K0383-G01",
+            "rationale": "producer 요청을 client-side throttling과 retry budget으로 줄이는 기존 전달 경로 보강이다. 별도 저장 구조로 바꾸는 대안이 아니다."
+          }
+        ],
+        "match_rationale": "기존 보고 흐름의 rate/backoff 강화를 제시해 G01의 핵심 개선 관계를 회수한다.",
+        "transfer_mapping": "SRE client-side throttle/retry budget → event producer API 요청 전 admission. global/개별 client ceiling과 loss 가시성이 없으면 overload와 진단 손실을 막지 못한다.",
+        "remaining_check": "hard ceiling과 representative diagnostic/loss 표시 정책을 정한 뒤 과부하·희소 client trace로 확인하면 H1/H2가 바뀐다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#A-C05-r1",
+      "final_gold_matches": [],
+      "final_H": [
+        [
+          "pass",
+          "실제 평가 범위인 producer 요청·재시도의 비용 증폭을 줄이는 대응과 hard local ceiling이 구체적이다."
+        ],
+        [
+          "pass",
+          "원 제안이 필수 진단용 allowance와 누락 표시를 요구한다. 모든 event 무손실을 약속하지 않는다."
+        ],
+        [
+          "not_in_scope",
+          "transport admission 참고이며 persistence 위치나 retention을 바꾸는 제안이 아니다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    },
+    {
+      "candidate_id": "B-C05-r1",
+      "initial_root_judgment": {
+        "rank": 1,
+        "L": "ok",
+        "E": "supported",
+        "H": [
+          [
+            "pass",
+            "원 응답은 reporter별 fairness뿐 아니라 aggregate hard write budget을 함께 제안한다."
+          ],
+          [
+            "unknown",
+            "대표 진단과 suppression count를 보존하라고 요구하지만 어떤 첫 실패·변경 메시지를 남길지 구체 loss policy는 없다."
+          ],
+          [
+            "pass",
+            "etcd persistence와 기존 retention을 그대로 두는 reporter admission 범위다."
+          ]
+        ],
+        "T": "mapped",
+        "scope": "reference_design: Reporter admission and aggregate API write budget.",
+        "link_status": "opened_body",
+        "gold_matches": [
+          {
+            "gold_id": "K0383-G01",
+            "rationale": "기존 event 전달 경로 앞의 rate/burst budget 강화라는 정답의 핵심 개선 방향을 명시했다. 다른 저장 구조로 옮기는 제안이 아니다."
+          }
+        ],
+        "match_rationale": "기존 전달 경로의 rate/backoff 강화 G01로 매칭한다. 적중과 제약 충족은 구별한다.",
+        "transfer_mapping": "Azure Throttling의 rate/burst 제어 → event writer의 개별·전체 예산. 원 응답의 공통 방향을 함께 읽었지만 진단 보존 조건은 미확인이다.",
+        "additional_evidence": [
+          "runs/B/C05.json#/raw_response"
+        ],
+        "remaining_check": "H unknown은 대표 진단/최초 보고/meaning-change 보존과 drop·재시작 정책을 구체화하고 overload trace로 확인한다. 문서상 조건부 참고 판정이며 runtime 결과는 아니다."
+      },
+      "review_judgment_location": "evidence/judgments/SECOND_REVIEW.json#B-C05-r1",
+      "final_gold_matches": [],
+      "final_H": [
+        [
+          "pass",
+          "원 후보가 로컬 limit만의 한계를 인지하고 aggregate write budget을 명시했다. limiter를 먼저 포화되는 자원에 맞춰야 하는 조건도 source가 지지한다."
+        ],
+        [
+          "pass",
+          "원 후보가 대표 진단과 억제 횟수를 보존하도록 요구한다. 무손실·실제 진단 효과는 검증하지 않았다."
+        ],
+        [
+          "not_in_scope",
+          "admission·write budget 참고이며 저장소나 보존 기간을 옮기는 구성이 아니다."
+        ]
+      ],
+      "final_label": "CONDITIONAL_TRANSFER",
+      "resolution": "수정 또는 유지 이유: 후보가 실제 언급한 비교/주의점도 회수로 인정하되 source-only 기능은 가져오지 않는다. 참고 범위에서 명시한 조건을 전체 구현 효과로 확대하지 않는다.",
+      "raw_response_modified": false
+    }
+  ],
+  "limits": "비무작위 경계7행의 해석 점검이며 신뢰도 추정이나 사람 검토가 아니다. 금번7행에서 외부 프로젝트 동일성만 세는 추가 민감도는 Jed 한 unknown-date 적중을 제외한다."
+}

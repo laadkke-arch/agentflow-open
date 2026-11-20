@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "case_id": "C11",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C11-D01",
+      "url": "https://grep.app/api/search?q=O_CLOEXEC&filter%5Blang%5D%5B0%5D=C",
+      "accessed_at_utc": "2026-11-20T12:48:35.072739+00:00",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live code index",
+      "sections_read": "Public code-search hit snippets for O_CLOEXEC; partial output due truncation.",
+      "confirmed": "Native unauthenticated grep.app search returned live public code snippets. Visible Git compatibility code retries without O_CLOEXEC after EINVAL; Redis code uses pipe2 with O_CLOEXEC.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D05",
+      "url": "https://man.openbsd.org/OpenBSD-5.2/closefrom.2",
+      "accessed_at_utc": "2026-11-20 12:49:24 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "closefrom(3) child cleanup policy",
+      "version_or_date": "OpenBSD 5.2; manual dated 2007-05-31",
+      "sections_read": "DESCRIPTION, RETURN VALUES, ERRORS, dated footer.",
+      "confirmed": "closefrom(fd) removes all descriptors numbered fd and above. The archived manual is dated May 31, 2007 and identifies OpenBSD 5.2.",
+      "limits": "It is a platform-specific API and closes deliberately shared extra descriptors too; every relevant launch path must adopt the policy or arrange explicit exceptions. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D06",
+      "url": "https://grep.app/api/search?q=ForkLock&f.repo=golang%2Fgo",
+      "accessed_at_utc": "2026-11-20T12:49:24.509567+00:00",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live golang/go master index",
+      "sections_read": "Repository/path/snippet fields from ten public search hits.",
+      "confirmed": "Go's live syscall code documents a shared ForkLock. Descriptor creation and setting close-on-exec use the read side while fork takes the write side; source also notes exceptions and blocking-call complications.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D07",
+      "url": "https://man.openbsd.org/OpenBSD-5.2/close.2",
+      "accessed_at_utc": "2026-11-20 12:49:41 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "FD_CLOEXEC per-descriptor inheritance control",
+      "version_or_date": "OpenBSD 5.2; manual dated 2011-11-06",
+      "sections_read": "DESCRIPTION on fork, execve, and F_SETFD; dated footer.",
+      "confirmed": "The archived manual explains inherited descriptors after fork and FD_CLOEXEC closing a descriptor on successful execve, with clearing the bit restoring inheritance.",
+      "limits": "It acts on exec, not fork alone; descriptors created without the flag by external code remain exposed, and setting the flag after creation leaves a concurrency gap. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D08",
+      "url": "https://man.openbsd.org/OpenBSD-5.3/open.2",
+      "accessed_at_utc": "2026-11-20 12:49:41 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "O_CLOEXEC on open/openat",
+      "version_or_date": "OpenBSD 5.3; manual dated 2013-01-19",
+      "sections_read": "Flag definitions, descriptor defaults, standards, dated footer.",
+      "confirmed": "The archived manual defines O_CLOEXEC to set FD_CLOEXEC on the new descriptor and lists ordinary open/openat behavior.",
+      "limits": "Platform support and fallback behavior must be checked; a separate open-then-fcntl sequence can race with another thread's fork and exec, as the retrieved Linux manual explains. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D10",
+      "url": "https://docs.gtk.org/glib/func.spawn_async.html",
+      "accessed_at_utc": "2026-11-20 12:49:41 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "func.spawn_async.html",
+      "version_or_date": "GLib 2.91.0; generated with gi-docgen 2026.1",
+      "sections_read": "Declaration, description, flags and child_setup parameters; current version header.",
+      "confirmed": "GLib exposes child-process launch flags and an optional pre-exec callback and delegates its detailed descriptor behavior to another spawn function.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D12",
+      "url": "https://go.dev/blog/go1.1",
+      "accessed_at_utc": "2026-11-20 12:50:07 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "go1.1",
+      "version_or_date": "2013-05-13",
+      "sections_read": "Title, publication date, release announcement.",
+      "confirmed": "Official release announcement dates Go 1.1 to May 13, 2013; this alone does not establish the contents of the blocked source file.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D13",
+      "url": "https://www.man7.org/linux/man-pages/man2/pipe.2.html",
+      "accessed_at_utc": "2026-11-20 12:50:07 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "pipe2(O_CLOEXEC)",
+      "version_or_date": "live Linux man-pages; post-2013 POSIX.1-2024 material",
+      "sections_read": "pipe2 signature, O_CLOEXEC description, history and standards.",
+      "confirmed": "pipe2 accepts O_CLOEXEC to mark both pipe ends at creation; the page records Linux 2.6.27/glibc 2.9 history and contains current POSIX.1-2024 material.",
+      "limits": "Deliberately passed pipe ends need explicit child-side mapping or flag handling; availability must be checked for the target operating system. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D14",
+      "url": "https://www.man7.org/linux/man-pages/man2/dup.2.html",
+      "accessed_at_utc": "2026-11-20 12:50:07 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "dup3(..., O_CLOEXEC)",
+      "version_or_date": "Linux man-pages 6.19; current POSIX.1-2024 material",
+      "sections_read": "dup/dup2 flags, dup3 O_CLOEXEC, error and history sections, colophon.",
+      "confirmed": "dup and ordinary dup2 produce a duplicate without FD_CLOEXEC, whereas dup3 accepts O_CLOEXEC. The page describes atomic replacement and the oldfd==newfd difference.",
+      "limits": "Ordinary dup/dup2 clear close-on-exec on a new duplicate, which can be useful for intentional child redirection; dup3 rejects identical old and new descriptor numbers, unlike dup2. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D15",
+      "url": "https://docs.gtk.org/glib/flags.SpawnFlags.html",
+      "accessed_at_utc": "2026-11-20 12:50:07 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "GLib spawn descriptor and standard-stream flags",
+      "version_or_date": "GLib 2.91.0; gi-docgen 2026.1",
+      "sections_read": "G_SPAWN_LEAVE_DESCRIPTORS_OPEN, standard stream flags, CLOEXEC_PIPES, version header.",
+      "confirmed": "Without LEAVE_DESCRIPTORS_OPEN, GLib closes descriptors other than standard streams before exec; standard input has a separate inheritance option. Current docs also list pipe CLOEXEC and newer standard-stream flags.",
+      "limits": "This protects only launches routed through GLib and therefore cannot cover all launch paths or external modules by itself; the current flag set includes later additions. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D17",
+      "url": "https://www.man7.org/linux/man-pages/man2/socket.2.html",
+      "accessed_at_utc": "2026-11-20 12:50:29 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "socket(..., SOCK_CLOEXEC, ...)",
+      "version_or_date": "live Linux manual; specific publication date not established in displayed excerpt",
+      "sections_read": "DESCRIPTION and type flags, including SOCK_CLOEXEC.",
+      "confirmed": "The socket type argument accepts SOCK_CLOEXEC to set FD_CLOEXEC when creating the descriptor; this is a constructor-level mechanism rather than a spawn-wrapper-only policy.",
+      "limits": "This constructor does not by itself audit other descriptor-producing networking operations, and support must be checked per platform. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D18",
+      "url": "https://www.man7.org/linux/man-pages/man3/posix_spawn.3p.html",
+      "accessed_at_utc": "2026-11-20 12:50:29 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "POSIX spawn file actions",
+      "version_or_date": "POSIX.1-2017 Programmer's Manual",
+      "sections_read": "PROLOG; file_actions/FD_CLOEXEC ordering and descriptor 0/1/2 behavior in DESCRIPTION.",
+      "confirmed": "POSIX spawn first applies ordered file actions and then closes descriptors carrying FD_CLOEXEC. The standard separately discusses descriptors 0, 1 and 2, and otherwise permits open parent descriptors to survive.",
+      "limits": "The interface does not automatically discard every unmarked descriptor and covers only callers that use the spawn path; it complements a descriptor-creation policy. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D19",
+      "url": "https://www.man7.org/linux/man-pages/man2/open.2.html",
+      "accessed_at_utc": "2026-11-20 12:50:29 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "open.2.html",
+      "version_or_date": "live Linux manual; specific publication date not established in displayed excerpt",
+      "sections_read": "DESCRIPTION, default inheritable flag, O_CLOEXEC concurrency discussion.",
+      "confirmed": "The manual explains that setting FD_CLOEXEC in a separate fcntl call races with a concurrent fork plus exec and that O_CLOEXEC avoids that gap at descriptor creation.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D20",
+      "url": "https://go.dev/src/syscall/exec_unix.go",
+      "accessed_at_utc": "2026-11-20 12:50:50 UTC",
+      "source_type": "public_code",
+      "title": "Go ForkLock and explicit retained-descriptor policy",
+      "version_or_date": "live source; 2009 copyright does not date the retrieved revision",
+      "sections_read": "ForkLock design comments, per-constructor rules, CloseOnExec implementation, ProcAttr.Files, forkExec call path.",
+      "confirmed": "Go's public source combines close-on-exec defaults and explicit retained descriptors with a reader/writer lock around fallback descriptor creation and fork. It prefers atomic OS operations and explicitly notes that potentially blocking opens cannot always hold the lock, leaving a race on fallback paths.",
+      "limits": "All participating descriptor creators and launchers must honor the lock; external native code can bypass it, and the source explicitly leaves a race for potentially blocking open fallbacks. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C11.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C11-D02",
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799.2008edition/functions/open.html",
+      "accessed_at_utc": "2026-11-20 12:49:24 UTC",
+      "reason": "Requested historical POSIX page could not be retrieved.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D03",
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799.2008edition/functions/fcntl.html",
+      "accessed_at_utc": "2026-11-20 12:49:24 UTC",
+      "reason": "Requested historical POSIX page could not be retrieved.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D04",
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799.2008edition/functions/posix_spawn.html",
+      "accessed_at_utc": "2026-11-20 12:49:24 UTC",
+      "reason": "Requested historical POSIX page could not be retrieved.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D09",
+      "url": "https://github.com/golang/go/blob/go1.1/src/pkg/syscall/exec_unix.go",
+      "accessed_at_utc": "2026-11-20 12:49:41 UTC",
+      "reason": "Historical public Go source could not be fetched through the GitHub HTML page.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D11",
+      "url": "https://raw.githubusercontent.com/golang/go/go1.1/src/pkg/syscall/exec_unix.go",
+      "accessed_at_utc": "2026-11-20 12:50:07 UTC",
+      "reason": "The historical source's raw GitHub endpoint could not be fetched by this web tool.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C11-D16",
+      "url": "https://go.googlesource.com/go/+/refs/tags/go1.1/src/pkg/syscall/exec_unix.go",
+      "accessed_at_utc": "2026-11-20 12:50:29 UTC",
+      "reason": "Historical Go source could not be fetched from the official googlesource mirror.",
+      "recorded_in": "runs/A/C11.json",
+      "counts_toward_minimum": false
+    }
+  ]
+}

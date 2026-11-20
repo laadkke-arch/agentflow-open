@@ -1,0 +1,406 @@
+{
+  "case_id": "C13",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "CPython subinterpreter C API",
+      "candidate_url": "https://docs.python.org/3.11/c-api/init.html",
+      "candidate_claim": "Py_NewInterpreter, Py_EndInterpreter, and PyThreadState_Swap provide the existing lifecycle machinery that a Python-facing interpreter handle could wrap.",
+      "gold_matches": [],
+      "match_rationale": "The underlying C API is not either gold execution-framework extension. No particular channel, exception or automatic-thread alternative was selected.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "Opened C API documents lifecycle and thread-state selection for multiple interpreters in one process."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "pass",
+          "reason": "The original narrow lifecycle wrapper must select the owning thread state and avoid crossing interpreter-owned objects; separate imports and shared OS/extension limits are explicitly documented."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "pass",
+          "reason": "The original proposal explicitly wraps create/end/swap operations in a Python-facing interpreter handle; this is a concrete API-level mapping, not a claim that the wrapper is implemented."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map a Python interpreter handle to its CPython interpreter/thread state; create/end and context selection delegate to the corresponding C operations. Original thread-state/GIL and shared-resource caveats bound the handle; do not treat it as process-level security isolation or pass owner-bound objects across it.",
+      "H_assessment_scope": "reference_design: Python handle over existing CPython interpreter lifecycle",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/0",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "CPython per-module state and multi-phase initialization",
+      "candidate_url": "https://docs.python.org/3.11/c-api/module.html",
+      "candidate_claim": "PyModuleDef.m_size, PyModule_GetState, and multi-phase initialization provide concrete mechanisms for keeping extension-owned state separate across interpreter instances.",
+      "gold_matches": [],
+      "match_rationale": "This mechanism does not identify any of the primary API-placement, channel, exception or automatic-thread alternatives.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "Module-local state belongs to individual module instances inside the same-process interpreter arrangement."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "pass",
+          "reason": "Opened module documentation supports per-instance storage and cleanup, and original use explicitly requires removing inappropriate static state and implementing cleanup."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "not_in_scope",
+          "reason": "Original scope is state isolation within the wrapper/compatible extensions, not a complete public interpreter-management API."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Move extension-owned state into PyModuleDef-sized instance storage accessed through PyModule_GetState and lifetime cleanup. The original caveat excludes merely setting a flag while retaining process-wide mutable statics; this is a state-ownership design, not an audit of every installed extension.",
+      "H_assessment_scope": "reference_design: per-module extension state owned by each interpreter instance",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/1",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Jep interpreter wrapper",
+      "candidate_url": "https://github.com/ninia/jep/blob/release/src/main/java/jep/Jep.java",
+      "candidate_claim": "Jep's public wrapper code offers an interpreter-object model with execution, value exchange, explicit closure, and creator-thread checks that can inform Python-level lifecycle design.",
+      "gold_matches": [],
+      "match_rationale": "Jep’s object wrapper does not select the gold concurrent.futures/multiprocessing placement or any precise exception transport alternative.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "Jep wraps CPython interpreter instances inside a host process and exposes lifecycle/execution operations."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "unknown",
+          "reason": "The candidate includes value exchange but leaves conversion and threading adaptation to Python unresolved; the retrieved separate-global/thread-affinity comments do not establish safe cross-interpreter object ownership for that adaptation."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "pass",
+          "reason": "The original use maps an interpreter object’s execute/close operations into Python-level lifecycle design, rather than proposing to use Java as the Python API."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map the wrapper’s interpreter handle, execution and explicit close to a Python object and preserve creator-thread validation. The original value-conversion adaptation remains decisive; lifecycle resemblance alone cannot prove isolation-safe exchange.",
+      "H_assessment_scope": "reference_design: interpreter-object lifecycle and thread-affinity checks",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/2",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "Inspect Jep conversion/ownership rules and define the target Python handle’s admissible values and thread-state transitions. A copied or serialized transfer contract could support conditional use; shared interpreter-owned mutable references would violate H2."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "mod_wsgi application groups",
+      "candidate_url": "https://www.modwsgi.org/en/develop/user-guides/processes-and-threading.html",
+      "candidate_claim": "mod_wsgi documents how separate applications can occupy separate subinterpreters in one process and how explicit grouping changes their module-state sharing.",
+      "gold_matches": [],
+      "match_rationale": "An application group is not the gold automatic dedicated-thread policy or any execution-framework placement.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "Opened application-group documentation explicitly places separate application interpreters within one Apache process."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "pass",
+          "reason": "The original reference maps application-group membership to separate versus shared module state and explicitly accounts for extensions requiring the main interpreter."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "not_in_scope",
+          "reason": "Original scope is assignment policy and isolation expectations, not Python management API exposure."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map application identity to an interpreter group and group equality to intentional module-state sharing. Preserve the original lifetime and main-interpreter extension limitations; the relation is an assignment policy, not a claim that arbitrary extensions are isolated.",
+      "H_assessment_scope": "reference_design: application-to-interpreter assignment and sharing policy",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/3",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Tcl interp command",
+      "candidate_url": "https://www.tcl-lang.org/man/tcl8.6/TclCmd/interp.htm",
+      "candidate_claim": "Tcl's interp command supplies a language-level precedent for creating and deleting interpreters, executing within them, and explicitly connecting otherwise separate namespaces.",
+      "gold_matches": [],
+      "match_rationale": "The original candidate does not specify the gold explicit channel associate/disassociate lifecycle: generic namespace aliases/connections are not that channel design.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "The opened interp command manages independent interpreter namespaces inside the Tcl runtime."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "unknown",
+          "reason": "Original use includes explicit cross-interpreter connections, but Python transfer/alias rules are not specified; Tcl’s rules cannot establish the target object-isolation boundary."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "pass",
+          "reason": "Language-level create/delete/eval operations supply the requested API-exposure precedent at the management layer."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map interp create/delete/eval to Python-facing handles over existing interpreter operations. Explicit Tcl connections suggest named boundary operations, but safe Python transfer semantics are not provided and Tcl security claims are not inherited.",
+      "H_assessment_scope": "reference_design: public interpreter-management commands and explicit connections",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/4",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "Specify whether each target connection copies, serializes or permits references, and verify its ownership/lifetime rules. Isolation-safe data could permit conditional transfer; aliasing mutable interpreter-owned state would fail H2."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "multiprocessing.connection byte-message interface",
+      "candidate_url": "https://docs.python.org/3.11/library/multiprocessing.html",
+      "candidate_claim": "Connection's send_bytes, recv_bytes, poll, close, and EOF behavior provide a reusable message-interface precedent for communication without exposing mutable interpreter-owned objects.",
+      "gold_matches": [],
+      "match_rationale": "Same project name is insufficient for P0554-G02: the original proposes Connection message semantics, not adding interpreter execution to multiprocessing. It also does not select exactly two one-way interpreter endpoints, so no pipe structural match is inferred.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "unknown",
+          "reason": "The original explicitly rejects the Process abstraction and proposes a possible same-process endpoint adapter, but endpoint compatibility/ownership across CPython interpreters was not verified."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "pass",
+          "reason": "The selected byte-message API avoids directly exposing mutable interpreter-owned Python objects; pickle receive is not proposed as the isolation-safe primitive."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "pass",
+          "reason": "send_bytes/recv_bytes/poll/close/EOF already supply the Python-facing communication interface precedent."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map interpreter boundary payloads to framed bytes and endpoint lifecycle to close/EOF, retaining the original distinction from process creation. The same-process endpoint adapter remains unverified rather than silently assumed.",
+      "H_assessment_scope": "reference_design: byte-message communication interface with a prospective endpoint adapter",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/5",
+        "runs/A/C13.json#/opened_documents"
+      ],
+      "remaining_check": "Inspect whether two interpreter contexts can own compatible endpoints without sharing Python object state; define creation/closure ownership. A safe same-process adapter would enable conditional transfer; a process-only or owner-unsafe adapter would fail H1/H2."
+    },
+    {
+      "case_id": "C13",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Lua independent state handles",
+      "candidate_url": "https://lua.org/manual/5.1/manual.html",
+      "candidate_claim": "Lua's lua_newstate and opaque lua_State illustrate explicit interpreter ownership, per-state allocation, and separation of independent runtimes from execution stacks sharing globals.",
+      "gold_matches": [],
+      "match_rationale": "Independent opaque state handles do not choose any gold API placement, channel association, exception mapping or dedicated-thread alternative.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "같은 프로세스의 다중 인터프리터 범위",
+          "value": "pass",
+          "reason": "The opened lua_newstate API creates independent embedded states within one host process."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "인터프리터 간 격리 존중",
+          "value": "pass",
+          "reason": "Opaque lua_State owns runtime state and allocation; the original explicitly contrasts independent states with coroutine stacks sharing globals."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "기존 기능을 Python 코드에서 접근",
+          "value": "not_in_scope",
+          "reason": "The original use is an ownership mechanism reference, explicitly not a ready Python interface."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map an opaque state handle and its allocator/lifetime to the target interpreter resource owner. Retain the distinction between independent states and shared-global execution stacks; adopting this ownership relation does not eliminate CPython extension globals or supply the full public API.",
+      "H_assessment_scope": "reference_design: opaque interpreter-state ownership and allocation boundaries",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "내부 별도 검토",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C13.json#/candidates/6",
+        "runs/A/C13.json#/opened_documents",
+        "evidence/judgments/reviewer-a-sources.json#RA005"
+      ],
+      "remaining_check": "No decisive document-level uncertainty within the stated narrow design scope. Target implementation and historical snapshots remain unverified unless separately dated."
+    }
+  ]
+}

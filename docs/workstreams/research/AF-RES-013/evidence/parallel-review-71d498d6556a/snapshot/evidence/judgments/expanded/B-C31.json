@@ -1,0 +1,120 @@
+{
+  "case_id": "C31",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C31",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Repology version-comparison mechanism",
+      "candidate_url": "https://repology.org/",
+      "candidate_claim": "Repology's documented component-and-rank comparator could supply an implementable order for heterogeneous numeric, prerelease, postrelease and letter-suffix versions, with bound sentinels for testing release-prefix intervals.",
+      "gold_matches": [],
+      "match_rationale": "Repology/SemVer는 Distutils StrictVersion·LooseVersion·pkg_resources.parse_version와 다른 실체다. 일반 date/custom/distribution 문자열 언급은 RPM의 날짜→숫자 전환 역전이나 Debian/Ubuntu 하이픈 정책이라는 구별 비교와 같지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "component/rank comparator와 bound sentinel이 dependency interval 비교에 필요한 순서를 제공한다. API 호환 자체와는 구별한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "숫자·prerelease·postrelease·letter suffix와 배포판 spelling의 차이를 명시하고 애매한 약어 정책을 검증할 조건을 남겼다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "숫자 비교·marker rank·padding의 구체 algorithm이 있다. first-letter 동등화는 정해진 정책의 한계이며 실제 목표 데이터 적합성은 별도다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Repology component/rank comparator → 이질적 version 표기의 정렬과 prefix interval 검사. ambiguous suffix·첫 글자 비교가 Python/배포판 의미에 맞는지 별도 검증한다.",
+      "H_assessment_scope": "reference_design: Version parsing and comparison independent of repository upload order; explicit treatment of irregular upstream labels and package-repository spellings; range-bound evaluation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C31.json#/candidates/0",
+        "runs/B/C31.json#/opened_documents"
+      ],
+      "remaining_check": "선택 algorithm/grammar의 결정 전 판과 실제 legacy/distribution version corpus를 확인한다. compatibility 범위가 실제 API 호환을 뜻하는지는 별도 사용자·구현 평가가 필요하다."
+    },
+    {
+      "case_id": "C31",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Semantic Versioning 2.0.0 precedence rules",
+      "candidate_url": "https://semver.org/",
+      "candidate_claim": "Semantic Versioning supplies deterministic numeric and prerelease precedence rules that can make declared compatibility intervals independent of upload order when package producers adopt its API-change contract.",
+      "gold_matches": [],
+      "match_rationale": "Repology/SemVer는 Distutils StrictVersion·LooseVersion·pkg_resources.parse_version와 다른 실체다. 일반 date/custom/distribution 문자열 언급은 RPM의 날짜→숫자 전환 역전이나 Debian/Ubuntu 하이픈 정책이라는 구별 비교와 같지 않다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "의존성 호환 범위를 위한 버전 비교",
+          "value": "pass",
+          "reason": "numeric/prerelease precedence와 dependency bound example을 원문으로 확인한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "서로 다른 기존 표기와 OS 패키징 환경 고려",
+          "value": "pass",
+          "reason": "고정 grammar와 기존 날짜·custom·distribution revision의 차이를 명시하여 migration/adaptor가 필요함을 고려한다. 기존 모든 표기를 그대로 수용한다고 하지 않는다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "실제 버전 순서 판별",
+          "value": "pass",
+          "reason": "numeric core·prerelease·build metadata 배제의 실제 순서 규칙이 있다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SemVer numeric/prerelease grammar → normalized version과 dependency bounds. legacy mapping·API compatibility 선언·build metadata의 정책을 별도 정의한다.",
+      "H_assessment_scope": "reference_design: A structured normalized version grammar, numeric component comparison, prerelease ordering, and interpretation of lower and upper dependency bounds.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C31.json#/candidates/1",
+        "runs/B/C31.json#/opened_documents"
+      ],
+      "remaining_check": "선택 algorithm/grammar의 결정 전 판과 실제 legacy/distribution version corpus를 확인한다. compatibility 범위가 실제 API 호환을 뜻하는지는 별도 사용자·구현 평가가 필요하다."
+    }
+  ]
+}

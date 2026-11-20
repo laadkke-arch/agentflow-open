@@ -1,0 +1,142 @@
+{
+  "case_id": "C07",
+  "baseline": "A",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "동일 위치 list 원소 pairing을 제시한다."
+        ],
+        [
+          "pass",
+          "기존 loop가 소비할 row 구성과 함수 결합이다."
+        ],
+        [
+          "pass",
+          "짧은 입력에서 종료함을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Public operation naming, rows for existing loops, pair/triple construction, termination policy.",
+      "link_status": "opened_body",
+      "gold_matches": [
+        {
+          "gold_id": "P0201-G04",
+          "rationale": "실제 Haskell 98 Prelude의 zip을 이름과 positional grouping 역할로 제시했다."
+        }
+      ],
+      "match_rationale": "명명 선례인 Haskell zip을 직접 회수했다.",
+      "transfer_mapping": "Haskell zip/zipWith의 positional grouping → Python의 별도 이름 있는 결합 연산. 비엄격 list·고정 arity를 Python indexing 및 임의 arity에 번역해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "두 list의 같은 위치 원소를 짝짓는다."
+        ],
+        [
+          "pass",
+          "tuple 생성과 pair별 처리를 나눈다."
+        ],
+        [
+          "pass",
+          "남는 tail을 버리는 정책을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Two-sequence tuple generation and a separate operation for per-pair work.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "SML의 pairing은 Haskell zip 자체나 Python 문법·pad·lazy 반환·두 수준 컨테이너 선택 대안과 동일 항목이 아니다.",
+      "transfer_mapping": "SML ListPair zip/map/app → pairing과 processing API 분리. 두 list 제한을 임의 arity·Python indexing으로 확장해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "임의 개수 list의 같은 위치 결합이다."
+        ],
+        [
+          "pass",
+          "mapping과 row constructor를 합친 wrapper다."
+        ],
+        [
+          "pass",
+          "명세에서 shortest-input 계약을 확인했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Variadic interface and reusable grouping wrapper; shortest-input contract verified in specification.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "동일 zip 명칭이어도 Haskell 선례와 구별된 Scheme 구현이며 다른 문서 내부 대안은 제안하지 않았다.",
+      "transfer_mapping": "Scheme variadic zip의 map+row construction → Python sequence protocol wrapper. Scheme list 및 mapping semantics를 번역해야 한다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "동일 index 다중 sequence processing이다."
+        ],
+        [
+          "pass",
+          "일반 sequence abstraction을 다룬다."
+        ],
+        [
+          "pass",
+          "최단 입력 길이를 결과 길이로 지정한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Generalized sequence semantics and precise index alignment.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "Common Lisp MAP은 Python map(None,...)의 None padding과 다르다. result-type만으로 내부·외부 컨테이너 둘 다 선택하는 대안을 회수했다고 보지 않았다.",
+      "transfer_mapping": "Common Lisp MAP의 sequence/index 계약 → Python 사용자 sequence 대상 순회. result-type·function 인수 및 discoverability 선택은 별도다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "두 입력의 대응 원소를 함께 처리한다."
+        ],
+        [
+          "pass",
+          "iterator abstraction은 사용자 정의 sequence의 접근 참고다."
+        ],
+        [
+          "pass",
+          "두 번째 입력이 충분히 길어야 한다는 제한과 추가 길이 검사를 명시했다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Access abstraction for user-defined sequence representations and direct pairwise processing.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "iterator로 입력을 읽는 것과 __getitem__ 기반 지연 반환 객체 대안은 다른 설계다.",
+      "transfer_mapping": "STL binary transform의 iterator 접근 → Python sequence 접근 추상화. 두 번째 range 끝 검사와 row-producing wrapper가 필요하며 문서 자체는 shortest 종료를 제공하지 않는다.",
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    }
+  ]
+}

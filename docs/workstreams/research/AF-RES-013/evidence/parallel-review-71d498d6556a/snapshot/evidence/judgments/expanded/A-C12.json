@@ -1,0 +1,409 @@
+{
+  "case_id": "C12",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "PyPy type-version method cache",
+      "candidate_url": "https://docs.huihoo.com/pypy/2.6/interpreter-optimizations.html",
+      "candidate_claim": "A cache keyed by lookup name, call site, and a type version could avoid repeated attribute lookup while type or base-class mutation invalidates the version.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다. PyPy와 CPython의 다른 cache 구현을 동일 외부 entity로 처리하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "pass",
+          "reason": "type/base 변경 때 version을 갱신하며 instance shadowing을 별도 확인한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "pass",
+          "reason": "name/site/type-version cache key로 무효화를 판별한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "캐시 이익과 추가 shadowing 확인의 필요를 함께 제시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "PyPy type-version cache → Python binding cache의 version guard 참조. globals/builtins의 별도 mutation path를 모두 연결하고 instance shadowing을 검사해야 한다.",
+      "H_assessment_scope": "reference_design: Class and inherited-attribute lookup.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/0",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "SELF change-dependency lists",
+      "candidate_url": "https://bibliography.selflanguage.org/implementation.html",
+      "candidate_claim": "Dependency lists from mutable bindings to compiled methods could shift work from each read to mutations that invalidate affected optimizations.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "pass",
+          "reason": "binding 변경에서 관련 compiled method를 무효화한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "pass",
+          "reason": "dependency list로 영향을 받는 최적화를 추적한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "읽기 비용을 mutation과 dependency storage 비용으로 옮기는 대가를 적었다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SELF 변경 dependency → Python binding-specialized 코드 invalidation graph. 모든 mutation을 연결하고 active frame을 안전하게 처리해야 한다.",
+      "H_assessment_scope": "reference_design: Binding-specialized compiled code.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/1",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Java SwitchPoint",
+      "candidate_url": "https://docs.oracle.com/javase/7/docs/api/java/lang/invoke/SwitchPoint.html",
+      "candidate_claim": "A SwitchPoint-style one-way guard could select a cached binding's fast path until rebinding switches dependent sites to a general lookup.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "pass",
+          "reason": "rebinding이 guard를 fallback으로 영구 전환하는 관계를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "pass",
+          "reason": "종속 fast path들의 shared invalidation이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "동기화·상태조회 비용과 새 speculation의 새 guard 비용을 적었다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "SwitchPoint의 one-way guarded fast/fallback 전환 → Python binding cache invalidation. fresh guard 재생성과 synchronized mutation 연결을 마련해야 한다.",
+      "H_assessment_scope": "reference_design: Shared guards for optimized binding uses.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/2",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "실제 대상 언어 통합은 미실시. 제시한 연결·비적용 조건을 구현하고 해당 사용례로 확인해야 한다. 날짜 미확인은 결정 전 고정 판의 같은 절을 찾아 확인한다."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "SELF polymorphic inline caches",
+      "candidate_url": "https://bibliography.selflanguage.org/pics.html",
+      "candidate_claim": "Small per-site caches of multiple lookup outcomes could retain fast paths for recurring namespace or type states while misses return to generic lookup.",
+      "gold_matches": [],
+      "match_rationale": "No primary match. SELF PICs are not the named CPython method-cache patch or any of the specific dict-version alternatives. Generic lookup caching is insufficient identity/mechanism evidence for those gold items.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "unknown",
+          "reason": "Reusing cached outcomes across mutable namespace states requires guards that distinguish rebinding. The original candidate says PICs alone do not provide them; their complete mutation coverage is not supplied."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "unknown",
+          "reason": "The essential validity/invalidation mechanism is explicitly missing, so matching a recurring receiver/state does not establish that a cached binding is still valid."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "Small per-site caches and the original warning about more tests/misses directly consider the cost of checking. No target speedup is asserted."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Map observed lookup states to per-site entries and misses to generic lookup. This can reduce repeated lookups only when a validity guard covers mutations; the original answer identifies but does not supply that decisive connection.",
+      "H_assessment_scope": "reference_design: Several cached lookup outcomes per site, with the decisive rebinding guard left unresolved.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/3",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "Read a concrete guard or invalidation contract covering replacement and deletion of the relevant Python bindings. If it cannot distinguish a mutation, the selected reuse would violate H1; complete coverage could resolve H1/H2."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "PyPy module cell dictionaries",
+      "candidate_url": "https://docs.huihoo.com/pypy/2.6/config/objspace.std.withcelldict.html",
+      "candidate_claim": "PyPy's module cell dictionaries are a concrete specialized-storage component to investigate for JIT-optimized global-name access.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "unknown",
+          "reason": "module mutation이 기존 바인딩 의미를 보존하며 전달되는 구현이 열리지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "unknown",
+          "reason": "cell dictionary가 어떤 무효화 알고리즘을 쓰는지 미확인이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "JIT가 없으면 이익이 없고 honor__builtins__=False 제약이 있음을 확인했다."
+        }
+      ],
+      "T": "unknown",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: Module dictionaries and JIT global lookup.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/4",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "release-2.6.x module cell dictionary의 write/update 경로와 JIT guard 구현을 열어 mutation-validation 관계를 확인하면 H1/H2/T가 바뀔 수 있다."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Linux sequence counters",
+      "candidate_url": "https://docs.kernel.org/locking/seqlock.html",
+      "candidate_claim": "Sequence counters offer an alternative mutation-validation pattern: readers compare generation values around a lookup and retry if a writer intervenes.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "unknown",
+          "reason": "pointer lifetime 보호가 필요하지만 대상 binding의 생존을 보장하는 연결이 확인되지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "pass",
+          "reason": "lookup 전후 generation 변화로 겹친 mutation을 감지하는 좁은 검증 관계다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "writer 직렬화와 retry 비용이 이익을 없앨 수 있음을 적었다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "sequence counter 전후 읽기·retry → concurrent lookup snapshot 검증. writer 직렬화와 참조 대상 생존 보호를 별도 마련해야 하며 persistent cache invalidation 전체를 대신하지 않는다.",
+      "H_assessment_scope": "reference_design: Consistent lookup snapshots around concurrent mutations.",
+      "runtime_observation": "not_performed",
+      "label": "INSUFFICIENT",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/5",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "Python binding 조회 중 참조 대상 생존을 보장할 concrete ownership/locking 경로와 writer 직렬화를 확인하면 H1과 INSUFFICIENT 판정이 바뀐다."
+    },
+    {
+      "case_id": "C12",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "JavaScriptCore property and global watchpoints",
+      "candidate_url": "https://webkit.org/blog/10308/",
+      "candidate_claim": "Property and global watchpoints could let optimized code embed a binding and receive mutation-triggered invalidation instead of repeatedly checking the binding.",
+      "gold_matches": [],
+      "match_rationale": "각 후보는 다른 구현체나 invalidation/dispatch 관계다. CPython tp_version_tag, 지정 issue 패치, Python __version__ 공개 API, verdict subtype, dict entry timestamp라는 특정 본문 항목과 이름·역할·구조가 충분히 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "실행 중 바인딩 변경 의미 보존",
+          "value": "pass",
+          "reason": "property/global 변경 시 watchpoint로 optimized code를 무효화한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "캐시 또는 최적화 무효화를 판별",
+          "value": "pass",
+          "reason": "compiled entry 차단 및 active code deoptimization 연결이 문서에 있다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "확인 비용이 최적화 이익을 없애지 않는지 고려",
+          "value": "pass",
+          "reason": "매 read 검사를 쓰기 hook 비용으로 옮기는 관계와 대가를 제시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "JSC watchpoint와 deoptimization → Python global/attribute 상수화 코드. 모든 write hook과 active frame의 안전한 deoptimization이 필요하다.",
+      "H_assessment_scope": "reference_design: Constant-folded globals, attributes, and deoptimization.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C12.json#/candidates/6",
+        "runs/A/C12.json#/opened_documents"
+      ],
+      "remaining_check": "2020 source는 사후 자료다. 적용 검토는 가능하나 2016 결정 당시 적중에 포함할 수 없다."
+    }
+  ]
+}

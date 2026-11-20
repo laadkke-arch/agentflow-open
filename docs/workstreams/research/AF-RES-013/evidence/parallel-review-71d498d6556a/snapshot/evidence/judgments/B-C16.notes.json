@@ -1,0 +1,117 @@
+{
+  "case_id": "C16",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "declaration용 unused 주석과 명시 영역 억제를 문서화하여 local 선언 및 block 안 작은 범위에 대응한다."
+        ],
+        [
+          "pass",
+          "코드와 지역 문맥을 원래 위치에 남겨 함수 복제·인자 포장을 요구하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Local unused declarations, region-specific checking flags, and small exception regions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 macro+helper 함수 근사, statement expression에만 허용하는 제한, if 조건과 if-chain의 inner/outer 배치라는 세 구별 설계를 제시하지 않는다. 선언·영역에 주석을 단다는 일반 주제만으로 일치시키지 않는다.",
+      "transfer_mapping": "Splint의 선언 allowance·bounded suppression → Rust let/작은 영역의 검사 예외. 명시 종료와 과도한 suppression 검사를 연결하고 자동 brace scope로 오해하지 않는다.",
+      "remaining_check": "문서상 제한한 참고 부분 판정이다. block와 let을 동시에 지원하는 전체 Rust 설계는 별도 검증이 필요하다. 날짜 unknown은 결정 이전 고정 판의 해당 절을 확인해야 한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "source span의 진단 상태와 조건부 포함을 통해 선언·block 범위를 지정한다. AST 부착과 달라 명시 경계 연결이 필요하다."
+        ],
+        [
+          "pass",
+          "원래 함수 내 source를 유지하며 helper 인자 전달이 필요 없다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Temporary lint allowances and conditional compilation while leaving code in its existing lexical context.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 macro+helper 함수 근사, statement expression에만 허용하는 제한, if 조건과 if-chain의 inner/outer 배치라는 세 구별 설계를 제시하지 않는다. 선언·영역에 주석을 단다는 일반 주제만으로 일치시키지 않는다.",
+      "transfer_mapping": "GCC의 diagnostic push/pop 및 preprocessor condition → 좁은 lint 상태·구성별 source 포함. AST scope에 연결하려면 경계 규칙이 필요하며 runtime local로 전처리 조건을 평가할 수 없다.",
+      "remaining_check": "문서상 제한한 참고 부분 판정이다. block와 let을 동시에 지원하는 전체 Rust 설계는 별도 검증이 필요하다. 날짜 unknown은 결정 이전 고정 판의 해당 절을 확인해야 한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답은 block/statement 계약에 한정하며 let 선언 부착·lint·조건부 컴파일을 제공한다고 주장하지 않는다."
+        ],
+        [
+          "pass",
+          "계약이 문장·block에 직접 붙어 기존 지역 문맥을 보존한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Descriptions of a small block's allowed effects and audit assumptions.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 macro+helper 함수 근사, statement expression에만 허용하는 제한, if 조건과 if-chain의 inner/outer 배치라는 세 구별 설계를 제시하지 않는다. 선언·영역에 주석을 단다는 일반 주제만으로 일치시키지 않는다.",
+      "transfer_mapping": "ACSL의 statement/block contract → 외부 도구가 읽는 작은 block의 효과·감사 가정. abrupt exit 의미를 보존하고 lint 허용이나 조건부 컴파일 대체로 확대하지 않는다.",
+      "remaining_check": "문서상 제한한 참고 부분 판정이다. block와 let을 동시에 지원하는 전체 Rust 설계는 별도 검증이 필요하다. 날짜 unknown은 결정 이전 고정 판의 해당 절을 확인해야 한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답부터 local declaration과 initializer만 제안했다. 임의 block annotation은 이 후보가 지원하지 않는다고 명시한다."
+        ],
+        [
+          "pass",
+          "대상 선언을 함수에서 추출하거나 지역값을 별도 함수 인자로 전달하지 않는다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Local declaration annotations and checker-specific warning identifiers.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 macro+helper 함수 근사, statement expression에만 허용하는 제한, if 조건과 if-chain의 inner/outer 배치라는 세 구별 설계를 제시하지 않는다. 선언·영역에 주석을 단다는 일반 주제만으로 일치시키지 않는다.",
+      "transfer_mapping": "Checker Framework의 local declaration/initializer suppression → let 선언의 precise checker ID 부착. 이후 변수 사용과 block 전체는 포함하지 않으며 별도 block 메커니즘이 필요하다.",
+      "remaining_check": "문서상 제한한 참고 부분 판정이다. block와 let을 동시에 지원하는 전체 Rust 설계는 별도 검증이 필요하다. 날짜 unknown은 결정 이전 고정 판의 해당 절을 확인해야 한다."
+    },
+    {
+      "rank": 5,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "선언의 한 줄 또는 block을 둘러싼 명시 comment span에 선택된 lint 예외를 줄 수 있다. AST scope와 동일하다고 보장하지 않는다."
+        ],
+        [
+          "pass",
+          "기존 source 위치를 유지하여 함수 복제·helper 전달을 피한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Narrow lint exceptions around a local declaration or block and audit-oriented justification text.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 macro+helper 함수 근사, statement expression에만 허용하는 제한, if 조건과 if-chain의 inner/outer 배치라는 세 구별 설계를 제시하지 않는다. 선언·영역에 주석을 단다는 일반 주제만으로 일치시키지 않는다.",
+      "transfer_mapping": "ESLint의 선택 rule·명시 comment span·이유·unused directive 검사 → 좁은 lint 예외와 감사 설명. source가 parse되어야 하므로 제거되는 조건부 컴파일과는 구별한다.",
+      "remaining_check": "문서상 제한한 참고 부분 판정이다. block와 let을 동시에 지원하는 전체 Rust 설계는 별도 검증이 필요하다. 날짜 unknown은 결정 이전 고정 판의 해당 절을 확인해야 한다."
+    }
+  ]
+}

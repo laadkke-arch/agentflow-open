@@ -1,0 +1,111 @@
+{
+  "case_id": "C12",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "binding-stability assumption을 바꾸는 mutation이 dependent code를 무효화하도록 연결한다."
+        ],
+        [
+          "pass",
+          "assumption dependency와 deoptimization을 구체적으로 제시한다."
+        ],
+        [
+          "pass",
+          "compiled validity check 제거의 이득과 잦은 rebinding의 recompilation 비용을 명시한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Builtins, globals, or type bindings that remain stable across many uses.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "공개 version 속성·entry별 tag·verdict 하위타입이나 열거된 CPython issue/PySizer의 특정 실체를 제시하지 않았다. 일반 invalidation 유사성으로 정답을 합치지 않는다.",
+      "transfer_mapping": "Truffle Assumption dependency → Python namespace binding의 mutation notification과 deoptimization. 모든 mutation을 포착하고 자주 바뀌는 binding에서는 재컴파일 비용을 비교해야 한다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "상수 property 재지정이 dependent optimized code를 invalidation하는 예가 있다."
+        ],
+        [
+          "pass",
+          "map lookup 및 constant-property dependency를 구별하여 shape만으로 value를 보증하지 않는다."
+        ],
+        [
+          "pass",
+          "매번 property lookup 대신 cached location/constant를 쓰되 mutation dependency 비용을 옮기는 참조다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Object and type attribute access, with an adapted dependency mechanism for namespace bindings.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "공개 version 속성·entry별 tag·verdict 하위타입이나 열거된 CPython issue/PySizer의 특정 실체를 제시하지 않았다. 일반 invalidation 유사성으로 정답을 합치지 않는다.",
+      "transfer_mapping": "V8 map/location 및 value dependency → Python attribute/global lookup 최적화. Python lookup 의미와 mapping 변경을 별도로 처리해야 하며 shape 동일성이 value 동일성을 뜻하지 않는다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "guard 실패의 복귀 경로는 있지만 변경 가능한 namespace의 변화가 실제 guard 실패로 연결되는 detector가 제시되지 않았다."
+        ],
+        [
+          "unknown",
+          "명시적으로 cheap dictionary-change detector를 제공하지 않으므로 유효성 판별의 핵심 전제가 남는다."
+        ],
+        [
+          "unknown",
+          "guard cost가 최적화 이득을 유지하는 방식은 구현 과제로만 남았다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: The execution and recovery path surrounding cached globals or attributes.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "공개 version 속성·entry별 tag·verdict 하위타입이나 열거된 CPython issue/PySizer의 특정 실체를 제시하지 않았다. 일반 invalidation 유사성으로 정답을 합치지 않는다.",
+      "transfer_mapping": "RPython guards/interpreter re-entry → 최적화 실패 시 실행 상태 복구. 변경 detector와 비용은 이 후보만으로 확인되지 않아 참고 범위 축소로 필수 전제를 지우지 않는다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    },
+    {
+      "rank": 4,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "unknown",
+          "원 pattern은 staleness를 허용한다. Python용 synchronous comprehensive mutation 처리가 필요하다고 했지만 이를 보장하는 구체 연결은 검증하지 않았다."
+        ],
+        [
+          "pass",
+          "write 시 invalidate하고 miss 시 원본에서 refill하는 lifecycle은 명시된다."
+        ],
+        [
+          "unknown",
+          "namespace lookup의 매회 validity 비용이나 dependency 비용 자료는 없다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Cache-entry lifecycle and fallback lookup behavior, rather than the validity-check representation.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "공개 version 속성·entry별 tag·verdict 하위타입이나 열거된 CPython issue/PySizer의 특정 실체를 제시하지 않았다. 일반 invalidation 유사성으로 정답을 합치지 않는다.",
+      "transfer_mapping": "Cache-Aside miss/refill/write invalidation → namespace cache lifecycle. 원 응답도 unchanged transfer를 부정하며 Python의 정확한 mutation 동기화와 low-cost check가 추가로 필요하다.",
+      "remaining_check": "대상 구현과 효용은 직접 관측하지 않았다. H unknown은 명시한 mutation/guard 구현 및 비용 자료로 확인해야 하며 날짜 unknown은 결정일 전 고정 판의 해당 기능으로 확인한다."
+    }
+  ]
+}

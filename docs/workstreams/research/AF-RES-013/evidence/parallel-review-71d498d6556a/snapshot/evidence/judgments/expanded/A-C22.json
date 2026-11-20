@@ -1,0 +1,342 @@
+{
+  "case_id": "C22",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "JSR-305 ThreadSafe and Immutable annotations",
+      "candidate_url": "https://chromium.googlesource.com/external/jsr-305/+/151fd3976210c6b79117e30b02aee86a20ff5c7f/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "candidate_claim": "Separate ThreadSafe and Immutable annotations provide a naming precedent for marking concurrent-use safety independently of whether the referenced object can change.",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "명시적인 최종 ThreadSafe 명명 제안의 핵심 선례다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "ThreadSafe와 Immutable을 분리하고 ordinary shared access와 구별한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "Rust의 shared-reference predicate로 한정하며 transfer/깊은 불변성을 추가하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "JSR ThreadSafe/Immutable 명명 분리 → Rust concurrency trait의 ThreadSafe 계열 이름. Java 전체 object promise를 옮기지 말고 shared-reference 안전성만 뜻하도록 문서화해야 한다.",
+      "H_assessment_scope": "reference_design: Concurrency-trait vocabulary and its explicit distinction from the vocabulary of ordinary shared access.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0123-G03"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/0",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Qt reentrant versus thread-safe terminology",
+      "candidate_url": "https://doc.qt.io/Archives/qt-4.7/threads-reentrancy.html",
+      "candidate_claim": "Qt separates concurrency on different instances from thread-safe use of one shared instance.",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "응답의 ThreadSafe 명명 제안을 Qt의 구별로 뒷받침한다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "다른 instance reentrancy와 같은 instance 동시 안전성을 구별한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "Reentrant 이름과 특정 locking 구현을 강제하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Qt same-instance thread safety 구별 → Rust ordinary reference와 concurrency proof의 설명. mutex 예시는 한 구현일 뿐 trait 요구를 강화하면 안 된다.",
+      "H_assessment_scope": "reference_design: Precise trait terminology and counterexamples.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [
+        "R0123-G03"
+      ],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/1",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Reference-immutability and isolation qualifiers for safe parallelism",
+      "candidate_url": "https://www.microsoft.com/en-us/research/publication/uniqueness-and-reference-immutability-for-safe-parallelism/",
+      "candidate_claim": "The paper's writable, readable, immutable, and isolated qualifiers show how reference access permissions and the additional conditions for safe parallel sharing can be given distinct names.",
+      "gold_matches": [],
+      "match_rationale": "별도 qualifier 설계이며 여덟 이름을 이 trait의 후보로 제시하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "access qualifier와 parallel-sharing 조건을 나눠 설명한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "readable/immutable이 interior-mutability Rust 참조와 같지 않음을 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "reference qualifier와 concurrency permission의 분리 → Rust 참조 용어와 trait 이름 분리. readonly/immutable을 그대로 trait 이름으로 대입하면 의미가 달라진다.",
+      "H_assessment_scope": "reference_design: An alternative conceptual vocabulary separating alias/access capability from concurrency permission.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/2",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Boost shared_ptr shared-ownership terminology and separate thread-safety contract",
+      "candidate_url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "candidate_claim": "Boost names shared ownership separately from the pointer's concurrent-access guarantees.",
+      "gold_matches": [],
+      "match_rationale": "일반 shared 용어 유지 참고이며 trait Share 유지/참조를 aliasable로 변경하는 리뷰 대안은 제시하지 않았다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "shared ownership과 pointer concurrency·pointee safety를 분리한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "reference count 안전성을 pointee나 borrow 안전성으로 확대하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Boost shared lifetime 어휘와 별도 thread contract → Rust shared reference 용어와 동시 안전성 설명 분리. ownership과 borrowing 차이를 유지해야 한다.",
+      "H_assessment_scope": "reference_design: Distinguishing aliasing/ownership vocabulary from safety.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/3",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Chromium ThreadSafe suffix for scoped guarantees",
+      "candidate_url": "https://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures/",
+      "candidate_claim": "Chromium adds ThreadSafe to separately named reference-counting and collection components.",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 ThreadSafe를 가장 가까운 명명 계열로 선택하고 shared-reference 동시 사용 안전성으로 뜻을 한정했다. 단순 문서 내부 단어 출현이 아니다."
+        }
+      ],
+      "match_rationale": "마지막 ThreadSafe 계열 권고의 명시적 naming 예다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "ThreadSafe suffix가 ownership/collection 용어와 구별된다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "component operation 범위의 보장으로 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Chromium ThreadSafe 합성 이름 → Rust trait의 명시적 safety 이름. reachable state 전체의 안전성을 추가로 주장하면 안 된다.",
+      "H_assessment_scope": "reference_design: Compositional concurrency-trait naming.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "R0123-G03"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/4",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "D shared versus unshared/thread-local qualifier vocabulary",
+      "candidate_url": "https://dlang.org/faq.html",
+      "candidate_claim": "D explicitly distinguishes cross-thread exposure from thread-local access.",
+      "gold_matches": [],
+      "match_rationale": "동등하지 않은 설명용 vocabulary이며 eight gold name 중 명명 제안에 해당하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "cross-thread visibility와 single-thread aliasing을 구별한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "D shared가 Rust concurrent-sharing safety와 같지 않다고 밝혔다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "D thread-shared/thread-local 대비 → Rust concurrency 차원의 설명 어휘. shared가 synchronization 보장을 뜻한다고 바꾸어서는 안 된다.",
+      "H_assessment_scope": "reference_design: Alternative explanatory vocabulary.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C22.json#/candidates/5",
+        "runs/A/C22.json#/opened_documents"
+      ],
+      "remaining_check": "대상 구현·사용자 효용은 미실시. 명시한 연결과 실패 조건을 구현·관측해야 한다. 날짜 미확인은 결정 전 고정 판의 해당 절로 확인한다."
+    }
+  ]
+}

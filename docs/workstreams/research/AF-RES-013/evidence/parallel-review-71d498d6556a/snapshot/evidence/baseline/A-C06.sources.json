@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "case_id": "C06",
+  "baseline": "A",
+  "sources": [
+    {
+      "id": "RUN-A-C06-D01",
+      "url": "https://grep.app/api/search?q=PidMode.IsContainer",
+      "accessed_at_utc": "2026-11-20 12:38:20 UTC",
+      "source_type": "code_search_response",
+      "title": "search",
+      "version_or_date": "live",
+      "sections_read": "Public code-search API request",
+      "confirmed": "The API returned 7 public code matches for PidMode.IsContainer, including moby/moby daemon/oci_linux.go and daemon/daemon_unix.go. This was native public code search, not code-through-web fallback.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D02",
+      "url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "accessed_at_utc": "2026-11-20 12:38:51 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "docs.docker.com",
+      "version_or_date": "live",
+      "sections_read": "PID settings (--pid)",
+      "confirmed": "Docker documents private PID namespaces by default and explicit joining of another container's PID namespace using --pid=container:<name|id>. This gives an implementation precedent for preserving PID 1 unless sharing is enabled.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D07",
+      "url": "https://raw.githubusercontent.com/moby/moby/v17.12.0-ce/daemon/oci_linux.go",
+      "accessed_at_utc": "2026-11-20 12:39:15 UTC",
+      "source_type": "public_code",
+      "title": "Docker/Moby private-or-container PID namespace modes",
+      "version_or_date": "v17.12.0-ce",
+      "sections_read": "PID namespace branch in OCI configuration generation",
+      "confirmed": "Container PID mode resolves the target container and sets the OCI PID namespace path to /proc/<target PID>/ns/pid; private mode supplies a PID namespace without a path, while host mode removes it. When user namespaces are enabled, the joining container also joins the target user namespace.",
+      "limits": "Docker exposes this at container scope, so an orchestrator must derive every container's setting from the single pod option; the referenced implementation also joins the target user namespace when user namespaces are enabled. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D2",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D08",
+      "url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/Documentation/devel/architecture.md",
+      "accessed_at_utc": "2026-11-20 12:39:19 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "rkt pod-scoped namespace owner and application launch architecture",
+      "version_or_date": "v1.29.0",
+      "sections_read": "Stage1 systemd/nspawn flavor and application launch",
+      "confirmed": "rkt starts a pod-scoped systemd as PID 1 and has it launch the pod applications, retaining application-specific resource isolation. This demonstrates a pod namespace owner distinct from application entrypoints, but its general init behavior is beyond the requested scope.",
+      "limits": "The demonstrated implementation uses systemd/nspawn and includes general init behavior; only its namespace ownership and launch arrangement transfer to this task, and it does not itself preserve PID 1 assumptions for applications in shared mode. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D09",
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "accessed_at_utc": "2026-11-20 12:39:23 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux PID namespace init and procfs semantics",
+      "version_or_date": "man-pages-4.15; header date verified separately as 2017-11-26",
+      "sections_read": "Namespace init, signal semantics, and /proc mounting",
+      "confirmed": "The namespace's first process receives PID 1; its exit kills the namespace's other processes, and PID 1 has special signal handling. A procfs instance presents the processes visible from the namespace of its mounter, so mount selection must agree with the intended process view.",
+      "limits": "One shared namespace has only one PID 1, so multiple applications that require their own PID 1 cannot retain that assumption in shared mode; leaving sharing disabled is the compatible path. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D10",
+      "url": "https://opencontainers.org/release-notices/v1-0-0/",
+      "accessed_at_utc": "2026-11-20 12:39:28 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "opencontainers.org",
+      "version_or_date": "2017-07-19 / v1.0.0",
+      "sections_read": "Release date and specification links",
+      "confirmed": "OCI's official notice states that Runtime Specification v1.0.0 was released on 2017-07-19.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D11",
+      "url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "accessed_at_utc": "2026-11-20 12:39:28 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "LXC 3.0 explicit namespace clone, keep, and share configuration",
+      "version_or_date": "2018-03-27 / LXC 3.0.0",
+      "sections_read": "Release heading; namespace-sharing section pending",
+      "confirmed": "The release page is explicitly dated 2018-03-27, after the cutoff; namespace-sharing details will be read separately.",
+      "limits": "This evidence is dated 2018-03-27, after the cutoff; LXC's container-level sharing targets must be hidden behind one pod-wide policy rather than exposed as independent pod subgroups. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D12",
+      "url": "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html",
+      "accessed_at_utc": "2026-11-20 12:39:28 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "pid_namespaces.7.html",
+      "version_or_date": "live",
+      "sections_read": "Namespace init, nesting, setns/unshare",
+      "confirmed": "The live Linux manual explains PID 1 lifetime and special signal treatment, visibility to same and ancestor namespaces, and the fact that setns affects subsequently created children. Its live text is not assumed to predate the cutoff.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D13",
+      "url": "https://man7.org/linux/man-pages/man1/nsenter.1.html",
+      "accessed_at_utc": "2026-11-20 12:39:28 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "util-linux nsenter for selective namespace-aware operations",
+      "version_or_date": "live",
+      "sections_read": "Description, --target and --pid options",
+      "confirmed": "nsenter starts a program in selected namespaces of a target process and forks by default when entering its PID namespace so the executed program receives the intended namespace. It provides a selective operational entry mechanism, not permanent sharing for all applications.",
+      "limits": "It requires an authorized caller able to enter the target namespace and does not provide mutual process visibility to all applications; its default fork when entering a PID namespace is essential to placing the helper correctly. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D15",
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "accessed_at_utc": "2026-11-20 12:40:19 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux PID namespace init and procfs semantics",
+      "version_or_date": "man-pages-4.15; manual date 2017-11-26",
+      "sections_read": ".TH date header",
+      "confirmed": "The versioned manual header dates this PID namespace reference to 2017-11-26, before the cutoff.",
+      "limits": "One shared namespace has only one PID 1, so multiple applications that require their own PID 1 cannot retain that assumption in shared mode; leaving sharing disabled is the compatible path. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D16",
+      "url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/CHANGELOG.md",
+      "accessed_at_utc": "2026-11-20 12:40:22 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "CHANGELOG.md",
+      "version_or_date": "v1.29.0",
+      "sections_read": "Version headings",
+      "confirmed": "The changelog identifies release 1.29.0 but the extracted headings provide no publication date; the architecture evidence remains date-unknown.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: unknown. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D17",
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man2/setns.2",
+      "accessed_at_utc": "2026-11-20 12:40:26 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "Linux setns PID namespace joining semantics",
+      "version_or_date": "man-pages-4.15; manual date 2017-09-15",
+      "sections_read": ".TH date; PID namespace reassociation and user-namespace restrictions",
+      "confirmed": "The 2017-09-15 manual explains that joining a PID namespace changes the namespace of future children rather than that of the caller, with descendant-namespace restrictions. This constrains the order of namespace setup and application process creation.",
+      "limits": "The documented descendant-namespace restrictions require a suitably placed runtime process; changing a running application's PID namespace is not a substitute for setting up its namespace at launch. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D18",
+      "url": "https://docs.docker.com/engine/release-notes/17.12/",
+      "accessed_at_utc": "2026-11-20 12:40:27 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "docs.docker.com",
+      "version_or_date": "17.12.0-ce / 2017-12-27 (page also contains 17.12.1-ce dated 2018-02-27)",
+      "sections_read": "Release headings and dates",
+      "confirmed": "The official release notes date Docker Engine 17.12.0-ce to 2017-12-27, establishing pre-cutoff availability of the matching versioned implementation.",
+      "limits": "This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D19",
+      "url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "accessed_at_utc": "2026-11-20 12:40:27 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "LXC 3.0 explicit namespace clone, keep, and share configuration",
+      "version_or_date": "2018-03-27 / LXC 3.0.0",
+      "sections_read": "Find: lxc.namespace.share (additional document read counted as an open)",
+      "confirmed": "LXC 3.0 exposes namespace clone, keep, and share configuration, including joining another container's PID namespace. It explicitly warns that PID sharing can conflict with system-container init behavior and requires sufficient privilege.",
+      "limits": "This evidence is dated 2018-03-27, after the cutoff; LXC's container-level sharing targets must be hidden behind one pod-wide policy rather than exposed as independent pod subgroups. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: post_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D20",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:40:57 UTC",
+      "source_type": "baseline_opened_document",
+      "title": "OCI Runtime Specification v1.0.0 namespace path contract",
+      "version_or_date": "v1.0.0; official release notice dated 2017-07-19",
+      "sections_read": "Linux namespaces schema and example",
+      "confirmed": "OCI v1.0.0 distinguishes joining an existing namespace via an absolute path, creating a new namespace when the type is listed without a path, and inheriting the runtime namespace when a type is omitted. Its PID-path example provides a portable runtime representation for a pod-wide sharing policy.",
+      "limits": "A listed PID namespace without a path creates a namespace, while omitting the PID namespace inherits the runtime's namespace; those cases must not be confused, and the specification does not define pod ownership or lifecycle. This is the recorded read scope, not a full-document or deployment validation. Evidence time class: pre_decision. Original read and any failures remain in runs/A/C06.json.",
+      "level": "D1",
+      "used_in": [
+        "Q5",
+        "Q7"
+      ],
+      "count_toward_minimum": false
+    }
+  ],
+  "excluded": [
+    {
+      "id": "RUN-A-C06-D03",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/v1.0.0/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:38:51 UTC",
+      "reason": "Public web retrieval returned DisabledError; no document body was available.",
+      "recorded_in": "runs/A/C06.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D04",
+      "url": "https://github.com/opencontainers/runtime-spec/releases/tag/v1.0.0",
+      "accessed_at_utc": "2026-11-20 12:38:51 UTC",
+      "reason": "Public web retrieval returned DisabledError; no document body was available.",
+      "recorded_in": "runs/A/C06.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D05",
+      "url": "https://github.com/moby/moby/blob/v17.12.0-ce/daemon/oci_linux.go",
+      "accessed_at_utc": "2026-11-20 12:38:51 UTC",
+      "reason": "Public web retrieval returned DisabledError; no document body was available.",
+      "recorded_in": "runs/A/C06.json",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D06",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:39:09 UTC",
+      "reason": "Opened response but substantive body not verified: The document was fetched, but the section-heading matcher raised StopIteration before returning content; namespace details still require verification.",
+      "recorded_in": "runs/A/C06.json",
+      "observation_level": "D3-fetch",
+      "counts_toward_minimum": false
+    },
+    {
+      "id": "RUN-A-C06-D14",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "accessed_at_utc": "2026-11-20 12:40:15 UTC",
+      "reason": "Opened response but substantive body not verified: The document was fetched, but the revised heading matcher also failed before returning useful content; namespace text remains unverified.",
+      "recorded_in": "runs/A/C06.json",
+      "observation_level": "D3-fetch",
+      "counts_toward_minimum": false
+    }
+  ]
+}

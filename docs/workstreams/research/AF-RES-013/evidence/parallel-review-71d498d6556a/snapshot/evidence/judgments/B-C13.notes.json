@@ -1,0 +1,85 @@
+{
+  "case_id": "C13",
+  "baseline": "B",
+  "judge": "작업자",
+  "judgments": [
+    {
+      "rank": 1,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "한 host process에 여러 CPython subinterpreter를 두는 실제 wrapper다."
+        ],
+        [
+          "unknown",
+          "README의 mostly isolated 설명만으로 요구되는 interpreter 경계의 구체 예외를 판정할 수 없다."
+        ],
+        [
+          "pass",
+          "기존 CPython capability를 host API로 감싼다는 좁은 interface precedent다. Java/JNI를 Python-facing facade로 옮겨야 한다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: API wrapper over multiple interpreters in one host process.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 concurrent.futures/multiprocessing 확장, 특정 channel association/pipe/queue API, 예외 변환 선택, 인터프리터마다 자동 thread 생성 중 어느 구별 구조도 선택하지 않았다. 같은 multi-runtime 또는 message-channel 주제로 매칭하지 않는다.",
+      "transfer_mapping": "Jep managed wrapper → Python interpreter-handle interface의 참고. partial isolation의 구체 규칙과 Python-facing lifetime/boundary API를 추가해야 한다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    },
+    {
+      "rank": 2,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "pass",
+          "한 Python process 안에 독립 LuaRuntime state들을 만든다. 같은 프로세스의 runtime-handle 설계 참고에 한정한다."
+        ],
+        [
+          "pass",
+          "runtime별 state/lock과 copy 또는 명시 통신을 요구하여 직접 state 공유를 피한다."
+        ],
+        [
+          "pass",
+          "Python 객체가 기존 runtime 기능을 노출하는 구체 API 형태다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Python API shape for independent runtimes and communication boundaries.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 concurrent.futures/multiprocessing 확장, 특정 channel association/pipe/queue API, 예외 변환 선택, 인터프리터마다 자동 thread 생성 중 어느 구별 구조도 선택하지 않았다. 같은 multi-runtime 또는 message-channel 주제로 매칭하지 않는다.",
+      "transfer_mapping": "Lupa LuaRuntime handle/explicit copy boundary → Python subinterpreter handles의 API 참고. CPython extension isolation은 같은 결과로 추론하지 않고 별도 확인해야 한다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    },
+    {
+      "rank": 3,
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        [
+          "not_in_scope",
+          "원 응답부터 application-integration channel의 통신 원리만 제안한다. interpreter 생성·실행 배치는 범위 밖이다."
+        ],
+        [
+          "unknown",
+          "writers/readers 분리만으로 Python 객체 ownership·teardown 경계를 보장하지 못하고 원 응답도 이를 미지정으로 남긴다."
+        ],
+        [
+          "not_in_scope",
+          "Python에서 기존 interpreter를 조작하는 API는 이 channel pattern의 범위 밖이다."
+        ]
+      ],
+      "T": "mapped",
+      "scope": "reference_design: Communication mechanism if the standard interface needs interpreter-to-interpreter exchange.",
+      "link_status": "opened_body",
+      "gold_matches": [],
+      "match_rationale": "원 응답은 concurrent.futures/multiprocessing 확장, 특정 channel association/pipe/queue API, 예외 변환 선택, 인터프리터마다 자동 thread 생성 중 어느 구별 구조도 선택하지 않았다. 같은 multi-runtime 또는 message-channel 주제로 매칭하지 않는다.",
+      "transfer_mapping": "Message Channel writer/reader separation → interpreter 간 교환 접점. ownership·payload 허용값·blocking·teardown 규칙이 필요하므로 유용 통과로 세지 않는다.",
+      "remaining_check": "H unknown은 해당 제약을 직접 다루는 고정 원문 및 구체 경계 규칙으로 확인한다. 날짜 unknown은 결정 전 판으로 확인하며 실제 대상 구현·사용자 효용은 관측하지 않았다."
+    }
+  ]
+}

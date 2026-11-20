@@ -1,0 +1,268 @@
+{
+  "case_id": "C06",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C06",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Docker explicit PID namespace joining",
+      "candidate_url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "candidate_claim": "Docker's isolated default and explicit namespace-join mode provide a mechanism for opt-in sharing while preserving legacy PID 1 expectations.",
+      "gold_matches": [
+        {
+          "gold_id": "K0495-G01",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답은 explicit namespace-join runtime mode를 제시하고 읽은 source에서 target container ID/name을 사용한다."
+        }
+      ],
+      "match_rationale": "명시 container ID/name target을 고르는 core mechanism이 G01과 일치한다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "isolated default를 남기고 sharing을 opt-in으로 하여 기존 PID1 이미지의 경로를 보존한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "container별 CLI를 하나의 pod-level policy가 uniform하게 생성하도록 명시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "여러 PID subgroup 또는 사용자별 container 설정으로 노출하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "namespace runtime adapter만 제안하며 general init을 도입하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Docker --pid=container target → pod controller 뒤에 숨긴 하나의 namespace owner 선택. join 뒤 PID1 변화와 default private 경로를 설명해야 한다.",
+      "H_assessment_scope": "reference_design: Runtime adapter for a single pod-level sharing policy.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "K0495-G01"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C06.json#/candidates/0",
+        "runs/B/C06.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "OCI runtime-spec Linux namespace create/join configuration",
+      "candidate_url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "candidate_claim": "OCI's pid namespace path can bind every pod member to one shared namespace while an explicit pathless entry requests a separate namespace.",
+      "gold_matches": [],
+      "match_rationale": "namespace filesystem path는 container/sandbox ID를 API 선택으로 쓰는 G01과 구별한다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "path 없는 명시 pid entry는 fresh namespace, path는 join으로 구별하여 private default를 유지한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "pod policy가 모든 member에 한 shared path를 제공한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "public per-container subgroup API를 만들지 않는 하나의 pod 선택이다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "OCI namespace configuration이며 init system이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OCI pid create/join schema → pod policy의 runtime config. type 생략의 runtime namespace inheritance를 fresh creation과 혼동하지 않고 lifetime을 관리해야 한다.",
+      "H_assessment_scope": "reference_design: Low-level runtime configuration generated from the pod choice.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C06.json#/candidates/1",
+        "runs/B/C06.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "rkt pod-level systemd/nspawn execution stage",
+      "candidate_url": "https://github.com/rkt/rkt/blob/master/Documentation/devel/architecture.md",
+      "candidate_claim": "rkt's pod-level PID 1 and application-launch stage illustrate how one pod can own a shared process environment and its lifecycle.",
+      "gold_matches": [],
+      "match_rationale": "shared runtime 구조를 참고하는 것과 모든 지원 runtime에서 항상 공유하는 G02 정책은 다르다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "원 응답이 legacy PID1을 위해 opt-in sharing을 명시한다. shared mode의 app이 PID1이 아님을 숨기지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "pod-level stage가 namespace owner와 application lifecycle을 관리한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "한 pod execution environment이며 복수 subgroup을 제안하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "systemd/nspawn의 general supervisor를 가져오지 말고 namespace ownership만 참고하라고 명시한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "rkt stage1 PID1/lifecycle → shared pod owner와 app entrypoint 분리. 기존 image는 private path로 남기며 full systemd init 채택으로 확대하지 않는다.",
+      "H_assessment_scope": "reference_design: Pod namespace ownership and startup/lifecycle architecture.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C06.json#/candidates/2",
+        "runs/B/C06.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    },
+    {
+      "case_id": "C06",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "nsenter and Linux PID-namespace lifecycle semantics",
+      "candidate_url": "https://man7.org/linux/man-pages/man1/nsenter.1.html",
+      "candidate_claim": "nsenter's target-namespace and fork behavior supplies an executable reference for placing a new process into a pod's existing PID namespace.",
+      "gold_matches": [],
+      "match_rationale": "target process의 kernel namespace 진입은 container/sandbox ID의 public configuration 선택 및 annotation migration과 다르다. A-C06-r6의 private-namespace 선택 진단과 달리 이 원 응답은 공유 pod 안의 새 process 생성에 범위를 뒀다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "Keep backwards compatibility for existing images that depend on PID 1 behavior.",
+          "value": "pass",
+          "reason": "새 child의 namespace 진입 순서를 참고하며 이미 실행 중인 app의 PID를 바꾸는 것으로 제안하지 않는다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Configure process-namespace sharing at pod scope.",
+          "value": "pass",
+          "reason": "새 process를 pod의 기존 namespace에 배치하는 runtime 부분이다. 사용자 정책 API 자체를 제공하지 않는다고 명시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope.",
+          "value": "pass",
+          "reason": "한 pod namespace 안의 child 생성 참고이며 subgroup 구성을 추가하지 않는다."
+        },
+        {
+          "constraint_id": "H4",
+          "constraint": "A general-purpose container init system is out of scope.",
+          "value": "pass",
+          "reason": "namespace/fork/lifecycle의 kernel 계약이며 general init이 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "nsenter target/fork와 PID namespace lifetime → pod runtime의 child 생성 순서. procfs mount와 namespace owner 종료를 처리해야 한다.",
+      "H_assessment_scope": "reference_design: Runtime mechanism and visibility/lifecycle checks.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C06.json#/candidates/3",
+        "runs/B/C06.json#/opened_documents"
+      ],
+      "remaining_check": "문서상 선택한 참고 범위만 판정했다. H unknown은 실제 생성 코드와 수동 초기화/경계 규칙을 확인하고 대상 최소 구현으로 검증한다. 날짜 unknown은 결정일 전 판의 선택 기능을 확인한다."
+    }
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "case_id": "C22",
+  "baseline": "B",
+  "judgments": [
+    {
+      "case_id": "C22",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Qt — thread-safe versus reentrant",
+      "candidate_url": "https://doc.qt.io/qt-6/threads-reentrancy.html",
+      "candidate_claim": "Qt's separate term thread-safe for concurrent use of one instance provides a clearer concurrency label than a word that merely describes shared access.",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 thread-safe를 concurrency trait의 명명 선례로 실제 제시한다. ThreadSafe/Threadsafe 대소문자 차이는 동일 명칭으로 처리한다."
+        }
+      ],
+      "match_rationale": "구체 이름을 제안한 경우와 어휘 구분만 설명한 경우를 분리한다. ConcurrentShareable이라는 최종 추론 이름은 gold의 ConcurrentlySharable과 같은 식별자 또는 공식 alias로 확인되지 않아 주점수에 넣지 않았다. 나머지 naming 후보를 단순 의미 유사성으로 모두 일치시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "일반 공유/alias와 concurrent safety를 구별하는 원문 용어 또는 의미 반례를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "원 응답이 기존 shared-reference concurrent-safety 의미를 그대로 유지하도록 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Qt의 동일 instance thread safety와 reentrancy 구별 → Rust concurrent shared-reference 안전성의 이름 ThreadSafe. class 전체 연산 보장으로 확대하거나 lock 필요성을 뜻하게 하지 않는다.",
+      "H_assessment_scope": "reference_design: Naming precedent for ThreadSafe or an explicitly qualified concurrent-sharing trait; keep the trait's existing shared-reference contract.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "R0123-G03"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C22.json#/candidates/0",
+        "runs/B/C22.json#/opened_documents"
+      ],
+      "remaining_check": "실제 사용자의 이름 이해도와 rename 효과는 관측하지 않았다. 날짜 unknown은 결정 전 동일 terminology 절을 확인해야 한다. ConcurrentShareable/ConcurrentlySharable의 철자·문법 변형 일치는 별도 경계 검토로 확인할 수 있다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Boost — shared ownership versus thread safety",
+      "candidate_url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "candidate_claim": "Boost's separate shared-ownership terminology and thread-safety contract show why sharing alone should not name a concurrent-safety guarantee.",
+      "gold_matches": [],
+      "match_rationale": "구체 이름을 제안한 경우와 어휘 구분만 설명한 경우를 분리한다. ConcurrentShareable이라는 최종 추론 이름은 gold의 ConcurrentlySharable과 같은 식별자 또는 공식 alias로 확인되지 않아 주점수에 넣지 않았다. 나머지 naming 후보를 단순 의미 유사성으로 모두 일치시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "일반 공유/alias와 concurrent safety를 구별하는 원문 용어 또는 의미 반례를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "원 응답이 기존 shared-reference concurrent-safety 의미를 그대로 유지하도록 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Boost의 shared ownership과 별도 handle concurrency 계약 → alias/ownership 설명과 concurrent safety 설명을 분리. owning pointer를 Rust borrow로 동일시하거나 pointee safety를 추론하지 않는다.",
+      "H_assessment_scope": "reference_design: Terminology and documentation structure: describe aliasing or ownership separately from operations safe across threads.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C22.json#/candidates/1",
+        "runs/B/C22.json#/opened_documents"
+      ],
+      "remaining_check": "실제 사용자의 이름 이해도와 rename 효과는 관측하지 않았다. 날짜 unknown은 결정 전 동일 terminology 절을 확인해야 한다. ConcurrentShareable/ConcurrentlySharable의 철자·문법 변형 일치는 별도 경계 검토로 확인할 수 있다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Concurrent Ruby — thread safety separate from mutability",
+      "candidate_url": "https://github.com/ruby-concurrency/concurrent-ruby",
+      "candidate_claim": "Concurrent Ruby describes mutable abstractions as thread-safe, providing a precedent for naming concurrent safety without suggesting immutability.",
+      "gold_matches": [
+        {
+          "gold_id": "R0123-G03",
+          "match_kind": "structural_design",
+          "match_basis": "structural_design",
+          "external_entity_hit": null,
+          "rationale": "원 응답이 thread-safe를 concurrency trait의 명명 선례로 실제 제시한다. ThreadSafe/Threadsafe 대소문자 차이는 동일 명칭으로 처리한다."
+        }
+      ],
+      "match_rationale": "구체 이름을 제안한 경우와 어휘 구분만 설명한 경우를 분리한다. ConcurrentShareable이라는 최종 추론 이름은 gold의 ConcurrentlySharable과 같은 식별자 또는 공식 alias로 확인되지 않아 주점수에 넣지 않았다. 나머지 naming 후보를 단순 의미 유사성으로 모두 일치시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "일반 공유/alias와 concurrent safety를 구별하는 원문 용어 또는 의미 반례를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "원 응답이 기존 shared-reference concurrent-safety 의미를 그대로 유지하도록 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Concurrent Ruby의 mutable abstraction에 대한 thread-safe 명명 → 안전한 interior mutation을 허용하는 trait 설명. payload 전체에 safety가 전파된다고 보지 않는다.",
+      "H_assessment_scope": "reference_design: Trait documentation and naming examples that permit safely synchronized interior mutation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [
+        "R0123-G03"
+      ],
+      "nongold_useful": false,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C22.json#/candidates/2",
+        "runs/B/C22.json#/opened_documents"
+      ],
+      "remaining_check": "실제 사용자의 이름 이해도와 rename 효과는 관측하지 않았다. 날짜 unknown은 결정 전 동일 terminology 절을 확인해야 한다. ConcurrentShareable/ConcurrentlySharable의 철자·문법 변형 일치는 별도 경계 검토로 확인할 수 있다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "B",
+      "rank": 4,
+      "candidate_name": "Clang Thread Safety Analysis — access capabilities and safety contracts",
+      "candidate_url": "https://clang.llvm.org/docs/ThreadSafetyAnalysis.html",
+      "candidate_claim": "Clang separates shared or exclusive access capabilities from thread-safety obligations, illustrating how access vocabulary and concurrency guarantees can occupy different naming layers.",
+      "gold_matches": [],
+      "match_rationale": "구체 이름을 제안한 경우와 어휘 구분만 설명한 경우를 분리한다. ConcurrentShareable이라는 최종 추론 이름은 gold의 ConcurrentlySharable과 같은 식별자 또는 공식 alias로 확인되지 않아 주점수에 넣지 않았다. 나머지 naming 후보를 단순 의미 유사성으로 모두 일치시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "일반 공유/alias와 concurrent safety를 구별하는 원문 용어 또는 의미 반례를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "원 응답이 기존 shared-reference concurrent-safety 의미를 그대로 유지하도록 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Clang의 shared/exclusive capability와 thread-safety obligation 구분 → access vocabulary와 concurrency guarantee의 별도 설명. annotation·lock 요구를 Rust trait 의미로 대체하지 않는다.",
+      "H_assessment_scope": "reference_design: Documentation vocabulary and avoidance of mechanism-specific trait names such as Locked or Guarded.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C22.json#/candidates/3",
+        "runs/B/C22.json#/opened_documents"
+      ],
+      "remaining_check": "실제 사용자의 이름 이해도와 rename 효과는 관측하지 않았다. 날짜 unknown은 결정 전 동일 terminology 절을 확인해야 한다. ConcurrentShareable/ConcurrentlySharable의 철자·문법 변형 일치는 별도 경계 검토로 확인할 수 있다."
+    },
+    {
+      "case_id": "C22",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "Pony reference capabilities — aliasing, read-only access, and actor sharing",
+      "candidate_url": "https://tutorial.ponylang.io/reference-capabilities/reference-capabilities.html",
+      "candidate_claim": "Pony distinguishes aliasable mutable ref, read-only box, immutable val, and isolated iso, showing why ordinary reference access and safe sharing across concurrent actors need separate terms.",
+      "gold_matches": [],
+      "match_rationale": "구체 이름을 제안한 경우와 어휘 구분만 설명한 경우를 분리한다. ConcurrentShareable이라는 최종 추론 이름은 gold의 ConcurrentlySharable과 같은 식별자 또는 공식 alias로 확인되지 않아 주점수에 넣지 않았다. 나머지 naming 후보를 단순 의미 유사성으로 모두 일치시키지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "일반 shared reference와 concurrent-sharing 안전성의 의미를 구분할 것",
+          "value": "pass",
+          "reason": "일반 공유/alias와 concurrent safety를 구별하는 원문 용어 또는 의미 반례를 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "명명 변경으로 trait의 의미를 바꾸지 않을 것",
+          "value": "pass",
+          "reason": "원 응답이 기존 shared-reference concurrent-safety 의미를 그대로 유지하도록 한정한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "Pony의 ref/box/val/iso 구분 → read-only view도 mutable alias가 있을 수 있다는 용어 반례. actor capability를 그대로 이식하거나 immutable/unique를 해당 trait의 정의로 바꾸지 않는다.",
+      "H_assessment_scope": "reference_design: A terminology comparison and semantic counterexample: a read-only view can still alias mutable state.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/B/C22.json#/candidates/4",
+        "runs/B/C22.json#/opened_documents"
+      ],
+      "remaining_check": "실제 사용자의 이름 이해도와 rename 효과는 관측하지 않았다. 날짜 unknown은 결정 전 동일 terminology 절을 확인해야 한다. ConcurrentShareable/ConcurrentlySharable의 철자·문법 변형 일치는 별도 경계 검토로 확인할 수 있다."
+    }
+  ]
+}

@@ -1,0 +1,470 @@
+{
+  "case_id": "C04",
+  "baseline": "A",
+  "judgments": [
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Kubernetes NodeRestriction admission plugin and public implementation",
+      "candidate_url": "https://github.com/kubernetes/kubernetes/blob/master/plugin/pkg/admission/noderestriction/admission.go",
+      "candidate_claim": "Its checks on label creation and modification provide a concrete reference for preventing kubelets from granting themselves protected placement identity.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "node 자체가 보호된 키를 생성·변경하지 못하게 검사한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "민감한 배치에는 보호 키를 쓰고 임의 키는 신뢰하지 않는다고 명시한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "API admission의 라벨 쓰기 제한이며 scheduler를 교체하지 않는다."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: API-server enforcement of label ownership during registration and later updates.",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/0",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Kubernetes validating admission webhooks",
+      "candidate_url": "https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/",
+      "candidate_claim": "A validating webhook can compare authenticated requests and old/new Node labels to enforce organization-specific label-writing permissions.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "인증 호출자와 이전/이후 라벨을 검사하며 fail-closed 조건을 둔다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "node가 선택자를 조작해 민감 라벨 보호를 우회하지 못하게 하는 조건이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "라벨 쓰기 권한을 admission으로 검증한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "validating webhook의 호출자·old/new object 검사 → 보호 라벨 소유권 predicate. create/update 전 경로와 장애 거부 정책이 필요하다.",
+      "H_assessment_scope": "reference_design: Custom authorization for protected labels while retaining automatic Node creation.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/1",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 3,
+      "candidate_name": "Kubernetes RBAC for a dedicated label-management identity",
+      "candidate_url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+      "candidate_claim": "ClusterRoles and bindings can give a separate controller the Node write permissions needed to centralize trusted labeling.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "not_in_scope",
+          "reason": "독립 label controller credential이라는 보조 부분만 제시했고 개별 키 보호는 admission이 필요하다고 밝혔다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "not_in_scope",
+          "reason": "credential 분리 참고이며 배치·secret 경로 전체 구현은 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "라벨 관리 controller의 권한 분리로 scheduler 교체가 없다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "RBAC controller 역할·별도 credential → 신뢰 라벨 관리 주체 분리. additive resource 권한만으로 개별 키를 보호하지 못하므로 admission과 결합해야 한다.",
+      "H_assessment_scope": "reference_design: Separation of controller credentials from kubelet credentials.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/2",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Cloud controller manager Node controller",
+      "candidate_url": "https://kubernetes.io/docs/concepts/architecture/cloud-controller/",
+      "candidate_claim": "Its provider-API-derived Node metadata demonstrates how a centralized authority can populate labels independently of node command-line assertions.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "node 주장 대신 provider API를 라벨 발급 원천으로 쓴다; overwrite 차단 조건을 명시했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "not_in_scope",
+          "reason": "provider metadata 발급 부분만이며 runtime integrity 증명을 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "중앙 라벨 발급 controller를 참고하며 scheduler 교체가 없다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "provider 기반 Node metadata → 독립된 trusted label issuer. instance-Node 결합과 overwrite 거부가 필요하고 provider 속성만으로 실행 무결성을 보장하지 않는다.",
+      "H_assessment_scope": "reference_design: Authoritative label issuance and automated registration enrichment.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/3",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Kubernetes Node authorizer",
+      "candidate_url": "https://kubernetes.io/docs/reference/access-authn-authz/node/",
+      "candidate_claim": "Its node-specific authorization and workload-to-secret relationships show how placement decisions determine the secrets a compromised kubelet may read.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "not_in_scope",
+          "reason": "label 신뢰성 생성이 아닌 API 접근 제한 부분으로 제시했다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "배치된 workload와 secret 읽기 권한의 연결을 문서로 확인했다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "node API authorization 보조이며 scheduler를 교체하지 않는다."
+        }
+      ],
+      "T": "not_needed",
+      "transfer_mapping": null,
+      "H_assessment_scope": "reference_design: Complementary confinement of node API access and secret exposure.",
+      "runtime_observation": "not_performed",
+      "label": "DIRECT_DOCUMENTED",
+      "link_status": "opened_body",
+      "date_status": "unknown",
+      "run_reported_date_status": "unknown",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/4",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 6,
+      "candidate_name": "Kubelet TLS bootstrap with individual node credentials",
+      "candidate_url": "https://kubernetes.io/blog/2018/09/27/kubernetes-1-12-release-announcement/",
+      "candidate_claim": "Automated per-kubelet certificate issuance provides the caller identity needed to enforce node-specific permissions without manually provisioning every node.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "not_in_scope",
+          "reason": "인증 identity 생성 부분이며 label 권한 자체를 인증서로 보증하지 않았다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "not_in_scope",
+          "reason": "등록 credential 부분으로 배치 secret 보호 전체를 주장하지 않았다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "라벨 쓰기 권한 판정에 쓸 개별 caller identity를 자동 등록에 제공한다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "per-kubelet certificate → 라벨 쓰기 권한의 신뢰할 수 있는 caller 식별. 올바른 node binding·승인과 별도 label authorization이 필요하다.",
+      "H_assessment_scope": "reference_design: Identity establishment during node registration.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": {
+        "record": "evidence/judgments/BOUNDARY_REVIEW.json",
+        "resolution": "evidence/judgments/BOUNDARY_RESOLUTION.json",
+        "initial_review_read_root_notes": false
+      },
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/5",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Keylime hardware-rooted identity and periodic attestation",
+      "candidate_url": "https://www.ll.mit.edu/r-d/publications/bootstrapping-and-maintaining-trust-cloud",
+      "candidate_claim": "A separate attestation service can supply evidence for an authorized controller to grant or revoke a security-related placement label.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "독립 attestation 결과를 controller가 label 발급·회수의 조건으로 쓰는 매핑을 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "보안 관련 placement label에 무결성 근거를 제공하는 좁은 제안이다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "기존 라벨 발급의 근거를 바꾸며 scheduler를 교체하지 않는다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "하드웨어 root와 주기적 attestation → controller의 보안 label 발급·회수 predicate. 의미 있는 measurement와 신뢰 체인 및 stale/revocation 처리를 만들어야 한다.",
+      "H_assessment_scope": "reference_design: Alternative evidence source for trusted label issuance.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "pre_decision",
+      "run_reported_date_status": "pre_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": true,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/6",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    },
+    {
+      "case_id": "C04",
+      "baseline": "A",
+      "rank": 8,
+      "candidate_name": "Open Policy Agent for Kubernetes admission policy",
+      "candidate_url": "https://www.openpolicyagent.org/blog/securing-the-kubernetes-api-with-open-policy-agent-ce93af0552c3",
+      "candidate_claim": "OPA's policies over Kubernetes request objects and external context could express a reusable label-prefix ownership policy for an admission webhook.",
+      "gold_matches": [],
+      "match_rationale": "보호된 prefix, webhook, credential 분리 또는 외부 attestation은 파일/flag 설정, 정책 API object, NoSchedule 사후 taint, 모든 라벨 고정 allowlist라는 네 명시 대안과 일치하지 않는다.",
+      "review_matches": [],
+      "L": "ok",
+      "E": "supported",
+      "E_reason": null,
+      "H": [
+        {
+          "constraint_id": "H1",
+          "constraint": "A compromised node must not gain trusted placement identity merely by asserting its own labels.",
+          "value": "pass",
+          "reason": "label-prefix 소유권을 admission policy로 검사하도록 제시한다."
+        },
+        {
+          "constraint_id": "H2",
+          "constraint": "Consider sensitive-workload and secret exposure through scheduler placement.",
+          "value": "pass",
+          "reason": "node-specific policy를 실제 admission 경로에 적용하고 오래된 context를 경계한다."
+        },
+        {
+          "constraint_id": "H3",
+          "constraint": "Address node-label authorization rather than replace the entire workload scheduler.",
+          "value": "pass",
+          "reason": "정책 평가 엔진 교체이며 scheduler 교체가 아니다."
+        }
+      ],
+      "T": "mapped",
+      "transfer_mapping": "OPA의 request object/context 정책 평가 → node-label prefix 권한 규칙. rule 작성·admission 적용과 stale context 대응이 필요하다.",
+      "H_assessment_scope": "reference_design: Policy engine implementation for custom Node-label admission.",
+      "runtime_observation": "not_performed",
+      "label": "CONDITIONAL_TRANSFER",
+      "link_status": "opened_body",
+      "date_status": "post_decision",
+      "run_reported_date_status": "post_decision",
+      "strict_historical_gold_ids": [],
+      "post_decision_gold_ids": [],
+      "date_unknown_gold_ids": [],
+      "nongold_useful": true,
+      "nongold_historical_useful": false,
+      "near_miss": false,
+      "broken_or_fake": false,
+      "exclusion": false,
+      "judge": "작업자",
+      "internal_separate_review": null,
+      "evidence_locations": [
+        "runs/A/C04.json#/candidates/7",
+        "runs/A/C04.json#/opened_documents"
+      ],
+      "remaining_check": "적용 구현은 미실시. 원 응답의 제한과 연결 전제를 구현해 접두부 사용례로 검증해야 하며, 날짜 미확인은 결정 전 판의 해당 절을 대조해야 한다."
+    }
+  ]
+}
