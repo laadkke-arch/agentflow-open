@@ -13,3 +13,7 @@ manifest의 freshness_at_start=local_only는 CLI에 명시 local ref를 준 결�
 ## 실행 전 cutoff 정정 — C14
 
 공식 PEP563 Resolution 메일(2017-12-04 16:42:38 UTC)을 직접 읽은 결과, 저장소 Accepted 반영일12월5일보다 하루 이르다. C14는 A/B 모두 미실행인 상태에서 접두부 cutoff만2017-12-04로 정정한다. 최초 접두부30개는8cb2b8e에 있고, 이 별도 정정도 gold 커밋보다 앞선다. 내용·선정·정답을 실행 결과에 맞춰 바꾸지 않았다.
+
+## 선정 누락 복구 — 31번째 접두부
+
+P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 추가한다. cutoff2010-03-21, 최초판526ad628, 후속440의 대체2014-08-22를 확인했다. 기존30개와 그 실행은 보존한다. SAMPLING의 보정 절과 PREFIX_MANIFEST에 이유·순서·hash를 남겼으며, gold는 아직 공개하지 않았다.
