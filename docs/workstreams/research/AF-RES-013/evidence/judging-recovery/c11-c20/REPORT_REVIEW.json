@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "judge": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "review_scope": "RESULT.md reporting review only; no baseline reruns or source-shard edits",
+  "reviewed_report_sha256": "97555e2400a1112b760f026ae4eab12ea6a1ab13f3c66bedc187baa8b54b2501",
+  "linked_judgment_commit": "df974def5425a343b16784f78c0641cac3ab4d33",
+  "overall": "Numerical and required-table structure checks pass. RR01–03 root wording/path corrections verified. Only low-priority C08 phrasing and explicit site-cap acceptance exception remain.",
+  "findings": [
+    {
+      "id": "RR-01",
+      "severity": "medium",
+      "location": "RESULT.md 표1 미확인 열 / tools/render_result.py unknown string",
+      "finding": "확인 지침의 runs/C01 등의 경로는 실제 파일 경로가 아니다. 실제 자료는 runs/A/C01.json과 runs/B/C01.json이다.",
+      "evidence": "31행 모두 같은 생성 문자열을 사용한다. runs에는 A/B 디렉터리가 있으며 직접 읽어 판정·집계를 확인했다.",
+      "recommended_change": "각 행을 runs/A/<id>.json 및 runs/B/<id>.json으로 명시하거나 해당 두 파일에 상대 링크를 단다. JUDGMENTS는 case_id/baseline/rank와 remaining_check로 연결한다.",
+      "affects_numbers": false,
+      "status_after_root_revision": "resolved"
+    },
+    {
+      "id": "RR-02",
+      "severity": "medium",
+      "location": "RESULT.md §2 Q8 마지막 문단",
+      "finding": "부품 외부 대상의 A 역사 적중8/30이라는 표현이 기능 역할과 정답 종류를 혼합한다. 30은 external_entity 분모이고 재사용 부품 분모는17이다.",
+      "evidence": {
+        "AGGREGATES.gold_types.external_entity": {
+          "gold_denominator": 30,
+          "A_strict": 8
+        },
+        "AGGREGATES.roles.재사용 부품": {
+          "gold_denominator": 17,
+          "A_strict": 6
+        }
+      },
+      "recommended_change": "외부 실체 항목의 A 역사 적중8/30으로 고친다. 부품 역할 수치를 쓰려면6/17로 별도 기술한다.",
+      "affects_numbers": false,
+      "status_after_root_revision": "resolved"
+    },
+    {
+      "id": "RR-03",
+      "severity": "medium",
+      "location": "RESULT.md 표3 Q8 행 및 §2 Q8 제목/첫 문단",
+      "finding": "AF009의 조건A/B는 기존조합 충분성을 기각하는 조건이 아니라, 기존조합이 새 절차와 동등 이상이면 H1/별도 조사 UI·구조 입력 UI의 추가가치를 기각하는 조건이다. 현 보고서의 결론 방향은 대체로 옳지만 제목의 기각 대상은 혼동될 수 있다.",
+      "evidence": "git show 7f627a81199f06da7f7b15f979e7fef25dd17602:docs/workstreams/research/AF-RES-009/GAP.md §2·§3를 직접 대조했다. 두 조건 모두 사전 과제·허용 오류·검토시간과 새 절차의 비교를 요구한다.",
+      "recommended_change": "Q8에 009의 기각 대상이 H1 추가가치임을 명시한다. 예: 기존조합의 충분성, 새 절차의 우위, H1의 기각 모두 이번 단독 기준선 관측만으로 판정하지 못한다. 제목은 AF009 비교·기각 조건은 미평가로 정리할 수 있다.",
+      "affects_numbers": false,
+      "status_after_root_revision": "resolved"
+    },
+    {
+      "id": "RR-04",
+      "severity": "low",
+      "location": "RESULT.md 표1 C08 미확인 열",
+      "finding": "C08은 A/B 날짜 unknown0·INSUFFICIENT0인데 일반 템플릿이 cutoff 이전 판 대조가 미확인이라고 덧붙인다. 현재 자료상 남은 날짜/H 미확인과 미실시 실제 적용을 구별하는 편이 정확하다.",
+      "evidence": "AGGREGATES.cases[C08]의 두 date_status_candidates unknown 및 insufficient_candidates가 모두0. 다른 행은 적어도 한 쪽 실제 unknown이 있다.",
+      "recommended_change": "해당 행에는 날짜·L/E/H 판정의 미확인 없음; 실제 적용효과는 미실시(대상 구현/사용자 비교로 확인)처럼 분리한다. 열 이름은 그대로 유지한다.",
+      "affects_numbers": false,
+      "status_after_root_revision": "open_low_priority"
+    },
+    {
+      "id": "RR-05",
+      "severity": "high_acceptance_guardrail",
+      "location": "RESULT.md §2 Q2, §5.1 및 앞으로 작성할 SELF_CHECK/HANDOFF",
+      "finding": "§5는 사례31개가 모두 GitHub 호스트이고 사이트당3개 상한을 사례에 문자 그대로 적용하면30개 요건을 충족하지 않는다고 정직하게 공개한다. 다만 SAMPLING의 연구자 해석은 사용자 승인된 예외가 아니므로 전체 완료 기준을 무조건 예로 처리할 수 없다.",
+      "evidence": "사용자 brief의 사이트 상한 문구, SAMPLING §사례 외 자료와 출처 수, SOURCE_COUNT의 case_documents_counted_separately31와 사이트당3을 대조했다. 비사례25개·13사이트·최대3은 별도로 실제 충족한다.",
+      "recommended_change": "현재 한계 문구를 유지하고 SELF_CHECK에는 문자적 사이트상한 적용 사례최소수는 아니오로 기록한다. Q2 또는 acceptance 요약에서31개 관측과 사이트상한 요건의 불충족을 구별한다. 사람 확인을 새로 요구하는 권고는 아니다.",
+      "affects_numbers": false,
+      "status_after_root_revision": "acceptance_exception_disclosed; must remain non-unconditional"
+    }
+  ],
+  "checks": {
+    "table1": {
+      "rows": 31,
+      "columns": 13,
+      "exact_headers": true,
+      "blank_cells": 0
+    },
+    "table2": {
+      "rows": 6,
+      "columns": 6,
+      "exact_headers": true,
+      "blank_cells": 0
+    },
+    "table3": {
+      "rows": 6,
+      "columns": 5,
+      "exact_headers": true,
+      "blank_cells": 0
+    },
+    "gold_denominator": 176,
+    "role_denominators": {
+      "같은 목적 완성품": 0,
+      "재사용 부품": 17,
+      "같은 분야의 다른 설계": 146,
+      "다른 언어·생태계": 12,
+      "다른 분야 원리": 1,
+      "표준·논문": 0
+    },
+    "judgments": 342,
+    "labels": {
+      "CONDITIONAL_TRANSFER": 318,
+      "INSUFFICIENT": 21,
+      "DIRECT_DOCUMENTED": 3
+    },
+    "A": {
+      "candidates": 204,
+      "strict_hits": 16,
+      "all_hits": 23,
+      "nongold_useful": 170,
+      "nongold_denominator": 178,
+      "historical_nongold_useful": 83
+    },
+    "B": {
+      "candidates": 138,
+      "strict_hits": 5,
+      "all_hits": 14,
+      "nongold_useful": 109,
+      "nongold_denominator": 120,
+      "historical_nongold_useful": 30
+    },
+    "independent_recompute_differences": [],
+    "useful_predicate_violations": [],
+    "section4_entries": 3,
+    "section4_each_required_field_count": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "counterexample_rows": 5,
+    "crossfield_domains": 3,
+    "perspectives": 5,
+    "noncase_sources": 25,
+    "noncase_sites": 13,
+    "max_noncase_per_site": 3,
+    "linked_judgment_commit_files_match_local": true
+  },
+  "question_evidence_check": [
+    {
+      "question": "Q1",
+      "result": "pass",
+      "evidence_types": [
+        "template/procedure primary",
+        "pinned real proposal",
+        "review discussion",
+        "methodology paper"
+      ],
+      "examples": [
+        "R-TEMPLATE-PRIOR-MERGE",
+        "PS-T-SWIFT-INITIAL",
+        "RV-K177-EMPTY",
+        "M26",
+        "M06"
+      ]
+    },
+    {
+      "question": "Q2",
+      "result": "pass_for_evidence; site-cap acceptance exception remains",
+      "evidence_types": [
+        "pinned-case/decision dataset and git ancestry",
+        "sampling/test-collection methodology"
+      ],
+      "examples": [
+        "CASES.json and table1",
+        "PREFIX_MANIFEST plus three ancestry checks",
+        "M05",
+        "M02"
+      ]
+    },
+    {
+      "question": "Q3",
+      "result": "pass",
+      "evidence_types": [
+        "pinned design proposal and gold coding",
+        "review discussion",
+        "external evaluation-method paper"
+      ],
+      "examples": [
+        "CASES",
+        "PS-R-S21-LENS",
+        "R-REVIEW-123",
+        "M07"
+      ]
+    },
+    {
+      "question": "Q4",
+      "result": "pass",
+      "evidence_types": [
+        "pinned design proposal",
+        "review comment",
+        "citation-evaluation review paper"
+      ],
+      "examples": [
+        "C05/RV-C05-ACTIVE-VOICE",
+        "RV-R123-TERM",
+        "M12"
+      ]
+    },
+    {
+      "question": "Q5",
+      "result": "pass_execution_exception",
+      "numeric_table": "Table1/AGGREGATES A16/176 and A23/176",
+      "concrete_example": [
+        "C09 A range/xrange",
+        "C18 A Python bytes",
+        "C12 A nonmatch"
+      ]
+    },
+    {
+      "question": "Q6",
+      "result": "pass_execution_exception",
+      "numeric_table": "Table1/AGGREGATES B5/176 and B14/176",
+      "concrete_example": [
+        "C22 B catalogue naming candidate",
+        "C31 B unknown migration link"
+      ]
+    },
+    {
+      "question": "Q7",
+      "result": "pass_execution_exception",
+      "numeric_table": "342 rows: CT318/I21/D3; A170/178 B109/120",
+      "concrete_example": [
+        "C05 B3 grouping condition correction",
+        "C13 B1 clean README insufficient",
+        "C30 A3 metadata-only"
+      ]
+    },
+    {
+      "question": "Q8",
+      "result": "pass_evidence; wording correction RR03",
+      "evidence_types": [
+        "AF009 fixed prior research/protocol",
+        "current run and judgment data",
+        "IR user-utility/methodology paper"
+      ],
+      "examples": [
+        "AF009 GAP §2/3",
+        "Table1/2 C05 0/1 plus section3.2",
+        "M03",
+        "M15"
+      ]
+    }
+  ],
+  "interpretation_audit": {
+    "utility_inflation": "not_found: text repeatedly distinguishes narrow document-based references from whole products, implementation/user effect and better alternatives",
+    "q8": "No causal product superiority/sufficiency claim found; root added explicit H1/UI rejection direction, resolving RR03.",
+    "site_cap": "Existing report is candid; must not promote researcher exception to unconditional acceptance"
+  },
+  "limitations": [
+    "This review recomputed all judgment aggregates and checked table content/structure; it did not reread every external original in the 365-entry source ledger.",
+    "Prior source reading records and CROSSFIELD were checked for the three-domain comparison; original third-party experimental results were not rerun.",
+    "No files outside REPORT_REVIEW.md/REPORT_REVIEW.json were modified in this review."
+  ],
+  "initial_reviewed_report_sha256": "cd6212749a4a83ab4205fcb5ae61ec547e39cb1f6f607ac201463ccf15aaa553",
+  "root_revision_verification": {
+    "report_sha256": "97555e2400a1112b760f026ae4eab12ea6a1ab13f3c66bedc187baa8b54b2501",
+    "status": {
+      "RR-01": "resolved",
+      "RR-02": "resolved",
+      "RR-03": "resolved",
+      "RR-04": "open_low_priority",
+      "RR-05": "acceptance_exception_disclosed; must remain non-unconditional"
+    },
+    "notes": "Root revised report after early findings were sent. Reviewed actual revised text; numeric inputs unchanged."
+  }
+}

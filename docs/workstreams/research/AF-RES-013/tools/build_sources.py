@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ["id", "url", "accessed_at_utc", "source_type", "title", "version_or_date", "sections_read", "confirmed", "limits", "level", "used_in"]
 INPUTS = ["evidence/cases-kep/sources.json", "evidence/cases-rust/sources.json", "evidence/cases-ps/sources.json", "evidence/methods/sources.json", "evidence/methods/supplementary-sources.json"]
-COUNTED = {f"M{i:02d}" for i in range(1, 17)} | {"M22", "M23", "M24", "M25", "PS-R-S25-DECISION", "R-TEMPLATE-PRIOR-MERGE", "PS-T-PEP12", "PS-T-SWIFT-INITIAL", "K-TEMPLATE-NOW"}
+COUNTED = {f"M{i:02d}" for i in range(1, 17)} | {"M22", "M23", "M24", "PS-R-S21-LENS", "PS-R-S25-DECISION", "R-TEMPLATE-PRIOR-MERGE", "PS-T-PEP12", "PS-T-SWIFT-INITIAL", "K-TEMPLATE-NOW"}
 
 
 def site(url):
@@ -54,8 +54,9 @@ def main():
     old = subprocess.check_output(["git", "show", "7f627a81199f06da7f7b15f979e7fef25dd17602:docs/workstreams/research/AF-RES-009/sources.json"], text=True)
     novelty = {k: next(s["url"] for s in sources if s["id"] == k) not in old for k in ("M13", "M14")}
     assert all(novelty.values())
+    assert "citeeval" not in old.lower() and "correctness is not faithfulness" not in old.lower()
     cases = json.loads((ROOT / "cases/CASES.json").read_text())["cases"]
-    audit = {"noncase_counted": len(counted), "counted_ids": sorted(COUNTED), "sites": dict(sorted(sites.items())), "single_site_max": max(sites.values()), "templates_or_procedures": ["R-TEMPLATE-PRIOR-MERGE", "PS-T-PEP12", "PS-T-SWIFT-INITIAL", "K-TEMPLATE-NOW"], "methodology_papers": ["M01", "M02", "M03", "M04", "M15", "M16"], "crossfield_overviews": {"patent": ["M05", "M07"], "law": ["M09"], "academic": ["M12"]}, "new_generative_citation_papers": novelty, "review_originals": ["M22", "M23", "M24", "M25", "PS-R-S25-DECISION"], "review_note": "M25는 리뷰 결과와 거절한 확장안을 설명하는 수락 공고; 나머지는 토론·메일 원문. 추가 GitHub 리뷰는 읽었지만 최소수에는 미산입.", "case_documents_counted_separately": len(cases), "case_families": dict(collections.Counter(c["family"] for c in cases)), "all_source_records_including_support": len(sources), "excluded_attempts": len(excluded), "limits": "사이트 상한은 비사례 최소수에 적용. GitHub에 호스팅된 사례는 독립 제안31개로 별도 보고하며 사이트 다양성으로 주장하지 않음."}
+    audit = {"noncase_counted": len(counted), "counted_ids": sorted(COUNTED), "sites": dict(sorted(sites.items())), "single_site_max": max(sites.values()), "templates_or_procedures": ["R-TEMPLATE-PRIOR-MERGE", "PS-T-PEP12", "PS-T-SWIFT-INITIAL", "K-TEMPLATE-NOW"], "methodology_papers": ["M01", "M02", "M03", "M04", "M15", "M16"], "crossfield_overviews": {"patent": ["M05", "M07"], "law": ["M09"], "academic": ["M12"]}, "new_generative_citation_papers": novelty, "review_originals": ["M22", "M23", "M24", "PS-R-S21-LENS", "PS-R-S25-DECISION"], "review_note": "실제 토론·메일 원문5개. 재개 감사에서 수락 공고 M25 대신 이미 직접 읽은 PS-R-S21-LENS를 산입하여 좁은 토론 기준도 충족한다. M25는 보조 근거로 유지하고 총25·사이트상한3은 불변.", "case_documents_counted_separately": len(cases), "case_families": dict(collections.Counter(c["family"] for c in cases)), "all_source_records_including_support": len(sources), "excluded_attempts": len(excluded), "limits": "사이트 상한은 비사례 최소수에 적용. GitHub에 호스팅된 사례는 독립 제안31개로 별도 보고하며 사이트 다양성으로 주장하지 않음."}
     dump("sources.json", {"schema_version": 1, "counting": audit, "sources": sources, "excluded": excluded})
     dump("evidence/SOURCE_COUNT.json", audit)
     print(json.dumps(audit, ensure_ascii=False))

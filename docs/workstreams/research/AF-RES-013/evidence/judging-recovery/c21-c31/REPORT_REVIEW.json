@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "reviewer": "내부 별도 검토",
+  "model_label": "GPT-6 Astra Pro",
+  "reviewed_at_utc": "2026-11-20T15:31:57Z",
+  "scope": "최종 연구해석·수치·분류·날짜·노출·후속 인과 및 AF004 기준 일관성 검토. 새 검색·원 기준선 재실행 없음. 자기 폴더 REPORT_REVIEW.md/JSON만 작성.",
+  "review_snapshot_hashes": {
+    "RESULT.md": "97555e2400a1112b760f026ae4eab12ea6a1ab13f3c66bedc187baa8b54b2501",
+    "JUDGMENTS.json": "7c9414e55f4d82453fa543b5d317f4d05806966ffbc8d07ae39d7be7783120c6",
+    "cases/CASES.json": "f6e58abff1edab7c1137cdae939d1b8ec6a313aab1fd57e66bb9dbb6580e8cba",
+    "evidence/AGGREGATES.json": "a776e71c59691889fe57d783b145901a309b01649c7b8f7857eb6beece3c7c84"
+  },
+  "overall": "주요 인과·제품우위·수요·전수회수 과대주장 없음. 날짜 일관성1건과 축 이름 문구1건을 발견했고 root가 수용함. 수정 후의 hash와 수치 재생성은 root QA가 확인해야 한다.",
+  "checks": [
+    {
+      "id": "RR2131-C01",
+      "topic": "gold 종류 4건의 일관성",
+      "result": "pass",
+      "detail": "S0018-G05, S0021-G01/G02, S0022-G01은 모두 structural_design이고 CASES.coding_revisions가 원 external_entity 값을 보존한다. 비적중 lens/typed-selector도 같은 기준을 적용했다. 종류 합계 external30/structural146, 전체176이 맞는다.",
+      "evidence": [
+        "cases/CASES.json#/coding_revisions",
+        "evidence/judging-recovery/c21-c31/correction.json",
+        "RESULT.md#Q3"
+      ]
+    },
+    {
+      "id": "RR2131-C02",
+      "topic": "C05 다른 분야 구조와 외부 인용 구분",
+      "result": "pass",
+      "detail": "K0383-G06의 role은 다른 분야 원리, transfer_kind=structure, external_source_citation=false, stance=rejected다. RESULT의1/176=0.57%,1/31=3.23%,KEP1/34=2.9%와 외부 다른 분야 인용0은 서로 다른 관측을 구별한다. Atom review의 term_only를 본문 분모에 더하지 않고 채택 효과0을 실제 효과 부재로 일반화하지 않는다.",
+      "evidence": [
+        "cases/CASES.json#C05/K0383-G06",
+        "RESULT.md#Q4",
+        "RESULT.md#표3"
+      ]
+    },
+    {
+      "id": "RR2131-C03",
+      "topic": "표1·총계·역할 집계",
+      "result": "pass",
+      "detail": "31개 표1 행의13열, gold 역할 벡터, A/B 역사·날짜무관 회수를 원 JSON으로 독립 재계산했다. 행 수·수치 불일치0. 입력 해시는 AGGREGATES 기록과 일치했다. A16/176·23/176, B5/176·14/176 및 합집합17/29가 맞는다.",
+      "evidence": [
+        "RESULT.md#표1",
+        "RESULT.md#표2",
+        "evidence/AGGREGATES.json",
+        "JUDGMENTS.json"
+      ]
+    },
+    {
+      "id": "RR2131-C04",
+      "topic": "시간·노출 민감도",
+      "result": "pass_with_one_correction",
+      "detail": "A18사례·93gold·8회수와 B13사례·60gold·1회수의 no-recorded-exposure 부분집합을 run exposures에서 재계산했다. 서로 다른 사례군 비율을 누설의 인과효과로 해석하지 않는다. C03A4/C30A3 넓은 일치 복원과 C22B1 synthesis 제외의 민감도는 역사 수를 바꾸지 않는다. C08A1의 claim-bearing 시간 일관성은 RR2131-F01 참조.",
+      "evidence": [
+        "RESULT.md#3.1",
+        "runs/",
+        "JUDGMENTS.json",
+        "evidence/AGGREGATES.json"
+      ]
+    },
+    {
+      "id": "RR2131-C05",
+      "topic": "정답 불완전 증거의 크기",
+      "result": "pass",
+      "detail": "nongold 분모 A178/B120과 문서상 조건 통과 A170/B109, 역사 조건 A83/B30은 보존된 flags와 일치한다. 반복 후보를 독립279개 새 선례로 더하지 않고, 대부분 조건부 부분 참고라는 범위를 밝힌다. 더 좋은 설계·실제 채택·시간절감의 D4 증거0을 명시하므로 높은 문서상 참고 수를 제품 효용으로 승격하지 않는다.",
+      "evidence": [
+        "RESULT.md#Q7",
+        "RESULT.md#표3",
+        "JUDGMENTS.json",
+        "evidence/AGGREGATES.json"
+      ]
+    },
+    {
+      "id": "RR2131-C06",
+      "topic": "AF004 L/E/H/T 원 기준",
+      "result": "pass",
+      "detail": "고정 AF004 PROTOCOL v1.1을 git show로 직접 읽었다.342행에서 허용 축/라벨·runtime not_performed·조건부 mapped·유용행의 L ok/E supported/결정적 H unknown 또는 fail 없음이 일치한다. DIRECT3행도 문서 기반 proposed_configuration이며 설치 성공이라고 보고하지 않는다. H not_in_scope가 있는78행과 모두 범위 밖0행도 재계산과 같다.",
+      "evidence": [
+        "2b798c7d2b7355b649691c18de196104ceabb0f0:docs/workstreams/research/AF-RES-004/PROTOCOL.md",
+        "RESULT.md#Q7",
+        "JUDGMENTS.json"
+      ]
+    },
+    {
+      "id": "RR2131-C07",
+      "topic": "링크 오류와 근거 부족 구분",
+      "result": "pass",
+      "detail": "RESULT는 반환 링크의 확정404/410/다른 대상0과 차단·timeout·metadata-only를 구분한다. C30A3의 L ok와 E/H unknown을 함께 보존한다.0/342를 미래 가용성·무오류·완성품 안전성으로 확대하지 않는다.",
+      "evidence": [
+        "RESULT.md#Q7",
+        "evidence/RUN_AUDIT.json",
+        "JUDGMENTS.json#C30/A/3"
+      ]
+    },
+    {
+      "id": "RR2131-C08",
+      "topic": "AF009 가설과 실제 효용",
+      "result": "pass_with_wording_note",
+      "detail": "고정 AF009 GAP §2·§3·§5를 읽고 새 절차와의 동등 비용·오류·시간 비교가 빠졌다는 결론을 대조했다. 낮은 문서항목 recall로 기존 조합의 충분성이나 신규 제품 우위를 판정하지 않는 해석은 타당하다. external_entity와 역할 부품의 문구 혼동은 RR2131-F02 참조; root는 수정했다고 통보했다.",
+      "evidence": [
+        "7f627a81199f06da7f7b15f979e7fef25dd17602:docs/workstreams/research/AF-RES-009/GAP.md",
+        "RESULT.md#Q8",
+        "RESULT.md#§4"
+      ]
+    },
+    {
+      "id": "RR2131-C09",
+      "topic": "반례·약점·일반화 경계",
+      "result": "pass",
+      "detail": "§4가 정확히3건이며 각 항목에 결론 변화와 최소 규모의 다음 조사가 있다. 단회 검색·현재 웹의 역사 판정·같은 모델 계열 코딩·사이트 상한의 해석 문제를 명시한다.검토가 허용한 범위를 넘어 시장·수요·통계적 우위로 확장하는 문장은 발견하지 못했다.",
+      "evidence": [
+        "RESULT.md#§4",
+        "RESULT.md#§5",
+        "SCOPE.md"
+      ]
+    }
+  ],
+  "reversal_checks": [
+    {
+      "case_id": "C07",
+      "verdict": "pass",
+      "why": "빈 입력의 역전치/무인수 zip 문제를 동일 함수명·고정2인수 빈리스트 처리와 구별한다. A5+B4=9후보의 해당 이유 미회수라는 제한된0/9를 쓰며 모든 미래 동작을 예측하지 못했다는 총괄 주장으로 확대하지 않는다.",
+      "evidence": [
+        "cases/CASES.json#C07/superseded_by",
+        "RESULT.md#3.2"
+      ]
+    },
+    {
+      "case_id": "C12",
+      "verdict": "pass",
+      "why": "SELF write-triggered invalidation의 결정 전 원리와 Python3.11의 다른 guard·필드 재활용이라는 구체 후속 이유를 구분한다. PEP699가 미래 watcher 구현을 확정했다는 주장도 하지 않는다.",
+      "evidence": [
+        "evidence/judging-recovery/c11-c20/Q8_SUCCESSORS.json#C12",
+        "RESULT.md#3.2"
+      ]
+    },
+    {
+      "case_id": "C14",
+      "verdict": "pass",
+      "why": "callback/promise를 찾은 것과 Python class/function-local binding·descriptor 연결을 찾은 것을 구별한다. 옛 lambda gold 적중이나 완성649 설계로 승격하지 않는다.",
+      "evidence": [
+        "evidence/judging-recovery/c11-c20/Q8_SUCCESSORS.json#C14",
+        "RESULT.md#3.2"
+      ]
+    },
+    {
+      "case_id": "C21",
+      "verdict": "pass",
+      "why": "원 per-variable capture 적중과 후속 receiver/capture inference는 다르다. Nim reference-default의 사후 판을 역사적 개선 이유의 회수로 세지 않고 callable-trait 폐기라고도 하지 않는다.",
+      "evidence": [
+        "cases/CASES.json#C21/superseded_by",
+        "evidence/judging-recovery/c21-c31/REVERSAL_NOTES.md",
+        "RESULT.md#3.2"
+      ]
+    },
+    {
+      "case_id": "C29",
+      "verdict": "pass",
+      "why": "C# partial declarations의 같은 타입 선언 조각 간 private 권한은 결정 전 부분 메커니즘으로 인정하되 Swift same-file 제약·당시 설계자의 반응·실제 효용을 미검증으로 둔다. 미래 결정 예측이나 인과효과라는 문장은 없다.",
+      "evidence": [
+        "runs/A/C29.json",
+        "evidence/judging-recovery/c21-c31/REVERSAL_NOTES.md",
+        "RESULT.md#3.2"
+      ]
+    },
+    {
+      "case_id": "C31",
+      "verdict": "pass",
+      "why": "Debian/RPM의 epoch라는 후속 관련 요소와 exact opened edition unknown을 함께 보존한다. 특정 PEP440 ordering 변경이나 역사적 이유 해결로 세지 않는다.",
+      "evidence": [
+        "runs/A/C31.json",
+        "evidence/judging-recovery/c21-c31/REVERSAL_NOTES.md",
+        "RESULT.md#3.2"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "RR2131-F01",
+      "severity": "medium",
+      "category": "temporal_classification_consistency",
+      "location": [
+        "JUDGMENTS.json#C08/A/1",
+        "RESULT.md#Q5",
+        "RESULT.md#Q7",
+        "RESULT.md#§4.2",
+        "RESULT.md#표1/C08"
+      ],
+      "finding": "C08 A1은 date_status=pre_decision이나 핵심 semantics 근거는 날짜 미확인 mirror에 의존한다. 따라서 nongold_historical_useful=false를 이미 적용하고 있어 pre+useful의 단순교집합84와 역사 유용83이 다르다. 산술 오류는 아니지만 다른 행의 exact claim-bearing evidence 날짜 원칙과 같은 date_status 필드 의미가 일관되지 않다.",
+      "evidence": "해당 row의 date_assessment_note는1999판 grammar만 pre이고 세부 의미는 undated corroboration이라 역사 유용에서 제외한다고 명시한다. C25 A1은 프로젝트 최초 존재와 실제 runner behavior를 구분하여 date unknown으로 정정했다.",
+      "recommendation": "original_date_status=pre_decision을 보존하고 최종 date_status를unknown으로 정정한다. 단순 날짜 통과와 본문 근거의 역사 적격성을 다른 축으로 유지하려면 명시적 별도 필드와 보고 설명이 필요하지만 현 스키마에서는 unknown이 일관적이다.",
+      "expected_effect": {
+        "A_date_status_before": {
+          "pre_decision": 104,
+          "post_decision": 22,
+          "unknown": 78
+        },
+        "A_date_status_after": {
+          "pre_decision": 103,
+          "post_decision": 22,
+          "unknown": 79
+        },
+        "unchanged": [
+          "A strict gold16",
+          "A all gold23",
+          "A nongold useful170",
+          "A historical nongold useful83",
+          "B 모든 수",
+          "역할/종류/분모176"
+        ],
+        "case_table_change": "C08 A 날짜unknown0→1; clean A subset pre61→60,unknown49→50"
+      },
+      "root_disposition": "root가 final date_status unknown 정정과 별도 commit/집계/RESULT 재생성을 수용한다고 통보함. 본 검토 snapshot은 정정 전이다.",
+      "status": "accepted_pending_root_implementation_at_review_time"
+    },
+    {
+      "id": "RR2131-F02",
+      "severity": "low",
+      "category": "axis_name_ambiguity",
+      "location": [
+        "RESULT.md#Q8"
+      ],
+      "finding": "부품 외부 대상의 A 역사 적중8/30이라는 문구는 role의 재사용 부품17과 match_kind의 외부 실체30을 섞어 읽히기 쉽다.8/30 수치 자체는 올바른 external_entity 집계다.",
+      "recommendation": "외부 실체의 A 역사 적중8/30으로 쓴다. role과 match_kind가 다른 축이라는3.1 설명은 유지한다.",
+      "root_disposition": "root가 외부 실체 및 AF009 기각방향 문구를 이미 수정했다고 통보함.",
+      "status": "accepted_by_root"
+    }
+  ],
+  "numeric_audit": {
+    "cases": 31,
+    "gold": 176,
+    "candidates": 342,
+    "table1_rows": 31,
+    "table1_columns": 13,
+    "table1_numeric_mismatches": 0,
+    "AF004_invariant_errors": 0,
+    "A": {
+      "candidates": 204,
+      "strict_gold": 16,
+      "all_gold": 23,
+      "nongold_denominator": 178,
+      "nongold_useful": 170,
+      "nongold_historical_useful": 83,
+      "labels": {
+        "DIRECT_DOCUMENTED": 2,
+        "CONDITIONAL_TRANSFER": 192,
+        "INSUFFICIENT": 10
+      },
+      "clean_cases": 18,
+      "clean_gold": 93,
+      "clean_strict_hits": 8
+    },
+    "B": {
+      "candidates": 138,
+      "strict_gold": 5,
+      "all_gold": 14,
+      "nongold_denominator": 120,
+      "nongold_useful": 109,
+      "nongold_historical_useful": 30,
+      "labels": {
+        "DIRECT_DOCUMENTED": 1,
+        "CONDITIONAL_TRANSFER": 126,
+        "INSUFFICIENT": 11
+      },
+      "clean_cases": 13,
+      "clean_gold": 60,
+      "clean_strict_hits": 1
+    },
+    "cross_review_rows": 36,
+    "scope_not_in_scope_rows": 78,
+    "all_constraints_not_in_scope_rows": 0,
+    "section4_items": 3
+  },
+  "limits": [
+    "전342개 후보의 외부 원문을 이번 보고서 검토에서 다시 연 것은 아니다. 보존 판정·집계·원 응답 위치와 이전 직접 열람 근거를 대조했다.",
+    "새 검색·사용자 시험·D4 적용·통계적 유의성 검정을 수행하지 않았다.",
+    "자료 최소수·사이트 해석·전체 출처의 URL 가용성 재검증은 별도 root QA/SELF_CHECK 범위다.",
+    "후속 수정의 최종 source SHA·원격 본문 동일성은 root가 확정한다."
+  ]
+}
