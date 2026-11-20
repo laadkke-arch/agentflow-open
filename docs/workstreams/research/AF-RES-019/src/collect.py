@@ -523,10 +523,15 @@ def scoped_git(repo, row, t, end, match, receipt):
                                 "--before=" + end_of_day(first - 366), head]).strip()
     if preceding:
         rows.insert(0, (day_of(preceding), None))
-    ref_tags = git_text(repo, ["for-each-ref", "--format=%(creatordate:unix)%09%(refname:short)", "refs/tags"])
-    tags = sorted(day_of(stamp) for stamp, tag in
-                  (line.split("\t", 1) for line in ref_tags.splitlines())
-                  if stamp.isdigit() and VERSION_TAG.match(tag))
+    traffic = []
+    tags_code, _ = git(repo, ["fetch", "--tags", "--no-write-fetch-head", "--filter=blob:none", "origin"],
+                       traffic, timeout=150, check=False)
+    tags = []
+    if tags_code == 0:
+        ref_tags = git_text(repo, ["for-each-ref", "--format=%(creatordate:unix)%09%(refname:short)", "refs/tags"])
+        tags = sorted(day_of(stamp) for stamp, tag in
+                      (line.split("\t", 1) for line in ref_tags.splitlines())
+                      if stamp.isdigit() and VERSION_TAG.match(tag))
     points = first_parent(repo, head)
     point_days = [p[0] for p in points]
     changes = first_parent_path_changes(repo, head, (first - 366, last))
@@ -546,7 +551,6 @@ def scoped_git(repo, row, t, end, match, receipt):
     for day in sorted(checkpoint):
         idx, _ = latest_day(point_days, day)
         refs[day] = points[idx][1] if idx >= 0 else None
-    traffic = []
     snapshots = snapshot_set(repo, refs, row.get("package"), row["project"], traffic)
     risk = {}
     for day in sorted(evaluation & set(snapshots)):
@@ -557,7 +561,7 @@ def scoped_git(repo, row, t, end, match, receipt):
         risk[day] = {"git_readme_notice": int(bool(current["notices"])) if current["notices"] is not None else None,
                      "git_package_changed": int(any(differences)) if differences else None}
     features = {"head": head, "repo_first_day": genesis, "tags": tags,
-                "license_days": sorted(license_days), "cla_days": sorted(cla_days)}
+                "license_days": sorted(license_days), "cla_days": sorted(cla_days), "tag_fetch_exit": tags_code}
     return features, rows, risk, snapshots, traffic
 
 
@@ -680,6 +684,8 @@ def missing_reason(key, outcome, point):
         return outcome["registry"]["unknown"]
     if key.startswith("git") and outcome.get("git_unknown"):
         return outcome["git_unknown"]
+    if key in {"git_tag_age", "git_tag_gap"} and (outcome.get("features") or {}).get("tag_fetch_exit"):
+        return "remote_tags_fetch_failed"
     if outcome.get("features") and point < outcome["features"]["repo_first_day"] and key.startswith("git"):
         return "before_first_reachable_commit"
     return "required_versions_or_file_or_authors_unavailable"

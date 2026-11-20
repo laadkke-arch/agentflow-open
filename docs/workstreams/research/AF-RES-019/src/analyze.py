@@ -117,21 +117,27 @@ def scoring_sets(events, controls):
 
 
 def evaluate(events, controls, histories):
-    auc_rows, confusions, leads = [], [], []
+    auc_rows, confusions, leads, trajectories = [], [], [], []
     for cohort, pairs in scoring_sets(events, controls).items():
         for key in KEYS:
             direction = SIGNALS.get(key, ("combo", 1, 1))[2]
             for m in WINDOWS:
-                ranked, ids = [], []
+                ranked, ids, raw = [], [], []
                 for ev, ctrl in pairs:
                     day = previous_months(date.fromisoformat(ev["effective_date"]), m).toordinal()
                     a, b = tuple(scalar(histories[row["id"]], key, day) for row in (ev, ctrl))
                     if a is not None and b is not None:
                         ranked.append((a * direction, b * direction))
+                        raw.append((a, b))
                         ids.append(ev["id"])
                 auc_rows.append({"cohort": cohort, "signal": key, "as_of": f"T-{m}m",
                                  "pairs": len(ranked), "eligible_pairs": len(pairs),
                                  "auc": auc(ranked), "ci95_percentile": boot_ci(ranked), "event_ids": ids})
+                trajectories.append({"cohort": cohort, "signal": key, "as_of": f"T-{m}m",
+                                     "pairs": len(raw),
+                                     "event_median": median([a for a, _ in raw]) if raw else None,
+                                     "control_median": median([b for _, b in raw]) if raw else None,
+                                     "paired_median_difference": median([a - b for a, b in raw]) if raw else None})
             for mode in ("pre_event", "pre_announcement"):
                 cells = {k: [] for k in ("TP", "FP", "FN", "TN")}
                 covered = 0
@@ -163,7 +169,7 @@ def evaluate(events, controls, histories):
                                    "miss_example": next(iter(cells["FN"]), None),
                                    "false_alarm_example": next(iter(cells["FP"]), None),
                                    "event_alert_examples": ",".join(cells["TP"])})
-    return auc_rows, confusions, leads
+    return auc_rows, confusions, leads, trajectories
 
 
 def schedule(start, stop, frequency, phase=0):
@@ -257,11 +263,12 @@ def main():
     args.results.mkdir(parents=True, exist_ok=True)
     events, controls, histories = inputs()
     if args.only in ("warning", "both"):
-        auc_rows, confusions, leads = evaluate(events, controls, histories)
+        auc_rows, confusions, leads, trajectories = evaluate(events, controls, histories)
         save_json(args.results / "auc.json", {"bootstrap_iterations": 2000, "seed": 19019,
                                                 "unit": "same pair samples for cases and controls", "rows": auc_rows})
         write_csv(args.results / "confusion.csv", confusions)
         write_csv(args.results / "leadtime.csv", leads)
+        write_csv(args.results / "trajectories.csv", trajectories)
     if args.only in ("cadence", "both"):
         cadence, details = schedule_rows(events, histories, parse_day(args.end))
         write_csv(args.results / "cadence.csv", cadence)
