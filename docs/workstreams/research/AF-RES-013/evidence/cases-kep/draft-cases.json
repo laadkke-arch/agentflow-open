@@ -1,0 +1,687 @@
+[
+  {
+    "id": "K0019",
+    "canonical_id": "KEP-19",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/enhancements/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md",
+    "pinned_version": "4921704140fabb9c616607df44e8c1fd6ea96541",
+    "decision_date": "2020-10-02",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/enhancements/pull/1996",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Summary",
+      "Motivation",
+      "Goals"
+    ],
+    "prefix_version": "4921704140fabb9c616607df44e8c1fd6ea96541",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/enhancements/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md",
+    "prefix_file": "cases/prefix/K0019.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "Preserve recurring cron schedule execution within the Kubernetes controller model."
+      },
+      {
+        "id": "H2",
+        "text": "Replace repeated API polling with informer-based observation."
+      },
+      {
+        "id": "H3",
+        "text": "Support measurement of controller throughput and latency."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0019-G01",
+        "name": "Unordered timer list",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "캐시를 주기적으로 훑으며 기존 구현과 유사하고 느리다고 비교.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G02",
+        "name": "Ordered timer list",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "다음 만료 순서대로 정렬하나 재삽입이 선형 비용.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G03",
+        "name": "Timer trees",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "정렬 이진 트리의 로그 삽입 비용을 비교.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G04",
+        "name": "Heap based timer",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "adopted",
+        "reason": "DelayingInterface의 AddAfter를 이용하는 힙 타이머 선택을 Proposal에서 명시.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G05",
+        "name": "Simple Timing wheels",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "작게 제한된 최대 timeout을 요구하지만 이 설계의 경우에 맞지 않음.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G06",
+        "name": "Hashed Wheel",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "해시 슬롯과 연결 리스트; 최악 삽입은 선형이라고 비교.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0019-G07",
+        "name": "Hierarchical Wheel",
+        "url": "https://github.com/kubernetes/enhancements/blob/4921704140fabb9c616607df44e8c1fd6ea96541/keps/sig-apps/19-Graduate-CronJob-to-Stable/README.md#alternatives-and-further-reading",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "초·분·시간·일별 바퀴와 계층간 재배치로 관리 비용을 개선.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "alternatives-and-further-reading",
+        "match_kind": "structural_design"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-19",
+      "K-META-19"
+    ],
+    "coding_by": "작업자",
+    "notes": "원문의 Further reading 4링크는 타이머 비교를 보충하지만 각각 별도 대안으로 반복 계산하지 않음. timer scheduling끼리의 비교를 먼 분야 전이로 세지 않음. 접두부는 Motivation/Goals의 문제 범위이며 timer 하위선택을 사후에 주입하지 않음."
+  },
+  {
+    "id": "K0127",
+    "canonical_id": "KEP-127",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/enhancements/blob/a61d587aa5db7c00e727fa4c2598fc1914d9784f/keps/sig-node/127-user-namespaces/README.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/enhancements/a61d587aa5db7c00e727fa4c2598fc1914d9784f/keps/sig-node/127-user-namespaces/README.md",
+    "pinned_version": "a61d587aa5db7c00e727fa4c2598fc1914d9784f",
+    "decision_date": "2023-02-07",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/enhancements/pull/3811",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Motivation",
+      "Goals",
+      "Non-Goals"
+    ],
+    "prefix_version": "e69a9bf8d3cce349962a2a94d85ba3a8d8d15e35",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/enhancements/e69a9bf8d3cce349962a2a94d85ba3a8d8d15e35/keps/sig-node/127-user-namespaces/README.md",
+    "prefix_file": "cases/prefix/K0127.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "A privileged identity inside the workload must correspond to an unprivileged identity on the host."
+      },
+      {
+        "id": "H2",
+        "text": "Consider both user and group identities and pod-scoped capabilities."
+      },
+      {
+        "id": "H3",
+        "text": "Running the kubelet or container runtime itself without privilege is outside this decision."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0127-G01",
+        "name": "Change ownership of all relevant files instead of idmapped mounts",
+        "url": "https://github.com/kubernetes/enhancements/blob/a61d587aa5db7c00e727fa4c2598fc1914d9784f/keps/sig-node/127-user-namespaces/README.md#dont-use-idmap-mounts-and-rely-chown-all-the-files-correctly",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "secret/configmap 소유권, 그룹 권한, 분산된 파일 생성 경로의 복잡성 때문에 폐기.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "dont-use-idmap-mounts-and-rely-chown-all-the-files-correctly",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0127-G02",
+        "name": "Limit pod count to reserve UID ranges with 64K mappings",
+        "url": "https://github.com/kubernetes/enhancements/blob/a61d587aa5db7c00e727fa4c2598fc1914d9784f/keps/sig-node/127-user-namespaces/README.md#64k-mappings",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "향후 ID 여유를 남기려 pod 수를 제한하는 대안; 부작용과 미결정 범위를 보존.",
+        "added_in_review": true,
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "64k-mappings",
+        "match_kind": "structural_design",
+        "review_evidence_url": "https://github.com/kubernetes/enhancements/pull/3065#discussion_r807408134",
+        "review_evidence_note": "2022-02-15 댓글이64K와pod수제한을 제안함을 실제 읽었다."
+      },
+      {
+        "id": "K0127-G03",
+        "name": "Allow container runtimes to choose ID mappings",
+        "url": "https://github.com/kubernetes/enhancements/blob/a61d587aa5db7c00e727fa4c2598fc1914d9784f/keps/sig-node/127-user-namespaces/README.md#allow-runtimes-to-pick-the-mapping",
+        "role": "같은 분야의 다른 설계",
+        "stance": "referenced",
+        "reason": "혼합 런타임의 의미 일관성과 연결된 리뷰 쟁점; stateful 범위는 별도 논의.",
+        "added_in_review": "unknown",
+        "boundary_note": "정답 문서는 런타임별 mapping 선택 제안으로 요약하지만 연결된2022-02-03댓글798760382는 혼합 런타임 때문에 mapping/size를 Kubernetes가 정해야 한다고 말한다. 항목 존재와 요약의 사실성 분리.",
+        "section_anchor": "allow-runtimes-to-pick-the-mapping",
+        "match_kind": "structural_design",
+        "review_evidence_url": "https://github.com/kubernetes/enhancements/pull/3065#discussion_r798760382"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-127",
+      "K-META-127"
+    ],
+    "coding_by": "작업자",
+    "notes": "최초2022 draft의 목적만 입력; gold는2023 idmap 수정 PR 병합 전 head. gold3개는 비교절에 명시된 리뷰 검토 대안이며 고정판에서도 전체가 최종 채택된 것은 아니다. 이후2026판의 해결 문구로 과거 불확실성을 지우지 않음."
+  },
+  {
+    "id": "K0277",
+    "canonical_id": "KEP-277",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/enhancements/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md",
+    "pinned_version": "e0640b65b0d8180779218b14858c5b129d5ac80b",
+    "decision_date": "2019-04-16",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/enhancements/pull/958",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Motivation/Development",
+      "Motivation/Operations and Support",
+      "Goals",
+      "Non-Goals"
+    ],
+    "prefix_version": "6e3ac814e9642dc2cc9553641333547ca769eaa3",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/enhancements/6e3ac814e9642dc2cc9553641333547ca769eaa3/keps/sig-node/20190212-ephemeral-containers.md",
+    "prefix_file": "cases/prefix/K0277.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "Inspect the namespaces and filesystems of individual running containers."
+      },
+      {
+        "id": "H2",
+        "text": "Obtain debugging tools at troubleshooting time, without requiring prior pod/image configuration."
+      },
+      {
+        "id": "H3",
+        "text": "Respect admission control and audit logging and make the debugging activity visible through the API."
+      },
+      {
+        "id": "H4",
+        "text": "Support container runtimes through CRI, with reduced capabilities permitted."
+      },
+      {
+        "id": "H5",
+        "text": "Do not require administrative access to the node or inherently modify the running application image."
+      },
+      {
+        "id": "H6",
+        "text": "Make the complete debugging container specification inspectable by admission control."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0277-G01",
+        "name": "Store container specification in PodStatus",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#container-spec-in-podstatus",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "사용자 의도를 status에 섞어 kubelet의 보존 책임이 늘어난다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "container-spec-in-podstatus",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G02",
+        "name": "Extend existing exec API to execute container images (exec++)",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#extend-the-existing-exec-api-exec",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "GET query 제약으로 완전한 컨테이너 설정을 전달하지 못하고 status 복잡성이 남는다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "extend-the-existing-exec-api-exec",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G03",
+        "name": "Dedicated EphemeralContainer resource and kubelet controller",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#ephemeral-container-controller",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "여러 설정 원천과 새 controller가 kubelet 복잡성을 늘린다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "ephemeral-container-controller",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G04",
+        "name": "Allow adding containers by mutating pod specification",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#mutable-pod-spec-containers",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "pod 불변 전제를 깨 state machine에 예측하기 어려운 오류를 유발한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "mutable-pod-spec-containers",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G05",
+        "name": "Add an Image parameter to exec without spec or status",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#image-exec",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "API에서 활동과 의도를 확인할 투명성 요구에 실패한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "image-exec",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G06",
+        "name": "Attach a volume containing debugging tools",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#attaching-container-type-volume",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "실행 중 volume 추가에 재시작이 필요해 문제 추적 요구를 어긴다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "attaching-container-type-volume",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G07",
+        "name": "Configure an inactive debug container in advance",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#inactive-container",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "사전 설정과 이미지·운영의 결합을 요구한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "inactive-container",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G08",
+        "name": "Implicit EmptyDir for extracting debug binaries",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#implicit-empty-volume",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "사용자가 package 배포 기반을 마련해야 해 복잡하다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "implicit-empty-volume",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G09",
+        "name": "Separate debug pod sharing target namespaces",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#standalone-pod-in-shared-namespace-debug-pod",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "pod 경계와 CRI 변경이 크고 privileged 우회는 node 권한 제약을 어긴다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "standalone-pod-in-shared-namespace-debug-pod",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0277-G10",
+        "name": "Execute troubleshooting binary from node in target namespaces",
+        "url": "https://github.com/kubernetes/enhancements/blob/e0640b65b0d8180779218b14858c5b129d5ac80b/keps/sig-node/20190212-ephemeral-containers.md#exec-from-node",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "node 도구·수명에 결합하고 다른 바이너리에 접근하지 못한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "exec-from-node",
+        "match_kind": "structural_design"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-277",
+      "K-META-277"
+    ],
+    "coding_by": "작업자",
+    "notes": "고정판은 docker cp 대안이 2019-04-25에 추가되기 전이다. 후속판의 11번째 항목을 원래 분모에 섞지 않음. 역사판 10개."
+  },
+  {
+    "id": "K0279",
+    "canonical_id": "KEP-279",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/community/blob/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/community/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md",
+    "pinned_version": "c2c1ace9963b45522fdb8f8d752b0613baec9f5d",
+    "decision_date": "2018-11-12",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/community/pull/911",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Motivation",
+      "Capturing Dedicated Workloads"
+    ],
+    "prefix_version": "c2c1ace9963b45522fdb8f8d752b0613baec9f5d",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/community/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md",
+    "prefix_file": "cases/prefix/K0279.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "A compromised node must not gain trusted placement identity merely by asserting its own labels."
+      },
+      {
+        "id": "H2",
+        "text": "Consider sensitive-workload and secret exposure through scheduler placement."
+      },
+      {
+        "id": "H3",
+        "text": "Address node-label authorization rather than replace the entire workload scheduler."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0279-G01",
+        "name": "Configure allowed labels using API-server files or flags",
+        "url": "https://github.com/kubernetes/community/blob/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md#file-or-flag-based-configuration-of-the-apiserver-to-allow-specifying-allowed-labels",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "설정 확인과 여러 API server 사이 동기화가 어렵다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "file-or-flag-based-configuration-of-the-apiserver-to-allow-specifying-allowed-labels",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0279-G02",
+        "name": "API object configures allowed label policy",
+        "url": "https://github.com/kubernetes/community/blob/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md#api-based-configuration-of-the-apiserver-to-allow-specifying-allowed-labels",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "공격받은 node가 정책 API를 바꾸는 권한상승 경로가 될 수 있다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "api-based-configuration-of-the-apiserver-to-allow-specifying-allowed-labels",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0279-G03",
+        "name": "Allow arbitrary labels then add NoSchedule taints",
+        "url": "https://github.com/kubernetes/community/blob/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md#allow-kubelets-to-add-any-labels-they-wish-and-add-noschedule-taints-if-disallowed-labels-are-added",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "taint 정리 controller와 위반 라벨 원인 보존이 복잡하다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "allow-kubelets-to-add-any-labels-they-wish-and-add-noschedule-taints-if-disallowed-labels-are-added",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0279-G04",
+        "name": "Reject every label except a fixed allowlist",
+        "url": "https://github.com/kubernetes/community/blob/c2c1ace9963b45522fdb8f8d752b0613baec9f5d/keps/sig-auth/0000-20170814-bounding-self-labeling-kubelets.md#forbid-all-labels-regardless-of-namespace-except-for-a-specifically-allowed-set",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "기존 사용자 라벨과 CSI topology 등 임의 라벨 사용을 과도하게 제한한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "forbid-all-labels-regardless-of-namespace-except-for-a-specifically-allowed-set",
+        "match_kind": "structural_design"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-279",
+      "K-META-279"
+    ],
+    "coding_by": "작업자",
+    "notes": "2018-12-01 enhancements 저장소 이전 PR638은 결정이 아님. 원래 community PR911의2018-11-12 merge를 사용."
+  },
+  {
+    "id": "K0383",
+    "canonical_id": "KEP-383",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/community/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md",
+    "pinned_version": "c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5",
+    "decision_date": "2017-09-27",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/community/pull/932",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Background/motivation",
+      "Non goals",
+      "Current Event API",
+      "Usability issues with the current API"
+    ],
+    "prefix_version": "c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/community/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md",
+    "prefix_file": "cases/prefix/K0383.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "Event reporting must not cause or worsen cluster performance failures."
+      },
+      {
+        "id": "H2",
+        "text": "Preserve an application developer’s ability to understand events about their application."
+      },
+      {
+        "id": "H3",
+        "text": "Moving persistence outside etcd or retaining events longer is outside this decision."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0383-G01",
+        "name": "Keep deduplication and strengthen batching/backoff/rate limits",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#leaving-current-dedup-mechanism-but-improve-backoff-behavior",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "작은 개선만으로 API 요청을 충분히 줄일지 불확실하다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "leaving-current-dedup-mechanism-but-improve-backoff-behavior",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G02",
+        "name": "Store a list of occurrence timestamps",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#timestamp-list-as-a-dedup-mechanism",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "되풀기 정보는 보존하지만 성능이 더 나쁘며 개별 반복보다 series 경계가 중요하다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "timestamp-list-as-a-dedup-mechanism",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G03",
+        "name": "One aggregate object with nested timestamp-object occurrences",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#events-as-an-aggregated-object",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "etcd 크기와 중첩 query 복잡성이 증가한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "events-as-an-aggregated-object",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G04",
+        "name": "Store in new API group and retain deprecated fields as annotations",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#using-new-api-group-for-storing-data",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "검증된 저장 경로를 바꾸는 위험과 annotation JSON parsing 비용이 크다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "using-new-api-group-for-storing-data",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G05",
+        "name": "Administrative panic switch disables event creation and updates",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#using-new-api-group-for-storing-data",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "기존 RBAC 규칙 변경으로 유사 효과를 낼 수 있어 별도 버튼을 버렸다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "using-new-api-group-for-storing-data",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G06",
+        "name": "Impose active-voice subject/object structure for machine-readable events",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#pivoting-towards-more-machine-readable-events-by-introducing-stricter-structure",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "당시 문서는 event의 소비자를 사람으로 한정해 엄격 구조를 버림.",
+        "added_in_review": "unknown",
+        "boundary_note": "경계: 자연어 능동태의 역할 대응을 데이터 필드에 빌린다. 외부 학문 인용은 없고 용어/구조 비유이므로 엄격 다른 분야 원리에는 넣지 않음; 넓은 민감도에만 포함.",
+        "section_anchor": "pivoting-towards-more-machine-readable-events-by-introducing-stricter-structure",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0383-G07",
+        "name": "Center reporting controller and log-grep links for operator debugging",
+        "url": "https://github.com/kubernetes/community/blob/c5b815bf44dd6f623ef2b4cf80cf5194bcfa38d5/contributors/design-proposals/events-redesign.md#pivoting-towards-making-events-more-helpful-for-cluster-operator-during-debugging",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "클러스터 운영자의 상세 추적보다 앱 개발자의 대략적 이해를 우선함.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "pivoting-towards-making-events-more-helpful-for-cluster-operator-during-debugging",
+        "match_kind": "structural_design"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-383",
+      "K-META-383"
+    ],
+    "coding_by": "작업자",
+    "notes": "현행 KEP Implementation History는2017-10-7 merge라고 적지만 실제 PR932 merged_at은2017-09-27이다. API metadata를 사용. 최신 Summary의 machine-readable 목표와 역사 대안절의 humans-only 거절은 긴장 관계이며 합쳐서 단일 확정 의도라 하지 않음."
+  },
+  {
+    "id": "K0495",
+    "canonical_id": "KEP-495",
+    "family": "Kubernetes KEP",
+    "url": "https://github.com/kubernetes/community/blob/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md",
+    "actually_opened_url": "https://raw.githubusercontent.com/kubernetes/community/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md",
+    "pinned_version": "333729bd66910b3c0b45aa74a8a54b5c9075226b",
+    "decision_date": "2018-01-24",
+    "decision_event": "공식 설계 제안/수정 PR 병합 (출시일·구현 완료일 아님)",
+    "decision_evidence_url": "https://github.com/kubernetes/community/pull/1048",
+    "decision_outcome": "merged proposal",
+    "superseded_by": null,
+    "prefix_sections": [
+      "Motivation",
+      "Proposal/Goals and Non-Goals"
+    ],
+    "prefix_version": "333729bd66910b3c0b45aa74a8a54b5c9075226b",
+    "prefix_source_url": "https://raw.githubusercontent.com/kubernetes/community/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md",
+    "prefix_file": "cases/prefix/K0495.md",
+    "mandatory_constraints": [
+      {
+        "id": "H1",
+        "text": "Keep backwards compatibility for existing images that depend on PID 1 behavior."
+      },
+      {
+        "id": "H2",
+        "text": "Configure process-namespace sharing at pod scope."
+      },
+      {
+        "id": "H3",
+        "text": "Multiple separate shared PID groups per pod and per-container sharing configuration are out of scope."
+      },
+      {
+        "id": "H4",
+        "text": "A general-purpose container init system is out of scope."
+      }
+    ],
+    "gold_items": [
+      {
+        "id": "K0495-G01",
+        "name": "Explicit container or sandbox ID as the PID namespace target",
+        "url": "https://github.com/kubernetes/community/blob/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md#explicit-containersandbox-id-targeting",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "mode 열거가 의도를 더 잘 표현해 문자열 target 대신 선택됨.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "explicit-containersandbox-id-targeting",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0495-G02",
+        "name": "Always share PID namespace when runtime supports it",
+        "url": "https://github.com/kubernetes/community/blob/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md#defaulting-to-pid-namespace-sharing",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "PID1을 전제하는 기존 이미지와 충돌한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "defaulting-to-pid-namespace-sharing",
+        "match_kind": "structural_design"
+      },
+      {
+        "id": "K0495-G03",
+        "name": "Use annotations then migrate to shared-only namespaces in v2",
+        "url": "https://github.com/kubernetes/community/blob/333729bd66910b3c0b45aa74a8a54b5c9075226b/contributors/design-proposals/node/pod-pid-namespace.md#migration-to-shared-only-namespaces",
+        "role": "같은 분야의 다른 설계",
+        "stance": "rejected",
+        "reason": "사용자가 pod 내부 container 경계의 보안을 위해 격리 namespace를 원한다.",
+        "added_in_review": "unknown",
+        "boundary_note": "외부 제품 실체가 아니라 문서에 명시된 설계 대안; 구조 일치만 별도 인정.",
+        "section_anchor": "migration-to-shared-only-namespaces",
+        "match_kind": "structural_design"
+      }
+    ],
+    "source_ids": [
+      "K-DOC-495",
+      "K-META-495"
+    ],
+    "coding_by": "작업자",
+    "notes": "원래 community PR1048의 결정 전 head와 merge일을 사용;2019 KEP 포팅일이나2020 경로이전일을 결정일로 쓰지 않음."
+  }
+]

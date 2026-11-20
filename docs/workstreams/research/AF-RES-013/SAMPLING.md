@@ -40,3 +40,66 @@
 첫 접두부 묶음 이후, gold 공개 전 원문 항목 분절을 다시 점검했다. PEP386은 Distutils를 하나의 도구로 묶으면 Setuptools와2개처럼 보였지만, 원문은 LooseVersion·StrictVersion의 문법/비교 동작을 독립적으로 비교한다. Setuptools parse_version을 합치면3개이고, RPM과 Debian/Ubuntu의 명시 비교까지5개다. 초기 분절은 SCOPE의 독립 설계 변형 규칙과 어긋났으므로 적격 누락을 복구했다.
 
 이 문서는2010-03-21 Accepted 반영과2014-08-22 PEP440 대체가 확인되어 대체층에서 PEP354 다음에 놓인다. 이미 동결한30개는 보존하고 C31을 추가하여31개(Rust8/Python9/Swift8/KEP6)로 확장한다. 최초 선정 오류를 없던 것으로 하지 않으며, 이로 인한 층별 포함 내역과 기존 P0563의 추가 대체층 성격을 원장에 남긴다. 최초30개의 실행 순서는 그대로 두고 C31을 끝에 붙인다. 이 보정 시 C31 실행 결과는 없었고 기존 A의 일부 실행은 진행 중이었다. 따라서 완전히 오류 없는 사전 선정이라고 주장하지 않는다. C31 접두부도 gold 파일보다 먼저 별도 커밋한다.
+
+## 실행 후 선정 원장
+
+계획과 구별한 실행 기록이다. 아래는 실제 읽기 또는 부분 선별 결과이며, 자동 길이 검사만 한 문서를 D1 완독으로 세지 않는다. 원장에는 URL·판·시각·세부 이유가 있다.
+
+### Rust RFC
+
+상세 원장: `evidence/cases-rust/selection.json`; 기록 40행.
+
+| 건너뛴 문서 ID | 이유 | 확인 범위 |
+|---|---|---|
+
+| R0001, R0003, R0019, R0026, R0034, R0040, R0048, R0049, R0050, R0059, R0060, R0063, R0066, R0068, R0071, R0079, R0086, R0087, R0089, R0092, R0100, R0107, R0109, R0111, R0112, R0115, R0116 | fewer_than_3_items | 직접 비교절 읽기 |
+
+| R0002 | process_not_feature | 직접 비교절 읽기 |
+
+| R0090 | no_comparison_section | 직접 비교절 읽기 |
+
+| R0130, R0131, R0132 | quota_already_met | 직접 비교절 읽기 |
+
+
+
+### Python PEP / Swift Evolution
+
+상세 원장: `evidence/cases-ps/selection.json`; 기록 91행.
+
+| 건너뛴 문서 ID | 이유 | 확인 범위 |
+|---|---|---|
+
+| P0215, P0431, P0203, S0001, S0003, S0007, S0009, S0010, S0012, S0013, S0015, S0017, S0024, S0026 | fewer_than_3_items | manual_comparison_section_read |
+
+| P0241, P0314, P0345, P0100, S0005, S0006, S0008, S0011, S0014, S0023 | no_comparison_section | manual_comparison_section_read |
+
+| P0344, P0367 | no_explicit_supersession | manual_comparison_section_read |
+
+| P0622, P0631, P3153 | eligible_beyond_quota | manual_comparison_section_read |
+
+| S0002, S0004 | prefix_not_historically_recoverable | manual_comparison_section_read |
+
+| S0028, S0029, S0030, S0031, S0032, S0033, S0034, S0035, S0036, S0037, S0038, S0039, S0040, S0041, S0042, S0043, S0044, S0045, S0046, S0047, S0048, S0049, S0050, S0051, S0052, S0053, S0054, S0055, S0056, S0057, S0058, S0059, S0060, S0061, S0062, S0063, S0064, S0065 | eligible_beyond_quota | automated_section_length_screen_only |
+
+| P0205, P0206, P0207, P0208, P0209 | eligible_beyond_quota | partial_comparison_preview_only |
+
+
+
+### Kubernetes KEP
+
+상세 원장: `evidence/cases-kep/selection.json`; 기록 45행.
+
+| 건너뛴 문서 ID | 이유 | 확인 범위 |
+|---|---|---|
+
+| KEP-24, KEP-117, KEP-135, KEP-281, KEP-365 | fewer_than_3_items | 직접 비교절 읽기 |
+
+| KEP-34 | no_decision_date | 직접 비교절 읽기 |
+
+| KEP-85, KEP-95, KEP-115, KEP-116, KEP-121, KEP-166, KEP-213, KEP-266, KEP-268, KEP-351, KEP-378, KEP-382, KEP-423, KEP-427, KEP-491, KEP-492 | no_comparison_section | 직접 비교절 읽기 |
+
+| KEP-177, KEP-265, KEP-284, KEP-361 | empty_template | 직접 비교절 읽기 |
+
+| KEP-504, KEP-531, KEP-536, KEP-541, KEP-548, KEP-554, KEP-555, KEP-556, KEP-557, KEP-559, KEP-563, KEP-565, KEP-566 | screened_past_quota_for_fallback | 직접 비교절 읽기 |
+
+
