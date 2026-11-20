@@ -1,0 +1,354 @@
+{
+  "case_id": "C22",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C22.md"
+  ],
+  "started_at_utc": "2026-11-20 11:17:28 UTC",
+  "ended_at_utc": "2026-11-20 11:22:11 UTC",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "Java JSR 305 ThreadSafe annotation Immutable thread safety shared access",
+      "at_utc": "2026-11-20 11:17:28 UTC",
+      "tool": "web_system2",
+      "result_note": "Found public JSR-305 source, a dated 2008 diff, and Java concurrency references distinguishing ThreadSafe from Immutable."
+    },
+    {
+      "q": "D language shared qualifier immutable thread safety shared data",
+      "at_utc": "2026-11-20 11:17:28 UTC",
+      "tool": "web_system2",
+      "result_note": "Found D language documentation and archived FAQ material on shared and immutable; a visible Reddit snippet mentioned modern Rust Send/Sync terminology and was conservatively excluded."
+    },
+    {
+      "q": "Chromium thread safe thread compatible thread hostile terminology C++",
+      "at_utc": "2026-11-20 11:17:28 UTC",
+      "tool": "web_system2",
+      "result_note": "Search completed, but its displayed result body was lost in initial batched-output truncation; no evidence claim relies on that uninspected portion."
+    },
+    {
+      "q": "https://grep.app/api/search?q=%40interface%20ThreadSafe&regexp=false",
+      "at_utc": "2026-11-20 11:17:47 UTC",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated grep.app code-search endpoint attempted via public web open; tool reported the URL inaccessible. No native code-search results were obtained."
+    },
+    {
+      "q": "site:doc.qt.io archives qt-4.8 threads reentrant thread safe",
+      "at_utc": "2026-11-20 11:17:47 UTC",
+      "tool": "web_system2",
+      "result_note": "Found official Qt 4.7 archived threading documentation and current reentrancy/thread-safety documentation."
+    },
+    {
+      "q": "site:boost.org 1_55_0 shared_ptr thread safety",
+      "at_utc": "2026-11-20 11:17:47 UTC",
+      "tool": "web_system2",
+      "result_note": "Found Boost 1.55 shared_ptr documentation with explicit thread-safety limits."
+    },
+    {
+      "q": "\"Uniqueness and Reference Immutability for Safe Parallelism\" 2012",
+      "at_utc": "2026-11-20 11:17:47 UTC",
+      "tool": "web_system2",
+      "result_note": "Found the original 2012 paper, its author-hosted PDF, and the Microsoft Research publication page."
+    },
+    {
+      "q": "site:github.com /blob/ \"public @interface ThreadSafe\"",
+      "at_utc": "2026-11-20 11:18:03 UTC",
+      "tool": "code_through_web",
+      "result_note": "Code-through-web fallback found public GitHub files, including JUnit RunListener.java; opened and inspected the concurrently callable listener annotation. This was web-indexed code discovery, not native code-search success."
+    },
+    {
+      "q": "\"MT-Safe\" site:gnu.org/software/libc/manual",
+      "at_utc": "2026-11-20 11:18:19 UTC",
+      "tool": "web_system1",
+      "result_note": "Found official GNU libc snippets defining MT-Safe separately from atomicity; both subsequent open attempts timed out, so this was not retained as a candidate."
+    },
+    {
+      "q": "\"thread-compatible\" \"thread-safe\" site:chromium.org",
+      "at_utc": "2026-11-20 11:18:19 UTC",
+      "tool": "web_system1",
+      "result_note": "Found Chromium pointer code and official abstractions documentation with RefCountedThreadSafe and ObserverListThreadSafe naming."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=%40interface%20ThreadSafe&regexp=false",
+      "at_utc": "2026-11-20 11:17:47 UTC",
+      "status": "blocked",
+      "sections_read": "Unauthenticated public code-search endpoint",
+      "confirmed": "The web tool reported that the grep.app API search URL was inaccessible; no code-search results were retrieved.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/151fd3976210c6b79117e30b02aee86a20ff5c7f/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "at_utc": "2026-11-20 11:18:24 UTC",
+      "status": "opened",
+      "sections_read": "ThreadSafe annotation Javadoc and declaration",
+      "confirmed": "The annotation describes classes whose public accesses preserve valid state across thread interleavings without extra caller synchronization; it does not require immutability.",
+      "published_or_version": "Commit 151fd3976210c6b79117e30b02aee86a20ff5c7f; blob 0d7973b41be9e931db9d5d1853d926436ecf66e7 also identified as the old ThreadSafe blob in the 2008-08-25 diff.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "at_utc": "2026-11-20 11:18:24 UTC",
+      "status": "opened",
+      "sections_read": "Introduction, type parameter requirements, and const indirection signatures",
+      "confirmed": "The pointer manages shared lifetime while accepting broad pointee types; const pointer operations can expose mutable pointees.",
+      "published_or_version": "Boost 1.55.0; page explicitly says this release is from 2013.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5%5E!/",
+      "at_utc": "2026-11-20 11:18:24 UTC",
+      "status": "opened",
+      "sections_read": "Commit metadata; ThreadSafe, Immutable, and NotThreadSafe diff sections inspected with find at 2026-11-20 11:19:11 UTC",
+      "confirmed": "The 2008-08-25 diff preserves separate ThreadSafe and Immutable contracts, including that immutable objects can contain unobservable internal changes while thread safety concerns concurrent use.",
+      "published_or_version": "Commit 4e1f9dc708a57e175e76833b0d1b27212b74d0c5 dated 2008-08-25 04:51:05.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://doc.qt.io/Archives/qt-4.7/threads-reentrancy.html",
+      "at_utc": "2026-11-20 11:18:24 UTC",
+      "status": "opened",
+      "sections_read": "Definitions, Counter examples, const value() and mutable mutex, terminology caveat",
+      "confirmed": "Qt separates different-instance reentrancy from same-instance thread safety and demonstrates locking inside a const accessor.",
+      "published_or_version": "Qt 4.7.0 archived documentation; footer dated 2008-2010.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures/",
+      "at_utc": "2026-11-20 11:18:39 UTC",
+      "status": "opened",
+      "sections_read": "scoped_refptr/RefCounted/RefCountedThreadSafe and ObserverList/ObserverListThreadSafe sections",
+      "confirmed": "The page contains RefCountedThreadSafe and ObserverListThreadSafe names alongside ownership and collection terminology.",
+      "published_or_version": "Live official documentation; no reliable publication date established.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/junit-team/junit4/blob/main/src/main/java/org/junit/runner/notification/RunListener.java",
+      "at_utc": "2026-11-20 11:18:39 UTC",
+      "status": "opened",
+      "sections_read": "File metadata and navigation; source body not reached in this first returned range",
+      "confirmed": "The public JUnit source page opened, but this first range did not verify the ThreadSafe contract; a later range did.",
+      "published_or_version": "Live main branch; annotation version date not established.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://dlang.org/faq.html",
+      "at_utc": "2026-11-20 11:18:39 UTC",
+      "status": "opened",
+      "sections_read": "FAQ questions on shared guarantees, synchronization, barriers, and casts",
+      "confirmed": "D shared means possible access by multiple threads; memory barriers and synchronization are separate concerns. Redirected to https://dlang.org/articles/faq.html.",
+      "published_or_version": "Live D 2.0 FAQ; no dated snapshot established.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.cs.drexel.edu/~csg63/assets/pdf/papers/oopsla12.pdf",
+      "at_utc": "2026-11-20 11:18:39 UTC",
+      "status": "error",
+      "sections_read": "No document content retrieved",
+      "confirmed": "The author-hosted PDF returned a 502 Bad Gateway error; the same research was subsequently obtained from Microsoft Research.",
+      "published_or_version": "No document version verified at this URL.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.gnu.org/software/libc/manual/html_node/POSIX-Safety-Concepts.html",
+      "at_utc": "2026-11-20 11:18:39 UTC",
+      "status": "error",
+      "sections_read": "No document content retrieved",
+      "confirmed": "The GNU libc POSIX Safety Concepts HTML page timed out.",
+      "published_or_version": "Live URL; no document version verified.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5/ri/src/main/java/javax/annotation/concurrent/Immutable.java",
+      "at_utc": "2026-11-20 11:19:00 UTC",
+      "status": "blocked",
+      "sections_read": "No document content retrieved",
+      "confirmed": "The web tool reported this commit-specific Immutable.java URL inaccessible; the dated diff supplied the relevant evidence instead.",
+      "published_or_version": "Requested commit 4e1f9dc708a57e175e76833b0d1b27212b74d0c5; contents not retrieved.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "at_utc": "2026-11-20 11:19:00 UTC",
+      "status": "blocked",
+      "sections_read": "No document content retrieved",
+      "confirmed": "The web tool reported this commit-specific ThreadSafe.java URL inaccessible; the already-open source and dated diff supplied the relevant evidence instead.",
+      "published_or_version": "Requested commit 4e1f9dc708a57e175e76833b0d1b27212b74d0c5; contents not retrieved.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.microsoft.com/en-us/research/publication/uniqueness-and-reference-immutability-for-safe-parallelism/",
+      "at_utc": "2026-11-20 11:19:00 UTC",
+      "status": "opened",
+      "sections_read": "Publication date and abstract",
+      "confirmed": "The publication is identified as MSR-TR-2012-79, October 2012, and describes a combination of immutable and isolated types for safe parallelism.",
+      "published_or_version": "MSR-TR-2012-79, October 2012.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "at_utc": "2026-11-20 11:19:00 UTC",
+      "status": "opened",
+      "sections_read": "Reopened at line 510; indirection, Thread Safety, and shared-ownership FAQ sections returned",
+      "confirmed": "The Thread Safety section distinguishes permitted concurrent pointer accesses from undefined simultaneous operations.",
+      "published_or_version": "Boost 1.55.0, released in 2013.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/junit-team/junit4/blob/main/src/main/java/org/junit/runner/notification/RunListener.java",
+      "at_utc": "2026-11-20 11:19:00 UTC",
+      "status": "opened",
+      "sections_read": "Reopened at line 810; class-level synchronization description and nested ThreadSafe annotation contract",
+      "confirmed": "JUnit's annotation designates listeners whose methods can be called concurrently without caller synchronization; its default listener handling uses synchronization instead.",
+      "published_or_version": "Live main branch; annotation marked since 4.12, but release date not verified.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.gnu.org/software/libc/manual/pdf/libc.pdf",
+      "at_utc": "2026-11-20 11:19:11 UTC",
+      "status": "error",
+      "sections_read": "No document content retrieved",
+      "confirmed": "The GNU libc PDF timed out, so MT-Safe remained search-snippet-only evidence and was omitted from the candidates.",
+      "published_or_version": "Live URL; no document version verified.",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/msr-tr-2012-79.pdf",
+      "at_utc": "2026-11-20 11:19:11 UTC",
+      "status": "opened",
+      "sections_read": "PDF opened through publication-page link; introduction and sections 2, 2.1, and 2.2, especially the four reference qualifiers and parallelism conditions",
+      "confirmed": "The paper separates writable, readable, immutable, and isolated references; readable views may coexist with writable aliases, so safe parallel sharing requires further restrictions on writable access. These qualifiers therefore distinguish a reference's permissions from the conditions for concurrent safety.",
+      "published_or_version": "Extended version of MSR-TR-2012-79; publication page dates the report to October 2012; URL upload path is not treated as its publication date.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [
+    {
+      "url": "https://www.reddit.com/r/rust/comments/zrqs9l",
+      "stage": "snippet",
+      "reason": "A D-language search returned a visible snippet discussing Rust's modern Send and Sync traits. Conservatively excluded as potentially revealing terminology connected with the assigned design question; no target proposal was identified or opened.",
+      "excluded": true
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "JSR-305 ThreadSafe and Immutable annotations",
+      "url": "https://chromium.googlesource.com/external/jsr-305/+/151fd3976210c6b79117e30b02aee86a20ff5c7f/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java",
+      "reason": "Separate ThreadSafe and Immutable annotations provide a naming precedent for marking concurrent-use safety independently of whether the referenced object can change.",
+      "application_scope": "Concurrency-trait vocabulary and its explicit distinction from the vocabulary of ordinary shared access.",
+      "constraints_or_caveat": "Java's annotation covers public object operations broadly; any Rust adaptation must explicitly mean safety of concurrent access through shared references, rather than general thread transfer, deep immutability, or every possible operation.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened 2008-08-25 diff at https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5%5E!/ contains both contracts and identifies the opened ThreadSafe source blob as the pre-change blob.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "Qt reentrant versus thread-safe terminology",
+      "url": "https://doc.qt.io/Archives/qt-4.7/threads-reentrancy.html",
+      "reason": "Qt separates concurrency on different instances from thread-safe use of one shared instance.",
+      "application_scope": "Precise trait terminology and counterexamples.",
+      "constraints_or_caveat": "Reentrant is too weak; the locking example must not become a required implementation strategy.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Archived Qt 4.7.0 documentation with a 2008-2010 footer.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "Reference-immutability and isolation qualifiers for safe parallelism",
+      "url": "https://www.microsoft.com/en-us/research/publication/uniqueness-and-reference-immutability-for-safe-parallelism/",
+      "reason": "The paper's writable, readable, immutable, and isolated qualifiers show how reference access permissions and the additional conditions for safe parallel sharing can be given distinct names.",
+      "application_scope": "An alternative conceptual vocabulary separating alias/access capability from concurrency permission.",
+      "constraints_or_caveat": "The paper's readable reference forbids mutation through that reference, unlike Rust shared access with interior mutability, so readable or immutable cannot be transplanted as an equivalent name for the trait.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened Microsoft publication page labels MSR-TR-2012-79 as October 2012; its linked extended paper was opened at https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/msr-tr-2012-79.pdf.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "Boost shared_ptr shared-ownership terminology and separate thread-safety contract",
+      "url": "https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm",
+      "reason": "Boost names shared ownership separately from the pointer's concurrent-access guarantees.",
+      "application_scope": "Distinguishing aliasing/ownership vocabulary from safety.",
+      "constraints_or_caveat": "Reference-count safety does not establish pointee safety, and ownership differs from borrowing.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Versioned Boost 1.55.0 page explicitly identifies a 2013 release.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Chromium ThreadSafe suffix for scoped guarantees",
+      "url": "https://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures/",
+      "reason": "Chromium adds ThreadSafe to separately named reference-counting and collection components.",
+      "application_scope": "Compositional concurrency-trait naming.",
+      "constraints_or_caveat": "The suffix is scoped to component operations, not all reachable state.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Unknown: live documentation without a verified pre-cutoff version.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "D shared versus unshared/thread-local qualifier vocabulary",
+      "url": "https://dlang.org/faq.html",
+      "reason": "D explicitly distinguishes cross-thread exposure from thread-local access.",
+      "application_scope": "Alternative explanatory vocabulary.",
+      "constraints_or_caveat": "D shared is not an equivalent guarantee of concurrent-sharing safety.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Unknown: live FAQ redirected to https://dlang.org/articles/faq.html.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "Use separate terminology for two properties: a shared or aliasable reference describes access, while the trait describes whether concurrent access through such references is safe. Interior mutation must remain allowed when the type's safe interface coordinates it correctly.\n\n1. JSR-305's ThreadSafe and Immutable annotations — https://chromium.googlesource.com/external/jsr-305/+/151fd3976210c6b79117e30b02aee86a20ff5c7f/ri/src/main/java/javax/annotation/concurrent/ThreadSafe.java\n\n   This is the strongest direct naming precedent: concurrency safety has its own ThreadSafe label, separate from Immutable. The contract concerns preserving valid object state under interleaved public accesses without additional caller coordination. For Rust, explicitly restrict the adapted meaning to safe concurrent access through shared references; Java's broad object-level promise should not silently become a guarantee about ownership transfer or every possible operation. The opened 2008-08-25 source diff establishes both labels before the cutoff: https://chromium.googlesource.com/external/jsr-305/+/4e1f9dc708a57e175e76833b0d1b27212b74d0c5%5E!/\n\n2. Qt's reentrant versus thread-safe distinction — https://doc.qt.io/Archives/qt-4.7/threads-reentrancy.html\n\n   Qt separates concurrent use of different instances from concurrent use of the same instance. This helps state exactly what the trait adds beyond ordinary access and shows why Reentrant would be an insufficient replacement. Its example also uses an internally mutable mutex inside a const accessor, making the distinction from literal immutability concrete. The locking example is illustrative; the Rust trait must not require a particular synchronization mechanism. This is archived Qt 4.7.0 documentation with a 2008-2010 footer.\n\n3. Reference-immutability and isolation qualifiers for safe parallelism — https://www.microsoft.com/en-us/research/publication/uniqueness-and-reference-immutability-for-safe-parallelism/\n\n   This October 2012 paper distinguishes writable, readable, immutable, and isolated references, then separately specifies when those references permit safe parallel execution. That separation is useful as a design model: naming an access capability does not automatically establish concurrent-sharing safety. The paper's readable views can coexist with writable aliases elsewhere, while immutable adds a stronger restriction. However, readable forbids mutation through that reference, so it is not an equivalent replacement for Rust shared access with interior mutability. The linked extended paper was opened and its qualifier definitions checked.\n\n4. Boost shared_ptr's ownership vocabulary and separate concurrency contract — https://www.boost.org/doc/libs/1_55_0/libs/smart_ptr/shared_ptr.htm\n\n   Boost uses shared to describe lifetime/ownership and gives thread-safety rules separately. That supports keeping shared reference as ordinary terminology without implying that every shared object is safe for simultaneous access. The documentation distinguishes concurrent const accesses to a pointer instance from mutations of different pointer instances and from unsafe simultaneous operations. Reference-count safety does not make arbitrary pointee operations safe, and shared ownership is not identical to a borrowed reference. The opened version is Boost 1.55.0, identified on the page as a 2013 release.\n\n5. Chromium's ThreadSafe suffix — https://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures/\n\n   RefCountedThreadSafe and ObserverListThreadSafe are concrete naming examples in which an explicit concurrency qualifier supplements an ownership or collection term. This suggests a name that identifies the safety property directly while leaving shared/aliasable access terminology alone. The guarantee must stay scoped to the relevant operations; a safe reference counter does not imply that all reachable object state is safe. The opened source is live documentation, so availability of this evidence before the cutoff is unknown.\n\n6. D's thread-shared versus thread-local vocabulary — https://dlang.org/faq.html\n\n   D explicitly associates shared with cross-thread visibility and contrasts it with unshared/thread-local data. This offers vocabulary for explaining the concurrency dimension independently of whether multiple aliases exist in one thread. It also provides a useful caution: the FAQ separately discusses synchronization and says the qualifier does not automatically insert memory barriers. Therefore D's shared qualifier is not a drop-in semantic equivalent of the Rust trait. The live FAQ redirected to https://dlang.org/articles/faq.html; its historical availability was not established.\n\nThe closest established naming family is ThreadSafe, provided the trait documentation preserves the exact predicate: concurrent use of shared references to the value is safe, including any permitted interior mutation. A more explicit spelling such as ThreadShareSafe would be a new naming suggestion derived from these precedents, not an existing standard claimed by these sources. Immutable, ReadOnly, Reentrant, or Atomic would each imply a different property.\n\nSearch limitations: unauthenticated grep.app code search was attempted but inaccessible. Public GitHub code was then discovered through web search and JUnit's ThreadSafe listener annotation was inspected; this was code-through-web fallback, not native code-search success. GNU libc's MT-Safe terminology appeared in search results, but both attempted document opens timed out, so it was not retained as a candidate. One visible snippet mentioning modern Rust trait terminology was conservatively excluded. No claim is made that any candidate was deployed or proved useful for this design problem.",
+  "budget": {
+    "search_queries": 10,
+    "opened_pages": 17,
+    "candidate_count": 6
+  },
+  "limitations": [
+    "The unauthenticated grep.app endpoint was inaccessible. Public GitHub code discovery used code-through-web fallback, not native code-search success.",
+    "Opened-page budget conservatively counts 17 actual open/click attempts, including failures and repeated ranges, across 15 distinct URLs; two find operations only located sections inside an already-opened diff.",
+    "Some initial batched search output was truncated. Visible relevant material was verified through actual opens, and the uninspected Chromium result body was not relied upon.",
+    "A visible modern Rust trait snippet was conservatively recorded as an exposure and excluded; the target proposal was neither identified nor retrieved.",
+    "Live Chromium and D evidence is date_status=unknown, not assumed to predate the cutoff.",
+    "The author-hosted paper PDF failed, but the original report and PDF were obtained from Microsoft Research.",
+    "Two GNU libc document opens timed out, and that search-only lead was omitted from the candidate answer.",
+    "Model pretraining knowledge cannot be erased; memory leakage is not controlled.",
+    "No candidate was tested for adoption or claimed to have been deployed or proved useful."
+  ],
+  "execution_status": "completed"
+}

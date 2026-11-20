@@ -1,0 +1,423 @@
+{
+  "case_id": "C02",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C02.md"
+  ],
+  "started_at_utc": "2026-11-20 11:04:00 UTC",
+  "ended_at_utc": "2026-11-20 11:07:26 UTC",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "Linux user namespaces uid_map gid_map capabilities subordinate IDs documentation -site:github.com/kubernetes -site:kubernetes.io -site:rust-lang.github.io -site:peps.python.org -site:github.com/swiftlang -site:github.com/apple/swift-evolution",
+      "at_utc": "2026-11-20 11:04:00 UTC",
+      "tool": "web_system2",
+      "result_note": "Found Linux user_namespaces manual pages and Docker remapping documentation; two potentially proposal-related Kubernetes talk snippets were excluded without opening."
+    },
+    {
+      "q": "Docker userns-remap subordinate UID GID unique nonoverlapping ranges documentation -site:github.com/kubernetes -site:kubernetes.io",
+      "at_utc": "2026-11-20 11:04:00 UTC",
+      "tool": "web_system2",
+      "result_note": "Found official Docker userns-remap documentation and subordinate-ID examples."
+    },
+    {
+      "q": "OCI runtime spec linux uidMappings gidMappings user namespace v1.0.2 -site:github.com/kubernetes -site:kubernetes.io",
+      "at_utc": "2026-11-20 11:04:00 UTC",
+      "tool": "web_system2",
+      "result_note": "Found OCI runtime specification versioned configuration pages and public implementations."
+    },
+    {
+      "q": "https://github.com/search?q=repo%3Aopencontainers%2Frunc+UidMappings&type=code",
+      "at_utc": "2026-11-20 11:04:15 UTC",
+      "tool": "github_public",
+      "result_note": "Public unauthenticated GitHub code search failed with DisabledError; native code search did not succeed and a code-through-web fallback will be used."
+    },
+    {
+      "q": "LXD user namespace idmap security.idmap.isolated 2017 site:stgraber.org",
+      "at_utc": "2026-11-20 11:04:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found the LXD maintainer's dated 2017 description of per-container nonoverlapping UID/GID ranges."
+    },
+    {
+      "q": "Podman v4.3 userns auto non-overlapping subordinate UID GID site:docs.podman.io",
+      "at_utc": "2026-11-20 11:04:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found versioned Podman v4.3 documentation describing automatic unique UID/GID range allocation."
+    },
+    {
+      "q": "Linux kernel idmapped mounts documentation user namespace site:docs.kernel.org",
+      "at_utc": "2026-11-20 11:04:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found official kernel idmapped-mount documentation including differently mapped containers sharing files."
+    },
+    {
+      "q": "site:github.com/opencontainers/runc/blob/ \"UidMappings\" \"GidMappings\"",
+      "tool": "code_through_web",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "result_note": "Code-through-web fallback found indexed public runc configuration structs and libcontainer example code; this was web indexing, not native code-search success."
+    },
+    {
+      "q": "Firecracker lightweight virtualization serverless applications NSDI 2020 site:usenix.org",
+      "tool": "web_system2",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "result_note": "Found the primary USENIX NSDI 2020 Firecracker paper and presentation page for a hardware-virtualization alternative."
+    },
+    {
+      "q": "Podman 4.3 release October 2022 site:podman.io",
+      "at_utc": "2026-11-20 11:05:25 UTC",
+      "tool": "web_system1",
+      "result_note": "Found official Podman archive with v4.3.0 release date 2022-10-22; release announcement snippet also mentioned HostUsers and was excluded as a possible proposal-related exposure."
+    },
+    {
+      "q": "OCI runtime specification v1.0.2 release 2019 site:opencontainers.org",
+      "at_utc": "2026-11-20 11:05:25 UTC",
+      "tool": "web_system1",
+      "result_note": "Found official OCI runtime-spec v1.0.2 release notice dated 2020-03-27, correcting the query's tentative 2019 date."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=repo%3Aopencontainers%2Frunc+UidMappings&type=code",
+      "at_utc": "2026-11-20 11:04:15 UTC",
+      "status": "blocked",
+      "sections_read": "None; fetch rejected.",
+      "confirmed": "Public unauthenticated GitHub code-search URL returned DisabledError. No code-search results were received.",
+      "published_or_version": "unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/user_namespaces.7.html",
+      "at_utc": "2026-11-20 11:04:15 UTC",
+      "status": "opened",
+      "sections_read": "Description; Capabilities; Effect of capabilities; interaction with other namespaces; beginning of UID/GID mappings. Colophon and dated footer.",
+      "confirmed": "User namespaces can present UID 0 internally while mapping to an unprivileged outside UID; capabilities apply to resources governed by the owning user namespace. UID and GID maps are defined through per-process proc files.",
+      "published_or_version": "Linux man-pages 6.19; manual dated 2026-02-08; HTML rendering 2026-09-09",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "followup_reads": [
+        {
+          "operation": "find",
+          "pattern": "Linux man-pages",
+          "at_utc": "2026-11-20 11:05:50 UTC"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.docker.com/engine/security/userns-remap/",
+      "at_utc": "2026-11-20 11:04:15 UTC",
+      "status": "opened",
+      "sections_read": "Introduction; About remapping and subordinate user and group IDs; Prerequisites; beginning of Enable userns-remap. Disable namespace remapping; User namespace known limitations.",
+      "confirmed": "Docker remaps workload UID/GID ranges while its daemon remains root, with bind-mount ownership requirements. Its documentation lists incompatibilities with host PID/network sharing and fully privileged mode unless remapping is disabled.",
+      "published_or_version": "Live Docker documentation",
+      "date_status": "unknown",
+      "post_decision": false,
+      "followup_reads": [
+        {
+          "operation": "find",
+          "pattern": "User namespace known limitations",
+          "at_utc": "2026-11-20 11:05:50 UTC"
+        }
+      ]
+    },
+    {
+      "url": "https://specs.opencontainers.org/runtime-spec/config-linux/?v=v1.0.2",
+      "at_utc": "2026-11-20 11:04:15 UTC",
+      "status": "opened",
+      "sections_read": "Page header and source link only; specification body was not rendered.",
+      "confirmed": "The page identified the OCI runtime configuration specification but did not expose its substantive body through this fetch. Its visible publication header was November 2025 despite the requested version parameter.",
+      "published_or_version": "November 2025 page header; requested v1.0.2 body not available",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://stgraber.org/2017/06/15/custom-user-mappings-in-lxd-containers/",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "status": "opened",
+      "sections_read": "Introduction; Increasing the size of the default map; Per container maps.",
+      "confirmed": "The dated LXD post describes distinct nonoverlapping UID/GID ranges per container through security.idmap.isolated, configurable range size, and the ownership/sharing cost of remapping its filesystem.",
+      "published_or_version": "2017-06-15",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "followup_reads": [
+        {
+          "operation": "find",
+          "pattern": "Per container maps",
+          "at_utc": "2026-11-20 11:05:03 UTC"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.podman.io/en/v4.3/markdown/podman-create.1.html",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "status": "opened",
+      "sections_read": "Name, synopsis, description, image transports; --user and --userns=mode including auto options.",
+      "confirmed": "Podman v4.3 documents auto allocation of unique UID/GID ranges from subordinate-ID pools, image-based or explicit range sizing, and joining another container's user namespace.",
+      "published_or_version": "Podman v4.3 manual; v4.3.0 release dated 2022-10-22 in opened official archive",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "followup_reads": [
+        {
+          "operation": "find",
+          "pattern": "--userns=mode",
+          "at_utc": "2026-11-20 11:05:03 UTC"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.kernel.org/filesystems/idmappings.html",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "status": "opened",
+      "sections_read": "Introduction; Formal notes; Idmappings on idmapped mounts and filesystem versus mount ownership.",
+      "confirmed": "The kernel document explains how idmapped mounts translate ownership per mount, enabling differently mapped containers to access a filesystem without a global recursive ownership rewrite.",
+      "published_or_version": "Live Linux kernel documentation",
+      "date_status": "unknown",
+      "post_decision": false,
+      "followup_reads": [
+        {
+          "operation": "find",
+          "pattern": "Idmappings on idmapped mounts",
+          "at_utc": "2026-11-20 11:05:03 UTC"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/opencontainers/runtime-spec/blob/v1.0.2/config-linux.md",
+      "at_utc": "2026-11-20 11:04:44 UTC",
+      "status": "blocked",
+      "sections_read": "None; fetch rejected.",
+      "confirmed": "GitHub's pinned runtime-spec v1.0.2 source URL returned DisabledError.",
+      "published_or_version": "Requested tag v1.0.2; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.2/config-linux.md",
+      "at_utc": "2026-11-20 11:05:03 UTC",
+      "status": "blocked",
+      "sections_read": "None; fetch rejected.",
+      "confirmed": "The raw pinned OCI v1.0.2 source URL returned DisabledError.",
+      "published_or_version": "Requested v1.0.2; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/opencontainers/runc/main/libcontainer/configs/config.go",
+      "at_utc": "2026-11-20 11:05:03 UTC",
+      "status": "blocked",
+      "sections_read": "None; fetch rejected.",
+      "confirmed": "The raw public runc configuration source URL returned DisabledError.",
+      "published_or_version": "Requested main branch; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "at_utc": "2026-11-20 11:05:03 UTC",
+      "status": "opened",
+      "sections_read": "Abstract and BibTeX publication metadata.",
+      "confirmed": "The NSDI 2020 paper describes a specialized virtual-machine monitor for isolating container and function workloads. This supplies an alternative virtualization mechanism rather than a UID/GID allocator.",
+      "published_or_version": "NSDI 2020; BibTeX year 2020",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/opencontainers/runc/blob/main/libcontainer/configs/config.go",
+      "at_utc": "2026-11-20 11:05:25 UTC",
+      "status": "opened",
+      "sections_read": "IDMap; UIDMappings; GIDMappings; related security configuration fields.",
+      "confirmed": "The actual public runc configuration source defines separate UID and GID mapping lists with container start ID, host start ID, and range size. This source was opened via web-indexed code after direct raw retrieval failed.",
+      "published_or_version": "Live main branch",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/opencontainers/runc/blob/main/libcontainer/example_test.go",
+      "at_utc": "2026-11-20 11:05:25 UTC",
+      "status": "opened",
+      "sections_read": "UIDMappings and GIDMappings example; container creation and UID 0 process example.",
+      "confirmed": "The libcontainer example maps container IDs beginning at zero to host IDs beginning at 1000 for both UID and GID, then shows creating the container and launching an internal UID 0 process. Its literal host range is example data, not a safe allocation policy for all hosts.",
+      "published_or_version": "Live main branch",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "at_utc": "2026-11-20 11:05:25 UTC",
+      "status": "opened",
+      "sections_read": "Namespaces creation/join behavior; User namespace mappings; example; related devices section.",
+      "confirmed": "The OCI source specifies separate UID/GID mapping arrays with containerID, hostID and size, and namespace creation or joining through type and path. It says filesystem ownership should not be modified merely to realize these mappings.",
+      "published_or_version": "Live main branch; older tagged version could not be fetched",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://podman.io/release/archive",
+      "at_utc": "2026-11-20 11:05:50 UTC",
+      "status": "opened",
+      "sections_read": "2022 release list.",
+      "confirmed": "The official release archive dates Podman v4.3.0 to 2022-10-22, supporting the availability date of the separately opened v4.3 manual.",
+      "published_or_version": "Archive entry: Podman v4.3.0, 2022-10-22",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://opencontainers.org/release-notices/v1-0-2-runtime-spec/",
+      "at_utc": "2026-11-20 11:05:50 UTC",
+      "status": "opened",
+      "sections_read": "Title, explicit notice date, release statement and source release link.",
+      "confirmed": "The official OCI notice dates runtime-spec v1.0.2 to 2020-03-27. It establishes the version date but cannot establish that every detail of the live main-branch document was present then.",
+      "published_or_version": "v1.0.2 release notice, 2020-03-27",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [
+    {
+      "url": "https://www.youtube.com/watch?v=ySS1sHDR_3Q",
+      "stage": "snippet",
+      "reason": "Search returned a talk describing a Kubernetes/containerd user-namespace prototype; possible proposal-related discussion was excluded without opening, and no target proposal identity was sought.",
+      "excluded": true
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Rx-ksmLUHEY",
+      "stage": "snippet",
+      "reason": "Search returned a talk about ongoing Kubernetes user-namespace support and filesystem challenges; possible proposal-related discussion was excluded without opening.",
+      "excluded": true
+    },
+    {
+      "url": "https://podman.io/release/2022/10/22/podman-release-v4.3.0",
+      "stage": "snippet",
+      "reason": "Release announcement snippet mentioned Kubernetes user namespaces through HostUsers; possible overlap with the studied decision was recorded and the announcement was excluded without opening. A separate release archive is used solely to verify version date.",
+      "excluded": true
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Linux user namespaces and namespace-scoped capabilities",
+      "url": "https://man7.org/linux/man-pages/man7/user_namespaces.7.html",
+      "reason": "User namespaces map workload UID/GID zero to unprivileged host IDs while limiting capabilities to resources owned by the relevant namespace.",
+      "application_scope": "Kernel isolation primitive; a pod namespace is a transfer inference.",
+      "constraints_or_caveat": "Create associated resource namespaces under the correct user namespace; kernel vulnerabilities remain possible.",
+      "evidence_opened": true,
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "Opened manual is Linux man-pages 6.19, dated 2026-02-08; HTML rendering dated 2026-09-09.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "OCI runtime-spec user-namespace configuration",
+      "url": "https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md",
+      "reason": "OCI supplies separate UID/GID range arrays and namespace path references that could carry pod allocations into a container runtime.",
+      "application_scope": "Interoperability contract between allocation policy and runtime setup.",
+      "constraints_or_caveat": "The orchestrator must allocate ranges and handle filesystems; the older tagged document could not be retrieved.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live main branch; the opened 2020-03-27 v1.0.2 release notice does not date the retrieved body.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "LXD isolated per-container identity maps",
+      "url": "https://stgraber.org/2017/06/15/custom-user-mappings-in-lxd-containers/",
+      "reason": "LXD's isolated mapping option demonstrates allocating distinct nonoverlapping host UID/GID blocks that could be adapted to each pod.",
+      "application_scope": "Range-allocation and exhaustion behavior.",
+      "constraints_or_caveat": "Requires sufficient subordinate IDs; filesystem remapping costs time and distinct maps complicate shared storage.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Original maintainer post explicitly dated 2017-06-15.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "Podman v4.3 automatic user-namespace allocation",
+      "url": "https://docs.podman.io/en/v4.3/markdown/podman-create.1.html",
+      "reason": "Podman's auto mode allocates unique UID/GID ranges with image-based or explicit sizing, offering a concrete allocator behavior to adapt.",
+      "application_scope": "Automatic range selection; joining an existing container namespace.",
+      "constraints_or_caveat": "Needs subordinate-ID pools; adapt allocation and lifetime from container scope to pod scope.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Versioned v4.3 manual; opened official archive dates v4.3.0 to 2022-10-22.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Docker Engine userns-remap",
+      "url": "https://docs.docker.com/engine/security/userns-remap/",
+      "reason": "Docker userns-remap demonstrates internal root mapped to subordinate host UID/GID ranges while the daemon remains privileged.",
+      "application_scope": "Workload remapping independent of runtime rootlessness.",
+      "constraints_or_caveat": "Daemon-level configuration does not supply pod allocation policy; bind mounts and fully privileged or host-namespace modes require care.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live documentation; no dated historical body verified.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "Linux idmapped mounts",
+      "url": "https://docs.kernel.org/filesystems/idmappings.html",
+      "reason": "Idmapped mounts could expose storage with suitable ownership to differently mapped pods without globally rewriting its on-disk ownership.",
+      "application_scope": "Root-filesystem and volume ownership compatibility.",
+      "constraints_or_caveat": "Requires supporting kernel/filesystem combinations and deliberate sharing policy; it does not itself allocate pod IDs.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live kernel documentation; no dated version verified.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 7,
+      "name": "runc libcontainer mapping structures and example",
+      "url": "https://github.com/opencontainers/runc/blob/main/libcontainer/example_test.go",
+      "reason": "The libcontainer example connects separate UID/GID maps to container creation and an internal UID-zero process, providing concrete implementation scaffolding.",
+      "application_scope": "Runtime implementation and configuration example.",
+      "constraints_or_caveat": "Reserve safe host ranges instead of copying the sample host ID; current branch evidence is undated.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Actual current main-branch code opened through web indexing; no historical commit date verified.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 8,
+      "name": "Firecracker specialized virtual-machine monitor",
+      "url": "https://www.usenix.org/conference/nsdi20/presentation/agache",
+      "reason": "Firecracker offers a virtualization boundary to consider if the broader hardening goal requires isolation beyond a shared host kernel.",
+      "application_scope": "Alternative isolation mechanism, inferred transfer to this problem.",
+      "constraints_or_caveat": "Requires a larger runtime architecture change and does not supply the requested host UID/GID allocation policy.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Primary USENIX paper page identifies NSDI 2020 and BibTeX publication year 2020.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "Eight useful references emerged from the searches. A user namespace plus coordinated UID/GID allocation is the closest fit; applying container-level mechanisms to a shared pod boundary is a design inference that still needs lifecycle and storage integration.\n\n1. [Linux user namespaces](https://man7.org/linux/man-pages/man7/user_namespaces.7.html) supply the core mapping from internal root to an unprivileged host identity and scope capabilities to namespace-owned resources. Create associated resource namespaces under the intended user namespace; this permission boundary cannot guarantee protection from every kernel flaw. Evidence timing: the opened manual is dated 2026-02-08, after the cutoff.\n\n2. [OCI runtime-spec user-namespace configuration](https://github.com/opencontainers/runtime-spec/blob/main/config-linux.md) supplies UID/GID range fields and namespace-path joining that could transmit one pod allocation to its containers. Allocation policy and filesystem ownership handling remain additional work. Evidence timing: unknown for the retrieved live body; the separately verified 2020 v1.0.2 release date cannot backdate it.\n\n3. [LXD isolated identity maps](https://stgraber.org/2017/06/15/custom-user-mappings-in-lxd-containers/) demonstrate separate nonoverlapping UID/GID blocks per container, adaptable to per-pod assignment. The documented constraints are subordinate-ID capacity, filesystem remapping cost, and difficulty sharing storage between distinct maps. Evidence timing: original post dated 2017-06-15.\n\n4. [Podman v4.3 auto user namespaces](https://docs.podman.io/en/v4.3/markdown/podman-create.1.html) demonstrate unique range allocation, estimated or explicit range sizing, and joining an existing container namespace. Adapt container allocation lifetime to pod lifetime and provision the subordinate-ID pools. Evidence timing: the versioned manual is supported by the official archive's 2022-10-22 v4.3.0 release entry.\n\n5. [Docker userns-remap](https://docs.docker.com/engine/security/userns-remap/) demonstrates workload UID/GID remapping while its daemon remains root, matching the boundary that runtime rootlessness is outside this decision. Its daemon-level setup needs a separate pod allocation policy, and bind mounts, host namespace sharing, and fully privileged modes have documented limitations. Evidence timing: unknown for this live documentation.\n\n6. [Linux idmapped mounts](https://docs.kernel.org/filesystems/idmappings.html) could address ownership mismatches when distinct pod identity maps access images or shared volumes, using mount-local translation instead of global ownership rewrites. Filesystem and kernel support plus explicit sharing policy are conditions; this mechanism does not allocate IDs. Evidence timing: unknown for the live page.\n\n7. [runc's libcontainer example](https://github.com/opencontainers/runc/blob/main/libcontainer/example_test.go) connects separate UID/GID maps with container creation and an internal UID-zero process. It is useful implementation scaffolding, but its sample host ID must be replaced with a safely reserved allocation. Evidence timing: unknown for current main-branch code.\n\n8. [Firecracker's NSDI 2020 design](https://www.usenix.org/conference/nsdi20/presentation/agache) offers an alternative virtualization boundary if the broader goal requires protection beyond shared-kernel isolation. This is a larger architectural change and does not itself supply host UID/GID allocation; its applicability here is an inference. Evidence timing: primary paper page dates the work to 2020.\n\nSearch limitations: unauthenticated GitHub code search was blocked with DisabledError. Public runc code was subsequently opened through web indexing; that is code-through-web, not native code-search success. Four direct open attempts were blocked. Three possibly proposal-related search snippets were recorded as exposures and excluded; no target proposal was identified or retrieved. These references have not been implemented or validated for this workload design.",
+  "budget": {
+    "search_queries": 11,
+    "opened_pages": 16,
+    "candidate_count": 8
+  },
+  "limitations": [
+    "Public unauthenticated GitHub code search was attempted and blocked with DisabledError; fallback was explicitly code-through-web and successfully opened indexed public code.",
+    "Opened-pages budget counts all 16 distinct open attempts, including four blocked attempts; five find operations on already-opened documents are separately preserved in followup_reads.",
+    "Three potentially proposal-related snippets are retained as excluded exposures. No target proposal document was identified, retrieved, or used.",
+    "Live documents without a dated historical body remain date_status unknown; post_decision false for unknown does not assert pre-cutoff availability.",
+    "The retrieved user_namespaces manual is dated 2026-02-08 and is marked post_decision; a November 2025 OCI landing-page header is also marked post_decision.",
+    "An OCI v1.0.2 release notice dates the version to 2020-03-27, but failed tagged-source retrieval prevents dating the retrieved main-branch specification body from that notice.",
+    "Podman v4.3 dating uses the opened versioned manual and the official release archive; the potentially related release-announcement snippet was excluded.",
+    "No implementation, deployment, security test, or effectiveness validation was performed; applying container mechanisms to pod lifecycle is an inference.",
+    "Only the assigned baseline rules and C02 prefix were read from the repository. Model pretraining knowledge cannot be erased and memory leakage is not controlled."
+  ],
+  "execution_status": "completed"
+}
