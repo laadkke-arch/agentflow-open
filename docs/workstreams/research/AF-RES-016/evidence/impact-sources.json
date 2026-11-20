@@ -1,0 +1,68 @@
+{
+  "study": "AF-RES-016",
+  "purpose": "Q7 only; common post-freeze evidence, not coder inputs or methods minimum",
+  "sources": [
+    {
+      "id": "I01",
+      "url": "https://opentelemetry.io/docs/languages/python/exporters/",
+      "accessed_at_utc": "2026-11-20",
+      "source_type": "후속 후보 공식 문서",
+      "title": "OpenTelemetry Python — Exporters",
+      "version_or_date": "live (2026-11-20 확인)",
+      "sections_read": [
+        "Exporters / Available exporters, lines 866–879",
+        "OTLP Collector Setup / Dependencies / Usage, lines 880–988"
+      ],
+      "confirmed": "Python SDK의 exporter 설정 예시는 애플리케이션 코드에서 Collector 등 OTLP endpoint로 데이터를 보내며, Collector의 후단 exporter 설정은 별도 YAML pipeline에 놓인다. 따라서 같은 exporter 이름만으로 Collector 외부 전송의 내구 대기 설정을 확인할 수 없다.",
+      "limits": "동결한 012 패키지 1.45.2의 코드 실행이나 Collector 장애 재현은 하지 않았다. 모든 가능한 Python 중계 구성을 불가능하다고 주장하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q7"
+      ],
+      "counted_for_minimum": false,
+      "access_time_precision": "UTC date; exact per-open clock time not logged"
+    },
+    {
+      "id": "I02",
+      "url": "https://aiolimiter.readthedocs.io/en/stable/",
+      "accessed_at_utc": "2026-11-20",
+      "source_type": "후속 후보 공식 문서",
+      "title": "aiolimiter 1.3.0 documentation",
+      "version_or_date": "1.3.0",
+      "sections_read": [
+        "Introduction / Typical use, lines 0–48",
+        "Bursting, lines 56–89",
+        "AsyncLimiter API, lines 90–152"
+      ],
+      "confirmed": "시간당 진입량과 burst를 제어하는 leaky-bucket limiter이며, 예시의 4개 burst 이후에는 시간이 흘러 용량이 다시 생기면 다음 작업이 들어간다. 완료 사건에 연결한 동시 실행 수 제한이나 유한 대기열을 이 인터페이스만으로 보증하지 않는다.",
+      "limits": "실제 라이브러리를 설치·실행하지 않았다. 별도 semaphore/유한 queue와 조합한 시스템을 평가하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q7"
+      ],
+      "counted_for_minimum": false,
+      "access_time_precision": "UTC date; exact per-open clock time not logged"
+    },
+    {
+      "id": "I03",
+      "url": "https://www.rfc-editor.org/rfc/rfc6902.html",
+      "accessed_at_utc": "2026-11-20",
+      "source_type": "후속 후보 공식 규격",
+      "title": "RFC 6902 — JavaScript Object Notation (JSON) Patch",
+      "version_or_date": "April 2013",
+      "sections_read": [
+        "§3 Document Structure, lines 129–170",
+        "§4 Operations, lines 172–197",
+        "§4.3 replace, lines 286–299"
+      ],
+      "confirmed": "Patch의 연산을 배열에 나타난 순서대로 적용하며 각 연산 결과가 다음 연산의 대상이다. 같은 경로를 서로 다른 값으로 replace하는 두 연산의 역순 적용은 같은 결과를 보장하지 않는다.",
+      "limits": "RFC 전체 구현이나 브라우저 IndexedDB 내구성 시험이 아니다. 단순 replace 반례는 R03의 도착 순서 무관 수렴 주장만 반박한다.",
+      "level": "D1",
+      "used_in": [
+        "Q7"
+      ],
+      "counted_for_minimum": false,
+      "access_time_precision": "UTC date; exact per-open clock time not logged"
+    }
+  ]
+}

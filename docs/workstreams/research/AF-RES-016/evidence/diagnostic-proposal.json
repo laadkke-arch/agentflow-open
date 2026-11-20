@@ -1,0 +1,903 @@
+{
+  "study": "AF-RES-016",
+  "artifact": "internal separate diagnostic proposal",
+  "reviewer": "내부 별도 진단 제안 — GPT-6 Astra Pro",
+  "human": false,
+  "read_scope": [
+    "CODEBOOK.md",
+    "sample/units.json",
+    "evidence/disagreements.json"
+  ],
+  "read_scope_sha256": {
+    "CODEBOOK.md": "df3a34cf937949d0e598b58212d26d30c725bde2189fc4435be78a072f2b88fa",
+    "sample/units.json": "3509814b417a97da6cbd0ce79d9ef636db5113bd961860821ec0ffa9d2c044cf",
+    "evidence/disagreements.json": "5b2e923d5517e847e13d732b6ee1d7340a22c5034fb81026bdf3ae8e746bcfb1"
+  },
+  "source_coding_commits_as_supplied_by_root": {
+    "a": "0981732949cdea358c4ffa27aafd4ae50d310bbe",
+    "b": "674f1c8eb99e531acee7531c8f1495f721c4dffd"
+  },
+  "method": "코드북과 59개 불일치의 전체 입력 패킷 및 A/B reason을 행별로 직접 검토하여 서술을 작성했다. 키워드 규칙이나 자동 추천으로 유형을 만들지 않았다. 스크립트는 사람이 아닌 내부 에이전트가 작성한 행별 서술의 직렬화, ID 대조와 집계에만 사용했다.",
+  "non_mutation": "원 A/B 코딩, 표본, 코드북, H/T·근접 오답 판정을 변경하지 않았다. resolution_note는 코드북상 상대적으로 더 뒷받침되는 해석에 관한 제안이며 새로운 정답 라벨이나 자동 수용 지시가 아니다.",
+  "diagnostic_unit": "여러 축이 다른 경우에도 한 단위에 지배적인 원인 하나를 지정했다. 축별 원인·정답을 검증한 결과가 아니다. 경계 정의 부족에는 정의 사이 중첩·우선순위 부족과 이미 있는 경계를 서로 다르게 적용한 사례가 함께 들어간다.",
+  "limits": [
+    "사후 원인 설명은 관측된 문장과 이유에 맞춘 해석이며 코더의 실제 인지 원인을 확인한 자료가 아니다.",
+    "유형별 금표준이나 독립 이중 진단이 아니다. root의 수용·이견을 별도 기록해야 한다.",
+    "명시 규칙에 한쪽이 더 가까운 사례도 있지만 이를 이용해 동결 코딩 또는 원 일치도를 수정하면 안 된다.",
+    "문맥 부족과 실제 다의성은 요약 패킷만으로 완전히 구별되지 않을 수 있어 모든 행에 대안 원인을 남겼다.",
+    "외부 웹, 원 응답 전체, 현재 제품 기능, Q7 영향 결과는 이 진단을 위해 읽거나 검증하지 않았다.",
+    "같은 T036/T047 안에서 반복되는 경계 문제는 독립적인 사람 표본 59개를 뜻하지 않는다."
+  ],
+  "summary": {
+    "units": 59,
+    "primary_type_counts": {
+      "경계 정의 부족": 35,
+      "실제 다의성": 6,
+      "문맥 부족": 18
+    }
+  },
+  "rows": [
+    {
+      "unit_id": "004-R03",
+      "sample": "004",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 후보명의 RFC 6902를 규격 대상으로, B는 뒤에 붙은 도착 순서 적용을 절차 대상으로 삼았다. S1·S2는 같고 규격명에 사용법이 붙은 후보에서 무엇을 form의 대상으로 삼을지만 달랐다.",
+      "alternative_explanation": "규격과 그 규격을 쓰는 병합 절차가 실제로 함께 제시되어 하나의 형태로 줄이기 어려운 다의성일 수도 있다.",
+      "resolution_note": "candidate 전체가 적용 절차를 명명한다는 점에서는 B의 pattern이 더 직접적이다. 그러나 CODEBOOK은 규격명+사용 절차 복합 제목의 우선순위를 명시하지 않아 A의 standard도 제목 일부에 근거한다. 수렴 여부는 이 진단으로 재판정하지 않는다.",
+      "evidence_location": "sample/units.json#004-R03 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=004-R03].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 대상 정보와 문제 문맥 분리; §4 standard/pattern"
+    },
+    {
+      "unit_id": "004-R07",
+      "sample": "004",
+      "different_axes": [
+        "S1"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 Redis 전체가 아닌 Pub/Sub 채널 기능을 component로 분리했고 B는 같은 채널이 독립 서버가 제공하는 기능이므로 product로 보았다. 두 코더 모두 form은 service라 하여 실행 형태보다는 후보 단위의 경계가 어긋났다.",
+      "alternative_explanation": "채널 기능이 독립 배포물인지 호스트 안의 모듈인지 입력에 완전히 기술되지 않은 문맥 부족이 보탬이 되었을 수 있다.",
+      "resolution_note": "서버를 다른 시스템이 사용한다는 이유로 component로 낮추지 않는 §2와 두 코더의 service 판단을 함께 적용하면 B 쪽이 더 일관된다. 다만 부분 기능과 별도 재사용 모듈을 구별하는 단위 규칙은 더 구체화할 여지가 있다.",
+      "evidence_location": "sample/units.json#004-R07 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=004-R07].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 상위 제품/특정 모듈 구별; §2 product/component"
+    },
+    {
+      "unit_id": "011-T010-002",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "입력은 Spring·Django·Bootstrap뿐 아니라 강좌와 Stackshare도 함께 적는다. A는 도구와 학습·발견 자원을 서로 다른 후보로, B는 프레임워크를 주 후보로 하고 강좌를 보조 설명으로 읽었다. S2도 전체 웹 구현인지 프레임워크 선택인지 달랐다.",
+      "alternative_explanation": "요약이 각 항목의 비중을 생략했기 때문에 주·보조 구별이 불가능해진 문맥 부족일 수 있다.",
+      "resolution_note": "서로 다른 대상이 실제 패킷에 병기된다는 점은 mixed 가능성을 뒷받침한다. 동급 여부는 확인할 수 없다. S2는 질문이 라이브러리·프레임워크 선택이라는 점에서 whole이 가능하며 결제 구현 증거의 부재만으로 part를 확정하면 역할과 충족을 혼합한다.",
+      "evidence_location": "sample/units.json#011-T010-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T010-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 선택 범위; §2 mixed; §3 whole/mixed; §4 mixed"
+    },
+    {
+      "unit_id": "011-T011-004",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 curl·버전관리 도구와 해시·필터 절차를 복수 형태의 전체 감시 흐름으로 읽었다. B는 실행 도구가 주 대상이고 절차는 사용법이며 알림이 명시되지 않아 일부 층만 맡는다고 읽었다. 도구의 사용법을 별도 후보로 세는지가 첫 차이다.",
+      "alternative_explanation": "FiveFilter의 구체 실행 형태와 알림 연결이 빠진 요약 때문에 실제 복합성이나 부분 범위를 충분히 알 수 없는 문제도 있다.",
+      "resolution_note": "mixed에는 서로 다른 역할이 동급이라는 근거가 필요하므로 도구와 그 사용법을 자동 분리하지 않는 B 해석이 더 보수적이다. S2는 제안이 기존 흐름 전체의 대체인지 수집·비교 층만의 교체인지 명시되지 않아 해소하지 않는다.",
+      "evidence_location": "sample/units.json#011-T011-004 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T011-004].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 묶음; §2 mixed; §3 part/mixed"
+    },
+    {
+      "unit_id": "011-T011-005",
+      "sample": "011",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 다중 사이트·스크린샷·메일 기능에서 app을 추정했고 B는 독립 감시 도구임은 인정하면서 UI 앱인지 상주 서비스인지 알 수 없어 form을 unknown으로 남겼다.",
+      "alternative_explanation": "웹 감시 도구가 UI와 상주 프로세스를 동시에 가지는 실제 다의성일 수도 있다.",
+      "resolution_note": "candidate_description에는 실행 UI, CLI, 장기 endpoint의 우선 설명이 없다. §4의 형태 구별에는 B의 unknown이 더 직접적으로 부합하며 app/service를 정하려면 배포·실행 설명 한 문장이 필요하다.",
+      "evidence_location": "sample/units.json#011-T011-005 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T011-005].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 대상 정보만으로 형태 판단; §4 app/service/unknown"
+    },
+    {
+      "unit_id": "011-T011-006",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "패킷은 Huginn 후보명뿐이다. A는 일반 지식으로 상주 자동화 서비스와 whole 역할을 보충했다고 밝혔고 B는 기능·형태 연결이 없어 모두 unknown으로 남겼다.",
+      "alternative_explanation": "문제에 대한 이름 추천 자체가 전체 대체 제안이라는 화용적 단서를 A가 인정하고 B가 인정하지 않은 경계 차이도 있다.",
+      "resolution_note": "새 지식으로 빈칸을 채우지 않고 패킷 부족이면 unknown을 쓰라는 §1에서 B가 더 보수적이다. 추천 발화라는 것만으로 전체 범위까지 맡긴다고 확정할지에 대해서는 명시된 사용 제안이 필요하다.",
+      "evidence_location": "sample/units.json#011-T011-006 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T011-006].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 입력 패킷 제한; §2 unknown; §3 unknown; §4 unknown"
+    },
+    {
+      "unit_id": "011-T011-007",
+      "sample": "011",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 영역 선택·변경 이력에서 사용자 UI를, B는 내부망 불가에서 외부 감시 서비스를 추론했다. 둘 다 짧은 기능 설명에 서로 다른 배포 단서를 덧붙여 app/service가 갈렸다.",
+      "alternative_explanation": "사용자 UI와 외부 감시 endpoint가 실제로 한 서비스에 함께 존재하여 두 형태가 모두 맞을 가능성도 있다.",
+      "resolution_note": "§4는 웹앱에서 주 대상이 사용자 UI인지 설명을 우선하라고 하나 이 패킷은 주 대상을 정하지 않는다. 두 추론 중 하나를 정답으로 선택하지 않고 실행 형태 또는 주 인터페이스 설명을 추가해야 한다.",
+      "evidence_location": "sample/units.json#011-T011-007 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T011-007].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 candidate_description 우선; §4 app/service"
+    },
+    {
+      "unit_id": "011-T012-001",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 GUI·CLI 회계 도구가 장부 층에만 기여한다고 보았고 B는 협동조합 회계 소프트웨어의 전체 대안으로 읽었다. 요약에는 지급·은행 연동을 이 도구에 맡길지, 장부만 맡길지의 제안 범위가 없다.",
+      "alternative_explanation": "A가 실제 기능 충족이 확인되지 않았다는 사실을 역할의 part로 바꾼 것일 수도 있다.",
+      "resolution_note": "전체 대안으로 제안되었다면 미확인 연동은 H 문제이고 B의 whole이 성립한다. 장부만 대체한다고 제안되었다면 A의 part가 성립하므로 일반 추천 문구만으로 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T012-001 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T012-001].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 역할과 사실 충족 분리; §3 whole/part/unknown"
+    },
+    {
+      "unit_id": "011-T027-002",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 선택 범위를 국가 변환 기능으로 두고 IP 국가 DB를 whole로 읽었다. B는 좌표 변환과 클라이언트 판매 제한 절차까지 포함하여 데이터 층의 part로 읽었다. 후보 형태는 동일하고 질문의 범위를 다르게 고정했다.",
+      "alternative_explanation": "국가 변환을 위해 입력받는 위치가 IP인지 좌표인지와 데이터 lookup 실행 방법이 생략된 문맥 부족도 있다.",
+      "resolution_note": "문제 문장은 국가로 바꾸는 방법을 찾는다고 하므로 판매 페이지 전체로 범위를 확대하지 않는 A의 읽기가 더 가깝다. 다만 B가 지적한 DB와 변환 절차의 차이는 남으며 좌표라는 입력형은 패킷에 명시되지 않는다.",
+      "evidence_location": "sample/units.json#011-T027-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T027-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 질문이 선택한 범위; §3 whole/part"
+    },
+    {
+      "unit_id": "011-T036-002",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 명시 대조 제품이 없으므로 시간 비교를 reference라는 판단 방법으로 보았다. B는 통합 시간과 직접 구현 시간이라는 두 선택의 명시적 척도를 comparison으로 읽었다. 비교 대상 제품의 존재를 필수로 볼지가 갈렸다.",
+      "alternative_explanation": "방법과 평가 기준이라는 두 기능이 한 문장에 실제로 공존하는 다의성도 있다.",
+      "resolution_note": "§3 comparison은 제품 대조군뿐 아니라 명시적 기준을 포함하므로 B가 더 직접적으로 뒷받침된다. reference의 판단 방법과 comparison의 추상 기준이 겹칠 때의 우선 규칙은 불명확하다.",
+      "evidence_location": "sample/units.json#011-T036-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-005",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 교체·관리 시간을 비용에 포함하는 규칙을 설계 참고로, B는 장기 시간 절약을 평가하는 비용 기준으로 보았다. 동일한 비용 계산의 절차와 평가축 중 무엇을 주 기여로 삼을지가 달랐다.",
+      "alternative_explanation": "요약에 실제로 어떤 선택지의 비용을 비교했는지가 생략되어 B의 comparison이 과도한 확장일 수도 있다.",
+      "resolution_note": "문제 자체가 구현과 라이브러리 사용의 비용 판단이므로 교체·관리 시간을 선택 기준으로 읽는 B가 §3에 더 가깝다. 실제 대조 제품이 없다는 이유만으로 comparison을 배제할 수는 없다.",
+      "evidence_location": "sample/units.json#011-T036-005 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-005].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-007",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 범위·업그레이드·위험 비교를 재사용 가능한 판단 원리로 보았고 B는 짧은 자체 구현과 외부 코드 유지 부담의 명시적 평가 기준으로 보았다. 후보 설명에 비교가 있지만 방법과 기준이 겹친다.",
+      "alternative_explanation": "판단 원리의 적용 자체가 질문이 요구한 산출물이라 reference와 comparison이 동시에 성립할 수도 있다.",
+      "resolution_note": "§3의 명시적 비교 기준이라는 문구는 B의 comparison을 더 직접적으로 지지한다. 어떤 선택법이든 reference로 묶으면 comparison의 기준 하위 의미가 사라지는 점을 기록한다.",
+      "evidence_location": "sample/units.json#011-T036-007 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-007].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-008",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "패킷에는 변동성·신뢰라는 평가 지표와 API 격리·통합 테스트라는 구현·운용 조언이 함께 있다. A는 후자의 설계 조언을 대표로 삼았고 B는 비교와 설계 참고가 대등하게 공존한다고 보았다.",
+      "alternative_explanation": "요약이 평가 지표와 구현 조언의 원래 비중을 보존하지 않아 mixed 여부를 결정할 문맥이 부족할 수 있다.",
+      "resolution_note": "서로 다른 두 기여가 패킷에 실제로 드러난다는 점에서 B의 mixed는 가능하다. §3은 동급 여부를 요구하므로 A의 reference가 잘못됐다고 확정할 수 없으며 원문에서 주·보조 관계 확인이 필요하다.",
+      "evidence_location": "sample/units.json#011-T036-008 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-008].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison/mixed"
+    },
+    {
+      "unit_id": "011-T036-009",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 고성능·좋은 API이면 재사용하라는 조건부 원리를 reference로 보았고 B는 성능과 API 품질을 후보 선택의 명시적 기준으로 읽었다. 같은 조건문을 방법으로 볼지 평가축으로 볼지가 갈렸다.",
+      "alternative_explanation": "성능이라는 기준을 실제 대안에 적용한 기록이 없어 comparison보다는 일반 조언일 수 있다는 문맥 해석도 가능하다.",
+      "resolution_note": "comparison 정의는 측정 완료나 실명 대조군을 요구하지 않으므로 명시적 선택 조건이라는 B의 읽기가 더 강하다. 기준을 제안하는 방법과 그 기준 자체를 구별하는 우선순위는 추가로 명료화할 수 있다.",
+      "evidence_location": "sample/units.json#011-T036-009 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-009].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-014",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 기회비용·유지비용 비교를 의사결정 방법으로, B는 직접 구현과 재사용을 대조하는 비용 척도로 읽었다. S1·form은 같고 비교 규칙의 기여 해석만 다르다.",
+      "alternative_explanation": "의사결정 절차와 비교 척도가 본질적으로 분리되지 않는 실제 다의성일 가능성도 있다.",
+      "resolution_note": "후보명과 설명에 비교가 직접 나타나고 질문도 두 선택을 고르는 문제이므로 §3 comparison에 B가 더 직접적이다. 분석에서는 이 차이를 형태 불일치로 세지 않는다.",
+      "evidence_location": "sample/units.json#011-T036-014 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-014].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-020",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 활동·소스·인기도·문서 검토를 선택 절차로 보았고 B는 라이브러리들을 평가하는 항목 묶음으로 보았다. 같은 체크리스트를 절차와 비교 기준 중 어디에 넣는지가 갈렸다.",
+      "alternative_explanation": "체크리스트가 실제로 여러 후보를 비교하는 데 사용되었는지 빠진 요약 문맥도 원인일 수 있다.",
+      "resolution_note": "§3 comparison은 명시적 기준을 포함하므로 후보 평가항목을 중심으로 보는 B가 뒷받침된다. 다만 기준을 적용하는 운용 절차와의 중첩을 가르는 명시 규칙은 없다.",
+      "evidence_location": "sample/units.json#011-T036-020 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-020].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-022",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 약 한 시간이라는 구현 비용 휴리스틱을 reference로 보았고 B는 직접 구현과 재사용을 나누는 구체 문턱값을 comparison으로 보았다. 평가 기준이 휴리스틱인 경우의 우선 분류가 달랐다.",
+      "alternative_explanation": "한 시간이라는 수치가 단순 경험담의 사례이고 실제 권고 기준이 아니었다면 reference가 더 적절할 수 있다.",
+      "resolution_note": "패킷 자체가 한 시간 이상이면 재사용이라고 명시하므로 B의 comparison이 §3의 기준 정의를 더 강하게 충족한다. 이 진단은 그 시간 문턱의 타당성을 검증한 것이 아니다.",
+      "evidence_location": "sample/units.json#011-T036-022 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-022].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-023",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 사업 차별성과 총소유비용에 따른 구매·구축 판단을 원리로 읽었다. B는 같은 항목을 대안을 비교하는 평가축으로 읽어 comparison을 선택했다.",
+      "alternative_explanation": "구매·구축 의사결정 전체를 설계하는 원리라는 해석과 특정 비교 척도라는 해석이 실제로 겹칠 수 있다.",
+      "resolution_note": "질문이 직접 구현과 라이브러리 사용의 선택을 묻고 후보가 그 기준을 명시하므로 B가 comparison 문구에 더 직접적이다. 원리라는 S1 판단은 양쪽이 같고 변경할 이유가 없다.",
+      "evidence_location": "sample/units.json#011-T036-023 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-023].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-026",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 기능·플랫폼·라이선스·가격 적합성을 확인하라는 판단 틀을 reference로, B는 명시적인 후보 평가항목이므로 comparison으로 보았다. 기준 제공과 설계 참고의 경계가 다르다.",
+      "alternative_explanation": "요약이 점검의 순서·조건을 생략했기 때문에 실제로는 평가 방법 전체였을 수 있다.",
+      "resolution_note": "도입할 구체 제품보다 평가항목을 제시한 패킷이므로 §3의 comparison에 B가 더 부합한다. 여러 항목이 있다는 사실만으로 mixed로 옮길 이유는 없다.",
+      "evidence_location": "sample/units.json#011-T036-026 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-026].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison/mixed"
+    },
+    {
+      "unit_id": "011-T036-027",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 예상 수명과 운영 위험에 따라 의존성을 고르는 방법을 reference로 보았다. B는 장기 조건에서 대안을 평가할 축으로 읽어 comparison을 택했다.",
+      "alternative_explanation": "제품 수명에 대한 경험적 조언을 정량 비교 기준으로 과잉 해석한 차이일 수도 있다.",
+      "resolution_note": "comparison은 정량 척도만을 뜻하지 않으므로 수명·위험이라는 명시적 평가 조건도 포함된다. 이 점에서는 B가 더 지지되지만 방법과 기준의 겹침 자체는 남는다.",
+      "evidence_location": "sample/units.json#011-T036-027 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-027].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T036-028",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 pdf.js·react-pdf·SageMath 실행 대상과 조합 경험을 동급으로 보아 mixed를 썼다. B는 도구명이 추상화 수준 변경 경험의 사례라고 보고 principle/pattern으로 묶었다. 구체 도구를 언급한 경험담의 대상 경계가 달랐다.",
+      "alternative_explanation": "도구 대체와 일반 선택 원리가 실제로 독립된 두 권고였을 수 있으며 요약이 비중을 줄였을 가능성도 있다.",
+      "resolution_note": "후보명은 경직성 때문에 직접 조합했다는 경험 관계를 중심에 두므로 B가 더 직접적이다. §2 mixed의 동급 대안 조건은 이름이 여러 개 있다는 사실만으로 충족되지 않는다.",
+      "evidence_location": "sample/units.json#011-T036-028 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T036-028].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 묶음; §2 principle/mixed; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T039-002",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "Blockqueue는 이름·링크 추천만 남아 있다. A는 큐 질문에 추천되었다는 발화만으로 whole을 읽었고 B는 실제 사용 기능과 범위가 없어 unknown으로 남겼다. S1·form은 모두 unknown이다.",
+      "alternative_explanation": "형태와 기능을 모르는 후보도 추천의 역할은 whole일 수 있다는 역할/충족 분리 규칙을 다르게 적용했을 수 있다.",
+      "resolution_note": "이름 추천이 전체 큐 대체 의도였다고 명시된다면 A가 성립한다. 현재 패킷은 역할을 뒷받침할 별도 사용 문장이 없어 B가 보수적이며 기능 충족이 미확인이라는 이유만으로 B를 정답으로 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T039-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T039-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 역할과 사실 충족 분리; §3 whole/unknown"
+    },
+    {
+      "unit_id": "011-T039-009",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 SQLite 테이블을 사용하는 내장 라이브러리를 대상에 두어 component/library/whole로 읽었다. B는 테이블별 큐를 직접 구현하는 방법을 대상으로 하여 principle/pattern/reference로 읽었다. 실행 대상과 구현 절차의 단위가 달랐다.",
+      "alternative_explanation": "큐 저장층이라는 부품과 그 구성법이 함께 제안된 실제 복합성이 있을 수 있다.",
+      "resolution_note": "candidate는 테이블로 큐 구현이라는 방법을 명명하고 특정 완성 큐 구현체를 제시하지 않으므로 B가 더 직접적이다. 다만 직접 구현 방법을 전체 해결안으로 지시한 경우의 whole/reference 구별은 별도 우선 규칙이 필요하다.",
+      "evidence_location": "sample/units.json#011-T039-009 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T039-009].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 component/principle; §3 whole/reference; §4 library/pattern"
+    },
+    {
+      "unit_id": "011-T041-004",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 여러 목록을 연결한 읽기용 문서로 보아 principle/document를 붙였고 B는 재사용 목록 자료로 보아 component/data를 붙였다. 두 코더는 같은 탐색 자원의 whole 역할에는 동의했다.",
+      "alternative_explanation": "사람이 읽는 큐레이션 문서와 재사용 데이터 목록이라는 두 성격을 자료가 실제로 동시에 가질 수 있다.",
+      "resolution_note": "§4 data는 목록 자료를 포함하지만 document는 분류표·읽기 안내도 포함한다. 목록이 언제 읽기 문서에서 data가 되는지 우선 규칙이 없어 단일 해소를 보류한다. 명시적으로 목록인 점만 보면 B의 직접 문구 근거가 더 많다.",
+      "evidence_location": "sample/units.json#011-T041-004 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-004].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 component/principle; §4 document/data"
+    },
+    {
+      "unit_id": "011-T041-005",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "awesome-selfhosted는 링크 추천이라는 설명만 남아 있는데 A와 B 모두 목록이라는 이름 지식을 보충했다. 그 다음 A는 읽기 문서, B는 데이터 목록으로 분류해 S1/form이 갈렸다.",
+      "alternative_explanation": "실제 주된 원인은 §4의 읽기용 목록/document와 재사용 목록/data 경계 중첩일 수 있다.",
+      "resolution_note": "문제 정보를 S1/form에 끌어오지 않는 규칙을 엄격히 따르면 목록 실체를 직접 설명하는 입력이 먼저 필요하다. 목록임을 허용한 뒤에도 document/data 우선 규칙이 부족하므로 어느 코딩도 확정 정답으로 보지 않는다.",
+      "evidence_location": "sample/units.json#011-T041-005 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-005].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 정보만으로 형태 판단; §4 document/data/unknown"
+    },
+    {
+      "unit_id": "011-T041-008",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 풍부한 대안 목록 전체를 제공한다는 증거가 없어 뉴스레터를 part로 보았다. B는 탐색 정보원을 선택하는 질문에서 주간 추천 뉴스레터도 전체 대안이라고 보았다. 소스의 충실성과 제안 범위가 혼합되었다.",
+      "alternative_explanation": "원 응답이 뉴스레터를 보조 정보원으로만 추천했는지 요약에서 빠진 문맥 부족일 수 있다.",
+      "resolution_note": "탐색원 대안으로 제시된 것이 맞다면 최신성·풍부함의 실제 충족을 whole의 전제조건으로 삼지 않는 B가 §1·§3에 더 부합한다. 부수 자료로만 지정되었다는 정보는 현재 없다.",
+      "evidence_location": "sample/units.json#011-T041-008 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-008].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 선택 범위와 요구 충족 분리; §3 whole/part"
+    },
+    {
+      "unit_id": "011-T041-009",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "입력은 뉴스레터와 GitHub 목록 두 자원을 함께 제시한다. A는 둘 다 읽기 문서라는 상위 성격으로 묶었고 B는 뉴스레터=document, 목록=data라는 서로 다른 형태가 공존한다고 보았다.",
+      "alternative_explanation": "§4의 목록 자료와 읽기용 문서 경계가 중첩되어 형태를 과도하게 나눈 것일 수도 있다.",
+      "resolution_note": "복수 자원은 실제로 있고 어느 것이 주 대상이라는 설명은 없다. 목록을 data로 읽는 코드북 문구를 우선하면 B의 mixed가 가능하지만, 목록/document 경계를 먼저 해결하지 않으면 이 단위의 mixed 여부도 확정할 수 없다.",
+      "evidence_location": "sample/units.json#011-T041-009 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-009].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 동급 후보 묶음; §2 mixed; §4 document/data/mixed"
+    },
+    {
+      "unit_id": "011-T041-010",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 Openalternatives 이름에서 대안 탐색 웹앱을 읽었다. B는 이름만으로 어느 대상인지와 사이트·목록 형태를 특정할 수 없다고 하여 모두 unknown으로 남겼다.",
+      "alternative_explanation": "이름 추천을 문제 전체에 대한 암묵적 대안으로 인정하는지의 화용적 경계 차이도 있다.",
+      "resolution_note": "후보 설명에 실제 기능·형태가 없으므로 B의 unknown이 §1 입력 제한에 더 보수적이다. 다른 행에 나오는 비슷한 이름과 동일 대상이라고 추정하거나 실체를 보충하지 않는다.",
+      "evidence_location": "sample/units.json#011-T041-010 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-010].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 입력 제한; §2 unknown; §3 unknown; §4 unknown"
+    },
+    {
+      "unit_id": "011-T041-011",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 서브레딧 소개 링크의 목록을 읽기용 문서로, B는 연결된 목록 자체를 재사용 데이터로 보았다. 위치 안내를 별도 방법으로 볼지는 다르지 않고 document/data의 자료 성격만 갈렸다.",
+      "alternative_explanation": "링크가 가리키는 실제 자료가 설명문인지 항목 모음인지 빠진 문맥 부족일 수도 있다.",
+      "resolution_note": "패킷이 기존 목록이라고 명시하므로 data를 포함하는 §4 문구는 B를 지지한다. 그러나 인간 탐색용 문서 목록과 data를 가르는 조건이 없어 A를 단순 오독으로 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T041-011 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T041-011].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 component/principle; §4 document/data"
+    },
+    {
+      "unit_id": "011-T047-001",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 Rabbit/Kafka/Redis 경험이라는 구체 후보와 환경에 따른 관리형 선택 원칙을 동급으로 보아 mixed를 썼다. B는 이 이름들이 메시지 유형·환경에 맞춰 고르는 방법의 사례라고 읽었다.",
+      "alternative_explanation": "관리형 서비스 추천과 일반 선택 원리가 실제로 독립된 권고였을 수 있으며 요약이 원래 비중을 보존하지 않았을 수 있다.",
+      "resolution_note": "후보 설명은 환경에 따라 선택이라는 관계를 중심에 두므로 B의 principle/reference/pattern이 더 직접적이다. 특정 실행물과 사용 설명의 병기만으로 동급 mixed를 인정하지 않는다는 원칙을 적용할 여지가 크다.",
+      "evidence_location": "sample/units.json#011-T047-001 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-001].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/mixed; §3 reference/mixed; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T047-005",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 NATS를 단순하다고 보는 전제의 비판을 설계 선택 조언으로, B는 질문의 단순함·복잡함 비교축을 교정하는 기준으로 보았다. 주의점과 비교 정보의 경계가 겹쳤다.",
+      "alternative_explanation": "원 응답이 구체적 기준을 제안하지 않고 전제에 반응만 했다면 reference나 unknown도 검토할 문맥 부족이 있다.",
+      "resolution_note": "문제의 핵심이 도구 복잡도 비교이고 후보가 그 비교 전제를 직접 교정하므로 B의 comparison이 가능한 근거를 가진다. 단순 이의 제기와 재사용 판단 규칙의 경계를 패킷만으로 완전히 해소할 수 없다.",
+      "evidence_location": "sample/units.json#011-T047-005 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-005].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/unknown; §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T047-013",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 모듈형 앱 설계와 내장 NATS를 복수 대상으로 세고 현재 통신의 일부 역할로 보았다. B는 향후 분산을 준비하는 단계적 설계 관계를 주 대상으로 보아 principle/reference/pattern을 택했다.",
+      "alternative_explanation": "현재 통신 기능과 미래 구조 변경이라는 두 시점의 기여가 실제로 함께 제안된 다의성일 수도 있다.",
+      "resolution_note": "후보는 특정 실행 배포물보다 구조화한 단일 앱에서 향후 분산으로 옮기는 절차를 설명하므로 B가 더 직접적이다. 현재 통신의 어느 일부를 맡는다는 명시가 없어 A의 part 범위는 추가 확인이 필요하다.",
+      "evidence_location": "sample/units.json#011-T047-013 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-013].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/mixed; §3 part/reference; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T047-018",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 기존 Postgres의 테이블·확장 부분을 삽입 라이브러리로 보았다. B는 구체 확장 이름이 없이 기존 저장소로 큐를 구현하는 조건부 방법이므로 principle/pattern/reference로 보았다.",
+      "alternative_explanation": "실제 응답에 특정 확장 구현체가 있었으나 요약에서 빠졌다면 문맥 부족이 원인일 수 있다.",
+      "resolution_note": "현재 입력에는 확장 구현체나 링크되는 모듈이 지정되지 않고 테이블·확장으로 구현하라는 절차가 명시된다. 따라서 B가 더 직접적이며 테이블이라는 이름만으로 library 형태를 확정할 근거는 약하다.",
+      "evidence_location": "sample/units.json#011-T047-018 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-018].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 component/principle; §3 whole/reference; §4 library/pattern"
+    },
+    {
+      "unit_id": "011-T047-022",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 MQTT 호환 NATS로 이전한 경험을 NATS 서비스의 전체 후보 추천으로 읽었다. B는 호환성이 시스템 전환을 돕는 관계를 경험에서 가져오는 설계 참고로 읽었다. 언급된 제품과 경험의 교훈 중 대상이 달랐다.",
+      "alternative_explanation": "단순 회사 경험담에 재사용 조언이 있었는지와 명시적 도입 권유가 있었는지 요약이 생략한 문맥 부족일 수 있다.",
+      "resolution_note": "패킷은 호환성을 활용한 이전 경험을 주어로 삼으므로 B의 reference가 더 직접적이지만 구체 전이 관계는 압축되어 있다. 제품 전체 추천을 뜻하는 문구가 없어 A의 whole을 확정하기 어렵다.",
+      "evidence_location": "sample/units.json#011-T047-022 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-022].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 product/principle; §3 whole/reference; §4 service/pattern"
+    },
+    {
+      "unit_id": "011-T047-023",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 단계별 DB·관리형·브로커 후보와 성장 단계 원리를 동급으로 보았다. B는 후보 이름들이 MVP·성장·대규모 단계에 맞춰 복잡도를 조절하는 방법을 설명한다고 보았다. 조건부 선택표를 후보 묶음으로 셀지의 차이다.",
+      "alternative_explanation": "단계마다 실제로 다른 도구를 권하므로 실행 대안 추천과 일반 방법이 동시에 유효한 다의성도 있다.",
+      "resolution_note": "후보 자체가 단계별 선택 경험이라는 관계를 명시하므로 B의 principle/reference가 더 지지된다. mixed를 택하려면 단계별 이름들이 방법의 예를 넘어 독립·동급 권고라는 추가 단서가 필요하다.",
+      "evidence_location": "sample/units.json#011-T047-023 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-023].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/mixed; §3 reference/mixed; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T047-031",
+      "sample": "011",
+      "different_axes": [
+        "S1"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 Redis의 Streams라는 하위 기능 단위를 component로 읽었고 B는 독립 Redis 서버 기능이라는 이유로 product로 보았다. form=service와 whole 기여는 일치하여 부분 기능의 S1 단위만 다르다.",
+      "alternative_explanation": "Streams가 독립 실행 가능한지 패킷에 상세히 없으며 두 코더의 기존 제품 지식 차이가 개입했을 수도 있다.",
+      "resolution_note": "독립 서버를 다른 시스템이 호출한다는 이유로 component로 낮추지 말라는 §2와 양쪽의 service 판단을 따르면 B가 더 일관된다. 서버의 개별 기능을 후보로 특정할 때의 S1 규칙을 보완할 필요는 있다.",
+      "evidence_location": "sample/units.json#011-T047-031 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-031].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 특정 모듈 단위; §2 product/component"
+    },
+    {
+      "unit_id": "011-T047-032",
+      "sample": "011",
+      "different_axes": [
+        "S1"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 PostgreSQL 전체와 다른 pub/sub 기능을 component로 보았다. B는 독립 DB 서버가 제공하는 기능이므로 product라고 했다. 같은 service 형태에 제품 기능 단위와 배포 단위를 다르게 적용했다.",
+      "alternative_explanation": "pub/sub 기능의 실제 제공 방식이 입력에 상세히 없어서 기존 제품 지식으로 서버 경계를 보충한 영향이 있을 수 있다.",
+      "resolution_note": "호출되는 독립 서버를 component로 낮추지 않는 §2는 B를 더 뒷받침한다. 다만 기능 이름을 대상에 붙이면 모듈로 간주할지의 일반 규칙이 충분히 세분되지 않았다.",
+      "evidence_location": "sample/units.json#011-T047-032 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-032].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 상위 제품/모듈; §2 product/component"
+    },
+    {
+      "unit_id": "011-T047-040",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "입력에는 동기 처리부터 검토하는 절차와 필요시 관리형 큐 또는 파일·버킷을 사용하는 구체 대안이 함께 있다. A는 이 기여들을 동급 mixed로 보았고 B는 모두 복잡도를 단계적으로 추가하는 하나의 선택 순서로 보았다.",
+      "alternative_explanation": "조건부 선택 순서를 하나의 방법으로 압축해야 한다는 우선 규칙이 불명확한 경계 정의 문제일 수도 있다.",
+      "resolution_note": "패킷 자체가 절차와 대안을 함께 제시하여 두 읽기가 모두 근거를 가진다. 문장 구조의 먼저/필요하면은 B의 대표 방법 해석을 지지하지만 실행 대안들을 별도 기여로 셀지를 한 단위 진단만으로 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T047-040 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-040].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/mixed; §3 reference/mixed; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T047-045",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 요구·측정 원칙과 Postgres·Rabbit 경험을 서로 다른 형태가 섞인 대상으로 보았다. B는 도구명이 요구 확인과 관측 우선 절차의 사례이므로 principle/pattern이라고 읽었다. S2=reference는 양쪽이 같다.",
+      "alternative_explanation": "Postgres부터 시작하라는 실제 도입 권유가 원칙과 독립되어 있었다면 mixed가 유효할 수 있다.",
+      "resolution_note": "후보는 전달보장·규모를 먼저 확인하고 관측하라는 순서를 강조하므로 B가 주 설명에 더 가깝다. 도구명이 나왔다는 것만으로 동급 실행 후보를 더하는 것은 §2 mixed의 조건보다 넓다.",
+      "evidence_location": "sample/units.json#011-T047-045 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-045].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/mixed; §4 pattern/mixed"
+    },
+    {
+      "unit_id": "011-T047-048",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 작업·잠금·스트림을 구별하는 원리와 NATS/Rabbit/Redis/Kafka 선택을 동급 기여로 보았다. B는 작업 유형을 먼저 구분하고 맞는 도구를 고르는 한 절차로 보았다. 도구명이 예인지 독립 후보인지가 달랐다.",
+      "alternative_explanation": "각 작업 유형에 실제로 별도 도구를 권하는 의사결정표이므로 방법과 대체 후보가 함께 존재하는 다의성도 있다.",
+      "resolution_note": "candidate_description의 작업 큐·스트림 분리와 후보명의 구별하여 선택이라는 구조는 B를 더 직접적으로 지지한다. 여러 제품의 이름만으로 mixed가 되지는 않는다는 §1도 적용된다.",
+      "evidence_location": "sample/units.json#011-T047-048 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-048].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 수와 형태 차이 구별; §2 mixed; §3 reference/mixed"
+    },
+    {
+      "unit_id": "011-T047-054",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 회사의 Kafka 사용 경험을 메시징 전체 후보 제안으로 읽었다. B는 사용했다는 사실만으로 현재 질문에 채택·비교·전이 중 어느 기여를 하려는지 모른다고 보아 S2를 unknown으로 남겼다.",
+      "alternative_explanation": "추천 문맥에서 경험담 자체가 암묵적 채택 제안이라는 화용적 단서를 다르게 인정한 차이일 수 있다.",
+      "resolution_note": "§3은 명시된 사용 방식을 우선하고 §2는 조언 없는 경험담에 주의한다. 재사용 가능한 관계나 권유가 없는 현재 요약에는 B의 S2 unknown이 더 보수적이며 Kafka 형태 자체의 정확성은 이 진단에서 검증하지 않는다.",
+      "evidence_location": "sample/units.json#011-T047-054 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-054].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 principle/unknown의 경험담 경계; §3 unknown"
+    },
+    {
+      "unit_id": "011-T047-060",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "Temporal 링크만 남아 있어 A는 전체 후보 제안이라고 읽고 B는 서비스 간 메시징에서 어떤 기능을 맡기는지 알 수 없다고 보았다. 둘 다 서비스 형태는 기존 이름 지식으로 보충했다.",
+      "alternative_explanation": "역할은 기능 충족과 별개라는 규칙에 따라 링크 추천만으로 whole을 부여할 수 있는지의 경계 차이도 있다.",
+      "resolution_note": "Temporal을 어떤 방식으로 쓰라는 말이 없으므로 B의 기여 unknown이 보수적이다. 원 응답이 기존 큐 전체를 대체하라는 명시 제안이었다면 A가 성립하므로 역할을 확정하려면 사용 문장 복원이 필요하다.",
+      "evidence_location": "sample/units.json#011-T047-060 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-060].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 역할/충족 분리; §3 whole/unknown"
+    },
+    {
+      "unit_id": "011-T047-062",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 복제 부재라는 주의점을 후보 대상으로 보아 principle/reference/pattern을 붙였다. B는 그 주의점이 평가하는 Iggy 제품을 대상으로 보아 product/service 및 comparison을 붙였다. 발화의 내용과 지시 대상이 다르다.",
+      "alternative_explanation": "후속 반박의 부모 맥락이 빠져 실제 권고·대조 관계가 사라진 문맥 부족일 수도 있다.",
+      "resolution_note": "명시적인 후보 결점을 선택 판단에 제시하므로 S2 comparison은 코드북상 지지된다. 그러나 S1/form은 제약 설명 자체를 후보로 볼지 제품을 볼지에 달려 있으며 S1이 역할에서 독립이어야 한다는 규칙만으로 해소되지 않는다.",
+      "evidence_location": "sample/units.json#011-T047-062 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-062].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 대상 정보 경계; §2 product/principle; §3 reference/comparison"
+    },
+    {
+      "unit_id": "011-T047-063",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "복제 개발 중이라는 후속 보충만 있어 A는 실행물·방법 형태를 정하지 못했고 B는 Iggy 제품을 복원하여 service 및 comparison으로 읽었다. A도 참고 정보라는 S2는 인정하여 형태와 기여의 정보량을 다르게 보았다.",
+      "alternative_explanation": "설명 발화와 설명 대상 제품 중 어느 것이 후보인지에 관한 경계 문제일 수도 있다.",
+      "resolution_note": "§1의 후보 설명만으로 형태를 판단하면 Iggy 서비스 형태는 외부 지식에 기대므로 A의 unknown이 보수적이다. S2는 후보 상태 평가의 comparison도 가능하지만 부모 대조·권유 맥락 없이 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T047-063 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T047-063].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 입력 정보 제한; §2 unknown; §3 reference/comparison/unknown"
+    },
+    {
+      "unit_id": "011-T048-002",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 당시 ZFS 증설 제약을 주의점이라는 방법 대상으로 보았다. B는 제약을 가진 ZFS 파일시스템 자체를 대상으로 하여 component/library와 comparison을 붙였다. 사실 설명과 그 설명 대상의 경계가 갈렸다.",
+      "alternative_explanation": "ZFS가 어떤 실행·결합 형태인지 패킷이 직접 설명하지 않아 B의 기존 지식이 차이를 만들었을 수도 있다.",
+      "resolution_note": "저장계층 선택의 제약 정보라는 점에서 S2 comparison은 뒷받침된다. S1/form은 패킷의 대상인 제약 설명을 추상 패턴으로 볼 충분한 재사용 절차도, 파일시스템 모듈 구조를 확정할 설명도 약해 미해소로 남긴다.",
+      "evidence_location": "sample/units.json#011-T048-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T048-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 대상 고정; §2 component/principle; §3 reference/comparison; §4 library/pattern"
+    },
+    {
+      "unit_id": "011-T048-008",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 SnapRAID 실행 도구와 DrivePool 저장 확장을 다른 형태로 보아 mixed로 묶었다. B는 두 독립 관리 앱의 조합으로 보아 product/app을 썼다. 패킷에는 각 도구의 실행·결합 형태가 명시되지 않는다.",
+      "alternative_explanation": "실제 배포물에 사용자 앱과 시스템 확장 모듈이 함께 있어 두 관점이 모두 가능한 다의성일 수도 있다.",
+      "resolution_note": "§1은 같은 형태 후보가 여러 개라는 것만으로 mixed를 금지한다. 그러나 두 도구가 같은 형태인지부터 패킷으로 확인할 수 없으므로 A/B 중 하나를 확정하지 않고 구성요소별 실행 형태 설명이 필요하다.",
+      "evidence_location": "sample/units.json#011-T048-008 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T048-008].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 동일 범주 복수 후보; §2 mixed; §4 app/library/mixed"
+    },
+    {
+      "unit_id": "011-T053-002",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 vue-layerx를 실행 라이브러리로 보았고 B는 README가 설명 경로일 뿐 실제 형태가 요약에 없어 unknown으로 두었다. 전체 대안으로 써 보라는 S2 역할은 양쪽이 동일하다.",
+      "alternative_explanation": "질문이 대체 라이브러리를 요청하므로 추천 후보도 라이브러리라고 볼 수 있다는 문제 정보의 사용 범위 차이일 수 있다.",
+      "resolution_note": "S1/form은 candidate와 candidate_description만 보라는 §1에서 B가 더 엄격하다. README URL이라는 이유로 document로 바꾸지 않은 점은 양쪽 모두 규칙에 맞으며 후보 자체의 배포 형태 한 문장이 추가되면 해소 가능하다.",
+      "evidence_location": "sample/units.json#011-T053-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T053-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 S1/form 입력 한정 및 문서 URL 규칙; §4 library/unknown"
+    },
+    {
+      "unit_id": "011-T054-002",
+      "sample": "011",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "입력은 양자화·작은 도구 집합이라는 설정 조언과 같은 과제에서 풋프린트·저장·BOM 일치를 확인하는 평가 절차를 함께 준다. A는 전체를 운용·평가 방법의 reference로, B는 운용 참고와 검증 기준의 mixed로 보았다.",
+      "alternative_explanation": "reference가 평가 절차를 포함하는지와 comparison이 검증 기준을 포함하는지의 우선 규칙 부족일 수 있다.",
+      "resolution_note": "서로 다른 두 기여는 패킷에 실제 존재한다. §3의 comparison에는 검증 기준도 들어가 B의 분해가 가능하지만 동급인지 보조 절차인지가 명시되지 않아 mixed를 확정하지 않는다.",
+      "evidence_location": "sample/units.json#011-T054-002 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T054-002].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 reference/comparison/mixed"
+    },
+    {
+      "unit_id": "011-T054-003",
+      "sample": "011",
+      "different_axes": [
+        "S1",
+        "S2",
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "실제 다의성",
+      "explanation": "Qwen 변형의 사용 인상과 추론·양자화·도구 수 변경 조언이 함께 있다. A는 모델과 운용 원리를 동급 mixed로 보았고 B는 대체 모델이 주 후보이며 설정은 보조 사용법이라고 보았다.",
+      "alternative_explanation": "제공 모델의 실제 형식과 각 권고의 원문 비중이 생략된 문맥 부족도 크다.",
+      "resolution_note": "질문이 대체 로컬 모델을 요청하므로 B의 주 후보 whole은 뒷받침된다. 하지만 모델 자료=data라는 형태 추론은 직접 제공 형식이 없고 설정 조언의 독립성도 불명확하므로 모든 축을 하나의 정답으로 해소하지 않는다.",
+      "evidence_location": "sample/units.json#011-T054-003 (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=011-T054-003].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §2 component/mixed; §3 whole/mixed; §4 data/mixed"
+    },
+    {
+      "unit_id": "012-bazel-cache",
+      "sample": "012",
+      "different_axes": [
+        "S1"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 Bazel의 원격 캐시 하위 기능을 component로, B는 독립 공유 서비스의 완결 기능을 product로 보았다. 둘 다 service 형태와 설계 관계 reference에 동의하여 S1에서 하위 기능과 실행 단위의 경계만 갈렸다.",
+      "alternative_explanation": "패킷이 특정 캐시 서버 구현체와 원격 캐시 기능 일반을 구별하지 않은 문맥 부족도 있다.",
+      "resolution_note": "원격 endpoint를 독립 실행 기능으로 보는 두 코더의 service 판단과 §2의 서버 규칙을 함께 적용하면 B가 더 일관된다. 어떤 구현체를 후보로 삼았는지 없으므로 독립 배포 단위 자체는 추가 확인 대상이다.",
+      "evidence_location": "sample/units.json#012-bazel-cache (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-bazel-cache].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 후보 단위; §2 product/component"
+    },
+    {
+      "unit_id": "012-origami-solar",
+      "sample": "012",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 항공우주 시제품의 전이 사례를 연구 보고로, B는 시제품을 소개하는 사례 문서로 보았다. 후보 제목과 내용 요약만으로 출판물의 보고 형식을 확정할 수 없다.",
+      "alternative_explanation": "시제품 연구 결과를 소개하는 문서가 research와 document 성격을 실제로 함께 갖는 다의성도 있다.",
+      "resolution_note": "§4 research는 연구 문제·방법·결과를 보고하는 문서 자체를 요구한다. 요약에는 시제품과 수정 사례가 있지만 보고 형식이 없어 B의 document가 더 보수적이며 연구기관 이름만으로 research를 확정할 수 없다.",
+      "evidence_location": "sample/units.json#012-origami-solar (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-origami-solar].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §4 research/document"
+    },
+    {
+      "unit_id": "012-otel-collector",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 기존 Collector의 외부 전송 개선을 Collector 기능으로 전체 맡기는 역할로 읽었다. B는 후보 설명의 수신기 공유·처리기 분리를 기존 두 pipeline 구성 해석의 참고로 읽었다. proposal은 비어 있어 기능 도입과 개념 설명 중 의도가 없다.",
+      "alternative_explanation": "실행 대상 Collector와 그 문서가 설명하는 pipeline 관계를 혼동한 후보 단위 경계 차이일 수도 있다.",
+      "resolution_note": "외부 전송을 맡긴다는 명시 제안이 있으면 A의 whole이 성립하고 실제 queue 충족은 H로 분리해야 한다. 현재 설명은 pipeline 구조에 집중하므로 B의 reference도 근거가 있어 사용 의도 없이 어느 쪽을 확정하지 않는다.",
+      "evidence_location": "sample/units.json#012-otel-collector (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-otel-collector].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 실행 대상/문서 구별 및 역할/충족 분리; §3 whole/reference"
+    },
+    {
+      "unit_id": "012-otel-wal",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 file_storage와 송신 큐를 별도 broker 없는 저장 방식 전체로 읽었다. B는 problem이 별도 broker 금지 하나만 담고 있어 무엇을 달성할 선택 범위인지 알 수 없다고 보았다. 부정 제약에서 목표를 복원했는지가 갈렸다.",
+      "alternative_explanation": "A가 후보 설명의 재시작 재전송 기능을 문제의 생략된 목표로 합리적으로 추론했을 가능성도 있다.",
+      "resolution_note": "§3 unknown은 선택 범위가 없을 때 사용한다. 금지 조건만으로 송신 내구 대기를 사용자가 선택했다고 확정할 수 없으므로 B가 더 직접적이며 상위 질문 전체를 복원하는 것이 최소 추가 확인이다.",
+      "evidence_location": "sample/units.json#012-otel-wal (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-otel-wal].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 선택 범위; §3 whole/unknown"
+    },
+    {
+      "unit_id": "012-paperless-original",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 문서 보관·검색이 결정 이유 탐색의 일부만 채운다고 읽었다. B는 검색 가능한 문서 보관함을 개발 기록 검색 전체의 대안으로 읽었다. 입력에는 어떤 자료 변환과 검색 사용을 맡길지의 proposal이 없다.",
+      "alternative_explanation": "A가 이유 재구성 기능의 실제 미충족을 역할의 part로 읽은 경계 혼합일 수도 있다.",
+      "resolution_note": "전체 검색 도구로 제안된 것이면 B의 whole과 별도 H 평가가 적절하다. 저장·검색 층만 보조한다는 제안이면 A의 part가 적절하므로 기능 설명과 넓은 목표만으로 역할 우열을 확정하지 않는다.",
+      "evidence_location": "sample/units.json#012-paperless-original (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-paperless-original].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 역할과 충족 분리; §3 whole/part"
+    },
+    {
+      "unit_id": "012-pg-wal",
+      "sample": "012",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 PostgreSQL 내구성 하위 시스템을 service 형태로 보았고 B는 호스트 내부 모듈이라는 설명을 따라 library로 보았다. S1 component와 reference 기여는 같아 하위 시스템의 실행 경계를 어디에 두는지가 문제다.",
+      "alternative_explanation": "하위 시스템의 구현·호출 방식이 패킷에 상세히 없어 library와 더 일반적인 internal module 사이 정보 부족이 있을 수 있다.",
+      "resolution_note": "패킷은 DB 내구성 하위 시스템이라고 명시하고 독립 endpoint를 제시하지 않는다. §4의 독립 service 기준보다 B의 호스트 내부 기능 묶음 해석이 더 직접적이지만 실제 라이브러리 API를 검증한 것은 아니다.",
+      "evidence_location": "sample/units.json#012-pg-wal (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-pg-wal].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §4 service/library"
+    },
+    {
+      "unit_id": "012-postgrest",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 일반 REST API를 요청 상태 노출 층으로 연결하여 part를 부여했다. B는 패킷에 접수/완료 상태 모델이나 원요청 상관관계가 없어 그런 기여를 발명할 수 없다고 하여 none을 택했다. 일반 기능에서 문제 기여로 허용하는 추론 폭이 다르다.",
+      "alternative_explanation": "기존 상태 테이블이나 API 설계가 입력에서 빠진 문맥 부족이라면 실제로 part가 가능할 수도 있다.",
+      "resolution_note": "§3은 연결되지 않은 주제 관련성이나 임의 유추를 금지한다. proposal이 없는 현재 패킷에서는 상태 노출이라는 A의 연결을 새로 추가해야 하므로 B의 none이 더 직접적이다. 이것은 PostgREST로 해당 시스템을 만들 수 없다는 일반 판정이 아니다.",
+      "evidence_location": "sample/units.json#012-postgrest (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-postgrest].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §3 part/none/unknown"
+    },
+    {
+      "unit_id": "012-pypi-aiolimiter",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "경계 정의 부족",
+      "explanation": "A는 투입 속도 제한을 작업 투입 제어의 일부로 연결했다. B는 입력률과 대기/진행 중 개수가 다른 양이며 연결 조건이 없다고 하여 none을 택했다. 제어 주제가 비슷한 것을 기능 기여로 셀지의 경계 차이다.",
+      "alternative_explanation": "서비스 시간이나 별도 큐 설계가 제공되면 투입률 제어가 부분 기여할 수 있어 현재 문맥 부족이 원인일 수도 있다.",
+      "resolution_note": "현재 문제의 두 수량은 대기 개수와 처리 중 개수이고 설명은 처리율만 제어한다고 제한한다. 명시적 대체 제안이 없는 패킷에서는 B가 §3의 관계 발명 금지에 더 부합한다. 실패하는 whole 제안의 H 판정과는 다른 경우다.",
+      "evidence_location": "sample/units.json#012-pypi-aiolimiter (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-pypi-aiolimiter].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 역할/충족 분리; §3 part/none"
+    },
+    {
+      "unit_id": "012-pypi-arq",
+      "sample": "012",
+      "different_axes": [
+        "S3",
+        "S3_form"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 asyncio·Redis 작업 큐를 호출하는 라이브러리로, B는 작업 실행 골격을 제공하는 프레임워크로 보았다. B는 실행 골격 판단에 arq 이름 지식이 개입했다고 명시했다.",
+      "alternative_explanation": "실제 작업 큐가 호출 API와 worker 생명주기 모두를 제공해 library/framework 중첩이 있을 가능성도 있다.",
+      "resolution_note": "§4의 framework 기준은 구조·생명주기·제어 흐름인데 요약은 asyncio 처리와 Redis 결합만 말한다. B의 framework는 패킷보다 강한 추론이며 A도 실제 호출 구조를 검증하지 않았으므로 생명주기 설명 추가 전 확정하지 않는다.",
+      "evidence_location": "sample/units.json#012-pypi-arq (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-pypi-arq].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 형태 입력 제한; §4 library/framework/unknown"
+    },
+    {
+      "unit_id": "012-pypi-opentelemetry-exporter-otlp",
+      "sample": "012",
+      "different_axes": [
+        "S2",
+        "S3"
+      ],
+      "primary_type": "문맥 부족",
+      "explanation": "A는 관측 전송 부품이라는 설명에서 전송 경로의 일부로 읽었다. B는 Collector용을 SDK에서 Collector로 보내는 방향으로 해석하고 질문의 Collector 이후 외부 전송과 다르다고 보았다. 방향과 설치 위치가 명시되지 않았다.",
+      "alternative_explanation": "같은 exporter라는 이름을 서로 다른 시스템 경계에 붙인 경계 정의 문제가 중심일 수도 있다.",
+      "resolution_note": "질문은 Collector→backend 구간을 명확히 선택하지만 후보 설명의 Collector용 exporter만으로 방향을 확정할 수 없다. B는 Python 패키지 지식을 보충했음을 밝혔으므로 현재 입력만으로 part/none을 확정하지 않고 송신자·수신자와 실행 위치 명시가 필요하다.",
+      "evidence_location": "sample/units.json#012-pypi-opentelemetry-exporter-otlp (candidate, candidate_description, problem, proposal, configuration); evidence/disagreements.json#rows[unit_id=012-pypi-opentelemetry-exporter-otlp].a/reason,b/reason",
+      "codebook_location": "CODEBOOK.md §1 선택 범위 및 입력 제한; §3 part/none/unknown"
+    }
+  ]
+}
