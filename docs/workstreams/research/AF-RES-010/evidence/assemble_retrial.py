@@ -31,6 +31,9 @@ for filename in ['retrial-root-sources.json', 'retrial-extra-sources.json', 'ret
     d = read(filename)
     sources += d['sources']
     excluded += d.get('excluded', [])
+for s in sources:
+    s['count_group'] = 'q5_candidate_only'
+    s['count_toward_32_body_sources'] = False
 
 judgments = []
 for filename in ['retrial-root-judgments.json', 'retrial-extra-judgments.json', 'retrial-p2-extra-judgments.json']:
