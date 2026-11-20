@@ -104,7 +104,7 @@ T010 A2는 StackShare URL과 프레임워크 설명이 있어 최종판에서 li
 
 JSON에는 같은 답의 `accepted`, `top_voted`, `asker_response` 및 거절 코드 집합의 차이를 모두 남겼다. 후속 댓글을 주 답에 흡수하는 범위도 달라서, 이를 하나의 정답률로 합치지는 않았다.
 
-**T024:** 양쪽은 Args의 필수 별칭 미지원을 H로 코딩했다. 원 near_misses 배열에는 1행이 있으나 `count_as_near_miss=false`다. 명시 조건 위반과 후보 전체를 거절한 관측을 분리한 것이며, blind의 빈 목록과 엄격 양성 판정은 같다. 자기 답의 비교표를 다른 사람의 추천 거절로 바꾸지 않는다. 미확인 기능이나 Unix 가능성도 확인된 H와 다르다. [T024 원문](https://softwarerecs.stackexchange.com/questions/91466/a-cross-platform-c-library-for-parsing-command-line-arguments)
+**T024:** 양쪽은 Args의 필수 별칭 미지원을 H로 코딩했다. 원 near_misses 배열에는 1행이 있으나 `count_as_near_miss=false`다. 명시 조건 위반과 후보 전체를 거절한 관측을 분리한 것이며, blind의 빈 목록과 엄격 양성 판정은 같다. 자기 답의 요구별 체크리스트를 다른 사람의 추천 거절로 바꾸지 않는다. 미확인 기능이나 Unix 가능성도 확인된 H와 다르다. [T024 원문](https://softwarerecs.stackexchange.com/questions/91466/a-cross-platform-c-library-for-parsing-command-line-arguments)
 
 **T048:** 무결성 검사·복구는 OP의 필수조건이다. 후속 설명은 mdadm에 그 기능이 없고 OMV+ZFS에는 있다고 구분한다. 따라서 H를 검토할 대상은 **mdadm 방식**이지 Xubuntu·mergerfs/SnapRAID·mdadm 전체 묶음이 아니다. OP는 감사하며 자료를 읽겠다고 했고 전체 후보의 포기를 명확히 말하지 않는다. 원 `try` 대 blind `thanks` 차이는 튜토리얼 열람 의향을 실제 설치 시도로 보아도 되는지의 차이다. 양쪽 strict near-miss는 0으로 유지된다. 원 요약의 예약 동기화 빈도도 원문은 주 3회가 아닌 **3일마다**다. [T048 원문](https://es.reddit.com/r/DataHoarder/comments/iqzq44/alternative_to_storage_spaces/?sort=old)
 
