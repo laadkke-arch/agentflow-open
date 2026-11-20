@@ -160,7 +160,7 @@ def attach(records):
         yield row
 
 
-def select_matrix(records, key, include_weak=False, verified_then=False, unique=False):
+def select_matrix(records, key, include_weak=False, verified_then=False, unique=False, age_threshold=None):
     usable = []
     seen = set()
     for row in records:
@@ -174,9 +174,12 @@ def select_matrix(records, key, include_weak=False, verified_then=False, unique=
         # The same legal state forms part of the answer key for these rows.
         if key == "license_change" and row["reason_type"] == "라이선스":
             continue
-        signal = row["signals"][key]["positive"]
+        observation = row["signals"][key]
+        signal = observation["positive"]
         if signal is None:
             continue
+        if age_threshold is not None:
+            signal = observation["raw"]["days"] > age_threshold
         label = POLARITY[verdict] or (include_weak and verdict == "약화")
         signature = (row["candidate"].casefold(), label, signal)
         if unique and signature in seen:
@@ -226,6 +229,8 @@ def export(records):
               "deduplicated": select_matrix(records, key, unique=True)}
         for key, name in SIGNALS.items()
     }
+    for key in ("commit_age", "release_age"):
+        result[key]["strict_730_days"] = select_matrix(records, key, age_threshold=730)
     (ROOT / "results" / "confusion.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n"
     )

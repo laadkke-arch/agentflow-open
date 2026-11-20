@@ -36,14 +36,21 @@ def main():
             observed["active_seconds"] = observed["auto_seconds"] + observed["web_then_seconds"]
             bundle.append(observed)
         page = [x for x in review if x["mode"] == mode]
+        calls = [x for x in network if x["mode"] == mode.lower()]
         review_elapsed = None
+        collection_elapsed = None
         if page:
             lo = min(datetime.fromisoformat(x["opened_at_utc"]) for x in page)
             hi = max(datetime.fromisoformat(x["returned_at_utc"]) for x in page)
             review_elapsed = (hi - lo).total_seconds()
+        if calls:
+            lo = min(datetime.fromisoformat(x["started_at_utc"]) for x in calls)
+            hi = max(datetime.fromisoformat(x["finished_at_utc"]) for x in calls)
+            collection_elapsed = (hi - lo).total_seconds()
         measured.extend(bundle)
         summary[mode] = {"n": len(bundle), "manual_reviews": len(page),
                          "review_retrieval_window_seconds": review_elapsed,
+                         "network_collection_window_seconds": collection_elapsed,
                          "known_http_requests": sum(x["known_http_requests"] for x in bundle),
                          "web_page_operations": sum(x["web_page_operations"] for x in bundle),
                          "metadata_pages_parsed": sum(x["metadata_pages_parsed"] for x in bundle),

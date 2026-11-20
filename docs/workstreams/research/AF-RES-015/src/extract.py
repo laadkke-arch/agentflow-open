@@ -57,6 +57,8 @@ def read_annotations():
 def main():
     cases = upstream("CASES.json")["cases"]
     inventory = {a["analysis_id"]: (c, a) for c in cases for a in c["answers"]}
+    linked = dict(line.split("|", 1) for line in (ROOT / "data" / "linked-answers.txt").read_text().splitlines()
+                  if line and not line.startswith("#"))
     records, extracted = [], set()
 
     for ref, candidate, reason_type, key, issued, locator, target, urls in read_annotations():
@@ -69,7 +71,12 @@ def main():
             not answer.get("candidate") or normalize(str(answer["candidate"])) == normalize(candidate)
         ):
             original = posted[0]
-        url = urls[0] if urls and urls[0] else original
+        recorded_link = linked.get(f"{ref}/{key}")
+        if recorded_link and recorded_link not in posted:
+            raise ValueError(f"Reviewed direct link missing from fixed answer {ref}")
+        explicit = urls[0] if urls and urls[0] else None
+        url = explicit or recorded_link or original
+        url_origin = ("원문 지정" if explicit else "011 답 직접 링크" if url in posted else "011 연결" if url else None)
         basis = "원문" if locator.startswith(("L", "본문", "댓글")) else "고정 입력 답별 요약"
         source_locator = str(answer.get("id_or_permalink") or answer.get("id") or "")
         original_post = case["url"]
@@ -86,7 +93,7 @@ def main():
             evidence["fixed_post_id"] = source_locator
         row = {
             "reason_id": f"{ref}/{key}", "answer_ref": ref, "candidate": candidate,
-            "url": url, "url_origin": ("원문 지정" if urls and urls[0] else "011 연결" if url else None),
+            "url": url, "url_origin": url_origin,
             "answer_date": issued or None, "reason_type": reason_type,
             "reason_target": target, "evidence_locator": evidence, "predicate": key,
             "now_verdict": None, "now_evidence_url": None, "now_checked_at_utc": None,
@@ -96,7 +103,7 @@ def main():
         records.append(row)
 
     with (ROOT / "results" / "answer-coverage.csv").open("w", newline="") as stream:
-        writer = csv.writer(stream)
+        writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(("answer_ref", "thread_url", "thread_platform", "upstream_form", "status"))
         for ref, (case, answer) in inventory.items():
             if ref in extracted:
