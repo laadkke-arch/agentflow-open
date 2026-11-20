@@ -1,0 +1,381 @@
+{
+  "case_id": "C05",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C05.md"
+  ],
+  "started_at_utc": "2026-11-20 12:32:07 UTC",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "\"Kubernetes\" \"event\" \"token bucket\" \"client-go\" -site:github.com/kubernetes/enhancements -site:github.com/kubernetes/community -site:github.com/kubernetes/design-proposals-archive",
+      "at_utc": "2026-11-20 12:32:24 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned client-go package documentation, actual code on a Google Git mirror, and a later third-party aggregation article; no proposal was opened."
+    },
+    {
+      "q": "\"RFC 5424\" structured data timestamp event message",
+      "at_utc": "2026-11-20 12:32:24 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned RFC 5424 at IETF and RFC Editor, including its March 2009 publication date."
+    },
+    {
+      "q": "\"rsyslog\" \"RepeatedMsgReduction\" rate limiting",
+      "at_utc": "2026-11-20 12:32:24 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned official rsyslog repeated-message documentation, older versioned docs and later source changes."
+    },
+    {
+      "q": "https://grep.app/api/search?q=EventSourceObjectSpamFilter",
+      "at_utc": "2026-11-20 12:32:24 UTC",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated urllib GET succeeded with HTTP 200; 101 code hits, including kubernetes/client-go/tools/record/events_cache.go and event.go. Response excerpt was truncated after 16,000 bytes."
+    },
+    {
+      "q": "site:freedesktop.org/software/systemd \"journal\" \"MESSAGE_ID\" \"_SOURCE_REALTIME_TIMESTAMP\"",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned official versioned systemd journal field documentation and public source."
+    },
+    {
+      "q": "site:logback.qos.ch/manual/appenders.html \"AsyncAppender\" \"neverBlock\"",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned official Logback AsyncAppender documentation and source."
+    },
+    {
+      "q": "site:sre.google \"Handling Overload\" \"criticality\"",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned Google's SRE Handling Overload chapter covering client-side throttling and criticality."
+    },
+    {
+      "q": "site:freedesktop.org \"systemd 234\" \"2017\"",
+      "at_utc": "2026-11-20 12:34:20 UTC",
+      "tool": "web_system2",
+      "result_note": "No systemd 234 release-date result appeared in the returned set."
+    },
+    {
+      "q": "site:logback.qos.ch/news.html \"1.2.3\"",
+      "at_utc": "2026-11-20 12:34:20 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned official Logback news archive with version 1.2.3 release dated 2017-03-30."
+    },
+    {
+      "q": "site:prometheus.io/docs/alerting \"group_by\" \"group_wait\" \"repeat_interval\"",
+      "at_utc": "2026-11-20 12:34:20 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned official Alertmanager configuration documentation covering label grouping and separate initial, change and repeat notification intervals."
+    },
+    {
+      "q": "site:lists.freedesktop.org/archives/systemd-devel \"234\" \"2017\" \"released\"",
+      "at_utc": "2026-11-20 12:34:46 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned an original systemd 234 release announcement mirrored from systemd-devel, dated 2017-07-12, plus unrelated secondary results."
+    },
+    {
+      "q": "site:research.google/pubs/ \"Site Reliability Engineering\" \"2016\"",
+      "at_utc": "2026-11-20 12:35:42 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned the official Google Research bibliographic record dating the original SRE book to 2016, plus other chapters and a later workbook."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=EventSourceObjectSpamFilter",
+      "at_utc": "2026-11-20 12:32:24 UTC",
+      "status": "opened",
+      "sections_read": "Search metadata and first returned code-hit snippets",
+      "confirmed": "Native public code search returned actual Go code hits for per-source/per-object event throttling and correlator options. This endpoint was discovery evidence only, not a verified historical implementation.",
+      "published_or_version": "live search index",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://datatracker.ietf.org/doc/html/rfc5424",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "status": "opened",
+      "sections_read": "Publication metadata, introduction; find reads at 2026-11-20 12:33:35 UTC for TIME-SECFRAC MUST, The MSGID SHOULD, and name-value pairs (sections 6.2.3, 6.2.7, 6.3)",
+      "confirmed": "RFC 5424 separates origin/application/process fields, a message-type identifier and extensible structured parameters from free text; its timestamp syntax permits up to six fractional digits and a time-quality indicator.",
+      "published_or_version": "RFC 5424, March 2009",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://rsyslog-doc-v5.readthedocs.io/en/v5-stable/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "status": "opened",
+      "sections_read": "RepeatedMsgReduction description and example",
+      "confirmed": "Version 5 documentation supports reducing consecutive repeated messages and allows disabling it to log every message. This page does not itself establish the complete modern identity key or rate-limit behavior.",
+      "published_or_version": "v5-stable; page footer 2008–2014",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/kubernetes/client-go/blob/v4.0.0/tools/record/events_cache.go",
+      "at_utc": "2026-11-20 12:32:54 UTC",
+      "status": "blocked",
+      "sections_read": "Fetch error only",
+      "confirmed": "The web opener returned DisabledError for the GitHub blob page; no code was read from this attempt.",
+      "published_or_version": "v4.0.0 requested",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://logback.qos.ch/manual/appenders-async-sift.html",
+      "at_utc": "2026-11-20 12:33:35 UTC",
+      "status": "opened",
+      "sections_read": "AsyncAppender section; find read at 2026-11-20 12:34:20 UTC for AsyncAppender logs",
+      "confirmed": "AsyncAppender has a fixed-size queue, optional lower-priority discarding, and an explicit neverBlock overflow mode. The default can block once full, so merely making event reporting asynchronous does not guarantee isolation.",
+      "published_or_version": "live manual",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://sre.google/sre-book/handling-overload/",
+      "at_utc": "2026-11-20 12:33:35 UTC",
+      "status": "opened",
+      "sections_read": "Client-Side Throttling, Criticality, Deciding to Retry; find read at 2026-11-20 12:34:20 UTC for Client-Side Throttling",
+      "confirmed": "The SRE chapter describes local adaptive rejection based on accepted/attempted request history, criticality-aware shedding, and both per-request and per-client retry budgets. It explains that server-side rejection itself can consume enough resources to overload a backend.",
+      "published_or_version": "First-edition SRE book chapter; book dated 2016 by Google Research, live online copy",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.rsyslog.com/doc/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "at_utc": "2026-11-20 12:33:35 UTC",
+      "status": "opened",
+      "sections_read": "What is a repeated message and Discussion; find read at 2026-11-20 12:34:20 UTC for What is a repeated message",
+      "confirmed": "Current rsyslog identifies duplicates using message, host, process and application, and documents historical over-merging when origin was ignored. It warns that prose-only repeat summaries can break machine analysis.",
+      "published_or_version": "live rsyslog 8 daily stable documentation",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/kubernetes/client-go/v4.0.0/tools/record/events_cache.go",
+      "at_utc": "2026-11-20 12:33:35 UTC",
+      "status": "opened",
+      "sections_read": "Complete source; getEventKey, EventAggregatorByReasonFunc, EventAggregate, eventObserve and NewEventCorrelator",
+      "confirmed": "The v4.0.0 implementation keeps bounded LRU state, groups differing messages by source/object/type/reason and counts duplicate events through patches; its default filter skips nothing. Unlike current search snippets, this version contains no EventSourceObjectSpamFilter, so aggregation alone is not an API request-rate limit.",
+      "published_or_version": "client-go tag v4.0.0",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/systemd/systemd/v234/man/systemd.journal-fields.xml",
+      "at_utc": "2026-11-20 12:33:35 UTC",
+      "status": "opened",
+      "sections_read": "Complete versioned manual source; user fields, trusted fields, object fields and address fields",
+      "confirmed": "The v234 manual separates human-readable MESSAGE from MESSAGE_ID and structured origin/object metadata, and distinguishes source time, receive time, monotonic time and boot identity. Both source and receive timestamps use microseconds.",
+      "published_or_version": "systemd v234, released 2017-07-12 per original announcement",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://pkg.go.dev/k8s.io/client-go@v4.0.0+incompatible/tools/record",
+      "at_utc": "2026-11-20 12:34:20 UTC",
+      "status": "blocked",
+      "sections_read": "Fetch error only",
+      "confirmed": "The web opener reported that this versioned pkg.go.dev URL was inaccessible; no package date was verified.",
+      "published_or_version": "v4.0.0+incompatible requested",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://prometheus.io/docs/alerting/latest/configuration/",
+      "at_utc": "2026-11-20 12:34:46 UTC",
+      "status": "opened",
+      "sections_read": "Route grouping, group_wait, group_interval and repeat_interval; find read at 2026-11-20 12:35:20 UTC for How long to wait before sending the first notification",
+      "confirmed": "Alertmanager groups alerts by selected labels and separates the delay before first notification, cadence for group changes, and repeat notification interval. The documentation explicitly notes that increasing the first delay can hide short-lived alerts.",
+      "published_or_version": "live latest documentation",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://logback.qos.ch/news-archive.html",
+      "at_utc": "2026-11-20 12:34:46 UTC",
+      "status": "opened",
+      "sections_read": "Version 1.2.3 release entry; find read at 2026-11-20 12:35:20 UTC for 2017-03-30",
+      "confirmed": "The relevant historical release entry dates Logback 1.2.3 to 2017-03-30. This dates the independently opened v_1.2.3 implementation, rather than assuming the entire live manual existed then.",
+      "published_or_version": "live archive with dated release entries",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://sre.google/books/",
+      "at_utc": "2026-11-20 12:34:46 UTC",
+      "status": "opened",
+      "sections_read": "Book list and first-edition description",
+      "confirmed": "The current Google SRE book page links the original online edition and its Google Books record; this live page alone supplies no precise first-edition publication date.",
+      "published_or_version": "live books overview, including newer editions",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/qos-ch/logback/v_1.2.3/logback-core/src/main/java/ch/qos/logback/core/AsyncAppenderBase.java",
+      "at_utc": "2026-11-20 12:34:47 UTC",
+      "status": "opened",
+      "sections_read": "Complete source; queue allocation, append, put, neverBlock and shutdown",
+      "confirmed": "Version 1.2.3 uses a fixed-size ArrayBlockingQueue; neverBlock selects a nonblocking offer, otherwise the caller waits for capacity, and the worker has a configurable maximum shutdown flush time.",
+      "published_or_version": "Logback v_1.2.3",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://api.github.com/repos/kubernetes/client-go/releases/tags/v4.0.0",
+      "at_utc": "2026-11-20 12:34:47 UTC",
+      "status": "not_found",
+      "sections_read": "HTTP error only",
+      "confirmed": "The unauthenticated GitHub releases API returned HTTP 404, so this request did not verify the v4.0.0 date.",
+      "published_or_version": "v4.0.0 release metadata requested",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.mail-archive.com/systemd-devel%40lists.freedesktop.org/msg38852.html",
+      "at_utc": "2026-11-20 12:35:20 UTC",
+      "status": "opened",
+      "sections_read": "Original release announcement header, release link and change list",
+      "confirmed": "The systemd 234 release announcement is dated 2017-07-12 and links the v234 release, establishing availability before the cutoff for the opened v234 journal-field source.",
+      "published_or_version": "Original announcement 2017-07-12, mirrored from systemd-devel",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://books.google.com/books?id=81UrjwEACAAJ",
+      "at_utc": "2026-11-20 12:35:20 UTC",
+      "status": "blocked",
+      "sections_read": "Fetch error only",
+      "confirmed": "The Google Books link redirected to a country-specific URL that the opener could not access; this attempt did not verify the first edition's date.",
+      "published_or_version": "first-edition book record requested",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://research.google/pubs/site-reliability-engineering-how-google-runs-production-systems/",
+      "at_utc": "2026-11-20 12:35:44 UTC",
+      "status": "opened",
+      "sections_read": "Book title, publisher/year and abstract",
+      "confirmed": "Google Research's bibliographic record identifies the original Site Reliability Engineering book as an O'Reilly publication from 2016, supporting pre-cutoff availability of the first-edition overload chapter.",
+      "published_or_version": "Original book, 2016",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Google SRE client-side adaptive throttling and retry budgets",
+      "url": "https://sre.google/sre-book/handling-overload/",
+      "reason": "Client-side rejection based on recent backend acceptance, combined with retry budgets and criticality-aware shedding, could reduce event traffic before it consumes API-server resources during an overload.",
+      "application_scope": "Event producer transport, local request admission, retry policy and prioritization of diagnostic traffic.",
+      "constraints_or_caveat": "This is a pattern to adapt, not a Kubernetes event component; sparse clients have weak feedback, reaction is delayed, and an independent hard local ceiling plus a developer-visible loss indicator would still be needed.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The original book is dated 2016 by the opened Google Research record: https://research.google/pubs/site-reliability-engineering-how-google-runs-production-systems/ ; the first-edition chapter was separately opened.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "Logback 1.2.3 AsyncAppenderBase bounded queue and nonblocking overflow",
+      "url": "https://raw.githubusercontent.com/qos-ch/logback/v_1.2.3/logback-core/src/main/java/ch/qos/logback/core/AsyncAppenderBase.java",
+      "reason": "A bounded asynchronous queue with an explicit nonblocking overflow path provides a concrete model for preventing event publication from blocking scheduler or controller work or consuming unbounded memory.",
+      "application_scope": "Producer-side buffer, worker handoff, shutdown behavior and overflow contract.",
+      "constraints_or_caveat": "The Java implementation is a mechanism reference for a Go system; its default blocks on a full queue, and indiscriminate dropping could hide the first actionable failure, so the adaptation needs explicit loss reporting and a policy for retaining representative diagnostics.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened source is tag v_1.2.3; https://logback.qos.ch/news-archive.html has the dated 2017-03-30 release entry. The live manual was used only as supporting explanation.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "systemd v234 structured journal fields",
+      "url": "https://raw.githubusercontent.com/systemd/systemd/v234/man/systemd.journal-fields.xml",
+      "reason": "Separating human-readable text, stable message-type identity, origin and subject metadata, and microsecond source and receive timestamps gives a concrete vocabulary for unambiguous event semantics and structured filtering.",
+      "application_scope": "Event schema, identity used for grouping, provenance, subject-versus-reporter distinction and timestamp interpretation.",
+      "constraints_or_caveat": "Journal metadata often relies on a local privileged collector and must be translated to Kubernetes object UIDs and authenticated reporters; monotonic time is useful only with its clock or boot identity, and adopting these fields does not require moving persistence to journald.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened v234 manual source and original release announcement dated 2017-07-12: https://www.mail-archive.com/systemd-devel%40lists.freedesktop.org/msg38852.html .",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "RFC 5424 structured event-message semantics and fractional timestamps",
+      "url": "https://datatracker.ietf.org/doc/html/rfc5424",
+      "reason": "RFC 5424 supplies a published model for keeping message type and structured parameters separate from display text while representing timestamps with fractional seconds and explicit time-quality information.",
+      "application_scope": "Event field definitions, parameter-aware deduplication keys and timestamp precision.",
+      "constraints_or_caveat": "The RFC does not define Kubernetes grouping, indexes or event-delivery guarantees; identical type identifiers do not make all parameter values interchangeable, and timestamp precision does not establish clock accuracy or total order.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "RFC 5424 is explicitly dated March 2009; sections 6.2.3, 6.2.7 and 6.3 were read.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "client-go v4.0.0 EventCorrelator and EventAggregator",
+      "url": "https://raw.githubusercontent.com/kubernetes/client-go/v4.0.0/tools/record/events_cache.go",
+      "reason": "The existing correlator supplies directly relevant code for bounded LRU tracking, event identity, repeated-event counts and aggregation of messages sharing a source, object, type and reason.",
+      "application_scope": "Producer-side aggregation and duplicate counting, with existing Kubernetes event patch behavior as an implementation starting point.",
+      "constraints_or_caveat": "The inspected version's default filter drops no events, and duplicate counting still creates updates, so it is not a write-rate bound; grouping distinct messages can erase distinctions and LRU eviction can split a series. The release date of this tag was not verified.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Versioned v4.0.0 source was opened successfully, but the versioned package page was inaccessible and the GitHub release metadata request returned 404; no pre-cutoff date is asserted.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "Prometheus Alertmanager label grouping and separate notification intervals",
+      "url": "https://prometheus.io/docs/alerting/latest/configuration/",
+      "reason": "Explicit label-based grouping with separate first-notification, group-update and repeat intervals offers a model for publishing bounded event-series summaries whose grouping criteria remain inspectable.",
+      "application_scope": "Coalescing policy, first-occurrence latency and repeat-summary cadence; selected labels suggest explicit queryable grouping dimensions.",
+      "constraints_or_caveat": "Alertmanager handles alert notifications rather than Kubernetes event persistence; only the mechanism should be transferred within the stated boundary, and a long initial delay can conceal short-lived failures while many distinct groups can still overwhelm a global budget.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Only the live latest configuration documentation was verified; no historical version or publication date was established.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 7,
+      "name": "rsyslog repeated-message reduction and its documented failure modes",
+      "url": "https://docs.rsyslog.com/doc/configuration/action/rsconf1_repeatedmsgreduction.html",
+      "reason": "The documented duplicate identity and failures of prose-only repetition summaries provide a concrete check against merging different reporters or making aggregated events impossible for tools to interpret.",
+      "application_scope": "Definition of duplicate identity, representation of repeat counts and preservation of machine-readable diagnostics.",
+      "constraints_or_caveat": "The rsyslog documentation discourages its legacy reduction format; use the lesson to retain structured message identity and counts rather than copying a free-text repetition notice. The current page's exact historical content is unverified.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Current official documentation and a v5-stable page were opened; the latter warns it describes an unreleased 5.10.2 documentation state, so it does not establish a dated released implementation for all current details.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "I found seven public references that can help with this design. They address different parts of the problem: bounding the cost of reporting, preserving meaningful event identity, and making grouped observations understandable. The applications below are design transfers to evaluate, not claims that these approaches have been deployed or validated for this Kubernetes change.\n\n1. **Google SRE client-side adaptive throttling and retry budgets** — [Handling Overload](https://sre.google/sre-book/handling-overload/).\n\n   Client-side rejection based on recent backend acceptance, combined with retry budgets and criticality-aware shedding, could reduce event traffic before it consumes API-server resources during an overload. The useful distinction is that even rejecting an incoming request costs the server resources, so event producers should participate in admission control. Apply the pattern to event requests and their retries, with a separate allowance for essential application diagnostics. Sparse producers have little feedback, and adaptive rejection reacts after overload becomes visible; I would therefore pair it with a hard local ceiling and an explicit indication that observations were omitted. **Date:** the original book is dated 2016 by [Google Research](https://research.google/pubs/site-reliability-engineering-how-google-runs-production-systems/).\n\n2. **Logback 1.2.3 AsyncAppenderBase bounded queue and nonblocking overflow** — [versioned implementation](https://raw.githubusercontent.com/qos-ch/logback/v_1.2.3/logback-core/src/main/java/ch/qos/logback/core/AsyncAppenderBase.java).\n\n   A bounded asynchronous queue with an explicit nonblocking overflow path provides a concrete model for preventing event publication from blocking scheduler or controller work or consuming unbounded memory. This implementation allocates a fixed-size queue and selects a nonblocking offer when neverBlock is enabled; otherwise enqueueing waits for space. Its shutdown also has a bounded flush wait. The mechanism is portable to Go, but the default blocking mode would violate the intended isolation under saturation. A Kubernetes adaptation also needs to retain representative failures and expose dropped-event counts so that an empty event list is not mistaken for an uneventful application. **Date:** the opened source is v_1.2.3, whose [official release entry](https://logback.qos.ch/news-archive.html) is dated 2017-03-30.\n\n3. **systemd v234 structured journal fields** — [versioned field specification](https://raw.githubusercontent.com/systemd/systemd/v234/man/systemd.journal-fields.xml).\n\n   Separating human-readable text, stable message-type identity, origin and subject metadata, and microsecond source and receive timestamps gives a concrete vocabulary for unambiguous event semantics and structured filtering. The specification explicitly treats display text separately from metadata, distinguishes the process reporting a message from the object it concerns, and distinguishes source time, receive time and monotonic time. Transfer those distinctions into Kubernetes object and reporter fields; do not assume that a remotely supplied field has the trust properties of journal metadata collected locally. A monotonic timestamp also requires its clock or boot context. This is a schema reference and does not require changing the event persistence backend. **Date:** the opened v234 specification is tied to the [original 2017-07-12 release announcement](https://www.mail-archive.com/systemd-devel%40lists.freedesktop.org/msg38852.html).\n\n4. **RFC 5424 structured event-message semantics and fractional timestamps** — [The Syslog Protocol](https://datatracker.ietf.org/doc/html/rfc5424).\n\n   RFC 5424 supplies a published model for keeping message type and structured parameters separate from display text while representing timestamps with fractional seconds and explicit time-quality information. Its message type and structured parameters suggest that meaningful differences currently embedded in messages should become fields that can participate in grouping and querying. Its timestamp syntax supports microsecond resolution, while the time-quality concept warns against treating precision as accuracy. The RFC does not supply a Kubernetes deduplication algorithm, index design or delivery guarantee, and a shared message type is not sufficient to prove that two parameterized events mean the same thing. **Date:** March 2009.\n\n5. **client-go v4.0.0 EventCorrelator and EventAggregator** — [versioned implementation](https://raw.githubusercontent.com/kubernetes/client-go/v4.0.0/tools/record/events_cache.go).\n\n   The existing correlator supplies directly relevant code for bounded LRU tracking, event identity, repeated-event counts and aggregation of messages sharing a source, object, type and reason. It is an implementation starting point for understanding how exact duplicates and similar messages become event updates. The inspected version has an important limit: its default filter skips nothing, and incrementing a repeated event can still result in another API update. Consequently, aggregation does not by itself bound write traffic. Grouping messages that differ can also lose distinctions, and cache eviction can divide one logical series into multiple records. **Date:** unknown; the versioned code was read, but attempts to verify the release date through the package page and GitHub release metadata did not succeed. Current code-search snippets showing a spam filter were not treated as evidence that this version contains it.\n\n6. **Prometheus Alertmanager label grouping and separate notification intervals** — [configuration reference](https://prometheus.io/docs/alerting/latest/configuration/).\n\n   Explicit label-based grouping with separate first-notification, group-update and repeat intervals offers a model for publishing bounded event-series summaries whose grouping criteria remain inspectable. The useful transfer is to define the grouping dimensions and publication cadence separately, preserving an actionable first observation while coalescing repeated observations into later summaries. This would require adaptation: Alertmanager is a notification system, not the existing Kubernetes event store, and using an external persistence service is outside this decision. Long initial waits can conceal short-lived failures, while a large number of unique groups can still exceed a total reporting budget. **Date:** unknown; only the current documentation was verified.\n\n7. **rsyslog repeated-message reduction and its documented failure modes** — [RepeatedMsgReduction](https://docs.rsyslog.com/doc/configuration/action/rsconf1_repeatedmsgreduction.html).\n\n   The documented duplicate identity and failures of prose-only repetition summaries provide a concrete check against merging different reporters or making aggregated events impossible for tools to interpret. The current documentation includes message, host, process and application in duplicate identity and describes problems caused by older behavior that ignored origin. It also warns that a human-oriented repetition notice can break log analysis. For Kubernetes, the transferable lesson is to retain explicit identity, count and observation metadata in an aggregate that clients can query; the legacy free-text reduction format itself is not an appropriate replacement. **Date:** unknown for the current details; the historical v5 documentation opened during verification explicitly warns that it describes an unreleased documentation state.\n\nA practical combination to investigate is a bounded nonblocking producer buffer, local traffic and retry budgets, and structured coalescing keyed by application object, reporter, event type and meaningful parameters. The event API should expose enough identity, time and loss information for an application developer to distinguish a repeated failure from a different failure or an incomplete observation stream. That combination preserves the existing persistence boundary, but its budgets, loss behavior and high-cardinality cases would still need workload-specific validation.\n\nSearch limitations: public unauthenticated grep.app code search succeeded. Several version/date verification attempts were blocked or absent; those are logged rather than inferred. Four candidates have pre-cutoff support, and three retain unknown date status. No target proposal or recognized excluded proposal reference was opened.",
+  "limitations": [
+    "Model pretraining knowledge cannot be erased; memory leakage is not controlled.",
+    "Only BASELINE_RULES.md and cases/prefix/C05.md were read from the local repository before producing this run; no gold, other runs, target documents or repository history were read.",
+    "Native unauthenticated grep.app code search succeeded; no code-through-web fallback was necessary. The initial code-search response was limited to its first 16,000 bytes.",
+    "Four document-open attempts failed or were inaccessible (one GitHub blob page, one versioned pkg.go.dev page, one absent GitHub release record and one Google Books redirect); raw versioned code was independently opened on public raw.githubusercontent.com.",
+    "Current documentation and the client-go tag lacking verified date evidence are marked unknown; post_decision=false with date_status=unknown does not assert pre-cutoff availability.",
+    "Historical rsyslog v5-stable documentation warns that it describes an unreleased 5.10.2 documentation state and was not used to backdate all current behavior.",
+    "Opened-page budget counts 18 document/endpoint open attempts, including the grep.app search endpoint and failed attempts; targeted find operations only revisited already-opened documents.",
+    "Candidates are design-transfer suggestions; no performance experiment or deployment validation was performed."
+  ],
+  "budget": {
+    "search_queries": 12,
+    "opened_pages": 18,
+    "candidate_count": 7
+  },
+  "execution_status": "completed",
+  "ended_at_utc": "2026-11-20 12:37:22 UTC"
+}

@@ -1,0 +1,351 @@
+{
+  "case_id": "C14",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C14.md"
+  ],
+  "started_at_utc": "2026-11-20T12:45:53Z",
+  "ended_at_utc": "2026-11-20T12:49:47Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "site:docs.python.org/release/3.6.3/library/typing.html \"Forward references\"",
+      "tool": "web_system2",
+      "at_utc": "2026-11-20T12:46:13Z",
+      "result_note": "The requested Python 3.6.3 documentation was not returned directly; the combined search produced modern Python typing pages and code, including excluded target-related snippets."
+    },
+    {
+      "q": "site:docs.racket-lang.org/reference/Delayed_Evaluation.html delay force promise",
+      "tool": "web_system2",
+      "at_utc": "2026-11-20T12:46:13Z",
+      "result_note": "Returned Racket delayed-evaluation documentation and SRFI 45, providing the promise-based alternative."
+    },
+    {
+      "q": "site:github.com/python/typing/blob/3.6.2 typing.py _ForwardRef get_type_hints",
+      "tool": "code_through_web",
+      "at_utc": "2026-11-20T12:46:13Z",
+      "result_note": "Code-through-web search returned modern public GitHub typing/cpython files rather than the historical version; no candidate was accepted solely from these snippets."
+    },
+    {
+      "q": "https://grep.app/api/search?q=ForwardRef&filter%5Brepo%5D%5B0%5D=python%2Ftyping",
+      "at_utc": "2026-11-20T12:46:13.982178+00:00",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated HTTP 200 with code-search JSON; requested repository-filter syntax was apparently ignored and response contained broad ForwardRef matches. No candidate selected from truncated response."
+    },
+    {
+      "q": "site:docs.sqlalchemy.org/en/rel_1_1/orm relationship callable string mapper initialization",
+      "at_utc": "2026-11-20T12:47:07Z",
+      "tool": "web_system1",
+      "result_note": "Returned official SQLAlchemy 1.3/1.4 relationship API documentation explaining deferred callable and string resolution, plus later versions; historical source will be checked separately."
+    },
+    {
+      "q": "site:mypy.readthedocs.io/en/v0.550/ stub files runtime",
+      "at_utc": "2026-11-20T12:47:07Z",
+      "tool": "web_system1",
+      "result_note": "Returned current official mypy stub documentation, including separate .pyi interfaces and precedence over implementation files; historical source will be checked separately."
+    },
+    {
+      "q": "https://grep.app/api/search?q=resolveForwardRef&f.repo=angular%2Fangular&f.path=packages%2Fcore%2Fsrc%2Fdi%2Fforward_ref.ts",
+      "at_utc": "2026-11-20T12:47:36.276464+00:00",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated HTTP 200; correctly shaped repository/path filter returned zero hits. Angular versioned code was verified separately through raw.githubusercontent.com."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=ForwardRef&filter%5Brepo%5D%5B0%5D=python%2Ftyping",
+      "at_utc": "2026-11-20T12:46:13.982178+00:00",
+      "status": "opened",
+      "sections_read": "HTTP status and initial response JSON (1,400 bytes)",
+      "confirmed": "The public code-search endpoint was reachable without credentials and returned code hits; repository filtering was ineffective in this request.",
+      "published_or_version": "live API",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.python.org/release/3.6.3/library/typing.html",
+      "at_utc": "2026-11-20T12:46:42Z",
+      "status": "error",
+      "sections_read": "none; web reader error",
+      "confirmed": "The web reader reported that the requested historical documentation URL was inaccessible.",
+      "published_or_version": "3.6.3 requested; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/python/cpython/blob/v3.6.3/Lib/typing.py",
+      "at_utc": "2026-11-20T12:46:42Z",
+      "status": "blocked",
+      "sections_read": "none; DisabledError",
+      "confirmed": "The web reader could not fetch the historical source file.",
+      "published_or_version": "v3.6.3 requested; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://srfi.schemers.org/srfi-45/srfi-45.html",
+      "at_utc": "2026-11-20T12:46:42Z",
+      "status": "opened",
+      "sections_read": "Status; Abstract; Solution; Specification; reference implementation and reentrancy examples",
+      "confirmed": "SRFI 45 defines promises that defer arbitrary expressions until forced, memoize results, and compose lazy steps using iterative forcing. Its example constructs a delayed computation before a later variable definition and forces it afterward.",
+      "published_or_version": "Final 2004-04-05; bug fix 2004-08-04; page modified 2007-01-28",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/angular/angular/blob/4.4.6/packages/core/src/di/forward_ref.ts",
+      "at_utc": "2026-11-20T12:46:42Z",
+      "status": "blocked",
+      "sections_read": "none; DisabledError",
+      "confirmed": "The web reader could not fetch the versioned Angular source file.",
+      "published_or_version": "4.4.6 requested; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.python.org/release/3.6.3/library/typing.html",
+      "at_utc": "2026-11-20T12:47:07.380090+00:00",
+      "status": "opened",
+      "sections_read": "get_type_hints; no_type_check; TYPE_CHECKING; version and last-updated footer",
+      "confirmed": "Python 3.6.3 documents deferred evaluation of string forward references in caller-supplied namespaces and TYPE_CHECKING guards that avoid expensive runtime imports. It separately allows annotations to be designated as non-type metadata.",
+      "published_or_version": "Python 3.6.3; last updated 2017-10-03",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.6.3/Lib/typing.py",
+      "at_utc": "2026-11-20T12:47:07.380685+00:00",
+      "status": "opened",
+      "sections_read": "_ForwardRef initialization and _eval_type; get_type_hints; no_type_check; TYPE_CHECKING assignment",
+      "confirmed": "The implementation compiles strings without evaluating their names, resolves them later using explicit namespaces, and caches some resolutions. Its validator requires type-like results, so it is not directly a general-purpose arbitrary-annotation evaluator.",
+      "published_or_version": "CPython tag v3.6.3; matching documentation dated 2017-10-03",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/angular/angular/4.4.6/packages/core/src/di/forward_ref.ts",
+      "at_utc": "2026-11-20T12:47:07.381283+00:00",
+      "status": "opened",
+      "sections_read": "ForwardRefFn; forwardRef; resolveForwardRef",
+      "confirmed": "Angular marks a zero-argument callback as a forward reference and invokes it when resolution is requested; ordinary values pass through. The function result type is unrestricted, and the code does not memoize callback results.",
+      "published_or_version": "Angular 4.4.6; tagged changelog date 2017-10-18",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://grep.app/api/search?q=resolveForwardRef&f.repo=angular%2Fangular&f.path=packages%2Fcore%2Fsrc%2Fdi%2Fforward_ref.ts",
+      "at_utc": "2026-11-20T12:47:36.276464+00:00",
+      "status": "opened",
+      "sections_read": "Code-search JSON hit count",
+      "confirmed": "The unauthenticated endpoint returned a valid JSON response with zero matching code hits.",
+      "published_or_version": "live API",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/angular/angular/4.4.6/CHANGELOG.md",
+      "at_utc": "2026-11-20T12:47:36.277184+00:00",
+      "status": "opened",
+      "sections_read": "4.4.6 release heading",
+      "confirmed": "The same Angular source tag records version 4.4.6 as released on October 18, 2017.",
+      "published_or_version": "4.4.6; 2017-10-18",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/__init__.py",
+      "at_utc": "2026-11-20T12:47:36.278009+00:00",
+      "status": "opened",
+      "sections_read": "HTTP fetch only; exact-phrase extraction produced no section",
+      "confirmed": "The versioned source URL returned HTTP 200, but no relationship behavior was confirmed from this attempt.",
+      "published_or_version": "SQLAlchemy rel_1_1_15",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/doc/build/changelog/changelog_11.rst",
+      "at_utc": "2026-11-20T12:47:36.279026+00:00",
+      "status": "opened",
+      "sections_read": "1.1.15 release heading",
+      "confirmed": "The tagged changelog records SQLAlchemy 1.1.15 as released on November 3, 2017.",
+      "published_or_version": "1.1.15; 2017-11-03",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/mypy/v0.550/docs/source/stubs.rst",
+      "at_utc": "2026-11-20T12:47:36.280434+00:00",
+      "status": "not_found",
+      "sections_read": "none; HTTP 404",
+      "confirmed": "The guessed historical stub-documentation path did not exist.",
+      "published_or_version": "v0.550 requested; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://pypi.org/pypi/mypy/0.550/json",
+      "at_utc": "2026-11-20T12:47:36.282424+00:00",
+      "status": "opened",
+      "sections_read": "release version and distribution upload times",
+      "confirmed": "PyPI identifies release 0.550 and distribution uploads on November 10, 2017.",
+      "published_or_version": "mypy 0.550; uploads 2017-11-10",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/__init__.py",
+      "at_utc": "2026-11-20T12:48:05.515507+00:00",
+      "status": "opened",
+      "sections_read": "HTTP fetch; search for relationship definition and documentation returned no matching lines",
+      "confirmed": "This source file did not expose the sought relationship implementation or documentation in the selected sections.",
+      "published_or_version": "SQLAlchemy rel_1_1_15; changelog dated 2017-11-03",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://mypy.readthedocs.io/en/v0.550/stubs.html",
+      "at_utc": "2026-11-20T12:48:10.939187+00:00",
+      "status": "blocked",
+      "sections_read": "none; HTTP 403",
+      "confirmed": "The historical mypy stub-documentation URL denied the unauthenticated request.",
+      "published_or_version": "v0.550 requested; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://mypy.readthedocs.io/en/latest/stubs.html",
+      "at_utc": "2026-11-20T12:48:46Z",
+      "status": "opened",
+      "sections_read": "Stub files; Creating a stub; Stub file syntax; current version heading",
+      "confirmed": "Mypy documents a separate .pyi interface file that takes precedence during checking and omits ordinary runtime implementations. This supports a tooling-only alternative, but the live page does not establish availability of these precise documented behaviors before the cutoff.",
+      "published_or_version": "Live mypy 2.5.0 development documentation; exact publication date unknown",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/relationships.py",
+      "at_utc": "2026-11-20T12:48:46.832453+00:00",
+      "status": "opened",
+      "sections_read": "RelationshipProperty callable/string documentation; mapper memoized property; _process_dependent_arguments",
+      "confirmed": "SQLAlchemy accepts callbacks and string references for configuration that needs classes declared later, resolving them when mapping is initialized. Its class registry supplies a lookup namespace, and mapper resolution is memoized.",
+      "published_or_version": "SQLAlchemy rel_1_1_15; tagged changelog release 2017-11-03",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [
+    {
+      "url": "https://github.com/python/cpython/issues/124089",
+      "stage": "snippet",
+      "reason": "Search result explicitly named a later Python annotation proposal (PEP 563), recognizable as related to the problem. Excluded without opening.",
+      "excluded": true
+    },
+    {
+      "url": "https://github.com/python/typing/blob/main/docs/guides/modernizing.rst",
+      "stage": "snippet",
+      "reason": "Search snippet described the later from __future__ import annotations feature; treated as possible target-related exposure and excluded without opening.",
+      "excluded": true
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "CPython 3.6.3 _ForwardRef and get_type_hints",
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.6.3/Lib/typing.py",
+      "reason": "Its existing string-to-code wrapper and explicit namespace resolver provide a concrete component for resolving annotation names after their definitions exist.",
+      "application_scope": "Representation and later resolution of forward references; separation of compilation from evaluation.",
+      "constraints_or_caveat": "Users still need quoted expressions; some compilation cost remains, resolution requires the correct namespace, and its type validator cannot directly serve arbitrary non-type annotation values.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Version v3.6.3 corresponds to opened Python 3.6.3 documentation last updated 2017-10-03: https://docs.python.org/release/3.6.3/library/typing.html",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "SQLAlchemy 1.1.15 deferred relationship arguments",
+      "url": "https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/relationships.py",
+      "reason": "Its delayed callable and registry-backed string resolution show how Python declarations can refer to later-defined classes and compute configuration when a consumer first needs it.",
+      "application_scope": "Initialization lifecycle, lookup namespace, and deferred processing of declaration metadata.",
+      "constraints_or_caveat": "The registry and initialization trigger are ORM-specific; a language-level adaptation must define scope retention and when errors occur, and cannot inherit ORM restrictions on accepted metadata.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Tagged 1.1.15 changelog gives release date 2017-11-03: https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/doc/build/changelog/changelog_11.rst",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "SRFI 45 delay, lazy, and force",
+      "url": "https://srfi.schemers.org/srfi-45/srfi-45.html",
+      "reason": "Its promises defer arbitrary expressions and memoize their results, offering a general annotation-value mechanism that can avoid import-time execution while retaining non-type uses.",
+      "application_scope": "Call-by-need evaluation, caching, reentrancy, and bounded-space composition of delayed computations.",
+      "constraints_or_caveat": "This is a Scheme mechanism to translate, not a Python annotation implementation; captured environments, side-effect timing, cycles, and exception behavior need an explicit Python contract.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The source records final status 2004-04-05, a 2004-08-04 bug fix, and last modification 2007-01-28.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "Angular 4.4.6 forwardRef and resolveForwardRef",
+      "url": "https://raw.githubusercontent.com/angular/angular/4.4.6/packages/core/src/di/forward_ref.ts",
+      "reason": "Its marked zero-argument callback defers reference lookup and its resolver passes ordinary values through, providing a small explicit opt-in pattern for forward references.",
+      "application_scope": "Deferred callback representation and discrimination between delayed and already available values.",
+      "constraints_or_caveat": "It requires explicit wrappers, does not memoize callback results, and only works if resolution happens after the referenced binding is ready; adapting syntax and scope to Python remains work.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened 4.4.6 changelog dates the release 2017-10-18: https://raw.githubusercontent.com/angular/angular/4.4.6/CHANGELOG.md",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Python 3.6.3 TYPE_CHECKING import guards",
+      "url": "https://docs.python.org/release/3.6.3/library/typing.html#typing.TYPE_CHECKING",
+      "reason": "This existing checker-only branch mechanism can keep dependencies needed solely for type descriptions from being imported during ordinary execution.",
+      "application_scope": "Import-cost reduction complementary to delayed or quoted annotation references.",
+      "constraints_or_caveat": "It does not by itself remove quoting or supply runtime annotation values; a later consumer must arrange for missing dependencies to be available, and arbitrary runtime metadata needs its own path.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened Python 3.6.3 documentation states last updated 2017-10-03.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "Mypy .pyi stub files",
+      "url": "https://mypy.readthedocs.io/en/latest/stubs.html",
+      "reason": "Separate type-interface files offer a tooling-only route to keep type descriptions outside executable module bodies while preserving optional checking.",
+      "application_scope": "Alternative storage of static type information outside runtime modules.",
+      "constraints_or_caveat": "Stubs duplicate interfaces and do not provide general runtime annotation metadata; the opened live documentation has unknown historical availability, since attempts to retrieve the 0.550 documentation failed.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live documentation has no verified publication date for the relevant text; PyPI dates mypy 0.550 to 2017-11-10 but that alone does not date this page or establish its behavior.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "Useful existing mechanisms for the Python annotation problem\n\nI found six candidates. Five have versioned or dated evidence before the 2017-12-04 cutoff; the stub-file candidate has only live behavioral documentation with an unverified historical date. These are components and transfer ideas, not claims that any proposal adopted them or that they were proved useful.\n\n1. CPython 3.6.3 _ForwardRef and get_type_hints\nhttps://raw.githubusercontent.com/python/cpython/v3.6.3/Lib/typing.py\nIts existing string-to-code wrapper and explicit namespace resolver provide a concrete component for resolving annotation names after their definitions exist.\nUse it to study representation, namespace selection, and delayed evaluation. It still requires quoted expressions, retains compilation work, and validates results as types; preserving arbitrary annotation values would require a more general evaluation path. The matching 3.6.3 documentation is dated 2017-10-03.\n\n2. SQLAlchemy 1.1.15 deferred relationship arguments\nhttps://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_1_1_15/lib/sqlalchemy/orm/relationships.py\nIts delayed callable and registry-backed string resolution show how Python declarations can refer to later-defined classes and compute configuration when a consumer first needs it.\nThe useful transfer is an explicit resolution lifecycle and namespace. The ORM's registry, accepted values, and initialization rules are domain-specific; Python annotations would need their own scope and error-timing contract. The tagged changelog dates this version to 2017-11-03.\n\n3. SRFI 45 delay, lazy, and force\nhttps://srfi.schemers.org/srfi-45/srfi-45.html\nIts promises defer arbitrary expressions and memoize their results, offering a general annotation-value mechanism that can avoid import-time execution while retaining non-type uses.\nThis is a mechanism to translate from Scheme. Environment lifetime, side effects, cycles, and exceptions need explicit Python semantics; deferred computation also has representation costs. The source records finalization on 2004-04-05 and a 2004-08-04 bug fix.\n\n4. Angular 4.4.6 forwardRef and resolveForwardRef\nhttps://raw.githubusercontent.com/angular/angular/4.4.6/packages/core/src/di/forward_ref.ts\nIts marked zero-argument callback defers reference lookup and its resolver passes ordinary values through, providing a small explicit opt-in pattern for forward references.\nIt offers a concrete callback representation, but requires wrappers and does not memoize results. Lookup must occur after the binding exists, and transferring it into Python requires scope and syntax decisions. The matching changelog dates version 4.4.6 to 2017-10-18.\n\n5. Python 3.6.3 TYPE_CHECKING import guards\nhttps://docs.python.org/release/3.6.3/library/typing.html#typing.TYPE_CHECKING\nThis existing checker-only branch mechanism can keep dependencies needed solely for type descriptions from being imported during ordinary execution.\nIt complements deferred references but does not eliminate quoting or make omitted dependencies available to runtime consumers. Arbitrary runtime annotation metadata still needs its own evaluation path. The versioned documentation was last updated on 2017-10-03.\n\n6. Mypy .pyi stub files\nhttps://mypy.readthedocs.io/en/latest/stubs.html\nSeparate type-interface files offer a tooling-only route to keep type descriptions outside executable module bodies while preserving optional checking.\nThis is a partial alternative: it duplicates interfaces and does not supply arbitrary runtime annotation metadata. Historical behavioral verification is incomplete: the current page was opened, but the attempted 0.550 documentation URLs failed. The 2017-11-10 package release timestamp does not establish the date of the live documentation.\n\nThe central design distinction is between delaying evaluation while retaining runtime metadata and moving static descriptions out of executable code. For either route, optional type checking and arbitrary annotation consumers need separate consideration. No implementation or benchmark was run.\n\nSearch limitations: native unauthenticated grep.app requests returned HTTP 200, but one broad request did not apply its intended repository filter and a second targeted request returned zero hits. Public GitHub code was also searched through the web and versioned raw source was opened directly. Two target-related search snippets were recorded and excluded; no target document was opened. Model pretraining familiarity cannot be erased.",
+  "budget": {
+    "search_queries": 7,
+    "opened_pages": 18,
+    "candidate_count": 6
+  },
+  "limitations": [
+    "Only the assigned baseline rules and C14 prefix were read from the repository; no gold, other runs, repository history, or target proposal document was consulted.",
+    "Search-result snippets included two recognized or suspicious target-related references; these exposures are recorded and excluded rather than treated as clean evidence.",
+    "Model pretraining familiarity with annotation-related designs cannot be erased; memory leakage is not controlled.",
+    "Unauthenticated grep.app returned HTTP 200 twice, but the first request's repository-filter syntax was ineffective and the second returned no hits; native reachability does not imply a useful native code-search result.",
+    "The code_through_web query is explicitly labeled as public code indexed by web search; versioned source verification used direct unauthenticated URLs.",
+    "Failed web-reader attempts, HTTP 403/404 responses, repeated source attempts, and code-search endpoint opens count toward the open budget.",
+    "The live mypy stub documentation was verified, but its availability at the cutoff remains unknown; the old package upload date is not used to backdate that documentation.",
+    "No implementation, import-time benchmark, or compatibility test was performed; applicability is reasoned transfer with stated constraints."
+  ],
+  "execution_status": "completed"
+}

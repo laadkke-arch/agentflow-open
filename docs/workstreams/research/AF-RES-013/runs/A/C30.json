@@ -1,0 +1,490 @@
+{
+  "case_id": "C30",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C30.md"
+  ],
+  "started_at_utc": "2026-11-20 12:48:41 UTC",
+  "ended_at_utc": "2026-11-20 12:53:02 UTC",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "Foundation NSString initWithBytes length encoding embedded null buffer",
+      "at_utc": "2026-11-20 12:48:41 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned primary Apple NSString buffer-length and encoding initializer documentation."
+    },
+    {
+      "q": "Qt QString fromUtf8 size null bytes documentation",
+      "at_utc": "2026-11-20 12:48:41 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned current Qt references and an official archived Qt 4.7.0 QString reference."
+    },
+    {
+      "q": "Rust String from_utf8 Vec u8 str from_utf8 invalid utf8 allocation",
+      "at_utc": "2026-11-20 12:48:41 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned Rust standard-library documentation and indexed public Rust source."
+    },
+    {
+      "q": "https://grep.app/api/search?q=QString%3A%3AfromUtf8",
+      "at_utc": "2026-11-20 12:48:41 UTC",
+      "tool": "grep.app",
+      "result_note": "Attempted this public unauthenticated code-search endpoint using web open; the tool reported that the URL was inaccessible. No native code-search success."
+    },
+    {
+      "q": "site:github.com/rust-lang/rust/blob/ \"from_utf8\" \"vec\"",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "tool": "code_through_web",
+      "result_note": "Fallback through web_system1 returned indexed public Rust string.rs and str/mod.rs source; this was code-through-web, not native code search."
+    },
+    {
+      "q": "site:unicode-org.github.io/icu \"u_strFromUTF8\" \"srcLength\"",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned primary ICU4C ustring.h reference with explicit lengths and strict/replacement conversion APIs."
+    },
+    {
+      "q": "site:boost.org \"to_utf\" \"begin\" \"end\" \"stop\" locale",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned primary Boost.Locale conversion reference with begin/end ranges and conversion policies."
+    },
+    {
+      "q": "site:docs.oracle.com/javase/8/docs/api/java/nio/charset/CharsetDecoder.html decode endOfInput",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "tool": "web_system1",
+      "result_note": "Returned Oracle CharsetDecoder reference describing incremental input, output buffers, endOfInput, and error policies; search metadata reported publication five months ago."
+    },
+    {
+      "q": "site:github.com/nemtrif/utfcpp \"utf8to16\" \"replace_invalid\"",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "tool": "code_through_web",
+      "result_note": "Fallback through web_system2 returned the public UTF8-CPP repository, checked-conversion examples, and indexed unchecked source. The unchecked routines were not selected as a Unicode-safety mechanism."
+    },
+    {
+      "q": "site:pubs.opengroup.org iconv inbytesleft EILSEQ EINVAL",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "tool": "web_system2",
+      "result_note": "No matching Open Group result appeared in the combined returned results. A direct public 2013-edition iconv page attempt was subsequently inaccessible; iconv was not included as a candidate."
+    },
+    {
+      "q": "site:boost.org/doc/libs/1_60_0/ locale charset_handling",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned a Boost 1.60 release page and other Boost documentation, but not the requested archived conversion reference. The direct 1.60 reference attempt failed."
+    },
+    {
+      "q": "site:blog.rust-lang.org \"Rust 1.6\" \"2016\"",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned the dated January 21, 2016 Rust 1.6 announcement. It was not opened; the attempted 1.6 API and source pages were inaccessible, so current implementation evidence was not backdated."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=QString%3A%3AfromUtf8",
+      "at_utc": "2026-11-20 12:48:41 UTC",
+      "status": "error",
+      "sections_read": "Public unauthenticated API open attempt; no results accessible.",
+      "confirmed": "The web tool reported that this endpoint was not accessible; no code-search result body was obtained.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://grep.app/api/search?q=QString%3A%3AfromUtf8"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:)?language=objc",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "status": "blocked",
+      "sections_read": "JavaScript requirement and public Markdown alternate link.",
+      "confirmed": "The HTML response required JavaScript and supplied a Markdown link; the initializer description was not readable in this response.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://developer.apple.com/documentation/foundation/nsstring/init%28bytes%3Alength%3Aencoding%3A%29?language=objc"
+      }
+    },
+    {
+      "url": "https://doc.qt.io/Archives/qt-4.7/qstring.html",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "status": "opened",
+      "sections_read": "Qt 4.7.0 title, QString static member signatures, and detailed-description introduction.",
+      "confirmed": "The archived reference lists fromUtf8, fromUtf16, and fromUcs4 overloads with explicit sizes; QString uses 16-bit units and implicit sharing.",
+      "published_or_version": "Qt 4.7.0 archived reference; no calendar publication date verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://doc.qt.io/Archives/qt-4.7/qstring.html"
+      }
+    },
+    {
+      "url": "https://doc.rust-lang.org/1.6.0/std/string/struct.String.html",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "status": "error",
+      "sections_read": "Historical API documentation open attempt.",
+      "confirmed": "The tool reported the URL inaccessible; no Rust 1.6 String documentation was verified.",
+      "published_or_version": "Requested Rust 1.6.0; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://doc.rust-lang.org/1.6.0/std/string/struct.String.html"
+      }
+    },
+    {
+      "url": "https://doc.rust-lang.org/1.6.0/std/str/fn.from_utf8.html",
+      "at_utc": "2026-11-20 12:48:51 UTC",
+      "status": "error",
+      "sections_read": "Historical API documentation open attempt.",
+      "confirmed": "The tool reported the URL inaccessible; no Rust 1.6 str::from_utf8 documentation was verified.",
+      "published_or_version": "Requested Rust 1.6.0; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://doc.rust-lang.org/1.6.0/std/str/fn.from_utf8.html"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:).md",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "status": "opened",
+      "sections_read": "Markdown alternate retrieval metadata.",
+      "confirmed": "The public Markdown alternative was retrieved and identified as a 52-line document, but this response did not expose its method-body text.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "click",
+        "ref_id": "turn978506895view0",
+        "id": 0
+      }
+    },
+    {
+      "url": "https://doc.qt.io/Archives/qt-4.7/qstring.html",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "status": "opened",
+      "sections_read": "Find result for QString QString::fromUtf8; neighboring buffer constructors and raw-data APIs.",
+      "confirmed": "The counted UTF-8 overload uses the supplied byte length; the default negative size invokes qstrlen. Neighboring QByteArray-constructor documentation warns of stopping at the first zero byte.",
+      "published_or_version": "Qt 4.7.0 archived reference; no calendar publication date verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "find",
+        "ref_id": "turn978506895view1",
+        "pattern": "QString QString::fromUtf8"
+      }
+    },
+    {
+      "url": "https://doc.qt.io/Archives/qt-4.7/qstring.html",
+      "at_utc": "2026-11-20 12:49:25 UTC",
+      "status": "opened",
+      "sections_read": "Find result for Copyright.",
+      "confirmed": "The search within this already-opened document found no matching copyright text, so no publication date was established.",
+      "published_or_version": "Qt 4.7.0 archived reference; no calendar publication date verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "find",
+        "ref_id": "turn978506895view1",
+        "pattern": "Copyright"
+      }
+    },
+    {
+      "url": "https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ustring_8h.html",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "opened",
+      "sections_read": "ICU4C 79 ustring.h introduction and Unicode C-function table.",
+      "confirmed": "This is the primary ICU C Unicode-string reference; the initial returned excerpt exposed buffer and length-oriented APIs.",
+      "published_or_version": "Live ICU4C 79 development reference",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ustring_8h.html"
+      }
+    },
+    {
+      "url": "https://www.boost.org/doc/libs/1_60_0/libs/locale/doc/html/group__Charset.html",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "error",
+      "sections_read": "Archived Boost.Locale reference open attempt.",
+      "confirmed": "The tool reported this versioned URL inaccessible, preventing verification against that historical release.",
+      "published_or_version": "Requested Boost 1.60.0; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://www.boost.org/doc/libs/1_60_0/libs/locale/doc/html/group__Charset.html"
+      }
+    },
+    {
+      "url": "https://docs.oracle.com/javase/8/docs/api/java/nio/charset/CharsetDecoder.html",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "opened",
+      "sections_read": "Class introduction, decoding lifecycle, malformed/unmappable-input policies, and method summary.",
+      "confirmed": "A decoder consumes byte buffers incrementally into character buffers, reports input/output exhaustion, and distinguishes the final input from intermediate chunks. Error handling defaults to reporting and can be changed to replacement or ignoring.",
+      "published_or_version": "Java SE 8 live reference; search metadata reported Published: 5 months ago",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://docs.oracle.com/javase/8/docs/api/java/nio/charset/CharsetDecoder.html"
+      }
+    },
+    {
+      "url": "https://github.com/rust-lang/rust/blob/1.6.0/src/libcollections/string.rs",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "blocked",
+      "sections_read": "Historical public-source open attempt.",
+      "confirmed": "The tool failed with DisabledError; no 1.6.0 implementation content was obtained.",
+      "published_or_version": "Requested Rust 1.6.0 source tag; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://github.com/rust-lang/rust/blob/1.6.0/src/libcollections/string.rs"
+      }
+    },
+    {
+      "url": "https://github.com/nemtrif/utfcpp",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "opened",
+      "sections_read": "Public repository README introduction, reference/install sections, and beginning of conversion example.",
+      "confirmed": "The project is a header-only C++ Unicode library with iterator-based usage and examples for validation and conversion. The README is current and discusses features from newer versions.",
+      "published_or_version": "Live master README; exact revision date not verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://github.com/nemtrif/utfcpp"
+      }
+    },
+    {
+      "url": "https://pubs.opengroup.org/onlinepubs/9699919799.2013edition/functions/iconv.html",
+      "at_utc": "2026-11-20 12:49:51 UTC",
+      "status": "error",
+      "sections_read": "Public 2013-edition iconv specification open attempt.",
+      "confirmed": "The tool reported this page inaccessible; no specification text was verified and iconv was omitted from candidates.",
+      "published_or_version": "Requested 2013-edition specification; content unavailable",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://pubs.opengroup.org/onlinepubs/9699919799.2013edition/functions/iconv.html"
+      }
+    },
+    {
+      "url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:).md",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "Markdown lines 0-20: availability and symbol metadata.",
+      "confirmed": "The returned excerpt identifies a Foundation initializer and platform availability, including macOS 10.0.0. It still does not expose the behavioral description, so functional verification remains incomplete.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:).md",
+        "lineno": 0
+      }
+    },
+    {
+      "url": "https://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "Function-table signatures for to_utf and from_utf.",
+      "confirmed": "The primary reference exposes overloads accepting begin/end pointers, an explicit character-set name, and a conversion-policy argument.",
+      "published_or_version": "Live develop documentation; publication date not verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "https://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html"
+      }
+    },
+    {
+      "url": "https://doc.qt.io/Archives/qt-4.7/qstring.html",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "fromUcs4 and fromUtf8 detailed API text around line 1189.",
+      "confirmed": "The explicit size determines how many UTF-8 bytes are decoded; a negative size falls back to qstrlen. Invalid UTF-8 is replaced or suppressed, which is not strict failure reporting.",
+      "published_or_version": "Qt 4.7.0 archived reference; no calendar publication date verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "turn978506895view1",
+        "lineno": 1189
+      }
+    },
+    {
+      "url": "https://github.com/nemtrif/utfcpp",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "README conversion example around line 270.",
+      "confirmed": "The example passes begin/end iterators and an output back inserter to UTF-8/UTF-16 conversion functions, demonstrating bounded conversion without a NUL-terminated input contract.",
+      "published_or_version": "Live master README; exact revision date not verified",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "open",
+        "ref_id": "turn129785217view4",
+        "lineno": 270
+      }
+    },
+    {
+      "url": "https://github.com/rust-lang/rust/blob/main/library/alloc/src/string.rs",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "Find result for pub fn from_utf8(vec; implementation and neighboring from_utf8_lossy documentation/source.",
+      "confirmed": "The implementation validates the byte vector and moves that same vector into String on success, returning the bytes with an error on failure. The lossy path can return borrowed text for valid input and allocates for repaired text.",
+      "published_or_version": "Live main source; methods carry since-1.0.0 annotations, but no dated snapshot was retrieved",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "find",
+        "ref_id": "turn823100799search0",
+        "pattern": "pub fn from_utf8(vec"
+      }
+    },
+    {
+      "url": "https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ustring_8h.html",
+      "at_utc": "2026-11-20 12:50:19 UTC",
+      "status": "opened",
+      "sections_read": "Find result for u_strFromUTF8; strict conversion and u_strFromUTF8WithSub parameters.",
+      "confirmed": "The strict function reports malformed input, while the substitution variant accepts source length, destination capacity, output length, and replacement policy. Zero destination capacity permits sizing, and a negative input length selects zero termination.",
+      "published_or_version": "Live ICU4C 79 development reference; stable-version annotations only",
+      "date_status": "unknown",
+      "post_decision": false,
+      "request": {
+        "operation": "find",
+        "ref_id": "turn129785217view0",
+        "pattern": "◆ u_strFromUTF8()"
+      }
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Rust String::from_utf8 and from_utf8_lossy",
+      "url": "https://github.com/rust-lang/rust/blob/main/library/alloc/src/string.rs",
+      "reason": "The validated ownership-transfer path and borrow-on-valid lossy path show how a counted byte buffer can become Unicode text without an unconditional full-buffer copy.",
+      "application_scope": "Design precedent for separating validation, owned-buffer adoption, and optional malformed-input repair.",
+      "constraints_or_caveat": "Reusing storage requires a compatible representation, allocator, and ownership contract; transferring arbitrary foreign Swift buffers is not established, and malformed-input repair may allocate.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The opened live source annotates these APIs as stable since 1.0.0, but historical 1.6 documentation/source attempts failed and no dated implementation snapshot was opened.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "ICU u_strFromUTF8 and u_strFromUTF8WithSub",
+      "url": "https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ustring_8h.html",
+      "reason": "These APIs combine explicit input length, caller-provided output capacity, produced length, and strict-or-replacing error policy for bounded bulk Unicode conversion.",
+      "application_scope": "Reusable C conversion component and API model for decoding known-length UTF-8, including interior zero bytes, into UTF-16.",
+      "constraints_or_caveat": "UTF-8-to-UTF-16 conversion requires output storage; preflighting introduces another pass, and the separate lenient routine does not guarantee well-formed output for malformed input.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live ICU4C 79 development documentation exposes stable-version annotations, but no dated historical source was opened.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "Foundation NSString initWithBytes:length:encoding:",
+      "url": "https://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:)?language=objc",
+      "reason": "The counted-buffer initializer is a directly relevant Foundation interface for decoding a specified byte span with a chosen encoding instead of requiring a terminator scan.",
+      "application_scope": "Existing Foundation component and a potential interoperation route for Swift buffer decoding.",
+      "constraints_or_caveat": "Zero-copy behavior and Swift bridging cost were not established; functional semantics came from the primary search snippet, while opened Markdown excerpts exposed only metadata, so verification is incomplete.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live Apple documentation supplies platform availability metadata, but no dated version of the behavior description was verified.",
+      "discovery_catalogue_url": null,
+      "verification_status": "incomplete"
+    },
+    {
+      "rank": 4,
+      "name": "Qt QString explicit-size Unicode constructors",
+      "url": "https://doc.qt.io/Archives/qt-4.7/qstring.html",
+      "reason": "QString::fromUtf8(pointer, size), together with UTF-16 and UCS-4 counterparts, supplies a precedent for using a known input extent instead of scanning for a zero terminator.",
+      "application_scope": "API design for explicit byte/code-unit counts, bulk decoding, and embedded-zero handling.",
+      "constraints_or_caveat": "The archived UTF-8 conversion may replace or suppress invalid input; strict decoding needs a distinct contract, and convenience constructors can have different NUL behavior.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "An official Qt 4.7.0 archived reference was opened, but this run did not verify a calendar date for the archive; the date is conservatively left unknown.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Boost.Locale range-based character-set conversion",
+      "url": "https://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html",
+      "reason": "The begin/end overloads of to_utf and from_utf demonstrate encoding-aware conversion of an exact buffer range without sentinel-based extent discovery.",
+      "application_scope": "C++ conversion component and boundary API model for slices or application-selected termination points.",
+      "constraints_or_caveat": "Set the conversion policy deliberately; output allocation and backend encoding support still matter, and the attempted Boost 1.60 reference could not be verified.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The opened develop reference has no verified publication date, and the requested historical version was inaccessible.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "Java NIO CharsetDecoder incremental decoding",
+      "url": "https://docs.oracle.com/javase/8/docs/api/java/nio/charset/CharsetDecoder.html",
+      "reason": "Its stateful byte-buffer-to-character-buffer protocol offers an alternative that handles chunk boundaries and explicit end-of-input without first assembling one complete source buffer.",
+      "application_scope": "Design precedent for streaming network/file decoding and custom framing, with bounded input/output and explicit malformed-input policy.",
+      "constraints_or_caveat": "The caller must handle underflow, overflow, finalization, and cross-chunk incomplete sequences; final string storage is still needed, and decoder instances are not safe for concurrent sharing.",
+      "evidence_opened": true,
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "The primary search result reported Published: 5 months ago at retrieval on 2026-11-20, after the 2016-02-23 cutoff; the live Java SE 8 page was not treated as a frozen historical snapshot.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 7,
+      "name": "UTF8-CPP checked iterator-range conversion",
+      "url": "https://github.com/nemtrif/utfcpp",
+      "reason": "The library's bounded iterator interfaces provide a mechanism for validating and converting byte/code-unit ranges while allowing the caller to choose the output container.",
+      "application_scope": "Portable conversion component and generic range design, including input streams or ranges whose end is determined by framing logic.",
+      "constraints_or_caveat": "Use checked conversion or an explicit repair policy; unchecked functions are not a Unicode-safety substitute, and output growth must be managed to avoid repeated reallocations.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The opened current README mentions a first release in 2006 but also newer features; that does not date the exact retrieved interfaces or implementation.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "Useful existing mechanisms for constructing Unicode strings from bounded input\n\n1. Rust String::from_utf8 and from_utf8_lossy\nhttps://github.com/rust-lang/rust/blob/main/library/alloc/src/string.rs\nThe validated ownership-transfer path and borrow-on-valid lossy path show how a counted byte buffer can become Unicode text without an unconditional full-buffer copy. The opened implementation validates a Vec<u8> and moves that vector into the String on success; its repair interface can borrow already-valid text. This is a useful model for separating ownership, validation, and repair. Reusing arbitrary foreign buffers still requires compatible storage and ownership rules, and repair can allocate. Date status: unknown; the current source was opened, while attempts to retrieve the historical 1.6 material failed.\n\n2. ICU u_strFromUTF8 and u_strFromUTF8WithSub\nhttps://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ustring_8h.html\nThese APIs combine explicit input length, caller-provided output capacity, produced length, and strict-or-replacing error policy for bounded bulk Unicode conversion. They offer a concrete C component and a design precedent for decoding an exact byte span, including interior zero bytes. Output storage is necessary when changing representation; sizing first can add a pass. The separate lenient converter should not stand in for a well-formedness guarantee. Date status: unknown because the opened evidence is live development documentation.\n\n3. Foundation NSString initWithBytes:length:encoding:\nhttps://developer.apple.com/documentation/foundation/nsstring/init(bytes:length:encoding:)?language=objc\nThe counted-buffer initializer is a directly relevant Foundation interface for decoding a specified byte span with a chosen encoding instead of requiring a terminator scan. It is worth examining as an existing interoperation route for Swift. Its zero-copy behavior and bridging cost were not established. Verification is incomplete: the primary search snippet described the initializer, but the HTML required JavaScript and the returned Markdown excerpts exposed only metadata. Date status: unknown.\n\n4. Qt QString explicit-size Unicode constructors\nhttps://doc.qt.io/Archives/qt-4.7/qstring.html\nQString::fromUtf8(pointer, size), together with UTF-16 and UCS-4 counterparts, supplies a precedent for using a known input extent instead of scanning for a zero terminator. The archived reference explicitly reserves terminator scanning for the default negative size. Its UTF-8 error behavior can replace or suppress invalid input, so strict rejection would require a separate contract. Convenience constructors can also have different NUL behavior. Date status: unknown; the official 4.7.0 archive was opened, but this run did not verify its calendar publication date.\n\n5. Boost.Locale range-based character-set conversion\nhttps://www.boost.org/doc/libs/develop/libs/locale/doc/html/group__Charset.html\nThe begin/end overloads of to_utf and from_utf demonstrate encoding-aware conversion of an exact buffer range without sentinel-based extent discovery. A framing parser could select the range before invoking the decoder; that application is an inference from the interface. Conversion policy, output allocation, and backend encoding support still need deliberate choices. Date status: unknown; the develop reference was opened and the attempted 1.60 reference was inaccessible.\n\n6. Java NIO CharsetDecoder incremental decoding\nhttps://docs.oracle.com/javase/8/docs/api/java/nio/charset/CharsetDecoder.html\nIts stateful byte-buffer-to-character-buffer protocol offers an alternative that handles chunk boundaries and explicit end-of-input without first assembling one complete source buffer. The documented protocol reports input/output exhaustion, supports explicit error policies, and finalizes the decoder after the last chunk. This is a useful design precedent for network or file framing. The caller must manage partial sequences, buffer exhaustion, and finalization; string storage is still required. Date status: post-decision evidence, because the search metadata dated this live reference to five months before retrieval in November 2026.\n\n7. UTF8-CPP checked iterator-range conversion\nhttps://github.com/nemtrif/utfcpp\nThe library's bounded iterator interfaces provide a mechanism for validating and converting byte/code-unit ranges while allowing the caller to choose the output container. The opened example passes begin/end iterators to Unicode conversion routines. Checked conversion and explicit repair policy matter; unchecked entry points do not supply the required safety guarantee. Output capacity should also be managed so that a generic output iterator does not imply repeated reallocations. Date status: unknown; a current README's statement that the project began in 2006 does not establish the age of the exact retrieved interface.\n\nThese are candidate components and design precedents, with no claim of deployment or measured usefulness for this problem. Public web search was performed. The unauthenticated grep.app endpoint attempt failed, and subsequent code discovery used public code indexed by web search; that fallback was code-through-web, not successful native code search. Historical access failures and live-document date uncertainty limit what can be concluded about availability at the 2016-02-23 cutoff.",
+  "budget": {
+    "search_queries": 12,
+    "opened_pages": 20,
+    "candidate_count": 7
+  },
+  "limitations": [
+    "No native public code-search result was obtained: the unauthenticated grep.app endpoint was inaccessible through the web tool. The explicitly identified fallback used web_system1/web_system2 indexes of public GitHub code.",
+    "The 20-page budget is counted conservatively as 20 document retrieval attempts, including failed opens, an alternate-format click, repeated page reads, and four find operations; it is not 20 unique successfully read documents.",
+    "Several historical documentation/source URLs were inaccessible, so current evidence was retained with unknown dates rather than backdated from API age or project history.",
+    "The Java reference's post-decision classification follows the search result's relative publication metadata; it does not imply that the CharsetDecoder mechanism originated after the cutoff.",
+    "Foundation's initializer remains incompletely verified because the opened excerpts showed a JavaScript barrier or metadata; its functional description was available through a primary search snippet.",
+    "No target proposal or excluded proposal-repository page was opened, and no specific target-proposal exposure was recognized in the returned material.",
+    "No implementation, benchmark, or Swift integration test was run; application scopes are design-transfer inferences rather than measured outcomes.",
+    "Model pretraining knowledge cannot be erased; memory leakage is not controlled."
+  ],
+  "execution_status": "completed"
+}

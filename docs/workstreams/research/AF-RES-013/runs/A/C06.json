@@ -1,0 +1,407 @@
+{
+  "case_id": "C06",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "BASELINE_RULES.md",
+    "cases/prefix/C06.md"
+  ],
+  "started_at_utc": "2026-11-20 12:38:04 UTC",
+  "ended_at_utc": "2026-11-20 12:42:19 UTC",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "Docker run --pid container PID 1 process namespace documentation",
+      "at_utc": "2026-11-20 12:38:04 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned official Docker CLI documentation and docker/cli source, plus unrelated mixed search results."
+    },
+    {
+      "q": "OCI runtime specification linux namespaces pid path namespace join",
+      "at_utc": "2026-11-20 12:38:04 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned OCI namespace specifications and public source; first-party specification will be verified separately."
+    },
+    {
+      "q": "rkt pods shared PID namespace processes stage1",
+      "at_utc": "2026-11-20 12:38:04 UTC",
+      "tool": "web_system2",
+      "result_note": "Returned rkt stage1 documentation; also exposed snippets of later Kubernetes process-sharing documentation, which were excluded."
+    },
+    {
+      "q": "https://grep.app/api/search?q=PidMode.IsContainer",
+      "at_utc": "2026-11-20 12:38:20 UTC",
+      "tool": "grep.app",
+      "result_note": "Native unauthenticated grep.app API succeeded (HTTP 200), returning 7 matches including moby/moby daemon/oci_linux.go and daemon/daemon_unix.go; only repository/path metadata retained."
+    },
+    {
+      "q": "site:github.com/opencontainers/runtime-spec/releases/tag/v1.0.0",
+      "at_utc": "2026-11-20 12:38:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found official OCI runtime-spec releases and changelog."
+    },
+    {
+      "q": "site:github.com/rkt/rkt \"architecture.md\" \"PID 1\"",
+      "at_utc": "2026-11-20 12:38:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found rkt architecture in an indexed mirror and first-party rkt README; first-party architecture URL will be opened directly."
+    },
+    {
+      "q": "site:man7.org linux pid_namespaces init signal setns",
+      "at_utc": "2026-11-20 12:38:31 UTC",
+      "tool": "web_system1",
+      "result_note": "Found Linux manual pages explaining PID namespace init lifetime, signal treatment, and setns restrictions."
+    },
+    {
+      "q": "site:linuxcontainers.org lxc.container.conf lxc.namespace.share.pid",
+      "at_utc": "2026-11-20 12:39:14 UTC",
+      "tool": "web_system2",
+      "result_note": "Found LXC namespace-sharing configuration and dated LXC 3.0 release notes from 2018-03-27, after cutoff."
+    },
+    {
+      "q": "site:man7.org nsenter target pid fork namespace",
+      "at_utc": "2026-11-20 12:39:14 UTC",
+      "tool": "web_system2",
+      "result_note": "Found util-linux nsenter documentation, including target PID namespace entry and required fork."
+    },
+    {
+      "q": "site:opencontainers.org 2017 runtime specification 1.0 July",
+      "at_utc": "2026-11-20 12:39:14 UTC",
+      "tool": "web_system2",
+      "result_note": "Found official dated OCI v1.0.0 release notice from 2017-07-19."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=PidMode.IsContainer",
+      "at_utc": "2026-11-20 12:38:20 UTC",
+      "status": "opened",
+      "sections_read": "Public code-search API request",
+      "confirmed": "The API returned 7 public code matches for PidMode.IsContainer, including moby/moby daemon/oci_linux.go and daemon/daemon_unix.go. This was native public code search, not code-through-web fallback.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.docker.com/reference/cli/docker/container/run/",
+      "at_utc": "2026-11-20 12:38:51 UTC",
+      "status": "opened",
+      "sections_read": "PID settings (--pid)",
+      "confirmed": "Docker documents private PID namespaces by default and explicit joining of another container's PID namespace using --pid=container:<name|id>. This gives an implementation precedent for preserving PID 1 unless sharing is enabled.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/opencontainers/runtime-spec/blob/v1.0.0/config-linux.md",
+      "at_utc": "2026-11-20 12:38:51 UTC",
+      "status": "blocked",
+      "sections_read": "Attempted GitHub versioned page",
+      "confirmed": "Public web retrieval returned DisabledError; no document body was available.",
+      "published_or_version": "v1.0.0",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/opencontainers/runtime-spec/releases/tag/v1.0.0",
+      "at_utc": "2026-11-20 12:38:51 UTC",
+      "status": "blocked",
+      "sections_read": "Attempted GitHub versioned page",
+      "confirmed": "Public web retrieval returned DisabledError; no document body was available.",
+      "published_or_version": "v1.0.0",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/moby/moby/blob/v17.12.0-ce/daemon/oci_linux.go",
+      "at_utc": "2026-11-20 12:38:51 UTC",
+      "status": "blocked",
+      "sections_read": "Attempted GitHub versioned page",
+      "confirmed": "Public web retrieval returned DisabledError; no document body was available.",
+      "published_or_version": "v17.12.0-ce",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "at_utc": "2026-11-20 12:39:09 UTC",
+      "status": "opened",
+      "sections_read": "Fetch succeeded but section extraction failed",
+      "confirmed": "The document was fetched, but the section-heading matcher raised StopIteration before returning content; namespace details still require verification.",
+      "published_or_version": "v1.0.0",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/moby/moby/v17.12.0-ce/daemon/oci_linux.go",
+      "at_utc": "2026-11-20 12:39:15 UTC",
+      "status": "opened",
+      "sections_read": "PID namespace branch in OCI configuration generation",
+      "confirmed": "Container PID mode resolves the target container and sets the OCI PID namespace path to /proc/<target PID>/ns/pid; private mode supplies a PID namespace without a path, while host mode removes it. When user namespaces are enabled, the joining container also joins the target user namespace.",
+      "published_or_version": "v17.12.0-ce",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/Documentation/devel/architecture.md",
+      "at_utc": "2026-11-20 12:39:19 UTC",
+      "status": "opened",
+      "sections_read": "Stage1 systemd/nspawn flavor and application launch",
+      "confirmed": "rkt starts a pod-scoped systemd as PID 1 and has it launch the pod applications, retaining application-specific resource isolation. This demonstrates a pod namespace owner distinct from application entrypoints, but its general init behavior is beyond the requested scope.",
+      "published_or_version": "v1.29.0",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "at_utc": "2026-11-20 12:39:23 UTC",
+      "status": "opened",
+      "sections_read": "Namespace init, signal semantics, and /proc mounting",
+      "confirmed": "The namespace's first process receives PID 1; its exit kills the namespace's other processes, and PID 1 has special signal handling. A procfs instance presents the processes visible from the namespace of its mounter, so mount selection must agree with the intended process view.",
+      "published_or_version": "man-pages-4.15; header date verified separately as 2017-11-26",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://opencontainers.org/release-notices/v1-0-0/",
+      "at_utc": "2026-11-20 12:39:28 UTC",
+      "status": "opened",
+      "sections_read": "Release date and specification links",
+      "confirmed": "OCI's official notice states that Runtime Specification v1.0.0 was released on 2017-07-19.",
+      "published_or_version": "2017-07-19 / v1.0.0",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "at_utc": "2026-11-20 12:39:28 UTC",
+      "status": "opened",
+      "sections_read": "Release heading; namespace-sharing section pending",
+      "confirmed": "The release page is explicitly dated 2018-03-27, after the cutoff; namespace-sharing details will be read separately.",
+      "published_or_version": "2018-03-27 / LXC 3.0.0",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html",
+      "at_utc": "2026-11-20 12:39:28 UTC",
+      "status": "opened",
+      "sections_read": "Namespace init, nesting, setns/unshare",
+      "confirmed": "The live Linux manual explains PID 1 lifetime and special signal treatment, visibility to same and ancestor namespaces, and the fact that setns affects subsequently created children. Its live text is not assumed to predate the cutoff.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man1/nsenter.1.html",
+      "at_utc": "2026-11-20 12:39:28 UTC",
+      "status": "opened",
+      "sections_read": "Description, --target and --pid options",
+      "confirmed": "nsenter starts a program in selected namespaces of a target process and forks by default when entering its PID namespace so the executed program receives the intended namespace. It provides a selective operational entry mechanism, not permanent sharing for all applications.",
+      "published_or_version": "live",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "at_utc": "2026-11-20 12:40:15 UTC",
+      "status": "opened",
+      "sections_read": "Second fetch; section matcher failed",
+      "confirmed": "The document was fetched, but the revised heading matcher also failed before returning useful content; namespace text remains unverified.",
+      "published_or_version": "v1.0.0",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "at_utc": "2026-11-20 12:40:19 UTC",
+      "status": "opened",
+      "sections_read": ".TH date header",
+      "confirmed": "The versioned manual header dates this PID namespace reference to 2017-11-26, before the cutoff.",
+      "published_or_version": "man-pages-4.15; manual date 2017-11-26",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/CHANGELOG.md",
+      "at_utc": "2026-11-20 12:40:22 UTC",
+      "status": "opened",
+      "sections_read": "Version headings",
+      "confirmed": "The changelog identifies release 1.29.0 but the extracted headings provide no publication date; the architecture evidence remains date-unknown.",
+      "published_or_version": "v1.29.0",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man2/setns.2",
+      "at_utc": "2026-11-20 12:40:26 UTC",
+      "status": "opened",
+      "sections_read": ".TH date; PID namespace reassociation and user-namespace restrictions",
+      "confirmed": "The 2017-09-15 manual explains that joining a PID namespace changes the namespace of future children rather than that of the caller, with descendant-namespace restrictions. This constrains the order of namespace setup and application process creation.",
+      "published_or_version": "man-pages-4.15; manual date 2017-09-15",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.docker.com/engine/release-notes/17.12/",
+      "at_utc": "2026-11-20 12:40:27 UTC",
+      "status": "opened",
+      "sections_read": "Release headings and dates",
+      "confirmed": "The official release notes date Docker Engine 17.12.0-ce to 2017-12-27, establishing pre-cutoff availability of the matching versioned implementation.",
+      "published_or_version": "17.12.0-ce / 2017-12-27 (page also contains 17.12.1-ce dated 2018-02-27)",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "at_utc": "2026-11-20 12:40:27 UTC",
+      "status": "opened",
+      "sections_read": "Find: lxc.namespace.share (additional document read counted as an open)",
+      "confirmed": "LXC 3.0 exposes namespace clone, keep, and share configuration, including joining another container's PID namespace. It explicitly warns that PID sharing can conflict with system-container init behavior and requires sufficient privilege.",
+      "published_or_version": "2018-03-27 / LXC 3.0.0",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "at_utc": "2026-11-20 12:40:57 UTC",
+      "status": "opened",
+      "sections_read": "Linux namespaces schema and example",
+      "confirmed": "OCI v1.0.0 distinguishes joining an existing namespace via an absolute path, creating a new namespace when the type is listed without a path, and inheriting the runtime namespace when a type is omitted. Its PID-path example provides a portable runtime representation for a pod-wide sharing policy.",
+      "published_or_version": "v1.0.0; official release notice dated 2017-07-19",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [
+    {
+      "url": "https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/",
+      "stage": "snippet",
+      "reason": "Search snippet directly described the Kubernetes process-sharing feature under study; conservatively excluded as potentially target-derived documentation and not opened.",
+      "excluded": true
+    },
+    {
+      "url": "https://github.com/kubernetes/website/blob/main/content/en/docs/tasks/configure-pod-container/share-process-namespace.md",
+      "stage": "snippet",
+      "reason": "Search snippet directly described the Kubernetes process-sharing feature under study; conservatively excluded as potentially target-derived documentation and not opened.",
+      "excluded": true
+    },
+    {
+      "url": "https://leoh0.github.io/images/kubernetes-documents-1.10.pdf",
+      "stage": "snippet",
+      "reason": "Search snippet directly described the Kubernetes process-sharing feature under study; conservatively excluded as potentially target-derived documentation and not opened.",
+      "excluded": true
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Docker/Moby private-or-container PID namespace modes",
+      "url": "https://raw.githubusercontent.com/moby/moby/v17.12.0-ce/daemon/oci_linux.go",
+      "reason": "Docker's separate private and join-container PID modes could implement an opt-in pod-wide sharing policy while preserving the private PID namespace used by existing images.",
+      "application_scope": "Runtime adapter: retain a fresh PID namespace for every application when sharing is disabled, and resolve one pod namespace owner for all applications when sharing is enabled.",
+      "constraints_or_caveat": "Docker exposes this at container scope, so an orchestrator must derive every container's setting from the single pod option; the referenced implementation also joins the target user namespace when user namespaces are enabled.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Versioned v17.12.0-ce source was opened; https://docs.docker.com/engine/release-notes/17.12/ dates that release to 2017-12-27. The separately opened live CLI documentation remains date-unknown.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "OCI Runtime Specification v1.0.0 namespace path contract",
+      "url": "https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md",
+      "reason": "OCI's namespace type-and-path contract could carry the pod's decision consistently to runtimes by selecting either a fresh PID namespace or one shared namespace path.",
+      "application_scope": "Runtime-neutral representation of the two pod policies; one shared path can be supplied to each application without introducing per-container configuration in the public API.",
+      "constraints_or_caveat": "A listed PID namespace without a path creates a namespace, while omitting the PID namespace inherits the runtime's namespace; those cases must not be confused, and the specification does not define pod ownership or lifecycle.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The v1.0.0 namespace section was opened, and https://opencontainers.org/release-notices/v1-0-0/ explicitly dates Runtime Specification v1.0.0 to 2017-07-19.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "Linux PID namespace init and procfs semantics",
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7",
+      "reason": "Linux's PID namespace rules could define the compatibility and lifecycle contract because PID 1 receives special signal treatment, its exit terminates the namespace, and procfs visibility depends on the mounting namespace.",
+      "application_scope": "Specify behavior of application PIDs, process enumeration, signal delivery to PID 1, namespace-owner failure, and matching /proc mounts.",
+      "constraints_or_caveat": "One shared namespace has only one PID 1, so multiple applications that require their own PID 1 cannot retain that assumption in shared mode; leaving sharing disabled is the compatible path.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened man-pages-4.15 source and separately verified its .TH header date of 2017-11-26.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "rkt pod-scoped namespace owner and application launch architecture",
+      "url": "https://raw.githubusercontent.com/rkt/rkt/v1.29.0/Documentation/devel/architecture.md",
+      "reason": "rkt's architecture could inform a pod-scoped namespace owner because its stage1 runs PID 1 for the pod and launches application processes underneath that shared execution environment.",
+      "application_scope": "Separate pod lifetime and namespace ownership from individual application entrypoints while retaining per-application resource isolation.",
+      "constraints_or_caveat": "The demonstrated implementation uses systemd/nspawn and includes general init behavior; only its namespace ownership and launch arrangement transfer to this task, and it does not itself preserve PID 1 assumptions for applications in shared mode.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The v1.29.0 architecture and changelog headings were opened, but the read evidence did not establish a release date; no pre-cutoff availability is claimed.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Linux setns PID namespace joining semantics",
+      "url": "https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man2/setns.2",
+      "reason": "The setns contract could guide runtime startup ordering because joining a PID namespace changes the namespace of subsequently created children rather than the caller's existing PID identity.",
+      "application_scope": "Implement the child creation and namespace-entry sequence used to start applications inside the selected pod PID namespace.",
+      "constraints_or_caveat": "The documented descendant-namespace restrictions require a suitably placed runtime process; changing a running application's PID namespace is not a substitute for setting up its namespace at launch.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened man-pages-4.15 setns source with its .TH header dated 2017-09-15.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "util-linux nsenter for selective namespace-aware operations",
+      "url": "https://man7.org/linux/man-pages/man1/nsenter.1.html",
+      "reason": "nsenter could provide a diagnostic or administrative alternative for selected operations by starting a helper in an application's PID namespace while normal application containers retain private namespaces.",
+      "application_scope": "Selective inspection and helper execution for pods whose images must keep private PID namespaces, plus a reference for namespace-entry behavior.",
+      "constraints_or_caveat": "It requires an authorized caller able to enter the target namespace and does not provide mutual process visibility to all applications; its default fork when entering a PID namespace is essential to placing the helper correctly.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The live manual was opened; no dated version was opened, so its present contents are not backdated.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 7,
+      "name": "LXC 3.0 explicit namespace clone, keep, and share configuration",
+      "url": "https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html",
+      "reason": "LXC's explicit namespace-sharing configuration could inform validation and compatibility messages by separating namespace creation from inheritance and warning that shared PID namespaces conflict with some init systems.",
+      "application_scope": "Later comparative evidence for runtime configuration and documentation of the consequences of joining an existing PID namespace.",
+      "constraints_or_caveat": "This evidence is dated 2018-03-27, after the cutoff; LXC's container-level sharing targets must be hidden behind one pod-wide policy rather than exposed as independent pod subgroups.",
+      "evidence_opened": true,
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "The opened LXC 3.0.0 release announcement is explicitly dated 2018-03-27 and includes the namespace share configuration and init-compatibility caveat.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "I found seven useful references. The first five cover the runtime mechanism, compatibility constraints, and pod ownership pattern; nsenter is a narrower operational alternative, and the LXC example is explicitly later evidence.\n\n1. Docker/Moby private-or-container PID namespace modes — https://raw.githubusercontent.com/moby/moby/v17.12.0-ce/daemon/oci_linux.go\nUseful part: Docker's separate private and join-container PID modes could implement an opt-in pod-wide sharing policy while preserving the private PID namespace used by existing images.\nThe opened implementation resolves a target container and uses its /proc/<PID>/ns/pid path, while the private branch requests a fresh PID namespace. An orchestrator could derive these choices from one pod option and give every application the same namespace target when enabled. Docker's own setting is container-scoped, and this code also joins the target user namespace when user namespaces are enabled. Date: pre-decision; the official release notes date this source version, 17.12.0-ce, to 2017-12-27: https://docs.docker.com/engine/release-notes/17.12/. The current CLI explanation was also opened, but its live text is date-unknown: https://docs.docker.com/reference/cli/docker/container/run/.\n\n2. OCI Runtime Specification v1.0.0 namespace path contract — https://raw.githubusercontent.com/opencontainers/runtime-spec/v1.0.0/config-linux.md\nUseful part: OCI's namespace type-and-path contract could carry the pod's decision consistently to runtimes by selecting either a fresh PID namespace or one shared namespace path.\nA PID namespace entry with a path joins that namespace; an entry without a path creates one; omitting that namespace type inherits the runtime's namespace. This distinction helps avoid accidentally turning the compatible private mode into host/runtime inheritance. The specification supplies the runtime representation, not pod lifecycle or public API policy. Date: pre-decision; the official notice dates Runtime Specification v1.0.0 to 2017-07-19: https://opencontainers.org/release-notices/v1-0-0/.\n\n3. Linux PID namespace init and procfs semantics — https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man7/pid_namespaces.7\nUseful part: Linux's PID namespace rules could define the compatibility and lifecycle contract because PID 1 receives special signal treatment, its exit terminates the namespace, and procfs visibility depends on the mounting namespace.\nOne shared namespace cannot give every application its own PID 1. Images that require that identity therefore need the existing private mode. Shared-mode documentation should explain changed application PIDs, the namespace owner's lifecycle, and which process receives signals addressed to PID 1. The /proc mount must present the intended namespace's process view. Date: pre-decision; the opened versioned manual header is dated 2017-11-26.\n\n4. rkt pod-scoped namespace owner and application launch architecture — https://raw.githubusercontent.com/rkt/rkt/v1.29.0/Documentation/devel/architecture.md\nUseful part: rkt's architecture could inform a pod-scoped namespace owner because its stage1 runs PID 1 for the pod and launches application processes underneath that shared execution environment.\nThis offers a concrete arrangement in which pod namespace ownership is separate from application entrypoints, while applications retain resource isolation. Its implementation uses systemd/nspawn and performs general init work, so only the ownership and launch arrangement belongs within this task's scope. Applications in that shared environment do not each remain PID 1. Date: unknown; versioned architecture and changelog headings were read, but the retrieved evidence did not establish a release date.\n\n5. Linux setns PID namespace joining semantics — https://raw.githubusercontent.com/mkerrisk/man-pages/man-pages-4.15/man2/setns.2\nUseful part: The setns contract could guide runtime startup ordering because joining a PID namespace changes the namespace of subsequently created children rather than the caller's existing PID identity.\nThe runtime must select the namespace before creating the application process and obey the documented descendant-namespace constraints. This is a launch mechanism, not a way to change the PID identity of an already-running application. Date: pre-decision; the opened manual header is dated 2017-09-15.\n\n6. util-linux nsenter for selective namespace-aware operations — https://man7.org/linux/man-pages/man1/nsenter.1.html\nUseful part: nsenter could provide a diagnostic or administrative alternative for selected operations by starting a helper in an application's PID namespace while normal application containers retain private namespaces.\nThe helper-entry pattern can serve pods whose images still require private PID namespaces. It requires an authorized caller able to enter the target namespace, and it does not give all application containers mutual visibility. The utility forks by default when entering a PID namespace so the launched helper has the requested process view. Date: unknown; only the live manual was verified.\n\n7. LXC 3.0 explicit namespace clone, keep, and share configuration — https://linuxcontainers.org/lxc/news/2018_03_27_21_15.html\nUseful part: LXC's explicit namespace-sharing configuration could inform validation and compatibility messages by separating namespace creation from inheritance and warning that shared PID namespaces conflict with some init systems.\nIt supports referencing another process or container's namespace and requires sufficient privilege. Its container-level controls are implementation evidence; exposing multiple independently configurable sharing groups within a pod would exceed this problem's boundaries. Date: post-decision, 2018-03-27; this is later comparative evidence, not evidence of availability by the 2018-01-24 cutoff.\n\nA design inference from these references is to retain private application PID namespaces unless one pod-wide sharing option is enabled, then have all applications join a single pod-owned namespace. The process responsible for that namespace must have a defined lifetime, and shared mode must make the loss of application PID 1 assumptions explicit. This inference does not require adding a general-purpose init system. Runtime joining, namespace visibility, and signal handling remain separate concerns that need clear behavior.\n\nSearch and evidence limits: I performed public web searches and a successful unauthenticated grep.app code search. Several GitHub HTML retrievals were blocked, while public versioned raw source was accessible. Two OCI section-extraction attempts failed before the namespace text was successfully read; those attempts are retained in the count. Search snippets exposed later Kubernetes process-sharing documentation, which I recorded and excluded without opening. These are candidate transfers, not claims of deployment or demonstrated usefulness; unknown dates remain unknown, and model-memory leakage is not controlled.",
+  "budget": {
+    "search_queries": 10,
+    "opened_pages": 20,
+    "candidate_count": 7
+  },
+  "limitations": [
+    "Three later Kubernetes process-sharing documentation snippets were exposed by search results, logged in exposures, excluded, and not opened; snippet exposure cannot be erased.",
+    "Three public GitHub HTML requests returned DisabledError. Public raw source was then read without authentication or bypassing access controls.",
+    "Two successful OCI raw-document fetches failed at local section extraction before a third read verified the namespace section; every attempt is counted.",
+    "Opened-page count conservatively includes the successful public code-search endpoint and one additional find read of the LXC page.",
+    "rkt and nsenter evidence remains date-unknown; LXC 3.0 evidence is explicitly post-decision. Live documentation was not backdated merely because mechanisms are old.",
+    "Model pretraining memory leakage is not controlled; no target proposal, prohibited repository, gold file, evidence file, other prefix, or other run was opened.",
+    "Candidates were assessed for possible transfer only; no execution, deployment, or usefulness validation was performed."
+  ],
+  "execution_status": "completed"
+}
