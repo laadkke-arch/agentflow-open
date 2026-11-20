@@ -93,10 +93,12 @@ def ratio(n, d):
 
 def alert_window(event, mode):
     day = date.fromisoformat(event["effective_date"])
+    start = previous_months(day, 12).toordinal()
     end = day.toordinal() - 1
-    if mode == "pre_announcement" and event["announce_date"]:
-        end = min(end, parse_day(event["announce_date"]) - 1)
-    return previous_months(day, 12).toordinal(), end
+    if mode == "pre_announcement":
+        notice = event["announce_date"]
+        end = min(end, parse_day(notice) - 1) if notice else start - 1
+    return start, end
 
 
 def scoring_sets(events, controls):

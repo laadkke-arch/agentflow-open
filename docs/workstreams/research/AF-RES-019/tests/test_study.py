@@ -1,7 +1,7 @@
 from datetime import date
 import unittest
 
-from analyze import alert, auc, boot_ci, first_alert, nullable_logic, quantile, schedule
+from analyze import alert, alert_window, auc, boot_ci, first_alert, nullable_logic, quantile, schedule
 from collect import normalize_repo, notice_state, parse_day, previous_months, registry_metadata
 
 
@@ -27,6 +27,13 @@ class StudyTest(unittest.TestCase):
         self.assertEqual(first_alert(h, "git_commit_age", 21, 19), (None, None))
         self.assertTrue(alert("git_commits_90d", 3))
         self.assertFalse(alert("git_commits_90d", 4))
+
+    def test_preannouncement_without_notice_has_no_window(self):
+        event = {"effective_date": "2024-05-07", "announce_date": None}
+        start, stop = alert_window(event, "pre_announcement")
+        self.assertEqual(stop, start - 1)
+        start, stop = alert_window(event, "pre_event")
+        self.assertGreater(stop, start)
 
     def test_cadence_and_quantile(self):
         first, last = parse_day("2023-11-12"), parse_day("2024-03-02")
