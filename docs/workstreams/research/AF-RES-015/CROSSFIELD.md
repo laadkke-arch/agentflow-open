@@ -1,0 +1,22 @@
+# 다른 분야에서 근거의 상태를 관리하는 단위
+
+| 분야·체계 | 업데이트 단위와 공개 주기 | 주소 생존 | 내용 변경 | 판단 무효화 | 소프트웨어 추천에 적용할 수 있는 범위 | 원문 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 법률 · Westlaw KeyCite | 사건·법령과 인용 취급, 특정 법률 쟁점의 효력. 공개 표시와 사용자 알림. 편집 반영 주기·SLA 미확인(공급자 반영 로그 필요) | 별도 | 판결 개정 등 일부 | 적어도 하나의 법률 쟁점이 무효가 된 빨강, 부정적 취급의 노랑, 직접 인용 없는 약화 위험의 별도 표시 | 한 프로젝트의 라이선스와 기능을 따로 판정하고 어느 조건을 재검토할지 연결한다 | [M-KC](https://lawschool.thomsonreuters.com/keycite/), [M-KC2](https://legal.thomsonreuters.com/en/products/westlaw/keycite) |
+| 법률 · Shepard’s | 사건·인용 관계와 쟁점별 headnote. 공급자는 단계별 변호사 편집을 설명. 실제 반영 주기 미확인(발행·등록 쌍 필요) | 별도 | 쟁점을 짚는 인용·취급 이력 | 경고 신호와 긍정·부정·무효에 가까운 취급을 구분 | 경보와 판단의 위치를 함께 노출하고 애매한 경우 사람 검토를 남긴다 | [M-SHEP2](https://www.lexisnexis.com/en-us/products/lexis/shepards.page), [M-SHEP3](https://www.lexisnexis.com/pdf/lexis-advance/Shepards-Signal-Indicators-and-analysis-phrases-Final.pdf) |
+| 학술 · Crossmark · Retraction Watch | DOI가 가리키는 발행물과 연결된 정정·철회·우려 표명. 발행자 Crossmark 등록, Retraction Watch 자료는 근무일 갱신. 사건부터 등록까지 미확인(입력일·발행일 대조 필요) | DOI 해석과 별도 | 등록된 정정과 판 변경 | 철회·우려 표명을 발행물에 연결한다. 논문 안의 특정 주장별 참거짓은 판정하지 않는다 | 공식 서비스 종료나 버전 철회 발표가 나오면 변경 근거를 관련 이유에 연결한다. 다운로드한 사본은 조회 시점 교정 정보와 함께 보여 준다 | [M-CROSS](https://www.crossref.org/services/crossmark/), [M-CR-RW](https://www.crossref.org/documentation/retrieve-metadata/retraction-watch/), [M-CREC](https://www.niso.org/publications/rp-45-2024-crec) |
+| 위키 · InternetArchiveBot | 페이지에 달린 개별 원 URL과 접근 상태. 위키별 작업 설정과 잘못된 상태 신고. 일정·탐지 시간 보장 미확인(봇 큐 로그 필요) | 죽은 URL 확인과 보존 링크 추가 | 당시 사본을 다시 열 수 있다. 차이 판정은 편집자가 한다 | 편집자 대조 필요 | 404인 후보 문서의 대체 주소를 찾되 이유별 성립으로 자동 전환하지 않는다 | [M-IAB](https://meta.wikimedia.org/wiki/InternetArchiveBot/FAQ/en), [M-IAB-W](https://en.wikipedia.org/wiki/Wikipedia:Link_rot) |
+| 법률 인용 보존 · Perma.cc | 인용자가 요청한 페이지의 캡처 날짜·영속 식별자. 요청 때 저장하고 접근 실패가 있을 수 있다 | 원 주소 장애 때 사본 제공 | 서로 다른 시점의 캡처를 비교할 수 있다 | 사본만으로 법률 효력을 평가할 수 없다 | 인용 당시 근거 URL·시각을 유지하고 사본에 역사 상태임을 표시한다. 동적 화면·외부 링크에는 공백이 생긴다 | [M-PERMA](https://perma.cc/docs/faq), [M-PERMAG](https://perma.cc/docs), [M-ZITTF](https://harvardlawreview.org/forum/vol-127/perma-scoping-and-addressing-the-problem-of-link-and-reference-rot-in-legal-citations/) |
+| 소프트웨어 보존 · Software Heritage | origin URL의 visit와 snapshot, 리비전·릴리스·디렉터리·파일을 내용 기반 식별자로 연결. 요청·수집에 따른 개별 방문. 이 표본의 실제 응답 미확인(archive 호스트 403) | 사본과 origin을 비교한다 | 고정 코드·파일을 직접 비교할 수 있다 | 운영 중인 API, 가격, 계약 효력의 최신 판단은 추가 출처가 필요하다 | 소스의 원래 라이선스와 API 존재를 특정 커밋의 파일로 복원할 수 있다. 호스팅 서비스는 가격표·종료 공지 추가 필요 | [M-SWHVIS](https://raw.githubusercontent.com/SoftwareHeritage/swh-model/master/swh/model/model.py), [M-SWHID](https://raw.githubusercontent.com/SoftwareHeritage/swh-model/master/swh/model/swhids.py), [M-CITED](https://arxiv.org/pdf/2401.04887) |
+
+## 추천 사례에 적용
+
+- 추천을 받은 개발자는 Linux 설치, 월 무료 한도, 자체 호스팅 가능 여부 중 자신이 의존한 속성부터 확인할 수 있다. T051.A001은 오래된 TanStack 링크가 404인데 v8에서 동일 필터를 제공했다. T020.A001은 제작사 사이트가 닫힌 서비스의 설명을 계속 제공했다. 링크 상태와 이용 가능성은 다른 두 필드다. [TanStack 공식 문서](https://tanstack.com/table/v8/docs/guide/column-filtering), [Dcoder 종료 안내](https://dcoder.tech/)
+- 운영자는 인용 관계에 따라 항목을 재검토하는 citator처럼 이유별 제품·판·지역·계정 조건을 연결할 수 있다. 변경 근거가 수신되면 해당 범위부터 확인한다. 자동 신호는 요청 비용을 낮추지만, 12개 벤치에서 공식 변경 두 건이 신호에서 빠졌다. [비용 집계](results/cost.json), [M-CROSS](https://www.crossref.org/services/crossmark/)
+- 관리자에게 GitHub의 archived는 더 이상 그 저장소에서 수정·이슈를 받지 않는다는 상태다. nfnt/resize에서는 공개 README가 여전히 함수와 예제를 제공한다. 소스 기능과 유지 인력의 상태를 각각 표시할 수 있다. [GitHub 보관 설명](https://docs.github.com/en/repositories/archiving-a-github-repository/archiving-repositories), [nfnt/resize](https://github.com/nfnt/resize)
+- 보존 기관은 캡처 대상을 제한한다. Perma는 선택 URL, SWH는 소스의 스냅샷과 리비전이 기본 대상이다. 종료 후에도 안내 원문을 보존한 Roo Code의 경우 저장 당시 시각과 현행 상태 링크가 모두 있어야 독자가 두 시점을 구분할 수 있다. [M-PERMAG](https://perma.cc/docs), [M-SWHVIS](https://raw.githubusercontent.com/SoftwareHeritage/swh-model/master/swh/model/model.py), [Roo Code 보존문서](https://roocodeinc.github.io/Roo-Code/)
+- 자료 권리 관점에서 저장 대상으로 삼은 본문의 라이선스·약관, 내려받은 사본의 재배포, 원 URL과 최소 근거 요약을 남기는 행위는 각각 확인 범위가 다르다. 이번 저장소는 공개 글의 전체 본문과 프로필을 복제하지 않았다. 외부 보존 URL, 시정 가능한 짧은 요약, 날짜, 고정 판을 저장하면 제품 자체의 복제량이 줄어든다. [Perma 약관](https://perma.cc/terms-of-service), [미국 17 USC §107](https://www.law.cornell.edu/uscode/text/17/107), [Stack Overflow 라이선스](https://stackoverflow.com/help/licensing), [공개 네트워크 약관](https://stackoverflow.com/legal/terms-of-service/public)
+
+## 한계
+
+각 시스템의 운영자 문서로 정의를 대조했다. 법률 편집 시스템의 사건 단위 반영 지연과 위키 봇의 현행 스캔 완료 시간 공개 분포는 확보하지 못했다. 문헌의 근무일 갱신·캡처 요청·사용자 알림 설정은 각기 다른 단계의 시간값이다. 이 작업은 캡처 업로드, 지불, 계정 생성, 운영 시스템 변경을 수행하지 않았다. [열람 원장](sources.json)
