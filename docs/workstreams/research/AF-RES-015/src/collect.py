@@ -178,12 +178,18 @@ def commit_list(data):
         for group in data.get("commitsRefRoute", {}).get("commitGroups", [])))
 
 
-def release_rows(data):
-    result = data.get("releasesIndexRoute", {})
-    page = result.get("page") or result.get("expanded") or {}
-    if isinstance(page, list):
-        return page
-    return page.get("releases") or page.get("items") or []
+def release_rows(body):
+    cards = re.finditer(r'<section[^>]*data-release-anchor="([^"]+)"[^>]*>(.*?)</section>',
+                        body, re.DOTALL)
+    for card in cards:
+        label, html = card.groups()
+        issued = re.search(r'released this\s*<relative-time[^>]*datetime="([^"]+)"', html)
+        if issued:
+            yield {
+                "tag": label.removeprefix("release-"),
+                "publishedAt": issued.group(1),
+                "isPrerelease": bool(re.search(r"<span[^>]+>\s*Pre-release\s*</span>", html)),
+            }
 
 
 def evidence_at(reader, repo, commit, file_path):
@@ -195,13 +201,23 @@ def primary_rows():
     return rows(ROOT / "REASONS.jsonl")
 
 
-def history(reader, rules, verbose):
+def verified_answer_dates():
+    dates = {}
+    for line in (ROOT / "data" / "answer-dates.txt").read_text().splitlines():
+        if line and not line.startswith("#"):
+            ref, day, location = line.split("|")
+            dates[ref] = (day, location)
+    return dates
+
+
+def history(reader, rules, verbose, visited):
+    verified = verified_answer_dates()
     current = rows(ROOT / "results" / "repo-now.jsonl")
     by_key = {rule["key"]: repo for repo, specs in rules.items() for rule in specs}
     dates = {}
     for reason in primary_rows():
         repo = by_key.get(reason["predicate"])
-        answer_date = reason["answer_date"]
+        answer_date = reason["answer_date"] or verified.get(reason["answer_ref"], (None, None))[0]
         if repo and answer_date and "후대 편집" not in reason["evidence_locator"]["position"]:
             dates.setdefault((repo, answer_date), set()).add(reason["predicate"])
     for item in current:
@@ -209,7 +225,7 @@ def history(reader, rules, verbose):
         if not name or not item["branch"]:
             continue
         for (candidate, day), keys in sorted(dates.items()):
-            if candidate != repo:
+            if candidate != repo or (repo, day) in visited:
                 continue
             until = (date.fromisoformat(day) + timedelta(days=1)).isoformat()
             path = f"https://github.com/{name}/commits/{quote(item['branch'], safe='/')}/"
@@ -251,6 +267,8 @@ def identify_license(text):
         in " ".join(low.split()) and "provided that" not in low
     ):
         return "0BSD"
+    if "mozilla public license" in low or "mozilla.org/mpl/2.0" in low:
+        return "MPL-2.0"
     if "apache license" in low and "version 2.0" in low:
         return "Apache-2.0"
     if "general public license" in low or "general public licence" in low:
@@ -275,13 +293,7 @@ def repo_signals(reader):
         commit_obs, commit_body = reader.get(f"{url}/commits/{query}/")
         first = next(iter(commit_list(payload(commit_body))), {})
         release_obs, release_body = reader.get(f"{url}/releases")
-        records = release_rows(payload(release_body))
-        releases = []
-        for entry in records:
-            release = {key: value for key, value in entry.items()
-                       if any(s in key.casefold() for s in ("date", "time", "tag", "pre", "draft"))}
-            if release:
-                releases.append(release)
+        releases = list(release_rows(release_body))
         yield {"repo": item["repo"], "commit_observation": commit_obs,
                "commit": {k: first.get(k) for k in ("oid", "committedDate", "url")},
                "release_observation": release_obs, "release_candidates": releases}
@@ -292,18 +304,24 @@ def main():
     parser.add_argument("stage", choices=("now", "then", "signals"))
     parser.add_argument("--interval", type=float, default=1.06)
     parser.add_argument("--show-hits", action="store_true")
+    parser.add_argument("--resume", action="store_true", help="only collect new dated repo pairs")
     args = parser.parse_args()
     if args.interval < 1:
         parser.error("per-host interval must be at least one second for this study")
     reader = Reader(args.interval)
     study = read_rules()
+    path = ROOT / "results" / f"repo-{args.stage}.jsonl"
+    append = args.stage == "then" and args.resume and path.exists()
+    visited = {(x["repo"], x["answer_date"]) for x in rows(path)} if append else set()
     if args.stage == "now":
         evidence = repo_current(reader, study, args.show_hits)
     elif args.stage == "then":
-        evidence = history(reader, study, args.show_hits)
+        evidence = history(reader, study, args.show_hits, visited)
     else:
         evidence = repo_signals(reader)
-    jsonl(ROOT / "results" / f"repo-{args.stage}.jsonl", evidence)
+    with path.open("a" if append else "w", encoding="utf-8", buffering=1) as stream:
+        for observation in evidence:
+            stream.write(json.dumps(observation, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
