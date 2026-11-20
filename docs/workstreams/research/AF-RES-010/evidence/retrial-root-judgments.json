@@ -1,0 +1,779 @@
+{
+  "task": "AF-RES-010",
+  "T_protocol_commit": "2b798c7d2b7355b649691c18de196104ceabb0f0",
+  "judgments": [
+    {
+      "candidate_id": "RP1-B02",
+      "source_ids": [
+        "B02"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-07"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "disposition_gate",
+      "candidate_name": "부적합 격리·재처리·출하 판정",
+      "proposed_use": "H: 문서 하나를 실패/보류/완료/공개 상태로 식별하고 재처리 결정과 공개 판정을 분리",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "batch 식별→처리·검사 기록→격리/승인된 출하; 재처리와 정상 계속은 구별",
+          "target_relation": "H: 문서 하나를 실패/보류/완료/공개 상태로 식별하고 재처리 결정과 공개 판정을 분리",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "폴더 전체를 batch로 고정하지 말고 서로 독립인 문서 항목 단위를 정한다.",
+        "입력 동일성, 영속 상태, 공개 판정과 기록의 원자성은 대상 구현에서 추가한다."
+      ],
+      "excluded": [
+        "OCR 정확도·전체 제품·자체 운영·중복 공개의 구현 증명",
+        "의약품 규제를 P1의 새 요구로 가져오는 것"
+      ],
+      "counterexample": "물리 오염은 관련 batch 전체에 영향을 줄 수 있다. H: 상관관계가 없는 문서 전체를 함께 폐기하면 성공 결과 보존 요구를 깨므로 해당 단위 복사를 금지한다.",
+      "minimum_next_check": {
+        "input": "문서 A 성공 공개/B 손상/C 중단을 입력하고 B만 재처리한 뒤 A가 계속 남고 C의 상태가 구별되는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 규제기관 지침의 상태·품질 책임 관계; SW 성능 실험 아님",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B10",
+      "source_ids": [
+        "B10"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R2-08"
+      ],
+      "representations": [
+        "R2"
+      ],
+      "family": "disposition_gate",
+      "candidate_name": "부적합의 영향 평가와 구별된 처분",
+      "proposed_use": "H: 모든 실패에 같은 무한 retry를 하지 않고 원인·영향·재처리 결정을 항목별로 표시",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "실패 관측을 기록→이전 결과 영향 평가→rework/redo/use-as-is/unusable 선택",
+          "target_relation": "H: 모든 실패에 같은 무한 retry를 하지 않고 원인·영향·재처리 결정을 항목별로 표시",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "처분 종류를 P1 입력·완료 상태와 연결한다.",
+        "재시도 가능한 실패를 구별하고 성공 항목 보존을 별도 검사한다."
+      ],
+      "excluded": [
+        "FDA 정확도 의무를 P1에 몰래 추가",
+        "재시도 정책이 공개 중복을 자동 방지한다는 주장"
+      ],
+      "counterexample": "H: 원문은 실패 시 영향 조사를 요구하지 성공을 모두 되돌리라고 하지 않는다. 부적합 flag 하나로 모든 결과를 취소하는 구현은 다른 관계다.",
+      "minimum_next_check": {
+        "input": "A 성공/B 영구 손상/C 일시 중단을 구분해 B와 C의 처분·재시도가 다르고 A가 보존되는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 시험실 운영 SOP; RP1-B02와 같은 disposition_gate family로 중복 집계",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B03",
+      "source_ids": [
+        "B03"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-04"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "amended_publication_lineage",
+      "candidate_name": "원 보고와 수정 보고의 계보",
+      "proposed_use": "H: 입력 처리의 결과와 후속 수정 결과를 서로 다른 버전으로 연결하고 어느 것이 현재 공개본인지 명시",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "잘못된 보고를 식별하고 수정본임을 표시하며 원본·수정본을 모두 보관",
+          "target_relation": "H: 입력 처리의 결과와 후속 수정 결과를 서로 다른 버전으로 연결하고 어느 것이 현재 공개본인지 명시",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "동일 입력 retry와 의도된 수정 버전의 차이를 정한다.",
+        "공개 버전 선택과 원 결과 보관, 실패 항목 표시를 분리한다."
+      ],
+      "excluded": [
+        "중복 공개 자체를 자동 막는 알고리즘",
+        "원본이 항상 사용자 화면에 동시에 공개되어야 한다는 요구"
+      ],
+      "counterexample": "H: retry를 수정 보고로 매번 새 발행하면 동일 입력의 중복 공개를 허용하게 된다. 버전 생성 권한과 재실행 식별이 없으면 P1 전체 답이 아니다.",
+      "minimum_next_check": {
+        "input": "A를 완료한 후 응답 유실로 A를 다시 제출하고, 별도로 승인된 변환 규칙 수정 A-v2를 제출한다; 재시도와 의도된 개정이 구별되는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 검사실 보고 계약; 원 분야 규범, 효과 크기 없음",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B09",
+      "source_ids": [
+        "B09"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-01"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "license_consume_relicense_check",
+      "candidate_name": "한 주기 내 재허가 방지와 감시 장벽",
+      "proposed_use": "H: 준비 상태와 한 번 소비되는 공개 허가를 구별하고, 잘못된 재허가를 독립 검증하는 설계 참고",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "복제 허가→기원 활성화→허가 구성 해체; ATR checkpoint는 허가 장애 시 재복제 억제",
+          "target_relation": "H: 준비 상태와 한 번 소비되는 공개 허가를 구별하고, 잘못된 재허가를 독립 검증하는 설계 참고",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "세포 주기를 P1의 입력/변환 버전 단위로 재정의한다; 프로세스 생명주기와 같게 놓지 않는다.",
+        "소모된 허가가 crash 후에도 남고 검증/공개가 원자적으로 연결되어야 한다."
+      ],
+      "excluded": [
+        "생물학이 결정적 exactly-once 실행을 증명한다는 해석",
+        "OCR·자가 운영·실패 목록의 완성품"
+      ],
+      "counterexample": "원문에서 허가 장애에 대한 감시는 세포주마다 다르고 재허가는 다음 주기에 일어난다. H: 재시작을 새 주기로 놓으면 이미 처리한 같은 입력이 다시 허가된다(RP1-B09-M).",
+      "minimum_next_check": {
+        "input": "동일 입력 A의 공개 직전/직후에 중단하고 두 번 재전송한다; 실행 횟수와 별개로 공개 횟수는1이고 미완료 항목은 재개 가능해야 한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: mammalian cell perturbation 실험; 목표 SW 연결은 H",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B09-M",
+      "source_ids": [
+        "B09"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-01"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "license_consume_relicense_check",
+      "candidate_name": "재시작을 새 복제 주기로 보는 적용",
+      "proposed_use": "H: 프로그램이 다시 시작할 때 공개 허가를 초기화하고 동일 입력을 새로 공개한다.",
+      "T": "mapped",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "near_miss",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "다음 세포 주기에는 다시 복제 허가를 획득한다.",
+          "target_relation": "H: 프로그램이 다시 시작할 때 공개 허가를 초기화하고 동일 입력을 새로 공개한다.",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "이 사용 방식을 유지한 채 필수 조건을 만족시킬 수 없다. 입력에 결부된 영속 허가를 추가해야 한다."
+      ],
+      "excluded": [
+        "세포 메커니즘 자체가 결함이라는 주장",
+        "실제로 목표 구현에서 중복을 관측했다는 주장"
+      ],
+      "counterexample": "H 논리 반례: A 공개→중단→새 주기로 간주→A 재허가·재공개. P1 같은 입력 중복 공개 금지를 직접 위반한다.",
+      "minimum_next_check": {
+        "input": "이 사건 순서에서 publication_count(A)=2가 가능한지 구현 상태 전이표로 검토한다; 현재는 구조적 반례이며 미실행.",
+        "executed": false
+      },
+      "origin_evidence": "D1 관계 + H 목표 사용 방식; 새 family는 RP1-B09와 하나",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B07",
+      "source_ids": [
+        "B07"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R1-06"
+      ],
+      "representations": [
+        "R1"
+      ],
+      "family": "signal_routing_word_match",
+      "candidate_name": "신호 라우팅 단어 일치",
+      "proposed_use": "separate/control/store signal flow를 중단 후 성공 보존 메커니즘으로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source_relation": "입력 신호를 bus로 묶거나 switch로 선택",
+          "target_relation": "separate/control/store signal flow를 중단 후 성공 보존 메커니즘으로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "공개 이력·항목 동일성·영속화를 새로 설계해야 하며 블록 목록이 제공한 관계가 아니다."
+      ],
+      "excluded": [
+        "Simulink의 모든 기능이 P1에 쓸모없다는 주장"
+      ],
+      "counterexample": "상태 값 읽기/쓰기는 이전 처리의 공개 횟수와 관계가 없다. 넓은 동사 질의에서 핵심 불변식이 빠졌다.",
+      "minimum_next_check": {
+        "input": "새 후보 문서에 동일 입력·재시작·다른 항목 성공 보존의 인과 관계가 실제 기술돼 있는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 공식 블록 역할 목록",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B08",
+      "source_ids": [
+        "B08"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R0-03"
+      ],
+      "representations": [
+        "R0"
+      ],
+      "family": "single_document_recovery",
+      "candidate_name": "한 편집 파일의 복구",
+      "proposed_use": "배치에서 한 손상이 다른 성공 결과를 지우지 않게 하는 설계로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source_relation": "손상된 Photoshop 문서의 이전 저장/합성 이미지 복구",
+          "target_relation": "배치에서 한 손상이 다른 성공 결과를 지우지 않게 하는 설계로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "단일 파일 복구와 독립 처리 항목의 공개 상태를 분리해야 한다."
+      ],
+      "excluded": [
+        "개별 파일 복구 기능의 유용성 자체"
+      ],
+      "counterexample": "다른 성공 항목이 존재하는 관계가 문서에 없고, 합성 복구는 레이어도 없어진다. P1의 실패 경계를 답하지 않는다.",
+      "minimum_next_check": {
+        "input": "단일 파일 복구를 넘어 batch A/B의 독립 결과 생존 조건을 명시하는 출처가 있는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 제품 도움말",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B11",
+      "source_ids": [
+        "B11"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R2-03"
+      ],
+      "representations": [
+        "R2"
+      ],
+      "family": "retry_specific_fault_injection",
+      "candidate_name": "retry 전용 검증 방법",
+      "proposed_use": "P1 후보 채택 후 retry 경계 검증의 소프트웨어 내부 참고",
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED",
+      "bucket": "technical_support",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source_relation": "retry 정책·지연·상태 reset·job tracking 결함을 fault injection과 정적 분석으로 검사",
+          "target_relation": "P1 후보 채택 후 retry 경계 검증의 소프트웨어 내부 참고",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "실제 선택 구현의 retry 경로와 기대 결과를 검사 oracle로 연결해야 한다."
+      ],
+      "excluded": [
+        "다른 분야 원리",
+        "70개 이슈가 P1 특정 구현의 결함 수라는 주장"
+      ],
+      "counterexample": "테스트가 retry를 꺼두거나 짧은 timeout을 강요하면 문제를 가릴 수 있다; 일반 단위시험 통과만으로 충분하지 않다.",
+      "minimum_next_check": {
+        "input": "중단·응답 유실·중복 전달을 주입하고 retry 설정을 실제 운영과 맞춘다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 70개 이슈 조사/Wasabi 평가; 직접 실행 안 함",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B12",
+      "source_ids": [
+        "B12"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-03"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "known_idempotency_and_status_reconciliation",
+      "candidate_name": "금융 시스템에서 상태 확인 재발견",
+      "proposed_use": "입력의 공개 상태를 조회하고 동일 ID를 유지하는 참고",
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED",
+      "bucket": "rediscovery",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source_relation": "거래 상태가 모호하면 확인 후 재시도; 성공 응답 유실과 실패를 구별",
+          "target_relation": "입력의 공개 상태를 조회하고 동일 ID를 유지하는 참고",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "P1 자체 운영 가능한 저장·상태조회 경계를 별도로 구현한다."
+      ],
+      "excluded": [
+        "금융 어휘만으로 컴퓨터 밖 원리가 발견됐다는 주장",
+        "Visa 서비스 채택을 P1 자체 운영의 답으로 고정"
+      ],
+      "counterexample": "backoff나 retry라는 말만으로 중복이 제거되지 않는다. 기존 AF-RES-002의 멱등 작업/공개 경계와 같은 넓은 핵심을 다시 찾았다.",
+      "minimum_next_check": {
+        "input": "상태조회 자체가 실패하는 경우와 응답 유실을 구별할 수 있는 고정 API 계약을 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 결제 API 운영 문서; 새 원거리 집계 제외",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B13",
+      "source_ids": [
+        "B13"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-03"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "message_identifier_contract",
+      "candidate_name": "메시지 ID만으로 실행 유일성을 판정",
+      "proposed_use": "EndToEndId만 있으면 같은 입력이 다시 공개되지 않는다고 해석",
+      "T": "unknown",
+      "label": "INSUFFICIENT",
+      "bucket": "insufficient",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source_relation": "서로 다른 식별자의 전달 범위와 duplicate 오류 코드 정의",
+          "target_relation": "EndToEndId만 있으면 같은 입력이 다시 공개되지 않는다고 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "ID와 영속 실행 상태의 연결, 보존기간, 원자적 판정 증거가 추가로 필요하다."
+      ],
+      "excluded": [
+        "ID 규격이 무의미하다는 주장"
+      ],
+      "counterexample": "동일 ID가 여러 노드에 전달된다는 계약과 그 ID의 효과를 단 한 번만 실행한다는 계약은 다르다.",
+      "minimum_next_check": {
+        "input": "같은 ID의 동시 처리·보존기간 이후 재도착·응답 유실에 대한 처리 명세를 확보한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 메시지 표준; 해당 보장 미확인으로 실패 판정하지 않음",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-B14",
+      "source_ids": [
+        "B14"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R2-01"
+      ],
+      "representations": [
+        "R2"
+      ],
+      "family": "scientific_replicability_word_match",
+      "candidate_name": "과학적 재현성과 작업 재시도의 혼동",
+      "proposed_use": "신뢰성을 높이려고 같은 처리를 재시도하면서 중복 공개하지 않는 관계로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "새 연구가 독립 관측으로 이전 결과의 일관성을 검토",
+          "target_relation": "신뢰성을 높이려고 같은 처리를 재시도하면서 중복 공개하지 않는 관계로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "반복의 대상과 성공 의미를 원문 조건으로 되돌려야 한다."
+      ],
+      "excluded": [
+        "과학적 재현성 자체의 가치"
+      ],
+      "counterexample": "추가 실험과 결과 공개가 가치 있는 원 분야와 이미 공개된 결과를 재공개하지 않는 P1은 반복의 목적이 다르다.",
+      "minimum_next_check": {
+        "input": "질의의 reliability/repeating 앞에 same input identity와 publication state를 붙였을 때 후보가 달라지는지 별도 통제 시험한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 기관 보고서; 실제 관측된 R2 어휘 오탐",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-N01",
+      "source_ids": [
+        "N01"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R1-01-A"
+      ],
+      "representations": [
+        "R1"
+      ],
+      "family": "triggered_release_word_match",
+      "candidate_name": "신경전달물질 release",
+      "proposed_use": "같은 입력 재전송을 알아보고 다시 공개하지 않는 장치로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "칼슘 자극에 따라 소포 융합·전달물질 방출",
+          "target_relation": "같은 입력 재전송을 알아보고 다시 공개하지 않는 장치로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "신호 임계값과 입력의 영속적 동일성·공개 이력을 구별해야 한다."
+      ],
+      "excluded": [
+        "조건부 방출 관계의 일반적 유용성"
+      ],
+      "counterexample": "약1ms 방출은 다시 온 자극을 과거의 같은 입력으로 식별하는 계약이 아니다. release라는 기능어만 대응한다.",
+      "minimum_next_check": {
+        "input": "후보가 자극과 공개 횟수의 동일성 관계를 실제 설명하는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: AskNature 전략 본문; underlying paper의 새 읽기/실험 아님",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP1-N02",
+      "source_ids": [
+        "N02"
+      ],
+      "problem": "P1",
+      "query_ids": [
+        "P1-R3-01-A"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "physical_rehydration_recovery",
+      "candidate_name": "재수화의 물리 복원",
+      "proposed_use": "입력 처리 중단·복구 뒤 공개 상태 보존으로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "액포의 크기와 물질 성질이 건조·재수화 변형을 줄임",
+          "target_relation": "입력 처리 중단·복구 뒤 공개 상태 보존으로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "형상 보존과 논리적 결과 이력은 서로 다른 대상이다."
+      ],
+      "excluded": [
+        "생물 전략의 내구성 자체를 부정"
+      ],
+      "counterexample": "반복되는 물리 변화에 견디는 것에는 동일 입력의 중복 공개라는 판정 대상이 없다.",
+      "minimum_next_check": {
+        "input": "재료 변형 대신 작업/공개 상태를 보존하는 관계가 있는 다른 자료를 찾는다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: AskNature 전략 본문",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP2-C01",
+      "source_ids": [
+        "C01",
+        "C02"
+      ],
+      "problem": "P2",
+      "query_ids": [
+        "P2-R3-01"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "intentional_discrepancy_adjudication",
+      "candidate_name": "차이의 의도와 해결 책임을 분리",
+      "proposed_use": "H: 상충 수정의 존재 탐지와 어느 의미를 채택할지의 판단을 분리하고 해결 이유를 원본에 연결",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "서로 다른 정보원을 대조하고 의도된 차이·설명 없는 차이·실제 오류를 확인한 뒤 결정 기록",
+          "target_relation": "H: 상충 수정의 존재 탐지와 어느 의미를 채택할지의 판단을 분리하고 해결 이유를 원본에 연결",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "기준판·수정 ID·작성자·입력 출처를 보존한다.",
+        "사람의 의미 판단을 자동 LWW로 대신하지 않으며 해결 권한을 임의로 P2 필수 조건에 추가하지 않는다."
+      ],
+      "excluded": [
+        "임상 24시간 목표를 소프트웨어 지연 목표로 복사",
+        "오프라인 복제·파일 내보내기 구현 보장"
+      ],
+      "counterexample": "의도된 처방 차이를 단순 오류로 제거하면 잘못된 정규화가 된다. H: 사용자 수정도 단어가 다르다는 이유만으로 오류로 삭제하면 안 된다.",
+      "minimum_next_check": {
+        "input": "기준 목록 v0에서 A는 항목 삭제, B는 그 항목에 설명 추가; 재접속 후 양쪽 의도·근거를 보여주고 해결 결정이 남는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: WHO SOP와 AHRQ 프로세스 지침; 같은 family의 두 출처",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP2-C03",
+      "source_ids": [
+        "C03"
+      ],
+      "problem": "P2",
+      "query_ids": [
+        "P2-R3-02"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "journal_correction_immutability_unproved",
+      "candidate_name": "분개 수정이 불변 이력을 뜻하는지",
+      "proposed_use": "모든 원수정이 영구 보존되고 export된다고 해석",
+      "T": "unknown",
+      "label": "INSUFFICIENT",
+      "bucket": "insufficient",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "수정 목적·출처·승인과 균형을 기록",
+          "target_relation": "모든 원수정이 영구 보존되고 export된다고 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "원 분개 수정 가능성·연결된 correction entry·이력 내보내기 규칙을 더 읽어야 한다."
+      ],
+      "excluded": [
+        "회계 이벤트 원장 전이의 일반적 가능성(T08과는 다른 자료)"
+      ],
+      "counterexample": "균형 조건은 같은 균형 분개가 중복 입력돼도 성립한다. 읽은 Yale 절은 모든 원본 보존을 증명하지 않는다.",
+      "minimum_next_check": {
+        "input": "동일 원거래에 두 사용자가 상반된 수정을 만든 뒤 남는 원본·수정본·export 예시를 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 기관 회계 절차, 필요한 보존 보장에는 INSUFFICIENT",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP2-C04",
+      "source_ids": [
+        "C04"
+      ],
+      "problem": "P2",
+      "query_ids": [
+        "P2-R3-08"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "source_variant_and_editorial_decision",
+      "candidate_name": "이본·편집 선택·출처의 분리",
+      "proposed_use": "H: 양쪽 수정과 현재 선택을 다른 객체로 표현하고 누가 무엇을 선택했는지 남기는 충돌 검토 표현",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "복수 rdg와 wit를 보관하고 선택적 lem 및 resp/cert로 편집 판단을 구별",
+          "target_relation": "H: 양쪽 수정과 현재 선택을 다른 객체로 표현하고 누가 무엇을 선택했는지 남기는 충돌 검토 표현",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "필드/문단 범위와 기준판을 지정하고 수정 ID·인과 관계·영속 저장을 추가한다.",
+        "단순 본문 export와 출처/해결 이력 포함 export의 보존 범위를 명시한다."
+      ],
+      "excluded": [
+        "TEI XML이 오프라인 병합 엔진이라는 해석",
+        "base text가 하나여야 한다는 고정"
+      ],
+      "counterexample": "H: lem만 저장하거나 export하면 선호되지 않은 rdg가 사라져 해결 전 상충본 확인이 불가능할 수 있다.",
+      "minimum_next_check": {
+        "input": "같은 문단의 A/B를 app-like 구조에 보관하고 하나를 선택한 뒤 원 대안과 resp가 조회·내보내기에서 유지되는지 확인한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 문헌학 원리를 담은 TEI 원표준; 같은 family인 구술사/FEMA와 보수 통합",
+      "assessment_scope": "reference_design",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP2-C08",
+      "source_ids": [
+        "C08"
+      ],
+      "problem": "P2",
+      "query_ids": [
+        "P2-R3-04"
+      ],
+      "representations": [
+        "R3"
+      ],
+      "family": "mismatch_repair_erases_alternative",
+      "candidate_name": "DNA 오류 절제를 편집 충돌 해결로 적용",
+      "proposed_use": "H: 먼저 있던 기록을 참값으로 두고 뒤에 도착한 다른 수정을 제거한다.",
+      "T": "mapped",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "near_miss",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "새 가닥의 mismatch를 오류로 식별→절제→주형에 맞게 재합성",
+          "target_relation": "H: 먼저 있던 기록을 참값으로 두고 뒤에 도착한 다른 수정을 제거한다.",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "P2에는 유효한 사용자 수정을 오류 가닥이라고 판정할 근거가 없다. 이 사용 방식 대신 두 대안을 남겨야 한다."
+      ],
+      "excluded": [
+        "DNA 복구가 나쁜 메커니즘이라는 주장",
+        "의미적으로 틀린 수정의 자동 판정을 P2가 요구했다는 주장"
+      ],
+      "counterexample": "H: 오프라인 A/B가 모두 의도된 수정이어도 B를 새 가닥 오류로 지우면 P2 무음 유실 금지·충돌 확인을 위반한다.",
+      "minimum_next_check": {
+        "input": "base→A와 base→B를 모두 유효 입력으로 놓고 도착 순서를 바꿔 본다; 어느 순서에서도 원 대안 둘이 남아야 한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: 생물 review의 절제 관계 + H 제약 위반; 실행 실패 관측 아님",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    },
+    {
+      "candidate_id": "RP2-N03",
+      "source_ids": [
+        "N03"
+      ],
+      "problem": "P2",
+      "query_ids": [
+        "P2-R1-01-A"
+      ],
+      "representations": [
+        "R1"
+      ],
+      "family": "habituation_transfer_word_match",
+      "candidate_name": "점균의 학습 전달과 기록 병합 혼동",
+      "proposed_use": "각자가 기록한 상충 수정의 계보·대안을 함께 남기는 병합으로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source_relation": "두 개체가 융합한 뒤 소금 자극에 대한 행동이 변화",
+          "target_relation": "각자가 기록한 상충 수정의 계보·대안을 함께 남기는 병합으로 해석",
+          "status": "H_target_mapping_or_mismatch_assessment"
+        }
+      ],
+      "bridge": [
+        "행동 공유와 수정 내용 보존을 구별해야 하며 문서도 세부 메커니즘은 미해명이라고 한다."
+      ],
+      "excluded": [
+        "중앙 없이 학습이 전달되는 현상 자체"
+      ],
+      "counterexample": "merge/information이란 말은 맞지만 원자료 두 개를 나란히 확인하고 의도를 해결하는 관계가 없다.",
+      "minimum_next_check": {
+        "input": "동일 기록·기준판·두 수정·해결 이벤트의 대응 요소가 실제로 있는 후보만 다시 판정한다.",
+        "executed": false
+      },
+      "origin_evidence": "D1: AskNature 설명; 원 분야 실험은 재실행하지 않음",
+      "assessment_scope": "specified_use_only",
+      "runtime_observation": "not_performed",
+      "target_application_level": "H; no D4"
+    }
+  ]
+}

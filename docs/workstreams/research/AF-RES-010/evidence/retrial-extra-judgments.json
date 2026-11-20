@@ -1,0 +1,133 @@
+{
+  "task": "AF-RES-010",
+  "scope": "Q5 direct candidate readings; novelty and final aggregate deduplication remain root integration checks",
+  "judgments": [
+    {
+      "id": "J-D01",
+      "candidate_id": "D01",
+      "source_id": "D01",
+      "problem": "P1",
+      "representation": "R1",
+      "query_ids": [
+        "P1-R1-03",
+        "P1-R1-05"
+      ],
+      "candidate_family": "restart_permission_interlock",
+      "proposed_use": "중단 원인 제거·재시도 준비와 결과 공개 동작을 분리하는 gate의 좁은 설계 참고",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source": "위험 조건 해소와 reset은 재가동 가능 상태를 만들지만 별도 start를 요구한다.",
+          "target": "H: 실패 해소와 재계산 완료는 공개 준비 상태를 만들고, 공개는 별도 허가 판정으로 시작한다.",
+          "preserved_relation": "상태 복구/허가와 비가역적 외부 동작 개시를 분리"
+        }
+      ],
+      "bridge": [
+        "H: P1의 입력 동일성 기준, 항목별 공개 상태, crash 뒤에도 남는 상태 저장을 추가해야 한다.",
+        "H: 공개 허가 확인과 공개 기록을 원자적으로 연결하고 같은 입력의 재전송을 구분해야 한다.",
+        "H: 제조 manual reset의 사람 확인을 소프트웨어의 자동 판정으로 바꾸려면 판정 근거가 무엇인지 지정한다; 단순 프로세스 재시작으로 gate를 열지 않는다."
+      ],
+      "excluded": [
+        "원문은 영속 공개 ledger나 exactly-once 부작용을 제공하지 않는다.",
+        "p.71의 redundant pair를 여러 독립 처리 항목으로 치환해 실패한 채널만 멈춘다고 설명하면 원문과 반대다.",
+        "P1 자체 운영 가능한 완성 도구·OCR 처리·실패 목록 기능의 직접 후보는 아니다."
+      ],
+      "counterexample": "D1: 원문 p.69의 Automatic Power-Up은 latch가 있어도 logic ON이면 출력을 켤 수 있다. H: 이에 대응하는 '재기동하면 공개 gate를 항상 열기'를 적용하면 이미 공개한 입력을 다시 공개할 수 있다.",
+      "minimum_next_check": {
+        "input": "H: 입력 A를 공개한 직후 공개 확인 응답 전에 프로세스를 중단하고, A를 두 번 재전송한 뒤 복귀한다.",
+        "required_observation": "공개 회수는 A당 1회이고, 다른 성공 입력 B는 남으며, 미공개/실패 항목의 상태를 구별할 수 있어야 한다.",
+        "execution_status": "proposed_not_run"
+      },
+      "origin_evidence": "제조사 제품 매뉴얼의 상태·조건 계약(D1); 효과를 정량 비교한 실험은 아님.",
+      "assessment_scope": "reference_design",
+      "target_application_level": "H; no D4",
+      "runtime_observation": "not_performed"
+    },
+    {
+      "id": "J-D02",
+      "candidate_id": "D02",
+      "source_id": "D02",
+      "problem": "P2",
+      "representation": "R2",
+      "query_ids": [
+        "P2-R2-08"
+      ],
+      "candidate_family": "annotated_source_correction_preservation",
+      "proposed_use": "상충하는 원기록을 즉시 지우지 않고 교정·이견을 구별해 함께 보여 주는 충돌 검토 표현의 좁은 참고",
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "bucket": "new_candidate",
+      "far_domain": true,
+      "mapping": [
+        {
+          "source": "원진술과 교정은 sic·주석으로 함께 보존할 수 있고 편집 단계는 새 사본·변경 추적을 사용한다.",
+          "target": "H: 두 수정 및 변경자·출처를 유지하고 해결 설명을 별도 레코드로 연결한다.",
+          "preserved_relation": "원자료와 수정된 해석의 역할을 구별하여 검토 가능성을 유지"
+        }
+      ],
+      "bridge": [
+        "H: 순차적 편집 사본을 오프라인 분기로 바꾸려면 수정 ID·기준 버전·인과관계와 영속 저장을 정의한다.",
+        "H: narrator 1인의 최종 권한을 팀 기록에 그대로 적용하지 말고 누구에게 어떤 해결 권한이 있는지 명시한다.",
+        "H: 해결 전 원수정 모두를 확인 가능하게 하고, 내보내기에도 필요한 출처·해결 관계를 담는 형식을 정한다."
+      ],
+      "excluded": [
+        "원문은 자동 병합·네트워크 복구·복제 알고리즘의 근거가 아니다.",
+        "모든 이력이 최종 공개 transcript에 보존된다고 주장하지 않는다; 원문 Finalize는 요청된 생략의 무표기를 허용한다.",
+        "원진술이 틀렸다는 편집 판단과 사용자 간 동시 수정 충돌은 같은 사건이 아니다."
+      ],
+      "counterexample": "D1: 원문은 최종 화자 수정과 생략을 표시 없이 반영하도록 허용한다. H: 최종 공개문서만을 유일한 동기화/내보내기 기록으로 쓰면 상충했던 원수정의 존재와 해결 경위를 확인할 수 없을 수 있다.",
+      "minimum_next_check": {
+        "input": "H: 같은 기준 기록에서 A는 날짜를 수정하고 B는 기존 날짜가 의도된 것이라는 설명을 추가한다; 양쪽을 오프라인 저장한 뒤 재접속한다.",
+        "required_observation": "두 입력과 작성자·근거를 나란히 확인하고 해결 이벤트를 남긴 뒤, 내보낸 파일에서도 이 관계를 재구성할 수 있어야 한다.",
+        "execution_status": "proposed_not_run"
+      },
+      "origin_evidence": "구술사 전문기관의 편집·화자 검토 절차(D1); 소프트웨어 요구 충족 실험은 아님.",
+      "assessment_scope": "reference_design",
+      "target_application_level": "H; no D4",
+      "runtime_observation": "not_performed"
+    },
+    {
+      "id": "J-D03",
+      "candidate_id": "D03",
+      "source_id": "D03",
+      "problem": "P2",
+      "representation": "R1",
+      "query_ids": [
+        "P2-R1-06"
+      ],
+      "candidate_family": "reactive_current_state_combination",
+      "proposed_use": "combine이라는 정보 결합 동사를 오프라인 수정 분기의 보존·충돌 해결 연산으로 해석",
+      "T": "analogy_only",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "bucket": "surface_false_positive",
+      "far_domain": false,
+      "mapping": [
+        {
+          "source": "여러 현재 store 값을 읽어 파생 store를 재계산한다.",
+          "target": "질의가 요구한 것은 복귀한 여러 수정의 출처·인과·충돌을 유지하는 병합이다.",
+          "preserved_relation": "현재 값의 결합이라는 표면 기능만 같고 이력/분기 보존 관계는 이 API 계약에 없다."
+        }
+      ],
+      "bridge": [
+        "H: 이력 저장·분기 식별·충돌 감지·해결·내보내기를 별도로 구현해야 하며 이는 combine API가 제공한다고 읽을 수 없다."
+      ],
+      "excluded": [
+        "Effector를 이용해 별도 동기화 UI를 작성할 가능성을 부정하지 않는다.",
+        "자료 부족으로 모든 제품 기능을 탈락시킨 것이 아니라, 제안된 combine 자체의 역할이 다른 것을 확인한 판정이다."
+      ],
+      "counterexample": "H: $a와 $b가 현재 문자열 값만 보유한 상태에서 combine($a,$b,(a,b)=>a)를 사용하면 선택되지 않은 수정은 파생값에 없다. 문서의 순수 함수·같은 tick batching 계약은 잃은 분기를 복구하는 규칙을 추가하지 않는다.",
+      "minimum_next_check": {
+        "input": "H: 같은 원기록의 독립 수정 A/B와 재연결 순서 B→A, A→B를 대상으로 보존 상태와 충돌 표시의 API 계약을 요구한다.",
+        "required_observation": "combine만으로 수정 식별·이력 보존을 설명하지 못하면 오프라인 충돌 해결 후보로 채택하지 않고 로컬 표시용 부품으로 범위를 제한한다.",
+        "execution_status": "document_contract_checked; runtime_not_performed"
+      },
+      "origin_evidence": "공식 API 문서의 현재 값→파생값 알고리즘(D1).",
+      "assessment_scope": "candidate_role_mismatch",
+      "target_application_level": "H; no D4",
+      "runtime_observation": "not_performed"
+    }
+  ]
+}
