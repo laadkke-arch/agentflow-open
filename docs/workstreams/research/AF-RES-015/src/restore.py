@@ -116,17 +116,23 @@ def apply_then(records):
             row.update(then_verdict=None, then_evidence=None)
             yield row
             continue
-        proof = manual.get(row["reason_id"]) or targeted.get(row["reason_id"]) or (
+        review = manual.get(row["reason_id"])
+        fixed = targeted.get(row["reason_id"])
+        proof = review or fixed or (
             pinned.get((row["predicate"], row["answer_date"]))
             if "후대 편집" not in row["evidence_locator"]["position"] else None
         )
         if proof:
+            if row["answer_date"] and proof["historical_date"] > row["answer_date"]:
+                if not (review and review["interval"] and fixed and
+                        fixed["historical_date"] <= row["answer_date"] and
+                        review["verdict"] == fixed["verdict"]):
+                    raise ValueError(f"Post-answer evidence for initial state {row['reason_id']}")
+                proof = {**fixed, "interval": review["interval"], "later_observation": review}
             row["then_verdict"] = proof["verdict"]
             row["then_evidence"] = dict(proof)
             if proof.get("interval") and proof["verdict"] == "성립":
                 row["break_interval"] = proof["interval"]
-            if row["reason_id"] == "T009.A001/directus-oss" and row["reason_id"] in targeted:
-                row["then_evidence"]["supporting_git"] = targeted[row["reason_id"]]
         else:
             row["then_verdict"] = "판단 불가"
             row["then_evidence"] = {

@@ -64,7 +64,7 @@
 
 ### Q3 답 시점 복원
 
-답 시점 상태를 137개 이유(101개 답)에서 복원했다. Git 고정판 114개와 날짜 있는 공식 기록 23개다. 이 중 130개 이유에는 확인된 답 날짜가 있다. 양쪽 성립 여부를 판정할 수 있고 답 시점에 성립한 이유 83개 중 5개(6.0%)가 현재 무너졌다. 5개 중 두 Almond 행은 같은 통합 제거를 가리키고 OpenZFS 한 행은 종전 제약을 없앤 기술 개선이다. 긍정 추천 속성만 남기면 후발 무너짐은 4행이다. Directus와 Dcoder의 변화는 정확한 답 날짜와 시행일이 있다. Mattermost·Rocket.Chat·Roo Code·TinyCC 4개 이유는 답 이전 사실에 반해 노후화 분자에서 제외했다. 고정판의 기능이 있었다는 증거와 개인 계정의 사용 여부를 구분했다. [과거 근거 원장](REASONS.jsonl), [tag 날짜](results/tag-date-observations.jsonl), [시행일 입력](results/cadence.json)
+답 시점 상태를 137개 이유(101개 답)에서 복원했다. Git 고정판 115개와 날짜 있는 공식 기록 22개다. 이 중 130개 이유에는 확인된 답 날짜가 있다. 양쪽 성립 여부를 판정할 수 있고 답 시점에 성립한 이유 83개 중 5개(6.0%)가 현재 무너졌다. 5개 중 두 Almond 행은 같은 통합 제거를 가리키고 OpenZFS 한 행은 종전 제약을 없앤 기술 개선이다. 긍정 추천 속성만 남기면 후발 무너짐은 4행이다. Directus와 Dcoder의 변화는 정확한 답 날짜와 시행일이 있다. Mattermost·Rocket.Chat·Roo Code·TinyCC 4개 이유는 답 이전 사실에 반해 노후화 분자에서 제외했다. 고정판의 기능이 있었다는 증거와 개인 계정의 사용 여부를 구분했다. [과거 근거 원장](REASONS.jsonl), [tag 날짜](results/tag-date-observations.jsonl), [시행일 입력](results/cadence.json)
 
 ### Q4 값싼 신호
 
