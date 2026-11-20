@@ -45,7 +45,7 @@
 
 v1: 표본 열람 전 고정. 건너뛴 후보는 실시간으로 `evidence/screening-*.json`에 누적하고, 최종 이 파일에 총수·이유·경로를 연결한다. v1 고정 때에는 아직 스레드 검색/열람하지 않았다.
 
-### 보완 질의 사전 고정 — 2026-11-20 05:19 UTC
+### 보완 질의 사전 고정 — 2026-11-20 (정확한 시각은 이 변경의 원격 커밋)
 
 초기 S1–S4/H1–H4 검색에서 태그·목록·설문·Show HN 비중이 높아 원래 질의만으로 층을 채우지 못했다. 아래 보완은 해당 결과를 보기 전에 추가한다. 포함 기준·최소 답 수·완전열람 기준·코딩은 바꾸지 않는다.
 
@@ -56,3 +56,17 @@ v1: 표본 열람 전 고정. 건너뛴 후보는 실시간으로 `evidence/scre
 - H9–H11에도 동일 날짜필터·관련도 순서·engine2→동일 engine1을 적용한다. 원래 H1–H8을 먼저 소진한다.
 
 셸 git push는 인증 부재로 실패했으므로 연결된 GitHub의 tree/commit/ref API로 같은 파일 묶음을 원격 커밋·게시한다. 첫 원격 고정 커밋은 `b1dc4258a6714cfedbc711eb271d022ee21ca71d`이며 실제 표본 조사는 그 뒤 시작했다.
+
+### Reddit 보완 질의 사전 고정 — 2026-11-20 (이 변경 커밋 이후 실행)
+
+R1–R8은 책 추천·홍보·프로필·단순 설문을 다수 반환했고, 개별 적격 후보 중에는 본문 접근 실패도 있었다. 기존 네 Reddit 사례는 보존하고 부족한 whole1/part5를 다음 순서로 선별한다. 기존 검색 결과의 프로필 URL은 개인정보 최소화를 위해 사용자명을 가린 `profile_result_redacted`로 제외 기록한다. 날짜 메타데이터가 검색 결과에 명시되고 본문 상대 날짜와 모순되지 않으면 날짜의 출처를 `search_published_metadata`로 따로 적는다. 본문 읽기 대신 검색 snippet을 쓰는 것은 여전히 금지한다.
+
+1. R9 `site:reddit.com/r/softwarearchitecture/comments/ "recommend" "library" -book -books`
+2. R10 `site:reddit.com/r/ExperiencedDevs/comments/ "recommend" "authentication"`
+3. R11 `site:reddit.com/r/devops/comments/ "recommend" "queue"`
+4. R12 `site:reddit.com/r/selfhosted/comments/ "looking for" "API" -inurl:user -intitle:removed -intitle:weekly`
+5. R13 `site:reddit.com/r/selfhosted/comments/ "alternative to" "backup"`
+6. R14 `site:reddit.com/r/golang/comments/ "recommend" "library"`
+7. R15 `site:reddit.com/r/rust/comments/ "recommend" "library"`
+
+동일 기간·정렬·선별·공개 댓글 완전열람 기준. R9–R15 engine2에서 부족하면 동일 engine1. 새로운 서브레딧을 실제 채택하면 그 규칙도 비스레드 원장에 포함한다. 전체/부분 할당을 채운 뒤 나온 후보는 `quota_filled`로 남긴다.
