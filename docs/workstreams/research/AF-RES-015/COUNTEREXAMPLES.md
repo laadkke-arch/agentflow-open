@@ -1,0 +1,15 @@
+# 반례 추적
+
+질의는 추천 이유의 반대 방향으로 선택했다. 같은 후보의 반복 코딩은 [혼동표의 deduplicated](results/confusion.json)에서 다시 확인한다.
+
+| 가정·반례 | 실제 질의·입력 | 확인 |
+| --- | --- | --- |
+| 404면 열 필터를 사용할 수 없다 | AF-RES-011 D039의 TanStack latest 경로와 v8 공식 `column-filtering / Column Filter State`를 대조 | T051.A001에서 이전 경로는 011 단회 404. v8 문서와 고정 v8.21.3 문서에 동일 로직이 있다. 새 경로의 열람은 기존 주소 재측정이 아니다. [011의 고정 관측](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/evidence/aging-observations.json), [v8 매뉴얼](https://tanstack.com/table/v8/docs/guide/column-filtering) |
+| archived·오래된 마지막 릴리스면 원래 기능이나 라이선스가 사라진다 | `github.com/nfnt/resize`의 archive 상태를 README Usage·함수 파일과 대조. `charmbracelet/soft-serve`의 archive와 self-hostable SSH, `lettier/gifcurry` 릴리스와 BSD를 대조 | T049.A005 이미지 리사이즈 인터페이스는 소스와 README에서 확인했다. T058.A021은 2026-10-26 보관 뒤에도 SSH Git 서버 코드·배포 설명을 제공한다. Gifcurry의 오래된 릴리스와 소스 사용권도 공존한다. [Resize](https://github.com/nfnt/resize), [Soft Serve](https://github.com/charmbracelet/soft-serve), [Gifcurry](https://github.com/lettier/gifcurry) |
+| 코드 저장소 및 주소가 열리면 추천 이유도 성립한다 | `site:directus.com Directus license changed Business Source License GPL 2023 2024 2025 MSCL Monospace change license`의 공급자 글과 고정 LICENSE 대조. `Dcoder shutdown official site dcoder discontinued app 2025 2026`의 제작자 안내 확인 | T009.A001의 저장소는 열리지만 공개 소스라는 조건을 지키던 적용 판이 2023년에 BSL로 바뀌었다. Directus는 2026년 v12부터 MSCL을 적용한다. T020.A001의 제작자 사이트는 열리지만 Dcoder는 2026-03-31 종료됐다. Dcoder의 추천 당시 앱스토어 주소와 후속 제작자 주소는 구분한다. [Directus의 전환 기록](https://directus.com/resources/changing-our-license-one-year-later), [Dcoder](https://dcoder.tech/) |
+| 현재 반박되는 추천 이유는 시간이 지나 깨진다 | `site:mattermost.com 2017 2018 threaded messaging Mattermost reply threads July 2020 integrated`, Rocket.Chat v1.0.0 HISTORY, Roo Code 문서의 종료 날짜, TinyCC 고정 매뉴얼 비교 | T001.A004의 두 경쟁 제품 스레드 미지원은 추천 이전에 이미 반박된다. T019.A001의 Roo Code 공식 확장 종료는 답보다 먼저다. T056.A008 인라인 어셈블리 미지원은 스레드 이전 고정 문서에서 반박된다. [Mattermost](https://mattermost.com/blog/mattermost-3-4-7-threaded-messages/), [Rocket.Chat 고정 이력](https://raw.githubusercontent.com/RocketChat/Rocket.Chat/1.0.0/HISTORY.md), [Roo Code](https://docs.roocode.com/) |
+| 보존본을 제공하면 읽는 사람이 현재 상태도 맞게 안다 | Roo Code 문서의 `Extension Shutdown`과 소개·Getting Started·2025/2026 릴리스 노트가 같은 보존본에 노출되는지 대조 | 보존된 공식 문서가 현재형으로 설치·연결 경로를 안내하는 부분과 2026-05-15 종료 배너를 동시에 보여 준다. T019.A001의 추천은 실제로 종료 뒤 올라왔다. 해당 답이 이 보존본을 사용했는지와 사람의 오인 비율은 미확인이다. [Roo Code 보존 문서](https://roocodeinc.github.io/Roo-Code/) |
+
+추가 반증에서는 Fly.io 무료 할당을 전면 종료로 처리하는 대신 기존 조직의 레거시 예외를 확인했다. T050.A049의 Railway PITR는 활성화해야 하므로 “기본 미제공”과 “기능이 없음”을 분리했다. T048.A002의 RAID-Z 증설 제약이 깨진 사례는 기술 개선이다. 이런 진술이 현재 틀렸다는 관측을 곧바로 제품 품질 하락으로 셀 수 없다. [Fly.io](https://docs.fly.io/about/discontinued-plans), [Railway PITR](https://docs.railway.com/volumes/point-in-time-recovery), [OpenZFS](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-attach.8.html)
+
+보관 배너·낡은 릴리스와 기능 증거는 비슷한 입력을 공유할 수 있다. 주표에서는 관리 상태의 날짜 기반 순환을 제외했다. 라이선스 이유도 라이선스 변경 신호의 독립 성능 집계에서 별도 처리했다. 표의 404가 정확히 붙은 추천 이유에서 오경보·놓침 다섯 사례를 모두 관측할 수 없었던 이유는 모집단 편입 후의 값싼 양성 관측 자체가 적기 때문이다.

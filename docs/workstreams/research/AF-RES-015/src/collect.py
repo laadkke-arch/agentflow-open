@@ -284,9 +284,9 @@ def identify_license(text):
     return ""
 
 
-def repo_signals(reader):
+def repo_signals(reader, exclude=frozenset()):
     for item in rows(ROOT / "results" / "repo-now.jsonl"):
-        if not item["canonical_repo"]:
+        if not item["canonical_repo"] or item["repo"] in exclude:
             continue
         url = f"https://github.com/{item['canonical_repo']}"
         query = quote(item["branch"], safe="/")
