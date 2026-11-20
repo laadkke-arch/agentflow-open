@@ -1,8 +1,8 @@
 # AF-RES-013 진행
 
 source_commit: a18d8d2e1575d9b679442134fd0f6f8e17423bfe.
-현재: 규칙·의존 결과 직접 읽기, SCOPE/SAMPLING 사전 고정. branch 없음을 원격 확인하고 생성.
-다음: 네 계열의 대체층/일반층을 스크리닝하고 역사적 prefix를 작성. prefix 모두 commit/push 후 gold commit.
+현재: A31개 실행을 원격 보존했고, B 카탈로그 실행과 후보별 판정을 진행 중이다.
+다음: B31개를 같은 접두부에 실행하고 모든 후보의 독립 문서 일치·L/E/H/T·시간 적격성을 집계한다. 아래는 초기부터의 변경 기록이다.
 manifest의 freshness_at_start=local_only는 CLI에 명시 local ref를 준 결과다. 별도 git ls-remote와 clone에서 같은 원격 SHA를 직접 확인했다.
 초기 manifest 생성 rev-parse 실패는 의존 branch refs를 fetch하여 해결했다. 외부 API 직접 read-only curl 200 확인, web KEP template 한 주소 실패는 제외 기록 예정.
 
@@ -34,3 +34,10 @@ P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 �
 
 - 직전 원격 중간 커밋: `fc930d1314051b09a60884ad6de2a2a763e9a6bb`(A16개). 이제 모든31개 접두부에 새 문맥 A 원 응답이 있다. `tools/audit_runs.py`가 raw_response·문맥 입력 표기·개별 검색/열람/후보 예산을 검사했다.
 - 판단은 별도 파일로 진행 중이다. 원 응답은 수정하지 않는다. B의 독립 카탈로그 실행을 시작했으며 최종 비교 결과는 아직 동결하지 않았다.
+
+
+## 기준선 B 첫 중간 보존
+
+- A31개 완료 원격 커밋: `0e7b6c34a3e490f94355048563979defe3bbf45b`.
+- B의 새 문맥 실행 C23·C02·C10·C08을 보존한다. 각 후보의 카탈로그 발견 경로와 실제 열람을 기록했으며, 사람 번역이 아닌 내부 모델 번역이다. C10의 조기 외부 페이지 열람은 원 기록에 남기고 해당 페이지·항목을 후보에서 제외했다.
+- 남은 B와 내부 별도 채점은 계속 진행한다. 이 커밋은 중간 보존이며 SELF_CHECK 통과·최종 완료를 뜻하지 않는다.
