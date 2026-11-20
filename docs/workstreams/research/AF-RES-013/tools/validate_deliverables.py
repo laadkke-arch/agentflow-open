@@ -141,9 +141,23 @@ def main():
         "q_sections": 8, "section4_weaknesses": 3, "local_report_links_resolve": len(local_links),
         "minimum_noncase": 25, "noncase_sites": len(Counter(s["site_group"] for s in counted)), "noncase_site_max": 3,
         "outside_owned_path": outside,
-        "file_hashes": {name: hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ["RESULT.md", "JUDGMENTS.json", "cases/CASES.json", "sources.json", "SEARCH_LOG.json"]},
+        "file_hashes": {name: hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ["RESULT.md", "JUDGMENTS.json", "cases/CASES.json", "sources.json", "SEARCH_LOG.json"] + (["SELF_CHECK.md"] if args.phase == "self-check" else [])},
         "limits": "구조·원장·조상·불변성 검증이며 원문 전수 재열람, 실제 사용자 효용, 모든 링크의 미래 생존을 증명하지 않는다. 차단을 성공으로 바꾸지 않는다."
     }
+    parallel_path = ROOT / "evidence/parallel-review-71d498d6556a/VALIDATION.json"
+    if parallel_path.exists():
+        parallel = json.loads(parallel_path.read_text())
+        assert parallel["integrity"] == "passed" and parallel["preserved_runs"] == 62
+        output["parallel_review"] = {
+            "path": "evidence/parallel-review-71d498d6556a/README.md",
+            "integrity": parallel["integrity"],
+            "snapshot_files": parallel["snapshot_files"],
+            "paired_judgments": parallel["paired_judgments"],
+            "changed_rows": parallel["changed_rows"],
+            "changed_fields": parallel["changed_fields"],
+            "consensus_adjudication": "not_performed",
+            "effect_on_acceptance": "SITE_CAP_CASES remains blocked; coding differences are disclosed, not resolved or averaged."
+        }
     (ROOT / "evidence/FINAL_VALIDATION.json").write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({k: output[k] for k in ["artifact_integrity", "strict_acceptance", "cases", "gold", "judgments", "tables", "minimum_noncase", "noncase_sites", "outside_owned_path"]}, ensure_ascii=False))
 

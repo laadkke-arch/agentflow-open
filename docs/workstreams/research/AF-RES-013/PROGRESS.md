@@ -121,3 +121,12 @@ P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 �
 - 기존 주판정은 A23/176·역사16, B14/176·역사5다. 이 작업공간의 별도 채점 A22/16·B8/2를 주점수로 덮어쓰지 않았다. 동일342후보에서 일치23행·라벨58행이 다르며, 다섯 대표행 검토에서는 어느 한쪽을 일괄 채택할 근거가 없었다. `evidence/parallel-review-71d498d6556a/`에230파일의 원본 delta·hash·전체 비교를 보존한다. 새로운 baseline 실행이나 독립 모델 재현으로 세지 않는다.
 - 별도 snapshot의 SELF_CHECK/FINAL_VALIDATION은 준비 중 상태이며 현행 인수 판단을 대체하지 않는다. 원격의 `BLOCKED — SITE_CAP_CASES`를 유지한다. 비사례 상한의 사전 해석은 사용자 예외 승인이 아니며, 사례31개에 문자적으로 적용하면3/30이다.
 - 다음: 비교 부록·주보고서의 이견 고지 커밋, 기존 산출물과 부록 무결성 재검사 및 SELF_CHECK 보완 커밋, 마지막 HANDOFF 단독 커밋과 해당 SHA 원격 본문 비교.
+
+
+## 비교 부록 원격 보존과 자기 점검 보완
+
+- 비교 부록·주보고서 이견 고지 원격 SHA: `8f25019fd4c51b1dd81d0e4a58677e2de22b1216`. 원격 tree와 로컬 staged tree `737c01264903dd5c2aae5ea814faf1f78a1389d3`가 일치했다. 기존 원격 HANDOFF `eb569f07`의 후속 커밋이며 비강제 갱신했다.
+- 원 snapshot230파일/4,752,466bytes·상세342행·원 실행62개 불변·출처 보조 원장1335열람/제외342건을 검사했다. 주보고서의 모든 표 셀은 이전과 동일하며 판정자 간 차이를 본문과부록에 명시했다.
+- SELF_CHECK에 미해결 일치23행·라벨58행과 실제 검증을 추가했다. 원격의 비사례25/13사이트·종류30/146·SITE_CAP_CASES 차단은 그대로다. 데이터·소유권 무결성 통과와 전체 인수 미충족을 분리한다.
+- 재개 검증 명령: `python docs/workstreams/research/AF-RES-013/tools/validate_deliverables.py --phase self-check` 및 `python docs/workstreams/research/AF-RES-013/evidence/parallel-review-71d498d6556a/validate_snapshot.py`. 다음 첫 행동은 사이트 상한 충족을 위한 별도 사전 선정 여부를 인수 처리하고, 새 우위 주장 전23/58차이 행을 원 응답·고정004규칙으로 재심하는 것이다.
+- 다음 마지막 절차: 이 자기 점검 묶음을 커밋·push한 뒤 HANDOFF만 단독으로 갱신·커밋·push하고 해당 SHA 원격 본문과 로컬 바이트를 비교한다.
