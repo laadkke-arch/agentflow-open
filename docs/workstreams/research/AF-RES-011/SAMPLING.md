@@ -70,3 +70,13 @@ R1–R8은 책 추천·홍보·프로필·단순 설문을 다수 반환했고, 
 7. R15 `site:reddit.com/r/rust/comments/ "recommend" "library"`
 
 동일 기간·정렬·선별·공개 댓글 완전열람 기준. R9–R15 engine2에서 부족하면 동일 engine1. 새로운 서브레딧을 실제 채택하면 그 규칙도 비스레드 원장에 포함한다. 전체/부분 할당을 채운 뒤 나온 후보는 `quota_filled`로 남긴다.
+
+### GitHub·기타 보완 질의 사전 고정 — 2026-11-20
+
+G1–G4 및 O1–O4에서 저장소 내비게이션·기사·도서관 의미의 library 등 비적격 결과가 많았다. 원래 질의를 먼저 소진한 뒤, 다음을 이 변경 커밋 이후 실행한다. 기간·정렬·최소 실질 답 2개·완전 열람 기준은 같다.
+
+- G5 `site:github.com inurl:discussions "library" "recommend" -inurl:categories -inurl:topics`
+- G6 `site:github.com inurl:issues "alternative to" "library" -inurl:topics`
+- O5 `site:lobste.rs/s/ "ask" "looking for"`
+- O6 `site:news.hada.io/topic "Ask GN" "추천"`
+- O7 `site:okky.kr/questions "라이브러리" "추천"`
