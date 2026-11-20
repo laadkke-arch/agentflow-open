@@ -1,4 +1,4 @@
-# AF-RES-011 — 코드북 v1 (표본 열람 전)
+# AF-RES-011 — 코드북 v1.3 (원 v1은 표본 열람 전 고정)
 
 고정 시각2026-11-20 05:10 UTC. 출발점은 AF-RES-001 `4d6208c08f6f2657865ba000d6768f6537e832b6` RESEARCH §5–7/CASES 정보명과 AF-RES-004 `2b798c7d2b7355b649691c18de196104ceabb0f0` PROTOCOL v1.1/RESEARCH §6–7이다. 선행8항목과4축을 재설계하지 않고 공개 대화에서 관측할 변수를 아래처럼 정의한다. 예시는 정의를 설명하는 합성이며 관측 사례로 세지 않는다.
 
@@ -67,7 +67,7 @@ AF-RES-004 4라벨은 `SURFACE_OR_CONSTRAINT_MISMATCH / INSUFFICIENT / CONDITION
 
 ## 6. 링크 관측 및 오래됨
 
-`link_status_now`는 배열: url, observed_at_utc, status(`accessible/redirected/archived/failed/blocked/not_linked`), final_url, evidence, level=D3. 접근 성공은 유지/기능 보증 아님. 도구가 접근 거절하면 blocked, 원격404/도메인 소실이 명시되면 failed. 리포지터리 배너로 archived를 확인. 옛 댓글의 dead/unmaintained 지적은 `historical_status_claim`으로 저장하고 현재 단회 결과와 섞지 않는다. URL fragment는 같은 문서로 중복 제거한다.
+`link_status_now`는 배열: url, observed_at_utc, status(`accessible/redirected/archived/failed/blocked/not_linked`), final_url, evidence. 실제 URL 관측은 level=D3, 문서에 링크가 없는 not_linked는 D1이다. 접근 성공은 유지/기능 보증 아님. 도구가 접근 거절하면 blocked, 원격404/도메인 소실이 명시되면 failed. 리포지터리 배너로 archived를 확인. 옛 댓글의 dead/unmaintained 지적은 `historical_status_claim`으로 저장하고 현재 단회 결과와 섞지 않는다. URL fragment는 같은 문서로 중복 제거한다.
 
 ## 7. 저장·분석·재코딩
 
@@ -80,3 +80,7 @@ CASES.json 루트는 `{study_id, codebook_version, cases:[...]}`. 필수 case �
 - v1.1의 형식 명료화: 이름/도메인+권유만은 링크 유무와 무관하게 `link_only`(최소 후보 제시)다. 기능이나 사용 조건 설명이 있지만 실제 URL이 없으면 `text_only`다. 실제 웹 링크만을 좁혀 센 결과를 별도로 보고해 명칭만 제시와 URL만 제시를 혼합하지 않는다. 원래 v1의 URL/이름 정의를 유지한 명료화이며 T044의 URL 없는 설명 2개를 교정한다.
 
 - v1.2 (2026-11-20, 블라인드 원응답 수령 후): whole/part 정의 누락을 발견해 최초 SAMPLING §1의 정의를 §1.1로 옮겼다. 원코딩·블라인드 원응답은 수정하지 않는다. 정보 항목·되묻기·형식·L/E/H/T 정의는 바꾸지 않는다. 15개 범위만 원판 코드를 주지 않고 추가 재코딩해 입력 정의의 영향을 따로 보고하며 최초 40% 일치율을 대체하지 않는다.
+
+- v1.3 (2026-11-20, 원판 재코딩 비교 뒤): 명백한 정보·형식 오류와 누락 답 단위를 보정하고 `evidence/adjudications.json`에 old/new·이유를 남겼다. 실제 하이퍼링크 부재(not_linked)는 D1, URL 열람은 D3로 구별한다. 같은 후보 이름이라도 독립된 사용 조건·구현·경험을 더하는 후속 답은 보존하고, 이미 부모 답의 반박 요약에 든 내용은 중복 추가하지 않는다. 추가43단위 중26을 포함하고17을 제외한 전수 판정은 `extra-answer-adjudication.json`에 있다. 원판15개의 코딩·블라인드 응답은 불변이다.
+- v1.3의 축 적용 명료화: 링크가 이미 있는 답에 설명·예제를 요구하는 것은 OTHER, 실제 주소/출처 부재·오류는 L이다. 타분야 위험의 비유나 같은 제품군 대안은 CROSS_DOMAIN으로 세지 않는다. 다른 제품 기능을 문제에 사용하는 명시 관계(DB→큐 등)는 포함하고 다른 학문분야 전이와 구별한다. 기능·지원 조건의 반박은 실제 선택 철회와 다를 수 있다.
+- v1.3의 반응 명료화: `adopt`의 identified/plan/in_progress/reported_use/integration 단계를 별도 기록한다. `try`도 read_or_consider_or_plan과 actual_trial을 구별한다. 2015년에 추가된 조건이 2017년 답보다 앞설 수 있으므로, 근접 오답의 시간 기준은 ‘최초 질문판’이 아니라 **해당 추천 시점에 알려진 조건**이다. 다른 독자가 그 뒤 새로 밝힌 필수조건은 별도 보완 사례다.
