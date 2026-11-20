@@ -89,3 +89,8 @@ P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 �
 - 예산 감사에서 B C12/C22의 opened_pages가 성공 수였으므로 실패 포함 charge25/22를 별도 필드로 교정했다. 원 run은 그대로다. A 질의326/보수 열람561, B 질의176/보수 charge703이며 모든 run이 지정 상한을 충족한다. find 포함 방식은 균일하지 않다.
 - 재개 환경은 `/workspace/scratch/013b978f520f/agentflow-open`, 세션 표시 모델은 `GPT-6 Astra Pro`다. 공개 git fetch는 성공했고 일반 git push는 비대화식 인증이 없어 실패했다. 기존 GitHub 연결의 commit/tree/ref 갱신으로 같은 작업 브랜치에 부모 SHA를 보존하여 게시하며, 로그인·권한 변경·force push를 하지 않는다.
 - 현재 원격 마지막 커밋은 위 재개 SHA다. 다음 묶음은 이 판정의 원격 커밋 후 RESULT·SEARCH_LOG·출처 통합이다. 재개 명령: `git fetch origin work/research-af-res-013` 후 원격 최신 PROGRESS와 커밋된 산출물을 확인한다. 전체 재검산 입력: `python docs/workstreams/research/AF-RES-013/tools/assemble_judgments.py`, 이어 `python docs/workstreams/research/AF-RES-013/tools/analyze_results.py` 및 `python docs/workstreams/research/AF-RES-013/tools/audit_runs.py`.
+
+
+## 최종 결과 검토의 날짜 일관성 정정
+
+판정 묶음은 `df974def5425a343b16784f78c0641cac3ab4d33`으로 원격 보존했다. 결과 검토에서 C08 A1의 날짜 있는 Haskell98 grammar와 날짜 미확인 상세 semantic mirror가 섞인 점을 확인했다. 원 run의 pre_decision은 보존하고 최종 판정 날짜를 unknown으로 맞췄다. 해당 행은 이미 역사 유용 수에서 제외되어 있었으므로 A 역사 gold16·정답밖 역사 유용83은 변하지 않는다. A 날짜 후보 수만103/22/79(pre/post/unknown)로 정정한다. 결과를 게시하기 전에 이 정정을 별도 커밋한다.
