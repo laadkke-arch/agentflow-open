@@ -1,5 +1,6 @@
 """Validate frozen research-run coverage and budgets, retaining instrument differences."""
 import json
+import re
 from pathlib import Path
 from datetime import datetime
 from collections import Counter
@@ -46,8 +47,12 @@ def main():
                     audit['notes'].append({'case_id':cid,'baseline':b,'candidate_rank':c['rank'],'issue':'Candidate URL lacks exact successful URL row; check redirects/supporting source before scoring E.'})
             code = [q for q in r['queries'] if q.get('tool') in ['grep.app','github_public'] or 'grep.app/api/search' in q.get('q','') or ('github.com/search' in q.get('q','') and 'code' in q.get('q',''))]
             if b=='A': assert code, (cid,'no public code search attempt')
-            native = any(('200' in q.get('result_note','') or 'succeeded' in q.get('result_note','').lower() or 'success' in q.get('result_note','').lower()) and not any(w in q.get('result_note','').lower() for w in ['no successful','did not succeed','not succeed']) for q in code)
-            # This is an audit aid, not proof of a public endpoint result; exact logs remain authoritative.
+            # Every A code-search result note was manually reviewed: 14 runs
+            # positively report HTTP 200, while 17 report inaccessible surfaces.
+            # Do not mistake phrases such as "no native ... success" for success.
+            native = any(re.search(r'HTTP\s+200',q.get('result_note',''),re.I) for q in code)
+            # Endpoint response is not evidence that every candidate came from
+            # code search, nor that all returned code snippets were read fully.
             audit['runs'].append({'case_id':cid,'baseline':b,'elapsed_seconds':elapsed,'queries_recorded':len(r['queries']),'query_attempts_budgeted':r['budget']['search_queries'],'retrievals_budgeted':r['budget']['opened_pages'],'opened_records':len(openings),'successful_open_records':sum(o.get('status')=='opened' for o in openings),'candidate_count':len(r['candidates']),'candidate_dates':dict(Counter(c['date_status'] for c in r['candidates'])),'exposure_count':len(r.get('exposures',[])),'exposure_stages':dict(Counter(x['stage'] for x in r.get('exposures',[]))),'native_code_success_reported':native if b=='A' else None,'code_query_records':code,'date_window_utc':[r['started_at_utc'],r['ended_at_utc']]})
         audit['coverage'][b]={'completed':len(found),'expected':len(expected),'missing':sorted(expected-found)}
     audit['notes'].append({'issue':'Agents sometimes conservatively count in-page finds or repeated opens in the document budget; preserve raw counts, do not pretend uniform effective browsing depth.'})
