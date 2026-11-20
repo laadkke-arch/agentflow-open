@@ -84,3 +84,7 @@ G1–G4 및 O1–O4에서 저장소 내비게이션·기사·도서관 의미의
 ### GitHub 공개 이슈 검색 보완 사전 고정 — 2026-11-20
 
 G5–G6도 웹 검색이 URL 필터를 무시하고 저장소·토픽 목록을 반환하여 부족하면, GitHub 공개 이슈 검색으로 전환한다. 이 변경 커밋 이후 G7 `is:issue is:public "alternative" "library" created:2014-01-01..2026-11-20 comments:2..80`, 이어 G8 `is:issue is:public "recommend" "library" created:2014-01-01..2026-11-20 comments:2..80`을 best-match 정렬, 처음20개씩 반환 순서로 검사한다. 댓글 수 필터는 실질 답 2개를 보장하지 않으므로 원래 포함 기준을 본문에서 다시 검사한다.
+
+### 한국어 부분 질문 보완 사전 고정 — 2026-11-20
+
+O1–O7을 소진한 뒤 기타 part2가 부족하면 O8 `site:news.hada.io/topic "Ask GN" "라이브러리"`를 이 변경 커밋 이후 실행한다. 기존 기간·engine2→engine1·관련도 반환순서·원문 및 2실질답 기준을 유지한다.
