@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "judge": "작업자",
+  "model_label": "GPT-6 Astra Pro",
+  "basis": "다른 내부 문맥의 경계 반증을 원 응답·gold 원문과 대조. 원 runs 불변.",
+  "overrides": [
+    {
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 4,
+      "replacement_fields": {
+        "gold_matches": [],
+        "strict_historical_gold_ids": [],
+        "post_decision_gold_ids": [],
+        "date_unknown_gold_ids": [],
+        "nongold_useful": true,
+        "nongold_historical_useful": false,
+        "judgment_note": "nsenter namespace descriptor/entry primitive의 참고 전이는 인정한다. 원 답변은 host troubleshooting binary의 출처·수명 결합을 제시하지 않으므로 K0277-G10과 동일 구조로 세지 않는다."
+      },
+      "reason": "G10의 host tool lifecycle 구조를 원 후보가 제안하지 않았다. 원 source가 구현할 수 있는 가능성을 후보가 실제 찾은 대안으로 확장하지 않는다.",
+      "evidence": [
+        "runs/A/C03.json#/candidates/3",
+        "runs/A/C03.json#/raw_response",
+        "cases/CASES.json#C03/K0277-G10",
+        "evidence/judging-recovery/c21-c31/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "case_id": "C05",
+      "baseline": "B",
+      "rank": 3,
+      "replacement_fields": {
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "error flood sampling을 producer report volume에 대응한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "unknown",
+            "reason": "원 응답은 message-only sampling의 의미 소실 위험과 semantic grouping key의 필요성을 적었지만 필드 차이를 보존하는 구체 equality/mapping을 제시하지 않았다. A의 구체 key를 B에 가져오지 않는다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "logger backend 채택이 아니라 producer semantics/behavior만 참고한다."
+          }
+        ],
+        "T": "unknown",
+        "transfer_mapping": {
+          "source_mechanism": "Use zap's error-flood sampling rationale and typed event fields as concrete examples of lowering reporting overhead while preserving readable context.",
+          "target_part": "Message classification and reporting hot path.",
+          "bridge_and_failure_conditions": "Its message-based duplicate identification may combine different field values; Kubernetes grouping needs an explicit semantic key and visible suppression.",
+          "assessment": "source sampling의 동작과 한계는 확인했으나 Event의 의미 동일성을 보존하는 핵심 연결이 원 B 응답에서 미확인이다.",
+          "scope": "reference design only; not implementation or deployment observation"
+        },
+        "label": "INSUFFICIENT",
+        "nongold_useful": false,
+        "nongold_historical_useful": false,
+        "judgment_note": "B 원 응답의 generic grouping rule을 A의 object/reporter/event type/meaningful parameter key로 보충했던 초기 판정 오류를 정정한다. 명시된 실패조건만으로 H2를 pass로 올릴 수 없다.",
+        "remaining_check": "B 후보의 semantic equality key와 서로 다른 object/reporter/event parameter를 합치지 않는 규칙을 명시하고 보존 사례를 대조하면 H2/T를 재판정할 수 있다. 원 실행에는 이 보충이 없었다."
+      },
+      "reason": "원 B 응답의 미제시 연결을 A의 구체 원 응답에서 가져온 판정 오류. known fail이 아니라 결정적 전제 unknown이므로 near_miss로 세지 않고 INSUFFICIENT.",
+      "evidence": [
+        "runs/B/C05.json#/raw_response",
+        "runs/B/C05.json#/candidates/2",
+        "runs/A/C05.json#/raw_response",
+        "evidence/judging-recovery/c21-c31/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "case_id": "C02",
+      "baseline": "A",
+      "rank": 4,
+      "replacement_fields": {
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "unique subordinate UID/GID range 할당을 pod identity 할당에 대응한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "not_in_scope",
+            "reason": "원 응답은 UID/GID range allocator와 namespace join만 참고한다. 두 ID pool은 확인되나 composite H2의 pod-scoped capability enforcement까지 이 후보가 제공한다고 주장하지 않으므로 전체 조건은 참고 범위 밖이다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "rootful path에서 workload identity를 remap하는 참고다."
+          }
+        ]
+      },
+      "reason": "교차검토 후 원 응답의 좁은 참고 범위에 맞춰 H의 의미를 한정한다. 라벨·유용 수·gold 회수는 변하지 않는다.",
+      "evidence": [
+        "runs/A/C02.json#/candidates/3",
+        "runs/A/C02.json#/raw_response",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 5,
+      "replacement_fields": {
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "not_in_scope",
+            "reason": "원 후보는 target PID 선택과 API-visible diagnostic lifecycle만 참고하며 namespace/filesystem inspection을 제공하지 않는다고 명시한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "진단 workload를 필요 시 API pod로 생성한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "실제 진단 작업을 pod object로 드러내는 lifecycle 참고다; shell audit 전체는 주장하지 않는다."
+          },
+          {
+            "constraint_id": "H4",
+            "value": "not_in_scope",
+            "reason": "일반 CRI debugging 지원은 주장하지 않는다."
+          },
+          {
+            "constraint_id": "H5",
+            "value": "not_in_scope",
+            "reason": "privileged tracing 자체를 사용자용 완성 attachment로 채택하지 않는다고 명시했다."
+          },
+          {
+            "constraint_id": "H6",
+            "value": "not_in_scope",
+            "reason": "일반 debugging spec admission은 별도다."
+          }
+        ]
+      },
+      "reason": "교차검토 후 원 응답의 좁은 참고 범위에 맞춰 H의 의미를 한정한다. 라벨·유용 수·gold 회수는 변하지 않는다.",
+      "evidence": [
+        "runs/B/C03.json#/candidates/4",
+        "runs/B/C03.json#/raw_response",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "case_id": "C24",
+      "baseline": "A",
+      "rank": 3,
+      "replacement_fields": {
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "Scala case-class parameter field 문법이 명시 gold와 동일하다. reference_design에서 제시된 부분/조건에 대한 판정이며 전체 구현 성공은 아니다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "Scala case-class parameter field 문법이 명시 gold와 동일하다. reference_design에서 제시된 부분/조건에 대한 판정이며 전체 구현 성공은 아니다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "not_in_scope",
+            "reason": "Scala case-class의 constructor/copy 형태를 참고한다. Swift hidden state와 여러 접근 수준을 혼합한 초기화 계약 전체는 원 응답에서 별도 설계로 남긴다."
+          }
+        ]
+      },
+      "reason": "교차검토 후 원 응답의 좁은 참고 범위에 맞춰 H의 의미를 한정한다. 라벨·유용 수·gold 회수는 변하지 않는다.",
+      "evidence": [
+        "runs/A/C24.json#/candidates/2",
+        "runs/A/C24.json#/raw_response",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c11-c20/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "case_id": "C30",
+      "baseline": "A",
+      "rank": 3,
+      "replacement_fields": {
+        "gold_matches": [],
+        "strict_historical_gold_ids": [],
+        "post_decision_gold_ids": [],
+        "date_unknown_gold_ids": [],
+        "nongold_useful": false,
+        "nongold_historical_useful": false,
+        "judgment_note": "고정 G04의 대안은 느린 NSString bridge의 성능 개선이다. counted initializer와 interop 경로를 지목한 원 답변에는 bridge 비용 개선 구조가 없어 본판정 불일치. 넓은 component 이름 회수는 민감도에만 남긴다."
+      },
+      "reason": "실제 골드의 기능적 비교 대상과 같은 namespace/API 이름을 구별한다. 원 판정의 넓은 component 회수를 엄격 본판정에 섞지 않는다. E/H unknown과 INSUFFICIENT는 유지한다.",
+      "evidence": [
+        "runs/A/C30.json#/candidates/2",
+        "runs/A/C30.json#/raw_response",
+        "cases/CASES.json#C30/S0027-G04",
+        "evidence/judging-recovery/c11-c20/CROSS_REVIEW.json"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "scope": "경계 교차검토 전체",
+      "disposition": "기록된 다른 agree 판정은 원 응답·제약 위치를 확인하여 유지한다. C14 A2의 H4 교정은 원 shard에서 이미 반영되어 재덮어쓰지 않는다.",
+      "artifacts": [
+        "evidence/judging-recovery/c01-c10/CROSS_REVIEW.json",
+        "evidence/judging-recovery/c11-c20/CROSS_REVIEW.json",
+        "evidence/judging-recovery/c21-c31/CROSS_REVIEW.json"
+      ]
+    },
+    {
+      "scope": "넓은 일치 민감도",
+      "disposition": "C03 A4 G10 및 C30 A3 G04를 더 넓게 인정할 경우 A의 날짜 무관 고유 gold는2 증가하나 엄격 역사 적중은 변하지 않는다. C22 B1 G08을 final synthesis 귀속에서 제외하면 B 날짜 무관 고유 gold가1 줄고 역사 적중은 변하지 않는다."
+    }
+  ],
+  "limitations": [
+    "이 검토는 분류 신뢰도 연구가 아니고 전체 후보를 복수의 독립 모델/사람이 재판정한 것이 아니다.",
+    "수정은 판정만을 바꾸며 입력 접두부·후보·검색질의·원 응답·동결 gold 항목 identity와 수를 바꾸지 않는다."
+  ]
+}

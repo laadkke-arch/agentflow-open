@@ -36,6 +36,13 @@ def main():
             else:
                 assert r['budget']['opened_pages']<=25 or elapsed<=1200
             openings = r['opened_documents']
+            charged = max(r['budget']['opened_pages'], len(openings),
+                          r['budget'].get('budget_pages_charged', 0),
+                          r['budget'].get('charged_page_budget', 0),
+                          r['budget'].get('open_attempts', 0))
+            assert charged <= (20 if b == 'A' else 25) or (b == 'B' and elapsed <= 1200)
+            if charged != r['budget']['opened_pages']:
+                audit['notes'].append({'case_id':cid, 'baseline':b, 'issue':'opened_pages field counts successes but failure-inclusive charged total is larger; preserve both.', 'reported_opened_pages':r['budget']['opened_pages'], 'conservative_charged':charged})
             for c in r['candidates']:
                 assert c['url'].startswith(('http://','https://'))
                 assert c['date_status'] in ('pre_decision','post_decision','unknown')
@@ -53,7 +60,7 @@ def main():
             native = any(re.search(r'HTTP\s+200',q.get('result_note',''),re.I) for q in code)
             # Endpoint response is not evidence that every candidate came from
             # code search, nor that all returned code snippets were read fully.
-            audit['runs'].append({'case_id':cid,'baseline':b,'elapsed_seconds':elapsed,'queries_recorded':len(r['queries']),'query_attempts_budgeted':r['budget']['search_queries'],'retrievals_budgeted':r['budget']['opened_pages'],'opened_records':len(openings),'successful_open_records':sum(o.get('status')=='opened' for o in openings),'candidate_count':len(r['candidates']),'candidate_dates':dict(Counter(c['date_status'] for c in r['candidates'])),'exposure_count':len(r.get('exposures',[])),'exposure_stages':dict(Counter(x['stage'] for x in r.get('exposures',[]))),'native_code_success_reported':native if b=='A' else None,'code_query_records':code,'date_window_utc':[r['started_at_utc'],r['ended_at_utc']]})
+            audit['runs'].append({'case_id':cid,'baseline':b,'elapsed_seconds':elapsed,'queries_recorded':len(r['queries']),'query_attempts_budgeted':r['budget']['search_queries'],'retrievals_budgeted':r['budget']['opened_pages'],'retrievals_conservative_charged':charged,'opened_records':len(openings),'successful_open_records':sum(o.get('status')=='opened' for o in openings),'candidate_count':len(r['candidates']),'candidate_dates':dict(Counter(c['date_status'] for c in r['candidates'])),'exposure_count':len(r.get('exposures',[])),'exposure_stages':dict(Counter(x['stage'] for x in r.get('exposures',[]))),'native_code_success_reported':native if b=='A' else None,'code_query_records':code,'date_window_utc':[r['started_at_utc'],r['ended_at_utc']]})
         audit['coverage'][b]={'completed':len(found),'expected':len(expected),'missing':sorted(expected-found)}
     audit['notes'].append({'issue':'Agents sometimes conservatively count in-page finds or repeated opens in the document budget; preserve raw counts, do not pretend uniform effective browsing depth.'})
     (ROOT/'evidence/RUN_AUDIT.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2)+'\n')

@@ -1,8 +1,8 @@
 # AF-RES-013 진행
 
 source_commit: a18d8d2e1575d9b679442134fd0f6f8e17423bfe.
-현재: A31개 실행을 원격 보존했고, B 카탈로그 실행과 후보별 판정을 진행 중이다.
-다음: B31개를 같은 접두부에 실행하고 모든 후보의 독립 문서 일치·L/E/H/T·시간 적격성을 집계한다. 아래는 초기부터의 변경 기록이다.
+현재: 재개 SHA caa2a814727dd485ed0eb9bb8530d6b16fab9584의 A31/B31 원 응답을 보존한 채 342개 후보 판정과 경계36행 내부 교차검토를 마쳤다.
+다음: 판정 묶음을 원격 보존한 뒤 RESULT·출처 통합, SELF_CHECK, 마지막 HANDOFF 단독 커밋과 원격 본문 대조를 진행한다. 아래는 초기부터의 변경 기록이다.
 manifest의 freshness_at_start=local_only는 CLI에 명시 local ref를 준 결과다. 별도 git ls-remote와 clone에서 같은 원격 SHA를 직접 확인했다.
 초기 manifest 생성 rev-parse 실패는 의존 branch refs를 fetch하여 해결했다. 외부 API 직접 read-only curl 200 확인, web KEP template 한 주소 실패는 제외 기록 예정.
 
@@ -77,3 +77,15 @@ P0386의 두 version 비교기를 합친 코딩 오류를 바로잡아 C31을 �
 - A204개·B138개 후보가 실제 생성되었다. 예산은 A검색12/열람20/후보15 이하, B열람25 또는20분 이하이며 실제 실패·노출·query 문자열을 남겼다. B C31의 질의17회는 B의 고정 예산에 질의 수 상한이 없다는 조건 아래 기록하며 A예산과 혼동하지 않는다.
 - 후보별 채점과 경계 내부 별도 검토를 마무리 중이다. 이벤트 스키마의 자연어 역할 대응은 초기 gold의 역할 분류와 SCOPE의 규칙 사이에 어긋남이 발견되어, 원문·규칙에 따른 정정과 최초 값을 함께 보존할 예정이다. 항목·접두부·원 응답을 결과에 맞춰 추가하지 않는다.
 - 다음: JUDGMENTS 묶음, 결과·비교·출처 묶음, SELF_CHECK 검증, 마지막 HANDOFF 단독 커밋과 원격 본문 대조.
+
+
+## AF-RES-013#2 재개 — 판정 묶음 완료
+
+- 먼저 원격 작업 브랜치의 최신 SHA `caa2a814727dd485ed0eb9bb8530d6b16fab9584`와 기존 산출물을 확인했다. 원본 source_commit `a18d8d2e1575d9b679442134fd0f6f8e17423bfe`를 유지한다. 재개 시 foundation 최신 `cc6ce55a261e5f3051c7fb9f203d846d65f64e75`의 AGENTS·STATE·DOT_AUTOMATION·RESEARCH_WORKFLOW·RESEARCH_BRIEF 및 control의 AF-RES-013 항목을 읽었다. 004/009/011의 고정 SHA에서 HANDOFF와 지정 입력을 다시 읽었다.
+- 커밋된 A31/B31 검색은 재실행하지 않았다. 이전 진행 기록의 미커밋 판정은 없는 것으로 보고, 342후보를 세 내부 별도 문맥에서 새로 문서 판정했다. 경계36행을 다른 내부 문맥이 교차검토하고 작업자가 조정했다. 사람·다른 모델 또는 사용자 평가가 아니다.
+- `JUDGMENTS.json`이 최종 판정이고 shard는 조정 전 근거다. root 조정6행과 이미 shard에 반영된 C14 A2 범위 조정은 원값·이유·위치로 추적한다. C03 A4의 과도한 구조 일치, C30 A3의 단순 component 회수, C05 B3에서 다른 기준선의 구체 매핑을 보충한 오류를 바로잡았다.
+- gold 항목 identity와176개 분모는 유지했다. C05 능동태→Event 필드 관계는 원 SCOPE에 맞춰 다른 분야 구조1건으로 정정하되 외부 문헌 인용0건과 구별했다. 토론 URL을 외부 제품 실체처럼 분류한4항목은 구조로 정정했다. 적중·비적중 모두 같은 규칙을 적용하고 최초 값을 CASES의 coding_revisions에 보존했다.
+- 현재 엄격 역사 적중은 A16/176, B5/176, 합집합17/176이다. 날짜 무관 본문 일치는 A23, B14, 합집합29다. 최종 수치는 `tools/analyze_results.py`로 재계산하며 역할·종류·시간·노출 민감도를 분리한다.
+- 예산 감사에서 B C12/C22의 opened_pages가 성공 수였으므로 실패 포함 charge25/22를 별도 필드로 교정했다. 원 run은 그대로다. A 질의326/보수 열람561, B 질의176/보수 charge703이며 모든 run이 지정 상한을 충족한다. find 포함 방식은 균일하지 않다.
+- 재개 환경은 `/workspace/scratch/013b978f520f/agentflow-open`, 세션 표시 모델은 `GPT-6 Astra Pro`다. 공개 git fetch는 성공했고 일반 git push는 비대화식 인증이 없어 실패했다. 기존 GitHub 연결의 commit/tree/ref 갱신으로 같은 작업 브랜치에 부모 SHA를 보존하여 게시하며, 로그인·권한 변경·force push를 하지 않는다.
+- 현재 원격 마지막 커밋은 위 재개 SHA다. 다음 묶음은 이 판정의 원격 커밋 후 RESULT·SEARCH_LOG·출처 통합이다. 재개 명령: `git fetch origin work/research-af-res-013` 후 원격 최신 PROGRESS와 커밋된 산출물을 확인한다. 전체 재검산 입력: `python docs/workstreams/research/AF-RES-013/tools/assemble_judgments.py`, 이어 `python docs/workstreams/research/AF-RES-013/tools/analyze_results.py` 및 `python docs/workstreams/research/AF-RES-013/tools/audit_runs.py`.

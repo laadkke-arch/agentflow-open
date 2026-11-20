@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "judge": "내부 별도 검토",
+  "scope": "추가 판정 검증만; 기준선 검색 예산에 소급 합산하지 않음",
+  "sources": [
+    {
+      "id": "JR1120-S01",
+      "url": "https://srfi.schemers.org/srfi-45/srfi-45.html",
+      "accessed_at_utc": "2026-11-20T15:03:03Z",
+      "source_type": "language_specification",
+      "title": "SRFI 45: Primitives for Expressing Iterative Lazy Algorithms",
+      "version_or_date": "Final 2004-04-05; bugfix 2004-08-04",
+      "sections_read": "Status; space-leak explanation; Specification; Reference implementation",
+      "confirmed": "Promise는 임의 값의 계산을 지연하고 force 시 결과를 보존한다. 반복적인 force 처리로 단순 delay/force 변환의 공간 문제를 다룬다.",
+      "limits": "Python annotation의 class/function-local scope 보존이나 descriptor 구현을 제시하지 않는다. 지연 계산 일반 구조와 P0563-G01 전체의 동일성은 별개다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "Q8",
+        "C14 A3"
+      ]
+    },
+    {
+      "id": "JR1120-S02",
+      "url": "https://docs.huihoo.com/pypy/2.6/config/objspace.std.withcelldict.html",
+      "accessed_at_utc": "2026-11-20T15:03:03Z",
+      "source_type": "project_documentation_mirror",
+      "title": "PyPy 2.6 withcelldict option",
+      "version_or_date": "PyPy 2.6 documentation",
+      "sections_read": "Option description; requirements; defaults",
+      "confirmed": "모듈 딕셔너리의 cell 표현이 JIT 전역 조회에 도움이 된다고 설명하고 기본값 false와 honor__builtins__ false 요구를 제시한다. 실제 변경 감지 알고리즘은 제공하지 않는다.",
+      "limits": "설정 옵션 설명만으로 Python의 모든 dynamic rebinding과 overridden builtins 의미가 보존된다고 판정할 수 없다. 원 run의 구현 소스 열람 실패를 채우지 못한다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "C12 A5"
+      ]
+    },
+    {
+      "id": "JR1120-S03",
+      "url": "https://man.openbsd.org/OpenBSD-5.3/open.2",
+      "accessed_at_utc": "2026-11-20T15:03:03Z",
+      "source_type": "operating_system_manual",
+      "title": "OpenBSD 5.3 open(2)",
+      "version_or_date": "OpenBSD 5.3; manual 2013-01-19",
+      "sections_read": "DESCRIPTION; O_CLOEXEC; ordinary descriptor inheritance; dated footer",
+      "confirmed": "O_CLOEXEC는 새 descriptor에 FD_CLOEXEC를 설정한다. 일반 open의 상속 기본값과 이를 바꾸는 생성 플래그는 구별된다.",
+      "limits": "Python 전체 생성 경로의 기본 정책이나 optional cloexec 인자 설계 자체를 제시하지 않는다. 이는 kernel 동작과 생성 primitive 근거다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "Q8",
+        "C11 A2"
+      ]
+    },
+    {
+      "id": "JR1120-S04",
+      "url": "https://github.com/rust-lang/rfcs/blob/main/text/0085-pattern-macros.md",
+      "accessed_at_utc": "2026-11-20 UTC (clock second not preserved)",
+      "source_type": "design_proposal",
+      "title": "Rust RFC 0085 pattern macros (live copy)",
+      "version_or_date": "live",
+      "sections_read": "Summary; Motivation; Alternatives",
+      "confirmed": "대안은 패턴 전체 왼쪽 부분, result expression을 포함한 arm, 그리고 custom match 전체를 다루는 것으로 구별된다. 전체 match의 사용자 문법은 procedural macro 대안으로 설명된다.",
+      "limits": "현재 사본이므로 고정 gold는 별도 S08로 다시 대조했다. 일반 boolean matches 매크로가 모든 arm과 사용자 문법을 지원한다는 근거가 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "C19 A4"
+      ]
+    },
+    {
+      "id": "JR1120-S05",
+      "url": "https://raw.githubusercontent.com/python/peps/0efb6d7b3ec34a093a341551d7209aaf6e9dff2b/pep-0433.txt",
+      "accessed_at_utc": "2026-11-20T15:04:40.555379+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "PEP 433 Alternatives",
+      "version_or_date": "0efb6d7b3ec34a093a341551d7209aaf6e9dff2b",
+      "sections_read": "Alternatives",
+      "confirmed": "선택적 인자와 기존 기본값 유지, 단방향 전역 설정, 기본 비상속과 예외, atfork 닫기, fopen mode 대안을 구별한다. atfork는 실행 경로와 thread 안전성 문제가 함께 설명된다.",
+      "limits": "정답원에 적힌 대안만 확인한다. OS close-on-exec primitive 하나를 찾았다고 Python API 정책 대안 전체를 회수한 것은 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q7",
+        "Q8",
+        "C11"
+      ]
+    },
+    {
+      "id": "JR1120-S06",
+      "url": "https://raw.githubusercontent.com/python/peps/cfa69b62a19c959b70e806591b2c9dbe93fd6e0b/pep-0563.rst",
+      "accessed_at_utc": "2026-11-20T15:04:48.743323+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "PEP 563 Rejected Ideas",
+      "version_or_date": "cfa69b62a19c959b70e806591b2c9dbe93fd6e0b",
+      "sections_read": "Rejected Ideas: function-local state; module-only names; __annotations_text__; -O; raw string literal",
+      "confirmed": "Lambda 대안은 함수 지역 상태를 annotation 계산에 남기는 목적이며 frame/cell 보유 문제가 설명된다. 별도 lazy annotation mapping, 값 제거, raw literal 표현은 독립 대안이다.",
+      "limits": "단순 deferred callback이나 promise가 Python의 함수·class scope 요구까지 만족한다는 증거는 아니다. 검토 중 source를 보고 baseline 원 응답을 확장하지 않았다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q7",
+        "Q8",
+        "C14"
+      ]
+    },
+    {
+      "id": "JR1120-S07",
+      "url": "https://raw.githubusercontent.com/rust-lang/rfcs/ef22d548abb5b85b08a5858cca2781e20e44f4bd/active/0000-new-intrinsics.md",
+      "accessed_at_utc": "2026-11-20T15:04:56.344462+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "Rust new intrinsics Alternatives",
+      "version_or_date": "ef22d548abb5b85b08a5858cca2781e20e44f4bd",
+      "sections_read": "Alternatives",
+      "confirmed": "Intrinsic attribute 대안은 intrinsic의 계속된 재선언을 허용하는 조건을 포함한다. Lang item 재선언과 Rust ABI coercion/equivalence는 별도 대안이다.",
+      "limits": "Intrinsic 이름을 attribute로 지정한다는 사실만으로 재선언이나 ABI 등가 조건을 확인할 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q7",
+        "C15 B3"
+      ]
+    },
+    {
+      "id": "JR1120-S08",
+      "url": "https://raw.githubusercontent.com/rust-lang/rfcs/59bdf1bd683e2872305a895d60406417c61f182c/active/0000-pattern-macros.md",
+      "accessed_at_utc": "2026-11-20T15:05:03.801074+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "Rust pattern macros Alternatives",
+      "version_or_date": "59bdf1bd683e2872305a895d60406417c61f182c",
+      "sections_read": "Drawbacks; Alternatives",
+      "confirmed": "패턴·guard, result를 포함한 arm, match 전체로 확장하는 세 가지 범위를 구별한다. 임의 사용자 문법을 감싸는 전체 match 해결책은 procedural macro와 합성성 문제로 설명된다.",
+      "limits": "Boolean을 반환하는 matches! 같은 부분 도구와 whole-match custom syntax 대안의 동일성을 입증하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q7",
+        "C19 A4"
+      ]
+    },
+    {
+      "id": "JR1120-S09",
+      "url": "https://raw.githubusercontent.com/python/peps/ab15de6ab836f41e6be797b4de380a0233066ce8/pep-0699.rst",
+      "accessed_at_utc": "2026-11-20T15:11:19.911766+00:00",
+      "source_type": "pinned_successor_proposal",
+      "title": "PEP 699 Remove private dict version field from the public specification",
+      "version_or_date": "ab15de6ab836f41e6be797b4de380a0233066ce8",
+      "sections_read": "Motivation; Rationale; Specification; Backwards Compatibility; Rejected Ideas",
+      "confirmed": "CPython 3.11 특수화는 다른 검증 방법을 사용하므로 기존 dict version 필드의 명세를 철회한다. 필드 재사용 예로 write watcher를 언급하되 미래 구현을 확정하지 않으며, 보존 시 메모리 비용을 거절 이유로 든다.",
+      "limits": "2016년 baseline이 2023년 CPython 내부 변경을 예측했다는 근거가 아니다. Write-triggered invalidation의 구조 유사성만 별도로 비교할 수 있다.",
+      "level": "D1",
+      "used_in": [
+        "Q8",
+        "C12"
+      ]
+    },
+    {
+      "id": "JR1120-S10",
+      "url": "https://raw.githubusercontent.com/python/peps/a111ec493be2d52356c1451f074e4a7c70d9ad82/pep-0649.rst",
+      "accessed_at_utc": "2026-11-20T15:11:19.912402+00:00",
+      "source_type": "pinned_successor_proposal",
+      "title": "PEP 649 Deferred Evaluation of Annotations",
+      "version_or_date": "a111ec493be2d52356c1451f074e4a7c70d9ad82",
+      "sections_read": "Overview; Mistaken Rejection Of This Approach In November 2017; Motivation opening",
+      "confirmed": "Annotation 계산 함수를 compiler가 만들고 descriptor가 한 번 계산해 cache하는 구조를 제안한다. 2017년 lambda 논의의 class-scope 제한을 재검토하며 module·class·local/free variable을 다루는 점을 명시한다.",
+      "limits": "일반 promise나 forwardRef와 비교해 후속안의 scope 해결 및 format API는 추가 설계다. baseline이 이를 미리 완성했다는 주장을 허용하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q8",
+        "C14"
+      ]
+    },
+    {
+      "id": "JR1120-S11",
+      "url": "https://clang.llvm.org/docs/AttributeReference.html",
+      "accessed_at_utc": "2026-11-20T15:11:57.216146+00:00",
+      "source_type": "compiler_documentation",
+      "title": "Clang Attribute Reference: clang_builtin_alias",
+      "version_or_date": "live",
+      "sections_read": "clang::builtin_alias / clang_builtin_alias; target restriction",
+      "confirmed": "Builtin alias attribute는 특정 ARM/RISC-V intrinsic 선언을 내부 builtin과 연결하고 overload resolution 이후 인식을 허용한다. 임의 builtin의 일반 alias 기법으로 사용하도록 설계된 것은 아니다.",
+      "limits": "Rust intrinsic의 중복 재선언, 일반 function pointer 의미, Rust ABI 등가를 입증하지 않는다. 원 B3가 제시한 frontend 선언 선례 범위를 넘겨 gold 적중으로 만들지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "C15 B3"
+      ]
+    },
+    {
+      "id": "JR1120-S12",
+      "url": "https://raw.githubusercontent.com/python/peps/4434e728a7db24540d581f52e96570ca1230356e/peps/pep-0446.rst",
+      "accessed_at_utc": "2026-11-20T15:12:14.178048+00:00",
+      "source_type": "pinned_successor_proposal",
+      "title": "PEP 446 Non-inheritable file descriptors",
+      "version_or_date": "4434e728a7db24540d581f52e96570ca1230356e",
+      "sections_read": "Abstract; Rationale inheritance opening",
+      "confirmed": "Python이 만드는 descriptor의 기본 비상속을 제안하고 OS가 지원하는 원자적 생성 flag로 멀티스레드 race를 줄인다. subprocess close_fds만으로 해결되지 않는 실행 경로를 동기로 든다.",
+      "limits": "기존 PEP433이 채택된 후 번복됐다는 증거는 아니다. 기준선의 primitive나 협조 lock 발견을 Python API 변경 전체의 사전 회수로 세지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q8",
+        "C11"
+      ]
+    },
+    {
+      "id": "JR1120-S13",
+      "url": "https://raw.githubusercontent.com/python/peps/6aeaba7f23a1ce373e099a2b35db9525dbb11f6d/peps/pep-0734.rst",
+      "accessed_at_utc": "2026-11-20T15:12:14.178740+00:00",
+      "source_type": "pinned_successor_proposal",
+      "title": "PEP 734 Multiple Interpreters in the Stdlib",
+      "version_or_date": "6aeaba7f23a1ce373e099a2b35db9525dbb11f6d",
+      "sections_read": "Replaces/header note; Abstract; Motivation; Rationale A Minimal API",
+      "confirmed": "PEP554의 긴 논의에서 제안의 핵심을 줄인 연속 문서라고 밝힌다. Interpreter 객체, Queue 통신, InterpreterPoolExecutor를 포함하며 실제 사용자 경험 부족을 이유로 최소 API를 제시한다.",
+      "limits": "이 고정 판은 Draft이며 2025년 최종 수락을 2023년 결정으로 당기지 않는다. 일반 lifecycle/채널 참고 후보가 Queue 또는 executor 설계 전체를 회수했다고 볼 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q8",
+        "C13"
+      ]
+    },
+    {
+      "id": "JR1120-S14",
+      "url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/05ef3a9d51d81be80208a4d8d554a7eef2f8e3b5/proposals/0021-generalized-naming.md",
+      "accessed_at_utc": "2026-11-20T15:17:01.455354+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "SE-0021 Alternatives considered",
+      "version_or_date": "05ef3a9d51d81be80208a4d8d554a7eef2f8e3b5",
+      "sections_read": "Alternatives considered: general partial application; underscore spelling",
+      "confirmed": "일반 partial application은 인수 위치의 underscore를 placeholder로 쓰며 모두 placeholder이면 method reference를 구성한다. 제안은 기존 closure의 간결함과 인수 대응의 명확성을 이유로 이 확대 문법을 거절한다.",
+      "limits": "Scala 후보가 Swift의 같은 타입·다른 레이블 overload를 해결한다는 증거가 아니다. Forum 링크는 구체 구조 대안의 논의 출처이며 외부 제품 실체명이 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "cross-review C27 A2"
+      ]
+    },
+    {
+      "id": "JR1120-S15",
+      "url": "https://raw.githubusercontent.com/swiftlang/swift-evolution/83bdc871121565084645b8fe792874594ae18fed/proposals/0027-string-from-code-units.md",
+      "accessed_at_utc": "2026-11-20T15:17:01.456023+00:00",
+      "source_type": "pinned_design_proposal",
+      "title": "SE-0027 Alternatives considered",
+      "version_or_date": "83bdc871121565084645b8fe792874594ae18fed",
+      "sections_read": "Alternatives considered: NSString bridge faster; append growth; mutable views; decode protocol",
+      "confirmed": "NSString 항목은 단순 component 존재가 아니라 느린 bridge를 빠르게 만드는 대안이다. 원 저자도 읽은 bridge 코드에서 왜 느린지 명확히 찾지 못했다고 기록한다.",
+      "limits": "기존 counted initializer를 지목한 것과 bridge 병목 개선 대안을 찾은 것은 구별해야 한다. 이 판정 검증은 어떤 구현이 실제 더 빠른지 측정하지 않았다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "cross-review C30 A3"
+      ]
+    },
+    {
+      "id": "JR1120-S16",
+      "url": "https://open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1821.htm",
+      "accessed_at_utc": "2026-11-20T15:17:01.456454+00:00",
+      "source_type": "standards_proposal",
+      "title": "N1821 Extending Move Semantics To *this (Revision 1)",
+      "version_or_date": "N1821 2005-08-24",
+      "sections_read": "Proposal informal; Examples: prevent surprises, enable move semantics; proposed wording",
+      "confirmed": "cv와 lvalue/rvalue receiver를 구분해 overload하며 hidden receiver를 보통 인수처럼 바인딩한다. 예제는 lvalue의 copy와 rvalue 객체로부터 move를 구분한다.",
+      "limits": "Rvalue-qualified call이 closure의 single-use나 Rust의 독점 borrow를 자체 보장하지 않는다. 원 baseline의 상세 규칙은 snippet-only였으며 이 열람은 판정 단계의 추가 근거다.",
+      "level": "D1",
+      "used_in": [
+        "Q7",
+        "cross-review C21 A3"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "url": "https://github.com/python/peps/blob/a111ec493be2d52356c1451f074e4a7c70d9ad82/pep-0649.rst",
+      "accessed_at_utc": "2026-11-20 UTC (clock second not preserved)",
+      "status": "tool_blocked",
+      "reason": "Web open returned DisabledError; no body read in that attempt; separate ordinary urllib pinned raw read succeeded later as S10."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/python/peps/a111ec493be2d52356c1451f074e4a7c70d9ad82/pep-0649.rst",
+      "accessed_at_utc": "2026-11-20 UTC (clock second not preserved)",
+      "status": "tool_blocked",
+      "reason": "Web open returned DisabledError; no body read in that attempt; later ordinary urllib open succeeded as S10."
+    },
+    {
+      "url": "https://clang.llvm.org/docs/AttributeReference.html",
+      "accessed_at_utc": "2026-11-20T15:11:42.188254+00:00",
+      "status": "retrieved_but_no_body_section_displayed",
+      "reason": "Section-anchor extraction missed. Not counted as a substantive read; next retrieval displayed actual builtin_alias paragraph as S11."
+    }
+  ]
+}

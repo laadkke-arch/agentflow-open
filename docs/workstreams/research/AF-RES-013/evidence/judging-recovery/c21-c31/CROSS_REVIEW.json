@@ -1,0 +1,864 @@
+{
+  "schema_version": 1,
+  "reviewer": "내부 별도 검토",
+  "reviewed_shard": "evidence/judging-recovery/c01-c10/judgments.json",
+  "reviewed_shard_sha256": "bf5aba27f0ad7200c236619d7b3f87711c8cd382f4e8d128c9a74341a1c320ec",
+  "reviewed_at_utc": "2026-11-20T15:15:36Z",
+  "review_scope": "Seven priority structural-match boundaries plus nine previously requested H/T boundaries; original shard unchanged. Proposals are for root adjudication.",
+  "reviews": [
+    {
+      "review_id": "JR2131-XR-01",
+      "case_id": "C03",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "util-linux nsenter implementation and Linux setns semantics",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "suggest_change",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "K0277-G10",
+            "match_kind": "structural_design",
+            "rationale": "nsenter가 node 측 namespace descriptor를 열고 target namespace에서 child program을 실행하는 방안을 실제 원 응답에서 조사·설명했다. 권한 때문에 직접 node-admin 방식은 맞지 않는다고 구별했다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "namespace descriptor와 root/PID-child setup을 target inspection에 대응한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "not_in_scope",
+            "reason": "새 tools 공급 방식은 코드 primitive의 범위 밖이다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "not_in_scope",
+            "reason": "API audit/admission은 코드 primitive 범위 밖이다."
+          },
+          {
+            "constraint_id": "H4",
+            "value": "not_in_scope",
+            "reason": "CRI 공통계약 구현은 별도다."
+          },
+          {
+            "constraint_id": "H5",
+            "value": "pass",
+            "reason": "직접 node administration을 사용자 경로로 쓰지 않고 authorized runtime 뒤에 한정한다고 명시했다."
+          },
+          {
+            "constraint_id": "H6",
+            "value": "not_in_scope",
+            "reason": "complete debugger spec은 별도 API 설계다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "unknown"
+      },
+      "conclusion": "G10 적중 제거를 제안한다. namespace-entry primitive 자체의 조건부 참고 가치는 유지된다.",
+      "refutation_attempt": "고정 원문의 G10은 node가 공급하는 troubleshooting binary 실행과 node lifecycle coupling이다. 원 후보는 descriptor/entry/error/PID-child 구현을 authorized runtime 뒤에서 재사용한다고만 하며 binary 공급 위치·수명을 제안하지 않는다. nsenter 소스가 할 수 있는 일을 원 응답의 설계 선택으로 확장하면 안 된다.",
+      "proposed_changes": {
+        "gold_matches": [],
+        "strict_historical_gold_ids": [],
+        "post_decision_gold_ids": [],
+        "date_unknown_gold_ids": [],
+        "nongold_useful": true,
+        "nongold_historical_useful": false,
+        "label": "CONDITIONAL_TRANSFER"
+      },
+      "evidence_locations": [
+        "runs/A/C03.json#/candidates/3",
+        "runs/A/C03.json#/raw_response",
+        "runs/A/C03.json#/opened_documents",
+        "cases/prefix/C03.md",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/sources.json#JR2131-S05"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-02",
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "kubectl-nsenter: target resolution and namespace attachment",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "K0277-G10",
+            "match_kind": "structural_design",
+            "rationale": "원 응답과 실제 script는 SSH→crictl PID lookup→nsenter→node의 bash 실행을 명시한다. 이는 node binary를 target namespace에서 실행하는 rejected 구조를 회수한 것이다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "target PID lookup·namespace entry·rootfs 경로의 실제 코드 관계가 있다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "not_in_scope",
+            "reason": "tools image 공급은 attachment 코드 참고 범위 밖이다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "not_in_scope",
+            "reason": "API admission/audit는 이 코드 참고가 제공하지 않는다."
+          },
+          {
+            "constraint_id": "H4",
+            "value": "not_in_scope",
+            "reason": "runtime-specific path를 CRI 뒤로 옮기는 작업은 별도라고 밝힌다."
+          },
+          {
+            "constraint_id": "H5",
+            "value": "pass",
+            "reason": "SSH 자체를 채택하지 않고 authorized node-agent 뒤로 이동해야 한다는 제한이 원 응답부터 있다."
+          },
+          {
+            "constraint_id": "H6",
+            "value": "not_in_scope",
+            "reason": "complete-spec admission은 별도 API 설계다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "unknown"
+      },
+      "conclusion": "G10 구조 적중과 CONDITIONAL_TRANSFER를 유지한다.",
+      "refutation_attempt": "동일 nsenter 이름만의 일치인지 반증했다. 이 run은 실제 SSH→container/PID lookup→host bash와 namespace entry 코드까지 읽고 그 attachment 경로를 참고하므로 node binary 실행 구조가 구체적이다. 사용자에게 SSH를 요구하는 전체 해결책을 채택한 주장은 아니며 authorized node-agent/CRI 뒤로 이전할 부분을 원 응답부터 제한했다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/0",
+        "runs/B/C03.json#/raw_response",
+        "runs/B/C03.json#/opened_documents",
+        "cases/prefix/C03.md",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/sources.json#JR2131-S05"
+      ],
+      "limits": "원형의 node administration은 prefix 전체를 만족하지 않는다. 유지 판정은 attachment primitive reference와 rejected-structure recovery이고, 통합 성공이나 privileged 도구 자체의 적합 판정이 아니다."
+    },
+    {
+      "review_id": "JR2131-XR-03",
+      "case_id": "C04",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "OPA/Gatekeeper admission enforcement",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "K0279-G02",
+            "match_kind": "structural_design",
+            "rationale": "실제 후보인 Gatekeeper의 CRD-based policy를 Node label-write 권한 규칙에 쓰고 policy configuration을 보호한다고 명시한다. allowed-label policy를 API object로 관리하는 구조와 대응한다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "caller/old/new Node object를 검사해 trusted label의 무권한 생성·변경·삭제를 거부한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "sensitive selector는 protected key만 사용한다는 전제가 원 응답에 있다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "Node admission boundary만 다룬다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "unknown"
+      },
+      "conclusion": "G02만의 구조 적중을 유지한다.",
+      "refutation_attempt": "단순 admission이라는 단어만으로 API configuration을 추정했는지 점검했다. 실제 선택한 Gatekeeper와 열린 본문은 CRD policy templates를 제공하고, 원 응답은 그 정책을 Node create/update label authorization에 적용하며 policy configuration 보호를 조건으로 둔다. 이는 API object가 allowed-label 규칙을 관리한다는 구조와 대응한다. 고정 allowlist·file/flag 대안은 회수하지 않았다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C04.json#/candidates/0",
+        "runs/B/C04.json#/raw_response",
+        "runs/B/C04.json#/opened_documents",
+        "cases/prefix/C04.md",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/sources.json#JR2131-S07"
+      ],
+      "limits": "구체 CRD schema나 배포가 제출되었다는 뜻이 아니다. 정책 저장 형태를 명시한 후보 문장만 요구하는 더 엄격한 민감도에서는 경계 적중으로 보고할 수 있다; 원 실행은 실제 도구와 primary CRD 문서를 함께 제공했다."
+    },
+    {
+      "review_id": "JR2131-XR-04",
+      "case_id": "C07",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Common Lisp LOOP with multiple iteration clauses",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "P0201-G02",
+            "match_kind": "structural_design",
+            "rationale": "하나의 loop body에 여러 sequence별 binding/iteration clause를 두는 구문을 명시해 for x in seq1, y in seq2의 별도 binding 구조와 대응한다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "여러 sequence bindings를 한 loop에서 positional traversal로 처리한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "기존 loop 문맥에 복수 binding syntax를 추가하는 대안으로 제시한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "하나의 clause가 끝나면 종료하며 sequential/parallel stepping 차이를 명시한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "pre_decision"
+      },
+      "conclusion": "G02 구조 적중을 유지한다. G03에는 확대하지 않는다.",
+      "refutation_attempt": "공통 loop라는 표면 유사성을 반증했다. 각 sequence에 독립 binding/iteration clause를 두고 한 loop body를 공유하며 endpoint 종료와 sequential/parallel stepping을 명시한다. 이는 tuple target에 sequences를 나열하는 G03과 달리 G02의 개별 binding 구조다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C07.json#/candidates/1",
+        "runs/B/C07.json#/raw_response",
+        "runs/B/C07.json#/opened_documents",
+        "cases/prefix/C07.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Python의 구문 충돌을 해결했다는 주장이 아니라 비교 대상으로서 구조를 회수한 것이다. custom sequence adapter 구현은 원 응답부터 미제공이다."
+    },
+    {
+      "review_id": "JR2131-XR-05",
+      "case_id": "C08",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "Common Lisp LOOP collect/append with conditional clauses",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "P0202-G06",
+            "match_kind": "structural_design",
+            "rationale": "원 응답은 multiple for clauses가 입력을 함께 전진시키고 nested traversal에는 별도 nesting이 필요하다고 명시한다. 복수 for를 병렬 결합하는 대안과 구조가 대응한다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "collect/append가 새 list를 반환한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "conditional collect와 nested/appended inner result를 설명한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "pre_decision"
+      },
+      "conclusion": "G06 구조 적중을 유지한다.",
+      "refutation_attempt": "문서가 conditional accumulation만 있고 병렬 sequence traversal은 추측인지 확인했다. 본문 name/kids와 name/age 예제는 복수 sequence를 같은 위치로 전진시킨다. 원 응답도 multiple for clauses의 함께 전진과 별도 nesting 필요를 구별하므로 G06 관계가 명시되어 있다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C08.json#/candidates/1",
+        "runs/A/C08.json#/raw_response",
+        "runs/A/C08.json#/opened_documents",
+        "cases/prefix/C08.md",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/sources.json#JR2131-S06"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-06",
+      "case_id": "C08",
+      "baseline": "B",
+      "rank": 1,
+      "candidate_name": "Common Lisp LOOP list accumulation",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "P0202-G06",
+            "match_kind": "structural_design",
+            "rationale": "실제 응답은 여러 iteration variables가 함께 step하며 nested enumeration을 별도로 정해야 한다고 명시한다. 복수 for parallel semantics를 회수한 구조 적중이다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "collect/append가 list accumulation을 제공한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "iteration과 conditional tests를 같은 construct에 결합한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "pre_decision"
+      },
+      "conclusion": "G06 구조 적중을 유지한다.",
+      "refutation_attempt": "원 B 응답이 simultaneous iteration versus nesting을 명시하며, 실제 열린 같은 Value Accumulation 페이지에 독립 sequence들의 positional 결합 예제가 있다. list generation/conditional collection이 확인되어 prefix H1/H2에 대응한다. 병렬이라는 표현을 thread concurrency로 잘못 해석하지 않았다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C08.json#/candidates/0",
+        "runs/B/C08.json#/raw_response",
+        "runs/B/C08.json#/opened_documents",
+        "cases/prefix/C08.md",
+        "cases/CASES.json",
+        "evidence/judging-recovery/c21-c31/sources.json#JR2131-S06"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-07",
+      "case_id": "C09",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "Cython typed integer-loop lowering",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "P0204-G01",
+            "match_kind": "external_entity",
+            "rationale": "후보는 Python의 recognizable numeric range loops를 type/direction 조건으로 lowering하는 구체 구현을 설명하고, 실제 열린 문서가 range 호출을 명시한다. 이 후보의 적용 대상인 range 실체만 인정한다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "range loop의 bounds/stride를 lowering 조건으로 다룬다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "typed induction variable을 가진 numeric iteration이 대상이다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "arbitrary builtin rebinding에 대한 안전성을 입증하지 못한다고 분명히 제한하고 proof/guard 의무를 남긴다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "post_decision"
+      },
+      "conclusion": "range 실체 적중을 유지하되 post-decision에만 둔다.",
+      "refutation_attempt": "Cython 제품 자체와 range를 같게 센 오류인지 점검했다. 원 structured candidate와 열람 기록은 실제 Python range loop를 C-integer induction 변수와 known direction 조건에서 lowering하는 사용을 제시한다. 원 raw의 마지막 synthesis도 proven binding 또는 runtime identity guard/fallback을 제안하므로 H3는 단지 caveat로 미확인을 pass 처리한 것이 아니다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C09.json#/candidates/2",
+        "runs/B/C09.json#/raw_response",
+        "runs/B/C09.json#/opened_documents",
+        "cases/prefix/C09.md",
+        "cases/CASES.json"
+      ],
+      "limits": "range라는 단어만 있는 수학적 interval은 아니다. xrange나 비공개 C helper G09로 확대하지 않는다. 문서의 later edition을 2000년 자료로 소급하지 않는다."
+    },
+    {
+      "review_id": "JR2131-XR-08",
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 2,
+      "candidate_name": "client-go delaying work queue",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "K0019-G04",
+            "match_kind": "structural_design",
+            "rationale": "원 응답은 AddAfter와 timer-driven heap으로 다음 실행 key를 보류한다고 명시해 Heap based timer와 구조가 같다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "다음 cron 발생까지의 간격을 AddAfter에 전달한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "informer 즉시 enqueue와 시간 기반 enqueue를 함께 쓰며 반복 API polling을 요구하지 않는다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "not_in_scope",
+            "reason": "메트릭은 이 큐 후보가 맡지 않는다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "unknown"
+      },
+      "conclusion": "timer queue의 조건부 전이와 기존 적중을 유지한다.",
+      "refutation_attempt": "AddAfter만으로 cron schedule이 해결되는지 반증했다. 원 응답은 next activation 계산→queue key→ordinary workers, informer immediate enqueue를 구체적으로 연결하며 restart reconstruction과 earlier-deadline dedup에 따른 recheck를 명시한다. 아직 계산되지 않은 설계 해법을 caveat만으로 통과시킨 경우와 다르다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/1",
+        "runs/A/C01.json#/raw_response",
+        "runs/A/C01.json#/opened_documents",
+        "cases/prefix/C01.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-09",
+      "case_id": "C01",
+      "baseline": "A",
+      "rank": 7,
+      "candidate_name": "Prometheus histogram and summary guidance",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "not_in_scope",
+            "reason": "예약 계산 자체는 계측 후보 범위 밖이다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "not_in_scope",
+            "reason": "관측 방식을 계측 후보가 대신하지 않는다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "queue/reconcile/schedule lateness를 분리하고 count/sum/bucket으로 측정한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "unknown"
+      },
+      "conclusion": "정답 밖 instrumentation reference의 조건부 유용성을 유지한다.",
+      "refutation_attempt": "Prometheus 이름만으로 H3를 통과했는지 확인했다. 원 응답의 queue delay/reconcile duration/intended schedule-to-creation delay와 success-creation counter는 측정 사건을 구체적으로 지정한다. buckets와 summary aggregation 위험을 명시하며 timer/scheduling H1/H2는 scope 밖으로 둔다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C01.json#/candidates/6",
+        "runs/A/C01.json#/raw_response",
+        "runs/A/C01.json#/opened_documents",
+        "cases/prefix/C01.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-10",
+      "case_id": "C02",
+      "baseline": "A",
+      "rank": 4,
+      "candidate_name": "Podman v4.3 automatic user-namespace allocation",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "qualify",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "unique subordinate UID/GID range 할당을 pod identity 할당에 대응한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "양쪽 ID pool·range 크기·기존 namespace join을 함께 고려한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "rootful path에서 workload identity를 remap하는 참고다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "pre_decision"
+      },
+      "conclusion": "allocator 참고의 CONDITIONAL_TRANSFER는 유지하되 H2 pass를 pod capability enforcement 입증으로 읽지 않도록 제한한다.",
+      "refutation_attempt": "원 v4.3 source는 양쪽 subordinate-ID pool, range sizing, existing namespace join을 확인한다. 후보의 미완료 부분은 container→pod allocation/lifetime이고, pod capability enforcement 구현을 제시한 것은 아니다. H2의 consider 표현은 검토 범위로만 통과할 수 있다.",
+      "proposed_changes": {
+        "H2_reason_clarification": "UID/GID allocation과 container-to-pod scope/lifetime 적응을 고려한 참고다. pod-scoped capability enforcement 자체는 이 allocator source에서 검증되지 않았다."
+      },
+      "evidence_locations": [
+        "runs/A/C02.json#/candidates/3",
+        "runs/A/C02.json#/raw_response",
+        "runs/A/C02.json#/opened_documents",
+        "cases/prefix/C02.md",
+        "cases/CASES.json"
+      ],
+      "limits": "필수 H2를 완성된 pod capability 동작 증명으로 해석하는 집계에는 pass를 사용해서는 안 된다. narrow allocator reference의 유용성은 별도다."
+    },
+    {
+      "review_id": "JR2131-XR-11",
+      "case_id": "C02",
+      "baseline": "A",
+      "rank": 5,
+      "candidate_name": "Docker Engine userns-remap",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "root daemon을 둔 채 workload UID/GID를 remap한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "UID/GID와 host namespace/privileged mode의 제약을 명시한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "daemon이 root로 남는다고 명시해 제외 경계와 맞는다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "unknown"
+      },
+      "conclusion": "Docker userns-remap의 조건부 유용성을 유지한다.",
+      "refutation_attempt": "rootless runtime이라는 제외 목적에 의존하는지 반증했다. 원 source는 daemon은 root로 유지하면서 workload UID/GID만 subordinate identity에 매핑한다. daemon-level allocation을 pod allocation으로 같게 보지 않고 bind mount/host namespace/privileged modes의 경계를 명시한다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C02.json#/candidates/4",
+        "runs/A/C02.json#/raw_response",
+        "runs/A/C02.json#/opened_documents",
+        "cases/prefix/C02.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-12",
+      "case_id": "C03",
+      "baseline": "B",
+      "rank": 5,
+      "candidate_name": "kubectl-trace: on-demand diagnostic workload",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "suggest_qualification",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "진단 workload가 target container PID를 선택하는 부분 관계는 원문에 있다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "진단 workload를 필요 시 API pod로 생성한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "실제 진단 작업을 pod object로 드러내는 lifecycle 참고다; shell audit 전체는 주장하지 않는다."
+          },
+          {
+            "constraint_id": "H4",
+            "value": "not_in_scope",
+            "reason": "일반 CRI debugging 지원은 주장하지 않는다."
+          },
+          {
+            "constraint_id": "H5",
+            "value": "not_in_scope",
+            "reason": "privileged tracing 자체를 사용자용 완성 attachment로 채택하지 않는다고 명시했다."
+          },
+          {
+            "constraint_id": "H6",
+            "value": "not_in_scope",
+            "reason": "일반 debugging spec admission은 별도다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "post_decision"
+      },
+      "conclusion": "diagnostic lifecycle 참고는 유지하되 H1 pass를 not_in_scope로 바꿀 것을 제안한다.",
+      "refutation_attempt": "target PID selection만 확인되어도 namespaces와 filesystem inspection 전체를 pass로 쓸 수 있는지 반증했다. 후보 스스로 general attachment/filesystem inspection이 아니라고 제한한다. API-visible on-demand pod lifecycle은 구체적 유용 부분이지만 H1은 원 scope 밖이다.",
+      "proposed_changes": {
+        "H1": {
+          "value": "not_in_scope",
+          "reason": "원 후보는 target PID selection과 API-visible diagnostic lifecycle만 제안하며 namespace/filesystem inspection을 제공하지 않는다고 명시한다."
+        },
+        "label": "CONDITIONAL_TRANSFER",
+        "nongold_useful": true
+      },
+      "evidence_locations": [
+        "runs/B/C03.json#/candidates/4",
+        "runs/B/C03.json#/raw_response",
+        "runs/B/C03.json#/opened_documents",
+        "cases/prefix/C03.md",
+        "cases/CASES.json"
+      ],
+      "limits": "privileged tracing의 완성품 적합성은 승인하지 않는다. H3도 pod API visibility 범위만의 참고이며 전체 interactive audit나 complete-spec admission 구현을 입증하지 않는다."
+    },
+    {
+      "review_id": "JR2131-XR-13",
+      "case_id": "C05",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Google SRE client-side adaptive throttling and retry budgets",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "producer-side adaptive rejection·retry budget·hard ceiling을 API overload 전에 적용한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "essential diagnostics 별도 allowance와 omitted observation 표시를 명시한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "event request의 처리량만 조정하며 storage/retention을 옮기지 않는다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "pre_decision"
+      },
+      "conclusion": "producer transport 부분의 조건부 유용성을 유지한다.",
+      "refutation_attempt": "adaptive feedback만으로 overload 회피를 보장할 수 없는 반례를 읽었다. 원 raw는 sparse feedback/delay 문제에 hard local ceiling, essential-diagnostic allowance, omitted-observation indicator를 함께 제안한다. 전체 cluster 크기에 대한 hard global budget이나 성능 달성을 입증한 것으로 확대하면 안 된다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C05.json#/candidates/0",
+        "runs/A/C05.json#/raw_response",
+        "runs/A/C05.json#/opened_documents",
+        "cases/prefix/C05.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Reference-design judgment only; preserved run dates are unchanged."
+    },
+    {
+      "review_id": "JR2131-XR-14",
+      "case_id": "C05",
+      "baseline": "B",
+      "rank": 3,
+      "candidate_name": "zap structured logging and duplicate sampling",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "suggest_change",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "error flood sampling을 producer report volume에 대응한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "message-only key가 다른 fields를 소실시킬 수 있어 semantic key와 suppression visibility를 요구한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "logger backend 채택이 아니라 producer semantics/behavior만 참고한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "unknown"
+      },
+      "conclusion": "H2 unknown 및 INSUFFICIENT, nongold_useful=false를 제안한다.",
+      "refutation_attempt": "message-only sampling이 다른 fields를 소실한다는 핵심 문제를 원 응답이 스스로 인지한다. 그러나 B raw는 deliberate semantic grouping key가 필요하다고만 하며 키 구성과 equality/changed-meaning 규칙을 연결하지 않는다. judge assessment의 object/reporter/event type/meaningful parameter key 명시는 A raw에 있으나 B raw에는 없다. B의 별도 selection-fields 예제는 grouping identity를 같은 기준으로 정의한다는 제안이 아니다.",
+      "proposed_changes": {
+        "H2": {
+          "value": "unknown",
+          "reason": "message-only duplicate key의 의미 소실을 해결할 구체 grouping identity/equality 매핑이 원 B 응답에 없다. typed fields·selection fields만으로 sampling 후 보존을 보장하지 않는다."
+        },
+        "label": "INSUFFICIENT",
+        "nongold_useful": false,
+        "nongold_historical_useful": false,
+        "near_miss": false,
+        "remaining_check": "원 후보 단계의 추가 설계로 grouping key와 변경된 parameter 의미를 구별하는 equality 규칙, suppressed-count 표현을 명시해야 H2 판정을 올릴 수 있다."
+      },
+      "evidence_locations": [
+        "runs/B/C05.json#/candidates/2",
+        "runs/B/C05.json#/raw_response",
+        "runs/B/C05.json#/opened_documents",
+        "cases/prefix/C05.md",
+        "cases/CASES.json"
+      ],
+      "limits": "잘못된 완성품을 추천했다고 주장하지 않는다. 원 응답이 제약을 인지했으므로 near_miss 대신 미해결 bridge로 판정한다. gold match는 원래 없으며 날짜도 변경하지 않는다."
+    },
+    {
+      "review_id": "JR2131-XR-15",
+      "case_id": "C10",
+      "baseline": "A",
+      "rank": 1,
+      "candidate_name": "Java 5 enum types and java.lang.Enum",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "named singleton constants와 cloning 금지의 value identity를 참고하며 mutable added field를 금지해야 한다고 명시한다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "동일 enum type 안의 비교와 integer 분리를 설명한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "declaration-order traversal/compare를 별도로 제공한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": true,
+        "date_status": "unknown"
+      },
+      "conclusion": "Java enum reference의 조건부 유용성을 유지한다.",
+      "refutation_attempt": "enum에 임의 mutable fields가 가능하다는 반례를 원 run이 이미 기록했다. 원 응답은 추가 필드가 immutability를 깨지 않도록 하고 Python runtime domain checks/freezing을 요구한다. source의 named singleton constants, same-enum comparison, integer separation이라는 실제 구조가 있어 단순 이름 유사성은 아니다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/A/C10.json#/candidates/0",
+        "runs/A/C10.json#/raw_response",
+        "runs/A/C10.json#/opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json"
+      ],
+      "limits": "immutable set/identity semantics 참고이며 임의 payload의 deep immutability나 Python implementation이 이미 검증된 것은 아니다."
+    },
+    {
+      "review_id": "JR2131-XR-16",
+      "case_id": "C10",
+      "baseline": "B",
+      "rank": 2,
+      "candidate_name": "Better Enums declaration-generated enum tables",
+      "reviewer": "내부 별도 검토",
+      "review_context": "Gold-visible cross-review; source shard not edited; same model session family, no human review or independent deployment test.",
+      "status": "agree",
+      "original": {
+        "gold_matches": [
+          {
+            "gold_id": "P0354-G03",
+            "match_kind": "structural_design",
+            "rationale": "default integral conversion이 isolation을 깬다는 사실과 strict-conversion 대조를 후보가 직접 제시한다. 숫자 backing과 열거값의 강한 연결이라는 rejected 설계를 회수한다."
+          }
+        ],
+        "label": "CONDITIONAL_TRANSFER",
+        "H": [
+          {
+            "constraint_id": "H1",
+            "value": "pass",
+            "reason": "하나의 declaration에서 generated member table을 만들어 consistent set을 유지하는 좁은 구조다."
+          },
+          {
+            "constraint_id": "H2",
+            "value": "pass",
+            "reason": "default integer conversion을 그대로 쓰지 않고 strict conversion과 duplicate backing rejection을 명시한다."
+          },
+          {
+            "constraint_id": "H3",
+            "value": "pass",
+            "reason": "같은 family 내 explicit ordinal comparison을 제안한다."
+          }
+        ],
+        "T": "mapped",
+        "nongold_useful": false,
+        "date_status": "unknown"
+      },
+      "conclusion": "numeric coupling G03 회수와 조건부 reference 판정을 유지한다.",
+      "refutation_attempt": "default integer conversion을 그대로 isolation 적합으로 오인했는지 점검했다. 원 응답은 바로 그 결함과 strict conversion 대조를 제시하므로 rejected design 회수로는 정당하다. 적용은 generated member table/index design, same-family ordinal comparison과 duplicate-backing rejection에 한정한다.",
+      "proposed_changes": {},
+      "evidence_locations": [
+        "runs/B/C10.json#/candidates/1",
+        "runs/B/C10.json#/raw_response",
+        "runs/B/C10.json#/opened_documents",
+        "cases/prefix/C10.md",
+        "cases/CASES.json"
+      ],
+      "limits": "Python class factory의 닫힌 construction·freezing을 구현했다는 뜻이 아니다. C++ strict flag 자체가 Python runtime 검증을 대신한다는 해석도 금지한다."
+    }
+  ],
+  "summary": {
+    "reviewed_rows": 16,
+    "proposed_gold_match_removals": [
+      "C03/A/4:K0277-G10"
+    ],
+    "proposed_usefulness_downgrades": [
+      "C05/B/3"
+    ],
+    "proposed_H_scope_qualifications": [
+      "C02/A/4:H2 explanation",
+      "C03/B/5:H1 not_in_scope"
+    ]
+  }
+}
