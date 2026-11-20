@@ -102,7 +102,9 @@ I2와 I3가61/61인 것은 ‘무엇을 하려는 추천 질문인가’라는 �
 
 [T026](https://softwarerecs.stackexchange.com/questions/90462/library-that-lets-you-write-tests-in-almost-english-like-manner)은 **이름과 URL만 있는 자기 답으로 찾던 라이브러리를 식별했다고 보고한 사례**다. 이는 후보 식별에 긴 설명이 언제나 필요한 것은 아니라는 좁은 반례다. 타인의 링크 추천이 공식 체크표로 채택되거나 통합에 성공한 사례로 확대하지 않는다. [T050](https://sr.reddit.com/r/rails/comments/1t7u9iv/migrating_off_heroku_what_deployment_setups_are/)의 짧은 Kamal 링크에는 읽어보겠다는 반응만 있고 실제 선택은 다른 조합이다. [P03](https://softwarerecs.meta.stackexchange.com/questions/356/what-is-required-for-an-answer-to-be-high-quality)도 링크가 단순 조건을 입증할 수 있으며 직접 사용 경험이 모든 답의 절대 요건은 아니라고 설명한다. [M03](https://ricerca.uniba.it/retrieve/dd9e0c6b-cb83-1e9c-e053-3a05fe0a45ef/1710.04692.pdf)의 미채택 질문 재검토는 공식 채택과 실제 유용성을 같은 변수로 놓지 말아야 할 외부 근거다.
 
-최종 반례 탐색에서도 신호를 분리했다. [SXR08](https://softwarerecs.stackexchange.com/questions/90362/is-there-a-file-uploader-like-dreamweavers/90455)은 WinSCP 이름/URL만 제시한 답에 질문자가 보너스를 지급한 사례다. 정식 답1개라 본표본에서 제외했지만, 짧은 후보 제시가 긍정 보상을 받을 수 있다는 타인의 답 사례다. [SXR09](https://softwarerecs.stackexchange.com/questions/36607/android-app-for-generating-pdf-from-images/36609)에서는 질문자가 설치해 작동했고 답을 채택했다고 명시했다. 다른 댓글은 이를 link-only라고 불렀으나 실제 답에는 짧은 사용 경험과 정렬 기능 설명이 있어 엄격 코드북에서는 experience다. 따라서 **공동체 표현상의 링크만 답 채택은 확인됐지만, 공식 체크표까지 확인되는 순수 URL 타인 답이라는 더 좁은 반례는 확정하지 않았다.** [추가 질의·반환 목록](evidence/minimal-answer-counter-search.json)에 성공·불충분 판정을 함께 남겼다.
+최종 반례 탐색은 더 직접적인 반례를 확보했다. [SXR08](https://softwarerecs.stackexchange.com/questions/90362/is-there-a-file-uploader-like-dreamweavers/90455)은 WinSCP 이름/URL과 일반 권유만 있는 코드북상 **link_only 답이 공식 채택되고 보너스도 받은 사례**다. 정식 답1개라 본표본에는 넣지 않았지만, 공개API의 accepted_answer_id=90455와 해당 답의 is_accepted=true를 본문에 대조했다. 질문자는 모든 기능이 되는 것 같지는 않다고도 말했다. 따라서 설명이 항상 필수라는 가정의 실제 반례인 동시에, 채택이 완전한 요구 충족을 보증하지 않는 사례다.
+
+[SXR09](https://softwarerecs.stackexchange.com/questions/36607/android-app-for-generating-pdf-from-images/36609)에서는 설치해 작동했다는 질문자 발언과 공식 채택을 둘 다 확인했다. 다른 댓글은 link-only라고 불렀으나 답에 짧은 사용 경험과 정렬 기능 설명이 있어 엄격 코드북에서는 experience다. 공동체의 표현과 분석 정의를 맞바꾸지 않았다. [추가 질의](evidence/minimal-answer-counter-search.json)·[공식 메타데이터](evidence/accepted-metadata-attempt.json)·[답 본문 대응](evidence/accepted-answer-mapping.json)에 각각 검색, 현재 선택표, 본문 판정을 남겼다.
 
 다른 제품 기능/분야의 관계를 옮기는 답은 **14개/5스레드**다. [T021](https://softwarerecs.stackexchange.com/questions/86879/is-there-a-decent-open-source-or-low-cost-net-sdk-that-has-functions-for-parsin)의 Word 기능→PDF 라이브러리 작업, [T039](https://news.ycombinator.com/item?id=41072631)의 SQLite/DB→큐, [T047](https://www.reddit.com/r/golang/comments/1rzhrze/what_message_broker_would_you_choose_today_and_why/)의 DB·파일→메시지 전달은 소프트웨어 안의 제품 기능 전용이다. [T035](https://news.ycombinator.com/item?id=29604618)의 Last.fm→자료 추천, [T040](https://news.ycombinator.com/item?id=18542227)의 시각효과 렌더팜→일반 작업 분배는 분야가 다른 비교다. 이14개에는 원질문자의 adopt/reject 반응이 없다. 원리 제시의 존재를 전이 성공률로 바꾸지 않는다.
 
@@ -116,12 +118,26 @@ I2와 I3가61/61인 것은 ‘무엇을 하려는 추천 질문인가’라는 �
 |---|---:|---|---|
 | 질문자의 선택·식별·사용 보고 adopt | 10 | 10스레드; 자기 답7개 | 단계가 다르므로 설치 성공10건이 아님 |
 | 시험·열람·검토 try | 19 | 13스레드 | 실제 시험과 향후 읽기/검토를 단계로 분리 |
-| 질문자의 명시 거절 reject | 14 | 12스레드 | 다른 독자 비판과 별도 |
+| 질문자의 거절·일부 방안 반박 reject | 14 | 12스레드 | 게시물 전체 채택과 일부 방안 거절은 공존 가능 |
 | 감사 thanks | 11 | 답 단위 | 채택 아님 |
 | 질문자 반응 없음 none | 577 | 답 단위 | 실패·거절 아님 |
 | 질문자 신원/반응 불명 unknown | 4 | 답 단위 | 추정하지 않음 |
-| 최다 추천 답 표시 | 53 | 41스레드; 동점 포함 | 투표자의 동기는 관측되지 않음 |
-| 공식 accepted 표식 | 알려진 값0 | null로 보존 | 채택 답이0개라는 뜻 아님 |
+| 현재 최대 점수 답 표시 | 53 | 41스레드; 동점·0점 포함 | 투표자의 동기는 관측되지 않음 |
+| 공식 accepted 표식 | 7 true /78 false | SR30질문의 정식답85;댓글4는해당없음 | 익명 공개API의 현재값;다른플랫폼은미노출null |
+
+본문 도구에서 표식이 빠졌으나 최종 익명 공개API 조회가 성공해 SR30질문의 정식 답85개를 보완했다. 현재 채택은7개, 나머지78개는 현재 미채택이며, 같은30개 질문의 API 답 수와 코딩한 정식 답 수가 모두 일치했다. 댓글 추천4개에는 게시물 채택표가 적용되지 않는다. 이것은 응답 형식이나 명시 사용 보고를 바꾸는 새 코딩이 아니라 결과 신호의 보강이다.
+
+| 공식 채택 사례·답ID | 채택된 답의 적합 근거 | 질문자의 채택 이유를 어디까지 알 수 있는가 |
+|---|---|---|
+| T004 ·39981 | BiblioteQ 무료·오프라인·단일 운영 | 자기 답이 요구 충족과 작은 단점을 직접 설명 |
+| T005 ·42908 | LAMP/LAPP·Laravel·Angular 조합의 보안·반응형·학습 근거 | 답변자의 근거다. 질문자는 다른 Vaadin 답에도 검토 의향을 보임 |
+| T010 ·39104 | 익숙한 언어·주변 공동체, 시각 디자인과 프레임워크의 분리 | 특정 제품명보다 선택 원리를 채택; 직접 채택 동기는 별도 발언 없음 |
+| T016 ·91604 | filer.dev의 오프라인·OS·무료 일괄 변환 주장 | 현재 채택표가 있지만 후속502댓글도 있어 유효성 보증은 아님 |
+| T022 ·94873 | LanguageDetection 포크의 .NET8 빌드·통합 | 질문자가 자기 실행 경험을 보고 |
+| T023 ·93493 | Form Tools의 PHP/MySQL·양식·모듈 구성 | 사용을 시도하겠다는 자기 답이 채택; 실제 통합 성공은 아님 |
+| T027 ·87705 | 위치DB 조회와 국가 직접 입력을 함께 제시 | 국가 직접 입력 방안은 질문자가 반박했지만 DB 대안도 있는 답 게시물은 채택 |
+
+이 표의 근거는 [공식 답 대응 원장](evidence/accepted-answer-mapping.json)이다. 채택을 한 사람의 동기를 답변자의 설명으로 대신하지 않는다. 특히 T027은 **게시물 단위 채택과 그 안의 한 방안 거절이 공존**하므로 rejection_targets를 사용자 직접 입력에 한정했다.
 
 선택·사용 보고10개의 이유와 단계는 다음과 같다. 선택이 특정 타인의 답 때문에 일어났다고 가정하지 않는다.
 
@@ -204,7 +220,7 @@ L 감사도 경계를 바꿨다. [T023](https://softwarerecs.stackexchange.com/q
 | 접속 실패 | 21 | 21 | 명시404 4개 + 다른/미상 오류17개 |
 | 도구 접근 차단 | 20 | 20 | 원격 사이트의 소실로 세지 않음 |
 
-명시404는4개 URL/3스레드([T035](https://news.ycombinator.com/item?id=29604618) · [T043](https://www.reddit.com/r/selfhosted/comments/opgyga/any_self_hosted_alexas_or_similar/) · [T051](https://github.com/perses/perses/discussions/3862))이고410은0개다. 나머지 실패17개와 차단20개를 죽은 링크37개로 바꾸지 않았다. T043의 두404는 Mycroft 시작 문서와 음성 인식 하드웨어 범주 주소이므로, Mycroft 제품과 모든 관련 기능이 죽었다는 결론도 아니다.
+명시404는4개 URL/3스레드([T035](https://news.ycombinator.com/item?id=29604618) · [T043](https://www.reddit.com/r/selfhosted/comments/opgyga/any_self_hosted_alexas_or_similar/) · [T051](https://github.com/perses/perses/discussions/3862))이고410은0개다. 나머지 실패17개와 차단20개를 죽은 링크37개로 바꾸지 않았다. T016은 현재 공식 채택을 유지하면서502댓글과접속실패가있어,채택표와현재근거접근성도별개임을보인다. T043의 두404는 Mycroft 시작 문서와 음성 인식 하드웨어 범주 주소이므로, Mycroft 제품과 모든 관련 기능이 죽었다는 결론도 아니다.
 
 역사 발언 중 특정 추천·회피 대상의 명시 관리/유지지원 중단은3스레드였다: [T011](https://softwarerecs.stackexchange.com/questions/16368/get-alerts-with-diffs-of-web-page-changes) Specto, [T049](https://th.reddit.com/r/golang/comments/1uktfq6/any_good_image_validation_libs_for_go/?sort=confidence) nfnt/resize, [T061](https://ru.reddit.com/r/selfhosted/comments/1q7jbx1/anyone_using_mediamanager_over_the_arr_apps/?sort=random) Huntarr. 긍정/조건부 추천만 남기면2개이고, 처음 대체하려던 원본 [T022](https://softwarerecs.stackexchange.com/questions/94872/human-language-detection-library-for-c) · [T052](https://github.com/knolleary/pubsubclient/issues/1095)까지 포함하면5개다. PHP IMAP 확장 폐기([T055](https://github.com/osTicket/osTicket/issues/7002))는 전체 프로젝트 관리 중단과 분리했다.
 
@@ -223,6 +239,8 @@ L 감사도 경계를 바꿨다. [T023](https://softwarerecs.stackexchange.com/q
 ## Q7. 전체 구조 없이 일부만 물어도 쓸 만한 답을 받는가
 
 부분 질문은33개다. 그중 선택·식별·구현 중·사용 보고가 있는6개는 [T013](https://softwarerecs.stackexchange.com/questions/52849/read-powerpoint-ppt-file) · [T022](https://softwarerecs.stackexchange.com/questions/94872/human-language-detection-library-for-c) · [T026](https://softwarerecs.stackexchange.com/questions/90462/library-that-lets-you-write-tests-in-almost-english-like-manner) · [T038](https://news.ycombinator.com/item?id=41756808) · [T049](https://th.reddit.com/r/golang/comments/1uktfq6/any_good_image_validation_libs_for_go/?sort=confidence) · [T050](https://sr.reddit.com/r/rails/comments/1t7u9iv/migrating_off_heroku_what_deployment_setups_are/)다. T013·T022는 자신에게 작동했다는 보고, T050은 사용·만족, T049는 구현 중, T038은 계획, T026은 후보 식별이다. 이를 모두 실제 통합 성공으로 부르지 않는다.
+
+현재 공식 채택이 있는 부분 질문은 T005/T010/T022/T023/T027의5개다. 명시 선택·사용 보고6개와는 T022만 겹쳐 합집합은10/33이지만, 이를10개의 검증된 사용 성공으로 부르지 않는다. 특히 T010은 원리 답, T023은 시험 계획, T027은 일부 방안 반박을 포함한 답의 채택이다.
 
 | 부분 질문 사례 | 주어진 좁은 범위 | 답이 진전시킨 부분 |
 |---|---|---|
@@ -314,7 +332,7 @@ DIRECT_DOCUMENTED를 질문자의 채택만으로 부여하지 않았고, 무반
 
 - 검색 관련도·쿼터·공개 접근성과2답 이상·80답 이하 기준으로 선택했다. 삭제·폐쇄·0답·매우 긴 토론이 덜 보이며 개발자 신원도 추론하지 않았다. 비교 비율은 모집단·플랫폼 우열이 아니다.
 - 현재 편집본이 중심이다. 일부 핵심 시점은 공개 revision/댓글로 보강했지만 모든 최초판과 편집을 복원하지 않았다. 보완 부분열람 사례는 존재 사례에만 쓰고 본표본 분모와 구분했다.
-- 공식 채택 표식은 본문 도구에서 확보되지 않아 null이다. 공개 반응 없는 실제 사용, 실패, 만족, 질문자의 이탈 이유는 알 수 없다. 자기 답·계획·타인 반박·선택 보고를 구별했다.
+- 공식 채택은 SR30질문에 대해 최종 공개API로 보완했으나 현재값이며 과거 채택 이력은 아니다. 다른 플랫폼의 미노출 표식은null이다. 공개 반응 없는 실제 사용·실패·만족·이탈 원인은 여전히 알 수 없다. 자기 답·계획·일부방안 반박·선택 보고를 구별했다.
 - 모든 현재 공개 댓글을 읽었다는 것과 모든 실질 행위를 동일 단위로 빠짐없이 코딩했다는 것은 다르다. 재코딩은26개 누락을 드러냈고 product/component 일치가 낮았다. 다른46개에도 같은 단위 경계가 남을 수 있어 역할 비율로 강한 제품 결정을 내리지 않는다.
 - 문헌의 모집단·결과 변수는 서로 다르며 C05는 C04에 포함된다. 정책·메타 여러 페이지를 독립된 실험 여러 편으로 세지 않았다. 전문직 지침과 개념 논문도 효과 시험과 구분했다.
 - D3는 도구·캐시를 통한 단회 URL 관측이다. 현재 기능·라이선스·성능·보안의 실행 검증이 아니며 실제 적용(D4)은 없다. API/DB/검색 스택 확정이나 배포 제안은 하지 않는다.

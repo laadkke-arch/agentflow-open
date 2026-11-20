@@ -67,6 +67,19 @@ def validate(doc, sources):
             check(r.get("status")in STATUSES,c["id"]+":링크상태")
             check(bool(r.get("observed_at_utc")),c["id"]+":링크시각")
             check(r.get("level")==("D1" if r.get("status")=="not_linked" else "D3"),c["id"]+":링크근거수준")
+    accepted_path=BASE/"evidence/accepted-metadata-attempt.json"
+    if accepted_path.exists():
+        meta=read("evidence/accepted-metadata-attempt.json")
+        if meta.get("result")=="metadata_read":
+            qm={x["question_id"]:x for x in meta["items"]}
+            for c in cs:
+                if c["platform"]!="softwarerecs":continue
+                qid=int(c["url"].split("/questions/")[1].split("/")[0]);q=qm[qid]
+                formal=[a for a in c["answers"] if a.get("is_formal_answer")]
+                check(len(formal)==q["answer_count"],c["id"]+":공식API정식답수")
+                got=[a for a in formal if a["outcome"]["accepted"]is True]
+                check(len(got)==int(q.get("accepted_answer_id")is not None),c["id"]+":공식API채택수")
+                if got:check(got[0].get("platform_answer_id")==q["accepted_answer_id"],c["id"]+":공식API채택ID")
     ss=sources["sources"]
     check(len(ss)>=20,"비 스레드 자료20")
     check(len(ss)==len({s["id"] for s in ss})==len({s["url"] for s in ss}),"자료 ID/URL고유")
