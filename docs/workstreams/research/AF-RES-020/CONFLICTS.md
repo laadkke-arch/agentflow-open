@@ -38,10 +38,10 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 ‘역할’이 가리키는 질문이 다르다. 50.34%와78.33%는 분모도149와120이므로 직접 차이가 아니며, S1/S2 분리는 정의 충돌을 줄여도 사람 재현성을 증명하지 않는다. 남는 같은 정의의 코더 차이는 CF12로 분리한다.
 
-- [AF-RES-011 · HANDOFF.md · L147](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-016 · RESULT.md · 표1 L9–17; Q6 L160–164](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
-- [AF-RES-016 · CODEBOOK.md · L9–11; §3 L25–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
-- [AF-RES-013 · RESULT.md · 표2 L43–50; L97–99](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 한계·미실시와 결론이 틀릴 수 있는 지점; 행: L147](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-016 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 분류안별 일치도; §2 세부 질문별 답 / Q6. 어느 안이 더 일치하고 왜 갈리는가; 행: L9–17, L160–164](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-016 · CODEBOOK.md · 원 절: 1. 공통 규칙과 입력; 3. S2 문제 상대형 — 선택 범위에 대한 기여; 4. S3 두 축 — form × contribution; 행: L9–11, L25–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표 2 — 역할별 집계; §2 세부 질문별 답 / Q3. 정답 항목은 외부 실체보다 내부 설계 대안에 치우쳤다; 행: L43–50, L97–99](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 
 방법 대응(조립 가설 H): X04, X08. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -49,10 +49,10 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 질문자 반응, 검색 순위, 같은 문장 발췌, 서로 다른 질문 유형은 다른 결과다. 관측된 반응을 실제 통합 성공으로 승격하지 않고 효과 크기는 동등 입력에서 따로 묻는다.
 
-- [AF-RES-011 · HANDOFF.md · L116–128](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-011 · CODEBOOK.md · L16; L44](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/CODEBOOK.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-012 · RESULTS.md · Q5 L80–89](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
-- [AF-RES-014 · RESULT.md · Q5 L90–99](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 5. 판단·근거 / Q1–Q8 결론과 적용 범위; 5. 판단·근거 / 고정 입력 판정; 5. 판단·근거 / 가장 강한 근거 세 가지; 행: L116–128](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-011 · CODEBOOK.md · 원 절: 1. 단위와 누락 / 1.1. 전체·부분 질문의 정의 — v1.2 명료화; 4. 답의 형태·역할·반응; 행: L16, L44](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/CODEBOOK.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-012 · RESULTS.md · 원 절: Q5. 전체 질의와 부분 질의; 행: L80–89](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
+- [AF-RES-014 · RESULT.md · 원 절: §2 세부 질문별 답 / Q5 전체·부분과 I5; 행: L90–99](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
 
 방법 대응(조립 가설 H): X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -60,9 +60,9 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 방향은 반대지만 같은 것을 같은 조건에서 반복 측정한 충돌이 아니다. 평균 N/질의와 N/슬롯을 구별한다. T017은 relevance 정의 차이, T021은 의도적인 오독 시험이므로 둘을 같은 필터 오류로 합치지 않는다.
 
-- [AF-RES-012 · RESULTS.md · L5–9; 한계 표 L45–53](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
+- [AF-RES-012 · RESULTS.md · 원 절: 서두(제목 아래); Q3. 한계 문장이 근접 오답을 줄이는가; 행: L5–9, L45–53](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
 - [AF-RES-012 · metrics.csv · D-b L47,77,182,212,317,347; D-c L92,122,227,257,362,392](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/results/metrics.csv) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
-- [AF-RES-014 · RESULT.md · L23–32; L61; L67–84](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-014 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 조건별 지표; §1 필수 결과 표 / 표 2 — 012 결론 재현 여부; §2 세부 질문별 답 / Q2 자료집; §2 세부 질문별 답 / Q3 인라인·필터·감점; 행: L23–32, L61, L67–84](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
 - [AF-RES-014 · metrics.csv · D-b/D-c actual-answer all-query 조건 행](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/results/metrics.csv) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
 
 방법 대응(조립 가설 H): X08, X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
@@ -71,11 +71,11 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 상이한 관측의 희소성을 같은 ‘수요0’으로 합치지 않는다. 010의 목표 mapping H와013의 실제 저자 인용도 증거 유형이 달라 방향 반박으로 사용할 수 없다.
 
-- [AF-RES-010 · HANDOFF.md · L5–7; L31–38](https://github.com/laadkke-arch/agentflow-open/blob/0603f0d2990c7a501dbdfc45fbbba79155f505fc/docs/workstreams/research/AF-RES-010/HANDOFF.md) — SHA `0603f0d2990c7a501dbdfc45fbbba79155f505fc`.
+- [AF-RES-010 · HANDOFF.md · 원 절: 상태; 2. 세부 질문별 결론과 적용 한계; 행: L5–7, L31–38](https://github.com/laadkke-arch/agentflow-open/blob/0603f0d2990c7a501dbdfc45fbbba79155f505fc/docs/workstreams/research/AF-RES-010/HANDOFF.md) — SHA `0603f0d2990c7a501dbdfc45fbbba79155f505fc`.
 - [AF-RES-010 · comparison-counts.json · L1–6; new_family_groups L211–264](https://github.com/laadkke-arch/agentflow-open/blob/0603f0d2990c7a501dbdfc45fbbba79155f505fc/docs/workstreams/research/AF-RES-010/evidence/comparison-counts.json) — SHA `0603f0d2990c7a501dbdfc45fbbba79155f505fc`.
-- [AF-RES-011 · HANDOFF.md · L112](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-012 · RESULTS.md · L41–43](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
-- [AF-RES-013 · RESULT.md · L56; Q4 L103–116; L146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 5. 판단·근거 / Q1–Q8 결론과 적용 범위; 행: L112](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-012 · RESULTS.md · 원 절: Q2. 목적과 메커니즘이 다른 분야 원리 발견을 늘리는가; 행: L41–43](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표 3 — 주장 표; §2 세부 질문별 답 / Q4. 다른 분야의 실제 인용: 구조 차용1건, 외부 자료 인용0건; §2 세부 질문별 답 / Q8. AF009의 반대 가설 A/B는 이번 결과만으로 기각되지 않는다; 행: L56, L103–116, L146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 
 방법 대응(조립 가설 H): X08, X12, X22. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -83,8 +83,8 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 역사적 대안 복원, 현재 문서상 참고, 실제 설계 효용, 유지 효용은 다른 목표다. 동일한 강한 기준선을 유지하고 새 절차가 없는 결과를 비교 승리로 바꾸지 않는다.
 
-- [AF-RES-009 · GAP.md · L73–79; H1/H2/H3 L113–125](https://github.com/laadkke-arch/agentflow-open/blob/7f627a81199f06da7f7b15f979e7fef25dd17602/docs/workstreams/research/AF-RES-009/GAP.md) — SHA `7f627a81199f06da7f7b15f979e7fef25dd17602`.
-- [AF-RES-013 · RESULT.md · L65–73; L122; L134–146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-009 · GAP.md · 원 절: 2. 반대 가설 A — “범용 LLM 검색이 이미 충분히 한다” / 지지하는 자료를 의도적으로 찾은 결과; 5. 남은 가설과 반증 가능한 다음 연구 / H1. 목적·부분·제약과 후보의 대응 기록; 5. 남은 가설과 반증 가능한 다음 연구 / H2. 제공자가 바뀌어도 이어지는 근거의 재검토; 5. 남은 가설과 반증 가능한 다음 연구 / H3. 별도 제품보다 기존 작업 도구의 작은 절차가 적절할 수 있음; 행: L73–79, L113–125](https://github.com/laadkke-arch/agentflow-open/blob/7f627a81199f06da7f7b15f979e7fef25dd17602/docs/workstreams/research/AF-RES-009/GAP.md) — SHA `7f627a81199f06da7f7b15f979e7fef25dd17602`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표의 단위와 판정 책임; §2 세부 질문별 답 / Q5. 기준선 A: 전31사례의 실제 실행, 역사 적중16/176; §2 세부 질문별 답 / Q7. 채점: 적중·부분 참고·미해결 조건·링크를 분리했다; §2 세부 질문별 답 / Q8. AF009의 반대 가설 A/B는 이번 결과만으로 기각되지 않는다; 행: L65–73, L122, L134–146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 
 방법 대응(조립 가설 H): X08, X12, X22. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -92,8 +92,8 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 404의 URL분모와 이유 변화의83개 분모는 직접 비교할 수 없다. 이유가 무너졌는데 주소가 살아 있는 반례는 차이를 입증하지만 신호의 장기 무용성을 입증하지 않는다.
 
-- [AF-RES-011 · HANDOFF.md · L115](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-015 · RESULT.md · 표2 L20–33; Q3–4 L65–71; L94–95](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 5. 판단·근거 / Q1–Q8 결론과 적용 범위; 행: L115](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-015 · RESULT.md · 원 절: §1 필수 결과 표 / 표 2 — 신호 예측력; §2 세부 질문별 답 / Q3 답 시점 복원; §2 세부 질문별 답 / Q4 값싼 신호; §3 추가 분석; 행: L20–33, L65–71, L94–95](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
 - [AF-RES-015 · confusion.json · HTTP 404/410 및 GitHub archived의 strict 혼동표](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/results/confusion.json) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
 
 방법 대응(조립 가설 H): X12, X22. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
@@ -102,13 +102,13 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 어휘를 관측 모달리티로 통일하면 충돌은 해소된다. 더 높은 숫자를 진실성 점수로 해석하거나 fetch/search를 제품 run으로 승격하는 것은 금지한다. 원 결과 파일은 덮어쓰지 않는다.
 
-- [AF-RES-002 · RESEARCH.md · L30–39](https://github.com/laadkke-arch/agentflow-open/blob/62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1/docs/workstreams/research/AF-RES-002/RESEARCH.md) — SHA `62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1`.
+- [AF-RES-002 · RESEARCH.md · 원 절: 2. 조사 설계와 실제 읽은 범위; 행: L30–39](https://github.com/laadkke-arch/agentflow-open/blob/62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1/docs/workstreams/research/AF-RES-002/RESEARCH.md) — SHA `62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1`.
 - [AF-RES-002 · p1.json · queries L231–1088](https://github.com/laadkke-arch/agentflow-open/blob/62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1/docs/workstreams/research/AF-RES-002/evidence/p1.json) — SHA `62b4aa6f95fee546a3cfb017d1ee8afc79ee87d1`.
-- [AF-RES-003 · RESEARCH.md · L101](https://github.com/laadkke-arch/agentflow-open/blob/b13db3931b4021ff9e1ac6e404590c09526c3087/docs/workstreams/research/AF-RES-003/RESEARCH.md) — SHA `b13db3931b4021ff9e1ac6e404590c09526c3087`.
-- [AF-RES-004 · PROTOCOL.md · L26; L81–85](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
-- [AF-RES-013 · RESULT.md · L73](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
-- [AF-RES-014 · HANDOFF.md · L3; 검증 범위](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/HANDOFF.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
-- [AF-RES-016 · RESULT.md · L120; L170–174](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-003 · RESEARCH.md · 원 절: 5. 무엇을 더 저장할지: 필드보다 막아야 할 실패; 행: L101](https://github.com/laadkke-arch/agentflow-open/blob/b13db3931b4021ff9e1ac6e404590c09526c3087/docs/workstreams/research/AF-RES-003/RESEARCH.md) — SHA `b13db3931b4021ff9e1ac6e404590c09526c3087`.
+- [AF-RES-004 · PROTOCOL.md · 원 절: 판정 단위와 증거 경계; v1.1 명확화 — 독립 v1 판정 이후; 행: L26, L81–85](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표의 단위와 판정 책임; 행: L73](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-014 · HANDOFF.md · 원 절: 서두(제목 아래); 행: L3](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/HANDOFF.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-016 · RESULT.md · 원 절: §1 필수 결과 표 / 표 4 — 주장 표; §2 세부 질문별 답 / Q7. 불일치가 실제 판정을 바꾸는가; 행: L120, L170–174](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -117,12 +117,12 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 숫자는 대체로 재집계와 일치하며 충돌은 전달 시 분모가 생략될 때 생긴다. 012/014의 N 평균은 질의·조건당 개수이고 상위10 슬롯 비율과10배 차이난다는 점을 CF03에 명시했다.
 
 - [AF-RES-010 · comparison-counts.json · L1–6; rows와new_family_groups](https://github.com/laadkke-arch/agentflow-open/blob/0603f0d2990c7a501dbdfc45fbbba79155f505fc/docs/workstreams/research/AF-RES-010/evidence/comparison-counts.json) — SHA `0603f0d2990c7a501dbdfc45fbbba79155f505fc`.
-- [AF-RES-012 · RESULTS.md · L5–9](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
-- [AF-RES-011 · HANDOFF.md · L34–37](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-013 · RESULT.md · L65–71; L97–99](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
-- [AF-RES-014 · RESULT.md · L23; L61](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
-- [AF-RES-015 · RESULT.md · L16; L59–67](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
-- [AF-RES-016 · RESULT.md · L120; L156](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-012 · RESULTS.md · 원 절: 서두(제목 아래); 행: L5–9](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 3. 실제 변경과 자료 규모; 행: L34–37](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표의 단위와 판정 책임; §2 세부 질문별 답 / Q3. 정답 항목은 외부 실체보다 내부 설계 대안에 치우쳤다; 행: L65–71, L97–99](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-014 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 조건별 지표; §2 세부 질문별 답 / Q2 자료집; 행: L23, L61](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-015 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 이유 유형별 노후화; §2 세부 질문별 답 / Q1 추천 이유 추출; §2 세부 질문별 답 / Q2 현재 유효성; §2 세부 질문별 답 / Q3 답 시점 복원; 행: L16, L59–67](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
+- [AF-RES-016 · RESULT.md · 원 절: §1 필수 결과 표 / 표 4 — 주장 표; §2 세부 질문별 답 / Q5. 이중 코딩은 어떻게 수행했는가; 행: L120, L156](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -130,11 +130,11 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 정답원·필수조건·용도 범위가 다르고 필터의 적합 후보 누락은 근접오답 발생 빈도가 아니다. 정의상 차이를 포함하지만 핵심 비교는 서로 다른 표본·발생 과정의 범위 차이다.
 
-- [AF-RES-011 · HANDOFF.md · L37; L114; L127](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-011 · CODEBOOK.md · L64–66](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/CODEBOOK.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
-- [AF-RES-014 · RESULT.md · L57](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
-- [AF-RES-013 · RESULT.md · L60; L134–136](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
-- [AF-RES-016 · RESULT.md · L174; L202](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-011 · HANDOFF.md · 원 절: 3. 실제 변경과 자료 규모; 5. 판단·근거 / Q1–Q8 결론과 적용 범위; 5. 판단·근거 / 가장 강한 근거 세 가지; 행: L37, L114, L127](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/HANDOFF.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-011 · CODEBOOK.md · 원 절: 5. L/E/H/T 대응과 추가 이유; 행: L64–66](https://github.com/laadkke-arch/agentflow-open/blob/478c301b693896e2c6d777f46ac441f071bfdfe8/docs/workstreams/research/AF-RES-011/CODEBOOK.md) — SHA `478c301b693896e2c6d777f46ac441f071bfdfe8`.
+- [AF-RES-014 · RESULT.md · 원 절: §2 세부 질문별 답 / Q1 실제 질문과 답; 행: L57](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표 3 — 주장 표; §2 세부 질문별 답 / Q7. 채점: 적중·부분 참고·미해결 조건·링크를 분리했다; 행: L60, L134–136](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-016 · RESULT.md · 원 절: §2 세부 질문별 답 / Q7. 불일치가 실제 판정을 바꾸는가; §3 추가 분석 / 3.2 요구된 반례 다섯 가지; 행: L174, L202](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X08, X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -142,9 +142,9 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 처음부터 거짓과 나중에 변함은 시간 상태의 정의가 다르다. 정의와 행 중복은 분리했지만 상대 중요성은 측정하지 않았으므로 부분 해소다. OpenZFS 제약 해소를 부정적 서비스 붕괴로 바꾸지 않는다.
 
-- [AF-RES-015 · RESULT.md · L16; L63–67; L93–95](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
+- [AF-RES-015 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 이유 유형별 노후화; §2 세부 질문별 답 / Q2 현재 유효성; §2 세부 질문별 답 / Q3 답 시점 복원; §3 추가 분석; 행: L16, L63–67, L93–95](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/RESULT.md) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
 - [AF-RES-015 · REASONS.jsonl · then/current 판정 및 초기오류·후발변화 행; OpenZFS·Almond](https://github.com/laadkke-arch/agentflow-open/blob/e39d23c9a7307ba83c974580f60115d90e221084/docs/workstreams/research/AF-RES-015/REASONS.jsonl) — SHA `e39d23c9a7307ba83c974580f60115d90e221084`.
-- [AF-RES-009 · GAP.md · H2 L117–119](https://github.com/laadkke-arch/agentflow-open/blob/7f627a81199f06da7f7b15f979e7fef25dd17602/docs/workstreams/research/AF-RES-009/GAP.md) — SHA `7f627a81199f06da7f7b15f979e7fef25dd17602`.
+- [AF-RES-009 · GAP.md · 원 절: 5. 남은 가설과 반증 가능한 다음 연구 / H2. 제공자가 바뀌어도 이어지는 근거의 재검토; 행: L117–119](https://github.com/laadkke-arch/agentflow-open/blob/7f627a81199f06da7f7b15f979e7fef25dd17602/docs/workstreams/research/AF-RES-009/GAP.md) — SHA `7f627a81199f06da7f7b15f979e7fef25dd17602`.
 
 방법 대응(조립 가설 H): X10, X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -152,9 +152,9 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 주성격을 경험적으로 둔 근거는012의 동일15질의·고정 검색 순위·문서 관련성이라는 평가 목적 아래 판정자에 따라 방식 순서가 실제 바뀌었다는 점이다. 다만012도 일부 근거 열람·조건 해석 범위가 달라 엄밀히 동일 조건의 수치 오류라고 부르지 않는다. 014의 실제 답 grade는 관측된 추천·사용 신호를, 내부 must 판정은 문서상 조건 충족을 묻는 성분이 있으므로 두 qrel의 차이에는 정의상·범위 차이가 있다. 이를012와 합쳐 한 종류의 경험적 불일치율로 계산하지 않는다. 013의 역사 적중과 조건부 참고도 다른 평가 질문이다. 전체0 일치에 가려진 양성 불일치를 함께 보존한다.
 
-- [AF-RES-012 · RESULTS.md · L137–145](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
-- [AF-RES-014 · RESULT.md · 표3 L34–41; L107–109](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
-- [AF-RES-013 · RESULT.md · L65–69; L134–146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-012 · RESULTS.md · 원 절: Q8. 판정과 자료집이 바뀌면 결론도 바뀌는가; 행: L137–145](https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/RESULTS.md) — SHA `cb602858378db90adb1f085953016267f9afbd6d`.
+- [AF-RES-014 · RESULT.md · 원 절: §1 필수 결과 표 / 표 3 — 판정 출처 민감도; §2 세부 질문별 답 / Q7 실제 답과 판정 편향; 행: L34–41, L107–109](https://github.com/laadkke-arch/agentflow-open/blob/42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9/docs/workstreams/research/AF-RES-014/RESULT.md) — SHA `42dc266dfd096bcc3c71f951fe0d9176f2eb9fd9`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표의 단위와 판정 책임; §2 세부 질문별 답 / Q7. 채점: 적중·부분 참고·미해결 조건·링크를 분리했다; §2 세부 질문별 답 / Q8. AF009의 반대 가설 A/B는 이번 결과만으로 기각되지 않는다; 행: L65–69, L134–146](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 
 방법 대응(조립 가설 H): X08, X12, X22. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -162,8 +162,8 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 같은 정의·패킷을 읽고 서로 다른 값을 실제로 부여했으므로 단순 용어 대응표로 해소되지 않는 경험적 재현성 차이다. 원 단위ID로 직접 조인해 A0/B14를 다시 셌다.
 
-- [AF-RES-016 · RESULT.md · L12; L170; §4.1 L216–224](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
-- [AF-RES-016 · CODEBOOK.md · S2 L25–36; S3 L39–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-016 · RESULT.md · 원 절: §1 필수 결과 표 / 표 1 — 분류안별 일치도; §2 세부 질문별 답 / Q7. 불일치가 실제 판정을 바꾸는가; §4 가장 중요한 불일치·약점 3건과 다음 조사 제안 / 1. S2의 낮은 점수에는 코드북 적용 비대칭과 과제 차이가 섞여 있다; 행: L12, L170, L216–224](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-016 · CODEBOOK.md · 원 절: 3. S2 문제 상대형 — 선택 범위에 대한 기여; 4. S3 두 축 — form × contribution; 행: L25–36, L39–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 - [AF-RES-016 · units.json · units[*].unit_id/sample; 011 표본120개](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/sample/units.json) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 - [AF-RES-016 · coder-a.json · rows[*].S2; T036-005 L532 이후](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/coding/coder-a.json) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 - [AF-RES-016 · coder-b.json · rows[*].S2; T036-005 L528 이후](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/coding/coder-b.json) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
@@ -174,17 +174,17 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 숫자 오류가 아니라 proposed_use를 role로 바꾼 정의 축 생략이다. 공통 해석은 PROTOCOL로 정했으나 원 파일은 이 작업의 수정 범위 밖이므로 부분 해소로 남긴다.
 
-- [AF-RES-004 · HANDOFF.md · §5 L80](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/HANDOFF.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
-- [AF-RES-004 · PROTOCOL.md · 판정 단위 L22–26](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
-- [AF-RES-016 · RESULT.md · L192; 조립 원칙 L210–212](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-004 · HANDOFF.md · 원 절: 5. 판단과 근거; 행: L80](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/HANDOFF.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
+- [AF-RES-004 · PROTOCOL.md · 원 절: 판정 단위와 증거 경계; 행: L22–26](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
+- [AF-RES-016 · RESULT.md · 원 절: §3 추가 분석 / 3.1 세 안의 적합 조건과 실패 조건; §3 추가 분석 / 3.4 판정 상태를 보존하는 조립 원칙(H); 행: L192, L210–212](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X04, X08, X10. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
 ### CF14 — 추가: AF-RES-020 원 결과 재대조
 
-같은 숫자146이 같은 집합을 보장하지 않는 정의 차이다. 직접 원JSON에서146/146/142 및4+4를 재계산했으며 7과8을 재현 실패로 만들지 않았다.
+같은 숫자146이 같은 집합을 보장하지 않는 정의 차이다. 직접 원JSON에서146/146/142 및4+4를 재계산했으며 7과8을 재현 실패로 만들지 않았다. 실제 오분류의 정정 이력도 있다: 013 RESULT L101과 cases/CASES.json coding_revisions[0]에서 C05는 외부 참고문헌 없음과 구조 전이 없음의 혼동을 바로잡았다. 이 과거 정정을 현재 고정판의 수치 불일치로 다시 세지 않는다.
 
-- [AF-RES-013 · RESULT.md · 역할표 L43–50; L97–101; 종류표 L161–166](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-013 · RESULT.md · 원 절: §1 필수 결과 표 / 표 2 — 역할별 집계; §2 세부 질문별 답 / Q3. 정답 항목은 외부 실체보다 내부 설계 대안에 치우쳤다; §3 추가 분석 / 3.1 계열·정답 종류·시간·노출을 나눈 관측; 행: L43–50, L97–101, L161–166](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/RESULT.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 - [AF-RES-013 · CASES.json · gold_items[*].role/match_kind; 차집합 L601,1527,1792,1808,1827,2743,4929,4945](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/cases/CASES.json) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 - [AF-RES-013 · AGGREGATES.json · roles L938 이후(같은 분야의 다른 설계 A.strict_historical=7); gold_types L2122 이후(structural_design A.strict_historical=8)](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/evidence/AGGREGATES.json) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
 
@@ -195,10 +195,10 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 작업 진행 상태·원 인계의 조건 충족 상태·연구 내용의 채택은 별개다. DONE을 허위 완료라고 자동 단정하지 않고 인수 이유를 남길 별도 기록을 요청한다. 원016이 표준 REVIEW_READY_WITH_GAPS 문구를 실제 썼다고 꾸미지 않는다.
 
 - [workspace-foundation · dot-control.json · AF-RES-013 L264–282; AF-RES-016 L337–355](https://github.com/laadkke-arch/agentflow-open/blob/7b4334e55a0563225295618eaf3ad299b415d9f7/docs/automation/dot-control.json) — SHA `7b4334e55a0563225295618eaf3ad299b415d9f7`.
-- [workspace-foundation · DOT_AUTOMATION.md · 완료 확인 L59–64](https://github.com/laadkke-arch/agentflow-open/blob/7b4334e55a0563225295618eaf3ad299b415d9f7/docs/DOT_AUTOMATION.md) — SHA `7b4334e55a0563225295618eaf3ad299b415d9f7`.
-- [AF-RES-013 · HANDOFF.md · L6; §1 L12 이후](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/HANDOFF.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
-- [AF-RES-016 · HANDOFF.md · L3–12](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/HANDOFF.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
-- [AF-RES-016 · RESULT.md · 지정 원문 공백 L252](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [workspace-foundation · DOT_AUTOMATION.md · 원 절: 한 작업을 연결하는 순서; 행: L59–64](https://github.com/laadkke-arch/agentflow-open/blob/7b4334e55a0563225295618eaf3ad299b415d9f7/docs/DOT_AUTOMATION.md) — SHA `7b4334e55a0563225295618eaf3ad299b415d9f7`.
+- [AF-RES-013 · HANDOFF.md · 원 절: 서두(제목 아래); 1. 인계 상태와 차단 이유; 행: L6, L12](https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/HANDOFF.md) — SHA `eb569f07a3a34ffacf114384ae9b06ad062f5396`.
+- [AF-RES-016 · HANDOFF.md · 원 절: 0. 인계 상태; 행: L3–12](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/HANDOFF.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-016 · RESULT.md · 원 절: §5 한계; 행: L252](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X10, X12. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 
@@ -206,11 +206,11 @@ REVIEW-4 §3의 원11행을 CF01–CF11로 전부 보존하고, 이번 재대조
 
 ‘가볍게 시작 가능’은 정보 보존 조건이 다른 구성 간의 범위 차이다. 파괴적 압축이 없으면 단일 메모도 가능하므로 가벼운 저장 자체와 충돌한다고 일반화하지 않는다.
 
-- [AF-RES-001 · RESEARCH.md · L147–152](https://github.com/laadkke-arch/agentflow-open/blob/4d6208c08f6f2657865ba000d6768f6537e832b6/docs/workstreams/research/AF-RES-001/RESEARCH.md) — SHA `4d6208c08f6f2657865ba000d6768f6537e832b6`.
-- [AF-RES-003 · RESEARCH.md · L107–111; L146–159](https://github.com/laadkke-arch/agentflow-open/blob/b13db3931b4021ff9e1ac6e404590c09526c3087/docs/workstreams/research/AF-RES-003/RESEARCH.md) — SHA `b13db3931b4021ff9e1ac6e404590c09526c3087`.
-- [AF-RES-004 · PROTOCOL.md · L24](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
-- [AF-RES-016 · RESULT.md · L192; 조립 원칙 L210–212](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
-- [AF-RES-016 · CODEBOOK.md · L39–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-001 · RESEARCH.md · 원 절: 9. 독립 검토가 바꾼 판단; 행: L147–152](https://github.com/laadkke-arch/agentflow-open/blob/4d6208c08f6f2657865ba000d6768f6537e832b6/docs/workstreams/research/AF-RES-001/RESEARCH.md) — SHA `4d6208c08f6f2657865ba000d6768f6537e832b6`.
+- [AF-RES-003 · RESEARCH.md · 원 절: 5. 무엇을 더 저장할지: 필드보다 막아야 할 실패 / 원문을 보존하지 않는 최소안의 정확한 한계; 7. 병합·분리·대체에서 보존할 연결; 행: L107–111, L146–159](https://github.com/laadkke-arch/agentflow-open/blob/b13db3931b4021ff9e1ac6e404590c09526c3087/docs/workstreams/research/AF-RES-003/RESEARCH.md) — SHA `b13db3931b4021ff9e1ac6e404590c09526c3087`.
+- [AF-RES-004 · PROTOCOL.md · 원 절: 판정 단위와 증거 경계; 행: L24](https://github.com/laadkke-arch/agentflow-open/blob/2b798c7d2b7355b649691c18de196104ceabb0f0/docs/workstreams/research/AF-RES-004/PROTOCOL.md) — SHA `2b798c7d2b7355b649691c18de196104ceabb0f0`.
+- [AF-RES-016 · RESULT.md · 원 절: §3 추가 분석 / 3.1 세 안의 적합 조건과 실패 조건; §3 추가 분석 / 3.4 판정 상태를 보존하는 조립 원칙(H); 행: L192, L210–212](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/RESULT.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
+- [AF-RES-016 · CODEBOOK.md · 원 절: 4. S3 두 축 — form × contribution; 행: L39–41](https://github.com/laadkke-arch/agentflow-open/blob/3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc/docs/workstreams/research/AF-RES-016/CODEBOOK.md) — SHA `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc`.
 
 방법 대응(조립 가설 H): X04, X10, X22. 원 사실의 증거를 추가한 것이 아니라, 질문·대안·기준·상태·추가 확인을 분리하는 기록 방식으로 사용한다.
 

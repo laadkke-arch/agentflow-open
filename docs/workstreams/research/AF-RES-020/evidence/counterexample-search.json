@@ -1,0 +1,90 @@
+{
+  "status": "four_types_found_one_strict_event_not_found",
+  "assessed_at_utc": "2026-11-21T05:44:41.961895+00:00",
+  "reviewers": [
+    "GPT-6 Astra Pro 작업자",
+    "gpt-6.2-sol 내부 별도 검토"
+  ],
+  "human_review": false,
+  "counts": {
+    "required_types": 5,
+    "found_types": 4,
+    "not_found_types": 1
+  },
+  "records": [
+    {
+      "id": "CE01",
+      "requested": "나눌 수 없는 묶음: 두 결과가 서로의 정의 없이는 읽히지 않는 경우",
+      "found": true,
+      "query_or_test": "B07의 role/proposed_use 치환과 B12의 선택 범위 제거; RELATIONS의27선행 그래프를 검사",
+      "finding": "특정 판정은 문제 조건·proposed_use·설정·제공 근거에서 분리하면 의미가 성립하지 않는다. contribution 역시 원 질문의 선택 범위와 제안 맥락의 정의를 필요로 한다.",
+      "evidence": [
+        "C-B07-01",
+        "C-B07-04",
+        "C-B12-02",
+        "RELATIONS.md §3"
+      ],
+      "limits": "의미 계약 내부의 비분리 반례다. 선행 그래프의 상호 순환은 발견하지 않았으며 구현 모듈을 모두 합치라는 뜻이 아니다."
+    },
+    {
+      "id": "CE02",
+      "requested": "정의상 충돌을 경험적 충돌로 잘못 기록한 경우. 반대의 경우도 찾는다.",
+      "found": true,
+      "query_or_test": "013 role/match_kind의146집합을 ID로 조인; CASES coding_revisions[0]과 RESULT L101; 016 같은120개의S2코딩 분포",
+      "finding": "C05의 외부 참고문헌 부재를 구조 전이 부재로 해석했던 실제 코딩을 원 작업이 정정했다. 두146집합은142개만 겹치므로7/146과8/146은 같은 모집단의 수치 오류가 아니다. 반대로 동일S2에서comparison A0/B14는 정의표 작성만으로 해소되지 않는 경험적 재현성 차이다.",
+      "evidence": [
+        "CF12",
+        "CF14",
+        "I013-RESULT L101",
+        "AF-RES-013 cases/CASES.json $.coding_revisions[0]"
+      ],
+      "source_sha": "eb569f07a3a34ffacf114384ae9b06ad062f5396",
+      "source_url": "https://github.com/laadkke-arch/agentflow-open/blob/eb569f07a3a34ffacf114384ae9b06ad062f5396/docs/workstreams/research/AF-RES-013/cases/CASES.json",
+      "limits": "원013이 두146의 차이를 숫자 오류라고 주장했다고 귀속하지 않는다. C05정정은 고정판 전에 일어났으며 현재 CLAIM_CHECK 불일치 수에 더하지 않는다."
+    },
+    {
+      "id": "CE03",
+      "requested": "작아 보이지만 첫날부터 되돌리기 어려운 결정을 강제하는 구성",
+      "found": true,
+      "query_or_test": "C0 원질문 덮기, C1 단일역할의 원판정 삭제, C2 원문 없는 원자화와003 C02/C09를 대조",
+      "finding": "저장 구조의 크기와 무관하게 원 질문·범위·원 라벨·근거 판을 버리면 후속 구조가 과거 판정을 복원할 수 없다. 원 문맥을 따로 보존한 단일 표시 필드까지 실패로 일반화하지 않는다.",
+      "evidence": [
+        "CF16",
+        "CONFIGS.md §3",
+        "C-B05-03",
+        "C-B06-01"
+      ],
+      "limits": "실제 사용자 이행 비용이 아니라 정보 손실 경로를 드러내는 H 설계 반례다."
+    },
+    {
+      "id": "CE04",
+      "requested": "앞선 결과의 주장이 원문과 맞지 않는 경우: 수치, 분모, 범위",
+      "found": true,
+      "query_or_test": "004 HANDOFF §5 L80과 PROTOCOL L24 및 사용 범위 사례 대조",
+      "finding": "C-B07-04에서 인계문이 proposed_use 축을 role로 바꿨다. 계약 범위의 실제 전달 불일치다.",
+      "evidence": [
+        "C-B07-04",
+        "CF13"
+      ],
+      "limits": "원 숫자 산술 오류를 발견한 것은 아니다. 허용 불일치 유형은 과대 일반화로 기록했다."
+    },
+    {
+      "id": "CE05",
+      "requested": "같은 주장이 두 묶음에 서로 다른 수치로 들어간 경우",
+      "found": false,
+      "query_or_test": "73행/70주장군 중 명시 공유3군; 010 7/9,0137/146·8/146,012/014 N,01514/195·5/83,01675/149·66/120의 동일 task/SHA·대상·관측 창·정의·분모를 대조",
+      "finding": "공유3군은 양립했고 의심 숫자들은 서로 다른 집합·조건·단위를 측정했다. 동일 주장·동일 조건의 실제 수치 상충은 현재 표집에서 미발견이다.",
+      "evidence": [
+        "CLAIM_CHECK.json assertion_group_id",
+        "CF03",
+        "CF08",
+        "CF10",
+        "CF14",
+        "evidence/audit-numeric-late.json"
+      ],
+      "limits": "유한 목적 표집 밖의 수치 오류 부재를 뜻하지 않는다. 단위가 다른 숫자를 같은 주장으로 바꿔 발견 건수를 만들지 않았다.",
+      "minimum_next_input": "미표집 원 결과의 모든 수치 주장 목록(원 task/SHA/path/행,대상,분모,관측 창,처치/판정원)을 만든 뒤 동일 의미 키로 중복을 조인한다. 같은 키에서 서로 다른 값이 있는 최소1쌍을 원 evidence까지 대조해야 이 발견 조건을 충족한다. 오류가 실제 존재할 것을 전제하지 않는다."
+    }
+  ],
+  "review_provenance": "별도 모델이 결과·관계·구성 및 고정 원 파일을 추가 대조해①–④의범위와⑤미발견을 메시지로 확인했다. 최초18통제점검과 이번 반례 점검을 동일 실험으로 세지 않는다."
+}
