@@ -1,0 +1,208 @@
+{
+  "batch": 12,
+  "rules": "claims/RULES.md",
+  "claims": [
+    {
+      "id": "CL-5a9925db05e7c9",
+      "qid": "T048",
+      "candidate": "FreeNAS 11.3 with a seven-disk ZFS RAIDZ1 pool",
+      "claim": "FreeNAS 11.3-U3's guide demonstrates virtualized installation.",
+      "claim_type": "platform",
+      "source_quote": "The 11.3-U3 installation guide demonstrates virtualized installation but discourages production VM use",
+      "supplied_urls": [
+        "https://www.ixsystems.com/documentation/freenas/11.3-U3/install.html"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "he redundancy's recovery limits. Sources: https://cdn-www.ixsystems.com/documentation/freenas/11.3-RELEASE/zfsprimer.html and https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/tasks.html\n\nThe unresolved part is ESXi integration. The 11.3-U3 installation guide demonstrates virtualized installation but discourages production VM use; that warning is not an explicit statement that ESXi is unsupported. I would verify the actual disk/controller presentation and storage-service connection before calling this deployment a complete match. Keeping Plex in Windows while another host supplies storage is a proposed architecture, not something tested here. Source: https://www.ixsystems.com/documentation/freenas/11.3-U3/install.html",
+      "question_cohort": "011",
+      "question_date": "2020-09-11",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-c15188ffbb9397",
+      "qid": "T040",
+      "candidate": "pg-boss",
+      "claim": "pg-boss uses SKIP LOCKED claims.",
+      "claim_type": "feature",
+      "source_quote": "For Node.js already using PostgreSQL, pg-boss packages the database-claim approach behind job submission and worker APIs. The opened project introduction specifically confirms SKIP LOCKED claims and concurrent workers. It is a useful implementation to inspect before writing a custom database queue. The page examined does not establish every deduplication or long-job setting, and I would retain explicit business-key and result constraints. Its exact historical feature set was not verified.",
+      "supplied_urls": [
+        "https://github.com/timgit/pg-boss"
+      ],
+      "reference_kind": "homepage_only",
+      "claim_context": " renewal. Those are material constraints for long computations. The current reference verifies these mechanisms, but I have not established a dated version available by the question's cutoff.\n\n6. pg-boss.\nhttps://github.com/timgit/pg-boss\n\nFor Node.js already using PostgreSQL, pg-boss packages the database-claim approach behind job submission and worker APIs. The opened project introduction specifically confirms SKIP LOCKED claims and concurrent workers. It is a useful implementation to inspect before writing a custom database queue. The page examined does not establish every deduplication or long-job setting, and I would retain explicit business-key and result constraints. Its exact historical feature set was not verified.\n\nConfiguration I would carry forward\n\nAssign a deterministic business job ID before enqueueing. Record that ID durably with a uniqueness constraint, and retain its completion identity for as long as repeated registration must be rejected. ",
+      "question_cohort": "011",
+      "question_date": "2018-11-27",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-1b09a2409b62da",
+      "qid": "T058",
+      "candidate": "Gitea repository mirroring",
+      "claim": "Gitea repository mirroring is not automatic failover for issues.",
+      "claim_type": "feature",
+      "source_quote": "Mirroring is not automatic failover for issues, reviews, CI, or releases, and a pull mirror cannot acquire new changes while its source is unavailable.",
+      "supplied_urls": [
+        "https://docs.gitea.com/usage/repository/repo-mirror/"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "oving, a push mirror can retain a GitHub copy. The public implementation shows scheduled synchronization and error handling:\nhttps://github.com/go-gitea/gitea/blob/main/services/mirror/mirror_pull.go\n\nKeep one authoritative write location. Mirroring is not automatic failover for issues, reviews, CI, or releases, and a pull mirror cannot acquire new changes while its source is unavailable. The documentation also warns that push mirroring overwrites remote changes.\n\nA concrete trial should exercise clone and push, one review, an issue with attachments, the normal build, and the normal release. Compare the migration effort and",
+      "question_cohort": "011",
+      "question_date": "2026-08-17",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-156e01727e845b",
+      "qid": "T024",
+      "candidate": "GLib GOption",
+      "claim": "GLib's README offers public downloads.",
+      "claim_type": "feature",
+      "source_quote": "GLib exposes a C API and identifies its license as LGPL-2.1-or-later. Its README offers public downloads and an explicit support policy for recent release series. This is a broader utility-library dependency, so consider that integration cost. I also did not open a definitive macOS support statement for the selected release. [Library and license](https://docs.gtk.org/glib/index.html) · [Downloads and support policy](https://github.com/GNOME/glib/blob/main/README.md)",
+      "supplied_urls": [
+        "https://github.com/GNOME/glib/blob/main/README.md"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": " occurrences. I did not establish the exact encounter-order guarantee or scalar last-value-wins behavior from the implementation, so those remain checks rather than promises. [Argument types](https://docs.gtk.org/glib/enum.OptionArg.html)\n\nGLib exposes a C API and identifies its license as LGPL-2.1-or-later. Its README offers public downloads and an explicit support policy for recent release series. This is a broader utility-library dependency, so consider that integration cost. I also did not open a definitive macOS support statement for the selected release. [Library and license](https://docs.gtk.org/glib/index.html) · [Downloads and support policy](https://github.com/GNOME/glib/blob/main/README.md)\n\nFor your preferences, the declaration-table approach avoids extensive macro-driven parsing logic and reuses definitions for help. A subcommand dispatch design was not verified here.\n\n**Assessment: INSUFFICIENT for an unconditional all-req",
+      "question_cohort": "011",
+      "question_date": "2024-11-12",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-9c5ef1b7b79fad",
+      "qid": "SX01",
+      "candidate": "QOwnNotes desktop + QOwnNotes Android using a synchronized local note folder",
+      "claim": "QOwnNotes Android writes changes back to the files.",
+      "claim_type": "feature",
+      "source_quote": "For the current Android app, the documented local-folder workflow is concrete: open the corresponding folder on Android, synchronize that folder with your desktop using a file synchronizer, and include the desktop `notes.sqlite` file for shared tags. The Android app edits Markdown and writes changes back to the files. Its tags therefore are not your ideal in-body #hashtags, but this is a documented tagged workflow across the two platforms. [Android setup](https://www.qownnotes.org/getting-started/qownnotes-android.html)",
+      "supplied_urls": [
+        "https://www.qownnotes.org/getting-started/qownnotes-android.html"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "rs with the same files. This makes it a good starting point for your preference to keep the underlying formatting visible and maintain access outside the original app. [Official project and feature list](https://github.com/pbek/QOwnNotes)\n\nFor the current Android app, the documented local-folder workflow is concrete: open the corresponding folder on Android, synchronize that folder with your desktop using a file synchronizer, and include the desktop `notes.sqlite` file for shared tags. The Android app edits Markdown and writes changes back to the files. Its tags therefore are not your ideal in-body #hashtags, but this is a documented tagged workflow across the two platforms. [Android setup](https://www.qownnotes.org/getting-started/qownnotes-android.html)\n\nQOwnNotes itself does not perform desktop file synchronization; that is a separate part of the setup. The resulting notes remain plain files that other text editors can read. [Storage and synchronization model](https://www.qownnotes.org/g",
+      "question_cohort": "011",
+      "question_date": "2016-08-11",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-81cf93a80113f3",
+      "qid": "T058",
+      "candidate": "GitLab.com",
+      "claim": "GitLab's GitHub importer does not import GitHub groups.",
+      "claim_type": "feature",
+      "source_quote": "GitLab documents importing GitHub projects, including collaboration records, but the importer does not bring over GitHub organizations or groups.",
+      "supplied_urls": [
+        "https://docs.gitlab.com/user/project/import/github/"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "roject, Codeberg is also a serious hosted option. Forgejo and SourceHut become more attractive when their operating or collaboration model suits you.\n\n## Ranked options\n\n1. **GitLab.com — the first general hosted alternative to evaluate.** GitLab documents importing GitHub projects, including collaboration records, but the importer does not bring over GitHub organizations or groups. Check its permissions and import limitations before trusting a migration. GitLab also publishes a separate guide for converting GitHub Actions workflows into GitLab CI/CD, so CI should be tested as its own migration task. This is a documented route to another host, not evidence that its uptime will be better for your workload. [GitHub importer](https://docs.gitlab.com/user/project/import/github/); [CI migration](https://docs.gitlab.com/ci/migration/github_actions/). genui{\"citation\":{\"refs\":[\"turn113172141view0\",\"turn250146023view0\",\"turn287527577view3\"]}}",
+      "question_cohort": "011",
+      "question_date": "2026-08-17",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-27feb0bd1383ee",
+      "qid": "N017",
+      "candidate": "Brave for Android",
+      "claim": "Provides other privacy controls.",
+      "claim_type": "feature",
+      "source_quote": "tracking protection and other privacy controls",
+      "supplied_urls": [
+        "https://play.google.com/store/apps/details?id=com.brave.browser&hl=en_US"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "nd its interface usable. I would try this one first, while treating that preference as unverified rather than promising you will like it.\n\n2. **Brave — a plausible alternative if its interface suits you.** Its normal Play listing documents tracking protection and other privacy controls, and it is a ready-made app rather than a build project. Brave also documents Android menu and toolbar customization. However, the primary material I could actually inspect did not establish the present location and accessibility of Reload. I would therefore keep Brave on the shortlist with that check still open, rather than assert that it solves your exact complaint. [Google Play](https://play.google.com/store/apps/details?id=com.brave.browser&hl=en_US) · [Android interface changes](https://brave.com/whats-new/android/)",
+      "question_cohort": "new",
+      "question_date": "2026-10-21",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-193e6a9c04eaea",
+      "qid": "N007",
+      "candidate": "Resend",
+      "claim": "Resend Pro costs $20/month for 50,000 messages.",
+      "claim_type": "price",
+      "source_quote": "| Rank | Service | Verified cost or allowance | When I would choose it |\n| --- | --- | --- | --- |\n| 1 | [Brevo](https://developers.brevo.com/docs/send-a-transactional-email) | Free: 300 sends/day. Starter begins at $9/month with a 5,000-send tier and no daily sending cap. | A practical starting point for a few thousand messages, using Free only when every day's volume fits. Its plan also lists contact-storage allowances, so check those if you will use Brevo's contact database. |\n| 2 | [Amazon SES](https://aws.amazon.com/ses/pricing/) | A-la-carte outbound sending: $0.10/1,000, so approximately $1 for 10,000 recipient deliveries before data and optional-feature charges. | Lowest verified marginal sending price in this comparison, when you can handle AWS setup and obtain production access. |\n| 3 | [Resend](https://resend.com/pricing.md) | Free: 3,000/month and 100/day. Pro: $20/month for 50,000 with no daily cap. | A small project that fits both free limits, or one that values the documented SDK integration enough to pay the larger minimum. |\n| 4 | [Postmark](https://postmarkapp.com/pricing/) | Basic: $15/month for 10,000; additional usage at $1.80/1,000. Free: only 100/month. | A paid transactional service where 45-day activity retention and delivery diagnostics are useful. |\n| 5 | [Zoho ZeptoMail / Zoho CPaaS email](https://www.zoho.com/zeptomail/pricing.html) | The live page confirms 10,000-email credits valid for six months, but the dollar amount was not readable. | An additional option for irregular sending, pending a current price and account-terms check. |",
+      "supplied_urls": [
+        "https://resend.com/pricing.md"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "s your busiest day's volume. “Thousands of emails” could mean a few thousand spread across a month, or a few thousand immediately after a local event. I would not assume a monthly free allowance can absorb the latter.\n\n## Ranked shortlist\n\n| Rank | Service | Verified cost or allowance | When I would choose it |\n| --- | --- | --- | --- |\n| 1 | [Brevo](https://developers.brevo.com/docs/send-a-transactional-email) | Free: 300 sends/day. Starter begins at $9/month with a 5,000-send tier and no daily sending cap. | A practical starting point for a few thousand messages, using Free only when every day's volume fits. Its plan also lists contact-storage allowances, so check those if you will use Brevo's contact database. |\n| 2 | [Amazon SES](https://aws.amazon.com/ses/pricing/) | A-la-carte outbound sending: $0.10/1,000, so approximately $1 for 10,000 recipient deliveries before data and optional-feature charges. | Lowest verified marginal sending price in this comparison, when you can handle AWS setup and obtain production access. |\n| 3 | [Resend](https://resend.com/pricing.md) | Free: 3,000/month and 100/day. Pro: $20/month for 50,000 with no daily cap. | A small project that fits both free limits, or one that values the documented SDK integration enough to pay the larger minimum. |\n| 4 | [Postmark](https://postmarkapp.com/pricing/) | Basic: $15/month for 10,000; additional usage at $1.80/1,000. Free: only 100/month. | A paid transactional service where 45-day activity retention and delivery diagnostics are useful. |\n| 5 | [Zoho ZeptoMail / Zoho CPaaS email](https://www.zoho.com/zeptomail/pricing.html) | The live page confirms 10,000-email credits valid for six months, but the dollar amount was not readable. | An additional option for irregular sending, pending a current price and account-terms check. |\n\nThe figures above come from the providers' own pages. Brevo's allowance and entry tier, Resend's monthly and daily limits, and Postmark's paid starting tier were readable directly. genui{\"citation\":{\"refs\":[\"turn364327763view2\",\"turn233",
+      "question_cohort": "new",
+      "question_date": "2026-06-01",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-dd0aea49279115",
+      "qid": "T029",
+      "candidate": "Apache log4net with AdoNetAppender and RollingFileAppender",
+      "claim": "log4net RollingFileAppender supports combined size/date rotation.",
+      "claim_type": "feature",
+      "source_quote": "[log4net's AdoNetAppender](https://logging.apache.org/log4net/manual/configuration/appenders/adonetappender.html) writes events to an SQL table through ADO.NET. Its configuration examples include an exception column populated through ExceptionLayout, so exception information need not be manually broken into separate fields. Pair that with [RollingFileAppender](https://logging.apache.org/log4net/manual/configuration/appenders/rollingfileappender.html), which supports local log rotation by size, date, or both.",
+      "supplied_urls": [
+        "https://logging.apache.org/log4net/manual/configuration/appenders/rollingfileappender.html"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": " 16 May 2022. Its original-version material supports availability before your 10 January 2023 cutoff; later-version annotations on that live article are not used to establish historical features.\n\n## 2. Apache log4net — another direct fit\n\n[log4net's AdoNetAppender](https://logging.apache.org/log4net/manual/configuration/appenders/adonetappender.html) writes events to an SQL table through ADO.NET. Its configuration examples include an exception column populated through ExceptionLayout, so exception information need not be manually broken into separate fields. Pair that with [RollingFileAppender](https://logging.apache.org/log4net/manual/configuration/appenders/rollingfileappender.html), which supports local log rotation by size, date, or both.\n\nThis is a practical option if you prefer log4net's appender and configuration model. You still need to define the database schema, connection and SQL parameter mappings, and explicitly attach the local file appender. Database batching als",
+      "question_cohort": "011",
+      "question_date": "2023-01-10",
+      "temporal_basis": "current"
+    },
+    {
+      "id": "CL-624d138ae3c314",
+      "qid": "T023",
+      "candidate": "jQuery formBuilder with formRender",
+      "claim": "Integrating application must implement persistence.",
+      "claim_type": "feature",
+      "source_quote": "your application must implement persistence, submission validation and processing.",
+      "supplied_urls": [
+        "https://formbuilder.online/docs/formRender/actions/userData/"
+      ],
+      "reference_kind": "claim_specific",
+      "claim_context": "completed responses, the [userData documentation](https://formbuilder.online/docs/formRender/actions/userData/) supplies an AJAX POST example that sends serialized answers to a server.\n\nThis supplies the authoring and rendering components; your application must implement persistence, submission validation and processing. The onSave example itself uses browser session storage, so copying that example alone would not satisfy your server-storage requirement. Replace that storage step with your own backend request. Keep the designer restricted to company staff and expose the respondent page according to your application's access policy.",
+      "question_cohort": "011",
+      "question_date": "2025-02-13",
+      "temporal_basis": "current"
+    }
+  ],
+  "output": "claims/verified/batch-12.json",
+  "instructions": "Read only this packet and claims/RULES.md. Verify every fixed claim against current official documents or public code, preserving product/version/plan/platform and nearby caveats. Never replace a difficult claim. No source-thread answers, gold, runs, sample key, conditions or other judgments. Record actual opened URLs/UTC/sections and paraphrased findings; failed opens and snippets go in excluded_readings. Unknown is not false. False error type is a possible classification, not a proved causal mechanism. Record original assessment prose in raw_response.",
+  "output_fields": [
+    "batch",
+    "judge",
+    "displayed_model_label",
+    "started_at_utc",
+    "ended_at_utc",
+    "claims",
+    "readings",
+    "excluded_readings",
+    "queries",
+    "raw_response",
+    "limitations"
+  ],
+  "claim_fields": [
+    "id",
+    "verdict",
+    "evidence_url",
+    "evidence_urls",
+    "checked_at_utc",
+    "confirmed",
+    "scope",
+    "error_type",
+    "error_type_basis",
+    "limitations"
+  ],
+  "reading_fields": [
+    "url",
+    "accessed_at_utc",
+    "title",
+    "version_or_date",
+    "sections_read",
+    "confirmed",
+    "limits",
+    "level"
+  ],
+  "verdict_values": [
+    "true",
+    "false",
+    "unknown"
+  ]
+}
