@@ -80,7 +80,7 @@ s='''# 공통 색인 반영 제안 — 미적용
 
 읽은 색인은 foundation `7b4334e55a0563225295618eaf3ad299b415d9f7`의 docs/research/INDEX.md다. 그 문서가 요구하는 고유 ID / 답하는 질문 / 현재 상태 / 파일 / 핵심 의존·충돌 열을 그대로 제안한다. ‘새 제품 연구 미배정·아직 없음’은 당시 설명이며 현재 배정을 취소하지 않는다. 원본 전체를 색인에 복제하지 않고 개별 고정 결과로 연결한다.
 
-020의 최종 RESULT·HANDOFF는 이 제안 뒤의 별도 커밋에서 만들어진다. 아래020 행은 명시적인 작업 브랜치 링크다. **편집 담당은 최종 HANDOFF 커밋과 acceptance 파일을 확인한 뒤 이 링크를 해당 결과 SHA로 고정한다.** 이미 완성된24묶음 링크는 묶음 완료 커밋 `aa0b4050f82116e3c18553f8a179e40e6bdf54e9`로 고정했다. 사용자 요청에 따라 공통 색인·진행표·계약은 수정하지 않았다.
+020의 RESULT는 결과 묶음 커밋에 있으며 최종 HANDOFF는 자기 점검 뒤 별도 커밋으로 작성한다. 아래 020 행은 명시적인 작업 브랜치 링크다. **편집 담당은 최종 HANDOFF 커밋과 acceptance 파일을 확인한 뒤 이 링크를 해당 결과 SHA로 고정한다.** 24묶음 링크는 원 인용 위치 교정을 포함한 결과 묶음 커밋 `18bb267b0048be18b13203df129e9d7c4bdbe146`로 고정했다. 사용자 요청에 따라 공통 색인·진행표·계약은 수정하지 않았다.
 
 ## 2. 대표 행 한 개
 
@@ -91,7 +91,7 @@ rows=[]
 for b in bundles:
  state='빈칸 포함·추가 사례 필요' if b['id'] in ['B19','B21'] else '조건부 검토 가능·효과/최종 선택 아님'
  conflict='; '.join(x['id'] for x in read('evidence/conflicts-data.json') if b['id'] in x['bundles']) or '직접 충돌 미선정'
- rows.append([b['id'],b['decision'],state,f"[{b['title']}]({base}/blob/aa0b4050f82116e3c18553f8a179e40e6bdf54e9/{own}/bundles/{b['id']}.md)",conflict+'; 선행·조건은 RELATIONS'])
+ rows.append([b['id'],b['decision'],state,f"[{b['title']}]({base}/blob/18bb267b0048be18b13203df129e9d7c4bdbe146/{own}/bundles/{b['id']}.md)",conflict+'; 선행·조건은 RELATIONS'])
 s+=table(['고유 ID','답하는 질문','현재 상태','파일','핵심 의존·충돌'],rows)+'\n\n## 4. 통합되지 않은 원 결과의 고정 진입점\n\n원 결과는 foundation 작업 트리에 없을 수 있으므로 브랜치 HEAD 대신 지정 result_commit을 사용한다. 원 인계 상태를 이번 표준 어휘로 덮어쓰지 않는다. 이 목록은 독립 연구의 승인 목록이 아니다.\n\n'
 rows=[]
 for t,sha in fixed['fixed'].items():
@@ -104,7 +104,7 @@ s+='''
 
 ## 5. 편집 담당의 다음 첫 행동
 
-최종020 HANDOFF 커밋에서 RESULT·SELF_CHECK·acceptance-evidence를 함께 연다. 연구 내용의 재사용 범위와 운영 절차 두 미충족을 따로 확인하고 대표 행의 브랜치 링크를 검토한 SHA로 고정한다. 그런 다음 원013/016의 DONE 처리에 대응하는 인수 기록이 있는지 진행 담당에게 확인할 질문을 남긴다. 이 연구에서 질문을 전송하거나 상태를 변경하지 않았다.
+최종020 HANDOFF 커밋에서 RESULT·SELF_CHECK·acceptance-evidence를 함께 연다. 연구 종료 조건 미충족 1건과 절차상 미충족 3건을 따로 확인하고 대표 행의 브랜치 링크를 검토한 SHA로 고정한다. 그런 다음 원013/016의 DONE 처리에 대응하는 인수 기록이 있는지 진행 담당에게 확인할 질문을 남긴다. 이 연구에서 질문을 전송하거나 상태를 변경하지 않았다.
 
 ## 한계
 

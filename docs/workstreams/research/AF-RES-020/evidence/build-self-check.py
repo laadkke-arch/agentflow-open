@@ -1,0 +1,91 @@
+"""Create a candid acceptance ledger; false criteria remain false."""
+import json,subprocess,datetime
+from pathlib import Path
+P=Path(__file__).resolve().parents[1]
+def read(n):return json.loads((P/n).read_text())
+def write(n,o):(P/n).write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
+def table(h,rows):
+ def c(x):return str(x).replace('|','\\|').replace('\n',' ')
+ return '\n'.join(['| '+' | '.join(h)+' |','| '+' | '.join(['---']*len(h))+' |']+['| '+' | '.join(c(x) for x in r)+' |' for r in rows])
+q=[
+('Q1','24개 묶음을 독립적으로 결정할 수 있는 경계로 나누되, 의미 계약은 관계에 명시했다.',['I003-RESEARCH','I004-PROTOCOL','X04','X05','X14'],'003 C09의 조건 메모만으로 충분한 사례, B07의 role/proposed_use 치환, Parnas의 공유 계약 반례를 대조했다. 파일 분할이 곧 의존성 제거라는 가설을 기각했다.','실제 조립자가 정의를 복원하는 데 드는 시간과 오류; B19의 운영 사건 공백'),
+('Q2','전달을 대조한 73행은 일치 72행·불일치 1행이며, 57행은 하위 고정 파일까지 대조했다.',['I004-HANDOFF','I004-PROTOCOL','I012-RESULTS','I014-RESULT','X12','X16'],'오류 12개·정확 4개·미측정 2개로 구성한 통제 문장을 별도 모델이 판정 키 없이 대조했고, 18/18이 준비 판정과 일치했다. 010의 7/9와 013의 두 146을 수치 오류로 만들지 않았다.','목적 표집 밖 주장, 원 외부 사실·판정의 진실성'),
+('Q3','276쌍의 관계에 조건을 명시하고, 선행 관계 27개의 정의·평가 전제를 구성에 반영했다.',['I016-CODEBOOK','I015-RESULT','IR10','X05','X07','X09'],'product-only 필터의 DIRECT 3/7 누락, C0/C1의 B06→B07 누락, C2의 B11→B12 누락을 찾아 조건 계약으로 보강했다. C0의 역할 층화는 전제를 도입하기 전까지 비활성으로 둔다.','무관으로 분류한 189쌍의 미발견 상호작용; 실제 공동 운용의 효과·비용'),
+('Q4','원 지점 11개와 추가 지점 5개를 정의·범위·경험적 성격으로 나누고, 해소에 필요한 최소 입력을 적었다.',['I013-RESULT','I016-RESULT','I014-RESULT','X08','X09','X16'],'013 coding_revisions[0]의 실제 기준 혼동 정정, 두 146의 교집합 142, 016 comparison의 A0/B14를 대조했다. 정의 차이와 같은 코드북에서의 재현성 차이를 뒤바꿔 분류하지 않았다.','같은 주장·조건의 실제 수치 상충 반례 ⑤는 미발견; CF03/05/11/12 등의 선택은 미해소'),
+('Q5','C0·C1·C2의 원리, 첫날부터 보존할 자료, 실패 조건, 이행 경로와 비용을 비교했으며 한 안을 고르지 않았다.',['I003-RESEARCH','I009-GAP','I004-PROTOCOL','X01','X02','X18','X23'],'C1의 단일 role로 인한 원 판정 삭제, C0의 요약 덮어쓰기, C2의 managed backups 부정 축약을 반례로 대조했다. X18·X19의 옵션 유지 비용은 작을수록 되돌리기 쉽다는 가정을 제한한다.','실제 전환 노동·검토 부담·운영 효과; 원문 판을 확보하지 못했을 때의 복원 한계'),
+('Q6','16개 결정마다 선택지·근거·결정을 바꿀 최소 증거·결정 전에 하지 말 행동을 남겼다.',['I009-GAP','I013-RESULT','I015-RESULT','X10','X13','X22','X24'],'기존 조합이 충분할 수 있다는 009의 반대 가설, 013의 비교군 부재, 015의 도구 시간과 사람 노동의 차이를 대조했다. 작은 평균 차이로 선택지를 닫지 않았다.','017–019는 읽지 않은 대기 입력; 제안 표본의 검정력·실제 선택은 미확인'),
+('Q7','016의 42행을 보존하고 22행을 더했으며, D3 하위 유형과 상태 축을 분리했다.',['I016-VOCAB-MAP-DATA','I009-GAP','I013-HANDOFF','I016-HANDOFF','X08','X10','X12'],'원 42행의 깊은 동일성을 검사하고, 012 E5 미실행, 016의 0/30 재사용, 013/016의 원 상태와 DONE의 차이를 대조했다. 근거 수준의 높은 숫자나 완료 상태를 제품 효과로 승격하지 않았다.','사람 간 어휘 재현성·기존 DONE의 인수 기록; 공통 계약 변경 없음'),
+('Q8','24개 원문에서 대안 보존·기록·축소·비용을 대조하고, 8항목에 H로 반영했다.',['I003-RESEARCH','I004-PROTOCOL','I009-GAP','X01','X04','X09','X12','X14','X18','X19','X22'],'Sobek1999의 극단 사례 정정, Shin/Ariely의 옵션 유지 실험, Gilbert/Ebert의 변경 가능성 비용, QOC 팀의 허수 대안 부담을 직접 읽었다. 대안을 오래 열어 두면 항상 좋다는 가설을 유지하지 않았다.','목적 표집·계보 의존; Ward1995 미열람·DesignRules 부분 발췌; AF-RES로의 전이는 H')]
+qd=[]
+for id,answer,ids,test,u in q:qd.append({'question':id,'answer':answer,'source_ids':ids,'source_kinds':['고정 내부 원 결과','외부 방법·비교 원문'],'source_kind_count':2,'falsification_attempt':test,'uncertainty':u})
+write('evidence/question-evidence.json',qd)
+# Exact wording of the user's thirteen end conditions.
+conditions=[
+('묶음 15개 이상이 있고, 각 묶음에 RESEARCH_WORKFLOW §4 항목이 모두 있다. 브리프 질문 8개마다 묶음(또는 빈칸 묶음)이 있다.',True,'bundles.json; bundles/B01.md–B24.md; RESULT.md#§2-Q1','24개 묶음, 각각 8항목, 8개 질문 모두에 대응'),
+('주장 재대조가 60개 이상(묶음당 3개 이상, 2단계 대조 20개 이상)이고, 모두 고정 SHA 위치를 가진다.',True,'CLAIM_CHECK.json; evidence/claim-audit-summary.json; evidence/locator-check.json','73행·70주장군, 묶음당 3개 이상, 2단계 57/73; 원 절·행 190곳 및 묶음 링크 48곳 확인'),
+('모든 묶음 쌍의 관계가 RELATIONS.json에 있다.',True,'RELATIONS.json; RELATIONS.md#2','24×23/2=276쌍; 조건부 관계 87쌍과 무관 189쌍'),
+('REVIEW-4 §3의 11개 지점이 모두 충돌 등록부에 있다.',True,'CONFLICTS.md#2; evidence/conflicts-data.json CF01–CF11','원 지점 11개와 추가 지점 5개; planning은 출발 목록이며, 사실 근거는 고정 원 결과'),
+('서로 다른 원리의 시작 구성 3개 이상(지정 3개 포함)이 표 4의 모든 열로 채워져 있다.',True,'CONFIGS.md#2; RESULT.md#표-4; evidence/config-prerequisite-check.json','C0 기존 조합+검증, C1 가벼운 자료, C2 근거 단위; 모든 필수 열과 조건부 전제를 명시'),
+('남은 결정 10개 이상이 있다.',True,'DECISIONS.md#2; evidence/decisions-data.json','16개; 선택지·근거·최소 증거·하지 말 것·대기 입력'),
+('표 1~6이 지정한 열로 채워져 있다.',True,'RESULT.md#§1; evidence/result-table-schema.json','지정한 열과 순서, 본문 행 24/91/16/3/16/12'),
+('Q1–Q8 각각에 서로 다른 종류의 출처가 2개 이상 있다. 내부 결과와 외부 문헌은 서로 다른 종류로 센다.',True,'SELF_CHECK.md#1; evidence/question-evidence.json; sources.json','각 질문에 고정 내부 원 결과와 외부 방법 원문을 실질적으로 연결했다. 외부 문헌으로 내부 수치 대조를 대체하지 않았다.'),
+('다른 분야 4개 이상이 원문으로 대조됐다.',True,'CROSSFIELD.md#2; evidence/crossfield-map.json; sources.json X01–X24','제조, 소프트웨어 설계, HCI/공공계획, 보건 근거 종합, 개발 정책, 행동 의사결정, 항공우주 등'),
+('반례 다섯 가지 각각을 찾은 기록이 있다.',False,'RESULT.md#3.2; evidence/counterexample-search.json','①–④는 발견했다. ⑤ 동일 주장·동일 조건의 실제 수치 상충은 73행, 공유 3군 및 의심 수치에서 발견하지 못했다. 조건이 다른 수를 같은 주장으로 만들지 않았다. 재개 입력: 미표집 정량 주장의 task/SHA/대상/분모/창/조건별 중복 목록. 동일 키에서 불일치하는 최소 1쌍의 원 evidence 대조가 필요하다.'),
+('최종 설계 하나를 고르지 않았다. 각 구성이 적합한 조건과 실패 조건을 남겼다.',True,'CONFIGS.md#2–4; RESULT.md#Q5; bundles.json final_design_selected=false','3개 구성을 독립 대안으로 유지했다. 첫날의 정보 보존과 비용 경계만 공통 의미 계약으로 제안했다.'),
+('RESULT.md §4에 불일치·약점 3건과 다음 조사 제안이 있다.',True,'RESULT.md#§4','정확히 3건: proposed_use 누락, 평가 정의·재현성의 전파, 구성의 추가 가치·비용 미측정. 각각 4개 필드와 자료·최소 규모를 명시했다.'),
+('SELF_CHECK.md 점검을 통과한 뒤에만 HANDOFF.md를 쓴다.',True,'SELF_CHECK.md#4; evidence/validation-report.json; Git의 SELF_CHECK→HANDOFF 커밋 순서','구조·정합성 검사 후 미충족 목록을 확정하고 HANDOFF를 마지막 단독 커밋으로 작성한다. 미충족을 true로 바꾸는 전체 수용 PASS는 아니다.')]
+accept=[dict(condition=c,met=m,evidence=e,note=n) for c,m,e,n in conditions]
+extra=[
+('내부 자료: 고정 입력의 원 결과 파일 30개 이상을 12개 작업 전부에서 직접 연다.',True,'sources.json summary; evidence/source-audit.json','필수 33개 파일을 포함한 고유 고정 파일 75개, 12개 작업 모두'),
+('외부 방법·비교 문헌 20개 이상과 지정 분야별 최소 개수 및 같은 사이트 최대3개를 충족한다.',True,'CROSSFIELD.md#1; evidence/source-audit.json','본문 24개, 보수적 계보 20군; 대안 5·모듈화/옵션 6·근거 기록 4·종합 틀 6·비용 직접 보고 3; 같은 사이트는 최다 3개'),
+('주장의 1/3 이상을 원 결과가 가리키는 다른 고정 evidence 파일까지 2단계로 확인한다.',True,'CLAIM_CHECK.json second_hop_path; evidence/claim-audit-summary.json','57/73; 2단계 파일·위치·계산 근거를 보존'),
+('판정 라벨이 한 값에 80% 이상 몰린 경우 알려진 나쁜 후보를 섞어 변별력을 점검한다.',True,'evidence/control-inputs.json; control-review-sol.json; claim-audit-summary.json','실제 일치 72/73에 대해 오류 12·정확 4·미측정 2의 통제 문장을 별도 모델이 분류했다. 본 주장 분모에 합산하지 않았다.'),
+('이 작업에 필요한 호스트마다 익명 요청1회로 접근 여부와 응답 코드를 첫 커밋 전에 확인하고 PROGRESS.md에 기록한다.',False,'PROGRESS.md#추가-발견-호스트; evidence/external-network-check.json','초기에 예정한 16개 호스트는 사전 확인했다. 추가 19개 호스트의 GET은 본문 열람 뒤인 05:12:57–05:13:06Z에 수행해 늦었다. 지난 사전 확인 시점을 사후 요청으로 복구할 수는 없다. 다음 연구에서는 새 호스트를 열기 전에 익명 응답 코드를 기록한다.'),
+('공통 작업 계약을 workbench.session start로 고정하고 인계 전 check --fetch를 통과한다.',False,'evidence/contract-start-attempt.json; sources.json G11–G13; evidence/NEXT_CHECKS.md','start exit2: dependency changed:work/research-af-res-013. 지정한 eb569…와 당시 HEAD d720…가 일치하지 않았다. 공식 역사 의존 모드가 없고 manifest도 없어 check를 실행할 수 없었다. 고정 입력·검사기·ref는 변경하지 않았다. 다음 첫 행동은 별도 범위에서 역사 입력을 보존하는 공식 계약을 정의하는 것이다.'),
+('AF-RES-011 CASES.json은 구조와 집계만 읽는다.',False,'evidence/audit-late.md#한계; RESULT.md#§5','주장 근거는 구조·집계에 한정했으나, 초기 outcome dict 집계 출력에 기존 요약 필드가 부수적으로 노출됐다. 새로운 개별 본문 분석이나 산출물 복사는 하지 않았다. 후속 검사에는 허용 필드만 출력하는 현재 audit-late.py --check-only를 사용한다.')]
+accept.extend(dict(condition=c,met=m,evidence=e,note=n) for c,m,e,n in extra)
+write('evidence/acceptance-evidence.json',accept)
+s='''# AF-RES-020 자기 점검
+
+## 1. 세부 질문별 점검
+
+원 결과의 전달·집계 대조와 조립 제안을 구별했다. 각 질문에는 고정 내부 결과와 외부 방법·비교 원문을 연결했다. 외부 방법이 내부 수치의 진실성을 대신 증명하지 않는다. 출처 ID의 URL·판·확인 내용·한계는 sources.json에 있다.
+
+'''+table(['세부 질문','답 한 줄','붙은 출처 ID(종류 수)','반증 시도(쓴 질의·자료와 결과)','남은 불확실성'],[[r['question'],r['answer'],', '.join(r['source_ids'])+' (2종류: 내부 원 결과 / 외부 방법 원문)',r['falsification_attempt'],r['uncertainty']] for r in qd])
+s+='''
+
+## 2. 실제 검증과 그 상한
+
+고정된 12개 작업의 필수 33개 파일을 포함한 고유 파일 75개를 읽었다. 각 파일의 URL·SHA·절/행 또는 JSON 위치·확인 내용·한계를 기록했다. 73행은 일치 72행·불일치 1행이며, 명시적으로 공유한 3행을 묶으면 70주장군이다. 57행의 2단계 확인에서는 evidence 파일을 실제로 열어 재집계하고 규칙을 대조했다. 이는 원 검색 실험이나 외부 사이트를 다시 조사한 횟수가 아니다.
+
+원 016 어휘 42행의 깊은 동일성, 추가 22행, 초기 D3 소급 13행을 확인했다. 모든 276쌍을 검사했으며, 선행 관계 27개로 구성한 현재 조건부 그래프에는 순환이 없었다. C0의 B12→B14는 역할별 평가를 비활성으로 둔다는 명시적 조건으로 처리했다. 나머지 활성 전제에는 누락이 없다. 같은 사이트 상한, 문헌 분야별 최소 수, 필수 표의 열/행, 고정 SHA 파일의 존재, 행 범위, 로컬 링크, owned_path를 검사했다.
+
+수치 감사 재생은 `PYTHONDONTWRITEBYTECODE=1 python docs/workstreams/research/AF-RES-020/evidence/audit-late.py --check-only`로 수행했다. 고정 파일 46개를 읽고 011 부분 합집합 10/33, 012 N85→163, 013의 두 146의 교집합 142, 014 양성 공통 3/12, 015 조건 집합 500/83/77, 016 comparison 0/14를 재확인했으며 종료 코드는 0이었다. 이 실행은 원 결과 파일의 산술 감사이며 과거 검색 파이프라인의 재실행이나 D4가 아니다.
+
+별도 모델 `gpt-6.2-sol`은 통제 키를 보지 않고 통제 문장 18개를 검토했다. 오류 12개·정확 4개·미측정 2개를 모두 준비 판정과 같게 분류했다. 이후 구성 전제와 반례, RESULT의 범위 표현을 추가로 검토했다. 이 두 검토를 인간 검토·외부 정답·독립 사용자 시험으로 표현하지 않았다. 초기 총괄, 내부 감사 2개 및 외부 방법 담당의 세션 표시 모델은 GPT-6 Astra Pro다.
+
+## 3. 미충족과 절차상 이탈
+
+- **연구 종료 조건1건:** 동일 주장·동일 조건·동일 분모의 두 묶음 수치 상충은 미발견이다. 공유 3군과 의심 수치를 검사했으나 차이는 정의·시점·집계 단위·처치였다. 자료가 없는 사건을 만들지 않고 추가 검사 입력을 counterexample-search에 남겼다.
+- **추가 호스트 확인 순서:** 초기에 예정한 16개 호스트와 달리, 추가 19개 호스트의 응답 코드는 본문을 읽은 뒤 확인했다. 첫 커밋 전 점검을 소급해 완료했다고 쓰지 않는다. 실패/차단의 재개 입력은 PROGRESS에 있으며, 우회하지 않았다.
+- **공통 manifest gate:** 사용자가 고정한 013과 현재 branch HEAD의 차이로 start가 실패했고, manifest가 없어 check도 통과하지 않았다. 공통 코드의 공식 옵션과 검사까지 읽어 역사 핀 모드의 부재를 확인했다(G11–G13). 별도의 고정 SHA·파일 검사는 공통 gate를 약화하거나 대체해 PASS로 만드는 것이 아니다.
+- **011 CASES 읽기 경계:** 초기의 outcome dict 집계 출력에 기존 요약 필드가 부수적으로 노출됐다. 근거는 구조·집계로 한정했으며, 그 텍스트를 새로운 개별 분석이나 산출물 복사에 쓰지 않았다. 현재 재생은 허용된 수치 필드만 출력한다.
+
+이들 미충족을 자료 수나 높은 일치율로 상쇄하지 않는다. 연구의 핵심 Q1–Q8에는 조건부 답을 제공하지만, 모든 요건을 충족한 REVIEW_READY로 표시하지 않는다. 예정 인계 상태는 **REVIEW_READY_WITH_GAPS**다.
+
+## 4. 끝내도 되는 조건별 판정
+
+다음 13행은 사용자 종료 조건의 원문이다. 연구 조건은 예 12개·아니오 1개이며, 마지막 절차 조건은 이 점검과 검증 결과를 커밋한 뒤 HANDOFF를 작성하기 위해 적용한다. 구조 검사 PASS와 모든 연구 조건 충족은 다른 판정이다. 검증기는 허위 전체 수용을 만들지 않고 **VALID_WITH_DECLARED_GAPS**를 출력한다.
+
+'''+table(['끝내도 되는 조건','충족 여부','근거 위치','설명/재개 입력'],[[r['condition'],'예' if r['met'] else '아니오',r['evidence'],r['note']] for r in accept[:13]])
+s+='\n\n## 5. 추가 공통 규칙 점검\n\n'+table(['공통 규칙','충족 여부','근거 위치','설명/재개 입력'],[[r['condition'],'예' if r['met'] else '아니오',r['evidence'],r['note']] for r in accept[13:]])
+s+='''
+
+## 6. 최종 인계 전 순서
+
+이 파일과 evidence/acceptance-evidence.json, validation-report.json을 먼저 커밋한다. 검증 결과의 구조 오류가 0이고 위 미충족 목록이 모든 산출물에서 같은지 확인한 뒤에만 HANDOFF.md를 작성한다. HANDOFF는 마지막 단독 커밋이며, 그 후 원격 본문과 로컬 본문의 바이트/해시 동일성을 읽기전용으로 확인한다. 이 절은 미실행 작업이 이미 성공했다고 표시하는 것이 아니다. 실제 커밋 순서와 재독 응답이 최종 증거다.
+
+재실행 명령·고정 입력·공통 gate의 재개 조건은 [NEXT_CHECKS](evidence/NEXT_CHECKS.md)에 있다. 모든 판단의 관측 창은 지정 원판 또는 2026-11-21의 이번 감사이며, 현재 제품 성능으로 확장하지 않는다.
+'''
+(P/'SELF_CHECK.md').write_text(s.rstrip()+'\n')
+print('acceptance',len(accept),'research true',sum(r['met'] for r in accept[:13]),'research false',sum(not r['met'] for r in accept[:13]),'overall false',sum(not r['met'] for r in accept))

@@ -13,11 +13,11 @@ for i,name in enumerate(['REVIEW-2.md','REVIEW-3.md','REVIEW-4.md'],8):
  path='docs/workstreams/planning/'+name;sha=fixed['planning_commit'];b=subprocess.check_output(['git','show',sha+':'+path]);gov.append({'id':f'G{i:02d}','url':f'https://github.com/laadkke-arch/agentflow-open/blob/{sha}/{path}','accessed_at_utc':'2026-11-21','source_type':'internal_planning_review','title':name,'version_or_date':sha,'sections_read':'전체; REVIEW-4 §3의11지점과§4–6 인계·색인 상태','confirmed':'충돌 후보와 통합·인계의 빈칸을 찾는 출발점으로 사용했다. 수치와 원 주장의 사실 근거는 별도로 고정 원 결과를 열었다.','limits':'계획 검토의 요약은 원 연구의 대체 근거가 아니다. 계획 권고를 실제 효과로 인용하지 않는다.','level':'D1','used_in':['Q1','Q3','Q4','Q6','Q7'],'access_method':'git show '+sha+':'+path,'content_sha256':hashlib.sha256(b).hexdigest()})
 write('evidence/sources-governance.json',{'sources':gov,'excluded':[]})
 all_sources=[];excluded=[]
-for part in ['early','late','root','governance','external']:
+for part in ['early','late','root','governance','operational-check','external']:
  d=read(f'evidence/sources-{part}.json')
  for s in d['sources']:
   s=dict(s)
-  if s['url'].split('#')[0].endswith('.py'):
+  if s['url'].split('#')[0].endswith('.py') and s['source_type'] in ['internal_result','internal_evidence']:
    s['level']='D2';s['level_note']='고정 판 코드 본문 대조; 원 실행을 재수행했다는 뜻은 아님';s['source_type']='internal_fixed_code'
   all_sources.append(s)
  excluded.extend(d['excluded'])

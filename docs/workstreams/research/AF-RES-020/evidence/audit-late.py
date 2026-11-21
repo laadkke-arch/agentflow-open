@@ -6,7 +6,10 @@ It reads no AF-RES-017/018/019 content. 011 CASES is used only for structure/cou
 from pathlib import Path
 from collections import Counter
 from datetime import datetime, timezone
-import subprocess, json, csv, io, hashlib, ast, unicodedata
+import subprocess, json, csv, io, hashlib, ast, unicodedata, argparse
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--check-only",action="store_true",help="Recompute without replacing source ledgers or prior audit report")
+args=parser.parse_args()
 
 OUT=Path('docs/workstreams/research/AF-RES-020')
 FIX=json.loads((OUT/'evidence/fixed-inputs.json').read_text())['fixed']
@@ -207,13 +210,15 @@ A['limits']=[
  '011 CASES는 구조·집계만 사용했다. 최초 탐색에서 outcome dict 전체를 Counter로 직렬화하여 일부 요약 필드가 도구 출력에 부수 노출되었으나 이를 새 단위 분석·출처 주장·산출물에 쓰지 않았다. 이후 허용 필드만 집계했다.',
  '현재 실행은 원문 재조사·E5 실행·사람 적용을 포함하지 않는다.'
 ]
-(OUT/'evidence/audit-numeric-late.json').write_text(json.dumps(A,ensure_ascii=False,indent=2)+'\n')
+if not args.check_only:
+    (OUT/'evidence/audit-numeric-late.json').write_text(json.dumps(A,ensure_ascii=False,indent=2)+'\n')
 readmap={(r['task'],r['path']):r for r in READ}
 for src in sources['sources']:
     t=src['id'][1:4]; marker=f'docs/workstreams/research/AF-RES-{t}/';p=src['access_method'].split(marker,1)[1]
     r=readmap[('AF-RES-'+t,marker+p)]
     src['accessed_at_utc']=r['accessed_at_utc'];src['content_sha256']=r['sha256'];src['line_count']=r['lines']
-(OUT/'evidence/sources-late.json').write_text(json.dumps(sources,ensure_ascii=False,indent=2)+'\n')
+if not args.check_only:
+    (OUT/'evidence/sources-late.json').write_text(json.dumps(sources,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps(dict(assertions_passed=True,files=len(READ),summary={
  '011_partial':res011['partial'],'012_N':[res12['representations'][x]['N_count'] for x in ['D-b','D-c']],
  '013_cross_axes':res13['role_by_match_kind'],'014_positive_agreement':res14['positive_agreement'],
