@@ -210,3 +210,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:12:09.751212+00:00
 
 96/106 responses and288/318 probe judgments are complete. T059 P is finalized; T054 A/P are checking probes and N014 P is in discovery. Next: dispatch100 onward. Identity mapping covers429 discovery rows without changing frozen gold or exposing H1 metrics. All downstream normalization, judgment and claim sampling will start after106 completed runs.
+
+## Execution checkpoint — 2026-11-21T09:13:38.922206+00:00
+
+98/106 responses and294/318 probe judgments are complete, with49 full pairs. T054 A/P are finalized and their procedural frozen answers remain outside entity-recall denominators. N014 A/P and SX01 P are active; next dispatch102. All required candidate probes are preserved, including unknown or non-strict probes that must not inflate strict-N denominators.
