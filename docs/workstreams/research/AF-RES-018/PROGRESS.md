@@ -170,3 +170,7 @@
 ## Resume checkpoint — 2026-11-21T08:20:44.301109+00:00
 
 Recovered dispatches 71–73 have finished with immutable discovery freezes and three checks each. This bundle records P/T007 and P/T057; A/T007 is already committed at ea620b7345032def951a44888b65a5cc85a12d08. Fresh contexts for 74–76 are in progress. Mapping is identity-only, with no outcome metrics inspected. The execution order and preregistered input hashes are unchanged. Next: complete outstanding runs and continue dispatch index 77 onward.
+
+## Execution checkpoint — 2026-11-21T08:24:18.145727+00:00
+
+75/106 actual responses and225/318 probe decisions are complete. A/T057 and A/N016 are added in this bundle. P/N016 and both T030 conditions are currently assigned to fresh contexts. Search-result exposures remain in the raw records and will enter the registered/exploratory exposure sensitivity without editing the answers. Next: continue the frozen dispatch order from79 after active runs finish.
