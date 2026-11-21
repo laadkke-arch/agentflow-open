@@ -39,6 +39,7 @@ def avg(values):
     values=[x for x in values if x is not None]
     return statistics.mean(values) if values else None
 def ratio(n,d):return n/d if d else None
+def check_decision(c):return c.get('decision',c.get('verdict'))
 def temporal_category(record):
     if record.get('post_decision') is True:return 'post_decision'
     if record.get('date_status')=='pre_decision':return 'pre_decision'

@@ -75,7 +75,9 @@ def audit(path, frozen=None):
         checks=r.get('checks',[])
         if len(checks)!=3:errors.append('not exactly three checks')
         for c in checks:
-            if c.get('decision') not in ['keep','exclude']:errors.append('invalid check decision')
+            decision=c.get('decision',c.get('verdict'))
+            if decision not in ['keep','exclude']:errors.append('invalid check decision')
+            elif 'decision' not in c:warnings.append('check uses verdict as field alias for keep/exclude; raw record retained')
             if not c.get('reason'):errors.append('check without reason')
     return {'path':str(path.relative_to(ROOT)), 'errors':errors, 'warnings':warnings, 'counts':counts,
             'execution_status':r.get('execution_status'), 'checks':len(r.get('checks',[]))}
