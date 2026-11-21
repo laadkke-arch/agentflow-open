@@ -226,3 +226,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:20:36.870470+00:00
 
 101/106 responses and303/318 probe judgments are complete. SX01 P is finalized and preserves its post-question Android-support caveat. SX01 A and N001 A/P are active; next dispatch105. Primary outcome statistics and all independent output judgments remain uncomputed.
+
+## Execution checkpoint — 2026-11-21T09:26:02.095713+00:00
+
+102/106 responses and306/318 probe judgments are complete, with51 full pairs. SX01 A is finalized; N001 A/P are checking probes and N003 A is in discovery. The first dispatch105 spawn attempt briefly hit the concurrent-thread limit before run102 ended; the successful retry created one fresh executor and is documented without replacing any result. Next: dispatch106 N003 P, then downstream normalization and independent checks.
