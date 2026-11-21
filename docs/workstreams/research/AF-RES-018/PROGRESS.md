@@ -234,3 +234,11 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:26:44.707783+00:00
 
 103/106 responses and309/318 probe judgments are complete. N001 A is finalized; N001 P is checking probes and N003 A/P are the last discovery assignments. Frozen dispatch1–106 has been assigned in order. Next: complete remaining freeze/check stages, then normalize every output before blinded judging and claim extraction.
+
+## AF-RES-018#3 재개 — 2026-11-21T12:32:07.665887+00:00
+
+- 원격 최신63d5be29445279b16adcc8508118cc9453ae4b80을 새 checkout으로 받았다. 최신 foundation8f2da9d2b7061f9fa9c757b5377bc6d61a91387e의 지침과 AF-RES-018 항목 및 고정 입력 HANDOFF를 읽었다. 기존 source_commit·사전등록·질문·gold는 유지한다.
+- 커밋된 실행103/106·검사309/318이다.104–106은 미커밋 실행으로 기존 작업공간을 보존하고 새 문맥으로 재개한다. 기존 배정 이력은 attempt_history에 남겼다.
+- 실행 위치 /workspace/scratch/17117b2bafff/agentflow-open, 표시 모델 GPT-6 Astra Pro. 다음 첫 행동: 마지막3실행의 발견동결·검사, 정규화와 내부 별도 블라인드 판정, 주장 표집·공식문서 검증.
+
+현재 익명 접근 관측: github.com 200, api.github.com 200, api.stackexchange.com 200, softwarerecs.stackexchange.com 403, news.ycombinator.com 200, aclanthology.org 200, arxiv.org 200, www.nejm.org 403. 원장은 evidence/network-resume3.json. requests 미설치 오류 후 표준 urllib로 관측했으며 설치·우회하지 않았다.
