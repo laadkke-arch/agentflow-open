@@ -222,3 +222,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:19:46.639019+00:00
 
 100/106 responses and300/318 probe judgments are complete, with50 full question pairs. N014 A is finalized; its access-based exclusion of PBS FAQ remains distinct from P retaining it as unresolved. This is not yet an aggregate outcome conclusion. SX01 P is finalizing checks; SX01 A and N001 A are active. Next: dispatch104 onward.
+
+## Execution checkpoint — 2026-11-21T09:20:36.870470+00:00
+
+101/106 responses and303/318 probe judgments are complete. SX01 P is finalized and preserves its post-question Android-support caveat. SX01 A and N001 A/P are active; next dispatch105. Primary outcome statistics and all independent output judgments remain uncomputed.
