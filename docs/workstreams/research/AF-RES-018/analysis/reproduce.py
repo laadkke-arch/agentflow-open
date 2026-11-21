@@ -14,6 +14,7 @@ STEPS = [
     ['analysis/commit_audit.py', '--write'],
     ['analysis/run_inventory.py', '--write'],
     ['analysis/protocol_audit.py'],
+    ['analysis/code_search_audit.py'],
     ['analysis/citation_audit.py', '--write'],
     ['analysis/map_candidates.py', '--finalize'],
     ['judging/batches.py', '--validate'],

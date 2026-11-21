@@ -1,0 +1,110 @@
+{
+  "qid": "T040",
+  "rows": [
+    {
+      "row_id": "R7ffbb6f337612661",
+      "qid": "T040",
+      "name": "Amazon S3 events + AWS Lambda standard function (Managed Instances 제외)",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "reason": "Standard Lambda stops after 15 minutes, preventing direct hour-long execution; S3 events are delivered at least once and need separate deduplication."
+    },
+    {
+      "row_id": "R7cd76079b050ecf8",
+      "qid": "T040",
+      "name": "Celery 4.2 with a RabbitMQ broker",
+      "url": "https://docs.celeryq.dev/en/v4.2.0/userguide/tasks.html",
+      "reason": "Celery 4.2/RabbitMQ provides distributed workers, routing and acknowledgment controls, not admission deduplication. Durable admission/idempotent effects remain necessary; early acknowledgment risks loss, late acknowledgment permits retries; worker-loss semantics need configuration."
+    },
+    {
+      "row_id": "R76987daa9b0c1108",
+      "qid": "T040",
+      "name": "pg-boss",
+      "url": "https://github.com/timgit/pg-boss",
+      "reason": "PostgreSQL SKIP LOCKED claims through Node.js queue APIs reduce custom plumbing. Claims do not guarantee logical registration/external-effect deduplication; current deduplication and long-job options require verification."
+    },
+    {
+      "row_id": "R315fabfa0c4cb181",
+      "qid": "T040",
+      "name": "CS Browser (formerly S3 Browser)",
+      "url": "https://s3browser.com/",
+      "reason": "CS Browser manages S3 buckets/objects through transfers, synchronization and administration, not job-executing worker distribution. Exclusion concerns documented operating scope; missing deduplication claims remain unknown rather than unsupported."
+    },
+    {
+      "row_id": "R40c462f8e87f8dc2",
+      "qid": "T040",
+      "name": "Slurm",
+      "url": "https://slurm.schedmd.com/overview.html",
+      "reason": "Provides batch scheduling, resource allocation, and job arrays with concurrency limits for many long tasks; registration deduplication and safe requeue handling remain application responsibilities."
+    },
+    {
+      "row_id": "R809ad99da735241c",
+      "qid": "T040",
+      "name": "Amazon S3 events + AWS Lambda standard function (Managed Instances 제외)",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "reason": "Standard Lambda's 15-minute limit conflicts with hour-long tasks. Managed Instances' 90-minute exception is excluded; splitting jobs or dispatch-only use changes the proposed execution configuration."
+    },
+    {
+      "row_id": "R0782d45c8bea224e",
+      "qid": "T040",
+      "name": "Celery Once (QueueOnce)",
+      "url": "https://github.com/cameronmaske/celery-once",
+      "reason": "Celery Once rejects equivalent pending/running tasks with submission locks. Default one-hour locks can expire across queue/run time; direct calls/retries need review. Locks are not permanent completion deduplication."
+    },
+    {
+      "row_id": "R51cc990e15207e6d",
+      "qid": "T040",
+      "name": "Slurm",
+      "url": "https://slurm.schedmd.com/overview.html",
+      "reason": "Cluster scheduling fits; singleton only serializes, no-requeue may be overridden. Durable admission deduplication, enforced restart policy, one-hour partitions and capacity unverified. Optional requeue alone does not justify exclusion."
+    },
+    {
+      "row_id": "Rc14f45c8e9abe105",
+      "qid": "T040",
+      "name": "Amazon SQS FIFO queues",
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "reason": "FIFO deduplication IDs and visibility leases provide admission deduplication and worker claims. Producer deduplication is time-bounded; expired visibility or crashes before deletion permit repeats. Preserve a durable result ledger."
+    },
+    {
+      "row_id": "R2f8f95e422f24638",
+      "qid": "T040",
+      "name": "Bull job IDs and renewable job locks",
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "reason": "Bull rejects existing jobIds and uses renewable Redis locks. Stalled recovery can repeat processing; deletion removes retained identity, and CPU-bound handlers can disrupt lock renewal."
+    },
+    {
+      "row_id": "R32df8b50e98556e6",
+      "qid": "T040",
+      "name": "pg-boss",
+      "url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+      "reason": "Node.js/PostgreSQL claims/atomic commits with automatic retries do not prove nonrepeating task execution despite exactly-once search snippet. Release-specific deduplication/retry/expiry and exact timeout configuration unverified."
+    },
+    {
+      "row_id": "R0427645638041899",
+      "qid": "T040",
+      "name": "PostgreSQL job ledger with unique task keys and atomic permanent claims",
+      "url": "https://www.postgresql.org/docs/11/sql-select.html",
+      "reason": "PostgreSQL separates durable admission deduplication from permanent worker claims. Strict at-most-once starts prohibit retrying uncertain claims, potentially stranding work. Task identity and acceptable failure recovery still require confirmation."
+    },
+    {
+      "row_id": "R358d10361fc6209f",
+      "qid": "T040",
+      "name": "PostgreSQL unique job ledger with ON CONFLICT and FOR UPDATE SKIP LOCKED",
+      "url": "https://www.postgresql.org/docs/9.5/sql-select.html",
+      "reason": "PostgreSQL unique keys reject duplicate jobs; transactional SKIP LOCKED distributes claims. Short transactions require leases/recovery; external effects need idempotency/shared transactions, and stale workers must not commit after ownership loss."
+    },
+    {
+      "row_id": "R7fcae21c7e0d939f",
+      "qid": "T040",
+      "name": "Celery 4.2.1 with early acknowledgment and an application-level identity ledger",
+      "url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+      "reason": "Celery 4.2.1 early acknowledgment requires admission deduplication/invocation gating and can lose unfinished work. Retries/late acknowledgment undermine literal no-repeat claims. Broker/publish uncertainty, long-task limits and worker gating unverified."
+    },
+    {
+      "row_id": "R99feeed708faeecd",
+      "qid": "T040",
+      "name": "CS Browser (formerly S3 Browser)",
+      "url": "https://s3browser.com/",
+      "reason": "Windows S3 file management and transfer software does not provide a distributed scheduler or deduplicated execution for arbitrary tasks lasting up to an hour."
+    }
+  ]
+}

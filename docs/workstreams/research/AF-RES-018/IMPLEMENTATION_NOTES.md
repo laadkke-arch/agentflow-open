@@ -27,3 +27,7 @@ The frozen TSV contains 270 identifier rows and 270 unique entity IDs, with no e
 Synthetic checks also confirmed paired question resampling, question-cluster claim ratios, distinct macro/micro recall denominators, null estimates for empty strata, reproducible sampling without replacement from an unchanged claim frame, and the separate handling of all-question and hit-only ranks. The modified Python sources parse successfully.
 
 The two changes are additive reporting fixes. They do not change the selected questions, claim sample, frozen gold, raw runs or judgments, C1–C4 thresholds, H1 point-status logic, or validation gates. The integration owner must run the existing deterministic recomputation and assess the actual result qualifiers. This reviewer did not execute production analysis, assert semantic correctness of actual normalization, or certify the actual freeze and dispatch chronology.
+
+## 명시 코드검색 시도 감사 — 결과 집계 전
+
+analysis/code_search_audit.py는106개 실행의 실제 질의/열람 기록에서 grep.app 또는 GitHub type=code를 대조한다.105/106개에 명시한 코드검색 시도가 있고 P/SX01은 type=repositories만 있다. 이를 코드검색 성공으로 바꾸거나 뒤늦게 질의를 추가하지 않는다. 주 분석53쌍은 보존하고 explicit_code_search_both 민감도에서 SX01쌍을 제외한다. 결과를 본 뒤 고른 제외가 아니며 기준 C1–C4는 그대로다. 접속 성공·완전한 도구 계측을 입증하는 감사는 아니다.

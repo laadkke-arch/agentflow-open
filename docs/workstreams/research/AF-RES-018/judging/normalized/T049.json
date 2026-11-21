@@ -1,0 +1,131 @@
+{
+  "qid": "T049",
+  "rows": [
+    {
+      "row_id": "R2cc9bec6d4729c33",
+      "qid": "T049",
+      "name": "Go mime.TypeByExtension as the sole uploaded-image validator",
+      "url": "https://pkg.go.dev/mime",
+      "reason": "TypeByExtension maps an extension string to a MIME type without inspecting file bytes, so renamed or malformed uploads pass the proposed sole check."
+    },
+    {
+      "row_id": "R44b08ab2ebc77c31",
+      "qid": "T049",
+      "name": "mimetype, as an optional content-sniffing component",
+      "url": "https://github.com/gabriel-vasile/mimetype",
+      "reason": "Preliminary MIME guesses must feed an image decoder/resizer. Signature detection can be inaccurate; image MIME does not certify valid encoding. Not a standalone solution to all requirements."
+    },
+    {
+      "row_id": "R71d94e057f1ae743",
+      "qid": "T049",
+      "name": "Go mime.TypeByExtension as the sole uploaded-image validator",
+      "url": "https://pkg.go.dev/mime",
+      "reason": "Go mime.TypeByExtension maps extensions to MIME strings without inspecting uploaded bytes. As sole validator, it cannot establish actual image format and retains the unwanted extension-only decision."
+    },
+    {
+      "row_id": "R1a7c7951596a8547",
+      "qid": "T049",
+      "name": "gabriel-vasile/mimetype",
+      "url": "https://pkg.go.dev/github.com/gabriel-vasile/mimetype",
+      "reason": "Extensible MIME detection accepts multipart readers or bytes. Magic-number recognition does not validate image encoding; bound reads and reset the reader before further processing."
+    },
+    {
+      "row_id": "Rc52b5b9524fdc3be",
+      "qid": "T049",
+      "name": "imgproxy",
+      "url": "https://docs.imgproxy.net/configuration/options",
+      "reason": "Dedicated transformation service offers source-file, pixel, animation and result-size limits. Requires service operation, image-source integration and configured limits; not a drop-in multipart validation library."
+    },
+    {
+      "row_id": "R58b7c52416dda491",
+      "qid": "T049",
+      "name": "Dear ImGui",
+      "url": "https://github.com/ocornut/imgui",
+      "reason": "A C++ immediate-mode GUI toolkit does not identify multipart file content, validate image encodings, or resize uploaded images."
+    },
+    {
+      "row_id": "R859ab5a3cab98747",
+      "qid": "T049",
+      "name": "OWASP File Upload Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "reason": "Implementation reference: MIME headers/signatures alone are insufficient; map decoding/re-encoding and limits to Go decoder/resizer/handler checks. It is not runnable software or independently sufficient processing."
+    },
+    {
+      "row_id": "R0f6d846cf574e021",
+      "qid": "T049",
+      "name": "Dear ImGui",
+      "url": "https://github.com/ocornut/imgui",
+      "reason": "Dear ImGui generates UI vertex buffers and delegates image loading to separate code. It does not supply encoded-upload validation/resizing; exclusion concerns workflow, not merely its C++ implementation."
+    },
+    {
+      "row_id": "R9b8395c1c00b82c1",
+      "qid": "T049",
+      "name": "Go net/http DetectContentType and MaxBytesReader",
+      "url": "https://pkg.go.dev/net/http@go1.24.0#DetectContentType",
+      "reason": "Go MaxBytesReader bounds uploads; DetectContentType replaces extension checks with sniffing at most 512 bytes. Sniffing cannot establish that the complete image decodes correctly."
+    },
+    {
+      "row_id": "Ra606877f6420481e",
+      "qid": "T049",
+      "name": "Go image.DecodeConfig/Decode + golang.org/x/image/draw",
+      "url": "https://pkg.go.dev/golang.org/x/image/draw",
+      "reason": "Go image decoding plus x/image/draw provides checks/scaling; application handles aspect ratio and decode/encode wiring. Inspected version postdates question; compatibility with unspecified Go runtime and throughput remain unestablished."
+    },
+    {
+      "row_id": "Raa5694b13de19afe",
+      "qid": "T049",
+      "name": "h2non/filetype",
+      "url": "https://pkg.go.dev/github.com/h2non/filetype",
+      "reason": "Header-based image/MIME detection is a lightweight extension-check alternative. Its 262-byte signature check is not full decoding; pair with a decoder and explicit resource limits."
+    },
+    {
+      "row_id": "R8901e2e893719068",
+      "qid": "T049",
+      "name": "Go image.DecodeConfig and image.Decode",
+      "url": "https://pkg.go.dev/image",
+      "reason": "Go's registered decoders identify formats/dimensions and reject failed decoding. Header parsing alone does not validate all image data; enforce pixel limits before decoding and register only needed codecs."
+    },
+    {
+      "row_id": "R354c233f25e58856",
+      "qid": "T049",
+      "name": "OWASP File Upload Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "reason": "Provides directly applicable guidance for image decoding/re-encoding, file-type checks, and upload/resource limits; useful design guidance although it is not a Go library."
+    },
+    {
+      "row_id": "Radcbcc38416f29e9",
+      "qid": "T049",
+      "name": "h2non/bimg",
+      "url": "https://github.com/h2non/bimg",
+      "reason": "libvips-backed upload resizing/conversion may help transformation bottlenecks. Requires libvips and a C compiler; codec support depends on the build, and workload-specific benchmarking remains required."
+    },
+    {
+      "row_id": "Rb2cd98ac3b663697",
+      "qid": "T049",
+      "name": "disintegration/imaging",
+      "url": "https://pkg.go.dev/github.com/disintegration/imaging",
+      "reason": "Imaging decodes uploads, resizes/fits them and encodes fresh images through Go. Bound inputs; documented output formats are JPEG, PNG, GIF, TIFF and BMP. Additional formats need separate support."
+    },
+    {
+      "row_id": "Rd8b0f28891aadb14",
+      "qid": "T049",
+      "name": "Go image.DecodeConfig/Decode + disintegration/imaging",
+      "url": "https://pkg.go.dev/github.com/disintegration/imaging@v1.6.2",
+      "reason": "Go decode/resize pipeline accepts only registered/allowed formats; decoding does not guarantee every byte or arbitrary formats. Format/dimension/orientation/animation policies unspecified; no integration or benchmark run."
+    },
+    {
+      "row_id": "R9719336f2557ce35",
+      "qid": "T049",
+      "name": "golang.org/x/image/draw",
+      "url": "https://pkg.go.dev/golang.org/x/image/draw",
+      "reason": "Scales decoded images with selectable interpolation for speed/quality tradeoffs. It handles neither upload validation nor output encoding; application must allocate and size the destination image."
+    },
+    {
+      "row_id": "R0bf6eb35fc383419",
+      "qid": "T049",
+      "name": "bimg / libvips",
+      "url": "https://github.com/h2non/bimg",
+      "reason": "Bimg/libvips loads, resizes and re-encodes buffers. Libvips/C toolchain are required but not forbidden; malformed/truncated acceptance and build-dependent formats need checking. Repository speed claims are not workload measurements."
+    }
+  ]
+}

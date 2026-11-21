@@ -1,0 +1,103 @@
+{
+  "qid": "N020",
+  "rows": [
+    {
+      "row_id": "R9688729c89d50bd1",
+      "qid": "N020",
+      "name": "Qwen3.8-27B Q4",
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "reason": "Qwen3.8-27B Q4 nominal weights alone require approximately 13.5GB, exceeding 8GB before buffers. Its 2026-08-14 release postdates the question; timing is separate from the memory conflict."
+    },
+    {
+      "row_id": "R541d37cf4198d022",
+      "qid": "N020",
+      "name": "Qwen3.8-27B Q4",
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "reason": "Its 27B weights alone require roughly 13.5 GB at four bits, exceeding 8 GB before runtime overhead; the official release also postdates the cutoff."
+    },
+    {
+      "row_id": "Rdeec5a57481f1361",
+      "qid": "N020",
+      "name": "Qwen3.5-4B, preferably Q6_K GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "reason": "Promising 3.53 GB Q6_K extractor; published benchmarks establish neither Hindsight retain performance nor quantized gpt-oss-20b parity. Requires compatible llama.cpp, context limits, and measured full-GPU allocation."
+    },
+    {
+      "row_id": "Ref7d841c6b17a636",
+      "qid": "N020",
+      "name": "Ministral 3 8B Instruct 2512, Q4_K_M GGUF",
+      "url": "https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512",
+      "reason": "Ministral 3 8B Instruct 2512 Q4_K_M offers JSON/function calls in 5.2GB. FP8 targets 12GB; 8GB needs quantization/bounded context. Retain quality and Windows full-GPU fit remain untested."
+    },
+    {
+      "row_id": "R14b760a90257ddd8",
+      "qid": "N020",
+      "name": "QEMU",
+      "url": "https://www.qemu.org/",
+      "reason": "Machine emulation/virtualization cannot itself supply a Hindsight retain language model. Hosting a separate model inside a VM still requires that model and does not solve its VRAM limit."
+    },
+    {
+      "row_id": "R772bab5f2f1b9281",
+      "qid": "N020",
+      "name": "llama.cpp schema-constrained generation and explicit GPU placement",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+      "reason": "Llama.cpp schema JSON and GPU/context controls support local extraction checks. Valid schema does not ensure factual correctness; verify build/architecture and peak VRAM. CPU orchestration differs from weight spill."
+    },
+    {
+      "row_id": "Rb9ee018b90ed763d",
+      "qid": "N020",
+      "name": "Qwen3.5-4B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "reason": "3.01 GB Q4_K_M leaves more 8 GB headroom than 9B; author-reported instruction following is promising. Full-GPU peak memory and gpt-oss-20b retain parity unverified; test exact quantization/representative inputs."
+    },
+    {
+      "row_id": "Rd5ab6134ef82b0f4",
+      "qid": "N020",
+      "name": "gpt-oss-120b MXFP4 with all weights resident on GPU",
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "reason": "MXFP4 gpt-oss-120b targets an 80 GB GPU; keeping all 117B parameters resident cannot fit the specified 8 GB RTX 5060."
+    },
+    {
+      "row_id": "R3ce7bb8812e89882",
+      "qid": "N020",
+      "name": "Qwen3-4B-Instruct-2507, Q6_K or Q8_0 GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "reason": "Qwen3-4B-Instruct-2507 offers non-thinking extraction with 3.31GB Q6_K or 4.28GB Q8_0. No matched gpt-oss-20b evaluation; 256K context cannot be assumed to fit 8GB. Longer inputs require bounded processing."
+    },
+    {
+      "row_id": "R90b2978c151f9b44",
+      "qid": "N020",
+      "name": "gpt-oss-120b MXFP4 with all weights resident on GPU",
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "reason": "Native checkpoint is 60.8 GiB versus RTX 5060's 8 GB VRAM: all weights cannot reside there. Smaller active-parameter count describes computation, not all-weight residency."
+    },
+    {
+      "row_id": "R86430b618798070a",
+      "qid": "N020",
+      "name": "Qwen3.5-9B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "reason": "5.68 GB Q4_K_M might fit 8 GB with controlled context/concurrency, conditional on Windows VRAM, cache and buffers. Neither retain parity nor no-spill fit is proven."
+    },
+    {
+      "row_id": "R203356d369274d0e",
+      "qid": "N020",
+      "name": "Qwen3.5-9B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "reason": "Qwen3.5-9B Q4_K_M's 6.17GB file leaves tight runtime memory; do not infer 8GB fit. The smaller 5.50GB IQ4_XS option requires separate quality checking."
+    },
+    {
+      "row_id": "R7ac19254d5efb131",
+      "qid": "N020",
+      "name": "Gemma 4 E2B IT, Q4_K_M GGUF",
+      "url": "https://huggingface.co/google/gemma-4-E2B-it",
+      "reason": "Gemma 4 E2B IT Q4_K_M is Hindsight's llama.cpp default, not evidence of gpt-oss-20b-level extraction. Exact Windows GGUF/build behavior and full-GPU residency remain unverified."
+    },
+    {
+      "row_id": "R3ee95115377f1a84",
+      "qid": "N020",
+      "name": "QEMU",
+      "url": "https://www.qemu.org/",
+      "reason": "A machine emulator and virtualizer does not supply a retain extraction model or reduce model weights enough to satisfy the 8 GB full-GPU constraint."
+    }
+  ]
+}

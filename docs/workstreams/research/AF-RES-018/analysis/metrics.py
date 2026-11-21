@@ -69,6 +69,8 @@ def groups(pairs):
         qs=[q for q in allq if (pairs[q]['A']['cohort'],pairs[q]['A']['whole_or_part'],pairs[q]['A']['I5'],pairs[q]['A']['must_present'])==(cohort,scope,i5,must)]
         out.append((f'stratum:{cohort}/{scope}/{i5}/{must}',f'{cohort} × {scope} × I5 {i5} × must {must}',qs))
     out.append(('no_recorded_exposure','exploratory: both runs without recorded excluded-source exposure',[q for q in allq if pairs[q]['A']['exposure_count']==pairs[q]['P']['exposure_count']==0]))
+    code_deviations={r['qid'] for r in load('analysis/code-search-audit.json',{'deviations':[]})['deviations']}
+    out.append(('explicit_code_search_both','exploratory: exclude pairs with a missing explicit code-search attempt record',[q for q in allq if q not in code_deviations]))
     out.append(('exclude_changed_adoption_cases','frozen planned sensitivity excluding N004,N005,N010,N020',[q for q in allq if q not in ['N004','N005','N010','N020']]))
     out.append(('exclude_procedural_positive_T054','positive-probe sensitivity without procedural T054',[q for q in allq if q!='T054']))
     out.append(('011_main','original011 main sample30',[q for q in allq if pairs[q]['A']['cohort']=='011' and pairs[q]['A']['source_subset']=='main']))
