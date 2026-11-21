@@ -1,0 +1,552 @@
+{
+  "case_id": "T046",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/PROCEDURE.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/T046.json"
+  ],
+  "started_at_utc": "2026-11-21T06:04:13Z",
+  "ended_at_utc": "2026-11-21T06:09:03Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Input is the fixed Korean two-sentence summary in T046.json. No original-question retrieval command is supplied; the original question page and its answers are excluded.",
+      "status": "explicit",
+      "source_location": "T046.json input_mode, question_summary, read_original_command",
+      "polarity": "neutral",
+      "force": "context",
+      "interpretation": "English paraphrases refer to the supplied summary, not direct quotations from the original post."
+    },
+    {
+      "item": "I2",
+      "value": "Compare security of consolidating authentication through Authentik with separate password-based service logins, focusing on multi-service exposure after one token compromise.",
+      "status": "explicit",
+      "source_location": "question_summary sentence 2",
+      "polarity": "positive",
+      "force": "goal",
+      "interpretation": "This is a security comparison and threat-boundary question, not a request to deploy a new service."
+    },
+    {
+      "item": "I3",
+      "value": "Existing services' authentication and the proposed Authentik consolidation are in scope. No service names or exact subset for migration is supplied.",
+      "status": "explicit_with_absent_detail",
+      "source_location": "question_summary sentences 1–2",
+      "polarity": "neutral",
+      "force": "scope",
+      "interpretation": "Compare authentication arrangements; do not substitute unrelated application catalogs."
+    },
+    {
+      "item": "I4",
+      "value": "Existing services use 2FA.",
+      "status": "explicit",
+      "source_location": "question_summary sentence 1",
+      "polarity": "positive",
+      "force": "context_not_must",
+      "interpretation": "Use password-plus-2FA as the existing comparator. The summary does not explicitly require a particular MFA type or declare a mandatory future configuration."
+    },
+    {
+      "item": "I4",
+      "value": "Concern that one compromised token may expose multiple services.",
+      "status": "explicit",
+      "source_location": "question_summary sentence 2",
+      "polarity": "negative_risk_concern",
+      "force": "evaluation_criterion_not_prohibition",
+      "interpretation": "Token type and actual authority are unknown. Do not reinterpret this concern as a blanket ban on SSO or a must that no credential ever span services."
+    },
+    {
+      "item": "I4",
+      "value": "No explicit mandatory exclusions, platform requirements, license limits or cost limits are stated.",
+      "status": "absent",
+      "source_location": "question_summary sentences 1–2",
+      "polarity": "unknown",
+      "force": "none",
+      "interpretation": "must_checks is empty for all candidates; no pass results are invented."
+    },
+    {
+      "item": "I5",
+      "value": "Authentication occurs across multiple existing services. Browser sessions, token issuance, application trust and recovery are relevant boundaries to inspect, but the summary does not specify their actual implementation.",
+      "status": "interpretation_with_unknown_details",
+      "source_location": "question_summary sentence 2",
+      "polarity": "neutral",
+      "force": "analysis_boundary",
+      "interpretation": "Keep access token, refresh token, application session and IdP session distinct without assuming which the user meant."
+    },
+    {
+      "item": "I6",
+      "value": "2FA is current. Authentik consolidation is being considered. Question date is 2025-03-28.",
+      "status": "explicit",
+      "source_location": "question_summary sentences 1–2; T046.json question_date",
+      "polarity": "neutral",
+      "force": "time_context",
+      "interpretation": "Current undated documentation cannot establish historical feature availability."
+    },
+    {
+      "item": "I7",
+      "value": "Authentik is named. Version, deployment topology, client applications, protocol choice, token datatype, MFA method, token/session lifetimes and security configuration are not specified.",
+      "status": "partly_explicit_otherwise_absent",
+      "source_location": "question_summary sentence 2",
+      "polarity": "neutral",
+      "force": "environment",
+      "interpretation": "OIDC is examined as a documented authentication approach; it is not asserted to be the user's exact deployed protocol."
+    },
+    {
+      "item": "I8",
+      "value": "The research answer translates and interprets a supplied summary; the original wording and revision were not inspected.",
+      "status": "explicit",
+      "source_location": "T046.json input_mode and question_source.reason",
+      "polarity": "neutral",
+      "force": "provenance",
+      "interpretation": "No source-thread answer, gold, repository metadata or other run was used."
+    }
+  ],
+  "queries": [
+    {
+      "q": "site:docs.goauthentik.io OAuth2 OpenID provider access token refresh token session MFA",
+      "at_utc": "2026-11-21T06:04:13Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system2_search_query",
+      "result_note": "Official authentik provider/configuration docs returned; live pages also expose newer key binding and token-exchange features. These are not assumed available at the 2025-03-28 decision date."
+    },
+    {
+      "q": "site:rfc-editor.org RFC 9700 access tokens audience restricted refresh tokens",
+      "at_utc": "2026-11-21T06:04:13Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system2_search_query",
+      "result_note": "RFC 9700 official January 2025 BCP returned, including audience restriction and refresh-token guidance."
+    },
+    {
+      "q": "site:github.com/goauthentik/authentik OAuth2 AccessToken audience",
+      "at_utc": "2026-11-21T06:04:13Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system2_search_query",
+      "result_note": "Public GitHub implementation files and repository documentation returned via code-through-web; main branch dates are unknown."
+    },
+    {
+      "q": "repo:goauthentik/authentik audience",
+      "at_utc": "2026-11-21T06:04:26Z",
+      "tool": "unauthenticated GitHub public code search via web.open",
+      "result_note": "Anonymous GitHub code-search attempt failed with DisabledError; counted as query and open. code-through-web fallback used the previous public GitHub-focused search."
+    },
+    {
+      "q": "site:docs.goauthentik.io \"Authenticator validation stage\" \"session\"",
+      "at_utc": "2026-11-21T06:04:40Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system1_search_query",
+      "result_note": "Official MFA validation stage, login session stage and per-provider authorization flow docs returned."
+    },
+    {
+      "q": "site:pages.nist.gov/800-63-3 \"session secret\" \"federation\"",
+      "at_utc": "2026-11-21T06:04:40Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system1_search_query",
+      "result_note": "NIST SP 800-63B revision 3 and implementation guidance returned; later July 2025 revision also appeared and is not used as pre-decision evidence."
+    },
+    {
+      "q": "site:authelia.com \"OpenID Connect\" \"two-factor\"",
+      "at_utc": "2026-11-21T06:08:03Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system1_search_query",
+      "result_note": "Official Authelia OIDC provider, client configuration and integration docs returned; documents distinguish OIDC provider role and two_factor authorization policy."
+    },
+    {
+      "q": "site:github.com/AutoHotkey/AutoHotkey \"Windows\" \"scripting\"",
+      "at_utc": "2026-11-21T06:08:03Z",
+      "tool": "mcp__codex_apps__search_service_web_run.system1_search_query",
+      "result_note": "Official AutoHotkey repository identifies Windows macro and desktop automation utility. Main README includes post-decision 2026 material; only product role is used."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=repo%3Agoauthentik%2Fauthentik+audience&type=code",
+      "at_utc": "2026-11-21T06:04:26Z",
+      "status": "failed: DisabledError",
+      "sections_read": "none",
+      "confirmed": "No results obtained from anonymous code-search surface.",
+      "published_or_version": "unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html",
+      "at_utc": "2026-11-21T06:04:26Z",
+      "status": "opened",
+      "sections_read": "lines 0–223; publication, introduction and table of contents; additional substantive content available in query result",
+      "confirmed": "Official IETF BCP was published January 2025; OAuth is API authorization and the basis for OIDC login.",
+      "published_or_version": "RFC 9700, January 2025",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/",
+      "at_utc": "2026-11-21T06:04:26Z",
+      "status": "opened",
+      "sections_read": "lines 70–178; provider overview, endpoint isolation, issuer mode, authorization-code flow",
+      "confirmed": "Authentik supports OAuth2/OIDC, PKCE and separate application/provider pairs. Current docs describe per-provider issuer mode and token expiration; no assumption of historical parity.",
+      "published_or_version": "live docs, no publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/create-oauth2-provider",
+      "at_utc": "2026-11-21T06:04:26Z",
+      "status": "opened",
+      "sections_read": "lines 68–81",
+      "confirmed": "Application/provider pairing; refresh tokens require offline_access configured on provider and requested by application.",
+      "published_or_version": "live docs, no publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html",
+      "at_utc": "2026-11-21T06:04:50Z",
+      "status": "opened",
+      "request_lineno": 230,
+      "sections_read": "lines 218–251; section 2.1 and 2.1.1",
+      "confirmed": "Exact redirect URI matching; code-flow injection protection; PKCE required for public clients and recommended for confidential clients.",
+      "published_or_version": "RFC 9700, January 2025",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://pages.nist.gov/800-63-3/sp800-63b.html",
+      "at_utc": "2026-11-21T06:04:50Z",
+      "status": "opened_wrong_range",
+      "request_lineno": 1900,
+      "sections_read": "lines 1239–1247 (requested line 1900 beyond total)",
+      "confirmed": "Appendix password-strength discussion only; session section not yet read in opened page.",
+      "published_or_version": "NIST SP 800-63B revision 3; original June 2017, live archival page",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate",
+      "at_utc": "2026-11-21T06:04:50Z",
+      "status": "opened",
+      "request_lineno": null,
+      "sections_read": "lines 66–100",
+      "confirmed": "MFA stage validates enrolled authenticators; Skip permits continuation without MFA; Deny blocks unenrolled users; validation threshold can suppress fresh checks.",
+      "published_or_version": "live documentation, no date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/",
+      "at_utc": "2026-11-21T06:04:50Z",
+      "status": "opened",
+      "request_lineno": null,
+      "sections_read": "lines 51–96",
+      "confirmed": "Flows assemble authentication, authorization, stages and policy decisions; standard login creates a session.",
+      "published_or_version": "live documentation, no date; export format note since 2022.8",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/goauthentik/authentik/blob/main/authentik/providers/oauth2/models.py",
+      "at_utc": "2026-11-21T06:04:50Z",
+      "status": "opened_partial",
+      "request_lineno": null,
+      "sections_read": "GitHub main-branch file metadata and navigation, lines 94–488; code not yet reached",
+      "confirmed": "Public provider models.py exists; no token claim verified yet.",
+      "published_or_version": "main branch, commit/date not shown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html",
+      "at_utc": "2026-11-21T06:05:04Z",
+      "status": "opened",
+      "read_method": "find",
+      "find_pattern": "Access Token Privilege Restriction",
+      "sections_read": "find output: sections 2.1.2–2.4, 4.10.1–4.10.2 and refresh-rotation excerpt",
+      "confirmed": "Access tokens need audience and privilege restriction with resource-server validation; a leaked scoped token is not automatically universal. PKCE concerns authorization codes, not replay of already stolen bearer tokens.",
+      "published_or_version": "RFC 9700, January 2025",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://pages.nist.gov/800-63-3/sp800-63b.html",
+      "at_utc": "2026-11-21T06:05:04Z",
+      "status": "opened",
+      "read_method": "find",
+      "find_pattern": "7.2.1 Reauthentication from a Federation",
+      "sections_read": "lines 797–812; section 7.2.1",
+      "confirmed": "Identity-provider and relying-party sessions are separate; an IdP session can issue new assertions without new user authentication unless reauthentication policy requires it.",
+      "published_or_version": "NIST SP 800-63B revision 3 (pre-2025 revision)",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/",
+      "at_utc": "2026-11-21T06:05:04Z",
+      "status": "opened",
+      "read_method": "find",
+      "find_pattern": "Authorization:",
+      "sections_read": "lines 109–116; flow designations",
+      "confirmed": "Authorization flows are per provider and can add verification before application access.",
+      "published_or_version": "live documentation, date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/goauthentik/authentik/blob/main/authentik/providers/oauth2/models.py",
+      "at_utc": "2026-11-21T06:05:04Z",
+      "status": "no_matching_text",
+      "read_method": "find",
+      "find_pattern": "\"aud\"",
+      "sections_read": "find attempt for aud claim; no match",
+      "confirmed": "No audience claim implementation verified through GitHub rendered page.",
+      "published_or_version": "main branch, unknown commit/date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://pages.nist.gov/800-63-3/sp800-63b.html",
+      "at_utc": "2026-11-21T06:05:30Z",
+      "status": "opened",
+      "request_lineno": 742,
+      "sections_read": "lines 683–919, focusing on sections 7.1–7.2.1, threats table, recovery and 8.4 session attacks",
+      "confirmed": "Browser session secrets can maintain access after authentication; OAuth tokens may outlive the initial login; federated RP and IdP sessions are separate; session hijacking can have authentication-failure consequences.",
+      "published_or_version": "NIST SP 800-63B revision 3; pre-2025 revision",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/goauthentik/authentik/raw/refs/heads/main/authentik/providers/oauth2/models.py",
+      "at_utc": "2026-11-21T06:05:30Z",
+      "status": "failed: restricted URL",
+      "read_method": "click raw link 59",
+      "requested_target": "Raw link observed on GitHub source page",
+      "sections_read": "none",
+      "confirmed": "Raw source retrieval failed. No source-code behavior was claimed from the blocked page.",
+      "published_or_version": "main branch; unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.authelia.com/integration/openid-connect/introduction/",
+      "at_utc": "2026-11-21T06:08:10Z",
+      "status": "opened_partial",
+      "phase": "checks",
+      "sections_read": "lines 0–254; page navigation and integrations",
+      "confirmed": "Official Authelia OIDC integration documentation accessible; substantive provider section read separately next.",
+      "published_or_version": "live documentation; search lists initial publication about 2.7 years ago but revision date unverified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.authelia.com/configuration/identity-providers/openid-connect/clients/",
+      "at_utc": "2026-11-21T06:08:10Z",
+      "status": "opened_partial",
+      "phase": "checks",
+      "sections_read": "lines 0–221; configuration navigation and option list",
+      "confirmed": "Official OIDC client configuration exposes audience, scopes, authorization_policy and PKCE settings; semantics verified separately next.",
+      "published_or_version": "search reports published last month relative to 2026-11-21; live configuration page",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://github.com/AutoHotkey/AutoHotkey",
+      "at_utc": "2026-11-21T06:08:10Z",
+      "status": "opened",
+      "phase": "checks",
+      "sections_read": "lines 117–125 and 194–205; product description",
+      "confirmed": "Official project defines AutoHotkey as Windows macro, keyboard-shortcut and automation scripting software; this operating role is unrelated to the requested authentication architecture comparison.",
+      "published_or_version": "live repository alpha branch; page includes 2026 material in search result",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://www.authelia.com/integration/openid-connect/introduction/",
+      "at_utc": "2026-11-21T06:08:22Z",
+      "status": "opened",
+      "phase": "checks",
+      "read_method": "find",
+      "find_pattern": "Authelia can act",
+      "sections_read": "line 473; OpenID Connect provider description",
+      "confirmed": "Authelia documents an OIDC provider role for integration with relying-party applications; this is a relevant comparison identity provider.",
+      "published_or_version": "live documentation; exact revision date unverified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.authelia.com/configuration/identity-providers/openid-connect/clients/",
+      "at_utc": "2026-11-21T06:08:22Z",
+      "status": "opened",
+      "phase": "checks",
+      "read_method": "find",
+      "find_pattern": "The authorization policy for this client",
+      "sections_read": "find output focused on lines 429, 483, 496–550 and 621–632",
+      "confirmed": "OIDC clients configure audiences, scopes, two_factor authorization policy and PKCE. Documentation explicitly limits the policy to authorization requests and does not replace application access control.",
+      "published_or_version": "live client configuration page; search reports publication last month relative to 2026-11-21",
+      "date_status": "post_decision",
+      "post_decision": true
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Authentik OIDC SSO with separate application providers and enforced MFA",
+      "url": "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/",
+      "reason": "Directly evaluates the proposed consolidation while distinguishing application-scoped tokens from the more powerful identity-provider session.",
+      "application_scope": "A whole candidate authentication architecture for the services the user is considering consolidating; individual service compatibility remains unspecified.",
+      "constraints_or_caveat": "The exact Authentik version, client validation, MFA enforcement, token audience, refresh settings and session lifecycle are unknown. Needed check: does every intended integration enforce separate token audiences and the intended MFA/reauthentication policy? Verified yes supports a documented deployment recommendation; no requires configuration changes or a different approach.",
+      "evidence_opened": [
+        "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/",
+        "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/create-oauth2-provider",
+        "https://www.rfc-editor.org/rfc/rfc9700.html",
+        "https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate",
+        "https://pages.nist.gov/800-63-3/sp800-63b.html"
+      ],
+      "date_status": "mixed: pre_decision standards and unknown-date live product docs",
+      "post_decision": null,
+      "date_evidence": "RFC 9700 is January 2025. Authentik live pages carry no publication date; their present content is not a historical version proof.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [],
+      "L": "ok",
+      "E": "supported",
+      "H": [],
+      "T": "unknown",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "rank": 2,
+      "name": "Independent per-service passwords plus 2FA",
+      "url": "https://pages.nist.gov/800-63-3/sp800-63b.html#sec7",
+      "reason": "Preserves the existing authentication approach and supplies a meaningful compartmentalization comparator, while retaining session-theft risk.",
+      "application_scope": "Whole architectural alternative and comparison baseline; no specific password or MFA product is selected.",
+      "constraints_or_caveat": "Independence is conditional on distinct credentials, recovery and administrative paths. Needed check: can compromise or recovery of one account authenticate another service? If yes, the assumed boundary is incomplete; if no, independent local authentication has a distinct isolation benefit. The services' actual recovery and session behavior is unspecified.",
+      "evidence_opened": [
+        "https://pages.nist.gov/800-63-3/sp800-63b.html"
+      ],
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "NIST SP 800-63B revision 3 is the pre-2025 revision; cited sections concern authentication, session management and recovery rather than a claim about a named application.",
+      "form": "pattern",
+      "contribution": "comparison",
+      "must_checks": [],
+      "L": "ok",
+      "E": "supported",
+      "H": [],
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "rank": 3,
+      "name": "Authentik per-application authorization flow with fresh MFA for sensitive access",
+      "url": "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/",
+      "reason": "Offers a concrete narrower mitigation for the risk of using an existing SSO session to enter additional applications.",
+      "application_scope": "Additional verification at selected provider authorization flows, not isolation from identity-provider compromise and not per-request MFA within an application session.",
+      "constraints_or_caveat": "Map an authenticator validation stage into the specific provider authorization flow, require an enrolled factor, and avoid skip/recent-validation settings that defeat the intended fresh check. Verify the prompt occurs at the intended boundary in the deployed version. Existing downstream sessions and full Authentik compromise are outside this mitigation.",
+      "evidence_opened": [
+        "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/",
+        "https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate",
+        "https://pages.nist.gov/800-63-3/sp800-63b.html"
+      ],
+      "date_status": "mixed: unknown-date live product docs and pre_decision standard",
+      "post_decision": null,
+      "date_evidence": "Live Authentik documentation has no publication date; no claim of feature availability on 2025-03-28.",
+      "form": "pattern",
+      "contribution": "part",
+      "must_checks": [],
+      "L": "ok",
+      "E": "supported",
+      "H": [],
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER"
+    }
+  ],
+  "rejected_candidates": [],
+  "raw_response": "OAuth/OpenID Connect is not inherently less secure than separate username-and-password logins. The useful comparison here is your current per-service password plus 2FA against Authentik SSO with appropriately enforced MFA. A stolen token issued to one application and a stolen Authentik browser session are different compromises.\n\nOAuth provides authorization; OpenID Connect adds identity authentication. Authentik supports both, so an application described casually as using “OAuth login” may actually use OIDC. Its documented authorization-code flow gives an application its own credentials and tokens; it does not mean every application receives one universal login secret. [Authentik OAuth2/OIDC provider](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/)\n\n### What does “one token compromised” mean?\n\n- **An application's access token:** Its usable privileges depend on the intended resource and scope, and on recipients actually checking them. RFC 9700 recommends audience restriction, least privilege and recipient-side enforcement. A correctly restricted token for one resource should not automatically work at unrelated resources. A reusable bearer token is still a credential an attacker may replay where it is valid.\n- **A refresh token:** This may allow replacement access tokens. Its client binding, granted permissions, rotation and expiry matter; it is not automatically an authorization grant for every service. These are protocol and configuration questions, not a property established by the word “OAuth.” [OAuth security BCP, sections 2.2–2.3](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.2)\n- **An application session cookie:** A service can continue accepting that session after the initial login. That is also true for services you entered using a password and 2FA.\n- **The Authentik SSO session:** This is the more relevant concentration concern. An identity-provider session can support new application logins without repeating authentication unless policy requires a fresh check. Application and identity-provider sessions have separate lifecycles. Compromise of the identity provider itself is broader still because applications trust its authentication assertions. These architectural consequences are distinct from theft of one narrowly scoped access token. [NIST SP 800-63B, sections 7 and 8](https://pages.nist.gov/800-63-3/sp800-63b.html#sec7)\n\nMFA protects the authentication event; it does not make every resulting reusable session secret impossible to steal or reuse. Therefore, keep session theft in both sides of the comparison. Also, do not assume that logging out of the identity provider ends every application session or invalidates every token: check each integration's actual lifecycle. [NIST session and federation guidance](https://pages.nist.gov/800-63-3/sp800-63b.html#sec7)\n\n### Ranked approaches to consider\n\n**1. Authentik OIDC SSO with deliberate application isolation and MFA.** This is the closest fit to your proposed consolidation. Use separate application/provider registrations and verify the applications' issuer, signature, audience and expiry checks. Prefer authorization-code flow with PKCE, precise redirect URIs, minimal privileges and suitable token lifetimes. PKCE protects the code exchange; it is not a cure for replay of an already stolen bearer token. Authentik's current docs describe provider-specific issuers, configurable token lifetimes and PKCE; its setup guide makes refresh-token issuance contingent on requesting and configuring offline_access. These are documented mechanisms, not verification of your applications. [Provider](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/) · [Configuration](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/create-oauth2-provider) · [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html)\n\nThe benefit is a central place to enforce authentication policy; the cost is reliance on that central identity system. I cannot conclude that your proposed deployment is safer until its exact applications, provider configuration and session behavior are checked.\n\n**2. Keep independent per-service passwords and 2FA.** This remains a reasonable choice when limiting the consequences of identity-provider compromise matters more than consolidating logins. Its isolation advantage is an architectural inference conditional on the credentials, recovery paths and administrative access really being independent. Shared secrets, a shared compromised endpoint or a common recovery account can undermine that assumption. Each application also retains its own session-theft and authentication implementation risks. I would not discard your existing 2FA merely because you are evaluating SSO. [Authentication, recovery and session threat model](https://pages.nist.gov/800-63-3/sp800-63b.html#sec8)\n\nThe decisive check is whether a compromise or reset path for one account can authenticate to another service. If it can, the claimed independence needs qualification; if it cannot, local authentication provides a distinct compartmentalization benefit.\n\n**3. Use Authentik for ordinary access and require extra verification for sensitive applications.** This is a narrower mitigation, useful if you want consolidation with less automatic access from an existing SSO session. Authentik documents per-provider authorization flows that can include additional verification. Its authenticator-validation stage can deny users without an enrolled factor, while a Skip setting permits continuation without MFA and a recent-validation threshold can suppress a new challenge. Design and test these settings together. [Authorization flows](https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/) · [MFA validation](https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate)\n\nThis only addresses the flows you configure. It does not restore independence from an attacker controlling Authentik, and it does not guarantee that every request inside an already established application session requires MFA. Confirm a fresh challenge occurs at the application boundary you intend.\n\nMy recommendation is to distinguish the particular secret you are worried about before choosing. If the concern is a token stolen from one application, validate audience and privilege boundaries. If the concern is loss of the Authentik session or identity server, independent authentication or selective additional checks directly addresses that different risk. There is no justified blanket verdict that OAuth is weaker, or that SSO is always safer.\n\nThe question supplies no application list, Authentik version, token type or session configuration. The protocol evidence above includes RFC 9700 from January 2025 and the earlier NIST revision. Authentik pages are live and undated; their present content does not establish exactly what was available on March 28, 2025. No integration was run or penetration-tested.",
+  "checks": [
+    {
+      "check_id": "CK-138e3e5e7153",
+      "name": "Authentik",
+      "decision": "keep",
+      "reason": "Authentik is the product explicitly under consideration and its official docs establish OIDC providers, MFA stages and per-provider authorization flows. It is directly relevant, but security relative to existing per-service 2FA depends on unknown token audiences, application validation and session/reauthentication settings. No mandatory exclusion is stated. Next check: verify those settings for the actual applications; a verified isolated configuration supports recommendation, while a validation or MFA bypass requires remediation.",
+      "evidence_urls": [
+        "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/",
+        "https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate",
+        "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/",
+        "https://www.rfc-editor.org/rfc/rfc9700.html"
+      ],
+      "verification_status": "Official product role and available mechanisms documented in stage one; deployment and historical version behavior unverified.",
+      "label": "INSUFFICIENT",
+      "must_checks": [],
+      "L": "ok",
+      "E": "supported",
+      "H": [],
+      "T": "unknown",
+      "form": "app",
+      "contribution": "whole",
+      "date_status": "mixed: pre_decision standard and unknown-date live documentation",
+      "post_decision": null
+    },
+    {
+      "check_id": "CK-a2a91d1a65d2",
+      "name": "Authelia",
+      "decision": "keep",
+      "reason": "Official Authelia docs establish an OIDC identity-provider role and client-level two_factor policies, so it is a relevant alternative for comparing centralized authentication with independent credentials. Changing identity-provider products alone does not remove the concentrated-session risk. No must condition rules it out. Exact application compatibility, policy enforcement and the version available at the question date remain unverified. Next check: validate the intended clients and MFA/session behavior in the selected version; positive evidence supports the alternative, while incompatible required clients would exclude that deployment.",
+      "evidence_urls": [
+        "https://www.authelia.com/integration/openid-connect/introduction/",
+        "https://www.authelia.com/configuration/identity-providers/openid-connect/clients/"
+      ],
+      "verification_status": "Current official OIDC provider role and two-factor authorization policy verified; deployment suitability and historical feature set unverified. Client configuration evidence is post_decision.",
+      "label": "INSUFFICIENT",
+      "must_checks": [],
+      "L": "ok",
+      "E": "supported",
+      "H": [],
+      "T": "unknown",
+      "form": "app",
+      "contribution": "comparison",
+      "date_status": "mixed: unknown-date overview and post_decision client configuration",
+      "post_decision": true
+    },
+    {
+      "check_id": "CK-ae8b53f48b72",
+      "name": "AutoHotkey",
+      "decision": "exclude",
+      "reason": "Its official repository describes a Windows macro, hotkey and desktop-automation scripting utility. That operating role does not supply the identity-provider, token-validation, MFA or authentication-risk comparison mechanism sought here. This is a known surface/working-relationship mismatch, not an invented Windows prohibition, a claim that custom scripting is impossible, or a failed must constraint.",
+      "evidence_urls": [
+        "https://github.com/AutoHotkey/AutoHotkey"
+      ],
+      "verification_status": "Official product purpose opened and verified; exclusion rests on role mismatch with this question.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [],
+      "T": "unknown",
+      "form": "app",
+      "contribution": "none",
+      "date_status": "post_decision live repository",
+      "post_decision": true
+    }
+  ],
+  "stage1_frozen_at_utc": "2026-11-21T06:07:17Z",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 20,
+    "candidate_count": 3,
+    "stage1_search_queries": 6,
+    "stage1_opened_pages": 15,
+    "maximum_search_queries": 12,
+    "maximum_opened_pages": 20,
+    "remaining_search_queries": 4,
+    "remaining_opened_pages": 0,
+    "counting_note": "All open attempts, including failures and repeat section reads/finds, are conservatively counted. Anonymous GitHub code-search URL counts both one literal query and one open.",
+    "checked_candidate_count": 3
+  },
+  "limitations": [
+    "Only the fixed summary and procedure were read from the repository. No original-question command was present, so the source question was not fetched.",
+    "No excluded question/thread/copy/citation-page snippet exposure was observed in returned search results.",
+    "Anonymous public GitHub code search failed with DisabledError. A public GitHub-focused web query provided code-through-web discovery; rendered source did not expose the searched audience claim, and the observed raw-source link failed. No code behavior is inferred from that failure.",
+    "Live Authentik documentation is undated and labeled unknown. Search results also surfaced later 2025/2026 specifications and features; these were not used as pre-decision evidence.",
+    "Documented mechanisms are not a measured security comparison or proof of the user's deployment. No apps, exact Authentik version or token/session settings were supplied.",
+    "No explicit user must constraints exist in the summary; concerns and current 2FA use were preserved without inventing mandatory exclusions.",
+    "Check phase used two additional search queries and five document reads, reaching the shared 20-open cap. Authelia configuration and AutoHotkey live repository evidence include post-decision material; these do not establish their exact 2025-03-28 behavior. No excluded-question exposure occurred during checks."
+  ],
+  "execution_status": "completed",
+  "checks_started_at_utc": "2026-11-21T06:08:03Z",
+  "checks_ended_at_utc": "2026-11-21T06:09:03Z"
+}
