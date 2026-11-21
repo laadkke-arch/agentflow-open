@@ -39,7 +39,9 @@ if fixed.exists():sources.extend(json.loads(fixed.read_text()))
 ids=[r['id'] for r in sources]
 root_audit=ROOT/'evidence/root-rechecks.json'
 if root_audit.exists():
-    for recheck in json.loads(root_audit.read_text()).get('readings',[]):
+    root_data=json.loads(root_audit.read_text())
+    excluded.extend(root_data.get('excluded',[]))
+    for recheck in root_data.get('readings',[]):
         matches=[r for r in sources if r['id']==recheck['source_id']]
         if len(matches)==1:matches[0].setdefault('root_rechecks',[]).append(recheck)
 if len(ids)!=len(set(ids)):errors.append({'duplicate_ids':[k for k,v in collections.Counter(ids).items() if v>1]})

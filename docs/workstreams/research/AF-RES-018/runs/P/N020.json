@@ -1,0 +1,1203 @@
+{
+  "case_id": "N020",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/PROCEDURE.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N020.json"
+  ],
+  "input_mode": "summary",
+  "question_date": "2026-07-02",
+  "question_sha256": "e0c4ddfcf746f95017cbcca5aaf47b5b155dae0b2189be7585d98a7f3f542d08",
+  "original_question_read": false,
+  "started_at_utc": "2026-11-21T06:09:55Z",
+  "ended_at_utc": "2026-11-21T06:20:05Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Supplied two-sentence summary of a GitHub discussion. The original retrieval command is null, so only the summary is used.",
+      "status": "explicit",
+      "source_location": "N020.json: input_mode, question_summary, read_original_command",
+      "polarity": "not_applicable",
+      "force": "input boundary",
+      "interpretation": "No original question, answers, copies, or repository context was read."
+    },
+    {
+      "item": "I2",
+      "value": "Find a local replacement model for Hindsight retain with quality near the existing gpt-oss-20b baseline.",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "goal",
+      "interpretation": "Near-quality tolerance and evaluation dataset are not specified."
+    },
+    {
+      "item": "I3",
+      "value": "Select the retain LLM while preserving the stated RTX 5060, 8 GB VRAM, Windows and llama.cpp environment.",
+      "status": "explicit_with_scope_interpretation",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "scope",
+      "interpretation": "The request is for a model choice, not replacement of the entire Hindsight system. CPU use by unrelated pipeline work is not stated to be forbidden."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M1",
+      "value": "Local model usable for Hindsight retain",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Preserve the stated target and polarity."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M2",
+      "value": "Retain quality near gpt-oss-20b",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "A qualitative required outcome; no numerical tolerance supplied."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M3",
+      "value": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Preserve the stated target and polarity."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M4",
+      "value": "CPU spill of model weights/experts/inference",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "negative",
+      "force": "must",
+      "interpretation": "Interpreted as model computation/weight/expert spill, not a ban on ordinary host-side orchestration."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M5",
+      "value": "Windows operation",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Preserve the stated target and polarity."
+    },
+    {
+      "item": "I4",
+      "constraint_id": "M6",
+      "value": "llama.cpp operation",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Preserve the stated target and polarity."
+    },
+    {
+      "item": "I4",
+      "value": "Candidate families may be smaller or denser.",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 2",
+      "polarity": "permissive",
+      "force": "allowed alternative, not mandatory",
+      "interpretation": "Does not ban mixture-of-experts models or require a specific parameter count."
+    },
+    {
+      "item": "I5",
+      "value": "Retain input lengths, modalities, completion lengths, required schema, concurrency, and surrounding model placements are absent.",
+      "status": "absent",
+      "source_location": "question_summary, both sentences",
+      "polarity": "unknown",
+      "force": "unknown",
+      "interpretation": "Do not invent a minimum context or assume all 8 GB is free."
+    },
+    {
+      "item": "I6",
+      "value": "Current gpt-oss-20b configuration spills experts to CPU; replacement is sought. Question dated 2026-07-02.",
+      "status": "explicit",
+      "source_location": "question_summary, sentence 2; question_date",
+      "polarity": "negative_current_outcome",
+      "force": "motivation",
+      "interpretation": "The existing configuration is a baseline, not a recommended candidate or proof that every possible gpt-oss quantization fails."
+    },
+    {
+      "item": "I7",
+      "value": "RTX 5060 with 8 GB VRAM, Windows and llama.cpp; specific driver, CUDA build, llama.cpp/Hindsight versions and model quantization are unknown.",
+      "status": "partly_explicit_partly_absent",
+      "source_location": "question_summary, sentence 1",
+      "polarity": "positive",
+      "force": "environment constraint",
+      "interpretation": "The hardware is user-provided, not independently measured."
+    },
+    {
+      "item": "I8",
+      "value": "All input evidence is the supplied paraphrase; no direct quotation from the original discussion is asserted.",
+      "status": "explicit",
+      "source_location": "input_mode and question_source.status",
+      "polarity": "not_applicable",
+      "force": "evidence boundary",
+      "interpretation": "Research findings do not retroactively add conditions to the question."
+    }
+  ],
+  "queries": [
+    {
+      "q": "site:hindsight.vectorize.io retain local models llama.cpp -2525",
+      "at_utc": "2026-11-21T06:10:06Z",
+      "tool": "web.system1_search_query",
+      "result_note": "Found official Hindsight configuration and models pages; snippet includes post-decision 2026-11-19 release; no excluded-thread exposure."
+    },
+    {
+      "q": "site:huggingface.co/Qwen Qwen3.5 9B GGUF llama.cpp model",
+      "at_utc": "2026-11-21T06:10:06Z",
+      "tool": "web.system1_search_query",
+      "result_note": "Found Qwen3.5-9B quantizer model cards and links to original Qwen model; not yet opened."
+    },
+    {
+      "q": "repo:vectorize-io/hindsight HINDSIGHT_API_RETAIN_LLM_MODEL",
+      "at_utc": "2026-11-21T06:10:06Z",
+      "tool": "web.open unauthenticated GitHub code-search surface",
+      "result_note": "Unauthenticated GitHub code search blocked with DisabledError. Continue with code-through-web fallback."
+    },
+    {
+      "q": "site:github.com/vectorize-io/hindsight \"HINDSIGHT_API_RETAIN_LLM_MODEL\" -discussions -2525",
+      "at_utc": "2026-11-21T06:10:20Z",
+      "tool": "web.system1_search_query (code-through-web)",
+      "result_note": "Code-through-web found upstream Hindsight config.py and performance.md excerpts; did not use mirrored repository result; no excluded-thread exposure."
+    },
+    {
+      "q": "site:github.com/ggml-org/llama.cpp Windows CUDA n-gpu-layers fit off Qwen3.5",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "tool": "web.system1_search_query",
+      "result_note": "Found official llama.cpp server and multi-GPU flag documentation and Qwen's Windows CUDA guidance; third-party fork and unrelated issue snippets not used."
+    },
+    {
+      "q": "site:ai.google.dev gemma 4 E2B memory requirements release",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "tool": "web.system1_search_query",
+      "result_note": "No separate result was returned for this query in the combined response; counted as a search attempt."
+    },
+    {
+      "q": "Qwen3.8-27B Q4_K_M GGUF size site:huggingface.co",
+      "at_utc": "2026-11-21T06:17:57Z",
+      "tool": "web.system1_search_query",
+      "result_note": "Found primary quantization-publisher file listings, including Q4_K_M sizes of 16.8 GB and a ggml-org artifact listing of 19 GB. These artifact pages were not opened; exclusion relies on the opened official 27B architecture plus nominal Q4 payload arithmetic."
+    },
+    {
+      "q": "site:openai.com gpt-oss-120b MXFP4 60 GB weights",
+      "at_utc": "2026-11-21T06:17:57Z",
+      "tool": "web.system1_search_query",
+      "result_note": "Found official OpenAI architecture table with 60.8 GiB checkpoint and an official Transformers guide snippet stating at least 60 GB VRAM. Architecture page opened; guide remained snippet-only."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=repo%3Avectorize-io%2Fhindsight%20HINDSIGHT_API_RETAIN_LLM_MODEL&type=code",
+      "at_utc": "2026-11-21T06:10:06Z",
+      "status": "blocked: DisabledError",
+      "sections_read": [],
+      "confirmed": [
+        "Public anonymous code-search surface was attempted and could not be fetched."
+      ],
+      "published_or_version": "Live GitHub search",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://hindsight.vectorize.io/1.1/developer/models",
+      "at_utc": "2026-11-21T06:10:20Z",
+      "status": "opened",
+      "sections_read": [
+        "Navigation and model overview",
+        "Benchmarks and tested models (lines 311-348, via find)"
+      ],
+      "confirmed": [
+        "Official Hindsight lists a model benchmark dashboard.",
+        "gpt-oss-20b is listed as tested via Groq; built-in llamacpp default is Gemma 4 E2B."
+      ],
+      "published_or_version": "Hindsight 1.1 live docs; header includes November 2026 material",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://hindsight.vectorize.io/1.1/developer/configuration",
+      "at_utc": "2026-11-21T06:10:20Z",
+      "status": "opened",
+      "sections_read": [
+        "LLM provider and built-in llama.cpp (lines 358-394 and 720-760 via find)"
+      ],
+      "confirmed": [
+        "Managed local llama.cpp subprocess, GPU layer setting, context setting, JSON grammar control documented.",
+        "Per-operation retain model/provider/base URL supported.",
+        "Version 1.1 docs say Gemma 4 E2B Q4_K_M default about 3.5 GB."
+      ],
+      "published_or_version": "Hindsight 1.1 live documentation, body publication date not supplied",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "at_utc": "2026-11-21T06:10:20Z",
+      "status": "opened",
+      "sections_read": [
+        "Model identity/license and quickstart",
+        "Model overview, llama.cpp quantization link and benchmark sections located by find",
+        "Comparative language benchmark table, lines 290-317 via find"
+      ],
+      "confirmed": [
+        "Official Qwen3.5-9B model exists; model-card format is Transformers.",
+        "Quantized versions for llama.cpp are linked; this is not an 8 GB fit measurement.",
+        "Author-reported IFEval: gpt-oss-20b 88.2, Qwen3.5-4B 89.8, Qwen3.5-9B 91.5; these are not Hindsight retain or GGUF quantized results."
+      ],
+      "published_or_version": "Live model card; publication date not established",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://benchmarks.hindsight.vectorize.io/",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "status": "opened",
+      "sections_read": [
+        "Entire short benchmark landing page, lines 0-32"
+      ],
+      "confirmed": [
+        "Operation-specific leaderboards swap one internal model while keeping other components fixed; no local candidate comparison on landing page."
+      ],
+      "published_or_version": "Live benchmark portal, no publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/google/gemma-4-E2B-it",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "status": "opened",
+      "sections_read": [
+        "Official model card model overview, lines 110-144 via find",
+        "Core capabilities and evaluation links"
+      ],
+      "confirmed": [
+        "Gemma 4 E2B is a local-deployment-oriented model, 2.3B effective and 5.1B including embeddings; supports system role and structured tools.",
+        "Card references July 2026 technical report; actual release date not established."
+      ],
+      "published_or_version": "Live Gemma 4 model card; cited report 2607.02770",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "status": "opened",
+      "sections_read": [
+        "Windows and llama.cpp usage, lines 65-91",
+        "Quantization file table, lines 310-322 via find"
+      ],
+      "confirmed": [
+        "Quantization publisher lists Q4_K_M as 6.17 GB and IQ4_XS as 5.50 GB; these are file sizes, not runtime VRAM measurements.",
+        "Model card gives llama.cpp invocation including Windows."
+      ],
+      "published_or_version": "Live quantization artifact card; publication date not established",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "at_utc": "2026-11-21T06:10:46Z",
+      "status": "opened",
+      "sections_read": [
+        "Official model identity",
+        "Model overview, lines 266-286 via find"
+      ],
+      "confirmed": [
+        "Qwen3.5-4B is a 4B language model using alternating linear attention and attention layers; no 8 GB runtime measurement."
+      ],
+      "published_or_version": "Live model card; publication date not established",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+      "at_utc": "2026-11-21T06:11:18Z",
+      "status": "opened",
+      "sections_read": [
+        "Server features lines 174-194",
+        "GPU memory fit and parallel slot options via find"
+      ],
+      "confirmed": [
+        "OpenAI-compatible chat completions and schema-constrained JSON are supported.",
+        "Full GPU layer placement, explicit context size, fit toggle and one parallel slot are available configuration controls."
+      ],
+      "published_or_version": "llama.cpp master live documentation; no pinned version",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md",
+      "at_utc": "2026-11-21T06:11:18Z",
+      "status": "opened",
+      "sections_read": [
+        "Windows build section",
+        "Unified memory section lines 418-420 via find"
+      ],
+      "confirmed": [
+        "Windows build documented; CUDA unified-memory fallback can swap to system RAM, with Windows setting in NVIDIA control panel."
+      ],
+      "published_or_version": "llama.cpp master live documentation; no pinned version",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF",
+      "at_utc": "2026-11-21T06:11:18Z",
+      "status": "opened",
+      "sections_read": [
+        "llama.cpp and Windows usage lines 65-91",
+        "Quantization table lines 307-323 via find"
+      ],
+      "confirmed": [
+        "Quantization publisher lists Q4_K_M at 3.01 GB and provides llama.cpp usage.",
+        "File size alone does not establish peak GPU memory."
+      ],
+      "published_or_version": "Live quantization artifact card; publication date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://benchmarks.hindsight.vectorize.io/leaderboards",
+      "at_utc": "2026-11-21T06:11:18Z",
+      "status": "opened",
+      "sections_read": [
+        "Entire short leaderboards page via find"
+      ],
+      "confirmed": [
+        "A retain-specific board exists, described as 42 cases."
+      ],
+      "published_or_version": "Live leaderboard; no publication date shown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/",
+      "at_utc": "2026-11-21T06:11:18Z",
+      "status": "opened",
+      "sections_read": [
+        "Launch date and introduction lines 214-249 via find"
+      ],
+      "confirmed": [
+        "Official launch article dated 2026-04-02, before question date."
+      ],
+      "published_or_version": "2026-04-02",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://benchmarks.hindsight.vectorize.io/leaderboards/retain",
+      "at_utc": "2026-11-21T06:11:39Z",
+      "status": "opened",
+      "sections_read": [
+        "Entire rendered page, lines 0-116; model table and evaluation categories"
+      ],
+      "confirmed": [
+        "The rendered board uses Hindsight 1.2.0 and 42 cases in 12 categories.",
+        "Its 16-model table does not include Qwen3.5-4B, Qwen3.5-9B, Gemma 4 E2B, or gpt-oss-20b; it cannot establish their relative retain quality."
+      ],
+      "published_or_version": "Hindsight 1.2.0 benchmark; evaluation publication date absent",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://qwen.ai/blog?id=qwen3.5",
+      "at_utc": "2026-11-21T06:11:39Z",
+      "status": "opened_empty",
+      "sections_read": [
+        "No readable lines returned"
+      ],
+      "confirmed": [
+        "Official blog link resolved but returned no readable body; release date unverified."
+      ],
+      "published_or_version": "unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.qemu.org/",
+      "at_utc": "2026-11-21T06:17:33Z",
+      "status": "opened",
+      "sections_read": [
+        "Official product description and operating modes, lines 9-25; release dates"
+      ],
+      "confirmed": [
+        "QEMU is a machine emulator/virtualizer, not a replacement language model for retain."
+      ],
+      "published_or_version": "Live homepage; product description undated, releases through 2026-11-18",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "at_utc": "2026-11-21T06:17:33Z",
+      "status": "opened",
+      "sections_read": [
+        "Publication date; introduction and architecture, lines 13 and 56-74",
+        "Availability/MXFP4 section, lines 126-132 via find"
+      ],
+      "confirmed": [
+        "gpt-oss-120b has approximately 117B total parameters and 5.1B active per token.",
+        "Native MXFP4 distribution and documented 80 GB GPU deployment; llama.cpp is listed among launch integrations."
+      ],
+      "published_or_version": "2025-08-05",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "at_utc": "2026-11-21T06:17:33Z",
+      "status": "opened",
+      "sections_read": [
+        "Introduction, news, models and local usage, lines 168-256"
+      ],
+      "confirmed": [
+        "Official news dates Qwen3.8-27B availability to 2026-08-14, after the 2026-07-02 question.",
+        "Repository links the official Qwen3.8-27B model card."
+      ],
+      "published_or_version": "Live README; Qwen3.8-27B release entry 2026-08-14",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "at_utc": "2026-11-21T06:17:44Z",
+      "status": "opened",
+      "sections_read": [
+        "Model identity; overview and architecture, lines 241-277 via find",
+        "Quantization application link, line 229"
+      ],
+      "confirmed": [
+        "Official card describes a dense model and lists 27B parameters in its language model.",
+        "For the candidate's nominal Q4 representation, 27e9 * 4 / 8 = 13.5e9 bytes before extra runtime memory; this arithmetic exceeds 8 GB."
+      ],
+      "published_or_version": "Live model card for model released 2026-08-14",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://deploymentsafety.openai.com/gpt-oss/architecture",
+      "at_utc": "2026-11-21T06:18:12Z",
+      "status": "opened",
+      "sections_read": [
+        "Publication date and architecture table, lines 99 and 161-173"
+      ],
+      "confirmed": [
+        "Official model card lists gpt-oss-120b as 116.83B total parameters and a 60.8 GiB checkpoint."
+      ],
+      "published_or_version": "2025-08-05",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [],
+  "exposure_note": "No original-question, copied-question, or question-citing page/snippet was observed. A dated 2026-11-19 Hindsight release appeared as an unrelated search snippet and was not used as candidate evidence.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Qwen3.5-4B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "reason": "Best first experiment for the strict 8 GB limit: a 3.01 GB quantized file leaves substantially more room than the 9B option, with promising author-reported instruction-following results.",
+      "application_scope": "Whole requested replacement-model choice for retain, served locally by Windows CUDA llama.cpp; does not replace Hindsight itself.",
+      "constraints_or_caveat": "Full-GPU peak memory and retain quality near gpt-oss-20b remain unverified; evaluate the exact quantization and representative retain inputs.",
+      "evidence_opened": [
+        "https://huggingface.co/Qwen/Qwen3.5-4B",
+        "https://huggingface.co/Qwen/Qwen3.5-9B",
+        "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF",
+        "https://hindsight.vectorize.io/1.1/developer/configuration",
+        "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+        "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live model and quantization cards; official Qwen blog returned no readable date. No claim of availability on the question date is inferred.",
+      "form": "data",
+      "contribution": "whole",
+      "s1_auxiliary": "component",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.5-4B",
+            "https://hindsight.vectorize.io/1.1/developer/configuration",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Current documented local serving interfaces; Hindsight 1.1",
+          "reason": "Local weights and the documented local server-to-retain interface provide the requested deployment route."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.5-4B",
+            "https://benchmarks.hindsight.vectorize.io/leaderboards/retain"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "No comparative retain result for this exact quantization against gpt-oss-20b was established; 'near' has no supplied tolerance."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Weight file size is not peak VRAM; user context, batch, concurrency and available dedicated GPU memory are unspecified."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Full GPU placement and disabled Windows memory fallback must be verified at runtime; no RTX 5060 run was performed."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF",
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "The artifact page documents Windows llama.cpp use; exact GPU build remains covered by M3."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF"
+          ],
+          "version_scope": "Quantizer's live llama.cpp instructions; exact user build unknown",
+          "reason": "The published GGUF has documented llama.cpp invocation."
+        }
+      ],
+      "L": "ok",
+      "E": "unknown",
+      "H": {
+        "M1": "pass",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "pass",
+        "M6": "pass"
+      },
+      "T": "not_needed",
+      "label": "INSUFFICIENT",
+      "additional_check": "Run paired retain cases against the existing gpt-oss-20b baseline at the intended context with GPU placement/memory recorded.",
+      "decision_if_check_passes": "DIRECT_DOCUMENTED for the verified hardware, versions, quantization, context and agreed quality tolerance.",
+      "decision_if_check_fails": "Exclude if full-GPU residency or the user's quality threshold fails; a lower context or different quantization is a new configuration requiring its own check."
+    },
+    {
+      "rank": 2,
+      "name": "Qwen3.5-9B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "reason": "A stronger quality-oriented experiment in the same family, but its 6.17 GB file gives a much tighter runtime memory budget.",
+      "application_scope": "Whole requested retain replacement-model choice, conditional on fitting the complete working set on the existing GPU.",
+      "constraints_or_caveat": "Do not infer an 8 GB fit from the file size. The 5.50 GB IQ4_XS artifact is a smaller option whose quality needs a separate check.",
+      "evidence_opened": [
+        "https://huggingface.co/Qwen/Qwen3.5-9B",
+        "https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF",
+        "https://hindsight.vectorize.io/1.1/developer/configuration",
+        "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+        "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live model and quantization cards; release-date body unavailable from the official blog.",
+      "form": "data",
+      "contribution": "whole",
+      "s1_auxiliary": "component",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.5-9B",
+            "https://hindsight.vectorize.io/1.1/developer/configuration",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Current documented local serving interfaces; Hindsight 1.1",
+          "reason": "Local weights and the documented local server-to-retain interface provide the requested deployment route."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.5-9B",
+            "https://benchmarks.hindsight.vectorize.io/leaderboards/retain"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "No comparative retain result for this exact quantization against gpt-oss-20b was established; 'near' has no supplied tolerance."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Weight file size is not peak VRAM; user context, batch, concurrency and available dedicated GPU memory are unspecified."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Full GPU placement and disabled Windows memory fallback must be verified at runtime; no RTX 5060 run was performed."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF",
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "The artifact page documents Windows llama.cpp use; exact GPU build remains covered by M3."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF"
+          ],
+          "version_scope": "Quantizer's live llama.cpp instructions; exact user build unknown",
+          "reason": "The published GGUF has documented llama.cpp invocation."
+        }
+      ],
+      "L": "ok",
+      "E": "unknown",
+      "H": {
+        "M1": "pass",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "pass",
+        "M6": "pass"
+      },
+      "T": "not_needed",
+      "label": "INSUFFICIENT",
+      "additional_check": "Measure peak dedicated VRAM and check retain accuracy under the intended prompt and completion lengths with one server slot.",
+      "decision_if_check_passes": "DIRECT_DOCUMENTED only for that verified configuration and accepted quality tolerance.",
+      "decision_if_check_fails": "Exclude the tested configuration if it spills or lacks required quality; smaller file variants are not automatically equivalent."
+    },
+    {
+      "rank": 3,
+      "name": "Gemma 4 E2B IT, Q4_K_M GGUF",
+      "url": "https://huggingface.co/google/gemma-4-E2B-it",
+      "reason": "A lighter alternative family explicitly used as Hindsight's built-in llama.cpp default, making it a useful integration-oriented experiment.",
+      "application_scope": "Whole requested retain-model replacement choice; use the text path through local llama.cpp.",
+      "constraints_or_caveat": "Hindsight's default is not evidence of gpt-oss-20b-level extraction. Exact Windows GGUF/build behavior and full-GPU residency still need verification.",
+      "evidence_opened": [
+        "https://huggingface.co/google/gemma-4-E2B-it",
+        "https://hindsight.vectorize.io/1.1/developer/configuration",
+        "https://hindsight.vectorize.io/1.1/developer/models",
+        "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md",
+        "https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Official launch article is dated 2026-04-02 (pre-decision); supporting Hindsight 1.1 and live model-card statements are not historically pinned.",
+      "form": "data",
+      "contribution": "whole",
+      "s1_auxiliary": "component",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/google/gemma-4-E2B-it",
+            "https://hindsight.vectorize.io/1.1/developer/configuration",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Current documented local serving interfaces; Hindsight 1.1",
+          "reason": "Documented as the built-in local default; retained-fact accuracy is a separate unresolved condition."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/google/gemma-4-E2B-it",
+            "https://benchmarks.hindsight.vectorize.io/leaderboards/retain"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "No comparative retain result for this exact quantization against gpt-oss-20b was established; 'near' has no supplied tolerance."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://hindsight.vectorize.io/1.1/developer/configuration",
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Weight file size is not peak VRAM; user context, batch, concurrency and available dedicated GPU memory are unspecified."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "Full GPU placement and disabled Windows memory fallback must be verified at runtime; no RTX 5060 run was performed."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md",
+            "https://hindsight.vectorize.io/1.1/developer/configuration"
+          ],
+          "version_scope": "Proposed quantized model on unspecified user llama.cpp/Hindsight versions",
+          "reason": "The runtime supports Windows, but the exact Gemma GGUF/build combination was not independently checked."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://hindsight.vectorize.io/1.1/developer/configuration"
+          ],
+          "version_scope": "Hindsight 1.1 built-in llama.cpp documented default",
+          "reason": "Hindsight explicitly documents this model as its built-in llama.cpp default."
+        }
+      ],
+      "L": "ok",
+      "E": "unknown",
+      "H": {
+        "M1": "pass",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "pass"
+      },
+      "T": "not_needed",
+      "label": "INSUFFICIENT",
+      "additional_check": "Test the actual Windows CUDA GGUF build on paired retain cases, recording tensor placement and the quality gap.",
+      "decision_if_check_passes": "DIRECT_DOCUMENTED for the actual tested configuration if every mandatory condition is met.",
+      "decision_if_check_fails": "Exclude if the exact configuration requires CPU placement, fails Windows operation, or misses the accepted quality threshold."
+    }
+  ],
+  "rejected_candidates": [],
+  "raw_response": "I would start with **Qwen3.5-4B in Q4_K_M GGUF**, then try **Qwen3.5-9B Q4_K_M** if the 4B model misses important facts and your actual context leaves enough VRAM. **Gemma 4 E2B IT Q4_K_M** is a useful third candidate because Hindsight documents it as its built-in local default. These are candidates to test, not verified claims of gpt-oss-20b-equivalent retain quality on your RTX 5060.\n\n### Ranked shortlist\n\n| Rank | Model/configuration | Why I would try it | What remains unproved |\n| --- | --- | --- | --- |\n| 1 | Qwen3.5-4B, Q4_K_M | Published GGUF file is 3.01 GB, giving the most comfortable memory margin of the two Qwen options. | Exact peak VRAM, no CPU spill, and retain quality near your baseline. |\n| 2 | Qwen3.5-9B, Q4_K_M | A stronger quality-oriented option, with a published 6.17 GB GGUF. | Whether weights, context state and compute buffers all fit in your available 8 GB. |\n| 3 | Gemma 4 E2B IT, Q4_K_M | Hindsight's documentation uses it as its local llama.cpp default and describes the GGUF as about 3.5 GB. | Your Windows build/configuration and extraction quality relative to gpt-oss-20b. |\n\nSources: [Qwen 4B model](https://huggingface.co/Qwen/Qwen3.5-4B), [4B GGUF artifact](https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF), [Qwen 9B model](https://huggingface.co/Qwen/Qwen3.5-9B), [9B GGUF artifact](https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF), [Gemma E2B model](https://huggingface.co/google/gemma-4-E2B-it), and [Hindsight local-provider configuration](https://hindsight.vectorize.io/1.1/developer/configuration).\n\n### How much evidence is there for the quality target?\n\nQwen's own comparison table reports IFEval scores of **89.8 for 4B, 91.5 for 9B and 88.2 for gpt-oss-20b**. That is a useful reason to investigate these smaller models. It is not a retain benchmark and does not measure your chosen four-bit quantization. Other rows differ in direction, so I would not turn those scores into a general claim that every smaller Qwen model replaces gpt-oss-20b at equal quality. [Official comparative model card](https://huggingface.co/Qwen/Qwen3.5-9B).\n\nThe current [Hindsight retain leaderboard](https://benchmarks.hindsight.vectorize.io/leaderboards/retain) evaluates 42 cases in 12 categories with Hindsight 1.2.0, but its rendered table does not compare these three candidates with gpt-oss-20b. The sources I opened therefore do not establish the particular quality comparison you need.\n\nGemma's smaller effective parameter count also should not be read as its total weight footprint: its model card distinguishes 2.3B effective parameters from 5.1B including embeddings. The GGUF/configuration matters more than the short model name for this decision. [Official Gemma model card](https://huggingface.co/google/gemma-4-E2B-it).\n\n### Use a configuration that exposes spills\n\nUse a Windows CUDA build of llama.cpp and an explicit local model file. For an initial **test configuration**, request all GPU layers, set an explicit modest context such as 4096 tokens, and use one server slot. Current server documentation supports the relevant controls: `-ngl all`, `--fit off`, `-c 4096`, and `-np 1`. These settings are a starting experiment, not a promise that your retain prompts will fit. The context must hold the full prompt plus extraction output, so increase it only after checking real request lengths and available VRAM. Avoid any explicit CPU/expert offload option. [llama.cpp server documentation](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).\n\nOn Windows, inspect and disable NVIDIA's **System Memory Fallback** for this test. The llama.cpp build documentation describes it as the Windows mechanism for falling back to system RAM when VRAM is exhausted. Requesting all GPU layers alone is not proof that this fallback has not occurred. Verify model/tensor placement and peak dedicated GPU memory during representative prompt processing as well as generation. CPU activity for tokenization or serving is distinct from spilling model inference to CPU. [Official build documentation](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md).\n\nFor Qwen3.5-9B, the same artifact page offers a 5.50 GB IQ4_XS version, but changing quantization creates another quality trade-off to measure. If the 9B working set does not fit, return to the 4B model or a smaller context that still handles your real inputs; silently spilling to RAM would miss your requirement. The file sizes above are download sizes, not measured VRAM totals. [9B quantization table](https://huggingface.co/bartowski/Qwen_Qwen3.5-9B-GGUF).\n\n### Connect and judge it in the intended role\n\nHindsight documents per-operation retain provider, model and base-URL settings. Point those at the local llama.cpp OpenAI-compatible endpoint so the model is evaluated specifically as the retain replacement. Keep schema-constrained JSON enabled: syntactically valid JSON and accurate extracted facts are separate things to inspect. This connection is documented, but I did not run an integration here. [Hindsight configuration](https://hindsight.vectorize.io/1.1/developer/configuration) and [llama.cpp API features](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).\n\nMy acceptance test would use the same representative inputs and extraction settings against the existing gpt-oss-20b baseline and each exact GGUF. Check missing facts, invented details, entity attribution, dates, schema failures/retries, and latency. Define what “near” means for your workload before choosing the winner. Only retain a configuration that passes both the quality threshold and the no-spill memory check.\n\nAll three therefore receive **INSUFFICIENT for the complete requested claim** at this stage: the documented deployment paths make them reasonable trials, while the decisive hardware-and-quality combination remains unverified. Missing evidence is not evidence that a candidate cannot work.\n\n**Timing:** this research uses live pages read on November 21, 2026 for a question dated July 2, 2026. Gemma's official launch article is dated April 2, 2026. Most model, quantization and runtime pages have no verified publication date, and the current Hindsight documentation is not pinned to the question's version; I am not claiming every observed detail was already available on July 2. [Gemma launch](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/).",
+  "checks": [
+    {
+      "check_id": "CK-d1d50f817881",
+      "name": "QEMU",
+      "url": "https://www.qemu.org/",
+      "decision": "exclude",
+      "reason": "QEMU is a machine emulator/virtualizer, so it cannot itself fill the requested Hindsight retain language-model role. Hosting a separate model inside a VM would still require that model and would not solve its VRAM limit.",
+      "evidence_urls": [
+        "https://www.qemu.org/"
+      ],
+      "verification_status": "decisive_role_mismatch_confirmed_from_official_description",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "fail",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "QEMU product role",
+          "reason": "Official description identifies machine emulation/virtualization, which does not supply the requested retain language-model component."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "Not fully assessed after decisive mismatch",
+          "reason": "No conclusion needed for this axis after the decisive mismatch; no unsupported claim of support or incompatibility."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "Not fully assessed after decisive mismatch",
+          "reason": "No conclusion needed for this axis after the decisive mismatch; no unsupported claim of support or incompatibility."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "Not fully assessed after decisive mismatch",
+          "reason": "No conclusion needed for this axis after the decisive mismatch; no unsupported claim of support or incompatibility."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "Not fully assessed after decisive mismatch",
+          "reason": "No conclusion needed for this axis after the decisive mismatch; no unsupported claim of support or incompatibility."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://www.qemu.org/"
+          ],
+          "version_scope": "Not fully assessed after decisive mismatch",
+          "reason": "No conclusion needed for this axis after the decisive mismatch; no unsupported claim of support or incompatibility."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "fail",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "unknown"
+      },
+      "T": "not_needed",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "check_id": "CK-bda15b887cf8",
+      "name": "gpt-oss-120b MXFP4 with all weights resident on GPU",
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "decision": "exclude",
+      "reason": "The official native checkpoint is 60.8 GiB, far larger than the RTX 5060's 8 GB VRAM. All weights cannot remain on that GPU; the much smaller active-parameter count is a compute figure, not an all-weights residency allowance.",
+      "evidence_urls": [
+        "https://openai.com/index/introducing-gpt-oss/",
+        "https://deploymentsafety.openai.com/gpt-oss/architecture"
+      ],
+      "verification_status": "decisive_memory_conflict_from_official_checkpoint_size; no runtime test",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "Downloadable local language model with structured-output capability; retain deployment interface is documented in the frozen discovery."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "No paired retain result against the user's baseline was established."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "fail",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "The documented 60.8 GiB checkpoint cannot be resident in 8 GB VRAM; active parameters do not remove the storage requirement for all resident experts."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "No claim that CPU use is intrinsically required on other hardware; the requested 8 GB all-resident configuration fails M3 before runtime."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "The exact Windows model/build combination was not checked; the article's Windows-specific example concerns 20b."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://openai.com/index/introducing-gpt-oss/",
+            "https://deploymentsafety.openai.com/gpt-oss/architecture"
+          ],
+          "version_scope": "Released gpt-oss-120b native MXFP4, all weights resident on the single specified GPU",
+          "reason": "The official launch announcement lists llama.cpp among the gpt-oss integrations; this does not resolve VRAM capacity."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "pass",
+        "M2": "unknown",
+        "M3": "fail",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "pass"
+      },
+      "T": "not_needed",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "check_id": "CK-90c9fb10e3d4",
+      "name": "Qwen3.8-27B Q4",
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "decision": "exclude",
+      "reason": "The official 27B dense language model needs about 13.5 GB for nominal four-bit weights alone, exceeding 8 GB before buffers. This is a storage calculation from documented parameters and the supplied Q4 precision. Its official 2026-08-14 release is also later than the question date; that timing is recorded separately, not invented as a new must.",
+      "evidence_urls": [
+        "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+        "https://huggingface.co/Qwen/Qwen3.8-27B"
+      ],
+      "verification_status": "decisive_memory_conflict_inferred_by_explicit_Q4_storage_arithmetic_from_official_architecture; post_decision_release_confirmed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "Local model usable for Hindsight retain",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "pass",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "Official local weights are available; the already-opened retain leaderboard includes the base model, without validating this Q4 configuration."
+        },
+        {
+          "id": "M2",
+          "target": "Retain quality near gpt-oss-20b",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "Retain quality near gpt-oss-20b for the unspecified Q4 artifact has not been established."
+        },
+        {
+          "id": "M3",
+          "target": "Model inference entirely on RTX 5060 within 8 GB VRAM",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "fail",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "Official architecture lists 27B language-model parameters. At nominal 4 bits each, the weight payload alone is 13.5 GB (about 12.6 GiB), already beyond 8 GB. This is an explicit arithmetic inference, before quantization overhead or context buffers."
+        },
+        {
+          "id": "M4",
+          "target": "CPU spill of model weights/experts/inference",
+          "polarity": "negative",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "No intrinsic CPU requirement is asserted; the proposed fully GPU-resident 8 GB configuration already fails its required weight-memory budget."
+        },
+        {
+          "id": "M5",
+          "target": "Windows operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "The exact Q4 artifact and Windows build were not specified or tested."
+        },
+        {
+          "id": "M6",
+          "target": "llama.cpp operation",
+          "polarity": "positive",
+          "source_location": "question_summary, sentence 1 (supplied paraphrase, not an original-question quotation)",
+          "status": "unknown",
+          "evidence_url": [
+            "https://huggingface.co/Qwen/Qwen3.8-27B",
+            "https://github.com/QwenLM/Qwen3.8/blob/main/README.md"
+          ],
+          "version_scope": "Qwen3.8-27B at candidate-specified nominal Q4 precision",
+          "reason": "Quantized llama.cpp artifacts appeared in search, but the exact Q4 file/build was not opened or validated; no incompatibility is inferred."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "pass",
+        "M2": "unknown",
+        "M3": "fail",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "unknown"
+      },
+      "T": "not_needed",
+      "date_status": "post_decision",
+      "post_decision": true
+    }
+  ],
+  "stage1_frozen_at_utc": "2026-11-21T06:12:44Z",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 20,
+    "candidate_count": 3,
+    "stage1_search_queries": 6,
+    "stage1_opened_pages": 15,
+    "max_search_queries": 12,
+    "max_opened_pages": 20,
+    "max_candidates": 10,
+    "remaining_search_queries": 4,
+    "remaining_opened_pages": 0,
+    "accounting_note": "Anonymous GitHub code search counts as one literal query and one failed open. Open/click requests count once each; find operations only inspected already opened documents and did not add documents. The empty official Qwen blog counts as an opened-document attempt.",
+    "checks_search_queries": 2,
+    "checks_opened_pages": 5
+  },
+  "limitations": [
+    "Documentation-based research; no model downloads, installation, inference, retain integration, or hardware measurements were performed.",
+    "Quality near gpt-oss-20b is not established for any exact proposed quantization on Hindsight retain.",
+    "The current retain leaderboard does not provide the needed small-model versus baseline comparison.",
+    "Most live sources are undated and not historically pinned to 2026-07-02; date_status remains unknown where publication timing is unverified.",
+    "Anonymous GitHub code search was blocked; code-through-web fallback found primary upstream code excerpts.",
+    "The user supplied no context/concurrency/quantization/driver/version details, which materially affect the strict 8 GB/no-spill requirement.",
+    "Find refinements are included in each opened document's sections_read; UTC is recorded for the initial document-fetch attempt.",
+    "Discovery candidate order and raw_response are frozen before any parent-supplied check candidates."
+  ],
+  "execution_status": "completed",
+  "checks_started_at_utc": "2026-11-21T06:17:33Z",
+  "checks_ended_at_utc": "2026-11-21T06:20:05Z"
+}

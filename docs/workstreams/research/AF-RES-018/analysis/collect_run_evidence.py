@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Index recorded document observations and literal searches without rerunning them."""
 import argparse,datetime,re
-from common import ROOT,load,save
+from common import ROOT,load,save,document_kind
 def main(partial):
     sources=[];excluded=[];events=[];count=0
     states={r['dispatch_index']:r for r in load('runs/DISPATCH_STATE.json')['assigned']}
@@ -18,7 +18,8 @@ def main(partial):
                            'raw_record':q,'source_file':d['output']})
         for i,doc in enumerate(run['opened_documents']):
             status=str(doc.get('status',''));op=str(doc.get('operation',''))
-            read=status.lower().startswith(('opened','ok','partial:','redirect landing page'))
+            observation_kind=document_kind(doc)
+            read=observation_kind in ['body','fetch_only'] or (observation_kind=='find' and not any(x in status.lower() for x in ['no_match','no_matching']))
             stage='discovery' if i<receipt['document_prefix_count'] else 'checks'
             sid=f'RUN-{d["condition"]}-{d["qid"]}-D{i+1:02d}'
             events.append({'id':sid,'kind':'document_event','condition':d['condition'],'qid':d['qid'],
@@ -28,7 +29,7 @@ def main(partial):
                                  'status':status,'confirmed':doc.get('confirmed'),
                                  'reason':'No successful readable-body status in the preserved observation; not counted as a body reading.',
                                  'source_file':d['output'],'counted':False});continue
-            level='D2' if re.search(r'/blob/[0-9a-fA-F]{40}/',doc['url']) else 'D1'
+            level='D3-fetch' if observation_kind=='fetch_only' else 'D2' if re.search(r'/blob/[0-9a-fA-F]{40}/',doc['url']) else 'D1'
             sources.append({'id':sid,'url':doc['url'],'accessed_at_utc':doc['at_utc'],
                             'source_type':'public document observation during experimental '+stage,
                             'title':doc.get('title') or 'Title not separately recorded; identified by observed URL',
@@ -39,13 +40,13 @@ def main(partial):
                             'level':level,'used_in':['Q4','Q7']+(['Q3'] if stage=='checks' else ['Q6']),
                             'counted_as':'execution_document_not_method_literature',
                             'condition':d['condition'],'qid':d['qid'],'stage':stage,'status':status,'operation':op,
-                            'date_status':doc.get('date_status'),'post_decision':doc.get('post_decision'),
+                            'date_status':doc.get('date_status'),'post_decision':doc.get('post_decision'),'observation_kind':observation_kind,
                             'reader':states[d['dispatch_index']]['agent'],'source_file':d['output']})
     save('evidence/run-readings.json',{'sources':sources,'excluded':excluded,'completed_runs':count,
                                     'partial':partial,'note':'Repeated observations remain distinct IDs tied to exact log events; none increases the29 methodological-paper count.'})
     save('evidence/run-search-log.json',{'events':events,'completed_runs':count,'partial':partial,
                                       'generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
                                       'note':'Indexed original records, not newly executed searches.'})
-    print({'completed_runs':count,'body_observations':len(sources),'excluded_events':len(excluded),'query_and_document_events':len(events)})
+    print({'completed_runs':count,'body_observations':sum(r['level'] in ['D1','D2'] for r in sources),'fetch_only_observations':sum(r['level']=='D3-fetch' for r in sources),'excluded_events':len(excluded),'query_and_document_events':len(events)})
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--partial',action='store_true');a=p.parse_args();main(a.partial)
