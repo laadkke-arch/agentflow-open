@@ -166,3 +166,7 @@
 - 실행 위치 `/workspace/scratch/3e3d4ea10139/agentflow-open`, 세션 표시 모델 GPT-6 Astra Pro. 앞 세션의 미커밋 결과를 회수하거나 읽었다고 주장하지 않는다.
 - 현재 익명 호스트 접근 관측은 `evidence/network-resume.json`; 이전 접근 성공을 이번 접근 성공으로 대체하지 않는다.
 - 다음 첫 행동: 71–73 발견 동결→동일 검사3개→보존 감사, 이후 고정 dispatch74부터 계속한다.
+
+## Resume checkpoint — 2026-11-21T08:20:44.301109+00:00
+
+Recovered dispatches 71–73 have finished with immutable discovery freezes and three checks each. This bundle records P/T007 and P/T057; A/T007 is already committed at ea620b7345032def951a44888b65a5cc85a12d08. Fresh contexts for 74–76 are in progress. Mapping is identity-only, with no outcome metrics inspected. The execution order and preregistered input hashes are unchanged. Next: complete outstanding runs and continue dispatch index 77 onward.
