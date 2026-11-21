@@ -52,6 +52,8 @@ def audit(path, frozen=None):
         if d.get('date_status') not in ['pre_decision','post_decision','unknown']:
             if str(d.get('date_status','')).startswith('mixed:') and isinstance(d.get('post_decision'),bool):
                 warnings.append(f'document {i} mixed date text retained; post_decision boolean governs conservative temporal analysis')
+            elif 'unknown' in str(d.get('date_status','')).lower() and d.get('post_decision') in [True,False,None]:
+                warnings.append(f'document {i} descriptive date uncertainty retained; treated as unknown unless explicitly post_decision')
             else:errors.append(f'document {i} date_status')
     for k in ['started_at_utc','ended_at_utc']:
         value=r[k]
