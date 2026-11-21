@@ -174,3 +174,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:24:18.145727+00:00
 
 75/106 actual responses and225/318 probe decisions are complete. A/T057 and A/N016 are added in this bundle. P/N016 and both T030 conditions are currently assigned to fresh contexts. Search-result exposures remain in the raw records and will enter the registered/exploratory exposure sensitivity without editing the answers. Next: continue the frozen dispatch order from79 after active runs finish.
+
+## Execution checkpoint — 2026-11-21T08:29:57.152279+00:00
+
+78/106 responses and234/318 probe judgments are complete. This P bundle records N016 and T030 and two transparent budget-field corrections; raw discovery hashes were unchanged. Citation metadata from current-session emitted references restored17 URLs, while5 references from earlier-session P/T036 remain unavailable and are explicitly excluded. Inputs, thresholds and gold remain frozen. Active dispatches79–81 use fresh contexts. Next: dispatch82 onward, then full normalization, blind judging and seeded claim extraction/verification.
