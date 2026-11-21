@@ -182,3 +182,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:36:05.137942+00:00
 
 81/106 responses and243/318 probe judgments are complete. T014 A/P and T003 P have passed parent completion audits. T030 A original-input provenance was clarified read-only from its executor’s retained tool result (HTTP200 and frozen SHA256 match), without rewriting the run. Active dispatches82–84 are T003 A and T048 P/A. Next: continue85 onward; do not run judgment or claim sampling until all106 discovery/check records are complete.
+
+## Execution checkpoint — 2026-11-21T08:44:42.911817+00:00
+
+84/106 responses and252/318 probe judgments are complete, giving42 full question pairs. T003 A and T048 A/P pass frozen-prefix and check-order audits. T048 P required a pre-injection accounting-only correction from4 investigated entries to3 returned entries; its raw answer/candidates were unchanged. N019 A/P are in checks, N012 A in discovery. Next: dispatch88 onward. Citation audit remains61 resolved printed references and5 unavailable previous-session references.
