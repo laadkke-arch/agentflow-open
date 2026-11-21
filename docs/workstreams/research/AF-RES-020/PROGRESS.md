@@ -40,3 +40,11 @@ SCOPE 선커밋 후 고정 입력의 HANDOFF와 원 결과 전부 읽기, 내부
 ## 원격 저장 경로
 
 - 첫 로컬 커밋의 HTTPS git push는 셸 자격증명 부재로 실패했다(Username 프롬프트를 읽을 수 없음). 로그인·권한 변경 없이 이미 연결된 GitHub 도구의 laadkke-arch 계정으로 브랜치 생성과 tree/commit/ref 갱신을 사용한다. 각 묶음을 원격 커밋한 즉시 git fetch로 다시 읽는다. 이것은 네트워크 제한 우회가 아니라 허용된 기존 연결의 쓰기 기능이다.
+
+## 운영 계약 검사 시도
+
+- workbench.session start --fetch는 고정 AF-RES-013 result_commit과 현재 브랜치 HEAD가 달라 종료2로 중단됐다. 실제 응답과 두 SHA는 evidence/contract-start-attempt.json. 역사 자료 감사에서 최신 branch로 입력을 바꾸지 않았고 검사기를 약화하지 않았다. 고정 SHA 입력·범위·문서 연결은 이 과제의 검사로 별도 확인한다.
+
+## 커밋 묶음 2
+
+초기 묶음12개(B01–B07, B11, B12, B19, B20, B22)와 고정 원 결과 읽기 기록을 분리 저장한다. 표본의 정의/분모 차이를 수치 모순으로 잘못 합치지 않도록 원 단위와 관측 창을 병기했다.
