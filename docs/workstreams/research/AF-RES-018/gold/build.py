@@ -3,6 +3,8 @@
 from pathlib import Path
 import csv,datetime,hashlib,json,random,re,subprocess,collections
 ROOT=Path(__file__).resolve().parents[1]
+if any(list((ROOT/'runs'/c).glob('*.json')) for c in ['A','P']):
+    raise SystemExit('Frozen gold: executions exist. Reproduce at the pre-execution commit in an isolated checkout; do not overwrite current gold.')
 def read(p):return json.loads((ROOT/p).read_text())
 def write(p,d):(ROOT/p).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
 def norm(s):return re.sub(r'[^a-z0-9]+',' ',str(s).lower()).strip()

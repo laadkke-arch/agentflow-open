@@ -38,6 +38,7 @@ def select_old():
  return rows
 
 def fetch_old():
+ if any(list((ROOT/'runs'/c).glob('*.json')) for c in ['A','P']):raise SystemExit('Frozen questions: executions exist. --emit remains available; regenerate only at the pre-execution commit in an isolated checkout.')
  rows=select_old();logs=[];se=[r for r in rows if r['platform']=='softwarerecs'];nums=[re.search(r'/questions/(\d+)',r['url']).group(1) for r in se];u='https://api.stackexchange.com/2.3/posts/'+';'.join(nums)+'/revisions?site=softwarerecs&filter=withbody&pagesize=100';at=now();d,status=request_json(u);logs.append({'url':u,'at_utc':at,'status':status,'item_count':len(d.get('items',[])),'has_more':d.get('has_more'),'body_saved':False})
  items=d.get('items',[])
  if d.get('has_more'):

@@ -36,6 +36,8 @@ def prepare_original(r):
     return r['id'],proof,t
 
 def main(refresh):
+    if any(list((ROOT/'runs'/c).glob('*.json')) for c in ['A','P']):
+        raise SystemExit('Frozen questions: executions exist. Reproduce at the pre-execution commit in an isolated checkout; do not overwrite current inputs.')
     old=json.loads((ROOT/'questions/old-metadata.json').read_text())
     new=json.loads((ROOT/'questions/new-draft/new-questions.json').read_text())
     assert len(old)==33 and len(new)==20
