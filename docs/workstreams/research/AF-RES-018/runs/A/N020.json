@@ -1,0 +1,433 @@
+{
+  "case_id": "N020",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/RULES_A.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N020.json"
+  ],
+  "started_at_utc": "2026-11-21T06:10:03Z",
+  "ended_at_utc": "2026-11-21T06:15:07Z",
+  "question_cutoff_date": "2026-07-02",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "site:huggingface.co Qwen3.5 4B 9B gpt-oss-20b model card",
+      "at_utc": "2026-11-21T06:10:03Z",
+      "tool": "web_system2",
+      "result_note": "Located official Qwen3.5 model cards with comparisons including gpt-oss-20b."
+    },
+    {
+      "q": "site:huggingface.co Qwen3-4B-Instruct-2507 Ministral-3-8B-Instruct GGUF 8GB structured output",
+      "at_utc": "2026-11-21T06:10:03Z",
+      "tool": "web_system2",
+      "result_note": "Located several Qwen3-4B-Instruct-2507 GGUF repositories; the combined response did not supply a Ministral result."
+    },
+    {
+      "q": "https://grep.app/api/search?q=LLAMA_SPLIT_MODE_NONE",
+      "at_utc": "2026-11-21T06:10:03Z",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated native code-search endpoint attempted through the public web open tool; the tool reported the URL inaccessible. Counted as one query and one opened-document attempt."
+    },
+    {
+      "q": "site:github.com/ggml-org/llama.cpp/blob \"json-schema\" \"cache-type-k\"",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "tool": "code_through_web",
+      "execution_tool": "web_system1",
+      "result_note": "Fallback public code repository search through web indexing found llama.cpp server and completion documentation. This was not native code-search success."
+    },
+    {
+      "q": "site:mistral.ai \"Ministral 3\" \"8B\" \"December\"",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "tool": "web_system1",
+      "result_note": "Found the official December 2, 2025 launch, model documentation, and governance release listing."
+    },
+    {
+      "q": "site:qwen.ai \"Qwen3.5\" \"4B\" \"March\"",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "tool": "web_system1",
+      "result_note": "No usable result for this literal query appeared in the combined tool response."
+    },
+    {
+      "q": "site:github.com/ggml-org/llama.cpp/blob \"LLAMA_SPLIT_MODE_NONE\"",
+      "at_utc": "2026-11-21T06:10:28Z",
+      "tool": "code_through_web",
+      "execution_tool": "web_system2",
+      "result_note": "Found actual public llama.cpp include/llama.h source defining single-GPU mode and GPU-layer allocation; subsequently opened the source. Native grep.app remained unavailable."
+    },
+    {
+      "q": "site:huggingface.co \"Qwen3.5\" \"Q4_K_M\" \"9B\" \"4B\"",
+      "at_utc": "2026-11-21T06:10:28Z",
+      "tool": "web_system2",
+      "result_note": "No usable result for this literal joint query appeared in the combined tool response; directly opened public quantization repositories afterward."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=LLAMA_SPLIT_MODE_NONE",
+      "at_utc": "2026-11-21T06:10:03Z",
+      "status": "blocked",
+      "sections_read": "No response body accessible.",
+      "confirmed": "The unauthenticated code-search endpoint could not be accessed through the public web tool; no code-search result was obtained.",
+      "published_or_version": "Unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "status": "opened",
+      "sections_read": "Model identity, supported formats, evaluation summary; shared 9B/4B benchmark table was read in the 4B card.",
+      "confirmed": "Official Qwen model card confirms a Qwen3.5-9B checkpoint and supplies public evaluation information. No Hindsight retain measurement or RTX 5060 test was established.",
+      "published_or_version": "Qwen3.5-9B; live model card",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "status": "opened",
+      "sections_read": "Model overview, instruction-following and long-context benchmarks, thinking controls.",
+      "confirmed": "The official card describes a 4B hybrid-attention model and compares its instruction-following scores with gpt-oss-20b; thinking is enabled by default and can be disabled through template parameters. The published comparison does not measure this user's quantized retain workload.",
+      "published_or_version": "Qwen3.5-4B; live model card",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "at_utc": "2026-11-21T06:10:11Z",
+      "status": "opened",
+      "sections_read": "Highlights, model overview, non-thinking behavior, benchmark table.",
+      "confirmed": "The official card describes a 4.0B instruction model that only uses non-thinking mode, with instruction-following, text-comprehension and tool-use evaluations. It does not provide a direct retain comparison with gpt-oss-20b.",
+      "published_or_version": "Qwen3-4B-Instruct-2507 model version; live card with no independently verified full publication date",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://mistral.ai/news/mistral-3/",
+      "at_utc": "2026-11-21T06:10:28Z",
+      "status": "opened",
+      "sections_read": "Dated announcement, dense Ministral family, instruct/reasoning variants and edge deployment.",
+      "confirmed": "The official December 2, 2025 announcement identifies the 3B, 8B and 14B Ministral 3 models as dense models and distinguishes instruct variants from reasoning variants.",
+      "published_or_version": "December 2, 2025",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+      "at_utc": "2026-11-21T06:10:28Z",
+      "status": "opened",
+      "sections_read": "GPU-layer placement, single-GPU mode, automatic fit, context and cache types, OpenAI-compatible chat endpoint and schema-constrained output.",
+      "confirmed": "The server documents explicit GPU-layer placement, context/cache controls, and JSON Schema response formats. These controls provide a way to evaluate smaller models while checking memory placement and output structure, but schema constraints do not establish factual extraction accuracy.",
+      "published_or_version": "Live master documentation",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF",
+      "at_utc": "2026-11-21T06:10:28Z",
+      "status": "opened",
+      "sections_read": "Quantization file table.",
+      "confirmed": "The quantization publisher lists Q6_K at 3.31 GB, Q8_0 at 4.28 GB, and Q4_K_M at 2.50 GB. These are file sizes, not measured total VRAM consumption.",
+      "published_or_version": "Live GGUF repository",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/tree/main",
+      "at_utc": "2026-11-21T06:10:42Z",
+      "status": "opened",
+      "sections_read": "GGUF file listing and available llama.cpp usage entry.",
+      "confirmed": "The repository lists Qwen3.5-4B Q6_K at 3.53 GB and Q4_K_M at 2.74 GB. Public quantizations provide a practical small-model path, subject to actual runtime overhead and supported architecture.",
+      "published_or_version": "Live file listing, revision displayed as e87f176",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/tree/main",
+      "at_utc": "2026-11-21T06:10:42Z",
+      "status": "opened",
+      "sections_read": "GGUF file listing and available llama.cpp usage entry.",
+      "confirmed": "The repository lists Qwen3.5-9B Q4_K_M at 5.68 GB, Q5_K_M at 6.58 GB and Q6_K at 7.46 GB. Q4 leaves more room for runtime buffers than the higher-bit versions, without proving an 8 GB configuration.",
+      "published_or_version": "Live file listing, revision displayed as 3885219",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512",
+      "at_utc": "2026-11-21T06:10:42Z",
+      "status": "opened",
+      "sections_read": "Overview, architecture, native function calling/JSON, edge deployment and recommended settings.",
+      "confirmed": "The model card describes an 8.4B language model with a separate 0.4B vision encoder, native JSON/function calling, and 12 GB FP8 deployment with lower memory possible after quantization. The unmodified FP8 package is therefore not the proposed 8 GB solution.",
+      "published_or_version": "Ministral-3-8B-Instruct-2512; model availability supported by official 2025-12-02 announcement, live card details undated",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/include/llama.h",
+      "at_utc": "2026-11-21T06:10:42Z",
+      "status": "opened",
+      "sections_read": "llama_split_mode and llama_model_params GPU-layer fields.",
+      "confirmed": "Actual public header source defines single-GPU splitting and a model parameter controlling how many layers reside in VRAM. It verifies the existence of placement controls, not their performance on this hardware.",
+      "published_or_version": "Live master source",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md",
+      "at_utc": "2026-11-21T06:10:42Z",
+      "status": "opened",
+      "sections_read": "Windows x64/MSVC build guidance and CUDA compilation.",
+      "confirmed": "The project documents Windows builds with Visual Studio and CMake, plus CUDA-enabled builds and compute-capability configuration. No exact RTX 5060 build was executed.",
+      "published_or_version": "Live master documentation",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B/commits/main",
+      "at_utc": "2026-11-21T06:11:14Z",
+      "status": "opened",
+      "sections_read": "Commit dates and model-file upload entries; no author identities retained.",
+      "confirmed": "The rendered history shows February 27 through March 2 entries including weight uploads, but does not expose a year. This alone was not treated as a fully dated pre-cutoff record.",
+      "published_or_version": "Commit history with month/day dates only in retrieved text",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Ministral-3-8B-Instruct-2512-GGUF/tree/main",
+      "at_utc": "2026-11-21T06:11:14Z",
+      "status": "opened",
+      "sections_read": "GGUF sizes, separate projection files and llama.cpp Windows usage entry.",
+      "confirmed": "The file listing provides Q4_K_M at 5.2 GB and Q5_K_M at 6.06 GB, plus separate vision projector files; it also exposes llama.cpp usage. Total runtime VRAM and retain quality remain unmeasured.",
+      "published_or_version": "Live file listing, revision displayed as 3731507",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.qemu.org/",
+      "at_utc": "2026-11-21T06:14:12Z",
+      "status": "opened",
+      "sections_read": "Homepage product purpose: full-system emulation, user-mode emulation and virtualization.",
+      "confirmed": "QEMU provides machine emulation and virtualization. These functions do not supply a language model or establish a way for the requested retain model to fit entirely in 8 GB VRAM.",
+      "published_or_version": "Live homepage; release list includes 2026 entries",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "at_utc": "2026-11-21T06:14:12Z",
+      "status": "opened",
+      "sections_read": "Dated introduction, model architecture table and Availability section.",
+      "confirmed": "The official announcement lists 117B total parameters for gpt-oss-120b and states that native MXFP4 enables it to run within 80 GB memory. Sparse activation does not make all of its weights resident within 8 GB.",
+      "published_or_version": "August 5, 2025",
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "at_utc": "2026-11-21T06:14:12Z",
+      "status": "opened",
+      "sections_read": "Qwen3.8 introduction, News release dates and official model-card link.",
+      "confirmed": "The official repository announces Qwen3.8-27B availability on August 14, 2026. This is later than the question cutoff; the model-card link was followed to verify its parameter count.",
+      "published_or_version": "Live README with Qwen3.8-27B release entry dated 2026-08-14",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "stage": "checks"
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "at_utc": "2026-11-21T06:14:28Z",
+      "status": "opened",
+      "sections_read": "Introduction and Model Overview.",
+      "confirmed": "The official card identifies Qwen3.8-27B as a dense model and specifies 27B language-model parameters. At nominal four-bit storage, the weights alone exceed the GPU capacity before overhead.",
+      "published_or_version": "Qwen3.8-27B; availability dated 2026-08-14 by official repository",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "stage": "checks"
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Qwen3.5-4B, preferably Q6_K GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "reason": "A 4B model with strong published instruction-following results and a 3.53 GB Q6_K GGUF offers a promising retain extractor while preserving substantial room for GPU context and runtime buffers.",
+      "application_scope": "Primary local retain extraction model; text-only inference through llama.cpp.",
+      "constraints_or_caveat": "Published benchmarks are not Hindsight retain results and do not establish quantized parity with gpt-oss-20b; require compatible llama.cpp, explicit context limits and a measured full-GPU allocation.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Official card and quantization listing are live; the opened commit history shows month/day dates but no year, so availability by 2026-07-02 is not certified.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/tree/main"
+      ]
+    },
+    {
+      "rank": 2,
+      "name": "Qwen3.5-9B, Q4_K_M GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "reason": "The 9B member supplies a stronger published instruction-following option with a 5.68 GB Q4_K_M file that could fit the 8 GB GPU at controlled context and concurrency.",
+      "application_scope": "Quality-focused alternative to the 4B extractor.",
+      "constraints_or_caveat": "The smaller remaining memory margin makes this conditional on actual Windows VRAM, cache and compute-buffer use; no retain parity or no-spill fit is proven.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live official model card and live GGUF listing; no fully dated original availability source verified.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/tree/main",
+        "https://huggingface.co/Qwen/Qwen3.5-4B"
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "Qwen3-4B-Instruct-2507, Q6_K or Q8_0 GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "reason": "Its dedicated non-thinking instruction behavior and 3.31 GB Q6_K or 4.28 GB Q8_0 files make it a practical compact baseline for direct structured retain extraction.",
+      "application_scope": "Lower-memory, direct-response extraction baseline.",
+      "constraints_or_caveat": "No matched gpt-oss-20b retain evaluation was located; nominal 256K model context cannot be assumed to fit 8 GB, and longer inputs still need bounded processing.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Model version is 2507, but the opened live card and GGUF table did not establish an independently verified full publication date.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://huggingface.co/bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF"
+      ]
+    },
+    {
+      "rank": 4,
+      "name": "Ministral 3 8B Instruct 2512, Q4_K_M GGUF",
+      "url": "https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512",
+      "reason": "This dense alternative offers native JSON/function-calling behavior and a 5.2 GB Q4_K_M GGUF that could support a local retain pipeline within a carefully measured 8 GB configuration.",
+      "application_scope": "Independent dense-model family for structured extraction comparison.",
+      "constraints_or_caveat": "The official FP8 configuration targets 12 GB; the 8 GB route needs further quantization and bounded context, and neither retain quality nor Windows full-GPU fit was tested.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Official announcement https://mistral.ai/news/mistral-3/ is dated 2025-12-02 and announces the 8B instruct variant; exact live GGUF artifact and runtime details remain undated.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://mistral.ai/news/mistral-3/",
+        "https://huggingface.co/unsloth/Ministral-3-8B-Instruct-2512-GGUF/tree/main"
+      ]
+    },
+    {
+      "rank": 5,
+      "name": "llama.cpp schema-constrained generation and explicit GPU placement",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+      "reason": "Schema-constrained JSON plus explicit GPU-layer and context controls can make a smaller local extractor operationally usable and expose whether it meets the no-spill requirement.",
+      "application_scope": "Supporting mechanism shared by the candidate models, not a model replacement.",
+      "constraints_or_caveat": "Schema validity does not guarantee correct facts; architecture/build support and maximum-workload VRAM must be checked, and CPU orchestration is distinct from model-weight spill.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live master documentation and header source; no fixed pre-cutoff version verified.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://github.com/ggml-org/llama.cpp/blob/master/include/llama.h",
+        "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md"
+      ]
+    }
+  ],
+  "raw_response": "I would begin with Qwen3.5-4B in Q6_K, then compare Qwen3.5-9B in Q4_K_M if the larger model fits your actual retain workload. These are research leads, not a verified claim that either matches gpt-oss-20b in Hindsight. I found no matched retain evaluation or measured RTX 5060 8 GB configuration in the sources examined.\n\nRanked candidates\n\n1. Qwen3.5-4B, Q6_K GGUF\nOfficial model: https://huggingface.co/Qwen/Qwen3.5-4B\nQuantization files: https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/tree/main\n\nThis is my first trial because its Q6_K file is 3.53 GB, leaving appreciably more room for context and runtime allocations than the larger candidates. The official comparison reports IFEval of 89.8 for the 4B model against 88.2 for gpt-oss-20b. That gives a reason to investigate instruction adherence, but it is not evidence of equivalent extraction quality after quantization. Qwen3.5 thinks by default; test its supported non-thinking setting for the retain workload and check what quality changes. Its hybrid attention architecture also makes using a compatible llama.cpp build essential.\n\n2. Qwen3.5-9B, Q4_K_M GGUF\nOfficial model: https://huggingface.co/Qwen/Qwen3.5-9B\nQuantization files: https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/tree/main\n\nThis is the quality-oriented second trial. The same official comparison gives the 9B model IFEval of 91.5, and its Q4_K_M file is 5.68 GB. A fit is plausible with bounded context, but the file size is not a VRAM measurement. Treat the 9B configuration as conditional until the maximum retain input and output complete without weight, cache, or tensor computation spilling to CPU. Its higher-bit files leave much less room: Q5_K_M is 6.58 GB and Q6_K is 7.46 GB.\n\n3. Qwen3-4B-Instruct-2507, Q6_K or Q8_0 GGUF\nOfficial model: https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507\nQuantization files: https://huggingface.co/bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF\n\nThis is a useful compact, direct-response baseline. The official model is explicitly non-thinking, and the quantization table lists Q6_K at 3.31 GB and Q8_0 at 4.28 GB. It could give you more freedom to preserve weight precision while keeping a practical context budget. Its published instruction-following and tool-use results justify testing, but I found no direct retain comparison with gpt-oss-20b.\n\n4. Ministral 3 8B Instruct 2512, Q4_K_M GGUF\nOfficial model: https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512\nQuantization files: https://huggingface.co/unsloth/Ministral-3-8B-Instruct-2512-GGUF/tree/main\nDated release: https://mistral.ai/news/mistral-3/\n\nThis offers a different dense-model family with native JSON output and function calling. The listed Q4_K_M language-model file is 5.2 GB. Use the text-only path for retain; the repository distributes vision projection files separately. The official FP8 configuration targets 12 GB VRAM, so the 8 GB proposal depends on further quantization and limited context. The family launch is dated December 2, 2025, before the question cutoff, although the exact currently listed quantization artifact was not independently dated.\n\n5. llama.cpp schema-constrained output and explicit placement\nDocumentation: https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md\nPublic source: https://github.com/ggml-org/llama.cpp/blob/master/include/llama.h\nWindows/CUDA build guidance: https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md\n\nThis supporting mechanism may matter as much as the model choice: use the local chat endpoint with the required JSON schema, explicitly request all model layers on the GPU, and set a bounded context rather than inheriting a huge advertised maximum. The current server exposes GPU placement, automatic-fit, context and cache-type controls. Schema constraints can reduce format failures; they cannot ensure that the extracted entities, relationships or facts are correct.\n\nHow I would select among them\n\nStart with one concurrent retain job and a modest context such as 4K, increasing it only to the size your actual prompts require. Include the output budget when choosing that limit. Inspect startup placement and memory reporting, then run a worst-case sample while observing dedicated GPU memory. A successful model load alone is insufficient. If memory is tight, reduce context or batch pressure, or move to the smaller model; investigate supported cache quantization as a separately measured tradeoff.\n\nCompare a representative set of your own retain inputs against the existing gpt-oss-20b setup. Score valid schema output, missed facts, invented facts, entity/relationship consistency, latency and peak dedicated VRAM. Keep prompts and evaluation criteria fixed. The preferred choice is the smallest configuration that meets your extraction-quality threshold on those inputs. Ordinary CPU tokenization and request handling do not themselves imply model spill, so define the acceptance check around model weights and inference placement.\n\nEvidence limits\n\nAll file sizes above are decimal GB as displayed by the publishers and exclude runtime allocations. Windows display use, context, buffers and concurrency can change fit. No model was downloaded or executed. Most evidence is from live pages whose full publication date was not established; I have not treated those pages as proven available by July 2, 2026. Native unauthenticated grep.app code search was attempted but inaccessible; public code was instead found through web indexing and the actual llama.cpp header was opened.",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 18,
+    "candidate_count": 5
+  },
+  "stage1_budget": {
+    "search_queries": 8,
+    "opened_pages": 14,
+    "candidate_count": 5
+  },
+  "budget_limits": {
+    "search_queries": 12,
+    "opened_pages": 20,
+    "candidate_count": 10
+  },
+  "budget_remaining_after_stage1": {
+    "search_queries": 4,
+    "opened_pages": 6
+  },
+  "budget_accounting_note": "Each literal web query and the failed grep.app query counted once; each explicit open attempt counted once, including failure. Find navigation only revisited already-opened documents and created no additional document opens.",
+  "stage1_frozen_at_utc": "2026-11-21T06:13:18Z",
+  "stage1_status": "completed",
+  "checks": [
+    {
+      "check_id": "CK-d1d50f817881",
+      "name": "QEMU",
+      "url": "https://www.qemu.org/",
+      "decision": "exclude",
+      "reason": "A machine emulator and virtualizer does not supply a retain extraction model or reduce model weights enough to satisfy the 8 GB full-GPU constraint.",
+      "judgment_method": "A free judgment",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://www.qemu.org/"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live homepage describes the product and includes dated releases before and after the cutoff; the general capability description itself is undated."
+    },
+    {
+      "check_id": "CK-bda15b887cf8",
+      "name": "gpt-oss-120b MXFP4 with all weights resident on GPU",
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "decision": "exclude",
+      "reason": "MXFP4 gpt-oss-120b targets an 80 GB GPU; keeping all 117B parameters resident cannot fit the specified 8 GB RTX 5060.",
+      "judgment_method": "A free judgment",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://openai.com/index/introducing-gpt-oss/"
+      ],
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Official announcement is dated 2025-08-05 and explicitly states the native MXFP4 memory configuration."
+    },
+    {
+      "check_id": "CK-90c9fb10e3d4",
+      "name": "Qwen3.8-27B Q4",
+      "url": "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+      "decision": "exclude",
+      "reason": "Its 27B weights alone require roughly 13.5 GB at four bits, exceeding 8 GB before runtime overhead; the official release also postdates the cutoff.",
+      "judgment_method": "A free judgment",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://github.com/QwenLM/Qwen3.8/blob/main/README.md",
+        "https://huggingface.co/Qwen/Qwen3.8-27B"
+      ],
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "Official repository News dates Qwen3.8-27B availability to 2026-08-14, after 2026-07-02.",
+      "inference_note": "The official model card identifies a dense language model with 27B parameters. Weight-only calculation: 27,000,000,000 \u00d7 4 / 8 = 13,500,000,000 bytes, approximately 12.57 GiB; quantization metadata, cache and compute buffers add memory. No specific Q4 artifact was downloaded."
+    }
+  ],
+  "checks_started_at_utc": "2026-11-21T06:14:12Z",
+  "checks_ended_at_utc": "2026-11-21T06:15:07Z",
+  "limitations": [
+    "Discovery only is complete; three parent-supplied checks are pending and must use the remaining same-run budget.",
+    "No target thread or source-thread answers were read, and no target citation was recognized in retrieved snippets or opened evidence.",
+    "No RTX 5060 execution, GPU-memory measurement, or Hindsight retain quality benchmark was performed.",
+    "Native public grep.app code search was inaccessible; the fallback was explicitly code-through-web and actual public source was opened.",
+    "Most pages were live and undated; unknown dates are not evidence of pre-cutoff availability, and post_decision=false does not resolve an unknown date.",
+    "Published general benchmarks and quantized file sizes are screening evidence only; model choice requires workload-specific quality and memory validation."
+  ],
+  "execution_status": "completed",
+  "checks_budget": {
+    "search_queries": 0,
+    "opened_pages": 4,
+    "check_count": 3
+  },
+  "budget_remaining_final": {
+    "search_queries": 4,
+    "opened_pages": 2
+  },
+  "checks_status": "completed",
+  "stage1_frozen_payload_sha256": "0641bfded9db45de1ca703c2885e0672e354729ab10374261a07f3e6e2749e82"
+}
