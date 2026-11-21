@@ -214,3 +214,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:13:38.922206+00:00
 
 98/106 responses and294/318 probe judgments are complete, with49 full pairs. T054 A/P are finalized and their procedural frozen answers remain outside entity-recall denominators. N014 A/P and SX01 P are active; next dispatch102. All required candidate probes are preserved, including unknown or non-strict probes that must not inflate strict-N denominators.
+
+## Execution checkpoint — 2026-11-21T09:18:36.618388+00:00
+
+99/106 responses and297/318 probe judgments are complete. N014 P is finalized at12 queries/20 document attempts, with the inaccessible positive retained as unknown rather than rejected. N014 A and SX01 P are checking probes; SX01 A is in discovery. Next: dispatch103 onward.
