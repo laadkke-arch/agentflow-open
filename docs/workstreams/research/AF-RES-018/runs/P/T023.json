@@ -1,0 +1,1006 @@
+{
+  "case_id": "T023",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro (internal separate agent, not human)",
+  "context_inputs": [
+    {
+      "path": "docs/workstreams/research/AF-RES-018/PROCEDURE.md",
+      "role": "assigned procedure"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-018/questions/inputs/T023.json",
+      "role": "assigned original-question descriptor"
+    },
+    {
+      "command": "python docs/workstreams/research/AF-RES-018/questions/generate.py --emit T023",
+      "role": "permitted original-question retrieval without inspecting helper source",
+      "verified_sha256": "596c51582721623ce4bb96b36c002ccb14fe3a1e3077e0fad6ec14a15ff4fc37",
+      "retrieved_at_utc": "2026-11-21T06:27:32.430529+00:00",
+      "http_status": 200,
+      "outside_search_budget": true
+    }
+  ],
+  "started_at_utc": "2026-11-21T06:27:32.430529+00:00",
+  "ended_at_utc": "2026-11-21T06:36:41Z",
+  "stage1_frozen_at_utc": "2026-11-21T06:33:48Z",
+  "checks_started_at_utc": "2026-11-21T06:34:21Z",
+  "checks_ended_at_utc": "2026-11-21T06:36:41Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Original question: Looking for a form generator; question date 2025-02-13. The fixed revision was retrieved by the permitted command and its normalized hash was verified.",
+      "status": "explicit",
+      "source_location": "input descriptor and verified original title",
+      "polarity": "neutral",
+      "force": "context",
+      "interpretation": "Original input, not a summary or source-thread answer."
+    },
+    {
+      "item": "I2",
+      "value": "Enable the company client to make and revise the booking-dependent forms itself, avoiding developer work for every form change.",
+      "status": "explicit",
+      "source_location": "original / Background / final paragraph; Looking for / first sentence",
+      "polarity": "positive",
+      "force": "goal",
+      "interpretation": "Client-facing form authoring is the selected capability; a programmer-only field-definition API would not by itself meet the goal."
+    },
+    {
+      "item": "I3",
+      "value": "Select a library or application for form creation; preserve the existing management application and the author's ability to process structured data, generate PDFs and send email.",
+      "status": "explicit with interpretation",
+      "source_location": "original / Background / sentences 1-6; Looking for / first sentence",
+      "polarity": "positive",
+      "force": "scope",
+      "interpretation": "A reusable designer plus renderer can satisfy the selection scope even when the author implements documented backend glue; an entire replacement management system is not requested."
+    },
+    {
+      "item": "I4",
+      "value": "company client can create and change forms",
+      "status": "explicit",
+      "source_location": "original / Looking for / first sentence",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "An accessible editing interface is required; drag-and-drop itself is not expressly required."
+    },
+    {
+      "item": "I4",
+      "value": "form definitions can be saved on the client's server or online",
+      "status": "explicit",
+      "source_location": "original / Looking for / final sentence",
+      "polarity": "positive disjunction",
+      "force": "must",
+      "interpretation": "Either the client's server or online storage is allowed; self-hosting is not mandatory."
+    },
+    {
+      "item": "I4",
+      "value": "answers are submitted to the server OR emailed to the server and client",
+      "status": "explicit",
+      "source_location": "original / The data / two alternatives",
+      "polarity": "positive disjunction",
+      "force": "must",
+      "interpretation": "Server submission is sufficient. Email is the alternative route, not an additional mandatory feature for a solution that supplies structured data to the server."
+    },
+    {
+      "item": "I4",
+      "value": "respondents to the online-service alternative do not first create an account",
+      "status": "explicit conditional",
+      "source_location": "original / Looking for / Online third parenthesis",
+      "polarity": "negative",
+      "force": "must for online-service alternative",
+      "interpretation": "The client's user means the form respondent, distinct from the company staff who build forms. Do not prohibit staff/admin accounts."
+    },
+    {
+      "item": "I4",
+      "value": "PHP first, JavaScript second, online third, Python fourth; Python is unfamiliar to the author.",
+      "status": "explicit",
+      "source_location": "original / Looking for / four technology-order lines",
+      "polarity": "positive",
+      "force": "ordered preference",
+      "interpretation": "No hard ban on JavaScript, hosted services or Python."
+    },
+    {
+      "item": "I4",
+      "value": "Free is preferred, especially for modifications; a reasonable one-off fee is allowed; recurring/form-based licensing must be modest.",
+      "status": "explicit but threshold unspecified",
+      "source_location": "original / The cost / three lines",
+      "polarity": "positive",
+      "force": "free preference plus qualitative paid-cost constraint",
+      "interpretation": "No numeric ceiling, required license family, or prohibition on paid software is stated."
+    },
+    {
+      "item": "I5",
+      "value": "Customers fill different forms according to bookings; reception needs the eventual form by email. The author can read server submissions or PDFs, populate the database, and generate/email a PDF from structured server data.",
+      "status": "explicit",
+      "source_location": "original / Background / sentences 2-6",
+      "polarity": "positive",
+      "force": "workflow boundary",
+      "interpretation": "PDF generation and reception email can remain application responsibilities; do not demand built-in PDF export from the selected authoring library."
+    },
+    {
+      "item": "I6",
+      "value": "The management application is being written and the form solution is being selected. No current form-builder product is named.",
+      "status": "explicit/absent",
+      "source_location": "original / Background / opening sentence",
+      "polarity": "neutral",
+      "force": "temporal context",
+      "interpretation": "Question-time reference is 2025-02-13. Current live documentation must not be silently presented as historical evidence."
+    },
+    {
+      "item": "I7",
+      "value": "PHP preferred, JavaScript acceptable; existing server and database are mentioned. Server OS, PHP/JS versions, database engine, specific field types, form count, response volume and staff count are not supplied.",
+      "status": "partly explicit; remaining fields absent",
+      "source_location": "original / Background and Looking for",
+      "polarity": "neutral",
+      "force": "environment preferences",
+      "interpretation": "Do not invent requirements for WordPress, a particular database, multitenancy, payment collection, security certification or active maintenance cadence."
+    },
+    {
+      "item": "I8",
+      "value": "The original was hash-verified. Company/client form authors and that company's booking respondents are distinct roles. The server-submit and email-submit routes are alternatives.",
+      "status": "explicit input with role interpretation",
+      "source_location": "original / Background; Looking for / Online third parenthesis; The data",
+      "polarity": "neutral",
+      "force": "interpretive relationship",
+      "interpretation": "No facts were supplied from other repository files, prior runs, gold, metadata or source-thread answers."
+    }
+  ],
+  "queries": [
+    {
+      "q": "PHP self hosted form builder user creates forms email submissions free open source",
+      "at_utc": "2026-11-21T06:27:52Z",
+      "tool": "public web search / system2_search_query",
+      "result_note": "Broad discovery found Form Tools and other PHP applications plus hosted/open-source form tools. Results were inspected as snippets; no source-thread/copy exposure observed."
+    },
+    {
+      "q": "JavaScript form builder drag drop self hosted save form JSON submit server SurveyJS formBuilder",
+      "at_utc": "2026-11-21T06:27:52Z",
+      "tool": "public web search / system2_search_query",
+      "result_note": "Discovered SurveyJS Creator, Form Library and PHP integration documentation; identified separate paid designer versus free rendering library for verification."
+    },
+    {
+      "q": "php form builder",
+      "at_utc": "2026-11-21T06:27:52Z",
+      "tool": "anonymous GitHub repository search via public web open",
+      "url": "https://github.com/search?q=php+form+builder&type=repositories",
+      "result_note": "DisabledError; counted as a search query and opened-document attempt. No login or workaround attempted."
+    },
+    {
+      "q": "site:formtools.org Form Builder module free generate forms email",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "tool": "public web search / system1_search_query",
+      "result_note": "Official getting-started, Form Builder and publishing tutorial results support further investigation of client-editable PHP forms."
+    },
+    {
+      "q": "site:formbuilder.online formBuilder formRender save data PHP",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "tool": "public web search / system1_search_query",
+      "result_note": "Official designer/renderer documentation found. Homepage snippet mentions version 3.23.9 dated 2026-11-17, after the decision date; that version is not treated as 2025 evidence."
+    },
+    {
+      "q": "site:github.com OpnForm Laravel form builder webhook email",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "tool": "public web search / system1_search_query; code-through-web",
+      "result_note": "Public-code discovery fallback after anonymous GitHub search failed. Combined displayed result was partly truncated; decisive OpnForm evidence was subsequently obtained by opening its website and linked public repository."
+    },
+    {
+      "q": "formBuilder onSave",
+      "at_utc": "2026-11-21T06:31:05Z",
+      "tool": "anonymous GitHub code search via public web open",
+      "url": "https://github.com/search?q=formBuilder+onSave&type=code",
+      "result_note": "Explicit code-search surface also returned DisabledError. Counted query and failed open; code-through-web fallback and official public documentation were used, without login, installation or network bypass."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=php+form+builder&type=repositories",
+      "at_utc": "2026-11-21T06:27:52Z",
+      "status": "failed: DisabledError",
+      "sections_read": "none",
+      "confirmed": "Anonymous repository search unavailable through this tool.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.formtools.org/",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "status": "opened; combined display partially truncated",
+      "sections_read": "homepage extract; partial display",
+      "confirmed": "No candidate-critical claim relies solely on this truncated return; the official getting-started page was opened separately.",
+      "published_or_version": "live homepage; no verified publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://surveyjs.io/php-form-builder",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "status": "opened; combined display partially truncated",
+      "sections_read": "PHP storage/integration paragraphs and demo section visible in returned extract",
+      "confirmed": "JSON definitions can be persisted by a PHP backend; application endpoints are supplied by the integrator. Reopened later for complete relevant sections.",
+      "published_or_version": "live undated PHP integration guide",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://surveyjs.io/pricing",
+      "at_utc": "2026-11-21T06:28:05Z",
+      "status": "opened",
+      "sections_read": "pricing and feature matrix, approximately lines 126-530",
+      "confirmed": "Perpetual licenses; free Essential Form Library; paid Basic includes Creator and is listed at US$559 once per developer with initial 12-month updates/support.",
+      "published_or_version": "live price observed 2026-11-21; publication date absent",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.formtools.org/userdoc/getting_started/",
+      "at_utc": "2026-11-21T06:28:24Z",
+      "status": "opened",
+      "sections_read": "About Form Tools and Feature Highlights, lines 19-45",
+      "confirmed": "PHP/MySQL self-hosted application; bundled no-programming form builder; server submission storage and PHP API; free under GNU Public License.",
+      "published_or_version": "undated page referring to Form Tools 2; footer 2018 is not a publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://formbuilder.online/docs/",
+      "at_utc": "2026-11-21T06:28:24Z",
+      "status": "opened",
+      "sections_read": "Introduction, Features, Browser Support and built-in controls, lines 202-235",
+      "confirmed": "Client-side drag-and-drop authoring; separate formRender; documented administration/front-end split.",
+      "published_or_version": "live undated documentation",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://opnform.com/",
+      "at_utc": "2026-11-21T06:28:24Z",
+      "status": "opened",
+      "sections_read": "builder, integrations, sharing and self-hosting sections",
+      "confirmed": "Managed cloud/self-host choices, no-code form design, webhooks/REST API, public-link sharing and embedding advertised. Respondent account behavior not explicit.",
+      "published_or_version": "live undated homepage; 2026 footer does not establish publication",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/",
+      "at_utc": "2026-11-21T06:28:43Z",
+      "status": "opened",
+      "sections_read": "Publishing your First Form, lines 31-50",
+      "confirmed": "Administrator workflow edits fields/views, configures email notifications and publishes form files onto the site.",
+      "published_or_version": "live undated Form Builder tutorial; footer 2018 not publication evidence",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://formbuilder.online/docs/formBuilder/options/onSave/",
+      "at_utc": "2026-11-21T06:28:43Z",
+      "status": "opened via official documentation link",
+      "sections_read": "onSave Usage, lines 202-216",
+      "confirmed": "Save callback receives formData; example renders it and stores it in browser session storage. Server persistence must be added.",
+      "published_or_version": "live undated documentation",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://formbuilder.online/docs/formRender/actions/userData/",
+      "at_utc": "2026-11-21T06:28:43Z",
+      "status": "opened via official documentation link",
+      "sections_read": "userData action and AJAX POST example, lines 201-246",
+      "confirmed": "Filled data can be captured and serialized for POST to an integrator-selected endpoint, then returned from a database for rerendering.",
+      "published_or_version": "live undated documentation",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/OpnForm/OpnForm",
+      "at_utc": "2026-11-21T06:28:43Z",
+      "status": "opened via official site link",
+      "sections_read": "public repository README product introduction, Key Features and Quick Start, lines 211-237",
+      "confirmed": "No-code builder, email notifications, embeds, webhook integrations, self-hosting deployment links. No private code or login required.",
+      "published_or_version": "current main README; no source commit date established",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://formbuilder.online/docs/license/",
+      "at_utc": "2026-11-21T06:28:43Z",
+      "status": "opened via official documentation link; minimal extract",
+      "sections_read": "official page title identifying The MIT License (MIT)",
+      "confirmed": "Official documentation identifies an MIT license page. The returned extract did not expose the full license text.",
+      "published_or_version": "live undated license page",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://surveyjs.io/php-form-builder",
+      "at_utc": "2026-11-21T06:29:04Z",
+      "status": "opened again for focused verification; counted separately",
+      "sections_read": "Form Generation, Rendering, Submission and Processing; Form Management UI; PHP demo, lines 126-222",
+      "confirmed": "Visual editor yields JSON; server stores definitions, serves forms and accepts answers through PHP requests; integrator implements API endpoints. Demo uses React/PHP/PostgreSQL.",
+      "published_or_version": "live undated integration guide; no historic version established",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.opnform.com/deployment/cloud-vs-self-hosting",
+      "at_utc": "2026-11-21T06:29:04Z",
+      "status": "opened via public repository documentation link",
+      "sections_read": "comparison and self-hosting license explanation, lines 72-100",
+      "confirmed": "Core self-hosting does not require Enterprise; current free instance limit is two users; additional users and some advanced workspace features require Enterprise. This is not evidence of a response limit.",
+      "published_or_version": "live undated deployment comparison",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/search?q=formBuilder+onSave&type=code",
+      "at_utc": "2026-11-21T06:31:05Z",
+      "status": "failed: DisabledError",
+      "sections_read": "none",
+      "confirmed": "Explicit anonymous public code search attempted but unavailable. Existing code-through-web discovery retained.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+      "at_utc": "2026-11-21T06:34:21Z",
+      "status": "opened; public article body available despite generic authorization banner",
+      "sections_read": "Prerequisites, Steps to grant guest access, authentication comparison and licensing FAQ, lines 32-134; last-updated line 202",
+      "confirmed": "Canvas guest access requires Microsoft Entra authentication and guest provisioning; license requirements apply to canvas users. The page distinguishes authenticated canvas apps from anonymous-capable Power Pages. It does not establish that every respondent personally creates a new account.",
+      "published_or_version": "Microsoft Learn last updated 2026-10-08; canvas guest-access configuration",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://formtools.org/",
+      "at_utc": "2026-11-21T06:34:21Z",
+      "status": "opened",
+      "sections_read": "PHP/MySQL introduction, form creation, account controls, API and Form Builder module, lines 0-34 and 50-54",
+      "confirmed": "Free self-hosted PHP/MySQL application, no-programming form creation, server-data/API integration and Form Builder publication. Earlier frozen official tutorial remains evidence for administrator authoring and email settings.",
+      "published_or_version": "undated live homepage; footer date is not publication date",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+      "at_utc": "2026-11-21T06:34:21Z",
+      "status": "opened",
+      "sections_read": "About FORM, symbolic manipulation and programming model, lines 0-7; sequential and parallel variants, lines 24-33",
+      "confirmed": "FORM processes large algebraic expressions using a specialized symbolic-manipulation programming model. Its documented working objects and operations differ from client-authored customer-input forms.",
+      "published_or_version": "undated official About FORM page",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b",
+      "at_utc": "2026-11-21T06:34:40Z",
+      "status": "opened; public article body available despite generic authorization banner",
+      "sections_read": "B2B introduction, identity reuse, email passcode fallback, invitation workflow and identity providers, lines 31-45, 69-81 and 106-113; last-updated line 142",
+      "confirmed": "B2B can use existing work/social identities; email one-time passcode is enabled by default unless disabled. The documented create-Microsoft-account fallback applies when passcodes are disabled. Mandatory authentication therefore does not alone prove mandatory creation of a new account by the respondent.",
+      "published_or_version": "Microsoft Learn last updated 2026-04-25; workforce-tenant B2B collaboration",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/entra/external-id/b2b-quickstart-add-guest-users-portal",
+      "at_utc": "2026-11-21T06:34:40Z",
+      "status": "opened; public article body available despite generic authorization banner",
+      "sections_read": "Prerequisites, invitation and acceptance workflow, lines 42-96; last-updated line 128",
+      "confirmed": "An administrator invites the external email identity, and a guest user object is automatically added to the tenant. The administrator-created guest object must be distinguished from a respondent being required to register a new account.",
+      "published_or_version": "Microsoft Learn last updated 2026-04-24; external guest invitation quickstart",
+      "date_status": "post_decision",
+      "post_decision": true
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Form Tools with Form Builder",
+      "url": "https://www.formtools.org/",
+      "reason": "Free PHP/MySQL application with client-editable published forms and server-side submission storage is the closest documented fit to the preferred stack.",
+      "application_scope": "Whole form authoring/collection application on the client's server; company staff use the documented administrator builder workflow, with management-app/PDF integration supplied by the author.",
+      "constraints_or_caveat": "Form creation tutorial requires administrator access. Do not assume ordinary client-data accounts have form-design rights. Exact host/runtime compatibility and integration were not executed.",
+      "evidence_opened": [
+        "https://docs.formtools.org/userdoc/getting_started/",
+        "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Official live docs have no verified publication date; Form Tools 2 references and 2018 footer are not a historical snapshot.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/",
+          "version_scope": "documented administrator Form Builder workflow",
+          "reason": "Fields and arrangement can be edited and a form published by company staff given administrator access."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/",
+          "version_scope": "self-hosted Form Builder",
+          "reason": "Publishing creates a named form file on the installation's site."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "self-hosted PHP/MySQL",
+          "reason": "Submissions are stored in database tables; this meets the server-data branch. Built-in email is additionally shown by the publishing tutorial."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "self-hosted application choice only",
+          "reason": "The conditional third-party online-service option is not selected; there is no proposed external service signup requirement. Company staff administration accounts remain permitted."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "documented GNU Public License distribution",
+          "reason": "Free software satisfies the preferred cost branch; unspecified infrastructure costs are not invented as licensing charges."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "pass",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass (conditional online-service branch not selected)",
+        "M5": "pass"
+      },
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED"
+    },
+    {
+      "rank": 2,
+      "name": "jQuery formBuilder with formRender",
+      "url": "https://formbuilder.online/docs/",
+      "reason": "An MIT-licensed visual designer and renderer can be embedded in the existing application, with documented definition and response APIs that map to the author's PHP backend.",
+      "application_scope": "Form-authoring and form-rendering components; author supplies PHP definition storage and answer-processing endpoints, PDF creation and email.",
+      "constraints_or_caveat": "Entirely client-side components. The onSave example uses session storage and must be changed to a server request; server validation, permissions and durable storage are application work.",
+      "evidence_opened": [
+        "https://formbuilder.online/docs/",
+        "https://formbuilder.online/docs/formBuilder/options/onSave/",
+        "https://formbuilder.online/docs/formRender/actions/userData/",
+        "https://formbuilder.online/docs/license/"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Opened documentation is undated. Separate homepage search snippet names a 2026-11-17 release; no 2025 compatibility or feature timing is asserted.",
+      "form": "library",
+      "contribution": "part",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "pass",
+          "evidence_url": "https://formbuilder.online/docs/",
+          "version_scope": "formBuilder plus formRender documented public API",
+          "reason": "A visual editor allows staff to author and revise definitions; formRender displays their result."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "pass",
+          "evidence_url": "https://formbuilder.online/docs/formBuilder/options/onSave/",
+          "version_scope": "proposed onSave-to-PHP integration",
+          "reason": "onSave exposes serialized definition data; the proposed mapping sends it to the client's PHP persistence endpoint. The library alone does not supply durable server storage."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "pass",
+          "evidence_url": "https://formbuilder.online/docs/formRender/actions/userData/",
+          "version_scope": "proposed userData AJAX POST integration",
+          "reason": "Official example serializes filled response data for posting to a server URL; author's endpoint performs validation/storage and subsequent email."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "pass",
+          "evidence_url": "https://formbuilder.online/docs/",
+          "version_scope": "embedded self-hosted components only",
+          "reason": "No external hosted service is proposed. Respondent account policy is under the existing application's control; no staff-account prohibition is inferred."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "pass",
+          "evidence_url": "https://formbuilder.online/docs/license/",
+          "version_scope": "official MIT license page",
+          "reason": "Official license title identifies MIT; no library license purchase is proposed."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "pass",
+        "M2": "pass with explicit backend mapping",
+        "M3": "pass with explicit backend mapping",
+        "M4": "pass (hosted-service condition not triggered)",
+        "M5": "pass"
+      },
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER",
+      "transfer_mapping": {
+        "source": "Browser designer and renderer interfaces",
+        "target": "Existing PHP management application",
+        "connection_work": [
+          "POST onSave formData to a PHP endpoint and persist it by form/version ID.",
+          "Load stored definitions for editing and for rendering.",
+          "POST serialized userData to the application's response endpoint, validate it, store it and run the existing PDF/email flow."
+        ],
+        "non_application": "The library is not itself a backend, email service or automatic durable-storage implementation.",
+        "failure_conditions": [
+          "Copying only the browser session-storage example fails the server-storage requirement.",
+          "Without the receiving endpoints and field validation, the component integration is incomplete."
+        ]
+      }
+    },
+    {
+      "rank": 3,
+      "name": "SurveyJS Survey Creator with Form Library",
+      "url": "https://surveyjs.io/php-form-builder",
+      "reason": "A documented visual-authoring-to-PHP workflow covers saved form definitions and submitted answers, but the designer is paid and the user's acceptable one-off budget is unspecified.",
+      "application_scope": "JavaScript designer and renderer inside the management application; PHP backend uses the documented JSON definition and submission workflow.",
+      "constraints_or_caveat": "Do not confuse the free renderer with the paid Creator. Current Basic price observed at US$559 once per developer; 2025 price and user's affordability threshold are unknown. Backend endpoints remain developer work.",
+      "evidence_opened": [
+        "https://surveyjs.io/php-form-builder",
+        "https://surveyjs.io/pricing"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live undated documentation and price page; observed current price is not historical evidence for the question date.",
+      "form": "library",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "pass",
+          "evidence_url": "https://surveyjs.io/php-form-builder",
+          "version_scope": "documented Creator plus Form Library PHP architecture",
+          "reason": "Visual form-authoring UI generates definitions and supports changing them through the application's management interface."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "pass",
+          "evidence_url": "https://surveyjs.io/php-form-builder",
+          "version_scope": "documented PHP backend integration",
+          "reason": "The guide explains storing JSON definitions in the application's database and retrieving them for rendering."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "pass",
+          "evidence_url": "https://surveyjs.io/php-form-builder",
+          "version_scope": "documented PHP submission integration",
+          "reason": "JSON responses are posted to PHP for validation and business processing; the author can then perform PDF/email handling."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "pass",
+          "evidence_url": "https://surveyjs.io/php-form-builder",
+          "version_scope": "self-hosted integration only",
+          "reason": "The proposed application uses its own PHP backend, not the optional hosted-service branch; an external respondent service account is not part of this configuration."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "unknown",
+          "evidence_url": "https://surveyjs.io/pricing",
+          "version_scope": "current Basic perpetual license; historical price unknown",
+          "reason": "One-off developer licensing is documented, but the question gives no numeric definition of reasonable. Need acceptance of current quoted cost before deciding overall suitability."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "pass",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass (hosted-service condition not triggered)",
+        "M5": "unknown"
+      },
+      "T": "not_needed",
+      "label": "INSUFFICIENT",
+      "additional_confirmation": {
+        "question": "Does the currently quoted one-off Creator license fit the user's reasonable-cost ceiling?",
+        "if_yes": "DIRECT_DOCUMENTED for the described functional integration, still documentation-only.",
+        "if_no": "Exclude this paid configuration on the cost requirement; free Form Library alone does not supply the requested visual authoring."
+      }
+    },
+    {
+      "rank": 4,
+      "name": "OpnForm",
+      "url": "https://opnform.com/",
+      "reason": "A complete no-code form application with email and webhooks is plausible, but hosted respondent access and the required account/integration plan need confirmation.",
+      "application_scope": "Whole form application, offered as hosted service or self-hosted installation; evaluated as an alternative to embedding a library.",
+      "constraints_or_caveat": "Inspected sources do not explicitly confirm no respondent signup for the selected hosted configuration. Current free self-hosting is limited to two instance users; more users or certain advanced features require Enterprise pricing not retrieved.",
+      "evidence_opened": [
+        "https://opnform.com/",
+        "https://github.com/OpnForm/OpnForm",
+        "https://docs.opnform.com/deployment/cloud-vs-self-hosting"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live homepage, current public README and deployment comparison have no verified publication date or pre-question snapshot.",
+      "form": "mixed",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "pass",
+          "evidence_url": "https://github.com/OpnForm/OpnForm",
+          "version_scope": "current no-code application description",
+          "reason": "Repository explicitly advertises a no-code builder with forms and embeds."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "pass",
+          "evidence_url": "https://opnform.com/",
+          "version_scope": "hosted or self-hosted application",
+          "reason": "Both hosted and on-premise deployment choices are documented, matching the allowed storage locations."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "unknown",
+          "evidence_url": "https://github.com/OpnForm/OpnForm",
+          "version_scope": "exact chosen cloud/self-hosted plan not established",
+          "reason": "Email and webhook integrations are documented at product level; required plan, exact payload delivery and destination configuration were not verified."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "unknown",
+          "evidence_url": "https://opnform.com/",
+          "version_scope": "hosted public-link or embedded form configuration",
+          "reason": "Sharing and embedding are advertised, but explicit no-account respondent submission was not established from the inspected pages. No contrary requirement was found."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "unknown",
+          "evidence_url": "https://docs.opnform.com/deployment/cloud-vs-self-hosting",
+          "version_scope": "current two-user free self-hosted tier; Enterprise beyond it",
+          "reason": "Core free tier exists; the necessary staff count and integration feature entitlement are unspecified, and paid quote/modesty cannot be assessed."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "pass",
+        "M2": "pass",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown"
+      },
+      "T": "not_needed",
+      "label": "INSUFFICIENT",
+      "additional_confirmation": {
+        "question": "Can the selected deployment accept a logged-out respondent and deliver complete response data to the management server within the free tier or an acceptable quoted plan?",
+        "if_yes": "Upgrade to DIRECT_DOCUMENTED after obtaining official configuration/plan evidence.",
+        "if_no": "Mandatory respondent signup excludes the hosted configuration; missing data delivery or unaffordable required plan excludes that configuration."
+      }
+    }
+  ],
+  "rejected_candidates": [],
+  "raw_response": "I would start with **Form Tools plus its Form Builder module** for a PHP application. If you want to put the designer directly inside your existing management application, **jQuery formBuilder with formRender** is the strongest free component option from this search. **SurveyJS Creator plus Form Library** provides another well-documented PHP integration path, but the visual designer is a paid product.\n\nYour requirement is for company staff to make and revise forms. You have already offered to handle database processing, PDF generation and email after receiving structured data, so a designer/renderer library can be useful even when you still supply its server endpoints. PHP is a preference, and the online-service alternative must allow respondents to answer without first creating an account.\n\n### 1. Form Tools + Form Builder — first PHP application to evaluate\n\n[Form Tools](https://www.formtools.org/) is a self-hosted PHP/MySQL application. Its [getting-started documentation](https://docs.formtools.org/userdoc/getting_started/) describes a bundled builder that creates forms without programming, saves submissions in database tables, and supports PHP API integration. The same documentation states that the software is free under the GNU Public License.\n\nThe [publishing tutorial](https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/) shows editing fields and page arrangements, setting email notifications, and publishing a form file on your site. That is a close match to letting the company maintain its own forms while keeping the results on its server.\n\nSet up a dedicated installation and give the appropriate company staff its form-administration access. The documented creation workflow uses an administrator account; the ordinary “client” accounts described elsewhere should not be assumed to have identical editing rights. Connect the resulting records to your management database and retain your existing PDF/email processing if needed.\n\n**Assessment:** Directly documented for the proposed PHP application configuration. I have not installed it or tested compatibility with your unspecified PHP/MySQL versions.\n\n### 2. jQuery formBuilder + formRender — free editor embedded in your application\n\nThe [official introduction](https://formbuilder.online/docs/) describes a browser-side drag-and-drop designer and a separate renderer, explicitly intended for an administration area and a public-facing form page. The project provides an [MIT license page](https://formbuilder.online/docs/license/).\n\nThe integration has two distinct data flows. Use the [onSave callback](https://formbuilder.online/docs/formBuilder/options/onSave/) to obtain a form definition, then send it to your PHP endpoint and store it. Later, load that definition into formRender. For completed responses, the [userData documentation](https://formbuilder.online/docs/formRender/actions/userData/) supplies an AJAX POST example that sends serialized answers to a server.\n\nThis supplies the authoring and rendering components; your application must implement persistence, submission validation and processing. The onSave example itself uses browser session storage, so copying that example alone would not satisfy your server-storage requirement. Replace that storage step with your own backend request. Keep the designer restricted to company staff and expose the respondent page according to your application's access policy.\n\n**Assessment:** A concrete, conditional component integration. It is useful precisely because you already expect to write the receiving PHP code; it is not a ready-configured forms backend.\n\n### 3. SurveyJS Creator + Form Library — paid designer with a documented PHP path\n\nThe [PHP integration guide](https://surveyjs.io/php-form-builder) documents visual authoring, saving the generated JSON definitions in your database, rendering them, and posting answers to PHP. It also points to a PHP demonstration application. You still implement the application's endpoints and business logic, then generate PDFs and send reception email on the server as you proposed.\n\nThe distinction between the components matters: the [pricing page](https://surveyjs.io/pricing) puts Form Library in the free tier and Survey Creator in the paid Basic tier. At retrieval, Basic is listed at **US$559 per developer once**, with the first 12 months of updates/support and a perpetual license. That is an observed current price, not a verified February 2025 price. The builder cannot be treated as free merely because its source is accessible.\n\n**Assessment:** The functional integration is documented. Overall suitability remains unconfirmed because “reasonable one-off cost” has no numeric ceiling in the question. If this price is acceptable, the cost concern clears; if it exceeds your ceiling, choose one of the free options.\n\n### 4. OpnForm — another complete application worth checking\n\n[OpnForm's public repository](https://github.com/OpnForm/OpnForm) describes a no-code builder, email notifications, embeds and webhook integrations. Its [website](https://opnform.com/) offers both managed hosting and self-hosting. This could reduce the amount of authoring-interface work you implement.\n\nThere are two unresolved details before I would put it ahead of the options above. Public links and embeds are advertised, but the inspected pages do not explicitly prove the no-signup respondent experience for the chosen hosted configuration. Also, the [self-hosting comparison](https://docs.opnform.com/deployment/cloud-vs-self-hosting) currently says core functionality is free within a two-user instance limit, with more users and some advanced features requiring an Enterprise license. That is an administrative-user limit, not evidence of a two-response limit. The exact account interpretation and any paid quote need checking against your deployment.\n\n**Assessment:** Retain for evaluation, with insufficient evidence for a complete recommendation. Confirm an anonymous respondent can submit and that the required integration/account configuration fits the free tier or an acceptable quoted price. A mandatory respondent account would exclude its hosted configuration; satisfactory answers would make it a stronger option.\n\nAll findings above are documentation-based. The sources are live pages retrieved after the question's date; most do not state their publication date. I have not treated current features or prices as proof of what was available on 13 February 2025.",
+  "checks": [
+    {
+      "check_id": "CK-207086c27817",
+      "name": "Microsoft Power Apps canvas app form (external guest access)",
+      "url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+      "decision": "keep",
+      "reason": "Keep only as an unresolved candidate, not an endorsed recommendation. Canvas apps require Microsoft Entra guest authentication and licensing, but the user's literal prohibition is respondents having to create an account first, not all authentication. Linked Microsoft B2B documentation permits existing identities and default email passcodes, while administrators create guest objects. Therefore a universal new-account requirement is not established. Verify the specific canvas browser redemption flow, form-authoring/data integration and acceptable licensing cost; a configuration that forces respondent account creation must be excluded.",
+      "evidence_urls": [
+        "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+        "https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b",
+        "https://learn.microsoft.com/en-us/entra/external-id/b2b-quickstart-add-guest-users-portal"
+      ],
+      "verification_status": "Official current documentation inspected; no runtime test. Decisive respondent workflow and costs remain unresolved. Sources are explicitly post-decision and not evidence of the 2025 configuration.",
+      "label": "INSUFFICIENT",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+          "version_scope": "canvas app with external guest access",
+          "reason": "The page describes low-code business-process applications, but does not verify the exact company-editable form-authoring arrangement proposed for this management application."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+          "version_scope": "hosted canvas application",
+          "reason": "Hosted application sharing is documented, but this access-focused page does not establish the proposed form-definition persistence workflow."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+          "version_scope": "canvas connectors and guest data permissions",
+          "reason": "Connectors and guest data-source access are documented, but actual submission to the management server or the alternative required email destinations has not been verified."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b",
+          "version_scope": "canvas browser access through Entra B2B, with existing identity or email-passcode configuration",
+          "reason": "Authentication is required, but B2B can reuse identities or use email passcodes. Admin-provisioned guest objects do not establish a mandatory respondent signup. Confirm the selected canvas flow does not force new-account creation."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/share-app-guests",
+          "version_scope": "canvas guest licensing",
+          "reason": "Guest license requirements are documented; exact plan cost, respondent volume and the user's modest-cost ceiling are unknown. This does not justify a definitive cost failure."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "unknown",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown"
+      },
+      "T": "unknown",
+      "additional_confirmation": {
+        "question": "Can a newly invited booking respondent use this specific canvas browser app with an existing identity or email passcode, without creating a new account, and does the complete authoring/submission configuration have an acceptable license cost?",
+        "if_yes": "The account condition can pass; verify the remaining authoring, storage, data-delivery and cost requirements before DIRECT_DOCUMENTED.",
+        "if_no": "If respondent-created accounts are required, exclude that configuration as SURFACE_OR_CONSTRAINT_MISMATCH. Reject an unaffordable required license when the user's ceiling is established."
+      }
+    },
+    {
+      "check_id": "CK-c6d7a90275ea",
+      "name": "Form Tools",
+      "url": "https://formtools.org/",
+      "decision": "keep",
+      "reason": "Official documentation supports a free PHP/MySQL application with a no-programming Form Builder, publication on the client's site and server-side submission storage. The company can use the documented administrator workflow to edit forms, while the existing application handles database/PDF/email integration. No decisive stated-condition violation is documented.",
+      "evidence_urls": [
+        "https://formtools.org/",
+        "https://docs.formtools.org/userdoc/getting_started/",
+        "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/"
+      ],
+      "verification_status": "Official documentation confirmed; uses frozen discovery evidence plus a fresh homepage check. Administrator access is part of the proposed setup; host compatibility and integration were not executed.",
+      "label": "DIRECT_DOCUMENTED",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/",
+          "version_scope": "documented administrator Form Builder workflow",
+          "reason": "Fields and arrangement can be edited and a form published by company staff given administrator access."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/modules/form_builder/usage/tutorials/publishing_first_form/",
+          "version_scope": "self-hosted Form Builder",
+          "reason": "Publishing creates a named form file on the installation's site."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "self-hosted PHP/MySQL",
+          "reason": "Submissions are stored in database tables; this meets the server-data branch. Built-in email is additionally shown by the publishing tutorial."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "self-hosted application choice only",
+          "reason": "The conditional third-party online-service option is not selected; there is no proposed external service signup requirement. Company staff administration accounts remain permitted."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "pass",
+          "evidence_url": "https://docs.formtools.org/userdoc/getting_started/",
+          "version_scope": "documented GNU Public License distribution",
+          "reason": "Free software satisfies the preferred cost branch; unspecified infrastructure costs are not invented as licensing charges."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "pass",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass (conditional online-service branch not selected)",
+        "M5": "pass"
+      },
+      "T": "not_needed"
+    },
+    {
+      "check_id": "CK-b8d31a88e0b8",
+      "name": "FORM symbolic manipulation system",
+      "url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+      "decision": "exclude",
+      "reason": "The official page identifies FORM as a symbolic manipulation system whose programming model processes large algebraic expressions. Those objects and operations are unrelated to company staff designing booking/customer-input forms. This is a documented operating-surface mismatch, not an inference that every unmentioned feature is unsupported.",
+      "evidence_urls": [
+        "https://www.nikhef.nl/~form/aboutform/aboutform.html"
+      ],
+      "verification_status": "Official product-purpose documentation confirms the mismatch; no execution required. Absence of particular web-form features is not treated as explicit unsupported evidence.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "company client can create and change forms",
+          "polarity": "positive",
+          "source_location": "original / Looking for / first sentence",
+          "status": "unknown",
+          "evidence_url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+          "version_scope": "FORM symbolic manipulation system",
+          "reason": "No explicit support/unsupported statement for company-editable customer forms is given. Exclusion instead follows the positively documented mathematical-expression operating surface."
+        },
+        {
+          "id": "M2",
+          "target": "form definitions can be saved on the client's server or online",
+          "polarity": "positive disjunction",
+          "source_location": "original / Looking for / final sentence",
+          "status": "unknown",
+          "evidence_url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+          "version_scope": "algebraic expressions and disk-based formula processing",
+          "reason": "Disk-based formulas are not evidence of persisted booking-form definitions; no direct required-storage claim is established."
+        },
+        {
+          "id": "M3",
+          "target": "answers are submitted to the server OR emailed to the server and client",
+          "polarity": "positive disjunction",
+          "source_location": "original / The data / two alternatives",
+          "status": "unknown",
+          "evidence_url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+          "version_scope": "symbolic-algebra computation",
+          "reason": "The document does not establish customer response submission or the specified email route."
+        },
+        {
+          "id": "M4",
+          "target": "respondents to the online-service alternative do not first create an account",
+          "polarity": "negative; conditional on online-service choice",
+          "source_location": "original / Looking for / Online third parenthesis",
+          "status": "unknown",
+          "evidence_url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+          "version_scope": "no applicable hosted form configuration documented",
+          "reason": "No hosted customer-form access configuration is documented. Do not manufacture an authentication claim."
+        },
+        {
+          "id": "M5",
+          "target": "paid cost is reasonable once, or modest under licensing; free is preferred",
+          "polarity": "positive; conditional paid-cost ceiling is qualitative",
+          "source_location": "original / The cost / three lines",
+          "status": "unknown",
+          "evidence_url": "https://www.nikhef.nl/~form/aboutform/aboutform.html",
+          "version_scope": "cost not evaluated on the About page",
+          "reason": "The cited page does not establish a relevant paid/free form-generator configuration; cost cannot repair the operating-surface mismatch."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "unknown",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown"
+      },
+      "T": "analogy_only"
+    }
+  ],
+  "budget": {
+    "search_queries": 7,
+    "opened_pages": 20,
+    "candidate_count": 4,
+    "stage1_search_queries": 7,
+    "stage1_opened_pages": 15,
+    "maximum_search_queries": 12,
+    "maximum_opened_pages": 20,
+    "maximum_candidates": 10,
+    "remaining_search_queries": 5,
+    "remaining_opened_pages": 0
+  },
+  "limitations": [
+    "Only the two allowed local input files and the permitted original-question command were used. No helper source, repository instructions/history, gold, metadata, other questions or other runs were read.",
+    "Searches and document attempts were public and unauthenticated; explicit GitHub repository and code searches were blocked. Code-through-web and openly accessible official documentation/repository evidence were used without login, paid API, installation or network bypass.",
+    "No excluded question thread, copy or question-quoting page was observed in returned snippets; exposures is therefore empty.",
+    "Most opened sources are undated live pages. Publication date unknown is preserved instead of deriving a date from copyright years or crawl dates. A clearly post-decision formBuilder release appeared only in a search snippet and was not projected back to 2025.",
+    "Opening attempts include failed requests and the repeated PHP guide verification. Original-question hash-verified retrieval is outside the research budget.",
+    "Evidence is documentation-based, not installation, runtime testing, integration measurement or a guarantee of compatibility with unspecified versions.",
+    "Free versus paid is separated from the user's qualitative cost ceiling. No numeric threshold or required maintenance cadence was invented.",
+    "Discovery candidates, rankings, raw_response and these search/open prefixes are frozen before receiving check candidates."
+  ],
+  "execution_status": "completed"
+}

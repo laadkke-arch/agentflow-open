@@ -25,6 +25,16 @@ def main():
     nscope=load('analysis/n-scope.json',{})
     checks={q['qid']:q['checks'] for q in load('gold/checks.json')['questions']}
     reason_audit={r['row_id']:r for r in records(load('judging/reason-audit.json'))}
+    probe_truth={}
+    for q,probes in checks.items():
+        for i,g in enumerate(probes):
+            if not g['eligible_current_strict_N_denominator']:continue
+            ids=[row_id(q,c,'check',i) for c in ['A','P']]
+            values=[str(reason_audit[rid]['frozen_violation_supported']).lower() for rid in ids]
+            assert all(v in ['true','false','unknown'] for v in values),(q,values)
+            status='supported' if values==['true','true'] else 'unsupported' if values==['false','false'] else 'unclear' if 'unknown' in values else 'inconsistent'
+            probe_truth[q]={'qid':q,'candidate':g['name'],'status':status,'row_ids':ids,
+                            'auditor_truth_values':values,'source_files':[reason_audit[rid]['source_file'] for rid in ids]}
     claims=records(load('claims/CLAIMS.json'));sample=load('claims/SAMPLE.json')['claims']
     assert {c['id'] for c in claims}=={c['id'] for c in sample} and len(claims)==len(sample)
     claim_groups=collections.defaultdict(list);pool_groups=collections.defaultdict(list);uncertain_groups=collections.defaultdict(list)
@@ -86,6 +96,8 @@ def main():
         for prefix in ['positive','strict_N','unrelated']:
             obs[prefix+'_denominator']=0;obs[prefix+'_excluded']=0
         obs['strict_N_correct_reject']=0;obs['positive_grade2_denominator']=0;obs['positive_grade2_excluded']=0
+        obs['auditor_confirmed_N_denominator']=0;obs['auditor_confirmed_N_correct_reject']=0;obs['auditor_confirmed_N_excluded']=0
+        obs['strict_N_audit_truth']=probe_truth.get(q,{}).get('status')
         obs['positive_kept_uncertain_by_primary']=0
         obs['strict_N_origin']=None
         expected_ids=[x['check_id'] for x in checks[q]];assert [x['check_id'] for x in run['checks']]==expected_ids
@@ -102,6 +114,10 @@ def main():
                 assert rid in reason_audit,('missing blind reason audit',rid)
                 correct_reason=reason_audit[rid]['verdict']=='correct'
                 obs['strict_N_correct_reject']+=int(excluded and correct_reason)
+                confirmed=probe_truth[q]['status']=='supported'
+                obs['auditor_confirmed_N_denominator']+=int(confirmed)
+                obs['auditor_confirmed_N_correct_reject']+=int(confirmed and excluded and correct_reason)
+                obs['auditor_confirmed_N_excluded']+=int(confirmed and excluded)
             if roles['positive'] and str(g['grade'])=='2':
                 obs['positive_grade2_denominator']+=1;obs['positive_grade2_excluded']+=int(excluded)
             # Independently judged uncertainty is reported separately from actual rejection.
@@ -138,6 +154,9 @@ def main():
                         jid+'_first_related_rank':min([mapping[rid]['rank'] for rid in disc_ids if str(jrows[rid]['relevance'])=='1'] or [11])})
         observations.append(obs)
     save('analysis/per_question.json',observations);save('analysis/candidate-observations.json',candidate_rows);save('analysis/check-observations.json',check_rows)
+    save('analysis/probe-truth-sensitivity.json',{'probes':list(probe_truth.values()),
+         'counts':dict(collections.Counter(r['status'] for r in probe_truth.values())),
+         'limits':'Exploratory sensitivity added after a T023 execution raised a signup/authentication scope concern. Frozen primary denominators and H1 thresholds remain unchanged. The supported-only subset requires both condition-hidden reason rows to affirm the frozen violation; this is internal agreement, not independent human truth.'})
     columns=list(dict.fromkeys(k for row in observations for k in row))
     with (ROOT/'analysis/per_question.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=columns);writer.writeheader();writer.writerows(observations)
