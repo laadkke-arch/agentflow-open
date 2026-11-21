@@ -43,3 +43,9 @@
 ## 현재 수집 상태
 
 이 커밋 전에는 저장소 기준·고정 선행입력·호스트 접근만 읽었고 새 외부 사례/문헌 수집은 시작하지 않았다. 실제 질의/skip는 SEARCH_LOG.json과 evidence/<lane>/selection.json에, 추가 질의는 UTC·purpose·result_note와 함께 기록한다. 이 문서의 계획을 실제 실행 횟수라고 보고하지 않는다.
+
+## 실행 뒤 추가한 관측 기록 — 사전 계획 변경 아님
+
+수집 원장40건은 a16/b3/c16/e5이다. ADR 목표4–6에는 미달했다. d의 고정013후보는 외부 발견 근거가 없어 새로운 사건으로 넣지 않았고, f의 실증 자료는 개별 월별 사건 대신 방법·비교 문헌으로 사용했다. 최종40관측 중 월·결과를 갖춘 최소 사건18, 좁은 인과 양성4이며 나머지를 완성 사례로 승격하지 않았다. 이 차이가40적격사례 수량 조건의 미충족 이유다.
+
+건너뛴 후보와 이유는 `evidence/blogs/selection.json`, `evidence/prs/selection.json`, `evidence/root/sources.json#excluded`에 있다. root에서는 PrestaShop ADR14/18(내부 이행 단계), Hardcount ADR007(외부 해법 실제 채택 없음), OpenedX devstack(취소된 내부 프로토타입), 원문을 얻지 못한 학생 ADR을 제외했다. B01·B15는 날짜 보강 후에도 미상으로 남겼다. 현재 검색40개는 각 lane의 원 반환과 통합 SEARCH_LOG에 남겼다. 모든 기록의 건수를 검색엔진의 전체 후보 수로 해석하지 않는다.

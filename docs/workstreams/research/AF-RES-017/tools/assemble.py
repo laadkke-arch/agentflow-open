@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse
 
 p=Path(__file__).resolve().parents[1]
-args=argparse.ArgumentParser();args.add_argument('--methods',action='store_true');args=args.parse_args()
+args=argparse.ArgumentParser();args.add_argument('--methods',action='store_true');args.add_argument('--sources-only',action='store_true');args=args.parse_args()
 cases=[];sources=[];excluded=[];logs=[]
 for lane in ['blogs','prs','root']+(['methods'] if args.methods else []):
     d=p/'evidence'/lane
@@ -18,7 +18,10 @@ for lane in ['blogs','prs','root']+(['methods'] if args.methods else []):
 assert len({c['id'] for c in cases})==len(cases)
 assert len({s['id'] for s in sources})==len(sources)
 for c in cases:c.setdefault('coder_b',None)
-(p/'cases/CASES.json').write_text(json.dumps(cases,ensure_ascii=False,indent=2)+'\n')
+if not args.sources_only:
+    if (p/'coding/coder-a.json').exists():raise SystemExit('Coder A is frozen: use --sources-only; do not overwrite normalized/coded cases.')
+    (p/'cases/CASES.json').write_text(json.dumps(cases,ensure_ascii=False,indent=2)+'\n')
 (p/'sources.json').write_text(json.dumps({'sources':sources,'excluded':excluded,'note':'Observed decision episodes and controls; eligibility is explicit and separate.'},ensure_ascii=False,indent=2)+'\n')
+if (p/'evidence/root/current-search.json').exists():logs.append({'lane':'root-current-search','records':json.loads((p/'evidence/root/current-search.json').read_text())})
 (p/'SEARCH_LOG.json').write_text(json.dumps(logs,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps({'cases':len(cases),'sources':len(sources),'excluded':len(excluded)},ensure_ascii=False))
