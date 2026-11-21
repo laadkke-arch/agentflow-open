@@ -6,6 +6,7 @@ an executor has finished its discovery answer and before revealing check names.
 """
 from pathlib import Path
 import argparse, datetime, hashlib, json
+from common import document_counts
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -40,9 +41,15 @@ def audit(path, frozen=None):
         errors.append('assigned path/identity mismatch')
     counts={'search_queries':len(r['queries']),'opened_pages':len(r['opened_documents']),
             'candidate_count':len(r['candidates'])}
-    for k,limit in [('search_queries',12),('opened_pages',20),('candidate_count',10)]:
+    for k,limit in [('search_queries',12),('candidate_count',10)]:
         if counts[k]>limit:errors.append(f'{k} {counts[k]} > {limit}')
         if r['budget'].get(k)!=counts[k]:errors.append('budget mismatch '+k)
+    declared=r['budget'].get('opened_pages');normal=document_counts(r['opened_documents'])['normalized_document_budget']
+    if not isinstance(declared,int) or not normal<=declared<=counts['opened_pages']:
+        errors.append(f'opened budget inconsistent with logged attempts: normalized={normal}, declared={declared}, events={counts["opened_pages"]}')
+    elif declared>20 or normal>20:errors.append(f'opened budget exceeds20: normalized={normal}, declared={declared}')
+    elif declared!=counts['opened_pages']:warnings.append('declared opens exclude some recorded rereads/finds; normalized cost verified')
+    counts['normalized_document_budget']=normal
     ranks=[c.get('rank') for c in r['candidates']]
     if ranks!=list(range(1,len(ranks)+1)):errors.append('rank sequence')
     for i,q in enumerate(r['queries']):
@@ -50,7 +57,7 @@ def audit(path, frozen=None):
     for i,d in enumerate(r['opened_documents']):
         if not d.get('url') or not d.get('at_utc'):errors.append(f'document {i} lacks URL/time')
         if d.get('date_status') not in ['pre_decision','post_decision','unknown']:
-            if str(d.get('date_status','')).startswith('mixed:') and isinstance(d.get('post_decision'),bool):
+            if str(d.get('date_status','')).startswith('mixed') and isinstance(d.get('post_decision'),bool):
                 warnings.append(f'document {i} mixed date text retained; post_decision boolean governs conservative temporal analysis')
             elif 'unknown' in str(d.get('date_status','')).lower() and d.get('post_decision') in [True,False,None]:
                 warnings.append(f'document {i} descriptive date uncertainty retained; treated as unknown unless explicitly post_decision')

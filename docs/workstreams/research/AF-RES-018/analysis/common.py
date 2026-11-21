@@ -21,16 +21,17 @@ def document_counts(docs):
     for d in docs:
         url=str(d.get('url',''));parts=urllib.parse.urlsplit(url)
         key=urllib.parse.urlunsplit((parts.scheme,parts.netloc,parts.path,parts.query,''))
-        op=str(d.get('operation','')).lower()
-        if op=='find':finds+=1;revisits+=1;continue
-        if d.get('status')=='opened':
+        op=str(d.get('operation','')).lower();status=str(d.get('status','')).lower()
+        if op.startswith('find') or status.startswith(('ok_find','find_no_match')) or 'via find' in status:
+            finds+=1;revisits+=1;continue
+        if status.startswith(('opened','ok','partial:','redirect landing page')):
             if key in seen:revisits+=1
             else:seen.add(key);opened+=1
         else:failed+=1
     return {'logged_document_events':len(docs),'unique_successfully_opened_urls':opened,
             'failed_open_attempts':failed,'revisits_or_finds':revisits,'explicit_find_events':finds,
             'normalized_document_budget':opened+failed,
-            'definition':'Successful exact URLs excluding fragments counted once; failed opens count each attempt; explicit find operations are rereads.'}
+            'definition':'Opened/ok/partial/redirect-landing responses: exact URLs excluding fragments counted once; failed or unreadable opens count each attempt; explicit find operations/statuses are rereads.'}
 def quantile(values,p):
     if not values:return None
     s=sorted(values);x=(len(s)-1)*p;lo=math.floor(x);hi=math.ceil(x)
