@@ -202,3 +202,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T09:03:49.744975+00:00
 
 93/106 responses and279/318 probe judgments are complete. SX08 A/P and N004 P are finalized; N004 A and T059 A are checking probes, T059 P is in discovery. Next: dispatch97 onward. A new first-party mechanism identity audit connects P/SX08’s unresolved Thinkzone lead to the fixed011 generic Markov mechanism; MAP03–04 and analysis/n-scope.json record current-scope static reasoning separately from blind judgments and without changing gold.
+
+## Execution checkpoint — 2026-11-21T09:06:17.676825+00:00
+
+95/106 responses and285/318 probe judgments are complete. SX08 A, N004 A and T059 A are committed in this bundle. T059 P and T054 A/P are active; next dispatch99. For T059, frozen gold includes Java/Python as language entities: explicitly offered implementation languages are matched as components and deduplicated per question, while different library proposals remain separate in the blind candidate pool. No gold expansion is performed.
