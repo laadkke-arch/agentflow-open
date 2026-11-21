@@ -242,3 +242,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 - 실행 위치 /workspace/scratch/17117b2bafff/agentflow-open, 표시 모델 GPT-6 Astra Pro. 다음 첫 행동: 마지막3실행의 발견동결·검사, 정규화와 내부 별도 블라인드 판정, 주장 표집·공식문서 검증.
 
 현재 익명 접근 관측: github.com 200, api.github.com 200, api.stackexchange.com 200, softwarerecs.stackexchange.com 403, news.ycombinator.com 200, aclanthology.org 200, arxiv.org 200, www.nejm.org 403. 원장은 evidence/network-resume3.json. requests 미설치 오류 후 표준 urllib로 관측했으며 설치·우회하지 않았다.
+
+## 실행106/106 완료 — 2026-11-21T12:39:13.655326+00:00
+
+53개 질문쌍의 원 응답106개와 검사318개를 모두 확보했고, 원 응답·후보·검사 전 로그 접두부 무결성 감사를 통과했다. 마지막 P/N001의 날짜 범위 설명은 검사 주입 전 date_status enum과 별도 date_scope로 분리했으며 발견 답·후보는 변경하지 않았다. 새 실행을 반복하지 않고 정규화·독립 블라인드 판정과 주장 추출/표집으로 넘어간다.
