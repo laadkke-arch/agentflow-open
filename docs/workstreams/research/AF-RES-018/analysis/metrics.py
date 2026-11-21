@@ -66,6 +66,9 @@ def groups(pairs):
     out.append(('exclude_changed_adoption_cases','frozen planned sensitivity excluding N004,N005,N010,N020',[q for q in allq if q not in ['N004','N005','N010','N020']]))
     out.append(('exclude_procedural_positive_T054','positive-probe sensitivity without procedural T054',[q for q in allq if q!='T054']))
     out.append(('011_main','original011 main sample30',[q for q in allq if pairs[q]['A']['cohort']=='011' and pairs[q]['A']['source_subset']=='main']))
+    out.append(('calendar_before_2026_06_01','exploratory calendar-date sensitivity: before2026-06-01',[q for q in allq if pairs[q]['A']['question_date']<'2026-06-01']))
+    out.append(('calendar_on_or_after_2026_06_01','exploratory calendar-date sensitivity: on/after2026-06-01',[q for q in allq if pairs[q]['A']['question_date']>='2026-06-01']))
+    out.append(('exclude_recent_011_questions','exploratory: remove4 recent011 questions; do not relabel them as new',[q for q in allq if not(pairs[q]['A']['cohort']=='011' and pairs[q]['A']['question_date']>='2026-06-01')]))
     secondary=next(j['qids'] for j in load('judging/plan.json')['judges'] if j['judge_id']=='secondary')
     out.append(('secondary_common_questions','same20 questions for comparing judging-source order',secondary))
     return out
@@ -126,6 +129,9 @@ def main():
     core=[r['met'] for r in criteria[:3]]
     conclusion='unjudgeable' if any(v is None for v in core) else 'narrow_operational_support' if all(core) else 'unsupported_in_this_setting' if not any(core) else 'mixed_results'
     save('analysis/H1.json',{'criteria':criteria,'point_threshold_status':conclusion,
+                           'C1_ceiling_diagnostic':{'maximum_possible_P_minus_observed_A':None if c1['A'] is None else 1-c1['A'],
+                                                    'threshold_reachable_given_observed_A':None if not c1.get('denominator_A') else 1-Fraction(c1['numerator_A'],c1['denominator_A'])>=Fraction(1,5),
+                                                    'interpretation':'Descriptive ceiling conditional on the observed baseline. Does not relax C1 or assert equality; probe hardness and baseline strength limit attainable improvement.'},
                            'rule':'Registered point thresholds; intervals and judging-source reversals remain material qualifiers. No human review-time claim.'})
     print(json.dumps({'groups':len(groups(pairs)),'metric_rows':len(results),'H1_point_status':conclusion,'criteria':criteria},ensure_ascii=False))
 if __name__=='__main__':main()

@@ -70,6 +70,7 @@ def main():
                                    'historical_N_match':is_n,'current_N_scope':nscope.get(rid),
                                    'temporal_category':temporal_category(candidate),'pool_entity':mp['pool_entity']})
         obs={'condition':c,'qid':q,'cohort':m['cohort'],'source_subset':m['source_subset'],
+             'question_date':m['date'],
              'input_mode':m['input_mode'],'whole_or_part':m['whole_or_part'],'I5':m['I5'],
              'must_present':bool(m['must']),'gold_relevant_count':len(relgold),'retrieved_relevant':len(found),
              'gold_recall':ratio(len(found),len(relgold)),'gold2_count':len(gold2),
