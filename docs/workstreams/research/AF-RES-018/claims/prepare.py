@@ -52,6 +52,7 @@ def combine():
                 raw=load(k['source_file'])['raw_response']
                 assert hashlib.sha256(raw.encode()).hexdigest()==k['raw_response_sha256']
                 assert item.get('source_quote') and item['source_quote'] in raw,('nonliteral extraction',item)
+                assert raw.count(item['source_quote'])==1,('ambiguous quote: expand to the actual candidate context before sampling',item)
                 assert item.get('candidate') and item.get('reference_kind') in ['homepage_only','claim_specific','none'],item
                 assert item.get('claim') and item.get('claim_type') in ['price','license','offline','self_hosting','platform','feature','other'],item
                 packet=packets[item['run_id']]

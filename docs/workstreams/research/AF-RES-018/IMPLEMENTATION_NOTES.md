@@ -31,3 +31,7 @@ The two changes are additive reporting fixes. They do not change the selected qu
 ## 명시 코드검색 시도 감사 — 결과 집계 전
 
 analysis/code_search_audit.py는106개 실행의 실제 질의/열람 기록에서 grep.app 또는 GitHub type=code를 대조한다.105/106개에 명시한 코드검색 시도가 있고 P/SX01은 type=repositories만 있다. 이를 코드검색 성공으로 바꾸거나 뒤늦게 질의를 추가하지 않는다. 주 분석53쌍은 보존하고 explicit_code_search_both 민감도에서 SX01쌍을 제외한다. 결과를 본 뒤 고른 제외가 아니며 기준 C1–C4는 그대로다. 접속 성공·완전한 도구 계측을 입증하는 감사는 아니다.
+
+## 주장 인용 위치의 유일성 — 표집 전
+
+claims/prepare.py와 sample.py에 원 응답 안 source_quote가 정확히 한 번 나타나는지 확인하는 게이트를 추가했다. 동일한 짧은 문구가 여러 후보에 반복되는 경우 raw.find가 잘못된 근처 문맥을 넘길 수 있어 추출자에게 실제 후보 문맥까지 인용구간을 확장하도록 했다. 사실 내용·조건·표집 알고리즘·진위 기준은 바꾸지 않았다. 이는 표집과 진위검증 전에 수행하는 원문 위치 무결성 점검이다.

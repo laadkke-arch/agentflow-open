@@ -9,6 +9,7 @@ for c in pool:
     key=(c['condition'],c['qid'])
     if key not in raw:raw[key]=json.loads((ROOT/'runs'/key[0]/(key[1]+'.json')).read_text())['raw_response']
     assert c['source_quote'] and c['source_quote'] in raw[key],('claim lacks literal response provenance',c)
+    assert raw[key].count(c['source_quote'])==1,('ambiguous source quote must be disambiguated before sampling',c)
     assert c['claim_type'] in ['price','license','offline','self_hosting','platform','feature','other'],c
     fingerprint=(key,c['candidate'].casefold(),' '.join(c['claim'].casefold().split()))
     assert fingerprint not in seen,('duplicate atomic claim',fingerprint)
