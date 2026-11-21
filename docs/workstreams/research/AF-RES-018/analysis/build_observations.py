@@ -86,6 +86,7 @@ def main():
             obs[prefix+'_denominator']=0;obs[prefix+'_excluded']=0
         obs['strict_N_correct_reject']=0;obs['positive_grade2_denominator']=0;obs['positive_grade2_excluded']=0
         obs['positive_kept_uncertain_by_primary']=0
+        obs['strict_N_origin']=None
         expected_ids=[x['check_id'] for x in checks[q]];assert [x['check_id'] for x in run['checks']]==expected_ids
         for i,(check,g) in enumerate(zip(run['checks'],checks[q])):
             rid=row_id(q,c,'check',i);excluded=check_decision(check)=='exclude'
@@ -95,6 +96,8 @@ def main():
                 obs[role+'_denominator']+=int(eligible);obs[role+'_excluded']+=int(eligible and excluded)
             correct_reason=None
             if roles['strict_N']:
+                provenance=g.get('provenance',{})
+                obs['strict_N_origin']='historical011' if provenance.get('near_miss_id') else 'constructed'
                 assert rid in reason_audit,('missing blind reason audit',rid)
                 correct_reason=reason_audit[rid]['verdict']=='correct'
                 obs['strict_N_correct_reject']+=int(excluded and correct_reason)
@@ -105,6 +108,7 @@ def main():
             obs['positive_kept_uncertain_by_primary']+=int(roles['positive'] and not excluded and j['label']=='INSUFFICIENT')
             check_rows.append({'row_id':rid,'condition':c,'qid':q,'check_id':g['check_id'],'candidate':g['name'],
                                'decision':check_decision(check),'frozen_grade':str(g.get('grade','unavailable')),
+                               'strict_N_origin':obs['strict_N_origin'] if roles['strict_N'] else None,
                                **roles,'correct_reason':correct_reason,'primary_relevance':str(j['relevance']),
                                'primary_label':j['label']})
         facts=pool_groups[(c,q)];sampled=claim_groups[(c,q)];vc=collections.Counter(verdict(x['verdict']) for x in sampled)

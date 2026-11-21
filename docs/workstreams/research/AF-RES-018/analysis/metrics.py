@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Calculate registered paired metrics and explicitly named sensitivities."""
-import collections,csv,itertools,json
+import collections,csv,itertools,json,statistics
 from fractions import Fraction
 from common import ROOT,load,save
 from bootstrap import paired_interval
@@ -56,7 +56,8 @@ for judge in ['primary','secondary']:
 def groups(pairs):
     allq=sorted(pairs);out=[('all','all53 questions',allq)]
     for field,values in [('cohort',['011','new']),('input_mode',['original','summary']),
-                         ('whole_or_part',['whole','part']),('must_present',[False,True]),('I5',['absent','present'])]:
+                         ('whole_or_part',['whole','part']),('must_present',[False,True]),('I5',['absent','present']),
+                         ('strict_N_origin',['historical011','constructed'])]:
         for value in values:out.append((f'{field}={value}',f'{field}={value}',[q for q in allq if pairs[q]['A'][field]==value]))
     for cohort,scope,i5,must in itertools.product(['011','new'],['whole','part'],['absent','present'],[False,True]):
         qs=[q for q in allq if (pairs[q]['A']['cohort'],pairs[q]['A']['whole_or_part'],pairs[q]['A']['I5'],pairs[q]['A']['must_present'])==(cohort,scope,i5,must)]
@@ -99,6 +100,15 @@ def main():
                     for c in ['A','P']:r['numerator_'+c]=sum(pairs[q][c][field] for q in selected)
             results.append(r)
     save('analysis/bootstrap_intervals.json',{'seed':18018,'iterations':10000,'difference_direction':'P minus A','rows':results})
+    hit_descriptives=[]
+    for gid,label,qs in groups(pairs):
+        for c in ['A','P']:
+            hit_qids=[q for q in qs if pairs[q][c]['first_known_related_rank_hit_only'] is not None]
+            values=[pairs[q][c]['first_known_related_rank_hit_only'] for q in hit_qids]
+            hit_descriptives.append({'group':gid,'condition':c,'hit_questions':len(values),'group_questions':len(qs),
+                                    'median_rank':statistics.median(values) if values else None,'qids':hit_qids,
+                                    'interpretation':'Condition-specific hit-only descriptive; A/P may contain different questions, so this is not a paired causal contrast.'})
+    save('analysis/hit-only-descriptives.json',hit_descriptives)
     columns=['group','group_label','group_questions','metric','unit','questions','A','P','difference','ci_low','ci_high','numerator_A','denominator_A','numerator_P','denominator_P','valid_replicates','small_stratum']
     with (ROOT/'analysis/metrics.csv').open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=columns,extrasaction='ignore');w.writeheader()

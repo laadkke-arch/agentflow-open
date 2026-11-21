@@ -1,0 +1,991 @@
+{
+  "case_id": "T040",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/PROCEDURE.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/T040.json"
+  ],
+  "started_at_utc": "2026-11-21T05:48:28Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "site:postgresql.org/docs/11 \"SKIP LOCKED\" \"queue\"",
+      "at_utc": "2026-11-21T05:48:35Z",
+      "tool": "system2_search_query",
+      "result_note": "Official PostgreSQL SELECT documentation and versioned resources found; snippets only at this stage."
+    },
+    {
+      "q": "site:docs.aws.amazon.com AWSSimpleQueueService \"exactly-once\" \"visibility\"",
+      "at_utc": "2026-11-21T05:48:35Z",
+      "tool": "system2_search_query",
+      "result_note": "Official SQS descriptions, deduplication identifiers, and visibility semantics found; snippets only."
+    },
+    {
+      "q": "site:docs.celeryq.dev \"acks_late\" \"idempotent\"",
+      "at_utc": "2026-11-21T05:48:35Z",
+      "tool": "system2_search_query",
+      "result_note": "Official versioned Celery tasks and optimization documentation found; snippets only."
+    },
+    {
+      "q": "\"FOR UPDATE SKIP LOCKED\" \"job\"",
+      "at_utc": "2026-11-21T05:48:35Z",
+      "tool": "anonymous_public_code_search: GitHub code-search URL via web open",
+      "result_note": "Unauthenticated code-search attempt blocked with DisabledError; use code-through-web fallback."
+    },
+    {
+      "q": "site:github.com/timgit/pg-boss \"exactly once\" \"SKIP LOCKED\"",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "tool": "system1_search_query (code-through-web)",
+      "result_note": "Found official repository README and database backend source documentation. Fallback after anonymous GitHub code search was blocked."
+    },
+    {
+      "q": "site:rabbitmq.com/tutorials/tutorial-two-python \"acknowledgment\" \"worker\"",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "tool": "system1_search_query",
+      "result_note": "Found official work-queue tutorial; acknowledges redelivery on worker failure and prefetch for variable task durations."
+    },
+    {
+      "q": "site:aws.amazon.com/blogs/aws \"2016\" \"FIFO\" \"deduplication\"",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "tool": "system1_search_query",
+      "result_note": "No matching launch article was exposed in returned results; historical launch date not established."
+    },
+    {
+      "q": "site:s3browser.com \"S3 Browser\" \"files\"",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "tool": "system2_search_query",
+      "result_note": "Official product and release pages identify CS Browser as a Windows S3 file-management client; no excluded question exposure observed."
+    },
+    {
+      "q": "site:docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html \"900\"",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "tool": "system2_search_query",
+      "result_note": "Official Lambda timeout documentation distinguishes the standard 900-second maximum from the Managed Instances exception."
+    },
+    {
+      "q": "site:slurm.schedmd.com/sbatch.html \"requeue\" \"singleton\"",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "tool": "system2_search_query",
+      "result_note": "Official sbatch manual describes no-requeue, its cluster-level override, and singleton dependencies; no-repeat execution is configuration-dependent."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=%22FOR+UPDATE+SKIP+LOCKED%22+%22job%22&type=code",
+      "at_utc": "2026-11-21T05:48:35Z",
+      "status": "failed: DisabledError",
+      "sections_read": "No source content returned.",
+      "confirmed": "Anonymous public code-search attempted; unavailable.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.postgresql.org/docs/11/sql-select.html",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "status": "successful",
+      "sections_read": "SELECT synopsis and version banner, lines 0–52",
+      "confirmed": "Versioned PostgreSQL 11 syntax includes FOR UPDATE and SKIP LOCKED.",
+      "published_or_version": "PostgreSQL 11; exact page revision date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.postgresql.org/docs/11/sql-insert.html",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "status": "successful",
+      "sections_read": "INSERT synopsis and description, lines 0–51",
+      "confirmed": "ON CONFLICT DO NOTHING and RETURNING are available in versioned PostgreSQL 11 syntax.",
+      "published_or_version": "PostgreSQL 11; exact page revision date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "status": "successful",
+      "sections_read": "Entire substantive body, lines 3–9",
+      "confirmed": "FIFO submission deduplication is bounded to a five-minute interval; content hash or explicit deduplication ID is used.",
+      "published_or_version": "Live AWS documentation; publication date not supplied",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "status": "successful",
+      "sections_read": "Introduction and use cases, lines 5–19",
+      "confirmed": "Messages remain in queue while hidden; long tasks require configured or extended visibility timeout; deletion is separate.",
+      "published_or_version": "Live AWS documentation; publication date not supplied",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+      "at_utc": "2026-11-21T05:49:00Z",
+      "status": "successful",
+      "sections_read": "Tasks introduction, acknowledgment semantics and warnings, lines 10–32",
+      "confirmed": "Early acknowledgment is the documented default; late acknowledgment is intended for idempotent tasks, and unacknowledged tasks can be redelivered.",
+      "published_or_version": "Celery 4.2.1; versioned page, exact revision date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://raw.githubusercontent.com/timgit/pg-boss/master/README.md",
+      "status": "failed: DisabledError",
+      "sections_read": "No content returned.",
+      "confirmed": "Raw repository fetch was unavailable.",
+      "published_or_version": "master; undated",
+      "date_status": "unknown",
+      "post_decision": null,
+      "at_utc": "2026-11-21T05:49:31Z"
+    },
+    {
+      "url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+      "status": "successful",
+      "sections_read": "Work queues introduction, lines 49–89",
+      "confirmed": "Official worker-pool pattern distributes time-consuming jobs among workers.",
+      "published_or_version": "Live tutorial; exact RabbitMQ version and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null,
+      "at_utc": "2026-11-21T05:49:31Z"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/11/sql-select.html",
+      "status": "successful_find",
+      "sections_read": "Locking clause, lines 375–407; pattern queue-like",
+      "confirmed": "SKIP LOCKED is documented for multiple consumers of queue-like tables; locking must be inside a WITH query where needed.",
+      "published_or_version": "PostgreSQL 11; exact revision date unknown",
+      "date_status": "unknown",
+      "post_decision": null,
+      "at_utc": "2026-11-21T05:49:31Z"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/11/sql-insert.html",
+      "status": "successful_find",
+      "sections_read": "INSERT conflict handling, returned excerpt lines 24–267, especially 115–126; pattern ON CONFLICT DO NOTHING",
+      "confirmed": "Unique/index conflicts can skip insertion using DO NOTHING; RETURNING identifies actual writes.",
+      "published_or_version": "PostgreSQL 11; exact revision date unknown",
+      "date_status": "unknown",
+      "post_decision": null,
+      "at_utc": "2026-11-21T05:49:31Z"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "status": "successful_find",
+      "sections_read": "Best practices, lines 46–59; pattern 12 hours",
+      "confirmed": "Heartbeat extensions and maximum visibility of 12 hours from first receive are documented.",
+      "published_or_version": "Live AWS documentation; publication date not supplied",
+      "date_status": "unknown",
+      "post_decision": null,
+      "at_utc": "2026-11-21T05:49:31Z"
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+      "at_utc": "2026-11-21T05:49:47Z",
+      "status": "successful",
+      "sections_read": "README introduction and features, lines 169–212",
+      "confirmed": "Node.js/PostgreSQL queue; SKIP LOCKED claims, transactional creation, polling workers and automatic retry features. The opened body no longer repeats the search snippet's exactly-once-delivery wording.",
+      "published_or_version": "Mutable master README; no commit date exposed",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+      "at_utc": "2026-11-21T05:49:47Z",
+      "status": "successful_find",
+      "sections_read": "Acknowledgments, durability and fair dispatch, lines 179–277; pattern If a consumer dies",
+      "confirmed": "Unacknowledged work is redelivered after failure; current tutorial gives a 30-minute acknowledgment timeout and prefetch_count=1 for fair dispatch.",
+      "published_or_version": "Live tutorial; version and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+      "at_utc": "2026-11-21T05:49:47Z",
+      "status": "successful_find",
+      "sections_read": "Visibility, standard/FIFO behavior, failure and timeout extension, lines 5–59; pattern expires",
+      "confirmed": "A message becomes available for another processing attempt when not deleted before expiry; visibility timeout is not a universal no-redelivery guarantee.",
+      "published_or_version": "Live AWS documentation; publication date not supplied",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://s3browser.com/",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "status": "successful",
+      "sections_read": "Product identity, capabilities, and latest release entry, lines 0–74",
+      "confirmed": "CS Browser is an S3 Windows file manager for transfers, objects, permissions and storage operations; the page identifies release 13.6.9 dated 2026-11-13.",
+      "published_or_version": "CS Browser 13.6.9; release 2026-11-13",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "status": "successful",
+      "sections_read": "Timeout definition, Managed Instances exception and settings, lines 5–59",
+      "confirmed": "Standard Lambda timeout maximum is 900 seconds; the documented 90-minute exception is for Managed Instances, expressly excluded by this check.",
+      "published_or_version": "Live Lambda Event Function documentation; exact publication date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://slurm.schedmd.com/overview.html",
+      "at_utc": "2026-11-21T05:53:27Z",
+      "status": "successful",
+      "sections_read": "Overview, architecture and plugins, lines 3–32",
+      "confirmed": "Slurm allocates Linux cluster resources, starts/monitors jobs and queues pending work; it includes submission-control plugin hooks.",
+      "published_or_version": "Live overview; release and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://slurm.schedmd.com/sbatch.html",
+      "at_utc": "2026-11-21T05:53:52Z",
+      "status": "successful_find",
+      "sections_read": "No-requeue and requeue options, lines 738–746 and 891–893; pattern --no-requeue",
+      "confirmed": "--no-requeue is available, but ForceRequeueOnFail can override it; requeue starts the batch script from its beginning.",
+      "published_or_version": "Live sbatch manual; exact release and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://slurm.schedmd.com/sbatch.html",
+      "at_utc": "2026-11-21T05:53:52Z",
+      "status": "successful_find",
+      "sections_read": "Singleton dependency and task distribution, lines 277–306; pattern singleton",
+      "confirmed": "Singleton serializes same-user/same-name jobs; it permits a later job after an earlier one terminates and is therefore not logical submission deduplication.",
+      "published_or_version": "Live sbatch manual; exact release and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://slurm.schedmd.com/sbatch.html",
+      "at_utc": "2026-11-21T05:53:52Z",
+      "status": "successful_find",
+      "sections_read": "Time limits, lines 938–944; pattern --time=",
+      "confirmed": "Run-time limits accept hours/days but depend on the partition's time limit; the intended cluster settings require verification.",
+      "published_or_version": "Live sbatch manual; exact release and publication date unspecified",
+      "date_status": "unknown",
+      "post_decision": null
+    }
+  ],
+  "exposures": [],
+  "checks": [
+    {
+      "check_id": "CK-1912f6fd5f27",
+      "name": "CS Browser (formerly S3 Browser)",
+      "decision": "exclude",
+      "reason": "As supplied, this is an S3 bucket/object file-management client. Its documented work consists of uploads, downloads, synchronization and storage administration, which does not match the requested role of distributing the workload to job-executing workers. Exclusion is for the documented operation-scope mismatch; missing deduplication statements are kept unknown rather than treated as explicit unsupported features.",
+      "evidence_urls": [
+        "https://s3browser.com/"
+      ],
+      "verification_status": "Official product page opened; operation surface verified; current release is post-decision.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://s3browser.com/",
+          "version_scope": "CS Browser 13.6.9 file-management product",
+          "reason": "No logical distributed-task admission configuration is supplied. This unknown is not itself the exclusion reason."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://s3browser.com/",
+          "version_scope": "CS Browser 13.6.9 file-transfer/storage operations",
+          "reason": "The product's documented execution surface is storage operations; end-to-end distributed workload invocation control is not established."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://s3browser.com/",
+          "version_scope": "CS Browser 13.6.9",
+          "reason": "Duration support for the requested workload is unverified."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://s3browser.com/",
+          "version_scope": "CS Browser 13.6.9",
+          "reason": "The page's claim about handling millions of files is not evidence of distributing 10,000 arbitrary jobs."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "unknown"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "unknown"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "not_needed",
+      "form": "app",
+      "contribution": "none",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "The opened home page identifies CS Browser 13.6.9 released 2026-11-13."
+    },
+    {
+      "check_id": "CK-07bf950c2270",
+      "name": "Amazon S3 events + AWS Lambda standard function (Managed Instances 제외)",
+      "decision": "exclude",
+      "reason": "Standard Lambda has an explicit 900-second (15-minute) invocation limit, which conflicts with tasks that can require one hour. The page's 90-minute Managed Instances exception does not apply because this check expressly excludes Managed Instances. Splitting a job or using Lambda only as a dispatcher would change the proposed execution configuration and does not cure this direct mismatch.",
+      "evidence_urls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
+      ],
+      "verification_status": "Official timeout page opened; decisive duration violation verified for the specified standard configuration.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+          "version_scope": "S3 events plus standard Lambda; Managed Instances excluded",
+          "reason": "The timeout page does not establish logical-task admission deduplication; no unsupported guarantee is inferred."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+          "version_scope": "S3 events plus standard Lambda; Managed Instances excluded",
+          "reason": "Exactly-once execution and event-delivery behavior were not verified within the remaining document budget."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "fail",
+          "evidence_url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+          "version_scope": "Standard Lambda Event Function; explicitly excluding Managed Instances",
+          "reason": "The official maximum is 900 seconds (15 minutes), so a single task requiring one hour cannot execute in this supplied configuration."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+          "version_scope": "Unspecified account quotas, event flow and concurrency",
+          "reason": "The timeout documentation does not validate this workload's scale."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "unknown"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "fail"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "not_needed",
+      "form": "mixed",
+      "contribution": "whole",
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live official timeout documentation; exact publication date unavailable."
+    },
+    {
+      "check_id": "CK-0877ac8c27de",
+      "name": "Slurm",
+      "decision": "keep",
+      "reason": "Slurm directly matches cluster job allocation, execution and pending-work scheduling. No unconditional incompatible limit was found. Keep it as INSUFFICIENT: singleton dependencies only serialize jobs, while no-requeue is subject to a cluster override. Durable logical-task admission deduplication, enforced restart policy, one-hour partition limits and workload capacity still need verification; optional requeue behavior does not justify excluding the whole product.",
+      "evidence_urls": [
+        "https://slurm.schedmd.com/overview.html",
+        "https://slurm.schedmd.com/sbatch.html"
+      ],
+      "verification_status": "Official overview and sbatch options inspected; plausible direct scope, with decisive configuration details unresolved.",
+      "label": "INSUFFICIENT",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://slurm.schedmd.com/sbatch.html",
+          "version_scope": "Slurm with unspecified submission controls",
+          "reason": "Singleton dependencies serialize jobs but allow later same-name jobs; a durable logical-task identity and admission control have not been verified."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://slurm.schedmd.com/sbatch.html",
+          "version_scope": "Slurm --no-requeue with site configuration unspecified",
+          "reason": "No-requeue exists, while ForceRequeueOnFail can override it and requeue restarts a script. The supplied candidate does not specify which policy is enforced."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://slurm.schedmd.com/sbatch.html",
+          "version_scope": "Slurm partition time limits unspecified",
+          "reason": "The interface supports hour/day limits, but the selected partition must permit at least one hour plus any required overhead."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://slurm.schedmd.com/overview.html",
+          "version_scope": "Unspecified Linux cluster size, job limits and submission configuration",
+          "reason": "A scalable pending-job scheduler is documented; concrete limits and resources for this workload remain unverified."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "unknown"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "unknown"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "unknown",
+      "form": "framework",
+      "contribution": "whole",
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Live Slurm documentation; exact release and publication dates not exposed.",
+      "additional_confirmation": "Verify whether the intended submission path enforces a durable logical-task key and an at-most-once start policy that the cluster cannot override. If that is supported, the candidate remains viable subject to duration/capacity settings; if repeated starts are unavoidable, exclude it for the literal no-duplicate-execution requirement."
+    }
+  ],
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Input is the fixed one-sentence summary for case T040, dated 2018-11-27; the original question URL is excluded from research. read_original_command is null.",
+      "status": "explicit",
+      "source_location": "questions/inputs/T040.json: input_mode, question_date, question_url_excluded_from_search, read_original_command",
+      "polarity": "neutral",
+      "force": "context",
+      "interpretation": "No original question body was retrieved or used; summary is not a direct quotation from that body."
+    },
+    {
+      "item": "I2",
+      "value": "Find technologies or a configuration to distribute more than 10,000 tasks, each taking 30 seconds to one hour, without duplicate registration or execution.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1",
+      "polarity": "positive",
+      "force": "objective",
+      "interpretation": "The work is background task distribution; a specific product category is not mandated."
+    },
+    {
+      "item": "I3",
+      "value": "Selection scope includes a technology or a configuration method for task distribution.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1: 기술·구성 방법",
+      "polarity": "positive",
+      "force": "scope",
+      "interpretation": "A composed design is allowed. Existing systems that must be preserved are absent."
+    },
+    {
+      "item": "I4",
+      "value": "Prevent duplicate task registration.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1: 중복 등록 ... 없이",
+      "polarity": "negative",
+      "force": "must",
+      "interpretation": "This concerns logical task admission. Task identity and deduplication retention period are unspecified; no five-minute limit is invented."
+    },
+    {
+      "item": "I4",
+      "value": "Prevent duplicate task execution.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1: 중복 실행 없이",
+      "polarity": "negative",
+      "force": "must",
+      "interpretation": "Preserved literally. Preventing simultaneous work or duplicate final effects alone does not establish that a task function can never run again."
+    },
+    {
+      "item": "I4",
+      "value": "Accommodate tasks lasting 30 seconds to one hour.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1: 30초–1시간 걸리는",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Workload compatibility requirement; it is not an overall batch-completion deadline."
+    },
+    {
+      "item": "I4",
+      "value": "Accommodate a workload of at least 10,000 tasks.",
+      "status": "explicit_summary",
+      "source_location": "question_summary sentence 1: 1만 개 이상 작업",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "A task count is stated, not 10,000 simultaneous workers, submissions per second, or an upper bound."
+    },
+    {
+      "item": "I5",
+      "value": "Task identity, producer behavior, output effects, retry policy, worker failures, and whether uncertain work may be abandoned are unspecified.",
+      "status": "absent",
+      "source_location": "question_summary sentence 1 (no further detail supplied)",
+      "polarity": "unknown",
+      "force": "unknown",
+      "interpretation": "Do not assume that all effects are transactional, that external APIs support idempotency keys, or that completion after every failure is mandatory."
+    },
+    {
+      "item": "I6",
+      "value": "Question date is 2018-11-27; summary does not say whether the workload is deployed or planned.",
+      "status": "partly_explicit_partly_absent",
+      "source_location": "question_date and question_summary sentence 1",
+      "polarity": "neutral",
+      "force": "context",
+      "interpretation": "Live sources are dated unknown where publication dates are missing; current content is not proof of availability or behavior on the decision date."
+    },
+    {
+      "item": "I7",
+      "value": "Programming language, operating system, cloud, database, broker, versions, hardware, payload size, and completion target are not supplied.",
+      "status": "absent",
+      "source_location": "question_summary sentence 1",
+      "polarity": "unknown",
+      "force": "unknown",
+      "interpretation": "Python, Node.js, PostgreSQL, and AWS are candidate-dependent conditions, not user requirements."
+    },
+    {
+      "item": "I8",
+      "value": "All requirements derive from the supplied summary, not the original question. At-most-once start, transactional effects, and idempotency are distinct proposed interpretations or designs.",
+      "status": "explicit_summary_plus_interpretation",
+      "source_location": "input_mode=summary; question_summary sentence 1",
+      "polarity": "neutral",
+      "force": "interpretive_boundary",
+      "interpretation": "The answer must disclose whenever a proposed design trades automatic recovery for preventing a second execution."
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "PostgreSQL job ledger with unique task keys and atomic permanent claims",
+      "url": "https://www.postgresql.org/docs/11/sql-select.html",
+      "reason": "The clearest configurable starting point separates durable admission deduplication from exclusive worker claims and makes the no-retry tradeoff explicit.",
+      "application_scope": "Whole proposed task-distribution configuration, including application-written workers and a durable identity ledger.",
+      "constraints_or_caveat": "Strict at-most-once start requires recording a permanent claim before execution and never automatically re-running an uncertain claim; crashes can strand work. Transactional or idempotent outputs solve a different, weaker duplicate-effects problem. Confirm task identity and acceptable failure recovery before treating this as a complete answer.",
+      "evidence_opened": [
+        "https://www.postgresql.org/docs/11/sql-select.html",
+        "https://www.postgresql.org/docs/11/sql-insert.html"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "PostgreSQL 11 versioned documentation was read live; exact content revision dates were not established.",
+      "form": "pattern",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://www.postgresql.org/docs/11/sql-insert.html",
+          "version_scope": "Proposed PostgreSQL 11 ledger with retained unique logical-task keys",
+          "reason": "A unique key plus ON CONFLICT DO NOTHING prevents a second row for the same defined key; retaining keys is part of the proposed design."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.postgresql.org/docs/11/sql-select.html",
+          "version_scope": "Proposed permanent claimed state, no automatic retries",
+          "reason": "SKIP LOCKED supports exclusive claims, but end-to-end invocation and crash behavior depend on custom worker code and the meaning of task identity; those are unverified."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.postgresql.org/docs/11/sql-select.html",
+          "version_scope": "Proposed short claim transaction followed by work outside it",
+          "reason": "The design does not require holding a row lock for the hour; actual worker timeout behavior has not been established."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.postgresql.org/docs/11/sql-select.html",
+          "version_scope": "Unspecified database and workers",
+          "reason": "No capacity benchmark or concrete workload/resource configuration was supplied or tested."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "pass"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "unknown"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "mapped",
+      "label": "INSUFFICIENT",
+      "additional_confirmation": "Is it acceptable to leave a permanently claimed task incomplete after a crash? If yes, implement and verify the at-most-once worker gate; if no, preserving literal no-repeat execution requires an additional task-specific recovery guarantee."
+    },
+    {
+      "rank": 2,
+      "name": "Celery 4.2.1 with early acknowledgment and an application-level identity ledger",
+      "url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+      "reason": "A documented early-acknowledgment mode offers a practical Python worker framework, provided admission deduplication and per-task invocation gating are supplied explicitly.",
+      "application_scope": "Whole composed configuration for a Python task system; Celery provides the worker framework while custom durable state provides logical-task deduplication.",
+      "constraints_or_caveat": "Early acknowledgment can lose unfinished work after failure. Do not silently enable task retries or late acknowledgment and still claim a literal no-repeat execution guarantee. Broker behavior, publish uncertainty, long-task limits and worker gating remain unverified.",
+      "evidence_opened": [
+        "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+        "https://www.postgresql.org/docs/11/sql-insert.html"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Official versioned Celery 4.2.1 tasks guide; page revision date unknown.",
+      "form": "mixed",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.postgresql.org/docs/11/sql-insert.html",
+          "version_scope": "Celery 4.2.1 plus proposed external uniqueness ledger",
+          "reason": "Celery task names are not logical-job deduplication. Admission and publish-failure integration require application code not established by the task guide."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+          "version_scope": "Celery 4.2.1 early acknowledgment; retries disabled; proposed permanent worker gate",
+          "reason": "The guide documents early acknowledgment for preventing re-execution of started invocations. Preventing independently submitted duplicates still requires a verified per-task gate."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+          "version_scope": "Celery 4.2.1; broker and time-limit settings unspecified",
+          "reason": "Long/blocking task behavior is discussed, but the exact one-hour worker/broker configuration was not verified."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+          "version_scope": "Unspecified broker, payload and worker configuration",
+          "reason": "Queue count and concurrency are not equivalent; no deployment-specific capacity claim is established."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "unknown"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "unknown"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "mapped",
+      "label": "INSUFFICIENT",
+      "additional_confirmation": "Can the application use Python/Celery and accept abandoned early-acknowledged work? If yes, verify a durable logical-ID gate and one-hour settings; if no, this strict at-most-once configuration is not suitable."
+    },
+    {
+      "rank": 3,
+      "name": "pg-boss",
+      "url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+      "reason": "A Node.js/PostgreSQL queue packages the same claim mechanism and transaction integration, but its deduplication, retry and expiry policies need release-specific verification.",
+      "application_scope": "Potential whole library alternative for a Node.js application, conditional on matching its policies to both duplicate prohibitions.",
+      "constraints_or_caveat": "The search snippet claimed exactly-once delivery, but the actually opened README instead describes concurrent claims and atomic commits. Automatic retries are listed. Those facts do not prove task bodies never execute twice; no exact deduplication/timeout configuration was verified.",
+      "evidence_opened": [
+        "https://github.com/timgit/pg-boss/blob/master/README.md"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Mutable master README with no exposed commit date; historical 2018 behavior not established.",
+      "form": "library",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+          "version_scope": "Current master README, exact release unspecified",
+          "reason": "Queue storage policies and transactional creation are described, but deduplication key scope/retention for this workload is unverified."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+          "version_scope": "Current master README; retry/expiry policies unspecified",
+          "reason": "Concurrent claims are documented; retry features exist. The opened text does not establish an unconditional no-second-execution guarantee or the required policy."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+          "version_scope": "Current master README; expiry and timeout settings unspecified",
+          "reason": "One-hour job expiration and retry configuration require further verification."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+          "version_scope": "Unspecified Node.js/PostgreSQL deployment",
+          "reason": "The readme establishes the queue's purpose, not this workload's capacity or completion time."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": [
+        {
+          "target": "duplicate task registration",
+          "status": "unknown"
+        },
+        {
+          "target": "duplicate task execution",
+          "status": "unknown"
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "status": "unknown"
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "status": "unknown"
+        }
+      ],
+      "T": "unknown",
+      "label": "INSUFFICIENT",
+      "additional_confirmation": "For a pinned release, can a durable logical key survive completion and can uncertain or expired jobs be prevented from starting again? A documented matching policy would strengthen fit; unavoidable redelivery would exclude it for literal no-repeat execution."
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "name": "Amazon SQS FIFO by itself",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html",
+      "reason": "Excluded as a complete solution to literal no-duplicate execution: the official visibility guide describes another processing attempt after a message is not deleted before expiry. Submission deduplication also has a documented five-minute scope. It can still be a transport behind a separate durable task gate.",
+      "application_scope": "Bare managed queue as the entire solution.",
+      "form": "service",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html",
+          "version_scope": "Live SQS FIFO documentation",
+          "reason": "Five-minute deduplication is documented; indefinite logical-task identity retention is not established."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "fail",
+          "evidence_url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+          "version_scope": "SQS FIFO with processing then deletion and retry on visibility expiry",
+          "reason": "A crash or lost deletion after execution can expose the same message for another processing attempt."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+          "version_scope": "Configured/extended visibility timeout up to documented 12-hour maximum",
+          "reason": "One-hour work fits the documented timeout range when timeout and deletion overhead are configured."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+          "version_scope": "Unspecified queue/consumer configuration",
+          "reason": "No workload-specific throughput or capacity validation was done."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "target": "duplicate task execution",
+          "status": "fail"
+        }
+      ],
+      "T": "not_needed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "name": "RabbitMQ acknowledged work queue by itself",
+      "url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+      "reason": "Excluded as a complete no-repeat solution because the documented acknowledgment/recovery path requeues and redelivers unacknowledged tasks after worker or connection failure. Its worker distribution and fair-dispatch mechanisms remain useful components behind a separate task gate.",
+      "application_scope": "Tutorial-style manual-acknowledgment work queue as the entire solution.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "duplicate task registration",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+          "version_scope": "Live work-queue tutorial",
+          "reason": "The opened tutorial does not establish logical-task admission deduplication."
+        },
+        {
+          "target": "duplicate task execution",
+          "polarity": "negative",
+          "source_location": "question_summary sentence 1",
+          "status": "fail",
+          "evidence_url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+          "version_scope": "Manual acknowledgments after execution",
+          "reason": "The documented recovery path can execute a task again after a worker loses the connection before acknowledgment."
+        },
+        {
+          "target": "30-second to one-hour task duration",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+          "version_scope": "Live tutorial default acknowledgment timeout 30 minutes; configurable",
+          "reason": "The default is too short for an hour, but the timeout is configurable; this is not an intrinsic product exclusion."
+        },
+        {
+          "target": "at least 10,000 tasks",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+          "version_scope": "Unspecified broker and workers",
+          "reason": "No concrete workload capacity was verified."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "target": "duplicate task execution",
+          "status": "fail"
+        }
+      ],
+      "T": "not_needed",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "date_status": "unknown",
+      "post_decision": null
+    }
+  ],
+  "raw_response": "For more than 10,000 jobs taking 30 seconds to one hour, I would start with a durable task ledger and a pool of workers. The decisive design choice is what “no duplicate execution” means when a worker crashes. The supplied summary does not say whether unfinished work may be abandoned, so none of the options below is established as an unconditional complete fit.\n\nThere are two distinct controls to build: deduplicate submission using a stable logical task ID, and atomically grant permission to execute that ID. A queue message ID, exclusive delivery while a worker is alive, or an idempotent final result does not by itself establish that the underlying task function can never run a second time.\n\n## 1. PostgreSQL job ledger and atomic claims — strongest starting architecture\n\nUse a table with a unique logical task key. Insert new work with ON CONFLICT DO NOTHING, retaining the key for as long as repeat submissions must be rejected. Workers claim pending rows in a short transaction using FOR UPDATE SKIP LOCKED and move the chosen row to a claimed state before they start the work. PostgreSQL documents both conflict-based insertion control and SKIP LOCKED for multiple consumers of queue-like tables. [INSERT documentation](https://www.postgresql.org/docs/11/sql-insert.html); [SELECT documentation](https://www.postgresql.org/docs/11/sql-select.html). genui{\"citation\":{\"refs\":[\"turn133336098view3\",\"turn133336098view2\"]}}\n\nThe end-to-end design here is an inference from those primitives, not an implementation supplied or tested by the documentation. For literal at-most-once execution, the claimed state must be permanent: a worker that is unsure whether it acquired permission must not execute, and a recovery process must not automatically put an uncertain claim back into the pending state. This prevents an ordinary recovery mechanism from starting the same logical task again, but a crash after claiming and before finishing can leave work incomplete. Keep the claim transaction short; the one-hour task itself need not hold the row lock.\n\nIf automatic recovery is required, a different design can make the final effect idempotent or commit the effect together with completion in one transactional system. That can protect against duplicate effects while allowing repeated computation. It is not equivalent to the literal requirement that execution never repeats, and external side effects cannot simply be assumed to participate in the database transaction.\n\nThis is my first recommendation to investigate because its states and tradeoffs can be made explicit. Its status is INSUFFICIENT for a complete guarantee until task identity, acceptable failure recovery, worker code, and resource settings are verified.\n\n## 2. Celery 4.2.1 with early acknowledgment and a durable identity gate — a Python option\n\nCelery's versioned task guide documents acknowledgment before execution as the default and explains the different behavior of late acknowledgment for idempotent tasks. This makes early acknowledgment a relevant starting point when avoiding another start is more important than recovering every interrupted invocation. [Celery task guide](https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html). genui{\"citation\":{\"ref\":\"turn997984159view4\"}}\n\nYou would still need an application-level durable logical-task key at admission and a worker-side gate preventing independently submitted copies from invoking the same task. A unique task-class name is not that gate. Keep automatic task retries disabled for the strict at-most-once interpretation, and explicitly resolve uncertain publishing and claim outcomes. Early acknowledgment means a failed worker may leave an unfinished task that is no longer queued.\n\nThis option is conditional on using Python and on verifying broker behavior, worker time limits, and the one-hour workload settings. The opened guide establishes the acknowledgment distinction, not the complete deduplication integration. Its status is INSUFFICIENT pending those checks.\n\n## 3. pg-boss — a Node.js/PostgreSQL library worth checking\n\npg-boss provides a packaged job queue using PostgreSQL, describes concurrent claims through SKIP LOCKED, supports job creation in an existing database transaction, and lists polling workers and retry facilities. It could remove some queue-management code if Node.js is appropriate. [Official README](https://github.com/timgit/pg-boss/blob/master/README.md). genui{\"citation\":{\"ref\":\"turn873656335view0\"}}\n\nI would not treat it as a verified exactly-once task executor from the material opened. The search snippet used exactly-once-delivery wording, while the opened README described concurrent claiming and atomic commits instead. Pin a release and check logical-key retention, completed-job retention, retries, and one-hour expiry behavior. Automatic retries are a feature that needs a deliberate policy when another execution is prohibited. Its status is INSUFFICIENT, not a finding that the library is inherently unusable.\n\n## Why I would not select these queues alone\n\nAmazon SQS FIFO provides a documented five-minute submission-deduplication window. Its visibility guide also describes messages becoming available for another processing attempt if they are not deleted before the timeout. One-hour jobs fit within the documented maximum visibility period when configured appropriately, but an execution followed by a crash before deletion still creates uncertainty. FIFO therefore does not, by itself, establish the requested literal no-repeat execution property. It could carry task IDs to workers that enforce a separate durable permission gate. [FIFO deduplication](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html); [visibility and failures](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html). genui{\"citation\":{\"refs\":[\"turn997984159view2\",\"turn873656335view2\"]}}\n\nRabbitMQ's acknowledged work-queue tutorial deliberately redelivers unacknowledged work when a worker or connection fails. Its fair-dispatch setting is useful for tasks with very different runtimes, but it does not remove that recovery behavior or supply logical-task admission deduplication. The live tutorial also describes a configurable acknowledgment timeout whose current default is shorter than one hour; that setting needs attention rather than treating it as a permanent product limitation. RabbitMQ is a useful distribution component, but the tutorial configuration alone fails the strict no-repeat-execution requirement. [RabbitMQ work queues](https://www.rabbitmq.com/tutorials/tutorial-two-python). genui{\"citation\":{\"ref\":\"turn873656335view1\"}}\n\n## Sizing and the decision to make\n\nTen thousand queued jobs does not imply ten thousand simultaneous workers. For exactly 10,000 jobs, the stated duration endpoints imply roughly 83 worker-hours if every job takes 30 seconds and 10,000 worker-hours if every job takes an hour. These are arithmetic bounds from the supplied workload, not performance measurements. Choose concurrency from the actual runtime distribution, memory/CPU needs, external-service limits, and desired completion time; those inputs are absent.\n\nThe first decision is whether an uncertain job may be left incomplete to preserve literal at-most-once execution. If yes, a permanent task ledger and non-retriable claim is the concrete direction to implement and validate. If no, the missing piece is the task-specific recovery or side-effect protocol; choosing a different queue does not establish that protocol.\n\nThis research used primary documentation and an official repository. No integration or load test was performed. The question is dated November 27, 2018; some sources are versioned, while the live documentation and mutable README expose no reliable publication date. Their current content should not be read as proof of the exact features or defaults available on that historical date. An unauthenticated GitHub code-search attempt was blocked; an indexed public-repository search and an opened official README supplied the code-through-web fallback.",
+  "budget": {
+    "search_queries": 10,
+    "opened_pages": 20,
+    "candidate_count": 3,
+    "stage1_search_queries": 7,
+    "stage1_opened_pages": 14,
+    "search_query_limit": 12,
+    "opened_page_limit": 20,
+    "remaining_search_queries": 2,
+    "remaining_opened_pages": 0,
+    "counting_note": "Each explicit open or find inspection attempt is counted, including repeated inspection of one URL and failed fetches; the anonymous code-search URL counts as one query and one open."
+  },
+  "limitations": [
+    "Input is a fixed summary; no original source-thread answer, copy, citation page, other run, gold file, helper source, or repository history was inspected.",
+    "Task identity, retry/recovery semantics, side-effect boundary, deployment language, broker and resource limits are unspecified.",
+    "No candidate was executed or load-tested; component documentation does not establish end-to-end guarantees.",
+    "Live or mutable source publication dates are unknown. Versioned documentation is not treated as proof of the exact page revision on 2018-11-27.",
+    "Anonymous GitHub code search and the raw repository fetch failed with DisabledError; code-through-web fallback used an indexed official repository and a successful GitHub README open.",
+    "The pg-boss search snippet and opened README differ on exactly-once wording; the opened body takes precedence.",
+    "No forbidden question-thread/copy/citation-page exposure was observed in returned results; exposures is therefore empty.",
+    "Five search queries and six document-inspection attempts remain for the separately injected checks.",
+    "Post-injection checks used three further queries and six further inspections. Final totals are 10 queries and 20 inspections; two queries but no document inspections remain."
+  ],
+  "ended_at_utc": "2026-11-21T05:55:00Z",
+  "stage1_frozen_at_utc": "2026-11-21T05:52:43Z",
+  "checks_started_at_utc": "2026-11-21T05:53:27Z",
+  "checks_ended_at_utc": "2026-11-21T05:55:00Z",
+  "execution_status": "completed",
+  "stage1_snapshot_sha256": "f32f69f109bba69fb6d632dbd6918457235be84b6ac33532521fb87ced823232"
+}

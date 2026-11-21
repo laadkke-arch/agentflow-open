@@ -6,7 +6,7 @@ Source responses are never overwritten. Overrides contain editorial reductions,
 not added evidence or replacement candidates.
 """
 from pathlib import Path
-import argparse,hashlib,json,random,re,collections
+import argparse,hashlib,json,random,re,collections,subprocess,sys
 ROOT=Path(__file__).resolve().parents[1]
 SEED=18018
 LABELS=['DIRECT_DOCUMENTED','INSUFFICIENT','CONDITIONAL_TRANSFER','SURFACE_OR_CONSTRAINT_MISMATCH']
@@ -83,6 +83,7 @@ def main(prepare,finalize,reveal):
         save('judging/batch-order.json',{'seed':SEED,'qids':qids,'row_count':sum(len(v) for v in groups.values())})
         print(json.dumps({'normalized_rows':sum(len(v) for v in groups.values()),'questions':len(qids)}))
     if reveal:
+        subprocess.run([sys.executable,str(ROOT/'judging/batches.py'),'--validate'],check=True)
         normalized=set();byqid={}
         for f in (ROOT/'judging/normalized').glob('*.json'):
             d=json.loads(f.read_text());byqid[d['qid']]={r['row_id'] for r in d['rows']};normalized.update(byqid[d['qid']])
