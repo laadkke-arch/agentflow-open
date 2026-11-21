@@ -20,10 +20,10 @@ def main():
             continue
         other = check_by[(r['qid'], 'A', r['check_id'])]
         # Retained+uncertain is deliberately separate from an actual exclusion.
-        if r['decision'] == 'exclude' or r['primary_label'] == 'INSUFFICIENT':
+        if r['decision'] == 'exclude' or r.get('executor_label') == 'INSUFFICIENT' or r['primary_label'] == 'INSUFFICIENT':
             over_reject.append({**r, 'A_decision': other['decision'],
                                'A_primary_label': other['primary_label'],
-                               'case_kind': 'P exclusion' if r['decision'] == 'exclude' else 'P kept with independently judged insufficient evidence',
+                               'case_kind': 'P exclusion' if r['decision'] == 'exclude' else 'P explicitly kept with INSUFFICIENT label' if r.get('executor_label') == 'INSUFFICIENT' else 'P kept with independently judged insufficient evidence',
                                'source_files': [f'runs/P/{r["qid"]}.json', f'runs/A/{r["qid"]}.json']})
     for q, pair in sorted(pairs.items()):
         a, p = pair['A'], pair['P']
@@ -58,9 +58,9 @@ def main():
                               'source_files': [f'runs/A/{q}.json', f'runs/P/{q}.json']})
     families = [
         {'id': 'CE1', 'question': 'Does P exclude an actual external-record positive, or retain it with unresolved evidence?',
-         'selector': 'condition=P AND eligible_positive AND (decision=exclude OR primary_label=INSUFFICIENT)',
+         'selector': 'condition=P AND eligible_positive AND (decision=exclude OR executor_label=INSUFFICIENT OR primary_label=INSUFFICIENT)',
          'matches': over_reject,
-         'limits': 'Grade2 subset identifies adoption; grade1 is an unrebutted recommendation. Actual exclusion and uncertainty must not be merged.'},
+         'limits': 'Grade2 subset identifies adoption; grade1 is an unrebutted recommendation. Actual exclusion, the executor\'s explicit uncertainty label and the independent judge\'s uncertainty are distinct. Missing executor labels are not inferred; label counts are not a balanced A/P uncertainty measure.'},
         {'id': 'CE2', 'question': 'Does A outperform P in any new question?',
          'selector': 'cohort=new AND A improves any of grade2 hit, known-gold recall, independently judged recall, first known-related rank',
          'matches': new_a,

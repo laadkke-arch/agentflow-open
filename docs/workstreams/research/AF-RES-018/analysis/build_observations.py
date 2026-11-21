@@ -99,6 +99,7 @@ def main():
         obs['auditor_confirmed_N_denominator']=0;obs['auditor_confirmed_N_correct_reject']=0;obs['auditor_confirmed_N_excluded']=0
         obs['strict_N_audit_truth']=probe_truth.get(q,{}).get('status')
         obs['positive_kept_uncertain_by_primary']=0
+        obs['positive_kept_uncertain_by_executor_label']=0
         obs['strict_N_origin']=None
         expected_ids=[x['check_id'] for x in checks[q]];assert [x['check_id'] for x in run['checks']]==expected_ids
         for i,(check,g) in enumerate(zip(run['checks'],checks[q])):
@@ -123,8 +124,11 @@ def main():
             # Independently judged uncertainty is reported separately from actual rejection.
             j=judgments['primary'][rid]
             obs['positive_kept_uncertain_by_primary']+=int(roles['positive'] and not excluded and j['label']=='INSUFFICIENT')
+            executor_label=check.get('label')
+            obs['positive_kept_uncertain_by_executor_label']+=int(roles['positive'] and not excluded and executor_label=='INSUFFICIENT')
             check_rows.append({'row_id':rid,'condition':c,'qid':q,'check_id':g['check_id'],'candidate':g['name'],
                                'decision':check_decision(check),'frozen_grade':str(g.get('grade','unavailable')),
+                               'executor_label':executor_label,'executor_reason':check.get('reason'),
                                'strict_N_origin':obs['strict_N_origin'] if roles['strict_N'] else None,
                                **roles,'correct_reason':correct_reason,'primary_relevance':str(j['relevance']),
                                'primary_label':j['label']})
