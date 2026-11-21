@@ -1,0 +1,490 @@
+{
+  "case_id": "N015",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/RULES_A.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N015.json"
+  ],
+  "started_at_utc": "2026-11-21T06:46:00Z",
+  "ended_at_utc": "2026-11-21T06:51:47Z",
+  "question_cutoff_date": "2026-07-14",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "input_retrieval": {
+    "command": "python docs/workstreams/research/AF-RES-018/questions/generate.py --emit N015",
+    "at_utc": "2026-11-21T06:46:08.814682+00:00",
+    "status": "verified question-only input, HTTP 200",
+    "question_sha256": "d1da8ca1362203c55c2cf5dad1d021623aa175678069f32daeef125159dcbfba",
+    "counted_in_search_budget": false,
+    "helper_source_inspected": false
+  },
+  "queries": [
+    {
+      "q": "mitmproxy modify HTML response body addon documentation -site:softwarerecs.stackexchange.com",
+      "at_utc": "2026-11-21T06:46:33Z",
+      "tool": "web_system2",
+      "result_note": "Found primary mitmproxy feature documentation, addon documentation, and indexed public example code."
+    },
+    {
+      "q": "Privoxy HTTPS content filters HTML documentation -site:softwarerecs.stackexchange.com",
+      "at_utc": "2026-11-21T06:46:33Z",
+      "tool": "web_system2",
+      "result_note": "Found primary Privoxy filter and action manuals, including current HTTPS inspection support; older manual snippets had different HTTPS limitations."
+    },
+    {
+      "q": "Chrome DevTools local overrides response HTML documentation -site:softwarerecs.stackexchange.com",
+      "at_utc": "2026-11-21T06:46:33Z",
+      "tool": "web_system2",
+      "result_note": "Found official local-override documentation and Chrome 117 release documentation supporting HTML, XHR, and fetch response overrides."
+    },
+    {
+      "q": "https://grep.app/api/search?q=modify_response%20HTML",
+      "at_utc": "2026-11-21T06:46:33Z",
+      "tool": "grep.app",
+      "result_note": "Attempted unauthenticated public code-search endpoint via web open; tool reported URL inaccessible. Counted as one query and one failed open; no native code-search success."
+    },
+    {
+      "q": "site:docs.telerik.com/fiddler modify response body utilReplaceInResponse",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "tool": "web_system1",
+      "result_note": "No identifiable Fiddler result appeared in the combined returned results; later broadened the domain restriction."
+    },
+    {
+      "q": "site:github.com/gildas-lormeau/SingleFile save complete page single HTML current state",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "tool": "web_system1",
+      "result_note": "Found the primary SingleFile repository and FAQ, which describe saving a tab or frame and limitations of interactive offline content."
+    },
+    {
+      "q": "site:github.com/mitmproxy/mitmproxy/blob/ response content replace addons",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "tool": "code_through_web",
+      "result_note": "Fallback after inaccessible grep.app: public code indexed by web_system1 returned the mitmproxy http-stream-modify.py example and implementation/documentation files. This was code-through-web, not native code search."
+    },
+    {
+      "q": "Fiddler Classic modify requests responses FiddlerScript utilReplaceInResponse",
+      "at_utc": "2026-11-21T06:47:03Z",
+      "tool": "web_system2",
+      "result_note": "Found current official response-modification documentation and a dated 2021 Telerik team example."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=modify_response%20HTML",
+      "at_utc": "2026-11-21T06:46:33Z",
+      "status": "blocked",
+      "sections_read": "None; the public code-search endpoint was inaccessible through the web tool.",
+      "confirmed": "The attempted endpoint could not be accessed; it supplies no code evidence.",
+      "published_or_version": "unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.mitmproxy.org/stable/overview/features/",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "status": "opened",
+      "sections_read": "Map Local; Modify Body; Streaming-related limitation; supplemental in-document find at 06:47:03 UTC.",
+      "confirmed": "modify_body performs regular-expression replacements in selected request or response bodies, with scripts available for finer control. Built-in body replacement does not affect streamed bodies.",
+      "published_or_version": "live stable documentation; undated",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.privoxy.org/user-manual/filter-file.html",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "status": "opened",
+      "sections_read": "Filter Files introduction and source-level substitution behavior.",
+      "confirmed": "Filter files define on-the-fly substitutions in HTML and other text responses and can invoke external filters. These operations modify source text rather than a rendered browser DOM.",
+      "published_or_version": "Privoxy 4.2.0 user manual; publication date not established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://developer.chrome.com/docs/devtools/overrides",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "status": "opened",
+      "sections_read": "Overview; Limitations; last-updated statement, with supplemental in-document finds at 06:47:25 and 06:47:40 UTC.",
+      "confirmed": "Local overrides replace network responses with local content, including HTML and fetch/XHR content, and persist across reloads. Edits in the Elements DOM tree are not saved as overrides; HTML must be edited through Sources.",
+      "published_or_version": "Last updated 2024-05-14 UTC",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://developer.chrome.com/blog/new-in-devtools-117",
+      "at_utc": "2026-11-21T06:46:50Z",
+      "status": "opened",
+      "sections_read": "Network panel improvements; HTML, fetch, and XHR override support; last-updated statement via in-document find at 06:47:03 UTC.",
+      "confirmed": "Chrome 117 documentation describes invoking Override content from Network and supports document HTML as well as XHR/fetch responses. The page supplies dated evidence predating the question cutoff.",
+      "published_or_version": "Chrome 117; last updated 2023-08-22 UTC",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/mitmproxy/mitmproxy/blob/main/examples/addons/http-stream-modify.py",
+      "at_utc": "2026-11-21T06:47:03Z",
+      "status": "opened",
+      "sections_read": "Public Python example, including data replacement and response stream callback; supplemental in-document find at 06:47:25 UTC.",
+      "confirmed": "The example installs a response-stream modification callback that substitutes byte content. Its explanatory comments caution that streaming edits are brittle around chunk boundaries and content length, supporting buffered editing for this application.",
+      "published_or_version": "live main branch; commit date not established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/gildas-lormeau/SingleFile",
+      "at_utc": "2026-11-21T06:47:03Z",
+      "status": "opened",
+      "sections_read": "Repository overview; Getting started; Additional notes for saving tabs, selected content, or frames, with supplemental finds at 06:47:25 and 06:47:40 UTC.",
+      "confirmed": "SingleFile is a browser extension that saves a page in one HTML file and provides commands for the current tab, selected content, or a selected frame. This offers a snapshot-oriented alternative after revealing the original listing.",
+      "published_or_version": "live main-branch README; publication date not established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/gildas-lormeau/SingleFile/blob/main/faq.md",
+      "at_utc": "2026-11-21T06:47:03Z",
+      "status": "opened",
+      "sections_read": "Offline interactive-element limitations and browser-local processing, with supplemental finds at 06:47:25 and 06:47:40 UTC.",
+      "confirmed": "The FAQ explains that scripts are removed by default and interactive elements may not work offline; retaining scripts still does not ensure offline function. It also describes obtaining resources referenced by the page.",
+      "published_or_version": "live main-branch FAQ; publication date not established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.privoxy.org/user-manual/actions-file.html",
+      "at_utc": "2026-11-21T06:47:03Z",
+      "status": "opened",
+      "sections_read": "Action scoping; external-filter and filter actions; https-inspection section located in supplemental find at 06:47:25 UTC.",
+      "confirmed": "Privoxy applies filtering actions to selected URLs and supports HTTPS inspection that decrypts, filters, and re-encrypts traffic. The browser must accept the certificate generated by the inspecting proxy.",
+      "published_or_version": "Privoxy 4.2.0 user manual; publication date not established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.telerik.com/fiddler/fiddler-classic/documentation/knowledge-base/fiddlerscript/modifyrequestorresponse",
+      "at_utc": "2026-11-21T06:47:25Z",
+      "status": "opened",
+      "sections_read": "OnBeforeResponse; response decoding; HTML search-and-replace; last-updated statement, with supplemental finds at 06:47:40 UTC.",
+      "confirmed": "FiddlerScript can alter responses before delivery using OnBeforeResponse, decode compressed content, and replace strings in HTML. This current documentation revision is later than the cutoff.",
+      "published_or_version": "Updated on 2026-10-05",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://www.telerik.com/forums/replace-response-textview",
+      "at_utc": "2026-11-21T06:47:25Z",
+      "status": "opened",
+      "sections_read": "Telerik team responses dated 2021-03-26 and 2021-03-29, including an HTML response-modification example; supplemental finds at 06:47:40 UTC.",
+      "confirmed": "A dated vendor-team response recommends FiddlerScript for request/response bodies; a subsequent example changes HTML in OnBeforeResponse after decoding the response. This independently supports availability of the mechanism before the cutoff.",
+      "published_or_version": "Vendor-team responses dated 2021-03-26 and 2021-03-29",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.mitmproxy.org/stable/concepts/certificates/",
+      "at_utc": "2026-11-21T06:47:25Z",
+      "status": "opened",
+      "sections_read": "About Certificates opening explanation.",
+      "confirmed": "mitmproxy decrypts TLS traffic when the client trusts its certificate authority, normally by installing the proxy CA certificate on the client.",
+      "published_or_version": "live stable documentation; undated",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/team-charls/charls",
+      "at_utc": "2026-11-21T06:50:51Z",
+      "status": "opened",
+      "sections_read": "Repository About; README introduction and Features.",
+      "confirmed": "CharLS implements JPEG-LS image compression/decompression in C++. The documented function is unrelated to HTTP proxying or rewriting HTML.",
+      "published_or_version": "live main-branch README; undated",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://www.charlesproxy.com/documentation/tools/rewrite/",
+      "at_utc": "2026-11-21T06:50:51Z",
+      "status": "opened",
+      "sections_read": "Rewrite Tool; Rewrite Sets; body rules; regex matching; location matching.",
+      "confirmed": "Charles can apply location-scoped rewrite rules to response bodies as they pass through the proxy, including regular-expression replacements. This supports source-level HTML attribute edits before browser rendering.",
+      "published_or_version": "live official documentation; undated",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://github.com/http-party/node-http-proxy",
+      "at_utc": "2026-11-21T06:50:51Z",
+      "status": "opened",
+      "sections_read": "Overview; npm Installation; custom proxy server examples; response-modification sections via supplemental find at 06:51:10 UTC.",
+      "confirmed": "node-http-proxy is a programmable Node.js library installed through npm. It supports response-handling code, but adopting it requires the Node.js ecosystem and implementing proxy logic.",
+      "published_or_version": "live master-branch README; undated",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://www.charlesproxy.com/documentation/proxying/ssl-proxying/",
+      "at_utc": "2026-11-21T06:51:10Z",
+      "status": "opened",
+      "sections_read": "SSL Proxying; choosing hosts; trusting generated certificates.",
+      "confirmed": "Charles supports HTTPS interception through dynamically generated certificates and client trust in its root CA. Target hosts must be enabled for SSL proxying to inspect their encrypted traffic.",
+      "published_or_version": "live official documentation; undated",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    }
+  ],
+  "exposures": [],
+  "supplementary_document_reads": [
+    {
+      "at_utc": "2026-11-21T06:47:03Z",
+      "tool": "web_find",
+      "reads": [
+        {
+          "url": "https://docs.mitmproxy.org/stable/overview/features/",
+          "pattern": "Modify Body"
+        },
+        {
+          "url": "https://developer.chrome.com/blog/new-in-devtools-117",
+          "pattern": "Last updated"
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-11-21T06:47:25Z",
+      "tool": "web_find",
+      "reads": [
+        {
+          "url": "https://github.com/mitmproxy/mitmproxy/blob/main/examples/addons/http-stream-modify.py",
+          "pattern": "data.replace"
+        },
+        {
+          "url": "https://github.com/gildas-lormeau/SingleFile",
+          "pattern": "Getting started"
+        },
+        {
+          "url": "https://github.com/gildas-lormeau/SingleFile/blob/main/faq.md",
+          "pattern": "interactive elements"
+        },
+        {
+          "url": "https://www.privoxy.org/user-manual/actions-file.html",
+          "pattern": "8.5.19."
+        },
+        {
+          "url": "https://developer.chrome.com/docs/devtools/overrides",
+          "pattern": "Limitations"
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-11-21T06:47:40Z",
+      "tool": "web_find",
+      "reads": [
+        {
+          "url": "https://www.telerik.com/fiddler/fiddler-classic/documentation/knowledge-base/fiddlerscript/modifyrequestorresponse",
+          "pattern": "Search and replace"
+        },
+        {
+          "url": "https://www.telerik.com/fiddler/fiddler-classic/documentation/knowledge-base/fiddlerscript/modifyrequestorresponse",
+          "pattern": "Updated on"
+        },
+        {
+          "url": "https://www.telerik.com/forums/replace-response-textview",
+          "pattern": "2021"
+        },
+        {
+          "url": "https://www.telerik.com/forums/replace-response-textview",
+          "pattern": "FiddlerScript and its events"
+        },
+        {
+          "url": "https://github.com/gildas-lormeau/SingleFile/blob/main/faq.md",
+          "pattern": "By default"
+        },
+        {
+          "url": "https://github.com/gildas-lormeau/SingleFile",
+          "pattern": "selected frame"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/devtools/overrides",
+          "pattern": "Last updated"
+        }
+      ]
+    },
+    {
+      "at_utc": "2026-11-21T06:51:10Z",
+      "tool": "web_find",
+      "stage": "checks",
+      "reads": [
+        {
+          "url": "https://github.com/http-party/node-http-proxy",
+          "pattern": "Modify a response from a proxied server"
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "mitmproxy",
+      "url": "https://docs.mitmproxy.org/stable/overview/features/",
+      "reason": "mitmproxy can rewrite selected HTML response bodies before delivery, using built-in replacements or a Python addon for more precise attribute transformations.",
+      "application_scope": "HTTP(S) interception and repeatable response-body modification before browser rendering.",
+      "constraints_or_caveat": "HTTPS interception requires client trust in the proxy CA; ordinary replacement operates on source bytes, and a Python HTML parser is needed for robust structural edits; this does not establish that Archiveweb.page will record eBay's dynamic listing.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened current stable feature/certificate documentation and public Python example on main; no dated version supporting the exact retrieved documentation was established.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "Fiddler Classic with FiddlerScript",
+      "url": "https://www.telerik.com/fiddler/fiddler-classic/documentation/knowledge-base/fiddlerscript/modifyrequestorresponse",
+      "reason": "FiddlerScript's OnBeforeResponse hook can decode an HTML response and replace its markup before the browser receives it.",
+      "application_scope": "Scriptable desktop proxy for controlled HTML response substitutions.",
+      "constraints_or_caveat": "Requires learning FiddlerScript rules and configuring HTTPS decryption; substitutions do not operate on a live DOM, and Archiveweb.page compatibility remains untested.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "https://www.telerik.com/forums/replace-response-textview contains vendor-team explanations dated 2021-03-26 and a concrete HTML rewriting example dated 2021-03-29; the separately opened current documentation is marked updated 2026-10-05 and is recorded as later evidence.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "Privoxy content filters",
+      "url": "https://www.privoxy.org/user-manual/filter-file.html",
+      "reason": "Privoxy's URL-scoped content filters can apply HTML-source substitutions such as attribute changes while forwarding pages to the browser.",
+      "application_scope": "Configuration-based proxy filtering for narrowly defined markup edits.",
+      "constraints_or_caveat": "Built-in filters use regular expressions rather than DOM selectors; HTTPS requires an inspection-capable build/configuration and trusted generated certificates; the retrieved 4.2.0 manual was not dated.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened current Privoxy 4.2.0 filter and action manuals; no dated release or version snapshot was inspected.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "Chrome DevTools Local Overrides",
+      "url": "https://developer.chrome.com/docs/devtools/overrides",
+      "reason": "Chrome's built-in Local Overrides can substitute edited HTML or fetch/XHR responses for selected requests, allowing an attribute-change experiment without installing a proxy.",
+      "application_scope": "Manual per-resource response replacement in the browser.",
+      "constraints_or_caveat": "Uses saved replacement resources rather than a general transformation of every live response; changes must be made to source files, not only the Elements DOM tree; interaction with Archiveweb.page must be tested.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened documentation states last updated 2024-05-14; the opened Chrome 117 article states last updated 2023-08-22 and explicitly describes HTML and XHR/fetch content overrides.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "SingleFile",
+      "url": "https://github.com/gildas-lormeau/SingleFile",
+      "reason": "SingleFile could save the original listing after it is visibly opened, using a self-contained HTML snapshot of the current tab or selected frame instead of recording the click sequence.",
+      "application_scope": "Alternative archival workflow when preserving displayed listing content is sufficient.",
+      "constraints_or_caveat": "This replaces the archival workflow rather than repairing Archiveweb.page; it is a browser extension and produces a snapshot rather than an interactive WARC/WACZ recording, with scripts removed by default and offline interactivity not assured.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened the live primary README and FAQ; no dated historical version was established.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "For the proxy you describe, I would start with **mitmproxy**. **Fiddler Classic** and **Privoxy** also provide documented ways to change HTML before the browser receives it. For a small experiment without a separate proxy, **Chrome DevTools Local Overrides** is worth considering. If your real requirement is simply to preserve the visible original listing, **SingleFile** offers a different capture workflow.\n\nA qualification matters here: an HTTP proxy receives response content. It can parse and rewrite that HTML, but it does not automatically have the live DOM that the browser constructs after JavaScript runs. Also, the unsuccessful automatic click does not, by itself, establish the cause of the Archiveweb.page recording problem. None of the sources below verifies a fix for this particular eBay interaction.\n\n## Ranked candidates\n\n### 1. mitmproxy\n\n[mitmproxy's feature documentation](https://docs.mitmproxy.org/stable/overview/features/) describes its built-in response-body replacements and support for finer control through scripts. It could help by changing the relevant attribute in the HTML response before the browser parses the page.\n\nFor a simple, stable attribute replacement, the built-in replacement mechanism may be enough. If the edit needs to identify a particular element structurally, a Python addon with an HTML parser is a more appropriate approach than a broad regular expression. This does not require adopting Node.js.\n\nFor HTTPS, the browser must trust the proxy's certificate authority; see the [certificate documentation](https://docs.mitmproxy.org/stable/concepts/certificates/). Buffered body editing is preferable here: the [public response-modification example](https://github.com/mitmproxy/mitmproxy/blob/main/examples/addons/http-stream-modify.py) explains why streaming modifications are fragile around chunk boundaries and content lengths.\n\n**Caveat:** Changing the initial HTML will help only if the relevant behavior can be changed there or in another intercepted response. It is not evidence that the archive recorder will capture a later rendered state correctly. The retrieved mitmproxy sources are live and undated, so their precise availability at the question cutoff is unverified.\n\n### 2. Fiddler Classic with FiddlerScript\n\n[Fiddler's response-modification documentation](https://www.telerik.com/fiddler/fiddler-classic/documentation/knowledge-base/fiddlerscript/modifyrequestorresponse) provides a direct match for the requested operation: an OnBeforeResponse rule can decode response content and perform substitutions in HTML before delivery.\n\nThis could be useful when you want to inspect traffic and then attach a repeatable rule to the matching host and HTML response. A [dated vendor-team example](https://www.telerik.com/forums/replace-response-textview) demonstrates HTML rewriting through this mechanism in March 2021.\n\n**Caveat:** You would still need to learn the rule syntax and configure HTTPS decryption. This is source-level editing, so it does not supply a browser DOM automatically. The current documentation was updated on October 5, 2026, after the July 14, 2026 cutoff; the separate March 2021 vendor example supports the earlier availability of the underlying mechanism.\n\n### 3. Privoxy content filters\n\n[Privoxy's filter-file manual](https://www.privoxy.org/user-manual/filter-file.html) documents on-the-fly substitutions in HTML and other response text. Its action system can scope those filters to selected URLs, making it a plausible fit for a narrowly targeted attribute change.\n\nThe [action manual](https://www.privoxy.org/user-manual/actions-file.html) also describes HTTPS inspection, so current Privoxy is not limited to changing unencrypted pages.\n\n**Caveat:** Its built-in filters use regular expressions against source text. That is convenient for a small stable substitution but fragile for arbitrary nested HTML. HTTPS filtering needs appropriate inspection support and certificate trust. The opened manual identifies version 4.2.0 without establishing its publication date, so I cannot assign this retrieved version to the cutoff date.\n\n### 4. Chrome DevTools Local Overrides\n\n[Chrome's Local Overrides](https://developer.chrome.com/docs/devtools/overrides) can replace selected network resources with locally edited content. You can use the Network panel's Override content action, edit the HTML in Sources, save it, and reload. This could test your proposed attribute change without installing a separate interception proxy.\n\nThe capability also covers fetch/XHR response content, which may matter if the listing data arrives separately. The [Chrome 117 documentation](https://developer.chrome.com/blog/new-in-devtools-117), dated August 22, 2023, explicitly lists HTML documents and fetch/XHR among the supported resources.\n\n**Caveat:** This substitutes saved resource content; it is less suitable than a proxy rule for transforming many changing listings. Editing an element only in the Elements panel does not create a persistent response override. Whether Archiveweb.page can record successfully with these overrides remains untested.\n\n### 5. SingleFile\n\n[SingleFile](https://github.com/gildas-lormeau/SingleFile) is worth testing if a self-contained HTML copy of the displayed listing meets your archival requirement. Open the original listing, wait until the desired content is visible, and then save the current tab or selected frame.\n\nThe relevant difference from your TamperMonkey attempt is the capture workflow: this would save the displayed page using another archiver, rather than asking Archiveweb.page to record an injected click.\n\n**Caveat:** SingleFile is still a browser extension, so it is an alternative to your existing archival workflow rather than the requested proxy. Its HTML snapshot is not equivalent to an interactive WARC/WACZ recording. The [FAQ](https://github.com/gildas-lormeau/SingleFile/blob/main/faq.md) explains that scripts are removed by default and that offline interactive behavior is not guaranteed. The sources opened here are undated live versions, and this exact eBay case has not been tested.\n\n## Practical next step\n\nIf maintaining the Archiveweb.page workflow is essential, use mitmproxy or Fiddler to inspect which HTML or data response supplies the original listing, then test one narrowly scoped response change. If a readable record of the listing is sufficient, testing SingleFile after manually revealing it is a smaller experiment. In either case, reopen the resulting archive and check the listing description, images, and any separately loaded frame content before relying on it.",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 16,
+    "candidate_count": 5,
+    "checked_candidates": 3
+  },
+  "stage1_budget": {
+    "search_queries": 8,
+    "opened_pages": 12,
+    "candidate_count": 5
+  },
+  "budget_limits": {
+    "search_queries": 12,
+    "opened_pages": 20,
+    "candidate_count": 10
+  },
+  "remaining_budget_after_stage1": {
+    "search_queries": 4,
+    "opened_pages": 8
+  },
+  "budget_accounting": "The blocked grep.app endpoint consumes one query and one open. Explicit web open attempts consume the opened-page budget, including failures. In-document find operations on pages already opened are recorded separately and do not count as new opened documents. Fixed verified question retrieval is excluded as instructed.",
+  "limitations": [
+    "No candidate was installed or tested against eBay or Archiveweb.page; all claimed applicability is a transfer hypothesis grounded in documented capabilities.",
+    "The observed failure of an injected click does not independently prove an Archiveweb.page bug or identify its cause.",
+    "Most sources are live and undated; unknown date_status does not establish pre-cutoff availability, even though post_decision is false for unknown dates.",
+    "The current Fiddler documentation is explicitly post-cutoff; separate dated vendor evidence supports the underlying candidate before cutoff.",
+    "Unauthenticated grep.app code search was inaccessible. Public code was subsequently found through web search and opened; this is explicitly a code-through-web fallback.",
+    "No excluded question-thread snippet, copy, or known page citing that question was observed.",
+    "Discovery is frozen; three later checks are pending and must use only the remaining four queries and eight open attempts."
+  ],
+  "discovery_status": "completed",
+  "execution_status": "completed",
+  "checks": [
+    {
+      "check_id": "CK-2bbaf33fb18b",
+      "name": "CharLS",
+      "url": "https://github.com/team-charls/charls",
+      "decision": "exclude",
+      "reason": "CharLS implements JPEG-LS image compression in C++; it provides no HTTP interception or HTML/DOM rewriting mechanism for the described browser workflow.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://github.com/team-charls/charls"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened live main-branch README; no dated historical revision inspected."
+    },
+    {
+      "check_id": "CK-ec64b29870cc",
+      "name": "Charles Proxy",
+      "url": "https://www.charlesproxy.com/documentation/tools/rewrite/",
+      "decision": "keep",
+      "reason": "Charles applies URL-scoped replacements to response bodies before delivery, supporting HTML attribute edits; HTTPS requires SSL proxying and certificate trust, and browser-DOM execution is absent.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://www.charlesproxy.com/documentation/tools/rewrite/",
+        "https://www.charlesproxy.com/documentation/proxying/ssl-proxying/"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened live official Rewrite Tool and SSL Proxying documentation; no publication date or historical version established."
+    },
+    {
+      "check_id": "CK-0934b9c8c323",
+      "name": "node-http-proxy Node.js library",
+      "url": "https://github.com/http-party/node-http-proxy",
+      "decision": "exclude",
+      "reason": "Although programmable response modification is supported, this library requires Node.js/npm and custom proxy code, directly conflicting with the request to avoid learning that ecosystem.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://github.com/http-party/node-http-proxy"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Opened live master-branch README; no dated historical revision inspected."
+    }
+  ],
+  "stage1_frozen_at_utc": "2026-11-21T06:49:33Z",
+  "checks_started_at_utc": "2026-11-21T06:50:51Z",
+  "checks_ended_at_utc": "2026-11-21T06:51:47Z",
+  "checks_budget": {
+    "search_queries": 0,
+    "opened_pages": 4,
+    "checked_candidates": 3
+  },
+  "remaining_budget": {
+    "search_queries": 4,
+    "opened_pages": 4
+  },
+  "checks_limitations": [
+    "Checked sources are live and undated; unknown date_status does not establish pre-cutoff availability.",
+    "Charles is retained for its documented response-rewriting mechanism, without claiming an end-to-end fix for the eBay/Archiveweb.page issue.",
+    "The stage-1 pending-checks limitation is a frozen historical statement; all three supplied checks are now completed."
+  ],
+  "checks_status": "completed"
+}
