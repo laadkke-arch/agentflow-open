@@ -198,3 +198,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:57:17.573710+00:00
 
 90/106 responses and270/318 probe judgments are complete, with45 full question pairs. T001 P is finalized. SX08 A/P are in checks, N004 P in discovery. Next: dispatch94 onward. Three candidate-count bookkeeping corrections are documented with unchanged raw-response/candidate hashes; no frozen treatment output or judgment was substantively revised.
+
+## Execution checkpoint — 2026-11-21T09:03:49.744975+00:00
+
+93/106 responses and279/318 probe judgments are complete. SX08 A/P and N004 P are finalized; N004 A and T059 A are checking probes, T059 P is in discovery. Next: dispatch97 onward. A new first-party mechanism identity audit connects P/SX08’s unresolved Thinkzone lead to the fixed011 generic Markov mechanism; MAP03–04 and analysis/n-scope.json record current-scope static reasoning separately from blind judgments and without changing gold.
