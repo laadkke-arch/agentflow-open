@@ -2,6 +2,7 @@
 """Parent-side bookkeeping. Never called by a blinded experimental executor."""
 from pathlib import Path
 import argparse,json,datetime
+from runner_audit import audit
 ROOT=Path(__file__).resolve().parents[1]
 def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
 def read(p):return json.loads((ROOT/p).read_text())
@@ -25,6 +26,9 @@ elif a.checks:
 elif a.complete:
     row=next(r for r in state['assigned'] if r['dispatch_index']==a.complete)
     run=read(row['output']);assert len(run.get('checks',[]))==3
+    checked=audit(ROOT/row['output'],read(f'runs/freeze/{row["condition"]}-{row["qid"]}.json'))
+    assert not checked['errors'],checked
+    row['integrity_audit']=checked
     row['phase']='completed';row['completion_observed_at_utc']=now();write('runs/DISPATCH_STATE.json',state)
     print(json.dumps({'completed':a.complete,'qid':row['qid'],'condition':row['condition']}))
 elif a.next:
