@@ -1,0 +1,984 @@
+{
+  "case_id": "N005",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/PROCEDURE.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N005.json"
+  ],
+  "original_input_retrieval": {
+    "command": "python docs/workstreams/research/AF-RES-018/questions/generate.py --emit N005",
+    "helper_source_inspected": false,
+    "status": 200,
+    "at_utc": "2026-11-21T04:23:27.012909+00:00",
+    "verified_question_sha256": "6dd7cc95d7443f3e4aadaa7c5e1adf524e6a33fca20bd96f44ea3e44c596266f",
+    "outside_search_budget": true
+  },
+  "started_at_utc": "2026-11-21T04:23:19Z",
+  "ended_at_utc": "2026-11-21T04:30:22Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Original question titled 'Is there a minimalist but HTMX-aware web server for serving (mostly) static files?', retrieved through the supplied hash-verifying command; question date 2026-07-25.",
+      "status": "explicit",
+      "source_location": "hash-verified original, title and question input metadata",
+      "polarity": "positive",
+      "force": "context",
+      "interpretation": "The supplied original, not a summary, is the research input. The excluded question thread was not searched or opened."
+    },
+    {
+      "item": "I2",
+      "value": "Select an existing web server for a personal website combining a file-based blog and small projects; reuse common page content and metadata without duplication.",
+      "status": "explicit",
+      "source_location": "hash-verified original, introductory paragraph and static-files bullet",
+      "polarity": "positive",
+      "force": "goal",
+      "interpretation": "Recommend the server for the shared site; individual projects may retain different stacks."
+    },
+    {
+      "item": "I3",
+      "value": "Server choice and in-server extensions; preserve static-file authoring, shared/page-specific content separation, Linux production, and Windows development or Docker.",
+      "status": "explicit",
+      "source_location": "hash-verified original, static-files, HTMX, and operating-system bullets",
+      "polarity": "positive",
+      "force": "scope",
+      "interpretation": "The requested replacement is not a complete blog CMS or a requirement to rewrite every small project."
+    },
+    {
+      "item": "I4",
+      "value": "M1: Be as secure as possible by default, or be really easy to secure in the described way.",
+      "status": "explicit",
+      "source_location": "hash-verified original, security bullet, first sentence",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "An alternative is expressly allowed: straightforward hardening. Security concern includes unintended filesystem access. No quantitative security threshold or isolation model is specified."
+    },
+    {
+      "item": "I4",
+      "value": "M2: Serve static files.",
+      "status": "explicit",
+      "source_location": "hash-verified original, static-files bullet, first sentence",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Core server capability, including ordinary site assets."
+    },
+    {
+      "item": "I4",
+      "value": "M3: Be HTMX-aware, possibly through an extension.",
+      "status": "explicit",
+      "source_location": "hash-verified original, HTMX bullet, first sentence",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Working interpretation: return suitable HTML fragments and optionally distinguish HTMX requests from normal full-page requests. Exact desired behavior is unspecified; this is an interpretation rather than quoted detail."
+    },
+    {
+      "item": "I4",
+      "value": "M4: Do not require a separate application server behind the selected web server for the HTMX/page-piece functionality.",
+      "status": "explicit",
+      "source_location": "hash-verified original, HTMX bullet, first sentence and explanatory parenthesis",
+      "polarity": "negative",
+      "force": "must",
+      "interpretation": "This restriction concerns the shared site's HTMX functionality, not the separate technology stacks of all future small projects."
+    },
+    {
+      "item": "I4",
+      "value": "M5: Be as simple/minimalist as possible, with little out-of-box functionality beyond needed features.",
+      "status": "explicit",
+      "source_location": "hash-verified original, minimalism bullet",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Relative and unquantified. Neither a binary-size limit nor a categorical ban on all unused modules is stated."
+    },
+    {
+      "item": "I4",
+      "value": "M6: Run on Linux.",
+      "status": "explicit",
+      "source_location": "hash-verified original, operating-system bullet, first sentence",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Alpine is preferred rather than mandatory."
+    },
+    {
+      "item": "I4",
+      "value": "Desired extensibility; preferably Alpine Linux; Windows support desired with Docker accepted as fallback; software should be free.",
+      "status": "explicit",
+      "source_location": "hash-verified original, minimalism, operating-system, and price bullets",
+      "polarity": "positive",
+      "force": "preference",
+      "interpretation": "Do not turn 'preferably', 'would like', 'want', or 'should' into additional categorical exclusions. No income/budget is context for the free preference."
+    },
+    {
+      "item": "I5",
+      "value": "Static files containing shared and page-specific content/metadata are the primary inputs; browser-delivered pages or page pieces are outputs. Separate projects can use their own stacks.",
+      "status": "explicit",
+      "source_location": "hash-verified original, static-files and HTMX bullets",
+      "polarity": "positive",
+      "force": "scope",
+      "interpretation": "Template includes and request-header-dependent output are plausible mappings. No forms, database, authentication, upload handling, or executable CGI requirement is supplied."
+    },
+    {
+      "item": "I6",
+      "value": "Apache was previously used; a custom server was considered and abandoned. The new website/server setup is planned. Question dated 2026-07-25.",
+      "status": "explicit",
+      "source_location": "hash-verified original, introductory paragraph; input question_date",
+      "polarity": "positive",
+      "force": "context",
+      "interpretation": "Current public documentation may postdate the decision. No claim that examined versions existed on the question date is assumed."
+    },
+    {
+      "item": "I7",
+      "value": "Linux production, preferably Alpine; Windows development with Docker acceptable; HTML/static files and shared metadata. No server, HTMX, Linux, Windows, or Docker version is specified.",
+      "status": "explicit_and_absent",
+      "source_location": "hash-verified original, operating-system, static-files, and HTMX bullets",
+      "polarity": "positive",
+      "force": "mixed",
+      "interpretation": "Specific release versions, memory budget, deployment privileges, and intended HTMX attributes are unknown."
+    },
+    {
+      "item": "I8",
+      "value": "A header-aware template/SSI server is a proposed interpretation of the requested HTMX awareness. Serving fragments is documented functionality; exact full-page/fragment routing and security acceptability remain deployment choices.",
+      "status": "interpretation",
+      "source_location": "hash-verified original, HTMX, security, and minimalism bullets",
+      "polarity": "positive",
+      "force": "interpretive",
+      "interpretation": "Do not equate ordinary HTML serving alone with proven satisfaction of the user's entire HTMX and layout requirement."
+    }
+  ],
+  "queries": [
+    {
+      "q": "htmx static files web server templates HX-Request -site:softwarerecs.stackexchange.com -site:superuser.com",
+      "at_utc": "2026-11-21T04:23:47Z",
+      "tool": "public web search, system2_search_query",
+      "result_note": "Found official HTMX documentation and several framework examples. No excluded question or copy was observed."
+    },
+    {
+      "q": "site:caddyserver.com/docs templates request header file_server htmx",
+      "at_utc": "2026-11-21T04:23:47Z",
+      "tool": "public web search, system2_search_query",
+      "result_note": "Found official Caddy templates, file_server, header, and installation-related documentation."
+    },
+    {
+      "q": "\"htmx\" \"web server\" \"static\" \"minimal\" -site:softwarerecs.stackexchange.com -site:superuser.com -site:reddit.com",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Independent broader search. Official HTMX documentation and small framework/server projects appeared; no additional fully verified standalone server was established."
+    },
+    {
+      "q": "\"HX-Request\" \"templates\" \"caddy\"",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "tool": "unauthenticated GitHub public code-search surface via web open",
+      "result_note": "Attempted https://github.com/search?q=%22HX-Request%22+%22templates%22+%22caddy%22&type=code; DisabledError. Counted as both one query and one open attempt. Switched to code-through-web, without authentication or access-control bypass."
+    },
+    {
+      "q": "site:github.com caddyserver templates \"Header.Get\" \"include\"",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "tool": "public web search, system2_search_query; code-through-web fallback",
+      "result_note": "Found the public Caddy templates.go source with request-header and file-include API descriptions in the search result. A subsequent raw-code open failed; source-derived package API documentation was read successfully."
+    },
+    {
+      "q": "site:nginx.org/en/docs http ssi module conditional variable include",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "tool": "public web search, system2_search_query",
+      "result_note": "Found official nginx SSI and core-module documentation, enabling an independent server-plus-SSI approach."
+    },
+    {
+      "q": "site:redmine.lighttpd.net mod_ssi HTTP headers conditional include",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "tool": "public web search, system2_search_query",
+      "result_note": "Found official lighttpd mod_ssi and configuration documentation snippets; the mod_ssi page open was forbidden. Kept this lead as unverified rather than treating missing access as an incompatibility."
+    },
+    {
+      "q": "site:learn.microsoft.com IIS \"requires Windows\" operating system",
+      "at_utc": "2026-11-21T04:28:56Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Official Microsoft results identify IIS as a Windows operating-system component and a Windows Server role. Opened the lifecycle and server-role installation pages; no excluded question exposure."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=%22HX-Request%22+%22templates%22+%22caddy%22&type=code",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "status": "failed: DisabledError",
+      "sections_read": "No document body",
+      "confirmed": "Anonymous public code-search attempt blocked.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://caddyserver.com/docs/modules/http.handlers.templates",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "status": "partial: generic module shell instead of populated module documentation",
+      "sections_read": "Lines 0-98",
+      "confirmed": "No usable template-module feature evidence. The blank non-standard-module boilerplate was not treated as an assertion about Caddy templates.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "status": "opened",
+      "sections_read": "Lines 48-77: introduction, root behavior, traversal and symlink warning, syntax",
+      "confirmed": "Static-file serving and root handling; path-component traversal is prevented, but symlinks inside the root can reach outside it. A root is not a filesystem sandbox.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://htmx.org/docs/",
+      "at_utc": "2026-11-21T04:23:54Z",
+      "status": "opened",
+      "sections_read": "Introduction and installation in open output; requests/responses and caching in search output from the same official page",
+      "confirmed": "HTML/fragment response model. Official search extract also explains HX-Request-dependent responses and Vary: HX-Request; htmx version-specific behavior must be checked for the selected version.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "status": "opened",
+      "sections_read": "Lines 48-81: purpose, trust warning, configuration and extension functions; static-site example exposed in search output",
+      "confirmed": "Templates process response bodies from files, support HTML includes and other functions, and permit custom function modules. Only trusted or sanitized content should undergo template evaluation.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://caddyserver.com/docs/install",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "status": "opened",
+      "sections_read": "Lines 48-91: supported installation methods, static binaries, Linux distributions, Windows package options",
+      "confirmed": "Official Linux installation paths and Windows binary/package options; standard modules ship in official packages. Alpine-specific installation was not verified.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+      "at_utc": "2026-11-21T04:24:07Z",
+      "status": "opened",
+      "sections_read": "Lines 95-161: version, publication date, license and API index",
+      "confirmed": "Caddy source-derived package documentation reports v2.11.9, published 2026-11-04, Apache-2.0. This is explicitly later than the question.",
+      "published_or_version": "v2.11.9; published 2026-11-04",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/caddyserver/caddy/master/modules/caddyhttp/templates/templates.go",
+      "at_utc": "2026-11-21T04:24:30Z",
+      "status": "failed: DisabledError",
+      "sections_read": "No document body",
+      "confirmed": "Raw public code open failed; no raw-source content was used from this attempt.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+      "at_utc": "2026-11-21T04:24:30Z",
+      "status": "opened",
+      "sections_read": "Lines 21-246: SSI enablement, commands, conditions, file/virtual includes, limits",
+      "confirmed": "SSI is disabled by default and can be enabled for a location; conditionals compare variables with text; file includes work inside the server. Only one conditional nesting level is documented.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://nginx.org/en/docs/http/ngx_http_core_module.html",
+      "at_utc": "2026-11-21T04:24:30Z",
+      "status": "opened",
+      "sections_read": "Lines 21-390: directive list, Linux file-serving options, alias and root examples",
+      "confirmed": "Core configuration includes file path mapping and Linux file-serving functionality. Arbitrary-header variable details required a second read.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+      "at_utc": "2026-11-21T04:24:30Z",
+      "status": "failed: HTTP 403 Forbidden",
+      "sections_read": "No document body; earlier search snippet only",
+      "confirmed": "No opened evidence for the exact lighttpd header-to-SSI configuration. The snippet indicates SSI file inclusion and notes incomplete directive behavior.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+      "at_utc": "2026-11-21T04:24:42Z",
+      "status": "opened: second range request",
+      "sections_read": "Lines 100-312, especially TemplateContext and Templates types",
+      "confirmed": "TemplateContext exposes the current HTTP request; template middleware runs in the HTTP handler chain; custom function support; trusted-content requirement and experimental API warning.",
+      "published_or_version": "v2.11.9; published 2026-11-04",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://nginx.org/en/docs/http/ngx_http_core_module.html",
+      "at_utc": "2026-11-21T04:24:42Z",
+      "status": "opened: second range request",
+      "sections_read": "Lines 1503-1678, especially embedded variables 1543-1576",
+      "confirmed": "Arbitrary request headers are available as $http_name, with lowercasing and hyphens converted to underscores; thus HX-Request maps to $http_hx_request.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://nginx.org/en/",
+      "at_utc": "2026-11-21T04:24:42Z",
+      "status": "opened",
+      "sections_read": "Lines 21-107: capabilities, modular architecture, license, process privileges, tested platforms",
+      "confirmed": "Static files, SSI, modularity, 2-clause BSD licensing, unprivileged worker processes, and tested Linux/Windows platforms. Alpine and Windows feature parity were not separately established.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+      "at_utc": "2026-11-21T04:25:00Z",
+      "status": "opened: third range request",
+      "sections_read": "Returned lines 0-561; read 324-432 and relevant version fields",
+      "confirmed": "File include/import functions, in-memory httpInclude, .Req.Header.Get, response-header methods, and front-matter metadata parsing. These are sufficient building blocks for a header-dependent file-template design without a separate app server.",
+      "published_or_version": "v2.11.9; published 2026-11-04",
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "url": "https://www.openoffice.org/",
+      "at_utc": "2026-11-21T04:28:56Z",
+      "status": "opened",
+      "sections_read": "Lines 6-36 and 109-117: product identity, extensions, release information",
+      "confirmed": "Apache OpenOffice identifies itself as an office/productivity suite; current release banner is 4.1.17 dated 2026-10-14. Followed the product-description link for its actual application roles.",
+      "published_or_version": "4.1.17 announcement dated 2026-10-14; general product identity undated",
+      "date_status": "mixed: unknown product text and post_decision release announcement",
+      "post_decision": true
+    },
+    {
+      "url": "https://caddyserver.com/",
+      "at_utc": "2026-11-21T04:28:56Z",
+      "status": "opened",
+      "sections_read": "Lines 18-64: automatic HTTPS, free software, configuration API and TLS defaults",
+      "confirmed": "Caddy describes automatic certificate acquisition/renewal and TLS defaults; it is free software. These features help security configuration but do not establish complete filesystem isolation or the user's subjective minimalism threshold.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/lifecycle/products/internet-information-services-iis",
+      "requested_url": "https://learn.microsoft.com/lifecycle/products/internet-information-services-iis",
+      "at_utc": "2026-11-21T04:29:05Z",
+      "status": "opened; redirected to en-us canonical URL",
+      "sections_read": "Lines 13-49: releases and operating-system component note",
+      "confirmed": "Microsoft explicitly identifies IIS as a component of the Windows operating system. Listed versions are tied to their Windows host releases; the decision does not infer an end-of-maintenance requirement.",
+      "published_or_version": "IIS release list through IIS 10; page publication date unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+      "requested_url": "https://learn.microsoft.com/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+      "at_utc": "2026-11-21T04:29:05Z",
+      "status": "opened; redirected; article body readable despite generic authorization notice",
+      "sections_read": "Lines 24-53 and 76: applicability, Windows Server Web Server role, installation command, updated date",
+      "confirmed": "The prescribed IIS deployment is a Windows Server role, installed through Windows Server Manager or Install-WindowsFeature. Applies to Windows Server 2016, 2019, 2022 and 2025; last updated 2024-11-01.",
+      "published_or_version": "Last updated 2024-11-01; applies to Windows Server 2016/2019/2022/2025",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.openoffice.org/product/index.html",
+      "at_utc": "2026-11-21T04:29:05Z",
+      "status": "opened via product link from official homepage",
+      "sections_read": "Lines 21-43 and 59-67: product components and purpose",
+      "confirmed": "Official product description lists Writer, Calc, Impress, Draw, Base and Math for office-document authoring, spreadsheets, presentations, drawings, database work and equations. This is a different application surface from operating a web server.",
+      "published_or_version": "Undated product description; navigation advertises 4.1.17",
+      "date_status": "unknown",
+      "post_decision": null
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Caddy with its templates and file_server handlers",
+      "url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+      "reason": "The closest documented configuration for shared file templates plus request-header-dependent HTML in one server process, with Linux and Windows installation paths.",
+      "application_scope": "Whole requested server choice for the shared static/blog site; separate small-project stacks remain outside this scope.",
+      "constraints_or_caveat": "Security and minimalism are unquantified musts, so full qualification remains INSUFFICIENT. Use trusted templates and a dedicated public root; prevent unsafe symlinks and excessive filesystem privileges. Alpine installation is unverified. The source-derived API reference is dated after the question. Next confirmation: review a minimal deployment on the intended Alpine image; acceptable filesystem isolation and complexity would remove the remaining practical must uncertainties, while an unavoidable separate backend or unacceptable hardening burden would reject the setup.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://caddyserver.com/docs/caddyfile/directives/file_server",
+        "https://caddyserver.com/docs/caddyfile/directives/templates",
+        "https://caddyserver.com/docs/install",
+        "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates"
+      ],
+      "date_status": "mixed: unknown live docs and post_decision versioned API",
+      "post_decision": true,
+      "date_evidence": "pkg.go.dev reports v2.11.9 published 2026-11-04; live Caddy guides have no established publication dates.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+          "version_scope": "Live Caddy documentation; exact deployed release unselected",
+          "reason": "Traversal protection is documented, but symlink access and powerful template evaluation need deliberate configuration. The user's relative security/ease threshold is unspecified; no whole-deployment audit was performed."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "pass",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+          "version_scope": "Live Caddy file_server documentation",
+          "reason": "Explicitly serves static files from a configured root."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+          "version_scope": "v2.11.9, published after question",
+          "reason": "Under the stated interpretation, templates can read HX-Request through .Req.Header.Get and include shared files to choose a fragment or full-page layout. This is a documented-component mapping, not an executed integration."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+          "version_scope": "v2.11.9, published after question",
+          "reason": "Templates execute as Caddy middleware; file includes and in-memory subrequests need no separate backend process for this design."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+          "version_scope": "Live Caddy documentation",
+          "reason": "Small configuration is feasible, but the server and template facility have capabilities beyond the stated needs. No objective 'as minimalist as possible' threshold is supplied."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "pass",
+          "evidence_url": "https://caddyserver.com/docs/install",
+          "version_scope": "Live installation documentation",
+          "reason": "Official installation methods include Linux distributions. Alpine preference remains separately unverified."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "unknown",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass",
+        "M5": "unknown",
+        "M6": "pass"
+      },
+      "T": "mapped",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "rank": 2,
+      "name": "nginx with ngx_http_ssi_module",
+      "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+      "reason": "A second documented in-server approach: SSI composes local files and conditions can use the HX-Request header without a separate application server.",
+      "application_scope": "Whole alternative web-server configuration for static files and shared-page/fragment assembly.",
+      "constraints_or_caveat": "Requires enabling SSI and implementing the header-dependent layout; SSI conditional nesting is limited. Security/ease and minimalism remain unverified, and an Alpine build/module set was not checked. Windows appears in the tested platform list without an assessment of development feature parity. Next confirmation: inspect the exact packaged configuration and demonstrate full-page and fragment responses with safe file boundaries; success would support the deployment, while an unavoidable prohibited backend or documented unsupported essential function would exclude it.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://nginx.org/en/",
+        "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+        "https://nginx.org/en/docs/http/ngx_http_core_module.html"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "All opened nginx sources are live pages with no established publication date for the examined text.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://nginx.org/en/",
+          "version_scope": "Live nginx documentation; exact deployed release unselected",
+          "reason": "Unprivileged workers and access-control facilities are documented, but filesystem boundary, module set, TLS, and chosen configuration were not audited against the user's subjective security/ease requirement."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "pass",
+          "evidence_url": "https://nginx.org/en/",
+          "version_scope": "Live nginx documentation",
+          "reason": "Static-file and index-file serving are explicit features."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+          "version_scope": "Live SSI documentation and core arbitrary-header variables",
+          "reason": "SSI file inclusion and variable conditions, combined with $http_hx_request from core documentation, support the interpreted full-page/fragment distinction. This design has not been executed."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+          "version_scope": "SSI for local static files in nginx",
+          "reason": "The proposed file includes and conditional response processing happen within nginx; proxy/FastCGI backends are optional and are not part of this configuration."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://nginx.org/en/",
+          "version_scope": "Live nginx documentation",
+          "reason": "The modular server supports many additional roles; package/build configuration and the user's simplicity threshold must be resolved."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "pass",
+          "evidence_url": "https://nginx.org/en/",
+          "version_scope": "Tested platform list in live official page",
+          "reason": "Linux is explicitly listed; Alpine-specific package/build behavior remains unverified."
+        }
+      ],
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "unknown",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass",
+        "M5": "unknown",
+        "M6": "pass"
+      },
+      "T": "mapped",
+      "label": "INSUFFICIENT"
+    },
+    {
+      "rank": 3,
+      "name": "lighttpd with mod_ssi — unverified lead",
+      "url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+      "reason": "Official search results identify a file-inclusion module, but blocked documentation leaves the exact HTMX-header mapping and overall fit unverified.",
+      "application_scope": "Potential whole server alternative, retained for confirmation rather than presented as a verified solution.",
+      "constraints_or_caveat": "HTTP 403 prevented reading the official module page. Do not infer incompatibility from inaccessible evidence. Next confirmation: readable official documentation or source showing HX-Request-aware conditional file composition on Linux without a separate backend; positive evidence would improve its standing, explicit unsupported required behavior would exclude it.",
+      "evidence_opened": false,
+      "evidence_urls": [
+        "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi"
+      ],
+      "date_status": "unknown",
+      "post_decision": null,
+      "date_evidence": "Search crawl date is not a publication date; the document was not successfully opened.",
+      "form": "app",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "unknown",
+          "evidence_url": "https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi",
+          "version_scope": "Exact lighttpd version/configuration not established",
+          "reason": "Official mod_ssi page was blocked; search snippets alone do not establish this requirement for the proposed whole server configuration."
+        }
+      ],
+      "L": "broken",
+      "E": "unknown",
+      "H": {
+        "M1": "unknown",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "unknown"
+      },
+      "T": "unknown",
+      "label": "INSUFFICIENT"
+    }
+  ],
+  "rejected_candidates": [],
+  "raw_response": "I would start with **Caddy using its file_server and templates handlers**. **nginx with SSI** is a credible second approach. Both have documented building blocks for serving files and assembling HTML inside the web server, so your shared site's page-fragment handling need not introduce a separate application-server process. I cannot certify either as “as secure/minimalist as possible”: those requirements depend on the configuration and on what amount of hardening you find acceptable.\n\n### What “HTMX-aware” needs to mean here\n\nHTMX normally consumes HTML responses, often fragments. A useful interpretation of your requirement is that a direct page visit receives a complete document, while an HTMX request can receive just the relevant content. The official documentation describes distinguishing these using HX-Request. When the same URL has those two representations, it also calls for Vary: HX-Request; history restoration and cache validators need corresponding care. Simply fetching a static fragment does not, by itself, solve composition of all shared page content and metadata. [HTMX documentation](https://htmx.org/docs/)\n\n### 1. Caddy with templates — my first option to evaluate\n\nCaddy's file server provides the static-file side. Its template handler can process file responses and include other HTML files. The template API exposes request headers through .Req.Header.Get, so you can use HX-Request to choose whether to include the surrounding page layout. Shared layout files can hold common content, while page-specific files supply each page's material. This is a mapping of documented capabilities, not a claim that I ran your site or found a turnkey HTMX preset. [File server](https://caddyserver.com/docs/caddyfile/directives/file_server) · [Templates](https://caddyserver.com/docs/caddyfile/directives/templates) · [Template API](https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates)\n\nThe same template API supports front-matter metadata and additional template functions, which is relevant to separating common and page-specific metadata. The installation documentation covers Linux distributions and Windows installation options. The examined package documentation identifies an Apache-2.0 license, and the project describes itself as free and open source. I did not verify a specific Alpine package or image. [Installation](https://caddyserver.com/docs/install) · [Template API and license](https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates)\n\nThe security qualification matters for your particular concern. Caddy documents protection against directory traversal in request paths, but explicitly warns that symlinks inside the site root can expose files outside it. Its template facility can access files, environment variables, and network resources. Use a dedicated public content tree, controlled symlinks and filesystem permissions, and only trusted template content. The presence of a configured root alone does not prove isolation. Whether that constitutes “really easy to secure” for you remains unconfirmed. [File-server boundary](https://caddyserver.com/docs/caddyfile/directives/file_server) · [Template trust warning](https://caddyserver.com/docs/caddyfile/directives/templates)\n\nOne temporal limitation: the source-derived API reference I read is Caddy v2.11.9, published November 4, 2026, after your July 25 question. The undated live guides do not establish historical availability. Confirm the chosen release's behavior before relying on this as a date-specific recommendation.\n\n### 2. nginx with SSI — a second configuration to consider\n\nnginx can serve static files and process Server Side Includes in the same server. Its SSI module supports file includes and conditional comparisons; its core exposes arbitrary request headers as variables. Consequently, the documented mechanisms map HX-Request to $http_hx_request and allow the shared wrapper to be included conditionally. No proxy or FastCGI backend is needed for local static-file includes. [SSI module](https://nginx.org/en/docs/http/ngx_http_ssi_module.html) · [Header variables](https://nginx.org/en/docs/http/ngx_http_core_module.html)\n\nThe official overview documents a modular architecture, a 2-clause BSD license, and Linux and Windows among tested platforms. SSI must be enabled, and its documented conditional nesting is limited. This option leaves you responsible for more of the layout and server configuration; I have not established that its hardening is sufficiently easy or its packaged feature set sufficiently minimal for your preferences. Alpine-specific packaging also remains unchecked. [nginx overview](https://nginx.org/en/) · [SSI configuration and limits](https://nginx.org/en/docs/http/ngx_http_ssi_module.html)\n\n### 3. lighttpd with mod_ssi — retain as an unverified lead\n\nOfficial search results point to a mod_ssi module for file inclusion, but the documentation page returned HTTP 403 when opened. I therefore cannot verify the precise request-header/conditional-template integration, Linux configuration, or security fit within this run. This is a lead for further checking, not an established replacement. Missing access is not evidence that lighttpd cannot meet your requirements. [Official mod_ssi page](https://redmine.lighttpd.net/projects/lighttpd/wiki/Mod_ssi)\n\nFor your next concrete decision, evaluate a small Caddy configuration on the intended Linux environment with one shared layout and two page files. Confirm a full document on direct visits, the intended fragment on HTMX requests, correct caching/history behavior, and the filesystem boundary you expect. That would resolve the largest practical uncertainties without requiring a separate application server merely to assemble page pieces.",
+  "checks": [
+    {
+      "check_id": "CK-891e0ba6bb22",
+      "name": "Apache OpenOffice",
+      "decision": "exclude",
+      "reason": "The official product description positively identifies an office suite comprising word processing, spreadsheets, presentations, drawing, database and equation tools. That product operates on office documents and does not supply the requested web-server role; this is a decisive application-surface mismatch, not confusion with Apache HTTP Server. No unverified unsupported-feature claim or maintenance cutoff is needed for this exclusion.",
+      "evidence_urls": [
+        "https://www.openoffice.org/",
+        "https://www.openoffice.org/product/index.html"
+      ],
+      "verification_status": "Official product identity and component functions opened; excluded on application-surface mismatch. Individual server musts remain unknown rather than fabricated failures.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "unknown",
+          "evidence_url": "https://www.openoffice.org/product/index.html",
+          "version_scope": "Apache OpenOffice product description; version not essential to scope judgment",
+          "reason": "This office-suite candidate has a decisive application-surface mismatch. No unsupported-feature assertion is invented from absent documentation; this individual server capability was not independently verified."
+        }
+      ],
+      "form": "app",
+      "contribution": "none",
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "unknown",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "unknown"
+      },
+      "T": "unknown",
+      "date_status": "unknown product text; homepage release announcement is post_decision",
+      "post_decision": true
+    },
+    {
+      "check_id": "CK-e81a0349a2be",
+      "name": "Microsoft IIS for Windows Server",
+      "decision": "exclude",
+      "reason": "Microsoft identifies IIS as a Windows operating-system component, and its installation instructions require the Windows Server Web Server role. This conflicts with the original must-run-on-Linux requirement. The user accepts Docker only as a Windows-development fallback; that does not authorize substituting Windows Server for Linux production. Price, security marketing, and extensibility cannot offset this platform failure.",
+      "evidence_urls": [
+        "https://learn.microsoft.com/en-us/lifecycle/products/internet-information-services-iis",
+        "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1"
+      ],
+      "verification_status": "Official Windows component dependency and Windows Server role installation verified. Linux requirement fails; other unresolved musts do not alter the decision.",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+          "version_scope": "IIS Windows Server role; documentation applies to Server 2016/2019/2022/2025",
+          "reason": "Not independently resolved because the Windows operating-system dependency is already decisive for the mandatory Linux target."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+          "version_scope": "IIS Windows Server role; documentation applies to Server 2016/2019/2022/2025",
+          "reason": "Not independently resolved because the Windows operating-system dependency is already decisive for the mandatory Linux target."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+          "version_scope": "IIS Windows Server role; documentation applies to Server 2016/2019/2022/2025",
+          "reason": "Not independently resolved because the Windows operating-system dependency is already decisive for the mandatory Linux target."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+          "version_scope": "IIS Windows Server role; documentation applies to Server 2016/2019/2022/2025",
+          "reason": "Not independently resolved because the Windows operating-system dependency is already decisive for the mandatory Linux target."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://learn.microsoft.com/en-us/windows-server/networking/core-network-guide/cncg/server-certs/install-the-web-server-web1",
+          "version_scope": "IIS Windows Server role; documentation applies to Server 2016/2019/2022/2025",
+          "reason": "Not independently resolved because the Windows operating-system dependency is already decisive for the mandatory Linux target."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "fail",
+          "evidence_url": "https://learn.microsoft.com/en-us/lifecycle/products/internet-information-services-iis",
+          "version_scope": "IIS as a Windows OS component; corroborated by role-installation instructions for Windows Server 2016/2019/2022/2025",
+          "reason": "The checked candidate requires the Windows Server operating system: Microsoft defines IIS as a Windows component and installs it as a Windows Server role. That operating-system dependency conflicts with the original mandatory Linux execution target. Optional Windows development support does not override Linux production."
+        }
+      ],
+      "form": "app",
+      "contribution": "whole",
+      "L": "ok",
+      "E": "contradicted",
+      "H": {
+        "M1": "unknown",
+        "M2": "unknown",
+        "M3": "unknown",
+        "M4": "unknown",
+        "M5": "unknown",
+        "M6": "fail"
+      },
+      "T": "not_needed",
+      "date_status": "mixed: unknown live lifecycle page and pre_decision installation article",
+      "post_decision": null
+    },
+    {
+      "check_id": "CK-1fd3a1f4f3d4",
+      "name": "Caddy",
+      "decision": "keep",
+      "reason": "Keep as a plausible whole-server solution: opened documentation establishes static files, in-process templates/file includes, request-header access and Linux installation. These map the interpreted HTMX behavior without a separate application server. The homepage additionally documents automatic HTTPS, but does not resolve the subjective security/minimalism musts or prove safe template/filesystem configuration. Those unknowns and the post-question API reference are preserved; no decisive exclusion is documented.",
+      "evidence_urls": [
+        "https://caddyserver.com/",
+        "https://caddyserver.com/docs/caddyfile/directives/file_server",
+        "https://caddyserver.com/docs/caddyfile/directives/templates",
+        "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+        "https://caddyserver.com/docs/install"
+      ],
+      "verification_status": "Documented functional mapping; retained with unresolved security/minimalism and Alpine-specific deployment checks. A reviewed minimal Alpine deployment with the expected filesystem boundary and response behavior would resolve practical uncertainty; failure to satisfy those musts would change the result.",
+      "label": "INSUFFICIENT",
+      "must_checks": [
+        {
+          "id": "M1",
+          "target": "server security or easy hardening",
+          "polarity": "positive",
+          "source_location": "hash-verified original, security bullet",
+          "status": "unknown",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+          "version_scope": "Live Caddy documentation; exact deployed release unselected",
+          "reason": "Traversal protection is documented, but symlink access and powerful template evaluation need deliberate configuration. The user's relative security/ease threshold is unspecified; no whole-deployment audit was performed."
+        },
+        {
+          "id": "M2",
+          "target": "static-file serving",
+          "polarity": "positive",
+          "source_location": "hash-verified original, static-files bullet",
+          "status": "pass",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+          "version_scope": "Live Caddy file_server documentation",
+          "reason": "Explicitly serves static files from a configured root."
+        },
+        {
+          "id": "M3",
+          "target": "HTMX awareness, including permitted extension",
+          "polarity": "positive",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+          "version_scope": "v2.11.9, published after question",
+          "reason": "Under the stated interpretation, templates can read HX-Request through .Req.Header.Get and include shared files to choose a fragment or full-page layout. This is a documented-component mapping, not an executed integration."
+        },
+        {
+          "id": "M4",
+          "target": "requirement for a separate application server behind this server",
+          "polarity": "negative",
+          "source_location": "hash-verified original, HTMX bullet",
+          "status": "pass",
+          "evidence_url": "https://pkg.go.dev/github.com/caddyserver/caddy/v2/modules/caddyhttp/templates",
+          "version_scope": "v2.11.9, published after question",
+          "reason": "Templates execute as Caddy middleware; file includes and in-memory subrequests need no separate backend process for this design."
+        },
+        {
+          "id": "M5",
+          "target": "simplicity/minimalism",
+          "polarity": "positive",
+          "source_location": "hash-verified original, minimalism bullet",
+          "status": "unknown",
+          "evidence_url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+          "version_scope": "Live Caddy documentation",
+          "reason": "Small configuration is feasible, but the server and template facility have capabilities beyond the stated needs. No objective 'as minimalist as possible' threshold is supplied."
+        },
+        {
+          "id": "M6",
+          "target": "Linux execution",
+          "polarity": "positive",
+          "source_location": "hash-verified original, operating-system bullet",
+          "status": "pass",
+          "evidence_url": "https://caddyserver.com/docs/install",
+          "version_scope": "Live installation documentation",
+          "reason": "Official installation methods include Linux distributions. Alpine preference remains separately unverified."
+        }
+      ],
+      "form": "app",
+      "contribution": "whole",
+      "L": "ok",
+      "E": "supported",
+      "H": {
+        "M1": "unknown",
+        "M2": "pass",
+        "M3": "pass",
+        "M4": "pass",
+        "M5": "unknown",
+        "M6": "pass"
+      },
+      "T": "mapped",
+      "date_status": "mixed: unknown live docs and post_decision API version",
+      "post_decision": true
+    }
+  ],
+  "stage1_frozen_at_utc": "2026-11-21T04:27:52Z",
+  "checks_started_at_utc": "2026-11-21T04:28:56Z",
+  "checks_ended_at_utc": "2026-11-21T04:30:22Z",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 20,
+    "candidate_count": 3,
+    "stage1_search_queries": 7,
+    "stage1_opened_pages": 15,
+    "search_query_limit": 12,
+    "opened_page_attempt_limit": 20,
+    "remaining_search_queries": 4,
+    "remaining_open_attempts": 0,
+    "counting_note": "Every explicit open attempt, including failed opens and repeated range requests to the same URL, is counted. The anonymous code-search URL counts as one search query and one open attempt. Input retrieval is excluded as instructed."
+  },
+  "limitations": [
+    "No deployment, integration test, security audit, or package installation was performed.",
+    "Security and minimalism are explicit but relative musts; they remain unknown rather than being silently weakened or scored away.",
+    "HTMX awareness was interpreted as suitable HTML fragments and optional request-header-dependent layout; exact intended HTMX behavior and version are unspecified.",
+    "Caddy v2.11.9 API material is post-decision. Undated live pages are marked unknown and not treated as evidence of availability on the question date.",
+    "Anonymous GitHub code search was blocked. A code-through-web query found official source snippets; a raw-source open also failed; source-derived pkg.go.dev documentation was readable.",
+    "lighttpd documentation was blocked and remains an unverified candidate, not a rejected candidate.",
+    "No excluded question thread, copy, or citing-page exposure was observed. No source bodies or usernames have been saved."
+  ],
+  "execution_status": "complete"
+}
