@@ -1,0 +1,149 @@
+[
+  {
+    "id": "AD01",
+    "source_family": "b",
+    "organization": "ExtendDB",
+    "repository": "ExtendDB/extenddb",
+    "primary_urls": [
+      "https://github.com/ExtendDB/extenddb/blob/main/docs/adr/0023-catalog-migrations.md",
+      "https://raw.githubusercontent.com/ExtendDB/extenddb/0e02e0f7069960231e0359e7f1a753b1e2b86d85/docs/adr/0003-catalog-migration-mechanism.md"
+    ],
+    "primary_version": "ADR0023 2026-10-29; ADR0003 0e02e0f7069960231e0359e7f1a753b1e2b86d85",
+    "selected_scope": "Schema migration runner across PostgreSQL, SQLite, Cassandra and MongoDB",
+    "built": "체크섬 없는 개별 backend migration runner",
+    "missed": {
+      "name": "sqlx::migrate checksum and atomic migration ledger",
+      "url": "https://docs.rs/sqlx/0.5.1/sqlx/migrate/index.html"
+    },
+    "missed_form": "library",
+    "legacy_S1": "component",
+    "missed_contribution": "reference",
+    "missed_relation": "재사용 부품",
+    "late_discovery_status": "known_rejected",
+    "strict_late_discovery_eligible": false,
+    "decision_date": "미확인(최초 자체 runner 선택의 월); 2026-06-17에는 기존 runner 관측",
+    "decision_date_kind": "initial choice unknown; dated ADR is upper bound on implementation",
+    "discovery_date": "2026-10-29",
+    "discovery_date_kind": "documented reassessment, not first awareness",
+    "replacement_date": "2026-10-29 accepted decision",
+    "existed_at_decision": {
+      "verdict": "unknown",
+      "evidence_url": "https://docs.rs/crate/sqlx/0.5.1/source/CHANGELOG.md",
+      "reason": "sqlx migration functionality predates dated ADRs, but initial custom-choice date unknown"
+    },
+    "prominence_at_decision": "미확인(동시기 사용 지표 확보 필요)",
+    "need_statement": {
+      "text": "Upgrade catalogs safely across several database backends without silently skipping schema or data changes.",
+      "kind": "worker paraphrase",
+      "word_count": 15,
+      "source_url": "https://github.com/ExtendDB/extenddb/blob/main/docs/adr/0023-catalog-migrations.md"
+    },
+    "official_description": {
+      "text": "Versioned migrations with checksums and transactional recording for SQL databases.",
+      "source_url": "https://docs.rs/sqlx/0.5.1/sqlx/migrate/index.html",
+      "status": "pending direct description read"
+    },
+    "lexical_overlap": {
+      "verdict": "pending"
+    },
+    "cost_indicators": {
+      "reversed_documented_decisions": {
+        "value": 1,
+        "unit": "decisions",
+        "evidence": "https://github.com/ExtendDB/extenddb/blob/main/docs/adr/0023-catalog-migrations.md",
+        "scope": "unimplemented ADR0003 superseded; NOT deployed adoption rollback",
+        "attributable_to_ignorance": false
+      }
+    },
+    "discovery_path": "schema bug and architecture review; first learning of sqlx unknown",
+    "miss_reason": {
+      "value": "known but does not cover non-SQL backends or code migration guards",
+      "statement_location": "ADR0023 Rationale option4",
+      "note": "Authors retain checksum/atomic-ledger properties while rejecting whole library migration."
+    },
+    "outcome": "정당한 자체 구현",
+    "outcome_observation_window": "ADR0023 accepted at2026-10-29",
+    "coding_author": "worker GPT-6 Astra Pro",
+    "summary": "An initially proposed sqlx replacement was never implemented. A later accepted custom runner borrows library safeguards but covers additional backends.",
+    "source_ids": [
+      "R01-adr",
+      "R01-old",
+      "R01-history"
+    ],
+    "remaining_gaps": [
+      "initial decision month",
+      "actual implementation commit of ADR0023",
+      "historical prominence"
+    ]
+  },
+  {
+    "id": "AD02",
+    "source_family": "b",
+    "organization": "VTT-ProperTune",
+    "repository": "VTT-ProperTune/OpenPFC",
+    "primary_urls": [
+      "https://vtt-propertune.github.io/OpenPFC/docs/adr/0004-execution-layer/",
+      "https://github.com/VTT-ProperTune/OpenPFC/blob/c131a45b3be5a3502399716a3b1fe400464aab4e/docs/adr/0004-execution-layer.md"
+    ],
+    "primary_version": "c131a45b3be5a3502399716a3b1fe400464aab4e; accepted2026-07-23",
+    "selected_scope": "GPU execution and memory portability layer",
+    "built": "사용하지 않는 Kokkos 유사 facade와 실사용 CUDA/HIP DataBuffer 계층",
+    "missed": {
+      "name": "Kokkos",
+      "url": "https://kokkos.org"
+    },
+    "missed_form": "library",
+    "legacy_S1": "component",
+    "missed_contribution": "comparison",
+    "missed_relation": "재사용 부품",
+    "late_discovery_status": "known_rejected",
+    "strict_late_discovery_eligible": false,
+    "decision_date": "미확인(최초 facade 선택 월); 유지 결정2026-07-23",
+    "decision_date_kind": "original choice unknown; retention date documented",
+    "discovery_date": "2026-07-23",
+    "discovery_date_kind": "accepted audit-driven reassessment, not first awareness",
+    "replacement_date": "M3 implemented by observed SHA",
+    "existed_at_decision": {
+      "verdict": "unknown",
+      "evidence_url": "https://www.sandia.gov/research/publications/details/kokkos-enabling-manycore-performance-portability-through-polymorphic-memory-2014-07-22/",
+      "reason": "Kokkos public in2014; existed before documented2026 review, but original choice date unknown"
+    },
+    "prominence_at_decision": "미확인(당시 사용 지표 필요)",
+    "need_statement": {
+      "text": "Run stencil computations on different GPU devices while keeping memory movement and halo exchange manageable.",
+      "kind": "worker paraphrase",
+      "word_count": 16,
+      "source_url": "https://vtt-propertune.github.io/OpenPFC/docs/adr/0004-execution-layer/"
+    },
+    "official_description": {
+      "text": "The Kokkos C++ library enables performance portability through abstractions for fine-grain data parallelism and memory access patterns.",
+      "source_url": "https://www.sandia.gov/research/publications/details/kokkos-enabling-manycore-performance-portability-through-polymorphic-memory-2014-07-22/",
+      "kind": "worker paraphrase of official abstract",
+      "historical": true
+    },
+    "lexical_overlap": {
+      "verdict": "pending"
+    },
+    "cost_indicators": {},
+    "discovery_path": "architecture audit",
+    "miss_reason": {
+      "value": "known but dependency cost exceeds benefit for stencil-shaped loops",
+      "statement_location": "ADR0004 Context, Decision3",
+      "note": "Future transition was already the facsimile's stated purpose."
+    },
+    "outcome": "정당한 자체 구현",
+    "outcome_observation_window": "M3 implemented in fixed SHA read2026-11-21",
+    "coding_author": "worker GPT-6 Astra Pro",
+    "summary": "The audit removed an unused partial imitation; the maintainers retained a smaller custom layer and deferred Kokkos until workload diversity justifies it.",
+    "source_ids": [
+      "R02-adr",
+      "R02-fixed",
+      "R02-availability"
+    ],
+    "remaining_gaps": [
+      "original decision month",
+      "deleted LOC",
+      "historical usage metrics"
+    ]
+  }
+]

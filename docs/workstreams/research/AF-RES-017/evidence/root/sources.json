@@ -1,0 +1,477 @@
+{
+  "sources": [
+    {
+      "id": "R01-adr",
+      "url": "https://github.com/ExtendDB/extenddb/blob/main/docs/adr/0023-catalog-migrations.md",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "primary technical record",
+      "title": "ADR0023 one migration list and ledgers",
+      "version_or_date": "2026-10-29; live at read",
+      "sections_read": "Context, Options, Decision, Rationale",
+      "confirmed": "기존 SQL 파일 편집을 체크섬 없는 runner가 건너뛰었다. ADR0003의 sqlx 채택은 실제 구현되지 않았다고 명시한다. 새 자체 runner는 sqlx의 체크섬·원자적 ledger 특성을 보존하되 비SQL backend와 code migration 때문에 sqlx 전체 채택을 거절했다.",
+      "limits": "수치 9/10 실패는 저자의 재현 실험이지 운영 사고 횟수가 아니다. 초기 sqlx 무지나 노동 비용을 입증하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R01-old",
+      "url": "https://raw.githubusercontent.com/ExtendDB/extenddb/0e02e0f7069960231e0359e7f1a753b1e2b86d85/docs/adr/0003-catalog-migration-mechanism.md",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "fixed ADR",
+      "title": "ADR0003 initial proposed sqlx migration",
+      "version_or_date": "0e02e0f7069960231e0359e7f1a753b1e2b86d85; document 2026-06-17",
+      "sections_read": "full short ADR",
+      "confirmed": "프로젝트는 이미 sqlx에 의존했고 filename-only migrator가 schema 변경을 놓쳐 CreateTable이 실패했다. 초기 제안은 sqlx::migrate 및 개발 DB 재생성이었다.",
+      "limits": "문서는 Proposed였다. 후속 ADR은 미구현을 명시하므로 채택·되돌림 사례로 세지 않는다.",
+      "level": "D2",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R01-history",
+      "url": "https://api.github.com/repos/ExtendDB/extenddb/commits?path=docs/adr/0003-catalog-migration-mechanism.md&per_page=30",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "commit metadata",
+      "title": "ADR0003 file history",
+      "version_or_date": "read 2026-11-21",
+      "sections_read": "returned commit SHAs/dates",
+      "confirmed": "첫 반환 생성 커밋은 2026-06-23의 0e02e0f이고 ADR0023 후속 갱신은 2026-10-29의 9791ada이다.",
+      "limits": "코드 작성·사적 인지 날짜와 다르다.",
+      "level": "D3-fetch",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R02-adr",
+      "url": "https://vtt-propertune.github.io/OpenPFC/docs/adr/0004-execution-layer/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "primary technical record",
+      "title": "OpenPFC minimal homegrown no Kokkos",
+      "version_or_date": "Accepted 2026-07-23",
+      "sections_read": "Context, Decision, Consequences",
+      "confirmed": "아키텍처 감사에서 실제 앱이 쓰지 않는 Kokkos 흉내 계층을 발견해 제거했다. 실사용 DataBuffer와 직접 CUDA/HIP kernel은 유지하고 kernel 다양성이 늘 때만 Kokkos를 재검토한다.",
+      "limits": "Kokkos 존재를 늦게 알았다고 하지 않는다. 삭제 LOC·초기 결정일은 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R02-fixed",
+      "url": "https://github.com/VTT-ProperTune/OpenPFC/blob/c131a45b3be5a3502399716a3b1fe400464aab4e/docs/adr/0004-execution-layer.md",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "fixed ADR",
+      "title": "OpenPFC ADR fixed git object",
+      "version_or_date": "c131a45b3be5a3502399716a3b1fe400464aab4e",
+      "sections_read": "git fetch then git show full ADR",
+      "confirmed": "고정 SHA 본문은 live ADR과 같은 Accepted·M3 구현·자체 계층 유지 결정을 담는다.",
+      "limits": "master HEAD 관측 고정본이며 최초 커밋은 아니다.",
+      "level": "D2",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R02-availability",
+      "url": "https://www.sandia.gov/research/publications/details/kokkos-enabling-manycore-performance-portability-through-polymorphic-memory-2014-07-22/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "official publication metadata",
+      "title": "Kokkos publication at originating lab",
+      "version_or_date": "2014-07-22 metadata; December2014 journal issue",
+      "sections_read": "abstract and publication metadata",
+      "confirmed": "Sandia 원기관은 2014-07-22 발행과 C++의 데이터 병렬·메모리 접근 추상화, 이식성 목적을 명시한다.",
+      "limits": "논문 초록/서지로 존재·설명만 확인했다. 방법 문헌 최소 개수에는 넣지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q4"
+      ]
+    },
+    {
+      "id": "R03-adr",
+      "url": "https://docs.openedx.org/projects/openedx-proposals/en/latest/architectural-decisions/oep-0045/decisions/0001-tutor-as-replacement-for-edx-configuration.html",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "primary technical record",
+      "title": "Tutor replacement ADR",
+      "version_or_date": "accepted; live",
+      "sections_read": "Criteria, Evaluation, maintenance and migration estimates",
+      "confirmed": "Ansible 기반 자체 배포를 외부 Tutor로 대체하는 기준과 유지보수·이행 위험을 공개 평가한다. 로컬 실험15분 미만·50분 초과·약2시간은 설치 실행시간이고 3–6개월은 미래 작업 추정이다.",
+      "limits": "초기 인지 시점·실제 이행 노동을 입증하지 않으며 미래 추정은 비용 관측에서 제외한다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R03-first",
+      "url": "https://github.com/overhangio/tutor/commit/bdd1a41f6207275bd24c98136fc567af2ea48b7f",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "first commit",
+      "title": "Tutor root commit",
+      "version_or_date": "bdd1a41f6207275bd24c98136fc567af2ea48b7f;2017-07-03",
+      "sections_read": "root commit metadata, README initial purpose",
+      "confirmed": "git fetch 및 git show로 0 parent인 초기 커밋 시각 2017-07-03T12:39:19+02:00을 확인했다. 초기 README는 Open edX production stack을 Docker Compose로 구성한다.",
+      "limits": "오픈소스 최초 기록이며 사적 개발 시작은 알 수 없다.",
+      "level": "D2",
+      "used_in": [
+        "Q4"
+      ]
+    },
+    {
+      "id": "R03-release",
+      "url": "https://openedx.org/blog/lilac-has-been-released/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "release announcement",
+      "title": "Lilac release supports external Tutor",
+      "version_or_date": "2021-06-09",
+      "sections_read": "release announcement main body",
+      "confirmed": "Lilac에서 처음 외부 개발·유지보수 설치 도구 Tutor를 공식 지원하며 native installation과 병행한다고 발표했다.",
+      "limits": "2021년 실제 채택 증거이나 최초 자체 구현의 월은 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R04-incident",
+      "url": "https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "incident report",
+      "title": "Cloudflare July2 WAF postmortem",
+      "version_or_date": "2019-07-12; incident2019-07-02",
+      "sections_read": "timeline, contributing causes, remediation list",
+      "confirmed": "과도한 정규식 backtracking으로 27분 전역 장애가 났다. 기존 CPU 보호가 리팩터링 중 빠졌으며 RE2/Rust regex와 같은 선형 시간 엔진 이전을 개선책으로 적었다.",
+      "limits": "27분은 사고 영향이며 무지를 제거하면 절약될 시간이라는 인과는 입증하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R04-followup",
+      "url": "https://blog.cloudflare.com/making-the-waf-40-faster/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "engineering follow-up",
+      "title": "WAF RE2-inspired migration follow-up",
+      "version_or_date": "2020-07-01",
+      "sections_read": "Transitioning from PCRE to RE2",
+      "confirmed": "2019년7월 실제 RE2 영감 엔진으로 이행했다고 확인한다. 평균CPU에는 측정 가능한 차이가 없었고 tail outlier는 줄었으며 초기 shared regex cache는 과도한 메모리를 써 조정했다.",
+      "limits": "제목의40% 전체 개선을 regex 교체 효과로 돌릴 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R04-release",
+      "url": "https://opensource.googleblog.com/2010/03/re2-principled-approach-to-regular.html",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "official release",
+      "title": "RE2 open source release",
+      "version_or_date": "2010-03-11",
+      "sections_read": "announcement body",
+      "confirmed": "공식 발표는 PCRE를 대체할 C++ 정규식 라이브러리와 입력 길이에 선형인 실행 및 제한된 메모리라는 목적을 명시한다.",
+      "limits": "이 시점에 존재했음만 증명하며 Cloudflare의 초기 선택 시각과 인지를 증명하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q4"
+      ]
+    },
+    {
+      "id": "R04-history",
+      "url": "https://swtch.com/~rsc/regexp/regexp3.html",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "author technical article",
+      "title": "Regular Expression Matching in the Wild",
+      "version_or_date": "2010-03",
+      "sections_read": "opening history, implementation tradeoffs",
+      "confirmed": "구현자는 2006년 Code Search에서 PCRE 사용을 고려하다 backtracking 한계를 알아차려 Thompson 계열 엔진을 만들었다고 기록한다.",
+      "limits": "관련 원리는 오래됐다는 근거이며 Cloudflare 팀의 인지 증거가 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q4",
+        "Q8"
+      ]
+    },
+    {
+      "id": "R05-incident",
+      "url": "https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "incident report",
+      "title": "GitLab database outage",
+      "version_or_date": "2017-02-10;incident2017-01-31",
+      "sections_read": "5 Whys, impact, improvements",
+      "confirmed": "약18시간 장애와 백업 실패를 공개했다. Azure snapshots는 다른 백업이면 충분하다는 판단 때문에 꺼졌고 복구시험 책임자가 없었다. PostgreSQL 도구 버전 불일치와 실패 알림 문제도 있었다.",
+      "limits": "사고의 모든 비용을 특정 기존 도구의 미인지에 귀속할 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R05-barman",
+      "url": "https://gitlab.com/gitlab-com/gl-infra/production-engineering/-/work_items/1105",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "issue discussion",
+      "title": "Investigate pgbarman",
+      "version_or_date": "issue1105; linked from2017-02-10 postmortem",
+      "sections_read": "issue body",
+      "confirmed": "사고 중 여러 사람이 Barman을 추천했고 담당자가 익숙하지 않다고 명시했다.",
+      "limits": "열람된 본문에는 실제 Barman 채택·정확한 작성일·이행 결과가 없다. 명시적 미인지와 실제 교체 증거를 분리한다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R05-pitr",
+      "url": "https://www.postgresql.org/docs/9.6/continuous-archiving.html",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "versioned official manual",
+      "title": "PostgreSQL continuous archiving",
+      "version_or_date": "9.6.24 maintained historical manual",
+      "sections_read": "continuous archiving setup, WAL vs pg_dump, test recommendation",
+      "confirmed": "WAL archiving과 base backup은 PITR을 제공하고 pg_dump 논리 백업만으로 그 복구를 할 수 없다고 설명한다.",
+      "limits": "9.6.24 본문을2016년의 모든 문장과 동일하다고 가정하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q4"
+      ]
+    },
+    {
+      "id": "R05-release",
+      "url": "https://www.postgresql.org/docs/release/9.6.0/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "official release",
+      "title": "PostgreSQL 9.6 release",
+      "version_or_date": "2016-09-29",
+      "sections_read": "release date, replication and migration notes",
+      "confirmed": "9.6 발행은2016-09-29이고 여러 standby 및 WAL 관련 개선이 공개돼 있었다.",
+      "limits": "최초 GitLab 백업 선택 날짜가 없으므로 그때 존재 판정은 별도 미확인.",
+      "level": "D1",
+      "used_in": [
+        "Q4"
+      ]
+    },
+    {
+      "id": "R06-incident",
+      "url": "https://github.blog/news-insights/company-news/oct21-post-incident-analysis/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "incident report",
+      "title": "GitHub Oct21 incident",
+      "version_or_date": "2018-10-30;updated2021-12-19;incident2018-10-21",
+      "sections_read": "incident chronology, recovery, future actions",
+      "confirmed": "43초 네트워크 분리가24시간11분 서비스 저하로 이어졌다. 전체 cluster 복구시험은 없었고 active/active 계획은 사고 전에도 있었다. failover 범위를 제한하고 장애 주입 시험 확대를 계획했다.",
+      "limits": "미래 계획과 실제 완료를 구별한다. 특정 도구를 몰랐다는 진술은 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R06-design",
+      "url": "https://github.blog/engineering/mysql-high-availability-at-github/",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "pre-incident engineering design",
+      "title": "MySQL HA at GitHub",
+      "version_or_date": "2018-06-20;updated2020-05-21",
+      "sections_read": "initial topology, need and existing architecture",
+      "confirmed": "사고 이전 설계 문서는 primary discovery와 가용성 필요를 명시하고 Orchestrator 기반 HA 설계를 설명한다.",
+      "limits": "실제 최초 도입일과 이후 fault-injection 완료는 이 문서만으로 알 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q2",
+        "Q4",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R07-incident",
+      "url": "https://about.roblox.com/newsroom/2022/01/roblox-return-to-service-10-28-10-31-2021",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "incident report",
+      "title": "Roblox return to service",
+      "version_or_date": "2022-01-20;incident2021-10-28..31",
+      "sections_read": "Root causes, recovery, completed and future changes",
+      "confirmed": "Consul streaming을 점진 도입하고2021-10-27 routing에 확대했다가10-30비활성화했다. 73시간 장애에는 channel contention과 BoltDB freelist 문제가 겹쳤다. 기존 BoltDB compaction 도구 사용을 배포했으며 bbolt 이전은 당시 계획이었다.",
+      "limits": "동시 원인 사고 전체를 streaming 또는 미인지 비용으로 나눠 귀속할 수 없다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R07-release",
+      "url": "https://www.hashicorp.com/en/blog/announcing-consul-1-10",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "official release",
+      "title": "Consul1.10 GA",
+      "version_or_date": "2021-06-23",
+      "sections_read": "release date and Streaming section",
+      "confirmed": "1.9에서 도입된 streaming이1.10의 service-health에서 기본 활성화됐다고 공식 발표했다.",
+      "limits": "기능 존재는 확인되나 Roblox 특수 부하의 적합성은 보장하지 않는다.",
+      "level": "D1",
+      "used_in": [
+        "Q3",
+        "Q4"
+      ]
+    },
+    {
+      "id": "R07-counter",
+      "url": "https://medium.com/criteo-engineering/consul-streaming-whats-behind-it-6f44f77a5175",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "practitioner engineering report",
+      "title": "Criteo Consul streaming experience",
+      "version_or_date": "2021-02-02",
+      "sections_read": "performance, patch list, Is it ready yet",
+      "confirmed": "Criteo는 대규모 부하에서 streaming의 장점과 당시 beta·추가 패치 필요를 함께 보고했다. Roblox 사고보다 앞선 긍정과 제한이 함께 있는 비교다.",
+      "limits": "다른 부하·패치된 fork여서 Roblox 성공을 예측할 근거가 아니다.",
+      "level": "D1",
+      "used_in": [
+        "Q4",
+        "Q6"
+      ]
+    },
+    {
+      "id": "R08-incident",
+      "url": "https://clerk.com/blog/postmortem-feb-6-2025-service-outage",
+      "accessed_at_utc": "2026-11-21T03:59:05.849Z",
+      "access_note": "직접 본문 열람; 이 시각은 원장 기록 시각. 개별 최초 열람은 같은 세션 2026-11-21 UTC.",
+      "source_type": "incident report",
+      "title": "Clerk February6 outage",
+      "version_or_date": "2025-02-11;incident2025-02-06",
+      "sections_read": "timeline and remediations",
+      "confirmed": "26분 장애에서 재시도 설정이 영향 범위를 넓혔고 이미 조정했다. 2024년에 staged rollout을 만들었지만 단순하다고 여긴 변경에서 예외를 허용했다. JSON의 편의와 type enforcement 경계도 재검토했다.",
+      "limits": "기법을 몰랐다는 증거가 아니며 typed-column 이행은 미래 계획이다.",
+      "level": "D1",
+      "used_in": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "url": "https://github.com/PrestaShop/ADR/blob/049e1e66baf6ebc5e1723621754bab78209ac7a5/0014-drop-the-no-use-of-legacy-in-new-code-restriction.md",
+      "reason": "직접 raw 본문 읽음. 내부 legacy/Core/Adapter 경계 재조정이며 새 외부 실체 발견 아님; 관측 비용 없음.",
+      "status": "D2 read; excluded case"
+    },
+    {
+      "url": "https://github.com/PrestaShop/ADR/blob/049e1e66baf6ebc5e1723621754bab78209ac7a5/0018-horizontal-migration.md",
+      "reason": "직접 raw 본문 읽음. 같은 Symfony 이전 순서 조정. 4년·30PR×10000줄은 미래 가정, 실제 비용 아님.",
+      "status": "D2 read; excluded case"
+    },
+    {
+      "url": "https://gethardcount.com/docs/internals/decisions/007-revert-to-api-key-dashboard-auth/",
+      "reason": "자체 인증 사이의 번복; WorkOS/Clerk 실제 채택 증거 없음. 기존 해법 채택후 되돌림에 넣지 않음.",
+      "status": "D1 read; excluded case"
+    },
+    {
+      "url": "https://docs.openedx.org/projects/openedx-proposals/en/latest/archived/oep-0005/decisions/0005-centralized-devstack.html",
+      "reason": "내부 decentralized prototype 취소이며 외부 해법 발견 아님.",
+      "status": "D1 read; excluded case"
+    },
+    {
+      "url": "https://github.com/SEP-SelfLearn-SS25/nm-self-learning/wiki/Lessons-Learned",
+      "reason": "web DisabledError. mirror 검색 snippet만 확인; 본문 원문·날짜 미확보.",
+      "status": "excluded failure"
+    },
+    {
+      "url": "https://learn.hashicorp.com/tutorials/consul/1-10?in=consul%2Fnew-release",
+      "reason": "500 redirected developer tutorial inaccessible. 정상 공개 GA 발표로 대체.",
+      "status": "excluded failure"
+    },
+    {
+      "url": "https://api.github.com/repos/ExtendDB/extenddb/git/trees/main?recursive=1",
+      "reason": "403. 우회하지 않고 알려진 ADR 링크·git 경로 사용.",
+      "status": "excluded failure"
+    },
+    {
+      "url": "https://api.github.com/repos/VTT-ProperTune/OpenPFC/git/trees/master?recursive=1",
+      "reason": "403. 정상 git fetch 고정 SHA로 ADR 본문 확인.",
+      "status": "excluded failure"
+    }
+  ]
+}
