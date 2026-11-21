@@ -190,3 +190,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:49:05.181033+00:00
 
 87/106 responses and261/318 probe judgments are complete. N019 both conditions and N012 A are finalized. N012 P and T001 A/P are active; next dispatch91. Full-composite external answers remain distinct from a single shared component or a different provider configuration. Identity decisions record these boundaries without enlarging frozen gold.
+
+## Execution checkpoint — 2026-11-21T08:53:44.584951+00:00
+
+89/106 responses and267/318 probe judgments are complete. N012 P and T001 A are finalized; T001 P is checking probes and SX08 P/A are in discovery. Next: dispatch93 onward. Candidate mapping remains identity-only and explicitly preserves named editions, included components and full-composite boundaries. No H1 outcome statistics have been calculated.
