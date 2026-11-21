@@ -45,7 +45,7 @@ def rows():
                             'needs_review':len(text.split())>30,'source_word_count':len(text.split())})
                 keys[rid]={'condition':d['condition'],'qid':d['qid'],'kind':kind,'index':i,
                            'rank':c.get('rank'),'check_id':c.get('check_id'),'source_file':d['output'],'source_fields':source,
-                           'decision':c.get('decision',c.get('verdict')) if kind=='check' else None}
+                           'decision':c.get('decision',c.get('verdict',c.get('judgment'))) if kind=='check' else None}
     assert len(out)==len(keys)
     return out,keys
 
