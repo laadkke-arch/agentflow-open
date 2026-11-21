@@ -16,3 +16,7 @@
 ## 원문 주소·세부 시각
 
 위 고정판의 원 주소·확인 내용·한계는 sources-root.json의 IR01–IR09에 기록했다. 원격 위치는 git 원본의 blob permalink이며 실제 접근 명령을 access_method로 병기했다. 사용자 이름·프로필·원 스레드 본문은 복사하지 않았다.
+
+## 관계 반례 추가 대조 2026-11-21T05:30:40.760636+00:00
+
+IR10: `3b43c41ae8e9f8d41ea740669a6e5b3625f7d7cc:docs/workstreams/research/AF-RES-016/evidence/role-filter-counterexample.json`의36행을 읽고 코더별 집계했다. DIRECT7중 누락3은 양쪽 같으며 product 통과A7/B8·mismatchA2/B3이다. 원 필터는H 반사실 규칙의 계산이며 실제 사용자 행동은 아니다. 해시는 evidence/relation-role-filter-check.json.
