@@ -1,0 +1,50 @@
+name: Collaboration contract
+on:
+  push:
+    branches: [chore/workspace-foundation, 'work/**', 'codex/**']
+    paths:
+      - 'docs/product/**'
+      - 'docs/collaboration/**'
+      - 'docs/workstreams/**'
+      - 'docs/tasks/**'
+      - 'docs/START_HERE.md'
+      - 'docs/WORKBENCH.md'
+      - 'docs/CLOUD_WORKFLOW.md'
+      - 'AGENTS.md'
+      - 'STATE.md'
+      - '.github/workflows/session-check.yml'
+  pull_request:
+    branches: [main, chore/workspace-foundation]
+    paths:
+      - 'docs/product/**'
+      - 'docs/collaboration/**'
+      - 'docs/workstreams/**'
+      - 'docs/tasks/**'
+      - 'docs/START_HERE.md'
+      - 'docs/WORKBENCH.md'
+      - 'docs/CLOUD_WORKFLOW.md'
+      - 'AGENTS.md'
+      - 'STATE.md'
+      - '.github/workflows/session-check.yml'
+permissions:
+  contents: read
+concurrency:
+  group: session-check-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sessions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    env:
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - name: Check active task manifests against the integration contract
+        run: python -m workbench.session check-all --fetch

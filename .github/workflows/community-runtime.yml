@@ -1,0 +1,88 @@
+name: Community web runtime
+on:
+  push:
+    branches: [chore/workspace-foundation]
+    paths:
+      - 'integrations/web-runtime/**'
+      - '.github/workflows/community-runtime.yml'
+permissions:
+  contents: read
+concurrency:
+  group: community-runtime-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Set isolated runtime location
+        run: echo "AGENTFLOW_WEB_HOME=$RUNNER_TEMP/agentflow-web-runtime" >> "$GITHUB_ENV"
+      - name: Test installation boundaries
+        run: python3 -m unittest discover -s integrations/web-runtime -p 'test_*.py' -v
+      - name: Build pinned community engine and project adapter
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/af-evidence"
+          chmod 777 "$RUNNER_TEMP/af-evidence"
+          python3 integrations/web-runtime/manage.py prepare 2>&1 | tee "$RUNNER_TEMP/af-evidence/build.log"
+          cp "$AGENTFLOW_WEB_HOME/build-receipt.json" "$RUNNER_TEMP/af-evidence/"
+      - name: Exercise original HTTP OAuth and MCP without public exposure
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=256m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --entrypoint python3 agentflow-community-runtime:e0cef9118f61 /opt/kc-mcp/scripts/smoke_test.py /usr/local/bin/spacedock --output /evidence/upstream-oauth.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/upstream-oauth.log"
+      - name: Execute existing projects through the actual MCP engine
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=512m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --mount "type=bind,source=$GITHUB_WORKSPACE,target=/fixture,readonly" --entrypoint python3 agentflow-web-runtime:e0cef9118f61 /fixture/integrations/web-runtime/exercise.py --fixture /fixture --output /evidence/project-mcp.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/project-mcp.log"
+      - name: Check actual Python contract and Git persistence through MCP
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 1g --cpus 2 --tmpfs /tmp:uid=1000,gid=1000,mode=1777,size=512m --mount "type=bind,source=$RUNNER_TEMP/af-evidence,target=/evidence" --mount "type=bind,source=$GITHUB_WORKSPACE,target=/fixture,readonly" --entrypoint python3 agentflow-web-runtime:e0cef9118f61 /fixture/integrations/web-runtime/compatibility.py --fixture /fixture --output /evidence/compatibility.json 2>&1 | tee "$RUNNER_TEMP/af-evidence/compatibility.log"
+      - name: Start the user installation profile internally and verify it
+        run: |
+          set -euo pipefail
+          python3 integrations/web-runtime/manage.py start --offline
+          python3 integrations/web-runtime/manage.py verify | tee "$RUNNER_TEMP/af-evidence/installed-live-check.log"
+          docker compose --project-name agentflow-web-runtime -f "$AGENTFLOW_WEB_HOME/compose.json" exec -T runtime python3 -c "from pathlib import Path; Path('/workspace/demo/persistence-check.txt').write_text('preserved')"
+          docker compose --project-name agentflow-web-runtime -f "$AGENTFLOW_WEB_HOME/compose.json" down
+          python3 integrations/web-runtime/manage.py start --offline
+          docker compose --project-name agentflow-web-runtime -f "$AGENTFLOW_WEB_HOME/compose.json" exec -T runtime python3 -c "from pathlib import Path; assert Path('/workspace/demo/persistence-check.txt').read_text() == 'preserved'; print('PASS named volumes survive container recreation')"
+          python3 integrations/web-runtime/manage.py verify | tee "$RUNNER_TEMP/af-evidence/recreated-live-check.log"
+      - name: Summarize inspected runtime evidence
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'af-evidence'
+          upstream=json.loads((root/'upstream-oauth.json').read_text())
+          actual=json.loads((root/'project-mcp.json').read_text())
+          compatibility=json.loads((root/'compatibility.json').read_text())
+          result={'commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],
+            'upstream_checks':len(upstream['passed']),'project_checks':len(actual['passed']),
+            'compatibility_checks':len(compatibility['passed']),'python':compatibility['python'],
+            'actual_mcp_calls':len(actual['mcp_calls']),'installation_profile':'passed and recreated',
+            'public_endpoint_created':False,'user_pc_modified':False,'chatgpt_ui_tested':False}
+          (root/'summary.json').write_text(json.dumps(result,indent=2))
+          print('COMMUNITY_RUNTIME_RESULT='+json.dumps(result))
+          PY
+      - name: Stop only the disposable CI runtime
+        if: always()
+        run: |
+          if test -f "$AGENTFLOW_WEB_HOME/compose.json"; then
+            docker compose --project-name agentflow-web-runtime -f "$AGENTFLOW_WEB_HOME/compose.json" down
+          fi
+      - name: Preserve non-secret evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: community-runtime-${{ github.sha }}
+          path: ${{ runner.temp }}/af-evidence/
+          retention-days: 14
+          if-no-files-found: warn
