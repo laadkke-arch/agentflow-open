@@ -83,8 +83,9 @@ def main(prepare,finalize,reveal):
         save('judging/batch-order.json',{'seed':SEED,'qids':qids,'row_count':sum(len(v) for v in groups.values())})
         print(json.dumps({'normalized_rows':sum(len(v) for v in groups.values()),'questions':len(qids)}))
     if reveal:
-        normalized=set()
-        for f in (ROOT/'judging/normalized').glob('*.json'):normalized.update(r['row_id'] for r in json.loads(f.read_text())['rows'])
+        normalized=set();byqid={}
+        for f in (ROOT/'judging/normalized').glob('*.json'):
+            d=json.loads(f.read_text());byqid[d['qid']]={r['row_id'] for r in d['rows']};normalized.update(byqid[d['qid']])
         assert normalized==set(keys)
         coverage=collections.defaultdict(set)
         for f in (ROOT/'judging/blind-raw').glob('*.json'):
@@ -92,10 +93,13 @@ def main(prepare,finalize,reveal):
             for row in judgment.get('rows',[]):
                 assert row['row_id'] in normalized,('unknown judgment row',str(f),row['row_id'])
                 coverage[judgment['judge_id']].add(row['row_id'])
-        assert coverage and all(v==normalized for v in coverage.values()),'Incomplete blind judge coverage: refuse key release'
+        plan=load('judging/plan.json');assert plan,'Missing coverage plan'
+        planned={j['judge_id']:set().union(*(byqid[q] for q in j['qids'])) for j in plan['judges']}
+        assert planned.get('primary')==normalized
+        assert set(coverage)==set(planned) and all(coverage[j]==expected for j,expected in planned.items()),'Incomplete planned blind judge coverage: refuse key release'
         save('judging/key.json',{'released_after_raw_judging':True,'seed':SEED,
-                               'complete_judges':sorted(coverage),'rows':keys})
-        print('Key released after every registered blind judge covered every normalized row.')
+                               'complete_judges':{j:len(ids) for j,ids in coverage.items()},'rows':keys})
+        print('Key released after primary full coverage and secondary planned subset coverage.')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--prepare',action='store_true');p.add_argument('--finalize',action='store_true');p.add_argument('--reveal-key',action='store_true');a=p.parse_args();main(a.prepare,a.finalize,a.reveal_key)

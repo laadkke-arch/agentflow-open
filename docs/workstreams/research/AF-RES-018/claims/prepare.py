@@ -20,8 +20,7 @@ def prepare():
         key[run_id]={'condition':d['condition'],'qid':d['qid'],'source_file':d['output'],
                      'raw_response_sha256':hashlib.sha256(run['raw_response'].encode()).hexdigest()}
         packets.append({'run_id':run_id,'qid':d['qid'],'raw_response':run['raw_response'],
-                        'candidate_links':[{'name':c['name'],'url':c.get('url'),'evidence_opened':c.get('evidence_opened')} for c in run['candidates']],
-                        'opened_urls':[r['url'] for r in run['opened_documents']]})
+                        'candidate_links':[{'name':c['name'],'url':c.get('url')} for c in run['candidates']]})
     rng=random.Random(18018);rng.shuffle(packets);manifest=[]
     for start in range(0,len(packets),8):
         number=start//8+1;file=f'claims/extract-inputs/batch-{number:02d}.json';runs=packets[start:start+8]

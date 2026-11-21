@@ -23,12 +23,13 @@ groups=collections.defaultdict(list)
 for r in sources:groups[site(r['url'])].append(r['id'])
 count=sum(min(3,len(v)) for v in groups.values())
 method_count=len(sources)
-for ledger in ['gold/draft-a/sources.json','gold/draft-b/sources.json','questions/new-draft/sources-draft.json']:
+for ledger in ['gold/draft-a/sources.json','gold/draft-b/sources.json','questions/new-draft/sources-draft.json',
+               'analysis/mapping-evidence.json','evidence/run-readings.json','evidence/judging-readings.json','evidence/claim-readings.json']:
     path=ROOT/ledger
     if not path.exists():continue
     data=json.loads(path.read_text())
     for row in data['sources']:
-        row=dict(row);row['counted_as']='question_or_check_evidence_not_methods';row['ledger']=ledger
+        row=dict(row);row.setdefault('counted_as','question_or_check_evidence_not_methods');row['ledger']=ledger
         miss=sorted(required-set(row))
         if miss:errors.append({'id':row.get('id'),'missing':miss})
         sources.append(row)
