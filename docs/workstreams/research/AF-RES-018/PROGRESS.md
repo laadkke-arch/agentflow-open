@@ -186,3 +186,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:44:42.911817+00:00
 
 84/106 responses and252/318 probe judgments are complete, giving42 full question pairs. T003 A and T048 A/P pass frozen-prefix and check-order audits. T048 P required a pre-injection accounting-only correction from4 investigated entries to3 returned entries; its raw answer/candidates were unchanged. N019 A/P are in checks, N012 A in discovery. Next: dispatch88 onward. Citation audit remains61 resolved printed references and5 unavailable previous-session references.
+
+## Execution checkpoint — 2026-11-21T08:49:05.181033+00:00
+
+87/106 responses and261/318 probe judgments are complete. N019 both conditions and N012 A are finalized. N012 P and T001 A/P are active; next dispatch91. Full-composite external answers remain distinct from a single shared component or a different provider configuration. Identity decisions record these boundaries without enlarging frozen gold.
