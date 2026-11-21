@@ -1,0 +1,187 @@
+{
+  "task_id": "AF-RES-003",
+  "attempt": 1,
+  "kind": "Documentation and Git contract check receipt; not a product evaluation format",
+  "checked_commit": "caf806738b0ed07fe5bce8d4c5c173bada5286b3",
+  "repository": "laadkke-arch/agentflow-open",
+  "branch": "work/research-af-res-003",
+  "owned_path": "docs/workstreams/research/AF-RES-003/",
+  "contract_check": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m workbench.session check docs/workstreams/research/AF-RES-003/task-manifest.json --fetch",
+    "exit_code": 0,
+    "output": {
+      "status": "passed",
+      "task_id": "af-res-003",
+      "freshness": "remote_checked",
+      "checked_at": "2026-11-19T15:56:50.289324+00:00",
+      "checked_out_commit": "caf806738b0ed07fe5bce8d4c5c173bada5286b3",
+      "task_base_commit": "9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad",
+      "integration_commit": "bdc2e052900b1658981dfcec354682f4e1fc29fb",
+      "scope_base_commit": "9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad",
+      "contract_sha256": "19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc",
+      "changed_paths": [
+        "docs/workstreams/research/AF-RES-003/CASES.md",
+        "docs/workstreams/research/AF-RES-003/RESEARCH.md",
+        "docs/workstreams/research/AF-RES-003/REVIEW.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-IDENTITY.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-MECHANISMS.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-STANDARDS.md",
+        "docs/workstreams/research/AF-RES-003/STATUS.md"
+      ],
+      "outside_paths": [],
+      "unmerged_paths": [],
+      "errors": [],
+      "boundary": "Git contract and ownership checks; not a new AI chat or product verification"
+    }
+  },
+  "documentation_audit": {
+    "command": "python - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,re,subprocess,sys\nfrom datetime import datetime,timezone\np=Path('docs/workstreams/research/AF-RES-003')\nbase='9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad'\ndef git(*args):\n    return subprocess.check_output(['git',*args],text=True).strip()\nhead=git('rev-parse','HEAD')\nfiles=sorted(x for x in p.rglob('*') if x.is_file())\nchanged=git('diff','--name-only',base,head).splitlines()\nassert changed and all(s.startswith(str(p)+'/') for s in changed),changed\nassert git('rev-parse',base+':docs/automation/dot-control.json')==git('rev-parse',head+':docs/automation/dot-control.json')\nsource_sets={}\nfor name,prefix,expected in [('SOURCES-IDENTITY.md','I',12),('SOURCES-MECHANISMS.md','M',10),('SOURCES-STANDARDS.md','R',12)]:\n    ids=re.findall(r'^### ('+prefix+r'\\d{2})\\b',(p/name).read_text(),re.M)\n    assert ids==[f'{prefix}{i:02}' for i in range(1,expected+1)],(name,ids)\n    source_sets[name]=ids\ncounted=set(source_sets['SOURCES-IDENTITY.md'][:-1]+source_sets['SOURCES-MECHANISMS.md']+source_sets['SOURCES-STANDARDS.md'])\nassert len(counted)==33\ncases=re.findall(r'^## (C\\d{2})\\b',(p/'CASES.md').read_text(),re.M)\nassert cases==[f'C{i:02}' for i in range(1,10)],cases\nall_source_ids=counted|{'I12'}\nfor name in ['RESEARCH.md','CASES.md']:\n    found=set(re.findall(r'\\b[IMR]\\d{2}\\b',(p/name).read_text()))\n    assert found<=all_source_ids,(name,found-all_source_ids)\nlinks=[]\nfor f in files:\n    if f.suffix!='.md':continue\n    text=f.read_text()\n    assert not re.search(r'^(<<<<<<<|=======|>>>>>>>)',text,re.M),str(f)\n    for target in re.findall(r'\\[[^\\]]+\\]\\(([^)]+)\\)',text):\n        if re.match(r'^[a-zA-Z][a-zA-Z0-9+.-]*:',target) or target.startswith('#'):continue\n        local=target.split('#',1)[0]\n        assert (f.parent/local).exists(),(str(f),target)\n        links.append({'from':f.name,'to':target})\nreview=(p/'REVIEW.md').read_text()\nreviewed={name:sha for name,sha in re.findall(r'\\| `([^`]+\\.md)` \\| `([0-9a-f]{64})` \\|',review)}\nassert len(reviewed)==5,reviewed\nfor name,sha in reviewed.items():\n    assert hashlib.sha256((p/name).read_bytes()).hexdigest()==sha,name\njson.loads((p/'task-manifest.json').read_text())\nwhitespace=subprocess.run(['git','diff','--check',base,head],text=True,capture_output=True)\nassert whitespace.returncode==0,whitespace.stdout+whitespace.stderr\nprint(json.dumps({'status':'passed','checked_at':datetime.now(timezone.utc).isoformat(),'checked_out_commit':head,'base_commit':base,'python':sys.version.split()[0],'git':git('--version'),'changed_paths':changed,'dot_control_unchanged':True,'counted_originals':len(counted),'source_groups':source_sets,'excluded_from_count':['I12'],'cases':cases,'relative_links':links,'review_input_hashes_match':reviewed,'files_sha256':{str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in files},'git_diff_check_exit_code':whitespace.returncode,'worktree_status_before_receipt':git('status','--porcelain'),'limits':['No external link availability sweep; source bodies were read during research.','No product execution, cost benchmark, user study, or integration testing.']},ensure_ascii=False,indent=2))\nPY",
+    "exit_code": 0,
+    "output": {
+      "status": "passed",
+      "checked_at": "2026-11-19T15:58:00.078928+00:00",
+      "checked_out_commit": "caf806738b0ed07fe5bce8d4c5c173bada5286b3",
+      "base_commit": "9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad",
+      "python": "3.12.14",
+      "git": "git version 2.52.0",
+      "changed_paths": [
+        "docs/workstreams/research/AF-RES-003/CASES.md",
+        "docs/workstreams/research/AF-RES-003/RESEARCH.md",
+        "docs/workstreams/research/AF-RES-003/REVIEW.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-IDENTITY.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-MECHANISMS.md",
+        "docs/workstreams/research/AF-RES-003/SOURCES-STANDARDS.md",
+        "docs/workstreams/research/AF-RES-003/STATUS.md",
+        "docs/workstreams/research/AF-RES-003/task-manifest.json"
+      ],
+      "dot_control_unchanged": true,
+      "counted_originals": 33,
+      "source_groups": {
+        "SOURCES-IDENTITY.md": [
+          "I01",
+          "I02",
+          "I03",
+          "I04",
+          "I05",
+          "I06",
+          "I07",
+          "I08",
+          "I09",
+          "I10",
+          "I11",
+          "I12"
+        ],
+        "SOURCES-MECHANISMS.md": [
+          "M01",
+          "M02",
+          "M03",
+          "M04",
+          "M05",
+          "M06",
+          "M07",
+          "M08",
+          "M09",
+          "M10"
+        ],
+        "SOURCES-STANDARDS.md": [
+          "R01",
+          "R02",
+          "R03",
+          "R04",
+          "R05",
+          "R06",
+          "R07",
+          "R08",
+          "R09",
+          "R10",
+          "R11",
+          "R12"
+        ]
+      },
+      "excluded_from_count": [
+        "I12"
+      ],
+      "cases": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C07",
+        "C08",
+        "C09"
+      ],
+      "relative_links": [
+        {
+          "from": "RESEARCH.md",
+          "to": "CASES.md"
+        },
+        {
+          "from": "RESEARCH.md",
+          "to": "SOURCES-IDENTITY.md"
+        },
+        {
+          "from": "RESEARCH.md",
+          "to": "SOURCES-MECHANISMS.md"
+        },
+        {
+          "from": "RESEARCH.md",
+          "to": "SOURCES-STANDARDS.md"
+        },
+        {
+          "from": "RESEARCH.md",
+          "to": "CASES.md"
+        },
+        {
+          "from": "RESEARCH.md",
+          "to": "REVIEW.md"
+        }
+      ],
+      "review_input_hashes_match": {
+        "RESEARCH.md": "130b61a7d224e200aa1fa49e29c972a231adbc9ff15167c4a56bece0eecf070a",
+        "CASES.md": "7ec10eae2e0f4244024eae7257a902ccf8eecf3ffaf65917e2d7867c4f40afd7",
+        "SOURCES-STANDARDS.md": "24685e973bff1d98a9da7221470ce1d77d69dece5b098a690152dc607c98dfad",
+        "SOURCES-IDENTITY.md": "f2b8d433a7219f4d53c986ac4314aac380d0e858e11bca603fb43c4464f58ce7",
+        "SOURCES-MECHANISMS.md": "6acc4a097a2f4f414645d1e86b208d5128fe3568cc73837a5dc79e157a0a1980"
+      },
+      "files_sha256": {
+        "docs/workstreams/research/AF-RES-003/CASES.md": "7ec10eae2e0f4244024eae7257a902ccf8eecf3ffaf65917e2d7867c4f40afd7",
+        "docs/workstreams/research/AF-RES-003/RESEARCH.md": "130b61a7d224e200aa1fa49e29c972a231adbc9ff15167c4a56bece0eecf070a",
+        "docs/workstreams/research/AF-RES-003/REVIEW.md": "1987efe879e0537ef656d4b2357278b9215e52aed640beea5bd8fecbf9c1228c",
+        "docs/workstreams/research/AF-RES-003/SOURCES-IDENTITY.md": "f2b8d433a7219f4d53c986ac4314aac380d0e858e11bca603fb43c4464f58ce7",
+        "docs/workstreams/research/AF-RES-003/SOURCES-MECHANISMS.md": "6acc4a097a2f4f414645d1e86b208d5128fe3568cc73837a5dc79e157a0a1980",
+        "docs/workstreams/research/AF-RES-003/SOURCES-STANDARDS.md": "24685e973bff1d98a9da7221470ce1d77d69dece5b098a690152dc607c98dfad",
+        "docs/workstreams/research/AF-RES-003/STATUS.md": "3174e5018005d1dee9d99372baa1ea3617ddd762b007388469324d1381890944",
+        "docs/workstreams/research/AF-RES-003/task-manifest.json": "0c45cf7c47e3a9877ffb3da2a70d709a7ad1be32326ea6193452d22b6dd9ecb6"
+      },
+      "git_diff_check_exit_code": 0,
+      "worktree_status_before_receipt": "",
+      "limits": [
+        "No external link availability sweep; source bodies were read during research.",
+        "No product execution, cost benchmark, user study, or integration testing."
+      ]
+    }
+  },
+  "integration_delta_review": {
+    "base_commit": "9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad",
+    "fetched_commit": "bdc2e052900b1658981dfcec354682f4e1fc29fb",
+    "command": "git diff --stat 9d728dfe2c2f3a13d9995b5fdc14a252aeddfdad origin/chore/workspace-foundation",
+    "changed_path": "docs/automation/dot-control.json",
+    "result": "Only coordinator control state changed; AF-RES-003 assignment and depends_on remain unchanged. Contract fingerprint unchanged."
+  },
+  "ci_limit": {
+    "observed_paths": [
+      ".github/workflows/session-check.yml",
+      "workbench/session.py"
+    ],
+    "finding": "CI invokes check-all, whose active-manifest discovery scans docs/tasks/*.json. This task's permitted manifest is in owned_path, so a check-all result does not establish that AF-RES-003 was checked.",
+    "performed_instead": "Explicit check of this task-manifest.json with --fetch, recorded above."
+  },
+  "limits": [
+    "This receipt validates checked_commit, not later administrative commits containing this receipt, STATUS.md, or HANDOFF.md.",
+    "The source ledger counts directly opened original documents; this audit checks references and counts, not the truth of every source claim.",
+    "Independent content review covers the five SHA256 inputs listed in REVIEW.md; their bytes match this receipt.",
+    "No product installation, migration, service API POST, D3/D4 product verification, user study, or cost benchmark."
+  ]
+}
