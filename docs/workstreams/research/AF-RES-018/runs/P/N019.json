@@ -1,0 +1,708 @@
+{
+  "case_id": "N019",
+  "baseline": "P",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N019.json",
+    "docs/workstreams/research/AF-RES-018/PROCEDURE.md"
+  ],
+  "started_at_utc": "2026-11-21T08:40:05Z",
+  "ended_at_utc": "2026-11-21T08:45:43Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "decomposition": [
+    {
+      "item": "I1",
+      "value": "Summary-only input for question dated 2026-11-01. The original question page is excluded from searches; there is no original-input command.",
+      "status": "explicit",
+      "source_location": "question_summary sentences 1–2; question_date; input_mode; read_original_command",
+      "polarity": "neutral",
+      "force": "input provenance",
+      "interpretation": "The summary is the evidence, not a verbatim quotation of the original question."
+    },
+    {
+      "item": "I2",
+      "value": "Find an open-weight alternative to the Claude Code workflow, used through a terminal for coding and other tasks.",
+      "status": "explicit",
+      "source_location": "question_summary sentence 1",
+      "polarity": "positive",
+      "force": "requested objective",
+      "interpretation": "Look for useful terminal-agent workflows as well as relevant open-weight model components."
+    },
+    {
+      "item": "I3",
+      "value": "The selected scope could mean an agent harness, a model, or their combination; the initial input does not resolve this.",
+      "status": "explicit ambiguity",
+      "source_location": "question_summary sentence 2",
+      "polarity": "neutral",
+      "force": "preserve ambiguity",
+      "interpretation": "Do not silently reinterpret the request as only a harness search or only a model search. State the role of each candidate."
+    },
+    {
+      "item": "I4",
+      "value": "Open weights are required of the model used by the proposed alternative.",
+      "status": "explicit requirement with target interpretation",
+      "source_location": "question_summary sentence 1",
+      "polarity": "positive",
+      "force": "must",
+      "interpretation": "Weights attach to models. A harness alone cannot establish this requirement; propose an open-weight model with the harness or label a model as a component."
+    },
+    {
+      "item": "I4",
+      "value": "No explicit prohibition on hosted inference, proprietary optional providers, paid services, or network use appears in the supplied summary.",
+      "status": "absent",
+      "source_location": "question_summary sentences 1–2",
+      "polarity": "negative constraints absent",
+      "force": "none",
+      "interpretation": "Local/offline operation, zero price, a particular source-code license, and replacement quality parity are not added as hard requirements."
+    },
+    {
+      "item": "I5",
+      "value": "Terminal interaction, coding, and unspecified other tasks define the surrounding workflow. Specific task inputs, outputs, integrations, and permissions are not given.",
+      "status": "partly explicit; details unknown",
+      "source_location": "question_summary sentence 1",
+      "polarity": "positive",
+      "force": "functional scope",
+      "interpretation": "General-purpose terminal agents deserve consideration; coding-only tools should be labeled as narrower fits."
+    },
+    {
+      "item": "I6",
+      "value": "The question requests an alternative; no migration already performed or future deployment plan is specified. Decision date is 2026-11-01.",
+      "status": "explicit date; plan absent",
+      "source_location": "question_date; question_summary sentence 1",
+      "polarity": "neutral",
+      "force": "temporal boundary",
+      "interpretation": "Current live documentation is not automatically evidence of exact availability on the question date."
+    },
+    {
+      "item": "I7",
+      "value": "Operating system, available RAM/VRAM, hardware, model size, installed software versions, provider configuration, and budget are unknown.",
+      "status": "unknown",
+      "source_location": "question_summary sentences 1–2",
+      "polarity": "neutral",
+      "force": "none",
+      "interpretation": "Do not assert that a particular local model will fit the user's hardware."
+    },
+    {
+      "item": "I8",
+      "value": "The provided summary preserves harness/model ambiguity. Initial revision history was not recovered, and the supplied provenance says to execute the paraphrase.",
+      "status": "explicit provenance",
+      "source_location": "question_source.status; question_source.reason; question_summary sentence 2",
+      "polarity": "neutral",
+      "force": "interpretation boundary",
+      "interpretation": "Do not fetch source-thread answers or import subsequent clarification."
+    }
+  ],
+  "queries": [
+    {
+      "q": "\"open weight\" \"Claude Code\" alternative terminal",
+      "at_utc": "2026-11-21T08:40:05Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Discovery batch returned terminal-agent alternatives and comparison listings. No known excluded question/thread/copy exposure. Secondary comparison claims were not used as final evidence."
+    },
+    {
+      "q": "\"terminal\" \"coding agent\" \"Ollama\" site:github.com",
+      "at_utc": "2026-11-21T08:40:05Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Found public terminal-agent repositories and Ollama integrations; unselected discovery hits remained snippet-only."
+    },
+    {
+      "q": "site:github.com/QwenLM/qwen-code \"Qwen3-Coder\"",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Found official Qwen Code repository and configuration documentation. An unrelated issue dated 2026-11-02 appeared in snippets and was not used for the recommendation."
+    },
+    {
+      "q": "site:block.github.io/goose Ollama CLI",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Found official goose homepage and the Ollama project's goose CLI integration guide."
+    },
+    {
+      "q": "ollama repo:anomalyco/opencode",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "tool": "unauthenticated GitHub public code search via web open",
+      "result_note": "Attempted https://github.com/search?q=ollama+repo%3Aanomalyco%2Fopencode&type=code without login. Fetch failed with DisabledError; counted as both a literal query and an opened-document attempt. Continued through code-through-web search."
+    },
+    {
+      "q": "site:github.com/anomalyco/opencode ollama",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "tool": "public web search, system1_search_query; code-through-web fallback",
+      "result_note": "Found official repository documentation source for Ollama and local runtimes. Also returned a fork and an unrelated issue; neither was used to establish exclusions."
+    },
+    {
+      "q": "site:huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct model card",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Found the official Qwen model card and public weight-file listings. Opened the canonical model card."
+    },
+    {
+      "q": "site:openrouter.ai/qwen/qwen3-coder \"open\" \"weights\"",
+      "at_utc": "2026-11-21T08:44:05Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Probe verification only. Found official OpenRouter listings for Qwen3-Coder and Qwen3-Coder-Next, including model-weight references. Listings remained snippet-only; the supplied probe does not specify which model is selected."
+    },
+    {
+      "q": "site:anthropic.com \"Claude Sonnet 4\" \"proprietary\"",
+      "at_utc": "2026-11-21T08:44:05Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Probe verification only. Found Claude 4 system card and transparency pages. Proprietary training-data descriptions do not themselves establish weight-release restrictions."
+    },
+    {
+      "q": "site:anthropic.com \"model weights\" \"do not\"",
+      "at_utc": "2026-11-21T08:44:05Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Probe verification only. Found RSP version 1.0, whose snippet describes access controls for model weights. Its applicability to the exact Sonnet 4 release requires care."
+    },
+    {
+      "q": "site:anthropic.com \"Claude Sonnet 4\" \"open weights\"",
+      "at_utc": "2026-11-21T08:44:23Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Probe verification only. Returned official research discussing Claude and other open-weight models; no exact Sonnet 4 weight-release or license statement was recovered."
+    },
+    {
+      "q": "site:anthropic.com \"do not release\" \"weights\"",
+      "at_utc": "2026-11-21T08:44:23Z",
+      "tool": "public web search, system1_search_query",
+      "result_note": "Probe verification only. Returned related official research, without an explicit exact-model weight-availability statement useful for the strict must check."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://github.com/search?q=ollama+repo%3Aanomalyco%2Fopencode&type=code",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "status": "failed: DisabledError",
+      "sections_read": "None; fetch error only.",
+      "confirmed": "Unauthenticated public code-search attempt failed. No code results were read.",
+      "published_or_version": null,
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://opencode.ai/docs/providers/",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "status": "opened",
+      "sections_read": "Setup and Custom provider sections, returned lines 57–188.",
+      "confirmed": "OpenCode permits custom OpenAI-compatible providers and explicitly illustrates a Qwen3-Coder model entry.",
+      "published_or_version": "Live documentation; no publication timestamp recovered.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://aider.chat/docs/llms/ollama.html",
+      "at_utc": "2026-11-21T08:40:18Z",
+      "status": "opened",
+      "sections_read": "Ollama connection, terminal invocation, model warnings, context-window configuration.",
+      "confirmed": "Aider connects to local Ollama models using ollama_chat/<model>; guide discusses context configuration.",
+      "published_or_version": "Live documentation; no publication timestamp recovered.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://opencode.ai/docs/providers/",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "status": "opened",
+      "sections_read": "Requested line 440; returned Bedrock, Vertex, and Copilot sections.",
+      "confirmed": "This navigation attempt did not yet show the Ollama section; counted as another document attempt.",
+      "published_or_version": "Live documentation with references to V2; date unknown.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://opencode.ai/",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "status": "opened",
+      "sections_read": "Product introduction and Terminal section, lines 38–87.",
+      "confirmed": "OpenCode offers a terminal UI and identifies itself as an open-source coding agent supporting different model providers.",
+      "published_or_version": "Live homepage; install examples reference V2; no publication date.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/QwenLM/qwen-code",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "status": "opened",
+      "sections_read": "Initial returned repository navigation range.",
+      "confirmed": "Repository fetched, but the first returned range did not provide the substantive README; later targeted read used.",
+      "published_or_version": "Live main branch, not a historical revision.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://block.github.io/goose/",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "status": "opened: redirect notice",
+      "sections_read": "Three-line relocation notice.",
+      "confirmed": "Official legacy homepage points to goose-docs.ai.",
+      "published_or_version": "Undated live relocation notice.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/ollama/ollama/blob/main/docs/integrations/goose.mdx",
+      "at_utc": "2026-11-21T08:40:32Z",
+      "status": "opened",
+      "sections_read": "Initial returned repository navigation range.",
+      "confirmed": "Integration document fetched; substantive configuration was read in a later targeted range.",
+      "published_or_version": "Live main branch; no publication timestamp.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://opencode.ai/docs/providers/",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Ollama and Runtimes sections, lines 483–523.",
+      "confirmed": "Ollama local completion models are discoverable; LM Studio and vLLM are supported runtimes. vLLM discovery starts with tools disabled because tool capability cannot be inferred.",
+      "published_or_version": "Live documentation referring to V2; no publication timestamp.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/QwenLM/qwen-code",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Repository About section and start of README, returned lines 118–239.",
+      "confirmed": "Qwen Code is a terminal coding agent; the page exposes an Apache-2.0 license and mentions a 1.0 preview without a date.",
+      "published_or_version": "Live main branch, 1.0 preview notice undated.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://goose-docs.ai/",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Introduction, general-purpose use, CLI, local models, recipes, MCP, and subagents.",
+      "confirmed": "goose documents terminal use, local models, and research, writing, automation, and data analysis beyond coding.",
+      "published_or_version": "Undated live homepage.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/ollama/ollama/blob/main/docs/integrations/goose.mdx",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Goose Desktop and Goose CLI Ollama configuration, lines 172–203.",
+      "confirmed": "For CLI, run goose configure, select Ollama, and enter a model name. The document distinguishes local hosting from ollama.com.",
+      "published_or_version": "Live main branch; no publication timestamp recovered.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Official model identity, Apache-2.0 license, Transformers loading example, and local-app/vLLM entry.",
+      "confirmed": "The official Qwen artifact provides downloadable/loadable model weights under Apache-2.0; it is a model rather than a terminal-agent harness.",
+      "published_or_version": "Qwen3-Coder-30B-A3B-Instruct live model card; card revision date not recovered.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://qwenlm.github.io/blog/qwen3-coder/",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Dated introduction and Qwen Code announcement, lines 13–30.",
+      "confirmed": "Qwen3-Coder and the Qwen Code CLI were announced together; the CLI was adapted for that model family's prompts and function-calling protocols.",
+      "published_or_version": "Published 2025-07-22.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://aider.chat/",
+      "at_utc": "2026-11-21T08:40:52Z",
+      "status": "opened",
+      "sections_read": "Introduction, feature list, and getting-started overview.",
+      "confirmed": "Aider is terminal pair programming, supports local LLMs, repository maps, Git integration, and lint/test workflows.",
+      "published_or_version": "Undated live homepage.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://github.com/QwenLM/qwen-code",
+      "at_utc": "2026-11-21T08:41:10Z",
+      "status": "opened",
+      "sections_read": "Why Qwen Code; Quick Start; How to Use; Capabilities. Requested line 240 and received full rendered repository page.",
+      "confirmed": "Explicit local Ollama/vLLM support, terminal invocation, headless automation, MCP and computer-use extension points. No installations or runtime tests performed.",
+      "published_or_version": "Live main branch; 1.0 preview and feature text are undated.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.stardock.com/products/cursorfx/",
+      "at_utc": "2026-11-21T08:44:05Z",
+      "status": "opened",
+      "sections_read": "Product introduction, Features, Apply, Customize, Create, and system requirements.",
+      "confirmed": "CursorFX customizes Windows mouse cursors, animations, effects, and sounds; this is a different product role from a terminal coding/general-purpose AI agent.",
+      "published_or_version": "Undated live product page; footer year is not a publication date.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "url": "https://www.anthropic.com/news/claude-4",
+      "at_utc": "2026-11-21T08:44:05Z",
+      "status": "opened",
+      "sections_read": "Publication date, introduction, model access channels, and Claude Code section.",
+      "confirmed": "Sonnet 4 is an Anthropic model released through Claude plans, API, Bedrock, and Vertex AI. The returned text does not make an explicit public-weight availability or nonavailability statement.",
+      "published_or_version": "Published 2025-05-22.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www-cdn.anthropic.com/6d8a8055020700718b0c49369f60816ba2a7c285/Claude%204%20System%20Card.pdf",
+      "resolved_url": "https://assets.claude.com/6d8a8055020700718b0c49369f60816ba2a7c285.pdf",
+      "at_utc": "2026-11-21T08:44:38Z",
+      "status": "opened: redirected PDF",
+      "sections_read": "Title, changelog, abstract, table of contents, and introductory model/release process text, returned lines 0–229.",
+      "confirmed": "The system card specifically identifies Sonnet 4 and deployment under ASL-2. Proprietary data provenance is not proof that model weights are unavailable.",
+      "published_or_version": "May 2025; visible changelog updates 2025-07-16 and 2025-09-02.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://www-cdn.anthropic.com/files/4zrzovbb/website/1adf000c8f675958c2ee23805d91aaade1cd4613.pdf",
+      "at_utc": "2026-11-21T08:44:38Z",
+      "status": "opened PDF",
+      "sections_read": "Title, effective date, framework, initial commitments, and beginning of ASL table, returned lines 0–160; related search snippet described ASL-2 weight access controls.",
+      "confirmed": "Version 1.0 is effective 2023-09-19 and explicitly anticipates policy revisions. It describes model-weight containment, but the applicable release-specific policy version for Sonnet 4 was not verified.",
+      "published_or_version": "Version 1.0, effective 2023-09-19.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "date_status": "unknown",
+      "post_decision": null,
+      "L": "ok",
+      "E": "supported",
+      "rank": 1,
+      "name": "Qwen Code with Qwen3-Coder open weights",
+      "url": "https://github.com/QwenLM/qwen-code",
+      "reason": "The official CLI and open-weight coding model family were designed together, giving the most directly documented terminal-agent pairing.",
+      "application_scope": "Terminal coding-agent workflow using a locally or independently hosted Qwen3-Coder checkpoint, with extensions available for other tasks.",
+      "constraints_or_caveat": "Choose an actual downloadable checkpoint such as Qwen3-Coder-30B-A3B-Instruct; a hosted model name or subscription alone does not establish weight availability. Hardware fit and exact endpoint configuration were not tested.",
+      "evidence_opened": [
+        "https://github.com/QwenLM/qwen-code",
+        "https://qwenlm.github.io/blog/qwen3-coder/",
+        "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      ],
+      "date_evidence": "The 2025-07-22 announcement establishes the CLI/model relationship before the question date. Live README features and the viewed 30B model-card revision are undated.",
+      "form": "mixed",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "version_scope": "Qwen Code live main; Qwen3-Coder-30B-A3B-Instruct",
+          "reason": "The proposed setup names the official downloadable Qwen3-Coder checkpoint and uses Qwen Code's documented local-model interfaces."
+        }
+      ],
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "pass"
+        }
+      ],
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED"
+    },
+    {
+      "date_status": "unknown",
+      "post_decision": null,
+      "L": "ok",
+      "E": "supported",
+      "rank": 2,
+      "name": "OpenCode with an open-weight model through Ollama",
+      "url": "https://opencode.ai/",
+      "reason": "A model-flexible terminal coding agent with documented local Ollama integration can retain the terminal workflow while changing the underlying model.",
+      "application_scope": "Terminal agent configured to use an open-weight Qwen3-Coder model served by a supported local runtime.",
+      "constraints_or_caveat": "The harness is not itself a set of weights. Select the open-weight model explicitly and verify tool calling in the installed version; current vLLM auto-discovery disables tools until configured.",
+      "evidence_opened": [
+        "https://opencode.ai/",
+        "https://opencode.ai/docs/providers/",
+        "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      ],
+      "date_evidence": "All supporting OpenCode documentation is live and undated; exact behavior on 2026-11-01 is unverified.",
+      "form": "mixed",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "version_scope": "OpenCode live V2 documentation; Qwen3-Coder-30B-A3B-Instruct through Ollama or a configured compatible endpoint",
+          "reason": "A public Qwen model checkpoint supplies the weights; OpenCode documents local and OpenAI-compatible providers."
+        }
+      ],
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "pass"
+        }
+      ],
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED"
+    },
+    {
+      "date_status": "unknown",
+      "post_decision": null,
+      "L": "ok",
+      "E": "supported",
+      "rank": 3,
+      "name": "goose with an open-weight model through Ollama",
+      "url": "https://goose-docs.ai/",
+      "reason": "Its documented terminal workflow explicitly covers research, writing, automation, and data analysis as well as coding.",
+      "application_scope": "General-purpose terminal agent with Ollama configured as provider and an open-weight Qwen checkpoint selected.",
+      "constraints_or_caveat": "Model choice and enabled extensions determine useful behavior. Exact Qwen3-Coder quality for the user's unspecified other tasks was not verified.",
+      "evidence_opened": [
+        "https://goose-docs.ai/",
+        "https://github.com/ollama/ollama/blob/main/docs/integrations/goose.mdx",
+        "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      ],
+      "date_evidence": "The official relocation, homepage, and Ollama integration guide are live and undated.",
+      "form": "mixed",
+      "contribution": "whole",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "version_scope": "goose live CLI integration; open-weight Qwen checkpoint",
+          "reason": "The model can be selected through the documented local Ollama provider; the proposed Qwen3-Coder checkpoint has public weights."
+        }
+      ],
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "pass"
+        }
+      ],
+      "T": "not_needed",
+      "label": "DIRECT_DOCUMENTED"
+    },
+    {
+      "date_status": "unknown",
+      "post_decision": null,
+      "L": "ok",
+      "E": "supported",
+      "rank": 4,
+      "name": "Aider with a local open-weight model",
+      "url": "https://aider.chat/",
+      "reason": "A documented terminal pair-programming option for repository changes, with an explicit Ollama connection path.",
+      "application_scope": "The coding and repository-editing portion of the requested workflow, not a claimed general-purpose agent replacement.",
+      "constraints_or_caveat": "Keep this as a narrower option when the main need is coding. Configure the local model and adequate context; general automation parity is not established.",
+      "evidence_opened": [
+        "https://aider.chat/",
+        "https://aider.chat/docs/llms/ollama.html",
+        "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+      ],
+      "date_evidence": "Aider's homepage and integration guide are undated live documentation.",
+      "form": "mixed",
+      "contribution": "part",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "version_scope": "Aider live Ollama integration; selected open-weight model",
+          "reason": "Aider can connect to a local Ollama model, so selecting the public Qwen checkpoint provides the open-weight component."
+        }
+      ],
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "pass"
+        }
+      ],
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER"
+    },
+    {
+      "date_status": "unknown",
+      "post_decision": null,
+      "L": "ok",
+      "E": "supported",
+      "rank": 5,
+      "name": "Qwen3-Coder-30B-A3B-Instruct",
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "reason": "A concrete public-weight model candidate if the intended replacement is the model rather than the terminal harness.",
+      "application_scope": "Underlying model component; pair with Qwen Code or another compatible terminal agent.",
+      "constraints_or_caveat": "The checkpoint alone supplies no Claude Code-style terminal workflow. It needs an inference runtime, compatible tool-call handling, and a harness; local memory requirements were not assessed.",
+      "evidence_opened": [
+        "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+        "https://qwenlm.github.io/blog/qwen3-coder/",
+        "https://github.com/QwenLM/qwen-code"
+      ],
+      "date_evidence": "The model-family announcement is dated 2025-07-22; the viewed 30B card's own publication/revision date is unknown.",
+      "form": "data",
+      "contribution": "part",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "pass",
+          "evidence_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "version_scope": "Qwen3-Coder-30B-A3B-Instruct",
+          "reason": "Official model card exposes Apache-2.0 licensing and loading instructions for the public checkpoint."
+        }
+      ],
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "pass"
+        }
+      ],
+      "T": "mapped",
+      "label": "CONDITIONAL_TRANSFER"
+    }
+  ],
+  "rejected_candidates": [],
+  "raw_response": "I would start with **Qwen Code paired with an open-weight Qwen3-Coder model**. Your wording could mean the terminal agent, the model behind it, or the combination, so the useful choices are configurations rather than just application names. Qwen's dated announcement describes Qwen Code as a command-line agent adapted for Qwen3-Coder; its current repository also documents local Ollama and vLLM support. [Qwen Code](https://github.com/QwenLM/qwen-code) · [Qwen announcement](https://qwenlm.github.io/blog/qwen3-coder/)\n\n1. **Qwen Code + Qwen3-Coder** is my first choice for a closely matched terminal-agent/model pairing. A concrete downloadable model is [Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct), whose official card lists Apache-2.0 and model-loading instructions. Choose that kind of public checkpoint explicitly; the fact that an agent offers a Qwen-branded hosted service is not by itself proof that the selected service model has public weights.\n\n2. **[OpenCode](https://opencode.ai/) + an open-weight model through Ollama** is an attractive option if you want to choose the model separately from the terminal interface. Its [provider documentation](https://opencode.ai/docs/providers/) describes local Ollama models and custom OpenAI-compatible endpoints. Check the configured model's tool-call support: the current documentation says vLLM discovery initially disables tools because it cannot infer their support. I am recommending the documented configuration route, not claiming I tested that combination or that every model works equally well.\n\n3. **[goose](https://goose-docs.ai/) + an open-weight model** is particularly relevant to your use of the terminal for things beyond coding. Its official description includes research, writing, automation, and data analysis. The [Ollama project's integration guide](https://github.com/ollama/ollama/blob/main/docs/integrations/goose.mdx) documents configuring the goose CLI with Ollama and selecting a model. The useful behavior still depends on that model and the tools you enable.\n\n4. **[Aider](https://aider.chat/) + a local open-weight model** is worth considering if repository editing and pair programming account for most of the work. It documents an [Ollama connection](https://aider.chat/docs/llms/ollama.html) using `aider --model ollama_chat/<model>`. I would treat it as a narrower coding option; the reviewed documentation does not establish a replacement for every unspecified non-coding task.\n\n5. **[Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct)** is also a model-only answer to the ambiguous request. It supplies weights, but you still need an inference runtime and terminal agent to obtain the workflow. Qwen Code is the most directly documented pairing in this shortlist.\n\nThese are documentation-based options, not a claim of Claude-level quality or feature parity. Your hardware, platform, and task mix were not supplied, so I cannot determine which checkpoint fits locally. The Qwen family/CLI announcement predates the 2026-11-01 question, while most pages reviewed are undated live documentation; their exact feature state on that date remains unverified.",
+  "checks": [
+    {
+      "check_id": "CK-acd6bda4bd6a",
+      "name": "OpenCode + OpenRouter",
+      "decision": "keep",
+      "reason": "Keep as a potentially suitable terminal workflow, with model selection still required. OpenCode documents OpenRouter routing, and official OpenRouter search results list Qwen3-Coder offerings, but the probe names no model. Hosting through OpenRouter is not prohibited by the input. Confirm the exact routed model: selecting a verified public-weight checkpoint would pass; selecting a closed-weight model would fail.",
+      "evidence_urls": [
+        "https://opencode.ai/",
+        "https://opencode.ai/docs/providers/",
+        "https://openrouter.ai/qwen/qwen3-coder/pricing",
+        "https://qwenlm.github.io/blog/qwen3-coder/"
+      ],
+      "verification_status": "partial: OpenCode provider documentation opened during discovery; OpenRouter Qwen listing seen only in search results; decisive selected-model identity unspecified",
+      "label": "INSUFFICIENT",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://opencode.ai/docs/providers/",
+          "version_scope": "OpenCode live provider documentation; selected OpenRouter model unspecified",
+          "reason": "The harness/provider pairing does not determine whether the selected model has public weights."
+        }
+      ],
+      "L": "ok",
+      "E": "unknown",
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "unknown"
+        }
+      ],
+      "T": "unknown",
+      "additional_confirmation": "Identify the exact OpenRouter model and verify its original model-weight distribution. Public weights plus compatible tool support permits a direct documented configuration; a confirmed closed-weight selection must be excluded.",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "check_id": "CK-1cfbd573c078",
+      "name": "CursorFX",
+      "decision": "exclude",
+      "reason": "The official product page identifies CursorFX as a Windows mouse-cursor customization application, including cursor animations, effects, and sounds. That product role does not supply a terminal AI-agent workflow or an underlying language model. This is a decisive surface mismatch, independent of unresolved model-weight licensing.",
+      "evidence_urls": [
+        "https://www.stardock.com/products/cursorfx/"
+      ],
+      "verification_status": "verified from official product description",
+      "label": "SURFACE_OR_CONSTRAINT_MISMATCH",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.stardock.com/products/cursorfx/",
+          "version_scope": "CursorFX product described on the live official page",
+          "reason": "No language-model checkpoint is identified; exclusion is based on the documented wrong product role, not an unsupported claim about its license."
+        }
+      ],
+      "L": "ok",
+      "E": "contradicted",
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "unknown"
+        }
+      ],
+      "T": "unknown",
+      "date_status": "unknown",
+      "post_decision": null
+    },
+    {
+      "check_id": "CK-c74bff3a3568",
+      "name": "Claude Sonnet 4",
+      "decision": "keep",
+      "reason": "Keep only as an unresolved verification candidate, not as a recommendation that satisfies the open-weight requirement. The official launch page establishes a relevant model and hosted access, but does not explicitly establish public-weight availability or unavailability. The system card maps Sonnet 4 to ASL-2; the retrieved weight-control policy is an older 2023 version, so its exact applicability cannot be assumed under P's version-scope rule. Obtain a release-specific weight-distribution statement: confirmed unavailable weights means exclude; a verified public checkpoint would permit reconsideration as a model component.",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-4",
+        "https://www-cdn.anthropic.com/6d8a8055020700718b0c49369f60816ba2a7c285/Claude%204%20System%20Card.pdf",
+        "https://www-cdn.anthropic.com/files/4zrzovbb/website/1adf000c8f675958c2ee23805d91aaade1cd4613.pdf"
+      ],
+      "verification_status": "insufficient: exact Sonnet 4 weight-release status not explicitly established within the remaining shared budget; older policy version cannot be promoted to release-specific proof",
+      "label": "INSUFFICIENT",
+      "must_checks": [
+        {
+          "target": "The model used by the proposed alternative has publicly available weights",
+          "polarity": "positive",
+          "source_location": "question_summary sentence 1",
+          "status": "unknown",
+          "evidence_url": "https://www.anthropic.com/news/claude-4",
+          "version_scope": "Claude Sonnet 4 released 2025-05-22; system card May 2025; retrieved RSP version 1.0 is from 2023",
+          "reason": "Hosted access and proprietary training data are not alone decisive evidence about public weights. The applicable exact-release weight policy was not verified."
+        }
+      ],
+      "L": "ok",
+      "E": "unknown",
+      "H": [
+        {
+          "target": "Open weights",
+          "status": "unknown"
+        }
+      ],
+      "T": "unknown",
+      "additional_confirmation": "Verify an official Sonnet 4-specific statement about public downloadable weights or the exact applicable weight-distribution policy. Unavailable weights gives fail and exclusion; available weights gives pass for the model component, with a separate terminal harness still needed.",
+      "date_status": "pre_decision",
+      "post_decision": false
+    }
+  ],
+  "stage1_frozen_at_utc": "2026-11-21T08:43:19Z",
+  "checks_started_at_utc": "2026-11-21T08:44:05Z",
+  "checks_ended_at_utc": "2026-11-21T08:45:43Z",
+  "budget": {
+    "search_queries": 12,
+    "opened_pages": 20,
+    "candidate_count": 5,
+    "stage1_search_queries": 7,
+    "stage1_opened_pages": 16,
+    "max_search_queries": 12,
+    "max_opened_pages": 20,
+    "max_candidate_count": 10,
+    "remaining_search_queries": 0,
+    "remaining_opened_pages": 0,
+    "counting_note": "Every explicit open attempt counted, including failed GitHub code search and repeated page ranges. The unauthenticated code search counted as one literal query. Later checks will not increase candidate_count."
+  },
+  "limitations": [
+    "Input is a paraphrase with unverified initial-revision provenance; no source-thread answers or later clarification were read.",
+    "Unauthenticated GitHub code search failed with DisabledError. Code-through-web fallback located official public repository documentation.",
+    "Most sources are live and undated. Retrieval after the question date is not treated as proof of post-decision publication; unknown dates remain unknown.",
+    "No models, packages, paid APIs, authenticated services, or local inference runtimes were installed or executed.",
+    "No claim of empirical task quality, equivalent autonomy, benchmark parity, or hardware fit was made.",
+    "The hard openness requirement is checked on the proposed model, while harnesses and model components remain distinguished to preserve input ambiguity.",
+    "Probe checking exhausted the 12-query/20-document shared budget. OpenRouter's selected model remains unspecified, and exact release-specific weight availability for Claude Sonnet 4 was not explicitly established by the retrieved official sources. P's unknown/version-scope rule was preserved rather than turning missing evidence into a definitive failure."
+  ],
+  "execution_status": "completed"
+}
