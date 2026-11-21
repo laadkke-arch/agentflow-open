@@ -131,6 +131,8 @@ def main():
         facts=pool_groups[(c,q)];sampled=claim_groups[(c,q)];vc=collections.Counter(verdict(x['verdict']) for x in sampled)
         obs.update(factual_claims=len(facts),uncertainty_items=len(uncertain_groups[(c,q)]),
                    claims_without_supplied_URL=sum(not x.get('supplied_urls') for x in facts),
+                   claims_without_any_supplied_reference=sum(not x.get('supplied_urls') and not x.get('citation_refs') for x in facts),
+                   claims_with_unresolved_citations=sum(bool(x.get('unresolved_citation_refs')) for x in facts),
                    claims_with_homepage_only=sum(x.get('reference_kind')=='homepage_only' for x in facts),
                    sampled_claims=len(sampled),claims_true=vc['true'],claims_false=vc['false'],claims_unknown=vc['unknown'],
                    claims_false_or_unknown=vc['false']+vc['unknown'],

@@ -21,6 +21,7 @@ def main():
     value['final_indexed_at_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     value['additional_ledgers'] = [entry(p, kind) for p, kind in [
         ('evidence/root-rechecks.json', 'method body rechecks and failed/wrong-page observations'),
+        ('evidence/citation-resolution.json', 'actual emitted citation-address metadata resolution only'),
         ('evidence/run-search-log.json', 'all discovery and injected-check queries/document observations'),
         ('evidence/judging-search-log.json', 'blind relevance and separate reason-audit queries'),
         ('analysis/counterexamples.json', 'exhaustive recorded counterexample selectors and matched cases')]]

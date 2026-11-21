@@ -38,6 +38,8 @@ for label,field,unit in [
  ('raw_words_mean','raw_response_words','English whitespace words, original raw_response'),
  ('uncertainty_items_mean','uncertainty_items','distinct explicitly uncertain candidate propositions'),
  ('URLless_assertions_mean','claims_without_supplied_URL','assertions without supplied URL'),
+ ('referenceless_assertions_mean','claims_without_any_supplied_reference','assertions without supplied URL or printed tool citation'),
+ ('unresolved_citation_assertions_mean','claims_with_unresolved_citations','assertions with printed but unresolved source references'),
  ('homepage_only_assertions_mean','claims_with_homepage_only','assertions with homepage-only linkage'),
  ('assertions_mean','factual_claims','all extracted atomic assertions before sampling'),
  ('candidates_mean','output_candidates','returned discovery candidates'),
