@@ -1,0 +1,359 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "X6a4ef2caba93d204",
+      "qid": "N010",
+      "raw_response": "I would evaluate **fail2zig first**, with **fail2ban-rs** as the next documented option. Both describe a single added application executable without a Python runtime, and both document blocking repeated SSH password failures. The important distinction is which host tools and Linux setup the chosen configuration requires. These recommendations come from public documentation, not an installation or attack test.\n\nI am interpreting “single binary” as one added blocker executable. Existing SSH, the Linux kernel and ordinary host utilities remain part of the server. If the intent is also to avoid invoking log-reader or firewall helper commands, fail2zig's file-input/native-nftables path is the strongest documented match among the inspected options.\n\n### 1. fail2zig — first option to evaluate\n\nThe project combines daemon and administration functions in one executable and explicitly states that Python is unnecessary. It documents SSH password-failure detection and a native nftables backend. For this request, the proposed setup is an SSH-only rule reading the authentication log file and using native nftables. [Project documentation](https://fail2zig.com/)\n\nCheck the target platform before deployment: the v0.4.8 installation document identifies Debian 13 x86_64 as its selected live qualification target, while other builds have narrower verification. Journal input calls journalctl, and the iptables/ipset options need their corresponding host tools. The main site and versioned installation text disagree about the oldest supported release; this recommendation is specifically for v0.4.8, not an older-version migration. [Installation scope](https://github.com/ul0gic/fail2zig/blob/v0.4.8/docs/operations/installation.md)\n\n**Judgment: DIRECT_DOCUMENTED for that stated configuration.** It covers the requested replacement scope. Actual host compatibility still needs checking.\n\n### 2. fail2ban-rs — a straightforward option for systemd hosts\n\nIts README documents one static application executable without Python, requires Linux and systemd, and supplies an SSH jail with a retry window and temporary firewall ban. It still invokes the selected host firewall tools. Keep the deployment limited to the SSH jail; optional webhook dependencies are unnecessary for this request. [Official README](https://github.com/aejimmi/fail2ban-rs)\n\n**Judgment: DIRECT_DOCUMENTED within the stated Linux/systemd configuration.** Confirm the host's log format and firewall backend rather than copying the example unchanged. A single application executable is not a claim that the entire server has no other executables.\n\n### 3. reaction — plausible, but packaging needs confirmation\n\nThe official tutorial specifically demonstrates watching Linux SSH logs, recognizing unsuccessful password authentication and applying firewall bans. That is the correct operating relationship for the requested task. [SSH tutorial](https://reaction.ppom.me/get-started/tutorial-en/)\n\nThe current project describes a Rust daemon, but that alone does not prove its entire runtime dependency set or the number of application executables in a release. The release page was not readable in this run. [Project](https://reaction.ppom.me/) · [Release listing](https://framagit.org/ppom/reaction/-/releases)\n\n**Judgment: INSUFFICIENT, retained for follow-up rather than rejected.** The next decisive check is a release manifest showing one added executable and no required Python. If confirmed, the documented SSH setup becomes a direct fit; if either requirement is violated, that setup should be excluded.\n\n### 4. Existing OpenSSH penalties — check before adding another daemon\n\nOpenSSH 9.8 introduced PerSourcePenalties, which accumulates penalties for repeated unsuccessful authentication and temporarily refuses connections from the source. The release also documents exempt address ranges and cautions about shared addresses. This is a configuration route within an existing supporting SSH server, not a separate single-binary blocker product; the same release explicitly split the server into multiple executables. [OpenSSH 9.8 release](https://www.openssh.org/txt/release-9.8)\n\n**Judgment: INSUFFICIENT until the installed SSH implementation/version is known.** If the relevant options exist and their behavior matches the desired banning policy, this may avoid installing another blocker. If they do not exist, it is not an available replacement on the current host. Keep password authentication available and check emergency access when evaluating any source-based ban policy.\n\n### Why SSHGuard is excluded from this particular shortlist\n\nSSHGuard fits the SSH log-blocking purpose, but its own architecture describes separate log-reader, parser, blocker and firewall-backend programs. That conflicts with the single added application binary requirement. Extra service coverage is not the reason for exclusion. [Official architecture](https://sshguard.net/docs/contributing.html)\n\n### Evidence and date limits\n\nThe question is dated August 28, 2026; the searches were performed November 21, 2026. The current fail2zig, fail2ban-rs and reaction pages did not establish their exact feature state on the question date. A search snippet dates fail2ban-rs 1.5.4 to October 5, 2026, so that release metadata is later evidence; an attempted older-version page was inaccessible. OpenSSH 9.8's release is explicitly dated July 1, 2024. I would not describe current live documentation as a verified historical recommendation.\n\nBefore replacing the running service, verify that the chosen configuration recognizes the actual SSH failure messages, creates and expires the intended ban, and preserves a usable emergency-management path. Those checks remain to be performed on the servers.",
+      "candidate_links": [
+        {
+          "name": "fail2zig",
+          "url": "https://fail2zig.com/"
+        },
+        {
+          "name": "fail2ban-rs",
+          "url": "https://github.com/aejimmi/fail2ban-rs"
+        },
+        {
+          "name": "reaction",
+          "url": "https://reaction.ppom.me/"
+        },
+        {
+          "name": "OpenSSH PerSourcePenalties",
+          "url": "https://www.openssh.org/txt/release-9.8"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X94b72ce87c49ebd3",
+      "qid": "T044",
+      "raw_response": "# Self-hosted remote access to Windows PCs without individual inbound firewall rules\n\nThe most direct fit is a remote-support system in which the Windows agent and the technician both connect outward to a server you operate. This removes the need to forward an incoming port to every target PC. It still requires installing or launching an agent, permitting its outbound traffic, and making the central server reachable. The ranked options below distinguish finished remote-access tools from a component-based alternative.\n\n## 1. Remote Utilities with your own RU Server\n\n**URL:** https://www.remoteutilities.com/product/self-hosted-server.php\n\nRU Server is the strongest verified match: its Internet-ID relay accepts outbound connections from both the Windows Host and the technician's Viewer, bringing the connection through your own server. The product page explicitly describes this connection direction and the absence of endpoint port forwarding. Its port documentation distinguishes Internet-ID operation from direct connections, which would require an inbound Host port. Use the self-hosted Internet-ID configuration for this requirement.\n\nThe remaining endpoint work is deploying the Host, configuring its server and access credentials, and ensuring outbound traffic is permitted. A reachable central Windows server and appropriate product licensing are still required.\n\n**Date evidence:** A vendor article dated November 27, 2016 explicitly describes Hosts connecting to either a public or a self-hosted relay, establishing the core arrangement before the December 4, 2016 cutoff. Current licensing and current features should not be assumed to describe the 2016 release.\n\nSources: https://www.remoteutilities.com/blog/version-65-online-statuses-in-viewer-address-book/ and https://www.remoteutilities.com/support/docs/ports-used-by-remote-utilities/?hide_main_note=2990\n\n## 2. UltraVNC with a self-hosted Repeater and reverse connections\n\n**URL:** https://uvnc.com/downloads/ultravnc-repeater/83-ultravnc-repeater.html\n\nUltraVNC's Repeater provides the central relay mechanism: the Windows VNC server initiates a connection to the repeater, and a viewer joins the corresponding connection. The official guide shows a Windows service configured to reconnect to the repeater using an identifier. This is useful when the endpoints sit behind NAT and you control a publicly reachable relay.\n\nThis requires more configuration than a complete remote-support portal: distribute the VNC service configuration and unique identifiers, configure the central repeater, and enable authentication and encryption. An identifier alone is not adequate access protection. The inspected public source also defines connection, reconnect and repeater command-line switches.\n\n**Date evidence:** The live download page contains 2026 updates. The guide has a 2016-looking generated key filename, and the current source contains a 2009 comment, but neither establishes the publication date of the inspected material. I therefore leave the candidate's historical evidence status unknown.\n\nSources: https://www.uvnc.eu/download/1210/Repeater.pdf and https://github.com/ultravnc/UltraVNC/blob/main/winvnc/winvnc/winvnc.h\n\n## 3. SimpleHelp\n\n**URL:** https://simple-help.com/self-hosted-remote-access\n\nSimpleHelp is a packaged self-hosted option covering attended support and unattended access. Its documentation describes remote services connecting outward to the SimpleHelp server, avoiding inbound ports on the managed machines; the self-hosting page identifies the server as infrastructure controlled by the operator.\n\nThis is appropriate when you want a central support workflow rather than assembling a relay and viewer yourself. You must deploy its remote-access service to the target machines, operate a reachable server, and arrange the relevant commercial licence. Blocking outbound traffic can still prevent a connection.\n\n**Date evidence:** The inspected product pages are live and undated, so their availability and precise capabilities at the 2016 cutoff remain unverified. An older vendor demonstration appeared in search results, but its page could not be fetched; I do not treat that failed open as verified historical evidence.\n\nSupporting source: https://simple-help.com/headless-server-remote-access\n\n## 4. Reverse SSH forwarding with Bitvise SSH Client, plus RDP or VNC\n\n**URL:** https://bitvise.com/port-forwarding\n\nA plausible alternative is to make each Windows PC establish an SSH connection to your central server, then use server-to-client forwarding to reach the PC's local RDP or VNC service. Bitvise documents server-to-client forwarding, including that its destination address is interpreted on the SSH-client side. Applying that mechanism to a local desktop service is an architectural inference, not an inspected turnkey deployment.\n\nThis avoids a public inbound connection to each PC, but adds tunnel configuration, per-machine port mapping, credentials and reconnection management. RDP must already be enabled and supported by the Windows edition; VNC needs its own server. The SSH client and local desktop service must be allowed to communicate.\n\n**Date evidence:** The inspected Bitvise documentation is live and undated; this run did not verify a dated version available by the cutoff.\n\nSupporting sources: https://bitvise.com/tunnelier and https://bitvise.com/remote-desktop\n\n## Evidence limits\n\nThese are documented fits and a proposed composition, not claims that I deployed or tested them. Remote Utilities has direct dated evidence before the cutoff; the other candidates remain explicitly undated. The unauthenticated grep.app attempt failed, so the code evidence came through a public web search indexing GitHub and subsequent source-page inspection, not successful native code search. Discovery used nine search queries and sixteen opened-document attempts, including failures and a second source-page read; three queries and four opens remain for the separate checks.",
+      "candidate_links": [
+        {
+          "name": "Remote Utilities with self-hosted RU Server",
+          "url": "https://www.remoteutilities.com/product/self-hosted-server.php"
+        },
+        {
+          "name": "UltraVNC with a self-hosted Repeater and reverse connections",
+          "url": "https://uvnc.com/downloads/ultravnc-repeater/83-ultravnc-repeater.html"
+        },
+        {
+          "name": "SimpleHelp",
+          "url": "https://simple-help.com/self-hosted-remote-access"
+        },
+        {
+          "name": "Bitvise SSH Client reverse forwarding with RDP or VNC",
+          "url": "https://bitvise.com/port-forwarding"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X29b2a8f382c74eb3",
+      "qid": "T040",
+      "raw_response": "For more than 10,000 jobs taking 30 seconds to one hour, I would start with a durable task ledger and a pool of workers. The decisive design choice is what “no duplicate execution” means when a worker crashes. The supplied summary does not say whether unfinished work may be abandoned, so none of the options below is established as an unconditional complete fit.\n\nThere are two distinct controls to build: deduplicate submission using a stable logical task ID, and atomically grant permission to execute that ID. A queue message ID, exclusive delivery while a worker is alive, or an idempotent final result does not by itself establish that the underlying task function can never run a second time.\n\n## 1. PostgreSQL job ledger and atomic claims — strongest starting architecture\n\nUse a table with a unique logical task key. Insert new work with ON CONFLICT DO NOTHING, retaining the key for as long as repeat submissions must be rejected. Workers claim pending rows in a short transaction using FOR UPDATE SKIP LOCKED and move the chosen row to a claimed state before they start the work. PostgreSQL documents both conflict-based insertion control and SKIP LOCKED for multiple consumers of queue-like tables. [INSERT documentation](https://www.postgresql.org/docs/11/sql-insert.html); [SELECT documentation](https://www.postgresql.org/docs/11/sql-select.html). genui{\"citation\":{\"refs\":[\"turn133336098view3\",\"turn133336098view2\"]}}\n\nThe end-to-end design here is an inference from those primitives, not an implementation supplied or tested by the documentation. For literal at-most-once execution, the claimed state must be permanent: a worker that is unsure whether it acquired permission must not execute, and a recovery process must not automatically put an uncertain claim back into the pending state. This prevents an ordinary recovery mechanism from starting the same logical task again, but a crash after claiming and before finishing can leave work incomplete. Keep the claim transaction short; the one-hour task itself need not hold the row lock.\n\nIf automatic recovery is required, a different design can make the final effect idempotent or commit the effect together with completion in one transactional system. That can protect against duplicate effects while allowing repeated computation. It is not equivalent to the literal requirement that execution never repeats, and external side effects cannot simply be assumed to participate in the database transaction.\n\nThis is my first recommendation to investigate because its states and tradeoffs can be made explicit. Its status is INSUFFICIENT for a complete guarantee until task identity, acceptable failure recovery, worker code, and resource settings are verified.\n\n## 2. Celery 4.2.1 with early acknowledgment and a durable identity gate — a Python option\n\nCelery's versioned task guide documents acknowledgment before execution as the default and explains the different behavior of late acknowledgment for idempotent tasks. This makes early acknowledgment a relevant starting point when avoiding another start is more important than recovering every interrupted invocation. [Celery task guide](https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html). genui{\"citation\":{\"ref\":\"turn997984159view4\"}}\n\nYou would still need an application-level durable logical-task key at admission and a worker-side gate preventing independently submitted copies from invoking the same task. A unique task-class name is not that gate. Keep automatic task retries disabled for the strict at-most-once interpretation, and explicitly resolve uncertain publishing and claim outcomes. Early acknowledgment means a failed worker may leave an unfinished task that is no longer queued.\n\nThis option is conditional on using Python and on verifying broker behavior, worker time limits, and the one-hour workload settings. The opened guide establishes the acknowledgment distinction, not the complete deduplication integration. Its status is INSUFFICIENT pending those checks.\n\n## 3. pg-boss — a Node.js/PostgreSQL library worth checking\n\npg-boss provides a packaged job queue using PostgreSQL, describes concurrent claims through SKIP LOCKED, supports job creation in an existing database transaction, and lists polling workers and retry facilities. It could remove some queue-management code if Node.js is appropriate. [Official README](https://github.com/timgit/pg-boss/blob/master/README.md). genui{\"citation\":{\"ref\":\"turn873656335view0\"}}\n\nI would not treat it as a verified exactly-once task executor from the material opened. The search snippet used exactly-once-delivery wording, while the opened README described concurrent claiming and atomic commits instead. Pin a release and check logical-key retention, completed-job retention, retries, and one-hour expiry behavior. Automatic retries are a feature that needs a deliberate policy when another execution is prohibited. Its status is INSUFFICIENT, not a finding that the library is inherently unusable.\n\n## Why I would not select these queues alone\n\nAmazon SQS FIFO provides a documented five-minute submission-deduplication window. Its visibility guide also describes messages becoming available for another processing attempt if they are not deleted before the timeout. One-hour jobs fit within the documented maximum visibility period when configured appropriately, but an execution followed by a crash before deletion still creates uncertainty. FIFO therefore does not, by itself, establish the requested literal no-repeat execution property. It could carry task IDs to workers that enforce a separate durable permission gate. [FIFO deduplication](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html); [visibility and failures](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html). genui{\"citation\":{\"refs\":[\"turn997984159view2\",\"turn873656335view2\"]}}\n\nRabbitMQ's acknowledged work-queue tutorial deliberately redelivers unacknowledged work when a worker or connection fails. Its fair-dispatch setting is useful for tasks with very different runtimes, but it does not remove that recovery behavior or supply logical-task admission deduplication. The live tutorial also describes a configurable acknowledgment timeout whose current default is shorter than one hour; that setting needs attention rather than treating it as a permanent product limitation. RabbitMQ is a useful distribution component, but the tutorial configuration alone fails the strict no-repeat-execution requirement. [RabbitMQ work queues](https://www.rabbitmq.com/tutorials/tutorial-two-python). genui{\"citation\":{\"ref\":\"turn873656335view1\"}}\n\n## Sizing and the decision to make\n\nTen thousand queued jobs does not imply ten thousand simultaneous workers. For exactly 10,000 jobs, the stated duration endpoints imply roughly 83 worker-hours if every job takes 30 seconds and 10,000 worker-hours if every job takes an hour. These are arithmetic bounds from the supplied workload, not performance measurements. Choose concurrency from the actual runtime distribution, memory/CPU needs, external-service limits, and desired completion time; those inputs are absent.\n\nThe first decision is whether an uncertain job may be left incomplete to preserve literal at-most-once execution. If yes, a permanent task ledger and non-retriable claim is the concrete direction to implement and validate. If no, the missing piece is the task-specific recovery or side-effect protocol; choosing a different queue does not establish that protocol.\n\nThis research used primary documentation and an official repository. No integration or load test was performed. The question is dated November 27, 2018; some sources are versioned, while the live documentation and mutable README expose no reliable publication date. Their current content should not be read as proof of the exact features or defaults available on that historical date. An unauthenticated GitHub code-search attempt was blocked; an indexed public-repository search and an opened official README supplied the code-through-web fallback.",
+      "candidate_links": [
+        {
+          "name": "PostgreSQL job ledger with unique task keys and atomic permanent claims",
+          "url": "https://www.postgresql.org/docs/11/sql-select.html"
+        },
+        {
+          "name": "Celery 4.2.1 with early acknowledgment and an application-level identity ledger",
+          "url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html"
+        },
+        {
+          "name": "pg-boss",
+          "url": "https://github.com/timgit/pg-boss/blob/master/README.md"
+        }
+      ],
+      "citation_links": [
+        {
+          "source_ref": "turn133336098view2",
+          "url": "https://www.postgresql.org/docs/11/sql-select.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn133336098view3",
+          "url": "https://www.postgresql.org/docs/11/sql-insert.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn873656335view0",
+          "url": "https://github.com/timgit/pg-boss/blob/master/README.md",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn873656335view1",
+          "url": "https://www.rabbitmq.com/tutorials/tutorial-two-python",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn873656335view2",
+          "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn997984159view2",
+          "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn997984159view4",
+          "url": "https://docs.celeryq.dev/en/v4.2.1/userguide/tasks.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        }
+      ],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X91c8e89f7501bd08",
+      "qid": "T058",
+      "raw_response": "Switching can make sense if GitHub outages repeatedly prevent your actual work, but the evidence gathered here does not establish that another provider has better uptime. With collaboration style, CI requirements, budget, and willingness to operate servers unspecified, I would first test one representative repository and an independent copy of its Git history. A complete move becomes attractive when the replacement handles your review and release workflow and the expected reduction in disruption outweighs migration and maintenance work.\n\nMy ranked shortlist is below. The ranking reflects general usefulness for this question, not measured reliability.\n\n1. GitLab — the first managed alternative I would evaluate for an existing GitHub collaboration workflow.\nhttps://docs.gitlab.com/user/project/import/github/\n\nGitLab's GitHub importer can transfer repository data and substantial collaboration metadata, including issues, pull requests, comments, labels, milestones, and wiki pages. It supports GitLab.com and self-managed offerings. This gives you a practical migration path when preserving existing project discussion matters. Its documentation identifies import limitations and does not migrate GitHub organizations or groups. Test attribution, links, attachments, permissions, and CI separately on a representative project before committing to a move. An importer is evidence of migration capability, not evidence of superior availability.\n\n2. Codeberg — a hosted option to investigate for a free-software project.\nhttps://docs.codeberg.org/getting-started/what-is-codeberg/\n\nCodeberg is a nonprofit, community-run forge based on Forgejo. Its migration tool supports GitHub repository data and metadata such as issues, labels, wiki content, releases, and milestones:\nhttps://docs.codeberg.org/advanced/migrating-repos/\n\nThe decisive caveat is CI. Codeberg's current documentation describes manually approved Woodpecker access, limited shared resources, an as-is availability caveat, and limited hosted Forgejo Actions availability:\nhttps://docs.codeberg.org/ci/\n\nThat makes Codeberg worth testing for an eligible project, but CI continuity cannot be inferred from the presence of a hosting service. Check whether its project scope and available runners fit your workload; use your own runner only if you are willing to operate it.\n\n3. Forgejo — an option when control of the hosting environment is a central requirement.\nhttps://forgejo.org/docs/latest/admin/installation/\n\nForgejo is self-hostable forge software; its installation documentation covers binaries and Docker. This lets you choose infrastructure and operational policies instead of depending entirely on another public hosting provider. The tradeoff is responsibility for service operation, updates, backups, recovery, and runners. Self-hosting only improves your situation if you can operate the required service adequately. Forgejo Actions provides CI, but its documentation explicitly distinguishes familiarity from GitHub Actions compatibility, so existing workflows need validation:\nhttps://forgejo.org/docs/latest/user/actions/overview/\n\n4. SourceHut — an alternative for people comfortable with email-oriented contribution and review.\nhttps://sourcehut.org/\n\nSourceHut offers Git hosting, ticket tracking, mailing-list-based patch review, and virtualized CI builds. Its workflow is materially different from a GitHub pull-request-centered setup, so contributor acceptance is an important part of a trial. Its current site describes the service as a public alpha. Its pricing page expects project hosts to pay according to means, offers financial assistance, and identifies builds as a paid service during the alpha:\nhttps://sourcehut.org/pricing/\n\nI would evaluate SourceHut if that collaboration model is appealing, rather than assume a repository import preserves the existing contributor experience.\n\n5. Gitea repository mirroring — a useful mechanism if the immediate objective is reducing dependence on a single code host.\nhttps://docs.gitea.com/usage/repository/repo-mirror/\n\nGitea supports periodic pull and push mirrors of commits, branches, and tags. An independently hosted pull mirror can provide an additional copy while you evaluate a full switch; after moving, a push mirror can retain a GitHub copy. The public implementation shows scheduled synchronization and error handling:\nhttps://github.com/go-gitea/gitea/blob/main/services/mirror/mirror_pull.go\n\nKeep one authoritative write location. Mirroring is not automatic failover for issues, reviews, CI, or releases, and a pull mirror cannot acquire new changes while its source is unavailable. The documentation also warns that push mirroring overwrites remote changes.\n\nA concrete trial should exercise clone and push, one review, an issue with attachments, the normal build, and the normal release. Compare the migration effort and ongoing operating burden with the disruption you actually experience. If outages mainly interrupt Git access, a separate copy may provide enough value with a smaller transition. If the blocked work is reviews or release automation, test those services explicitly before switching.\n\nEvidence limits: this is a capability and migration shortlist, not an uptime study or a demonstration that any option was deployed successfully. The sources are live pages retrieved after the question's 2026-08-17 cutoff; their historical feature availability was not independently established, so date status is unknown. One unauthenticated grep.app search attempt was inaccessible. Gitea source was instead located using public code indexed in web search; that is code-through-web fallback, not successful native code search.",
+      "candidate_links": [
+        {
+          "name": "GitLab",
+          "url": "https://docs.gitlab.com/user/project/import/github/"
+        },
+        {
+          "name": "Codeberg",
+          "url": "https://docs.codeberg.org/getting-started/what-is-codeberg/"
+        },
+        {
+          "name": "Forgejo",
+          "url": "https://forgejo.org/docs/latest/admin/installation/"
+        },
+        {
+          "name": "SourceHut",
+          "url": "https://sourcehut.org/"
+        },
+        {
+          "name": "Gitea repository mirroring",
+          "url": "https://docs.gitea.com/usage/repository/repo-mirror/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X8e5eef44d6beaf03",
+      "qid": "N003",
+      "raw_response": "## Recommended starting point: PlantUML Salt\n\n[PlantUML Salt](https://plantuml.com/salt) is the closest match I found to the workflow you describe: write a short textual specification of a UI and have a renderer lay out the wireframe. Its official documentation shows buttons, input fields, checkboxes, radio buttons and dropdowns, with braces and pipes for arranging controls into a grid. That makes it a strong first option for the same kind of convenience you associate with Mermaid.\n\nFor example, this small form follows its documented syntax:\n\n```text\n@startsalt\n{+\n  Email | \"                 \"\n  Secret | \"                 \"\n  [Back] | [Continue]\n}\n@endsalt\n```\n\nThe recommendation concerns Salt's wireframing language; it does not require Mermaid compatibility. The syntax and controls are documented, but I have not run this example or measured authoring speed. [Official Salt syntax](https://plantuml.com/salt).\n\n## Alternatives worth comparing\n\n| Tool | Authoring approach | Why it may fit |\n| --- | --- | --- |\n| [wiremark](https://wiremark.dev/) | Indented component names such as Stack, TextField and Button | A compact structural language with a browser editor; sources can be standalone files or embedded Markdown blocks through the appropriate host adapters. |\n| [wiremd](https://github.com/akonan/wiremd/) | Markdown plus UI and layout extensions | A useful choice if Markdown already feels natural. Its README documents rendering to HTML and a CLI watch mode with live reload. |\n| [WireDSL](https://github.com/Wire-DSL/wire-dsl) | Explicit declarations of projects, screens, layouts and components | A more structured alternative with a browser editor, live SVG preview and documented SVG, PNG and PDF exports. |\n\nFor the shortest route to evaluating the idea, start with Salt and compare its notation with wiremark's indentation-based syntax. Try wiremd if familiar Markdown is your main preference; consider WireDSL if explicit screen and layout declarations suit the designs you want to express. This ordering is a judgment about fit to your concise-authoring goal, not a benchmark.\n\nAll four have primary documentation supporting the core requirement: authoring wireframes through text. I have not imposed an operating-system, license, price, export-format or integration requirement because the question does not supply one. In particular, comparing the effort of writing HTML does not prohibit a tool that produces HTML from a shorter source language.\n\nThese are documentation-based recommendations, not installation or usability tests. The evidence is live and undated, so I cannot establish from these pages that every described feature was available on 7 November 2026. A search snippet reports a later wiremark repository update; it does not establish the project's original release date.",
+      "candidate_links": [
+        {
+          "name": "PlantUML Salt",
+          "url": "https://plantuml.com/salt"
+        },
+        {
+          "name": "wiremark",
+          "url": "https://wiremark.dev/"
+        },
+        {
+          "name": "wiremd",
+          "url": "https://github.com/akonan/wiremd/"
+        },
+        {
+          "name": "WireDSL",
+          "url": "https://github.com/Wire-DSL/wire-dsl"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xcea681420f68aa07",
+      "qid": "T057",
+      "raw_response": "Start with **[Marginalia Search](https://marginalia-search.com/)** and **[Wiby](https://wiby.me/)**. They are particularly close to what you describe: ways to discover personally motivated pages that tend to disappear among larger commercial sites. Then try a personal-homepage community if you want the feeling of wandering from one person's interests into another's.\n\n### Where I would start\n\n1. **Marginalia Search.** Its own homepage says that it prioritizes non-commercial content and provides tools for both searching and discovering old websites. Try a subject that genuinely interests you, then explore beyond the first result. This is my strongest starting point when you have a topic in mind. Its preference for this material is not a guarantee about every result. [Official source](https://marginalia-search.com/). genui{\"citation\":{\"ref\":\"turn302063197view0\"}}\n\n2. **Wiby.** Its stated purpose is unusually close to your description: finding pages made by hobbyists and other individuals about subjects they care about. The homepage also has a **“surprise me”** link, which gives you a concrete starting point for aimless browsing. I would try that when you want discovery rather than an answer to a specific question. [About Wiby](https://wiby.me/about/). genui{\"citation\":{\"refs\":[\"turn302063197view1\",\"turn408217180view3\"]}}\n\n3. **Neocities.** Follow **Explore sites** from its [about page](https://neocities.org/about). This is a place for handmade personal websites; the project's own examples include fan shrines, digital gardens, project notes and online zines. Those are promising directions if the attraction is seeing someone's personality and interests expressed through an entire website. Individual pages will vary in substance, so treat the directory as a place to explore. genui{\"citation\":{\"ref\":\"turn302063197view2\"}}\n\n4. **[MelonLand Surf Club](https://melonland.net/surf-club).** This is a webring and browsable collection of community members' homepages, with a random-site control. The current community rules focus on creative personal homepages and exclude commercial sites. A useful practical detail: if a member's page does not work inside the navigator, the wiki explains how to open it directly. Its current rules page was revised on **7 August 2026**, after your question date, so I cannot treat those exact rules as evidence of how it operated on 4 April 2026. [Community documentation](https://wiki.melonland.net/surf_club). genui{\"citation\":{\"refs\":[\"turn389106544view1\",\"turn426067826view0\"]}}\n\n5. **[Search My Site](https://searchmysite.net/).** The operator's July 2025 report describes narrowing the index specifically to personal websites. That makes it another sensible place to search for a niche interest. The same report mentions paid listings, so I would describe its focus as personal sites rather than promise that everything involved is non-commercial. I verified the operator's report, not the live search endpoint. [First-party report](https://blog.searchmysite.net/posts/five-year-anniversary/). genui{\"citation\":{\"ref\":\"turn587590285view1\"}}\n\n6. **[Kagi Small Web](https://kagi.com/smallweb).** Try this if you want currently active personal writing. Its launch announcement describes a curated route to recent non-commercial blog posts, and its public repository documents the project and feed access. The current inclusion rules are English-focused and apply restrictions to advertising and blog authorship; those rules should not be assumed identical to the launch criteria. This is a discovery route to personal content provided by Kagi, and I have not exercised the browsing interface itself. [Announcement](https://blog.kagi.com/small-web) · [Project documentation](https://github.com/kagisearch/smallweb). genui{\"citation\":{\"refs\":[\"turn408217180view2\",\"turn408217180view0\"]}}\n\n**One additional lead to check:** [ooh.directory](https://ooh.directory/). It appeared as a blog-directory lead during discovery, but both its homepage and about page returned 403 errors to my retrieval tool. I could not verify its current first-party description or browse it, so I would keep it behind the documented options above. This is a verification gap, not evidence that the site is unavailable to an ordinary visitor.\n\nFor a first session, I would use Wiby's random link, search one of your book's subjects in Marginalia, and then spend time with a few homepages from Neocities or the Surf Club. When a page resonates, follow its own links and explore its older writing. That last step is my suggested browsing approach: the aim is to find an individual whose curiosity overlaps with yours and let their connections guide the next visit.\n\nThese recommendations concern documented discovery routes. I have not audited every destination for depth or commercial activity. Most current primary pages are undated; where I found a dated source or a known later revision, I have distinguished it above.",
+      "candidate_links": [
+        {
+          "name": "Marginalia Search",
+          "url": "https://marginalia-search.com/"
+        },
+        {
+          "name": "Wiby",
+          "url": "https://wiby.me/"
+        },
+        {
+          "name": "Neocities",
+          "url": "https://neocities.org/about"
+        },
+        {
+          "name": "MelonLand Surf Club",
+          "url": "https://melonland.net/surf-club"
+        },
+        {
+          "name": "Search My Site",
+          "url": "https://searchmysite.net/"
+        },
+        {
+          "name": "Kagi Small Web",
+          "url": "https://kagi.com/smallweb"
+        },
+        {
+          "name": "ooh.directory",
+          "url": "https://ooh.directory/"
+        }
+      ],
+      "citation_links": [
+        {
+          "source_ref": "turn302063197view0",
+          "url": "https://marginalia-search.com/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn302063197view1",
+          "url": "https://wiby.me/about/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn302063197view2",
+          "url": "https://neocities.org/about",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn389106544view1",
+          "url": "https://melonland.net/surf-club",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn408217180view0",
+          "url": "https://github.com/kagisearch/smallweb",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn408217180view2",
+          "url": "https://blog.kagi.com/small-web",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn408217180view3",
+          "url": "https://wiby.me/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn426067826view0",
+          "url": "https://wiki.melonland.net/surf_club",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn587590285view1",
+          "url": "https://blog.searchmysite.net/posts/five-year-anniversary/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        }
+      ],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X4df07c9bb19ae5cc",
+      "qid": "T014",
+      "raw_response": "I would try **Flixier** first for the browser-based workflow you described. Its official [MP4 editor instructions](https://flixier.com/tools/video-editor/mp4-editor) explicitly describe importing a YouTube video by pasting its link, cutting away unwanted parts, trimming clips, and downloading the exported result. Its [cutting workflow](https://flixier.com/tools/cut-videos) also includes combining clips. In practice, the intended sequence is: import the link, put the video on the timeline, cut around each section you want to keep, remove the other pieces, arrange the retained clips together, and export the shorter study video. This is a documentation-based recommendation; I have not run an import or export.\n\nThe main catch is the [free plan](https://flixier.com/pricing): it currently allows 10 minutes of exported video per month at 720p, with a Flixier watermark. Your question does not prohibit a watermark or specify a minimum resolution, so those restrictions do not automatically rule it out, but they may matter for regular study use. I also found that one older YouTube-specific page redirects to generic editing instructions, although the live MP4 editor page still explicitly advertises YouTube-link imports. Try your actual source link before spending time on a long edit.\n\n**Cutlab** is another browser option. Its [link-import documentation](https://www.cutlab.in/features/import-video-from-link) explicitly supports public YouTube URLs, and its [editor documentation](https://www.cutlab.in/features/online-video-editor) describes trimming, splitting and arranging clips on a timeline before exporting the resulting video. The editor is described as free, with no watermark or sign-up. Its source restrictions are more explicit: private videos, age-restricted videos and videos longer than 30 minutes cannot be fetched, and even a public link may occasionally fail. Export runs in real time with the tab open; the output is MP4 when supported by the browser, otherwise WebM. It is therefore a documented fit for an accessible source within those limits, rather than a promise that every YouTube lecture will import.\n\nIf you need the PC fallback, **[WonderFox Free HD Video Converter Factory](https://www.videoconverterfactory.com/free-hd-video-converter/)** is a Windows application with both a YouTube downloader and basic editing. Its [URL guide](https://www.videoconverterfactory.com/tips/youtube-to-mp3.html) shows pasting a YouTube URL into the Downloader, while its [cut-and-join guide](https://www.videoconverterfactory.com/tips/free-video-cutter-joiner.html) documents trimming selected intervals and merging clips in the chosen order. Use the video download option, then bring the downloaded source into the Converter, make the clips you want, merge them, and save the resulting video. These are modules of the same free application. I have not installed or tested it; the relevant guides were updated in 2024 and 2026.\n\nI also examined the free, self-hosted **[Cut/Storm](https://github.com/vorniches/cutstorm)** project. Its README supports YouTube URL import, trimming and MP4 output, but I could not establish the crucial ability to join several arbitrary, separated sections into one gist. It remains an option to investigate, not a confirmed complete recommendation. The one decisive follow-up is whether its current editor supports that selection-and-concatenation operation; an affirmative documented answer would make it a fit, while an explicit lack of support would rule it out for this task.\n\nI would exclude **[Clippingnet's trimmer](https://clippingnet.com/video-trimmer/)** for your stated requirement: its own workflow says a YouTube source produces timestamped share links and an embed instead of a downloadable video.\n\nThese findings reflect live documentation observed on 21 November 2026. Most pages are undated, and the dated WonderFox guides are later than your 19 July 2023 question, so this evidence does not establish what was available when the question was originally posted.",
+      "candidate_links": [
+        {
+          "name": "Flixier",
+          "url": "https://flixier.com/tools/video-editor/mp4-editor"
+        },
+        {
+          "name": "Cutlab",
+          "url": "https://www.cutlab.in/features/import-video-from-link"
+        },
+        {
+          "name": "WonderFox Free HD Video Converter Factory",
+          "url": "https://www.videoconverterfactory.com/free-hd-video-converter/"
+        },
+        {
+          "name": "Cut/Storm",
+          "url": "https://github.com/vorniches/cutstorm"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xafb427a76817197a",
+      "qid": "N004",
+      "raw_response": "DBeaver Enterprise is a defensible choice for the job you described. I would put it first for a scheduled database-copy workflow, then evaluate Microsoft SSIS if the consolidation steps are substantial. Advanced ETL Processor Enterprise is another practical-looking option, but I could not clear two important details within this search.\n\nYour non-open-source requirement and company support requirement are separate. A paid license or a support contract alone does not prove that a product is not open source. I have therefore distinguished documented product licensing from details still needing confirmation.\n\n1. DBeaver Enterprise\n\nThe vendor documents direct transfers between databases, task scheduling, ODBC connectivity, and support through the Enterprise subscription. Its purchased-product EULA restricts redistribution, modification and source-code discovery. That supports treating the licensed Enterprise product as proprietary at the product-license level. It does not establish that all included drivers or dependencies are proprietary, and your question does not separately specify such a rule.\n\nThis makes your existing shortlist sensible. Configure the transfer as a scheduled task, and evaluate whether SQL-based consolidation is sufficient for your transformations. Test it with the actual ODBC driver and target database under the unattended account before committing. I did not establish performance for your unspecified data volume or test a complete transfer.\n\nSources: [Enterprise documentation](https://dbeaver.com/docs/dbeaver/Enterprise-Edition/); [product EULA](https://dbeaver.com/eula/).\n\n2. Microsoft SQL Server Integration Services (SSIS)\n\nSSIS is a strong alternative for a more developed ETL workflow. Microsoft documents an ODBC Source that reads tables, views or query results; SSIS provides transformations and destination loading; SQL Server Agent can schedule packages on premises. A concrete design is an ODBC source, any needed transformation steps, a compatible destination, and a recurring Agent job.\n\nProduction licensing and edition choice need attention. The opened licensing guidance describes commercial SQL Server editions, but I did not inspect the applicable production EULA, so the strict non-open-source requirement remains unverified in this record. Microsoft's SQL Server 2022 lifecycle shows continuing product support; you would still need the appropriate support arrangement for the chosen version.\n\nSources: [ODBC Source](https://learn.microsoft.com/en-us/sql/integration-services/data-flow/odbc-source?view=sql-server-ver15); [SSIS capabilities](https://learn.microsoft.com/en-us/sql/integration-services/sql-server-integration-services?view=sql-server-ver17); [scheduled execution](https://learn.microsoft.com/en-us/sql/integration-services/packages/sql-server-agent-jobs-for-packages?view=sql-server-2017); [licensing guidance](https://www.microsoft.com/licensing/guidance/SQL); [SQL Server 2022 support lifecycle](https://learn.microsoft.com/en-us/lifecycle/products/sql-server-2022).\n\n3. Advanced ETL Processor Enterprise\n\nThe vendor describes unattended ETL on your own Windows servers, visual transformations, database loading, operational logs and direct technical support. Use the Enterprise production edition when evaluating automation. The current feature comparison says Standard does not provide it.\n\nThis is a conditional shortlist entry: I did not verify the applicable non-open-source license or your required ODBC source path. An attempted ODBC-to-ODBC documentation URL failed, which means missing evidence rather than a proven incompatibility. The feature page is dated September 1, 2026, after your August 21 question; it cannot establish exactly what was documented at the question date.\n\nSources: [Enterprise product](https://www.etl-tools.com/products/advanced-etl-processor-enterprise.html); [features and edition distinctions](https://www.etl-tools.com/features.html).\n\nFor the evaluation, use a representative set of your real tables and check data-type fidelity, elapsed time, the chosen full/incremental-load strategy, recovery after a failed run, and whether scheduling works without an interactive session. These are proposed checks, not tested results. The source and destination engines, operating system, ODBC driver and scale are unspecified, so none of these product-level recommendations is a guarantee for that exact environment.",
+      "candidate_links": [
+        {
+          "name": "DBeaver Enterprise",
+          "url": "https://dbeaver.com/docs/dbeaver/Enterprise-Edition/"
+        },
+        {
+          "name": "Microsoft SQL Server Integration Services (SSIS)",
+          "url": "https://learn.microsoft.com/en-us/sql/integration-services/sql-server-integration-services?view=sql-server-ver17"
+        },
+        {
+          "name": "Advanced ETL Processor Enterprise",
+          "url": "https://www.etl-tools.com/products/advanced-etl-processor-enterprise.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}

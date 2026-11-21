@@ -1,0 +1,79 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "Xc599a572ee57ed66",
+      "qid": "N005",
+      "raw_response": "Caddy is the closest fit I found for the requested combination of static files, shared page components, and HTMX-dependent responses in one server process. I would evaluate it first. A second approach can remove runtime template processing altogether: serve preassembled static pages and let htmx select the relevant fragment in the browser. These are configuration and architecture recommendations from documentation, not deployments or security audits.\n\n1. Caddy with its built-in templates handler\n\nCaddy can execute templates over files served by its own file server. Its documentation shows the combination of a site root, templates, and file_server, with support for file inclusion and Markdown rendering. That directly addresses authoring common headers, footers, and other shared content once. Source: https://caddyserver.com/docs/caddyfile/directives/templates\n\nThe public template implementation exposes the incoming request through .Req, including .Req.Header.Get, and provides include/import helpers. My inference is that a template can inspect HX-Request and conditionally emit the page shell around a shared body: a normal navigation receives a complete document, while an HTMX request receives the relevant fragment. That does not require a separate application server. The same source also documents front-matter splitting, which could help separate blog metadata from content. Source: https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go\n\nCaddy's official installation and feature search results identify static binaries, Linux and Windows support, and a Docker distribution. I did not open or test an Alpine-specific package in this run. Sources: https://caddyserver.com/docs/install and https://caddyserver.com/features\n\nThere are two material security qualifications. Caddy's file-server documentation explicitly says that its configured root is not a filesystem sandbox: symlinks inside it can expose files outside it. Its template documentation also warns against evaluating untrusted content, since templates can access capabilities beyond plain HTML rendering. Use a dedicated public directory, avoid symlinks to private data, and process only templates you control. The documentation is not evidence that Caddy is the most secure server. Sources: https://caddyserver.com/docs/caddyfile/directives/file_server and https://caddyserver.com/docs/caddyfile/directives/templates\n\n2. Static Web Server v2 with htmx hx-select\n\nStatic Web Server is an alternative if the primary goal is a small static-serving runtime. Its overview describes a standalone musl-linked binary, Linux and Windows availability, and Docker support. It therefore looks promising for an Alpine production system and Windows development. Source: https://static-web-server.net/v2/\n\nThis option changes how the HTMX requirement is met. The hx-select attribute selects an element from an HTML response before swapping it into the current page. Consequently, the server can return the same complete static HTML file to both ordinary navigation and htmx; htmx extracts the relevant content. Source: https://htmx.org/attributes/hx-select/\n\nTo keep common content out of individual source pages, assemble full pages from shared source templates during a build step. That build-time assembly is an architectural inference, not a verified feature of Static Web Server. It eliminates runtime template evaluation but adds a build step and still transfers the complete HTML response. If server-side generation of only the requested fragment is a strict requirement, this is an alternative design rather than a direct match. Extensibility, certificate automation, and the exact security defaults of a chosen SWS release need separate review.\n\n3. nginx with Server Side Includes\n\nnginx's SSI module can include shared files and conditionally include content. Its request-header variables expose custom request headers, so combining those mechanisms should allow HX-Request-dependent page-shell inclusion while keeping processing inside nginx. This is an inference from the documented primitives, not a preconfigured HTMX integration. Sources: https://nginx.org/en/docs/http/ngx_http_ssi_module.html and https://nginx.org/en/docs/http/ngx_http_core_module.html\n\nSSI is disabled by default and must be enabled for the intended responses. Its documented conditional nesting is limited to one level. This is a viable mechanism for a modest common-layout problem, but less attractive than Caddy here because the configuration and restricted template language introduce more work. I did not verify native Windows production suitability, Alpine packaging, or a complete secure nginx configuration in this run.\n\nFor either server-side approach, returning full pages and fragments from the same URL requires correct cache variation. htmx's documentation calls for Vary: HX-Request and distinct ETags for different representations; it also discusses history restoration settings. These details matter even for content stored in otherwise static files. Source: https://htmx.org/docs/#caching\n\nI would start with Caddy templates if request-time composition is essential, or the static-page/hx-select approach if a build step is acceptable. All evidence above is current documentation or live public code. I did not establish dated versions proving that these exact documented capabilities were available by the question's 2026-07-25 cutoff.",
+      "candidate_links": [
+        {
+          "name": "Caddy with built-in templates",
+          "url": "https://caddyserver.com/docs/caddyfile/directives/templates"
+        },
+        {
+          "name": "Static Web Server v2 with htmx hx-select",
+          "url": "https://static-web-server.net/v2/"
+        },
+        {
+          "name": "nginx Server Side Includes",
+          "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xc40d33db250020e9",
+      "qid": "T017",
+      "raw_response": "I would start with SNAP, then examine LEMON, with OGDF as a third option. These are candidates for the graph-library role you described. I did not find enough opened evidence to certify every performance requirement, particularly filtered iteration, the complete mutation workload, and very uneven vertex degrees.\n\nYour C++11-or-later preference is expressly nonmandatory, and the preference for a less viral license is also softer than the requirement to be free and open-source. I have therefore not excluded older-looking APIs or GPL software solely on those grounds. I also preserved your allowance for insignificant Boost use.\n\n## 1. SNAP — strongest documented starting point\n\n[SNAP](https://snap.stanford.edu/snap-2.1/index.html) documents a C++ core intended for large networks, with dynamic nodes, edges and attributes. Its [quick introduction](https://snap.stanford.edu/snap-2.1/quick.html) distinguishes undirected, directed and directed multigraph types, and describes network templates carrying data on both nodes and edges. Those are directly relevant to graph manipulation and additional semantics.\n\nThe [installation guide](https://snap.stanford.edu/snap-2.1/install.html) says external packages are required for drawing and visualization, while the core includes its own GLib containers. That supports using the core without a significant Boost dependency. The overview identifies BSD licensing for the core and GLib source.\n\nThe practical tradeoff is adopting SNAP's own types and conventions. Its documentation supports large-network design, but that is not a measurement of your particular filters, updates or hubs. Exact movement semantics and the performance of the complete operation mix still need checking. I would compare a representative sparse graph, including high-degree vertices, before selecting it.\n\nForm: library. Contribution: the whole graph-library alternative. Assessment: INSUFFICIENT to certify all hard requirements; no decisive hard-constraint failure established.\n\n## 2. LEMON — promising, with incomplete verification\n\n[LEMON](https://lemon.cs.elte.hu/) deserves investigation. An [accessible source copy](https://github.com/The-OpenROAD-Project/lemon-graph) identifies it as an open-source C++ library focused on graph algorithms and optimization. Its [license file](https://github.com/The-OpenROAD-Project/lemon-graph/blob/master/LICENSE) identifies Boost Software License 1.0. That name refers to licensing and does not by itself imply a dependency on Boost code.\n\nIndexed excerpts from its [ListGraph 1.3.1 reference](https://lemon.cs.elte.hu/pub/doc/1.3.1/a00244.html) describe node/edge deletion, endpoint changes and reservation operations. The indexed [Basic Concepts tutorial](https://lemon.cs.elte.hu/pub/tutorial/a00011.html) also points to maps for associated data. These are useful leads toward mutable ListGraph/ListDigraph configurations.\n\nHowever, my official-document opens were blocked, and the attempted implementation-file opens failed. I could not confirm the full dependency closure, the complete maps/mutation contract, or performance and high-degree behavior from opened primary material. I would keep LEMON on the shortlist with those gaps explicit. In particular, do not assume every LEMON graph representation has the same mutation capabilities.\n\nForm: library. Contribution: the whole graph-library alternative. Assessment: INSUFFICIENT; promising indexed evidence is not treated as full document verification.\n\n## 3. OGDF — broad graph manipulation, with concrete tradeoffs\n\n[OGDF](https://github.com/ogdf/ogdf) is a C++ graph library whose scope extends beyond graph drawing. Its [basic examples](https://ogdf.github.io/doc/ogdf/ex-basic.html) explain adjacency-list graphs, directed edges and an undirected interpretation, and associated GraphAttributes.\n\nThe [Graph reference](https://ogdf.github.io/doc/ogdf/classogdf_1_1_graph.html) documents creation, deletion, splitting, contraction and moving edge endpoints. It also states that edge lookup takes time proportional to the smaller endpoint degree. That is a reason to inspect hub-to-hub lookups in your workload, not enough to declare failure without a performance threshold.\n\nThe repository states GPL v2 or v3 with special exceptions. This may be less attractive for your licensing preference, but it is not excluded by your hard free/open-source requirement. The project describes itself as self-contained; I did not verify the complete intended-build dependency closure, so absence of significant Boost dependence remains unconfirmed.\n\nForm: library. Contribution: the whole graph-library alternative. Assessment: INSUFFICIENT pending dependency and workload verification.\n\n## Evidence and date limits\n\nThe question is dated March 8, 2016. The opened OGDF API explicitly identifies version 2023.09, so it is later evidence and cannot establish the exact 2016 API. The SNAP pages have a 2.1 versioned path, but their publication dates were not established. The LEMON source copy is live and not a verified historical snapshot.\n\nNo code was built or benchmarked. The ranking reflects fit and the evidence actually available, and none of the three is presented as a fully verified match. The next decisive step is to choose the intended release/container and test your sparse, skewed-degree graph with the real filter and mutation mix.",
+      "candidate_links": [
+        {
+          "name": "SNAP (Stanford Network Analysis Platform)",
+          "url": "https://snap.stanford.edu/snap-2.1/index.html"
+        },
+        {
+          "name": "LEMON",
+          "url": "https://lemon.cs.elte.hu/"
+        },
+        {
+          "name": "OGDF (Open Graph Drawing Framework)",
+          "url": "https://github.com/ogdf/ogdf"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}

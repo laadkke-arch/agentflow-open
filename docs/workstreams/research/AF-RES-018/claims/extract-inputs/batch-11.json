@@ -1,0 +1,299 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "X3b137957ff6c341a",
+      "qid": "N015",
+      "raw_response": "I would start with **mitmproxy's built-in Modify Body feature**, with **Charles** as the GUI-oriented alternative. Both provide the kind of network response rewriting you describe. **Privoxy** is another reasonable option if you can obtain a build with HTTPS inspection enabled.\n\nThere is one distinction that matters for your eBay case: changing the HTML response before the browser receives it is different from changing a DOM that JavaScript constructs later. These tools document the former. I have not found evidence that any of them specifically fixes the missing original listing in ArchiveWeb.page, so the archive result still needs to be checked.\n\n## 1. mitmproxy: my first candidate\n\nThe [Modify Body documentation](https://docs.mitmproxy.org/stable/overview/features/) describes built-in rules that replace text in HTTP message bodies. Rules can be filtered to particular traffic and applied to responses. For a stable attribute in delivered HTML, that gives you a direct way to change the source before it is used by the browser. You do not have to start by writing a Python addon.\n\nThe [installation documentation](https://docs.mitmproxy.org/stable/overview/installation/) offers standalone binaries and says those packages contain their own Python environment and dependencies. That is a useful distinction for your ecosystem concern: using a packaged application and a replacement rule does not require setting up a Python development project. Additional packages are a separate advanced installation path.\n\nFor HTTPS, configure the browser to use the proxy and follow its [certificate setup instructions](https://docs.mitmproxy.org/stable/concepts/certificates/). The response must be available to the modifier; the feature documentation specifically says body modification does not work on streamed bodies.\n\nI would first inspect the response that contains the listing-related markup, scope a rule to that response, and make the smallest necessary change. This is an investigation plan, not an eBay-specific rule: the actual attribute and response URL are absent from the question.\n\n**Assessment:** documented proxy capability; insufficient evidence of a complete fix for this particular recording failure.\n\n## 2. Charles: a good choice for a graphical rule editor\n\nCharles's [Rewrite tool](https://www.charlesproxy.com/documentation/tools/rewrite/) lets you define location-scoped rules for response bodies, including regular-expression replacement. That is suitable for replacing an attribute value in a known piece of HTML without writing an application.\n\nIts [SSL Proxying documentation](https://www.charlesproxy.com/documentation/proxying/ssl-proxying/) explains how to select the HTTPS hosts to intercept and trust the Charles certificate. Ordinary HTTPS forwarding alone will not let a proxy rewrite the encrypted content.\n\nCharles has [application downloads](https://www.charlesproxy.com/download/) and [installation instructions](https://www.charlesproxy.com/documentation/installation/) for Windows, macOS and Linux. The download page advertises a trial; I have not verified the current purchase price. An older-looking FAQ discusses Java runtime requirements, while the current installation pages describe packaged installation. I would verify the particular package before making a stronger claim about its bundled runtime, but using its rewrite rules does not imply learning Java.\n\n**Assessment:** documented response rewriting with a convenient GUI; the response to modify and its effect on ArchiveWeb.page remain unverified.\n\n## 3. Privoxy: configuration-file filtering\n\nPrivoxy's [filter manual](https://www.privoxy.org/user-manual/filter-file.html) describes on-the-fly substitutions in source HTML and JavaScript. You define a filter in a user filter file and activate it through an action, keeping the change scoped to the target traffic.\n\nFor eBay's HTTPS traffic, the important prerequisite is in its [HTTPS inspection guide](https://www.privoxy.org/user-manual/howto.html): the installed build must include FEATURE_HTTPS_INSPECTION, and the browser must trust the proxy's CA. The guide explains how to check the feature. It also warns that a build without it may require compilation, which could make this route less attractive given your setup preference.\n\nIts filter syntax requires learning some rules and possibly regular expressions, but it is not a Node.js application-development workflow. I would rank it below the first two because the TLS-enabled package and configuration need more checking.\n\n**Assessment:** promising filtering proxy; the exact build and the final archive behavior need verification.\n\n## A non-proxy diagnostic worth trying\n\nThe [ArchiveWeb.page troubleshooting guide](https://archiveweb.page/en/troubleshooting/errors/) documents capture failures involving content inserted by other extensions and recommends disabling other extensions or trying a clean browser profile. That supports a limited test with only ArchiveWeb.page enabled. It does not show that your eBay problem has that cause, and it does not justify repeating your already unsuccessful automatic-click script as a solution.\n\nI also would not assume the recorder simply missed a click. The original listing may be fetched separately, embedded, already present but hidden, or assembled by JavaScript; the question does not establish which. Identifying that behavior determines whether a source rewrite can help. If the listing comes from a separate navigable response, testing that response directly is a possible next experiment, not a verified eBay workaround.\n\nFor any proxy trial, the decisive check is the saved archive: stop recording and replay it to see whether the listing and its required resources are present. Seeing the listing in the live tab is not enough, as your TamperMonkey experiment already demonstrates.\n\nThese recommendations are based on documentation and public source inspection, not a live test against your sold item. The sources were accessed on 2026-11-21. Most are undated live documentation, so I cannot establish the exact feature state on the question's 2026-07-14 date. The ArchiveWeb.page troubleshooting result was marked by search as published after that date.",
+      "candidate_links": [
+        {
+          "name": "mitmproxy — standalone binary with built-in Modify Body",
+          "url": "https://docs.mitmproxy.org/stable/overview/features/"
+        },
+        {
+          "name": "Charles — Rewrite tool",
+          "url": "https://www.charlesproxy.com/documentation/tools/rewrite/"
+        },
+        {
+          "name": "Privoxy — content filter with HTTPS inspection",
+          "url": "https://www.privoxy.org/user-manual/filter-file.html"
+        },
+        {
+          "name": "ArchiveWeb.page clean-profile troubleshooting",
+          "url": "https://archiveweb.page/en/troubleshooting/errors/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X47b96282f880ad2a",
+      "qid": "T001",
+      "raw_response": "I would start by evaluating Zulip, especially because keyboard access matters to you. Mattermost and Rocket.Chat are additional direct team-chat candidates. If ordinary channel chat is sufficient, The Lounge paired with an open-source IRC server offers a different architecture.\n\n1. **Zulip** — https://zulip.com/features/\n\n   Zulip has an open-source server and clients, supports self-hosting, and supplies a web interface plus iOS and Android apps. Its official feature matrix explicitly lists extensive keyboard shortcuts. Conversations are organized into topics inside channels, which can help keep parallel discussions separate but requires a different habit from a flat Slack channel. The official Zulip 2.1 announcement dated December 13, 2019 confirms an open-source server, an installation route and mobile/desktop apps before your question date: https://blog.zulip.com/2019/12/13/zulip-2-1-released/. The current shortcut and feature matrix should not be treated as a complete snapshot of the 2020 version.\n\n2. **Mattermost, using its open-source edition** — https://github.com/mattermost/mattermost\n\n   The official repository documents self-hosted deployment, a web interface, and Android/iOS clients. It is a strong candidate for a conventional team-chat setup. Choose the appropriate open-source edition and check the feature boundaries for the version you deploy: commercial enterprise editions also exist. I did not verify that most features can be operated without a mouse. The official 5.23 announcement is dated May 18, 2020, so the product was available before the question date: https://mattermost.com/blog/mattermost-5-23-automatic-hyperlinking-to-jira-issues-and-more/. Current client documentation is separate evidence and does not establish historical availability of every feature.\n\n3. **Rocket.Chat, using the community/core configuration** — https://github.com/RocketChat/Rocket.Chat\n\n   Its official README describes deployment on your own servers and access through web and mobile apps. The core repository uses the MIT license, with explicit exceptions for enterprise directories and third-party components: https://github.com/RocketChat/Rocket.Chat/blob/develop/LICENSE. Limit an all-open-source installation to the appropriate core components. Native mobile source licensing and broad keyboard operation were not separately audited here. The evidence opened is live and undated; I have not established the exact feature set available on June 24, 2020.\n\n4. **The Lounge plus InspIRCd** — https://thelounge.chat/ and https://www.inspircd.org/\n\n   The Lounge is a self-hosted, MIT-licensed web IRC client whose interface supports desktops, smartphones and tablets. Pair it with the GPLv2 InspIRCd server to control both sides of the system. The Lounge stays connected while a browser is offline, allowing users to resume their sessions. This is useful if your essential need is channel-based messaging, but it requires two components and an evaluation of IRC's differences from Slack. I did not verify broad keyboard coverage or a dated pre-2020 feature snapshot.\n\nMy first trial would be Zulip because it provides the clearest documented match for your optional keyboard requirement. For the others, the required browser/mobile and self-hosting arrangement is documented, while the edition boundaries and unverified points above deserve checking before choosing one.",
+      "candidate_links": [
+        {
+          "name": "Zulip",
+          "url": "https://zulip.com/features/"
+        },
+        {
+          "name": "Mattermost — open-source edition",
+          "url": "https://github.com/mattermost/mattermost"
+        },
+        {
+          "name": "Rocket.Chat — community/core configuration",
+          "url": "https://github.com/RocketChat/Rocket.Chat"
+        },
+        {
+          "name": "The Lounge with an InspIRCd server",
+          "url": "https://thelounge.chat/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X78d836a7549174f6",
+      "qid": "N013",
+      "raw_response": "I would start with **Fabric** for the workflow you described. If you would rather describe directory synchronization and server operations in a deployment file, **pyinfra** is the next option I would try. **Dagu** is worth considering when saved workflow runs and a web interface are useful; **Ansible** makes sense when this deployment is also becoming part of broader lab configuration.\n\nThe supplied question describes source transfer, remote commands and logs, and explicitly allows SSH underneath. It does not require containers, a particular language, a graphical interface, a Git service or a paid hosting platform. The choices below therefore cover the workflow you selected without assuming those additional requirements.\n\n## 1. Fabric — closest to the current SSH/SCP sequence\n\nFabric provides a Python connection object for uploading files and executing commands on an SSH host. Its getting-started guide documents that remote command output is both printed to the terminal and captured. That makes it a close fit for a short task that performs your existing steps in order. [Getting started](https://docs.fabfile.org/en/stable/getting-started.html) · [Connection API](https://docs.fabfile.org/en/stable/api/connection.html)\n\nA practical mapping is: prepare a source archive locally, upload it with `Connection.put`, then call `Connection.run` for extraction, build and execution commands. This mapping is my proposed recipe; Fabric's documentation establishes the individual upload and command primitives. In particular, `put` is a file-upload method, so I would not describe it as a verified recursive source-tree deployment mechanism by itself.\n\nChoose this when you are comfortable keeping the automation in a small Python file. You still choose the remote paths, environment setup and commands. The observed terminal output covers the immediate run; if you need logs from a service that continues running afterward, add the appropriate remote log-reading command or a separate log arrangement. That longer-lived service-log behavior was not established by the pages I inspected.\n\n## 2. pyinfra — directory synchronization plus server operations\n\npyinfra has a more direct source-directory mapping: `files.sync` synchronizes a local directory to a remote directory, and `server.shell` executes commands during the deployment. Its CLI accepts an SSH inventory and deployment files; `-vvv` displays remote shell output. [File operations](https://docs.pyinfra.com/en/3.x/operations/files.html) · [Server operations](https://docs.pyinfra.com/en/3.x/operations/server.html) · [CLI](https://docs.pyinfra.com/en/3.x/cli.html)\n\nA deployment file can therefore express “sync this source folder, then run these commands,” with the target supplied in the inventory. You provide the actual commands and any required working-directory or environment setup. The documentation explicitly says `server.shell` is not idempotent: running the deployment again runs those commands again. Its default shell is `sh`, with an override available where needed.\n\nFor a source directory, I would begin by reviewing `files.sync` rather than treating every similarly named transfer operation as interchangeable. Its deletion option defaults off; the separately documented `files.rsync` operation has different defaults, including deletion. Keep the intended remote-file preservation behavior explicit.\n\n## 3. Dagu — when a workflow application is useful\n\nDagu's primary README documents SFTP transfer actions, SSH execution, dependencies between steps, a web interface and per-run stdout/stderr capture. That provides a documented route for an upload step followed by remote commands, with retained run output. [Primary repository](https://github.com/dagucloud/dagu)\n\nYou would configure an instance and write the workflow. I would select a release and check its exact action syntax before implementing it: the evidence here is the current main-branch README, not a dated release snapshot. This is the option I would explore if a managed sequence of runs is more useful to you than invoking a local script.\n\n## 4. Ansible — useful if deployment joins wider lab configuration\n\nAnsible's builtin `copy` module transfers a file or directory structure to a remote machine. The builtin `shell` module runs remote shell commands and exposes their stdout, stderr and return status. Ansible also documents controller output and the `log_path` setting for saving its run output. [Copy](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html) · [Shell](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/shell_module.html) · [Logging](https://docs.ansible.com/projects/ansible/latest/reference_appendices/logging.html)\n\nThe resulting playbook needs tasks for transfer and execution, and should deliberately display the returned command output if that is what you mean by logs. Do not assume that a general task log is the same as continuous application-log collection. The inspected builtin shell configuration uses `/bin/sh`; its documentation points Windows targets to different modules, which I did not verify in this search.\n\nFor the immediate request, my order is **Fabric, pyinfra, Dagu, then Ansible**. This is a fit ranking, not a claim that one tool is universally better. All four require you to define the actual deployment commands. No explicit hard exclusion appears in the supplied summary, so none is rejected on an invented requirement.\n\nThese are documentation-based recommendations, not integration tests. The sources are live and mostly undated, retrieved on 21 November 2026; they do not establish that every current feature was present when the question was asked on 18 June 2026.",
+      "candidate_links": [
+        {
+          "name": "Fabric",
+          "url": "https://docs.fabfile.org/en/stable/getting-started.html"
+        },
+        {
+          "name": "pyinfra",
+          "url": "https://docs.pyinfra.com/en/3.x/"
+        },
+        {
+          "name": "Dagu",
+          "url": "https://github.com/dagucloud/dagu"
+        },
+        {
+          "name": "Ansible",
+          "url": "https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xc390f208f6265fdf",
+      "qid": "T048",
+      "raw_response": "For this seven-disk file and Plex host, the strongest match to automatic integrity checking and repair is a ZFS storage layer. If keeping the storage directly inside Windows is the priority, SnapRAID and DrivePool are useful components, but their protection model needs to be chosen deliberately.\n\n1. **FreeNAS 11.3 with OpenZFS RAIDZ** — https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/zfsprimer.html\n\nZFS checks block checksums and can reconstruct damaged blocks from RAIDZ or mirror redundancy. FreeNAS schedules monthly pool scrubs and exposes their status. A seven-disk pool can use RAIDZ1 for one-disk redundancy or RAIDZ2 for two-disk redundancy; the latter gives up another disk's capacity. The versioned guide discusses the additional resilience of RAIDZ2 and cautions against RAIDZ1 for large disks. This is my preferred architectural direction when automatic silent-corruption detection and repair are the key requirements.\n\nIt is a migration, with a new pool and data copy, rather than an in-place replacement of Storage Spaces. ESXi also matters: the installation guide discourages production virtualization and specifies at least 8 GiB guest memory. Plan the storage guest's disk access and recovery before committing data. The ZFS guide recommends allowing ZFS direct control of disks. Supporting sources are the [pool-layout manual](https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/storage.html), [scrub scheduler](https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/tasks.html), and [virtualization guidance](https://www.ixsystems.com/documentation/freenas/11.3-U3/install.html).\n\n2. **SnapRAID** — https://www.snapraid.it/manual\n\nThis is a strong option for media files that rarely change. It runs with Windows paths, stores file parity and checksums, and provides sync, scrub and fix commands. One dedicated parity disk can protect against one disk failure; additional parity disks increase that tolerance. Schedule sync and scrub, and treat repair as a separate operation: scrub marks errors, while filtered fix can repair them.\n\nThe recovery point is the last successful sync. Recent changes can be unprotected, and changing or deleting existing files can complicate recovery. SnapRAID does not itself provide a conventional single filesystem or continuous RAID5 availability. I would keep frequently changing application state outside the protected media set. The [upstream source-tree manual](https://github.com/amadvance/snapraid/blob/master/doc/snapraid.1) corroborates the scrub/fix behavior.\n\n3. **StableBit DrivePool with optional Scanner integration** — https://stablebit.com/DrivePool/Features\n\nDrivePool supplies the Windows pooled-drive experience while storing ordinary files on its member volumes. File duplication can protect selected folders, and Scanner integration can move files away from a drive showing damage. The [duplication-consistency documentation](https://stablebit.com/Support/DrivePool/2.X/Manual?Section=Pool+Organization+Bar) describes automatic consistency checks after missing duplication is detected.\n\nThis is a useful alternative mechanism or pooling companion, but duplication uses additional full copies rather than RAID5 parity. The reviewed documentation does not establish checksum-directed silent-corruption healing. If combining it with SnapRAID, file movement and sync behavior would need a concrete integration design; I have not validated that combination or the exact Server 2019 release requirements.\n\n4. **Unraid parity array** — https://docs.unraid.net/unraid-os/using-unraid-to/manage-storage/array/array-health-and-maintenance/\n\nUnraid supplies scheduled parity checks and recovery from a failed disk. It is worth considering if changing the storage OS is acceptable. Its correcting check updates parity to match the data disks. My inference is that this alone does not solve the stronger requirement of identifying and automatically repairing silently corrupted file contents: matching parity does not establish which data was correct. I did not verify an ESXi deployment arrangement.\n\n5. **Linux MD software RAID** — https://www.kernel.org/doc/html/v5.8/admin-guide/md.html\n\nFor a conventional RAID5/6 implementation in a Linux storage guest, MD exposes full redundancy checks, repair, failed-device recovery and mismatch counters. These are concrete building blocks for scheduled array maintenance. Scheduling, alerts and exports to the Windows workload would need configuration. As with parity checking generally, redundancy consistency alone is weaker than checksum-directed filesystem repair.\n\n**Historical evidence:** FreeNAS 11.3 is supported by an [official release announcement dated January 28, 2020](https://www.truenas.com/blog/truenas-and-freenas-11-3-release-pr/) and its versioned manual. The other opened pages were live or lacked an independently verified release date, so I have not treated their full current feature sets as proven available by September 11, 2020. No candidate has been tested on this host.",
+      "candidate_links": [
+        {
+          "name": "FreeNAS 11.3 with OpenZFS RAIDZ",
+          "url": "https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/zfsprimer.html"
+        },
+        {
+          "name": "SnapRAID",
+          "url": "https://www.snapraid.it/manual"
+        },
+        {
+          "name": "StableBit DrivePool with optional StableBit Scanner integration",
+          "url": "https://stablebit.com/DrivePool/Features"
+        },
+        {
+          "name": "Unraid parity array",
+          "url": "https://docs.unraid.net/unraid-os/using-unraid-to/manage-storage/array/array-health-and-maintenance/"
+        },
+        {
+          "name": "Linux MD software RAID",
+          "url": "https://www.kernel.org/doc/html/v5.8/admin-guide/md.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X08705ffce52265c4",
+      "qid": "T006",
+      "raw_response": "## Recommendation\n\nQuestion2Answer is a sensible first prototype for this project. I would compare it with Askbot before committing to custom development, and consider AnswerHub after obtaining a concrete feature demonstration and quote. I cannot confirm that any of them satisfies every item in the wishlist in one verified configuration.\n\nYour wording matters: free/open source and PHP/MySQL are preferences, you explicitly allow Java or Python, the extra features are described as desirable, and you permit a paid fallback. I have therefore retained promising candidates with unresolved details rather than inventing mandatory exclusions.\n\nThe question dates from 28 February 2014. The sources available in this research include current pages and later changelogs. I identify those limits below; a feature described in a later release is not proof that it was available in the 2014 version.\n\n## 1. Question2Answer — the best starting point\n\nThe official overview describes a GPL v2+ PHP/MySQL application with categories and tags, voting, reputation points, translation support and several user roles. This is a close match to the basic website you describe. Its site also advertises scalability and security protections, but I would not turn those publisher statements into a guarantee about your traffic or deployment. [Official overview](https://question2answer.org/).\n\nSeveral extras have plausible extension paths. The official add-on directory lists badges, a MathJax-capable editor, file-management extensions and traffic-analytics integration. These are evidence that an extension ecosystem exists, not evidence that every listed plugin is compatible with the release and editor you choose. [Add-on directory](https://docs.question2answer.org/addons/plugins/).\n\nHere is how I would interpret the remaining work:\n\n| Desired capability | Assessment |\n| --- | --- |\n| Topics/tags, votes, reputation and roles | Described in the official core overview. |\n| Multilingual use | Translation is documented; your intended language-switching and mixed-language workflow still needs checking. |\n| Badges | A plugin route is listed; verify the selected plugin and release together. |\n| LaTeX | A math-editor route is listed. Establish whether typed notation plus rendering is enough, or whether you need a visual editor. |\n| Attachments | Do not assume that image upload or a file-management add-on proves support for every file type and permission rule you want. |\n| Statistics | Traffic analytics is listed; the exact answers-per-week output remains unverified. |\n| Easy development | Extension support is encouraging, but no documentation can determine your team's implementation time without a representative task. |\n\nThe core facts in this table come from the [overview](https://question2answer.org/); the extension routes come from the [add-on directory](https://docs.question2answer.org/addons/plugins/). The unresolved items are research limitations, not statements that the product cannot do them.\n\nThere is a route for developing missing functionality: the overview describes plugin customization, and an official [plugin-development page](https://docs.question2answer.org/plugins/) exists. That page returned only its title in this run, so I have not verified a particular API hook or promised that an arbitrary extension will be easy.\n\nFor a concrete evaluation, build one representative question with mathematical notation and an attachment, let a second account answer and vote, confirm the intended role restrictions, award the desired reputation/badge behavior, and produce the weekly report. This is a proposed evaluation, not a test I ran. The result would tell you which gaps are configuration, existing add-ons or actual development.\n\nThe current overview points to Q2A 1.8.8, dated July 2023. The [version history](https://docs.question2answer.org/install/versions/) includes a 1.7 beta dated November 2014, already later than the question. These pages therefore do not reconstruct the full February 2014 feature set.\n\n**Assessment:** first choice to prototype; insufficient evidence for an unconditional claim that the complete wishlist is already covered.\n\n## 2. Askbot — compare it if Python is attractive\n\nAskbot's official repository describes an open-source Django/Python Q&A application and identifies its license as GPL-3.0. That puts it within the language alternatives you allow. [Official repository](https://github.com/ASKBOT/askbot-devel).\n\nIts product page describes tags, voting, badges, reputation-based privileges, moderation and a multilingual interface. These directly address much of the same community workflow. [Official product page](https://www.askbot.com/).\n\nThe opened changelog gives more specific, but much later, evidence: attachment/image settings appear in the April 2023 entry, MathJax support in the February 2026 entry, and built-in activity analytics in the March 2026 entry. Those details support evaluating the relevant modern releases. They do not prove that the same behavior existed in 2014, or that earlier releases lacked every alternative implementation. [Official changelog](https://github.com/ASKBOT/askbot-devel/blob/master/askbot/doc/source/changelog.rst).\n\nI would evaluate Askbot with the same sample workflow as Q2A and compare the amount of customization your team needs. The evidence here does not establish that either application is objectively easier to develop, more secure or faster at your eventual workload. If the Python team can implement and maintain the desired behavior more comfortably, that could outweigh Q2A's match to the initially preferred stack.\n\n**Assessment:** a strong second candidate; release-specific workflow and historical compatibility remain unverified.\n\n## 3. AnswerHub — obtain a specific proposal before judging value\n\nAnswerHub is worth retaining as the paid comparator named in your question. Its official administration documentation describes allowed attachment types, per-content attachment enablement and number/size limits. [Attachment settings](https://developer.answerhub.com/docs/attachment-settings).\n\nIts analytics documentation describes traffic and activity reports, date ranges, weekly graph intervals and content/action filters. The documented combination of Answer content, creation actions and a time range is a plausible route to the weekly activity metric; the exact output should still be demonstrated. Relevant administrators need the documented API permission for the Analytics plugin. [Advanced analytics](https://developer.answerhub.com/docs/advanced).\n\nI did not verify a price, purchase contract, mathematical editor, multilingual workflow or development-access terms. Consequently I cannot call AnswerHub inexpensive, expensive relative to its benefits, or a better purchase. Request a demonstration of the same sample workflow and a quote that includes the needed configuration, extensions and support. Assess that total alongside the customization and operational work required by the open-source options.\n\n**Assessment:** keep as a commercial comparator; evidence is insufficient for a purchase recommendation.\n\n## Decision\n\nStart with a small Question2Answer prototype and compare Askbot if Python is a comfortable development environment. Move to a paid proposal if it solves demonstrated gaps or provides support whose value exceeds its cost for your project. No candidate was excluded for a proven mandatory violation because the question states preferences and desirable features, with explicit flexibility. Unverified details remain visible instead of being treated as either supported or impossible.\n\nThis is a documentation-based shortlist. No installation, load test, security audit, plugin compatibility test or vendor negotiation was performed.",
+      "candidate_links": [
+        {
+          "name": "Question2Answer",
+          "url": "https://question2answer.org/"
+        },
+        {
+          "name": "Askbot",
+          "url": "https://github.com/ASKBOT/askbot-devel"
+        },
+        {
+          "name": "AnswerHub",
+          "url": "https://developer.answerhub.com/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X7c82a8718a92f617",
+      "qid": "T023",
+      "raw_response": "I would start with Reef if the form editor needs to live inside the management application, or MachForm Self-Hosted if a separate ready-made application is acceptable. Both directly address the central requirement: company staff can change the form without asking a developer to rebuild it.\n\nI interpret the no-account requirement as applying to the customers filling in forms. Staff who create and manage forms can still have an administrative account. I have not tested a live respondent journey for these products, so public access settings remain a practical validation step.\n\n## Ranked candidates\n\n1. **Reef Form Generator — the closest PHP library fit.**  \n   https://reefphp.gitlab.io/home/  \n   Reef combines a PHP/JavaScript drag-and-drop editor, rendering and validation, and PDO storage for definitions and answers. Company staff could edit forms inside your application, leaving structured submissions for your own PDF generator and mailer. It uses LGPL 3.0. You supply endpoints and access controls. Setup takes development effort, and the documentation cautions against unusually complex custom forms. Current runtime compatibility and maintenance status remain unverified.\n\n2. **MachForm Self-Hosted — a finished PHP application with the delivery workflow included.**  \n   https://www.machform.com/  \n   MachForm offers a visual form builder running on PHP and MySQL. Its official notification documentation lists multiple email recipients, respondent auto-replies, submitted data attached as a PDF, and HTTP webhooks: https://www.machform.com/features-notifications/. This gives you a direct route to reception emails and a separate structured-data route into the management application. The current homepage advertises a $99 one-time self-hosted license. Treat that as a live price rather than a verified February 2025 price, and confirm the appropriate license tier. It is commercial software, so check its modification terms if substantial customization is planned.\n\n3. **Form Tools with its Form Builder module — self-hosted PHP form administration.**  \n   https://docs.formtools.org/modules/form_builder/  \n   The official documentation says non-programmers can create single- or multi-page forms in the interface and publish them on their own site. Form submissions can be managed together in a database; the core application also has an API and configurable staff access. The homepage describes the PHP/MySQL core as free and open source: https://www.formtools.org/?lang=en. This is a useful option if form administration can be a separate area alongside your management system. Current module-specific licensing and supported PHP versions were not established. Budget integration effort for database mapping and any PDF or email behavior your workflow still requires.\n\n4. **jQuery formBuilder with formRender — a lightweight JavaScript editor/renderer pair.**  \n   https://github.com/kevinchappell/formBuilder  \n   The indexed primary repository identifies this as an MIT-licensed drag-and-drop builder. Its opened source-tree documentation separates the editor from the renderer and describes JSON/XML form definitions: https://github.com/kevinchappell/formBuilder/blob/master/src/js/README.md. Store those definitions on your PHP server, load them for staff editing, and render them for customers. This would reduce form-design work but leaves submission handling, server-side validation, persistence, emails, and PDFs to your application. It depends on jQuery and should be evaluated as a component rather than a complete form-management service.\n\n5. **OpnForm — a fuller open-source application with notifications and webhooks.**  \n   https://github.com/OpnForm/OpnForm  \n   Its repository describes a no-code builder, embeddable forms, email notifications, webhooks, and self-hosting. This Laravel/Nuxt application could run alongside the management system and forward responses through a webhook. Verify self-hosted licensing and respondent access; deployment is more involved than embedding a library. The inspected README references an October 2026 update, so it is later evidence, not proof of the same behavior at the question date.\n\n6. **SurveyJS Survey Creator plus Form Library — an integrated JavaScript authoring approach.**  \n   https://github.com/surveyjs/survey-creator/blob/master/README.md  \n   Survey Creator gives staff a drag-and-drop editor that produces JSON definitions. Your application saves those definitions, renders them with Form Library, and stores responses through your own backend. That architecture fits an existing PHP management application well. The material tradeoff is licensing: Form Library is free, while the embedded visual creator is paid. The current pricing page lists Basic at $559 once per developer and describes perpetual licenses with time-limited included updates/support: https://surveyjs.io/pricing. The PDF generator is in a higher tier, although your own PDF pipeline remains an option. These are current, undated terms, not historical pricing.\n\n## Integration recommendation\n\nFor an embedded implementation, retain a stable identifier and a version for each saved form definition, associate each booking with the relevant form version, and submit answers as structured data. Your existing server can then create the PDF and send it to reception. This is an application-design recommendation, not a claim that every candidate implements versioning automatically. For a separate form application, use its webhook or database integration to connect the same workflow.\n\nThe research used seven literal queries, including an unsuccessful unauthenticated grep.app code-search attempt, and thirteen document-open attempts. The fallback was explicitly code-through-web: public GitHub files indexed by web search. A direct implementation-source open also failed, but the formBuilder source-tree documentation was accessible. No product was installed or tested. Most inspected sources are live and undated; their exact capabilities and prices remain date-unknown relative to 13 February 2025. I found no recognized exposure to the excluded question thread or its answers.",
+      "candidate_links": [
+        {
+          "name": "Reef Form Generator",
+          "url": "https://reefphp.gitlab.io/home/"
+        },
+        {
+          "name": "MachForm Self-Hosted",
+          "url": "https://www.machform.com/"
+        },
+        {
+          "name": "Form Tools with the Form Builder module",
+          "url": "https://docs.formtools.org/modules/form_builder/"
+        },
+        {
+          "name": "jQuery formBuilder with formRender",
+          "url": "https://github.com/kevinchappell/formBuilder"
+        },
+        {
+          "name": "OpnForm",
+          "url": "https://github.com/OpnForm/OpnForm"
+        },
+        {
+          "name": "SurveyJS Survey Creator with Form Library",
+          "url": "https://github.com/surveyjs/survey-creator/blob/master/README.md"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xb71a409cdf256c94",
+      "qid": "T012",
+      "raw_response": "For a community credit union with 400–1,000 members, I would start by evaluating Mifos X. It is the strongest match in this search for a single open-source platform covering savings, loans, transfers and accounting. The other options below address different parts of the job. I have separated evidence available before 15 September 2014 from later or undated material, and I have not tested any of these products with your workload.\n\n1. Mifos X — strongest overall starting point.\n[Official June 2014 announcement](https://mifos.org/blog/mifos-initiative-launches-mifos-x-platform-for-financial-inclusion/) identifies an open-source core-banking platform intended for financial institutions, including credit cooperatives. The [public version 1.22.0 changelog](https://github.com/openMF/mifosX-PGS_v2/blob/master/CHANGELOG.md) dates that release to 30 April 2014 and documents fixed and recurring deposits, loan accrual accounting, standing account transfers and loan disbursement into savings. Those features make it a useful candidate for the union's savings, lending and ledger operations. External payment connections and the exact reports your institution requires would still need evaluation; the evidence does not establish that those integrations are already supplied for your location.\n\n2. Cyclos 3.6 — a community payments and account-management alternative.\nThe [December 2011 release newsletter](https://www.cyclos.org/newsletter/2011_12/) describes GPL software with member accounts, transaction histories, payment authorization, scheduled payments, fees, loans, SMS banking and POS/card interfaces. This is particularly relevant if member payments and a community financial network are central to the requirement. Check the fit of its accounting model and any external bank connections rather than assuming its payment history is a complete general ledger. There is also a material present-day limitation: the [official Cyclos 3 page](https://www.cyclos.org/products/cyclos3/) says it is no longer maintained and discourages mission-critical use. Its relevance to the 2014 question is supported; that does not make the legacy release a suitable current deployment without further work.\n\n3. S.A.F.E. Open Source Microfinance Suite — a broad microfinance suite to inspect.\nA [source release dated 3 June 2014](https://sourceforge.net/projects/safemicrofin/files/safe-microfinance/2014.05_152/) establishes pre-cutoff availability. The [later project description](https://sourceforge.net/projects/safemicrofin/) lists loan, cashier, accounting, savings, bank and reporting modules, which together are close to the functions a small credit union needs. The distinction in dates matters: the module list does not prove that every module was already present in the June 2014 build. That build's own notes also identify demanding configuration and only a partial English database translation. I would evaluate a representative loan, deposit and cash transaction before treating it as a practical fit.\n\n4. OpenCBS Desktop — useful lending and savings functions, with later evidence.\nThe [project page](https://sourceforge.net/projects/opencbs/) describes open-source microfinance core banking with client management, loan schedules, repayments, savings and reporting, plus connections to accounting software, POS terminals and web services. This could supply the member-account and loan side of a solution where accounting or payment processing is separate. The [opened public README](https://github.com/RSKInitiatives/OpenCBS/blob/master/README.md) confirms the client/loan/savings scope, but the release listing I found contains 2016–2017 versions. I therefore cannot establish its availability by the question's September 2014 date from the opened evidence. The current project page also says Desktop is unsupported following its replacement by Cloud in 2019.\n\n5. GnuCash — a ledger component, with a narrower scope.\n[GnuCash](https://www.gnucash.org/?lang=en_US) is GPL accounting software, and an [official January 2013 documentation change](https://lists.gnucash.org/pipermail/gnucash-changes/2013-January/011820.html) establishes its double-entry transactions, account registers and multiple ledger splits before the cutoff. It could handle the accounting portion alongside a dedicated member-account system. The opened evidence describes personal and small-business accounting, so I would not present it as a complete credit-union system or assume it supplies multiuser teller operations and payment-network processing.\n\nMy practical shortlist would begin with Mifos X, followed by Cyclos if community payments are the dominant need and SAFE if its configuration and language constraints are acceptable. The main unanswered requirement is what “payments” means here: recording deposits and repayments is different from sending money through an external banking network. The searches establish plausible software and components, not a verified production fit for this credit union.",
+      "candidate_links": [
+        {
+          "name": "Mifos X",
+          "url": "https://mifos.org/blog/mifos-initiative-launches-mifos-x-platform-for-financial-inclusion/"
+        },
+        {
+          "name": "Cyclos 3.6",
+          "url": "https://www.cyclos.org/newsletter/2011_12/"
+        },
+        {
+          "name": "S.A.F.E. Open Source Microfinance Suite",
+          "url": "https://sourceforge.net/projects/safemicrofin/files/safe-microfinance/2014.05_152/"
+        },
+        {
+          "name": "OpenCBS Desktop",
+          "url": "https://sourceforge.net/projects/opencbs/"
+        },
+        {
+          "name": "GnuCash",
+          "url": "https://www.gnucash.org/?lang=en_US"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X29eeb5a7c837b046",
+      "qid": "T043",
+      "raw_response": "Based on the summarized question, I would evaluate SEPIA first for a broader self-hosted assistant and Kalliope for a voice-driven automation assistant. Rhasspy is also highly relevant as a DIY voice-control toolkit, with a substantial maintenance caveat. Leon is a candidate to investigate further rather than a verified recommendation.\n\nI can offer a comparison grounded in project documentation, not firsthand ownership or listening-test experience. The summary expresses concern about Mycroft's longevity, but it does not make offline-only operation, a particular platform, a language, an update schedule or any specific feature mandatory.\n\n### 1. SEPIA — the broadest documented assistant environment\n\nSEPIA's official overview describes client apps backed by a server you host, with language understanding, chat and extendable services. That makes it a useful first evaluation if you want an assistant environment to customize. Its speech configuration matters: the client can use platform-provided speech engines or a separate offline recognition server. Select the latter if local speech processing is part of what you want; hosting the core alone does not settle that choice. [Project overview](https://sepia-framework.github.io/) · [Speech configuration](https://sepia-framework.github.io/tools/index.html). genui{\"citation\":{\"refs\":[\"turn611704390view0\",\"turn783437522view2\"]}}\n\nAssessment: mixed app/framework; whole assistant candidate; DIRECT_DOCUMENTED for the described self-hosted architecture. I have not verified recognition quality, installation on your hardware or continued maintenance.\n\n### 2. Kalliope — useful when you want to define the actions yourself\n\nKalliope provides a framework that connects voice and other input signals to actions you compose. Its README documents Debian-family systems, including Raspberry Pi. This is a good fit for a configurable assistant whose main purpose is to carry out your chosen routines. [Official README](https://github.com/kalliope-project/kalliope/blob/master/README.md). genui{\"citation\":{\"ref\":\"turn783437522view0\"}}\n\nCheck the speech-engine settings before evaluating privacy or independence: the documented default recognizer is Google, while CMUSphinx is listed as a self-hosted alternative. The synthesis options also include local engines such as Pico2wave. Those choices need to match your intended deployment. [Official settings](https://github.com/kalliope-project/kalliope/blob/master/docs/settings/settings.md). genui{\"citation\":{\"ref\":\"turn783437522view1\"}}\n\nAssessment: framework; whole candidate for a custom command/action assistant; DIRECT_DOCUMENTED for that role. These documents do not prove that it will understand your actual commands well or provide everything you expect from a general assistant.\n\n### 3. Rhasspy — relevant for an offline voice layer, with a dated archival caveat\n\nThe versioned Rhasspy documentation describes offline voice processing, command templates and structured intents that can drive external automation. You supply the command definitions and connect their intents to actions in Home Assistant, Node-RED or another handler. Without that connection, recognition alone will not perform the task. [Versioned documentation](https://rhasspy.readthedocs.io/en/v2.4.20/). genui{\"citation\":{\"ref\":\"turn497339839view0\"}}\n\nThe official repository now states that it was archived on October 6, 2025. Given your concern about longevity, I would treat it as a historical or DIY option requiring ownership of its maintenance, rather than assume it solves that concern. This is a later event: it could not have informed the July 2021 question. [Official repository](https://github.com/rhasspy/rhasspy). genui{\"citation\":{\"ref\":\"turn497339839view1\"}}\n\nAssessment: framework; partial contribution to the complete assistant behavior; CONDITIONAL_TRANSFER through the explicit intent-to-action integration. Archival is a caveat here, not a violation of an invented hard maintenance requirement.\n\n### 4. Leon — keep on the investigation list\n\nLeon's current official repository supports running a personal assistant on your own machine, but it describes unfinished 2.0 work and points to master for the previous version. My attempts to inspect the legacy README failed. I therefore cannot verify the precise voice setup of that version from the opened evidence. [Official repository](https://github.com/leon-ai/leon). genui{\"citation\":{\"ref\":\"turn799396163view0\"}}\n\nAssessment: app; intended whole candidate; INSUFFICIENT. The next useful check is whether the specific legacy release you would deploy documents a usable self-hosted voice path. A positive result would support a version-specific recommendation; an explicit lack of voice operation would rule out that release for this role.\n\n### How I would evaluate longevity\n\nI would first write down a few real commands you need, identify which parts of each setup are local and which call external services, then try the documented configuration with your own microphone and language. That is a proposed evaluation, not a test I performed. Source availability and an extensible architecture can make taking over maintenance more feasible, but neither guarantees that a project will continue.\n\nThere is an important date limitation: this question is dated July 22, 2021, while most evidence available here is undated live documentation. I have not established a complete 2021 snapshot. The Rhasspy archival notice and the later indexed Leon notice must not be treated as information available to the original questioner. No candidate's long-term survival or hands-on reliability has been verified.",
+      "candidate_links": [
+        {
+          "name": "SEPIA",
+          "url": "https://sepia-framework.github.io/"
+        },
+        {
+          "name": "Kalliope",
+          "url": "https://github.com/kalliope-project/kalliope"
+        },
+        {
+          "name": "Rhasspy",
+          "url": "https://rhasspy.readthedocs.io/en/v2.4.20/"
+        },
+        {
+          "name": "Leon",
+          "url": "https://github.com/leon-ai/leon"
+        }
+      ],
+      "citation_links": [
+        {
+          "source_ref": "turn497339839view0",
+          "url": "https://rhasspy.readthedocs.io/en/v2.4.20/",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn497339839view1",
+          "url": "https://github.com/rhasspy/rhasspy",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn611704390view0",
+          "url": "https://sepia-framework.github.io/",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn783437522view0",
+          "url": "https://github.com/kalliope-project/kalliope/blob/master/README.md",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn783437522view1",
+          "url": "https://github.com/kalliope-project/kalliope/blob/master/docs/settings/settings.md",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn783437522view2",
+          "url": "https://sepia-framework.github.io/tools/index.html",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        },
+        {
+          "source_ref": "turn799396163view0",
+          "url": "https://github.com/leon-ai/leon",
+          "methods": [
+            "preserved source_ref in run document log"
+          ]
+        }
+      ],
+      "unresolved_citations": []
+    }
+  ]
+}

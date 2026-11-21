@@ -1,0 +1,257 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "X962d622214f5c138",
+      "qid": "T001",
+      "raw_response": "I would start with Zulip. It is the strongest documented fit for your mandatory requirements and your optional preference for keyboard use.\n\n1. **Zulip — first choice.** Its official repository describes an open-source team-chat system under Apache 2.0 and explicitly documents running your own server on Ubuntu/Debian or with Docker. Its official feature matrix lists a browser interface, iOS and Android apps, and the same entirely open-source software across its plans. The keyboard reference covers navigation, searching, composing and replying, menus, and channel operations. That is strong support for your optional preference, though I have not tested whether every operation you personally need can be completed without a mouse. Its topic-organized conversation model is the main workflow difference to try before choosing it.\nSources: https://raw.githubusercontent.com/zulip/zulip/main/README.md ; https://zulip.com/features/ ; https://zulip.com/help/keyboard-shortcuts\n\n2. **Element Web plus Synapse — a complete alternative using Matrix.** The proposed setup is the open-source Element web client connected to your own open-source Synapse homeserver. Their repositories document hosting the client and operating Synapse independently. Element's current README includes current mobile browsers on Android, iOS and iPadOS, at a community-supported tier. That meets the mobile-web branch of your requirement without assuming anything about a native application's license. You will need to deploy and configure both pieces. I have not verified broad keyboard coverage.\nSources: https://github.com/element-hq/element-web ; https://github.com/element-hq/synapse\n\n3. **Mattermost open-source core — useful, with one verification left.** The official README documents self-hosting, a web interface, and Android/iOS clients. The licensing file establishes the core's AGPL option and Apache 2.0 licensing for the webapp. I have not opened the native mobile client's license, so I cannot yet call the full proposed client/server setup a fully verified match. Confirm the chosen mobile client's open-source license and compatibility with the chosen server build before selecting it. A positive confirmation would close the identified gap; a proprietary-only mobile client would require a separately verified mobile-web option or exclusion of that setup. Keep the open-source core distinct from commercial offerings.\nSources: https://raw.githubusercontent.com/mattermost/mattermost/master/README.md ; https://raw.githubusercontent.com/mattermost/mattermost/master/LICENSE.txt\n\n4. **Rocket.Chat non-enterprise core — also worth considering, subject to a mobile-client check.** Its README documents self-hosting, a web app, and Android/iOS apps. Its license puts the non-enterprise core under MIT while explicitly treating enterprise directories separately. My attempt to read the mobile repository failed, so the open-source status of the selected mobile client remains unverified. Confirm that license and server compatibility; do not assume every enterprise feature belongs to the MIT core.\nSources: https://raw.githubusercontent.com/RocketChat/Rocket.Chat/develop/README.md ; https://raw.githubusercontent.com/RocketChat/Rocket.Chat/develop/LICENSE\nFailed verification attempt: https://raw.githubusercontent.com/RocketChat/Rocket.Chat.ReactNative/develop/README.md\n\nZulip is the first option I would trial because it has the clearest documented fit and the best keyboard evidence in this search. Element Web with standalone Synapse is another documented match for the required setup. Mattermost and Rocket.Chat are retained as candidates with explicit evidence gaps rather than being treated as proven failures.\n\nThis is a documentation-based assessment, not an installation or usability test. The sources are current live pages and repository branches; they do not reconstruct the exact product state on the question date, 2020-06-24. The Rocket.Chat license text includes later-than-question material. No cost ceiling, operating system, team-size limit, encryption requirement, Slack import requirement, or feature-for-feature parity was supplied, so none was imposed.",
+      "candidate_links": [
+        {
+          "name": "Zulip",
+          "url": "https://github.com/zulip/zulip"
+        },
+        {
+          "name": "Element Web with a self-hosted Synapse server",
+          "url": "https://github.com/element-hq/element-web"
+        },
+        {
+          "name": "Mattermost open-source core",
+          "url": "https://github.com/mattermost/mattermost"
+        },
+        {
+          "name": "Rocket.Chat non-enterprise core",
+          "url": "https://github.com/RocketChat/Rocket.Chat"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xc7819839eef9a417",
+      "qid": "T054",
+      "raw_response": "I would start with Devstral Small 2 24B, then compare Qwen3-Coder-Next if the machine can hold it, with Qwen3-Coder-30B-A3B-Instruct as the smaller Qwen alternative. These are candidates for a controlled local test. I did not find primary evidence that any of them reliably solves this particular KiCad MCP wiring and PCB-routing example.\n\nThe available input is a summary. It says model names, quantizations, conversation logs and output images were provided in the original question, but it does not include those details. I therefore cannot identify a proven upgrade over the models already tried, diagnose an image, or choose a quantization that fits the actual machine.\n\n## Model shortlist\n\n1. **Devstral Small 2 24B Instruct (2512).** Its official card documents local inference, agentic coding, function calling and image input. That combination makes it my first comparison when both tool execution and reviewing circuit screenshots matter. The local serving example uses the Mistral tool-call parser. Confirm that the chosen client actually passes images and tool results correctly. Its release announcement is dated December 9, 2025; this is not a KiCad benchmark. [Official model card](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512) · [Dated release](https://mistral.ai/news/devstral-2-vibe-cli/)\n\n2. **Qwen3-Coder-Next.** The official model card targets coding agents and local development, with documented function-call serving. Consider it if the machine has enough memory for the complete model and working context. It has 80B total parameters despite only 3B being active per token, so the active count is not a memory estimate. The documented vLLM route requires its model-specific parser and a compatible version. I have not established image handling or KiCad-specific accuracy. [Official model card](https://huggingface.co/Qwen/Qwen3-Coder-Next)\n\n3. **Qwen3-Coder-30B-A3B-Instruct.** This is a useful smaller-total-weight comparison if the larger model is impractical and this exact variant was not already tested. The official card supplies local serving examples, and the Qwen repository identifies model-specific function-call formatting and tokenizer requirements. That makes runtime configuration worth checking before judging the model from malformed tool calls. It does not establish superior circuit knowledge. [Official model card](https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct) · [Official repository](https://github.com/QwenLM/Qwen3-Coder)\n\nAll three remain **INSUFFICIENT for an unconditional recommendation in the exact setup**: local deployability is documented, but the decisive client configuration, hardware fit and actual KiCad behavior are not. None has a demonstrated hard conflict with the stated local-model requirement. OpenCode's current documentation describes local runtimes and configurable compatible endpoints, which provides a plausible integration route. The exact OpenCode version and the identity/configuration of Strata remain unknown. [OpenCode providers](https://opencode.ai/docs/providers/)\n\n## Separate model behavior from routing behavior\n\nI would test a tiny, fixed circuit with an explicit list of required pin-to-pin connections. First check that the model can call one read tool and one edit tool correctly. Then compare the produced netlist with the required connections, check the schematic, and only then attempt board placement and routing. Record malformed calls, connectivity errors, unrouted nets, rule violations and runtime. This is a proposed evaluation method, not a claim that I ran the example.\n\nKeep the prompt, circuit, client, tool definitions and context budget fixed when comparing models. To investigate whether low-bit quantization caused the problem, compare precisions of the same model where hardware permits; changing both the model and precision cannot isolate that cause. The supplied summary does not justify saying that quantization caused the failures.\n\nFor the PCB stage, **Freerouting's local CLI is a complementary option**, not a replacement language model. Its documentation describes DSN input and SES output with KiCad integration. A concrete approach is to export a correct, placed board, route it locally, reimport the result, and validate it. The necessary MCP/export/import bridge has not been verified. This cannot correct an electrically wrong schematic or guarantee that a board meets application-specific layout requirements. [Freerouting](https://github.com/freerouting/freerouting)\n\nThe model cards and integration documentation were inspected live on November 21, 2026. Apart from the dated Mistral release, their exact revision dates were not established, so I cannot treat every present-day integration detail as verified for the question date, November 14, 2026.",
+      "candidate_links": [
+        {
+          "name": "Devstral Small 2 24B Instruct (2512)",
+          "url": "https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512"
+        },
+        {
+          "name": "Qwen3-Coder-Next",
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next"
+        },
+        {
+          "name": "Qwen3-Coder-30B-A3B-Instruct",
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+        },
+        {
+          "name": "Freerouting local CLI as the PCB-routing component",
+          "url": "https://github.com/freerouting/freerouting"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X1a0877e15b020f3c",
+      "qid": "T002",
+      "raw_response": "I would start by trying Veusz, SciDAVis and LabPlot. They are the closest matches I found for a scientist who wants to import data, make plots and edit figures through a graphical interface. The order below reflects fit to your stated workflow; it is not a measured ranking of popularity, and I have not personally tested these applications in this run.\n\n1. Veusz — https://veusz.github.io/\nVeusz is a particularly good candidate for publication figures. You construct and edit plots graphically using plotting widgets, with support for labels, error-bearing data, multiple plots and vector output. Its versioned PyPI page confirms that version 1.24, released on 5 May 2016, already offered a GUI and PostScript, PDF and SVG output: https://pypi.org/project/veusz/1.24/. The layout model may take some learning. I would not assume that its current 3D features were present in the 2016 version.\n\n2. SciDAVis — https://scidavis.sourceforge.net/\nThis is worth trying if a desktop workspace organized around tables, matrices and plots suits how you work. Its official handbook describes 2D, 3D and multilayer plots and provides references for menus and toolbars: https://highperformancecoder.github.io/scidavis-handbook/. The official repository confirms GPL licensing and desktop platforms: https://github.com/SciDAVis/scidavis/blob/master/README.md. Version 1.14 artifacts are dated 29 July 2016 in the official archive: https://sourceforge.net/projects/scidavis/files/SciDAVis/1/1.14/. The handbook is newer, so I have not verified every listed feature in that historical release. Use the official project links; its repository identifies scidavis.org as unaffiliated.\n\n3. LabPlot — https://labplot.org/\nLabPlot is another strong fit for interactive plotting from spreadsheet data. You can create, arrange and edit curves graphically; its additional analysis features need not be part of your plotting workflow. The official 2.3.0 announcement, dated 23 July 2016, describes this plotting workflow and newly available Windows installers: https://labplot.org/posts/labplot-2-3-0-released/. That announcement also says the Windows version was less mature than the Linux version, which matters when choosing a version appropriate to the question date.\n\n4. Grace — https://plasma-gate.weizmann.ac.il/Grace/\nGrace is a focused candidate for conventional 2D scientific graphs. Its project page describes point-and-click customization, annotations, text-data input and vector export, with links to a manual, tutorial and forums. The X/Motif interface and platform setup may be less comfortable than the other desktop options. It is not a complete replacement for a surface-visualization workflow. I did not establish its historical availability from a dated primary document in this run.\n\n5. Kst — https://kst-plot.kde.org/\nKst is especially interesting if exploring large experimental datasets, or watching incoming measurements, is the main job. Its official page documents a graphical interface, mouse-driven manipulation, streaming-data plots, contour and matrix displays, and vector or bitmap export. Documentation, tutorials and community support links are present. Its exploration-oriented workflow may be less natural for a carefully composed final figure. The opened project page is undated, so its detailed historical capabilities remain unverified.\n\n6. Gnumeric — https://www.gnumeric.org/\nFor simple plots from a table, a spreadsheet can be the quickest alternative. Gnumeric's own guide shows selecting cells, opening a chart wizard and editing the resulting chart, including titles, legends and image export: https://gnome.pages.gitlab.gnome.org/gnumeric/manual/quick-graphing.html. Its project site confirms open-source licensing. This is most attractive for straightforward charts; I would test the required scientific plot type before choosing it for specialized figures. The opened manual does not establish the features' date.\n\nFor the question about a useful support community, documentation, tutorials, forums and mailing-list links are better-supported findings here than any claim about which application is most used. I found no comparable adoption statistics. A practical trial would be to import one of your real datasets, reproduce a figure with the needed labels and error bars, and export it in your publication format. Veusz, SciDAVis and LabPlot would be my first three trials, with Grace for focused 2D work, Kst for large or changing datasets, and Gnumeric for simpler charts.",
+      "candidate_links": [
+        {
+          "name": "Veusz",
+          "url": "https://veusz.github.io/"
+        },
+        {
+          "name": "SciDAVis",
+          "url": "https://scidavis.sourceforge.net/"
+        },
+        {
+          "name": "LabPlot",
+          "url": "https://labplot.org/"
+        },
+        {
+          "name": "Grace",
+          "url": "https://plasma-gate.weizmann.ac.il/Grace/"
+        },
+        {
+          "name": "Kst",
+          "url": "https://kst-plot.kde.org/"
+        },
+        {
+          "name": "Gnumeric",
+          "url": "https://www.gnumeric.org/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xfa070db32d921a2b",
+      "qid": "N001",
+      "raw_response": "## Best documented match: ZunShot on Windows 11\n\n[ZunShot](https://www.bandicam.com/zunshot/) is the strongest documented match I found for capturing one window while leaving the background outside its rounded corners transparent. Its official product page explicitly describes that behavior.\n\nUse **Window** on the Capture tab, or **Shift+PrtScn**, then select the desired window. You can also choose it from the window list. Keep the Windows 11 rounded-corner option enabled and save as **PNG** or **WebP**. The [official capture guide](https://www.bandicam.com/zunshot/guide/capture-window/) explains that JPG loses transparency, some clipboard pastes lose it, and a window partly off-screen is captured only where visible.\n\nThis is a documentation-based recommendation, not a claim that I ran the application. I did not establish Qt6 or Fedora support for it. Your tangential section makes those preferences rather than prerequisites, so they do not disqualify an otherwise matching Windows tool.\n\n## Alternatives, in order of relevance\n\n### 2. Spectacle — worth checking for the KDE side\n\nSpectacle's [official handbook](https://docs.kde.org/stable_kf6/en/spectacle/spectacle/using.html) documents Active Window and Window Under Cursor capture. This makes it a directly relevant KDE candidate. However, the evidence I could inspect did not establish the precise rounded-corner transparency result on Fedora 45 Wayland. I would keep it on the shortlist with that verification outstanding, rather than promise a complete match.\n\nThe decisive check is whether a saved window-mode PNG has transparent outside-corner pixels. A positive result supports that tested setup; retained background pixels would make that setup unsuitable.\n\n### 3. ksnip — closest documented coverage of several preferences\n\nThe [ksnip README](https://github.com/ksnip/ksnip/blob/master/README.md) describes a Qt-based application with command-line capture and Windows, Plasma Wayland and macOS coverage. Its backend table lists Windows active-window capture and Plasma Wayland window-under-cursor capture. I could not establish Qt6 specifically or the needed corner-alpha behavior on the requested OS versions. It remains a candidate to verify, not a confirmed cross-platform answer.\n\n### 4. ShareX — a Windows lead requiring a current-version check\n\nThe [official-project issue](https://github.com/ShareX/ShareX/issues/5667) discusses transparent Windows 11 window capture and distinguishes active-window capture from selecting a window through region mode. The old discussion also contains conflicting reports about actual transparency. That leaves the exact current settings and alpha output unresolved; it does not establish a general failure.\n\n### 5. Greenshot — another unresolved Windows alternative\n\nThe [official-project issue](https://github.com/greenshot/greenshot/issues/326) records an attempted Windows 11 fix for version 1.3.238, followed by inconsistent results. This is insufficient evidence to recommend current Greenshot confidently for your exact corner requirement, but also insufficient to rule out every current build.\n\n**My practical choice is ZunShot for the documented Windows behavior, with Spectacle as the first candidate to verify on your KDE system.** I found no fully verified single application satisfying all the preferred platforms and Qt6 alongside the mandatory capture behavior. The live product documentation I used is undated, so I cannot establish that every described feature was already available on November 17, 2026.",
+      "candidate_links": [
+        {
+          "name": "ZunShot",
+          "url": "https://www.bandicam.com/zunshot/"
+        },
+        {
+          "name": "Spectacle",
+          "url": "https://apps.kde.org/spectacle/"
+        },
+        {
+          "name": "ksnip",
+          "url": "https://github.com/ksnip/ksnip"
+        },
+        {
+          "name": "ShareX",
+          "url": "https://getsharex.com/"
+        },
+        {
+          "name": "Greenshot",
+          "url": "https://getgreenshot.org/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xebb6f3afc87f0f1f",
+      "qid": "T014",
+      "raw_response": "For your workflow—paste a YouTube link, keep several useful passages, join them into a shorter study video, and download the result—I would start with Kapwing or Flixier if their free limits are sufficient. For regular or longer editing, a free desktop workflow is yt-dlp followed by LosslessCut.\n\n## 1. Kapwing: a direct browser option for short summaries\n\n[Kapwing's YouTube trimmer](https://www.kapwing.com/tools/trim/youtube) describes splitting, trimming and rearranging clips in a timeline. Its [official tutorial](https://www.kapwing.com/resources/how-to-edit-someone-elses-youtube-video/) describes importing a YouTube link and exporting a downloadable edited video.\n\nThe practical workflow is to import the video, split around each passage you want to keep, remove unwanted portions and gaps, arrange the remaining clips, then export and download. This fits the study-summary task without requiring a desktop editor.\n\nThe significant restriction is the free export allowance. The [current pricing page](https://www.kapwing.com/pricing) lists a four-minute maximum exported video, 720p resolution and a watermark. It is therefore a suitable candidate if each finished digest is short and the watermark is acceptable.\n\n## 2. Flixier: another browser option, with a monthly allowance\n\n[Flixier's cutting documentation](https://flixier.com/tools/cut-videos) explicitly says it can import a pasted YouTube link directly into the cloud. It also explains cutting and trimming on the timeline, combining clips, and exporting to your computer. You can use that sequence to assemble the important sections into one study video.\n\nIts [current free plan](https://flixier.com/pricing) includes ten minutes of video export per month, 720p output, 2 GB of storage and a watermark. The monthly export allowance could suit occasional short summaries; it is restrictive if you intend to process many lectures.\n\n## 3. Free desktop workflow: yt-dlp plus LosslessCut\n\nIf the browser allowances are too restrictive, use these two tools together:\n\n- [yt-dlp](https://github.com/yt-dlp/yt-dlp) handles downloading from the YouTube URL. It is a command-line tool with official desktop downloads, not a visual editor. Its documentation and indexed source also describe timestamp-based section downloads with FFmpeg, but downloading alone does not assemble your finished digest.\n- [LosslessCut](https://github.com/mifi/lossless-cut) handles the visual selection and joining work. Its README documents cutting video, merging retained segments, and exporting without re-encoding. It provides free manual downloads for Windows, macOS and Linux.\n\nThe workflow is to save the source using yt-dlp, open that local video in LosslessCut, mark the sections you want to retain, and merge those sections when exporting. LosslessCut is aimed at fast rough cutting, and its lossless merging requires compatible codecs; sections from a single source are the natural starting point. This is a two-tool workflow rather than a single application with a YouTube import button.\n\nI would choose Kapwing for an occasional digest of four minutes or less, compare Flixier if its monthly allowance fits better, and choose the desktop pair for repeated study-video editing.\n\n### Evidence and date limits\n\nThese are documentation-based candidates; I did not upload a video or test an export. Kapwing has an official tutorial dated May 7, 2020, which provides pre-July-2023 evidence for the basic import/edit/download workflow. The pricing figures above come from live pages checked during this run, so they should not be read as verified July 2023 plan terms. The other candidates' cited feature pages are current, and attempts to retrieve historical yt-dlp and LosslessCut README versions failed. Their exact relevant feature sets at the question's date therefore remain unverified.",
+      "candidate_links": [
+        {
+          "name": "Kapwing",
+          "url": "https://www.kapwing.com/tools/trim/youtube"
+        },
+        {
+          "name": "Flixier",
+          "url": "https://flixier.com/tools/cut-videos"
+        },
+        {
+          "name": "yt-dlp",
+          "url": "https://github.com/yt-dlp/yt-dlp"
+        },
+        {
+          "name": "LosslessCut",
+          "url": "https://github.com/mifi/lossless-cut"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X633742e4051ac38e",
+      "qid": "T049",
+      "raw_response": "For a Go/Gin application receiving multipart image uploads, I would start with Go's image decoders plus disintegration/imaging. The useful distinction is between identifying a likely format, checking whether that format actually decodes, and producing a smaller output. A MIME detector handles the first task; a decoder and an image-processing library cover the others. Gin and htmx do not change those processing requirements.\n\n## Ranked candidates\n\n1. **Go image.DecodeConfig and image.Decode** — https://pkg.go.dev/image  \n   Use the registered image decoders to identify the encoded format, inspect dimensions, and reject inputs that fail actual decoding. DecodeConfig is useful before allocating the full decoded image; then rewind or reopen the input and call Decode. Header success alone is insufficient. Register the codecs that your application intends to accept and enforce a format allowlist and dimension/pixel limits. The opened package documentation is go1.27.4, dated November 10, 2026, so this particular evidence is after the July 1 cutoff; older documentation retrieval attempts failed.\n\n2. **disintegration/imaging** — https://pkg.go.dev/github.com/disintegration/imaging  \n   Decode accepted uploads, reduce them with Fit or Resize, and encode a fresh output image using a straightforward Go processing API. Fit is convenient for a maximum display-size box, while Fill supports fixed-size cropped thumbnails. Its documented encoder supports JPEG, PNG, GIF, TIFF and BMP. Apply input limits before processing, and check that your required formats fit this set. The inspected v1.6.2 documentation is dated November 16, 2019.\n\n3. **Go net/http DetectContentType and MaxBytesReader** — https://pkg.go.dev/net/http@go1.24.0#DetectContentType  \n   Combine a bounded request body with content-based MIME sniffing to replace filename-extension checks at the upload boundary. DetectContentType examines at most 512 bytes, making it useful for an early allowlist decision, while MaxBytesReader limits incoming request-body reads. A convincing header can still precede broken image data, so decoding remains necessary. The opened go1.24.0 reference is dated February 11, 2025.\n\n4. **h2non/bimg** — https://github.com/h2non/bimg  \n   Use its libvips-backed image operations to resize and convert accepted uploads when transformation cost is a bottleneck. It provides resizing, cropping, rotation and format conversion, with JPEG, PNG and WebP output described in the README. Its deployment cost includes libvips, a C compiler and any required codec dependencies. Benchmark representative inputs before choosing it for performance; I have not tested the repository's performance claims. The inspected README is live and its publication date is unestablished.\n\n5. **gabriel-vasile/mimetype** — https://pkg.go.dev/github.com/gabriel-vasile/mimetype  \n   Detect MIME types directly from a multipart reader or byte buffer when a dedicated extensible type detector is useful. DetectReader fits a reader-based upload flow, and SetLimit controls detection reads. The library documents that the reader must begin at the start. Treat the result as classification, then perform decoder validation separately. The opened v1.4.16 documentation is dated October 17, 2026 and is later evidence.\n\n6. **golang.org/x/image/draw** — https://pkg.go.dev/golang.org/x/image/draw  \n   Scale already decoded images with explicit interpolation choices to control the resizing speed/quality tradeoff. ApproxBiLinear and CatmullRom offer different compromises, documented by the package. This is a useful smaller building block if you want to assemble the decoding, allocation, resizing and encoding steps yourself. It supplies neither upload validation nor encoding. The inspected v0.48.0 documentation is dated November 9, 2026 and is later evidence.\n\n7. **h2non/filetype** — https://pkg.go.dev/github.com/h2non/filetype  \n   Infer image and MIME types from a short header prefix as a lightweight alternative to extension checks. Its documentation describes dependency-free recognition using a 262-byte prefix. This is an alternative to another MIME detector, not an additional mandatory layer. It does not validate a complete image stream. The inspected v1.1.3 documentation is dated November 21, 2021.\n\n8. **imgproxy** — https://docs.imgproxy.net/configuration/options  \n   Move image transformation into a dedicated service with configurable source-file, pixel, animation and result-size limits. This becomes relevant if you prefer serving transformed derivatives from a separate image-processing service. It adds service operation and source integration, so it is a larger architectural choice than a library in a Gin handler. Configure limits explicitly: the inspected documentation permits a zero source-file-size limit that disables that check. The opened 4.0.x documentation is live, with availability at the cutoff unverified.\n\n## Suggested integration\n\nMy suggested composition is a bounded upload, an allowed-format decision, a header dimension check, a successful full decode, a resize, and encoding to a selected output format. Keep the decoded image from the validation step for transformation instead of doing the same full decode again. A header detector is optional if the decoder already supplies all the accepted-format information you need. Choose one resizing implementation initially, then measure representative files and concurrent uploads before adding native dependencies.\n\nThese are components and an integration proposal, not evidence of a tested deployment. The research used seven queries, including a blocked unauthenticated grep.app attempt, and twelve document-open attempts. Public code was subsequently found through web-indexed code search, and Go's source was opened directly. One excluded source-thread snippet appeared incidentally in the first search batch; it was recorded as an exposure and was not opened or used as supporting evidence.",
+      "candidate_links": [
+        {
+          "name": "Go image.DecodeConfig and image.Decode",
+          "url": "https://pkg.go.dev/image"
+        },
+        {
+          "name": "disintegration/imaging",
+          "url": "https://pkg.go.dev/github.com/disintegration/imaging"
+        },
+        {
+          "name": "Go net/http DetectContentType and MaxBytesReader",
+          "url": "https://pkg.go.dev/net/http@go1.24.0#DetectContentType"
+        },
+        {
+          "name": "h2non/bimg",
+          "url": "https://github.com/h2non/bimg"
+        },
+        {
+          "name": "gabriel-vasile/mimetype",
+          "url": "https://pkg.go.dev/github.com/gabriel-vasile/mimetype"
+        },
+        {
+          "name": "golang.org/x/image/draw",
+          "url": "https://pkg.go.dev/golang.org/x/image/draw"
+        },
+        {
+          "name": "h2non/filetype",
+          "url": "https://pkg.go.dev/github.com/h2non/filetype"
+        },
+        {
+          "name": "imgproxy",
+          "url": "https://docs.imgproxy.net/configuration/options"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xa04a81d1b1063cb4",
+      "qid": "T004",
+      "raw_response": "I would evaluate **GCstar first**, with **Tellico** as the next option if Linux is convenient. Both have documented local collection-file workflows, so they are promising for the narrow catalogue you describe. **BiblioteQ in SQLite mode** is a broader third possibility. These are provisional recommendations: the available documentation leaves some of your mandatory requirements unverified.\n\n### 1. GCstar\n\nGCstar is the closest match when “users” means a maintained list of people who borrow books. Its documentation includes a separate borrower configuration list, and describes assigning borrowers, recording returns and viewing borrowed items. The lending example uses a film collection, so the exact book-form layout still needs checking. [Borrowing documentation](https://gcstar.gitlab.io/gcstar_docs/en/usage/borrowing/)\n\nThe collection manual describes manual data entry, saving each collection in a local file, and reopening the last collection at startup. This supports an offline workflow: enter the records yourself and leave online metadata retrieval unused. I did not find an explicit guarantee that every startup and catalogue operation is login-free. Also check the selected book model for the precise author and category fields you want. [Collection management](https://gcstar.gitlab.io/gcstar_docs/en/usage/collectionmanagement/)\n\nGCstar supports books and is available on Windows and Linux. Its FAQ identifies it as free software under the GNU GPL. The installation guide provides a Windows installer and Linux packages; required dependencies must be available on the target machine. Prepare the installer and dependencies before transferring them to your disconnected computer. [Overview](https://gcstar.gitlab.io/gcstar_docs/en/) · [License information](https://gcstar.gitlab.io/gcstar_docs/en/usage/faq/) · [Installation](https://gcstar.gitlab.io/gcstar_docs/en/download_installation/)\n\n**Verdict:** first shortlist choice, with the no-login requirement and exact book fields still to confirm.\n\n### 2. Tellico\n\nTellico is a good Linux candidate if a straightforward book catalogue plus loan records is sufficient. The project documents local XML storage without a database server, title/author properties, genres, configurable fields, sorting and grouping. It is GPL-licensed and includes translations. These features are useful for keeping the interface focused on the few fields you need. [Project description](https://tellico-project.org/about-tellico/)\n\nIts Quick Start begins with an empty book collection and explains entering records directly. Its loan workflow accepts a borrower name directly, with optional due dates and notes; using an address book or calendar is optional. [Quick Start](https://docs.kde.org/stable_kf6/en/tellico/tellico/fundamentals.html) · [Loan tracking](https://docs.kde.org/stable_kf6/en/tellico/tellico/loan-dialog.html)\n\nThe unresolved point is your list of users. A name attached to a loan may be sufficient for some small libraries, but I have not verified a standalone user register matching what you intend. Nor do the opened pages explicitly guarantee the absence of application logins. Those gaps prevent calling it a fully verified match.\n\n**Verdict:** second shortlist choice, especially for Linux, subject to confirming the user-list and no-login behavior.\n\n### 3. BiblioteQ, using SQLite\n\nBiblioteQ's official site describes free, BSD-licensed library software with Windows/Linux support, network-less operation, SQLite and patron information. That makes its local SQLite configuration worth investigating if you need more formal member records. It also has many more features and options, which may work against your preference for simplicity. [Official project](https://textbrowser.github.io/biblioteq/)\n\nThe important setting is SQLite. Do not assume that statements about PostgreSQL accounts apply to it, or that a reference to SQLite automatically proves the complete workflow has no login. I found suggestive official search snippets, but the opened excerpts did not establish that point or the detailed author/category/member workflow. I would confirm those before choosing it.\n\n**Verdict:** a lower-ranked possibility, not a demonstrated all-requirements match.\n\nFor an initial trial, create several book records, categories and borrowers, close and reopen the application with all networking unavailable, and verify that the normal workflow never requests a login. That single exercise addresses the most important unresolved behavior.\n\nThis is a documentation-based shortlist; I did not install or run the applications. Your question is dated 4 February 2017, while the GCstar overview is dated 2022, the Tellico and BiblioteQ pages describe 2026 releases, and several manuals have no publication date. These sources therefore support present-day investigation, not a claim that an identical configuration was available on the original question date.",
+      "candidate_links": [
+        {
+          "name": "GCstar",
+          "url": "https://gcstar.gitlab.io/gcstar_docs/en/"
+        },
+        {
+          "name": "Tellico",
+          "url": "https://tellico-project.org/about-tellico/"
+        },
+        {
+          "name": "BiblioteQ (SQLite configuration)",
+          "url": "https://textbrowser.github.io/biblioteq/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X3f651e13fda0c5fa",
+      "qid": "T037",
+      "raw_response": "For the one-to-three-person lodging-reservation example, I would start by evaluating **Laravel with Filament**. **Django with Celery** is the closest alternative, especially if the team already works in Python. Rails remains a plausible third option, but I have not verified a complete admin/authentication configuration in this search.\n\nThe supplied summary asks for a framework supporting CRUD, authentication, admin, background jobs, mail, and files. It does not specify a language, database, hosting platform, price constraint, or a requirement that all six features live in the framework core. I have therefore compared framework-based stacks and made the added components explicit. The ranking is a judgment about the documented fit, not a measured claim about development speed.\n\n### 1. Laravel with Filament — strongest documented fit\n\nLaravel's official documentation describes authentication guards and providers, authentication starter kits, background queues, mailables, and a filesystem abstraction. Filament supplies the admin interface, with documentation for listing, creating, editing, viewing, and deleting records. This maps directly onto the requested capability set. Sources: [authentication](https://laravel.com/framework/docs/9.x/authentication), [queues](https://laravel.com/framework/docs/9.x/queues), [mail](https://laravel.com/framework/docs/9.x/mail), [files](https://laravel.com/framework/docs/9.x/filesystem), and [Filament admin installation](https://filamentphp.com/docs/2.x/admin/installation).\n\nFor the inspected historical configuration, Filament 2.x documents Laravel v8.0+, PHP 8.0+, and Livewire v2.0+ requirements. The installation instructions explicitly require additional access configuration for production administration. Laravel's queue documentation offers several backends, including a database connection; the mail API can enqueue delivery; and the filesystem documentation covers local and remote storage. These are capabilities to configure, not an already implemented reservation product.\n\nI would use the framework for the main application and Filament for staff management of the application's records. The team must still build the customer-facing reservation flow and its domain rules. **Assessment: DIRECT_DOCUMENTED for the broad requested capabilities in the proposed stack.** Some supporting authentication, queue, and mail details came from substantive official search excerpts; the direct-open displays for those pages were limited to navigation. No application was installed or tested.\n\n### 2. Django with Celery — strong alternative, one verification gap\n\nDjango's official documentation covers its model/query layer, automatic internal admin, email APIs, and uploaded-file/storage APIs. Celery's official guide documents integration with a Django project, including shared settings and task discovery. Sources: [Django documentation](https://docs.djangoproject.com/en/4.1/), [admin](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/), [email](https://docs.djangoproject.com/en/4.1/topics/email/), [files](https://docs.djangoproject.com/en/4.1/topics/files/), and [Celery integration](https://docs.celeryq.dev/en/v5.2.7/django/first-steps-with-django.html).\n\nThe admin documentation makes an important boundary clear: its intended role is internal management. Public booking screens still need their own views. Celery is an additional task-processing component to configure and operate; this proposal does not claim Django 4.1 itself includes the queue runner.\n\nAn official [Django authentication result](https://docs.djangoproject.com/en/4.1/topics/auth/) appeared in search, but I did not open that page. **Assessment: INSUFFICIENT for a completely verified setup in this run, not a known failure.** Confirm the intended authentication setup against the chosen version's documentation. Positive evidence would close the remaining broad capability gap; an explicit unsupported requirement would change the assessment for that configuration. If the team already knows Django well, that existing knowledge could reasonably move it ahead of Laravel.\n\n### 3. Ruby on Rails — plausible, but less completely verified here\n\nThe [Rails 7.0.4 introductory guide](https://guides.rubyonrails.org/v7.0.4/getting_started.html) explicitly lays out CRUD operations and identifies Action Mailer, Active Job, and Active Storage. That makes Rails worth evaluating for the same application scope.\n\nI attempted the [ActiveAdmin installation page](https://activeadmin.info/0-installation.html), but it returned only a relocation notice. I have not established the compatible admin/authentication package versions or the selected background-job backend. **Assessment: INSUFFICIENT.** Keep Rails on the shortlist while verifying that concrete combination; the evidence gap does not establish that Rails cannot meet the requirements.\n\n### How I would make the choice\n\nWith no existing language preference stated, Laravel plus Filament is my first candidate from the evidence gathered. I would compare it with Django plus Celery using one representative application slice: a staff-managed lodging record, an authenticated customer action, a stored file, and an asynchronously sent email. That is a proposed evaluation step, not an evaluation performed here.\n\nThe question is dated September 27, 2022. I used older versioned documentation where practical, but those pages were retrieved live in 2026 and their exact historical revisions are unknown. Newer Django task-framework and Rails authentication-generator search results were not used to backdate capabilities. The old versions cited here identify the evidence scope; they are not a recommendation to deploy unsupported versions today. Anonymous GitHub code search was attempted and blocked, and the code-through-web fallback did not produce usable code evidence.",
+      "candidate_links": [
+        {
+          "name": "Laravel with Filament",
+          "url": "https://laravel.com/framework/docs/9.x/authentication"
+        },
+        {
+          "name": "Django with Celery",
+          "url": "https://docs.djangoproject.com/en/4.1/"
+        },
+        {
+          "name": "Ruby on Rails with an admin/authentication add-on",
+          "url": "https://guides.rubyonrails.org/v7.0.4/getting_started.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "Xeb6791034b4832a5",
+      "qid": "T024",
+      "raw_response": "I would start by evaluating **GLib's GOption parser**, with **Argtable3** as the smaller integration to compare against it. I found four useful candidates, but the available evidence does not establish that every requirement is satisfied by any one candidate, especially maintenance as of 12 November 2024 and the exact behavior of repeated scalar options.\n\n## Ranked candidates\n\n1. **[GLib GOption / GOptionContext](https://docs.gtk.org/glib/goption.html)** is the closest documented fit. A table of option entries drives parsing and help generation in one call. Short and long names, both `--name=value` and `--name value`, and positional collection are documented. String and filename array option types collect repetitions; callbacks provide a route for custom aggregation or overriding. The [unknown-option setting](https://docs.gtk.org/glib/method.OptionContext.set_ignore_unknown_options.html) explicitly leaves ignored options in `argv`. Its caveat matters for forwarding: the parser cannot reliably decide whether a separate non-option value belongs to an unknown option. Choose a clear forwarding boundary or convention. The API uses ordinary C tables and functions, though GLib adds a substantial dependency. The [official overview](https://docs.gtk.org/glib/index.html) identifies LGPL-2.1-or-later licensing; Windows-specific command-line handling is documented. Native subcommands and exact scalar overwrite semantics were not verified.\n\n2. **[Argtable3](https://www.argtable.org/tutorial/)** offers a small ANSI C integration, BSD licensing, declarative option definitions and generated usage. Its dated tutorial documents positional arguments, repeated typed values and multiple aliases. This is a useful candidate when embedding one source file is attractive. However, I did not verify transparent preservation of unknown options, automatic last-occurrence overriding or native subcommands. Those are material gaps for this request.\n\n3. **[cofyc/argparse](https://github.com/cofyc/argparse)** is a compact MIT-licensed high-level C parser with automatic help and both positional and optional arguments. Its [public header](https://github.com/cofyc/argparse/blob/master/argparse.h) exposes modes for ignoring unknown arguments and stopping at the first non-option, plus callbacks. These are promising extension points, but I did not confirm exact leftover preservation, ordered repetition handling, both long-value forms or all three platform builds. Macro usage and maintenance also need closer examination.\n\n4. **[GNU Gengetopt](https://www.gnu.org/software/gengetopt/gengetopt.html)** is a useful alternative if generated C is acceptable. Its [dated upstream manual mirror](https://ftp2.gwdg.de/pub/gnu/www/savannah-checkouts/gnu/gengetopt/gengetopt.html) documents an option specification, aliases, both long-value forms, repeated-value arrays and configuration precedence. The generator is free software and its output has a permissive license. Unknown-option forwarding and subcommands remain unverified; native Windows integration needs attention to its `getopt_long` dependency.\n\n## Evidence limits\n\nThis is a research shortlist, not a claim of deployment or successful compatibility testing. Argtable3's tutorial is dated 2014 and the opened Gengetopt manual is dated 2007. The GLib 2.42.1 documentation is version-specific but its release date was not independently opened; current GLib 2.91.0 pages are later evidence. The live argparse sources are undated. None of this establishes every project's maintenance state at the question date.\n\nAn unauthenticated grep.app code-search attempt was blocked. The successful source discovery was **code-through-web**, followed by opening the public argparse header; it was not a successful native code search. Cargo was also investigated, but its sparse opened documentation and blocked repository left insufficient verified feature coverage to rank it.",
+      "candidate_links": [
+        {
+          "name": "GLib GOption / GOptionContext",
+          "url": "https://docs.gtk.org/glib/goption.html"
+        },
+        {
+          "name": "Argtable3",
+          "url": "https://www.argtable.org/tutorial/"
+        },
+        {
+          "name": "cofyc/argparse",
+          "url": "https://github.com/cofyc/argparse"
+        },
+        {
+          "name": "GNU Gengetopt",
+          "url": "https://www.gnu.org/software/gengetopt/gengetopt.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xa9e43f6f2920ea89",
+      "qid": "T036",
+      "raw_response": "I would use different thresholds for a small utility and for cryptographic code. A local implementation can be sensible when you can state and test its complete behavior. For cryptography, I would normally reuse an established implementation with an appropriate high-level API, then spend engineering effort on using it correctly. The number of functions you call is not a reliable measure of the expertise or failure risk behind them.\n\nThe supplied summary does not identify a language, platform, exact function, cryptographic operation, performance target, or prohibited dependency. Consequently, this is a decision method with illustrative options, not a verified package selection for a particular application.\n\n## Make the comparison about ownership\n\nWrite down the behavior you actually need before comparing alternatives. For a utility, consider accepted inputs, edge cases, error behavior, and whether the specification is likely to change. Then compare two complete proposals: the smallest local implementation you would maintain, and the smallest suitable external component you would integrate.\n\nMy suggested accounting is:\n\n- Local ownership: implementation, review, tests, future corrections, and the consequences of mistakes.\n- External reuse: learning the API, integration, deployment, upgrades, investigation of failures, and eventual replacement.\n- In either case: the cost of failure in the application where the code runs.\n\nThis is a qualitative comparison unless you have credible project-specific estimates. Do not assign precise probabilities just to make a spreadsheet look objective. A task that takes an afternoon to write can still be expensive to specify and validate. Conversely, a stable, ordinary helper need not acquire an external release lifecycle merely because a package exists.\n\nAs a useful later reference, [Our Software Dependency Problem](https://research.swtch.com/deps) discusses expected failure cost, dependency inspection, testing, indirect dependencies, and a narrow interface to ease replacement. It was published on 23 January 2019, after the question's 20 April 2018 date, so it is retrospective guidance rather than evidence available at that decision time. genui{\"citation\":{\"ref\":\"turn320807153view0\"}} genui{\"citation\":{\"ref\":\"turn268661611view0\"}}\n\n## Ranked options and references\n\n1. **A structured dependency review.** Start with the cost comparison above and use [Cox's checklist](https://research.swtch.com/deps) as a reference for assessing a proposed dependency. This is the most generally useful response to the question because it applies to both examples. It does not supply your team's costs or prove that a particular library is safe. Its publication is post-decision, and applying its general advice to your project is an explicit transfer of a method, not a measured result.\n\n2. **Own a small, bounded utility locally.** This is reasonable when the behavior is sufficiently clear for your team to review and test, and when owning that implementation costs less than integrating a package. [Go Proverbs](https://go-proverbs.github.io/) provides the well-known small-copying/small-dependency heuristic and connects the collection to a 2015 talk. The additional conditions here are my interpretation of when the heuristic is useful; it is not a universal instruction to copy code, nor does it establish that the unspecified function in your case is simple. Before choosing this route, write the specification and edge cases. If they expand beyond what you can confidently maintain, reconsider reuse. genui{\"citation\":{\"ref\":\"turn320807153view3\"}}\n\n3. **Use a high-level cryptographic library; libsodium is one concrete candidate.** Its [official quickstart](https://doc.libsodium.org/quickstart) documents high-level authenticated encryption, secure random generation, and error handling. It explicitly prefers high-level APIs where available. Those APIs still impose obligations: initialize the library, keep keys secret, follow nonce requirements, and check authentication failures. A library does not discharge the application's responsibility for its protocol and key handling. The documentation supports this candidate's role, but the exact operation, runtime, binding and version are unspecified. Confirm those before adopting it; a supported match would make it a direct option, whereas an unsupported operation would require another implementation. The live documentation's revision date is unknown, so I do not treat its entire current feature set as established in April 2018. genui{\"citation\":{\"ref\":\"turn320807153view1\"}}\n\n4. **Consider embedding an expert implementation when deployment footprint is the concern.** [TweetNaCl's original paper](https://cryptosith.org/papers/tweetnacl-20140917.pdf), dated 17 September 2014, describes a compact C implementation that can be included as a source file and header. It provides NaCl-compatible operations and discusses the tradeoff between compactness and performance. This illustrates an intermediate option: reuse cryptographic expertise while controlling how the code is incorporated. It does not establish that TweetNaCl fits every cryptographic task or is the best current implementation. Confirm the required operation, target toolchain, performance and update ownership before selecting it. The project website could not be opened during this research; the cited original paper was readable. genui{\"citation\":{\"ref\":\"turn188625224view0\"}}\n\n## Why the security threshold differs\n\nFor a normal helper, you may be able to enumerate the relevant behavior well enough to own it. Cryptographic implementation correctness includes adversarial properties that ordinary successful examples do not demonstrate. TweetNaCl's paper, for example, discusses secret-dependent branches and memory access in connection with timing attacks, and explicitly distinguishes its limited verification examples from a complete audit. That makes “the output looks right” a poor acceptance criterion for a new cryptographic implementation. This is an inference from the documented engineering problem, not a claim that any library is invulnerable. genui{\"citation\":{\"ref\":\"turn188625224view0\"}}\n\nMy practical default is therefore to keep a genuinely bounded utility local when you can own its specification, while reusing cryptographic implementations and validating their integration. If a cryptographic library feels too large, first investigate a narrower API or an embeddable implementation. Changing packaging and taking responsibility for inventing or reimplementing cryptography are separate engineering decisions.\n\nNo mandatory exclusion conditions were supplied, so none of these options is rejected on an invented language, license, maintenance interval, or dependency prohibition. The two named libraries remain provisional because application fit is unknown. This research inspected documentation and public code; it did not execute, benchmark, integrate, or independently audit either library.",
+      "candidate_links": [
+        {
+          "name": "Structured dependency review — Our Software Dependency Problem",
+          "url": "https://research.swtch.com/deps"
+        },
+        {
+          "name": "Own a bounded utility locally — Go Proverbs heuristic",
+          "url": "https://go-proverbs.github.io/"
+        },
+        {
+          "name": "libsodium high-level APIs",
+          "url": "https://doc.libsodium.org/quickstart"
+        },
+        {
+          "name": "TweetNaCl",
+          "url": "https://cryptosith.org/papers/tweetnacl-20140917.pdf"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": [
+        {
+          "source_ref": "turn188625224view0",
+          "possible_urls": [],
+          "reason": "No unique preserved or observed URL mapping"
+        },
+        {
+          "source_ref": "turn268661611view0",
+          "possible_urls": [],
+          "reason": "No unique preserved or observed URL mapping"
+        },
+        {
+          "source_ref": "turn320807153view0",
+          "possible_urls": [],
+          "reason": "No unique preserved or observed URL mapping"
+        },
+        {
+          "source_ref": "turn320807153view1",
+          "possible_urls": [],
+          "reason": "No unique preserved or observed URL mapping"
+        },
+        {
+          "source_ref": "turn320807153view3",
+          "possible_urls": [],
+          "reason": "No unique preserved or observed URL mapping"
+        }
+      ]
+    },
+    {
+      "run_id": "X057afb9bb3142094",
+      "qid": "T033",
+      "raw_response": "For a simple, open-source personal blog that you can host yourself, I would start with **Publii** if desktop editing suits you, or **Bludit** if you want to write in a browser. **Ghost** is the strongest option in this shortlist for explicitly documented technical SEO features. The ranking below is my assessment of fit for the stated requirements; I have not deployed or benchmarked these systems.\n\n## Ranked options\n\n### 1. Publii — visual editing with static hosting\n\n[Publii](https://getpublii.com/) gives you a desktop editor and publishes static pages to your own hosting. Its [public source repository](https://github.com/GetPublii/Publii) documents offline editing and server uploads. This is a good fit for a single-author blog because the public site does not require a running CMS or database, while writing does not require a command-line workflow.\n\nThe main tradeoff is that the editable project lives on your computer. Back it up and choose a theme whose generated pages meet your SEO needs. The homepage explicitly identifies a November 7, 2026 update, so this particular evidence is later than the question's September 21, 2024 cutoff.\n\n### 2. Bludit — a small browser-based CMS\n\n[Bludit](https://www.bludit.com/) offers Markdown and visual editing, stores content in JSON files, and advertises built-in SEO tools. Its [MIT-licensed public repository](https://github.com/bludit/bludit) confirms installation on a PHP web server. It could meet the requirement for a conventional personal blog without adding database administration.\n\nYou still maintain a web application. The homepage does not establish every SEO detail, so inspect the selected theme's metadata and sitemap behavior before committing. This option is attractive when browser editing matters more than a fully static deployment.\n\n### 3. Ghost — integrated publishing and technical SEO\n\n[Ghost's public repository](https://github.com/TryGhost/Ghost) documents running your own instance. Its [official SEO guide](https://ghost.org/help/seo/) explicitly lists metadata, social tags, XML sitemaps, canonical tags and structured data. These are concrete features that address the SEO requirement with relatively little separate configuration.\n\nThe application still needs installation, backups and upgrades. For a minimal personal blog, decide whether its wider publishing capabilities justify that operational commitment. I would prioritize it when the publishing interface and integrated SEO controls matter more than having the smallest possible system.\n\n### 4. Hugo — a static generator for a file-based workflow\n\n[Hugo](https://gohugo.io/) is an open-source static site generator. Its [sitemap documentation](https://gohugo.io/templates/sitemap/) confirms automatic XML sitemap generation and configurable templates. It is useful when you are comfortable maintaining content files and want a blog that can be served as static output.\n\nThe remaining setup is yours: select a suitable blog theme, configure the build and publishing process, and inspect the resulting metadata. Hugo alone does not provide the same visual authoring experience as a finished CMS.\n\n### 5. HTMLy — a database-free PHP blog engine\n\n[HTMLy](https://www.htmly.com/) is an open-source blogging application that uses flat files and supports both web-based and filesystem-based content management. Its feature list includes archives, categories, tags and a sitemap, making it a focused alternative for ordinary PHP hosting.\n\nConfirm hosting compatibility and the chosen theme's SEO output. The opened homepage establishes a sitemap but does not establish all metadata or canonical handling, so I would treat those details as verification work before deployment.\n\n### 6. WordPress — a flexible conventional choice\n\n[WordPress](https://wordpress.org/about/features/) provides visual publishing, themes, built-in search-engine support and optional SEO extensions. It also documents self-installation and GPL licensing. It is worth considering when you expect a personal blog to grow into a more customized site.\n\nIts database and extension maintenance are the main tradeoffs for this request. Start with a simple theme and a limited set of plugins if ease of upkeep is the priority.\n\n## How I would choose\n\nChoose according to the writing workflow first: Publii for desktop editing and static publishing; Bludit or HTMLy for a small browser-managed application; Ghost for integrated publishing and explicit SEO controls; Hugo for a file-and-build workflow; WordPress for broader customization. None of these features guarantees search ranking, and the recommendation concerns implementation fit rather than measured results.\n\n**Evidence limits:** This discovery used current public documentation. Except for Publii's explicitly later version banner, the opened sources did not provide verified publication or historical-version dates, so their availability and exact feature set at the 2024 cutoff remain unverified. An unauthenticated grep.app code-search attempt was blocked; I used web-indexed public code as the fallback. A broad search returned a question-only snippet from the excluded source thread; I logged that exposure and did not open the thread or use its answers.",
+      "candidate_links": [
+        {
+          "name": "Publii",
+          "url": "https://getpublii.com/"
+        },
+        {
+          "name": "Bludit",
+          "url": "https://www.bludit.com/"
+        },
+        {
+          "name": "Ghost",
+          "url": "https://github.com/TryGhost/Ghost"
+        },
+        {
+          "name": "Hugo",
+          "url": "https://gohugo.io/"
+        },
+        {
+          "name": "HTMLy",
+          "url": "https://www.htmly.com/"
+        },
+        {
+          "name": "WordPress",
+          "url": "https://wordpress.org/about/features/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xdec53101de1524db",
+      "qid": "T043",
+      "raw_response": "For the question about a self-hosted Alexa-like assistant and concern about Mycroft's long-term continuity, the strongest documented starting point is Rhasspy for local home-control commands. Kalliope and SEPIA provide different levels of customization. I found seven candidates worth distinguishing, rather than assuming that every open-source assistant is equally complete or equally independent of external services.\n\nThis is a documentation-based shortlist, not a report of personal installation experience. The question's cutoff is July 22, 2021. I could establish an older Rhasspy version before that date; several other opened sources are live and their historical feature sets remain unverified. The Home Assistant pipeline below is explicitly later evidence.\n\n1. **Rhasspy — first choice to investigate for private home-control commands.** [Project](https://github.com/rhasspy/rhasspy). Rhasspy supplies an offline voice interface that can turn custom spoken commands into actions in a self-hosted Home Assistant or Node-RED setup. Its appeal is control over the local voice stack and the automation it triggers. You must define commands and connect the resulting intents to useful actions, so this is a configurable system rather than evidence of a complete consumer-assistant experience. The [older repository README](https://github.com/synesthesiam/rhasspy/blob/master/README.md), archived in August 2020, documents version 2.4 and points to 2.5. The current project's October 2025 archive notice is a later continuity caveat, not something that could have informed a July 2021 decision.\n\n2. **Kalliope — a modular DIY assistant.** [Project](https://kalliope-project.github.io/). Kalliope provides a modular Linux or Raspberry Pi voice assistant for home automation, with configurable speech engines and action modules. It is useful when you want to assemble the behaviors you need and retain control over the installation. One material qualification is that its [settings documentation](https://github.com/kalliope-project/kalliope/blob/master/docs/settings/settings.md) defaults to Google speech recognition, while also listing self-hosted CMUSphinx and local speech-output engines. Running Kalliope yourself therefore does not automatically make the speech path local. Its [release listing](https://github.com/kalliope-project/kalliope/releases) was opened, but the rendered dates omitted years; I have left the cutoff status unknown.\n\n3. **SEPIA Framework — a broader assistant with its own server and clients.** [Project](https://sepia-framework.github.io/). SEPIA offers a self-hosted assistant server with natural-language understanding, reminders and other services, browser or mobile clients, and extensible device control. Its server hosts the core, accounts, and data, and its framework supports custom dialogs and services. This is attractive if you want more of an assistant application than a narrowly defined command recognizer. You would still need to check the speech engine selected by each client and any external service integrations before calling the whole system offline. The opened overview has no verified pre-cutoff date.\n\n4. **Leon — a personal-assistant development foundation.** [Repository](https://github.com/leon-ai/leon). Leon is an open-source assistant that can run on the user's own computer and can serve as a foundation for personalized task automation. The current README says the first open-source release was in 2019, but its present default branch is an unfinished 2.0 rewrite and it directs users to the master branch for the previous version. That version distinction matters for someone worried about continuity and usable documentation. I would evaluate a specific version against the required tasks, and I would not project today's preview features back onto 2021. The described feature set has unknown cutoff status.\n\n5. **Jasper — a build-your-own voice platform.** [Project](https://jasperproject.github.io/). Jasper supplies an open-source platform for building always-on voice applications and custom modules using ordinary hardware. It could be useful for a focused appliance with a small number of functions you control yourself. The primary page supports that design, but does not settle current maintenance, compatibility with modern dependencies, or whether every speech and service component is local. For this particular continuity concern, those are unresolved questions rather than reasons to promise longevity. The opened page is undated.\n\n6. **OpenVoiceOS — a modular offline-capable assistant stack.** [Repository](https://github.com/OpenVoiceOS/OpenVoiceOS). OpenVoiceOS provides an offline-capable open-source assistant platform with separately installable listening, intent, audio, and messaging components. Its current documentation also describes installation paths for Linux and Raspberry Pi systems. That modularity may make individual components easier to replace if one implementation stops meeting your needs. However, the live documentation cannot establish which of those capabilities were available in July 2021, and the project notes that some distributions can lag behind its releases. I retain it as a relevant candidate with unknown cutoff status.\n\n7. **Home Assistant Assist with a local voice pipeline — a later alternative architecture.** [Dated announcement](https://www.home-assistant.io/blog/2023/04/27/year-of-the-voice-chapter-2). Home Assistant's local Assist pipeline combines speech recognition, intent execution, and spoken responses to add self-hosted voice control to an existing home-automation installation. The April 27, 2023 announcement describes local Whisper and Piper components and Wyoming integration. It demonstrates a useful approach: make voice an interface to the automation system already responsible for your devices. It requires audio hardware and configured actions, and it is explicitly post-cutoff evidence rather than a 2021 recommendation.\n\nFor the original concern, I would evaluate whether a candidate can perform the few tasks you actually need with local components, retain a reproducible installation, and expose an integration boundary you can maintain. Those are practical selection criteria, not guarantees that a project will survive. The research did not establish hands-on reliability, recognition quality in your room or language, or equivalence to Alexa's service catalog. The required unauthenticated grep.app code-search attempt was inaccessible; public GitHub source was instead discovered through web indexing, which is code-through-web evidence rather than successful native code search.",
+      "candidate_links": [
+        {
+          "name": "Rhasspy",
+          "url": "https://github.com/rhasspy/rhasspy"
+        },
+        {
+          "name": "Kalliope",
+          "url": "https://kalliope-project.github.io/"
+        },
+        {
+          "name": "SEPIA Framework",
+          "url": "https://sepia-framework.github.io/"
+        },
+        {
+          "name": "Leon",
+          "url": "https://github.com/leon-ai/leon"
+        },
+        {
+          "name": "Jasper",
+          "url": "https://jasperproject.github.io/"
+        },
+        {
+          "name": "OpenVoiceOS",
+          "url": "https://github.com/OpenVoiceOS/OpenVoiceOS"
+        },
+        {
+          "name": "Home Assistant Assist with a local voice pipeline",
+          "url": "https://www.home-assistant.io/blog/2023/04/27/year-of-the-voice-chapter-2"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xf61fa4ace4a43323",
+      "qid": "T030",
+      "raw_response": "For a small C or C++ program that receives pixels on stdin, I would start with **MiniFB**. **SDL2's window-surface API** is another straightforward choice if you want a broader windowing library.\n\nThe application still needs to parse its input format. These libraries handle displaying the resulting pixels; they do not define a protocol for dimensions and pixel bytes arriving on stdin.\n\n### Closest matches\n\n1. **[MiniFB](https://github.com/emoon/minifb)** directly matches a window backed by an application-owned pixel array. Create the window with `mfb_open` or `mfb_open_ex`, fill a 32-bit pixel buffer from the input, and present it with `mfb_update_ex`. Keep its event loop running. Its system backends mean you do not need to assemble GLFW and a separate drawing library, but the operating system's display facilities remain dependencies.\n\n2. **[SDL2 window surfaces](https://wiki.libsdl.org/SDL2/SDL_GetWindowSurface)** let you obtain the window's surface, copy or convert your incoming pixels into it, and call [SDL_UpdateWindowSurface](https://wiki.libsdl.org/SDL2/SDL_UpdateWindowSurface) to show the changes. Account for surface format and row pitch. Resizing invalidates the surface, and presentation can change its pixel pointer. This is a useful choice for CPU-generated images.\n\n3. **[CImg / CImgDisplay](https://www.cimg.eu/CImg_slides.pdf)** is convenient if C++ is acceptable and an image container is useful. Populate a CImg image and display it through CImgDisplay, which also handles window events. Its image-processing facilities are more than this task requires. The inspected version 1.5 documentation describes X11 and GDI32 implementations, so it still has platform display dependencies.\n\n4. **[rawdraw / CNFG](https://github.com/cntools/rawdraw)** offers a compact C approach: create a window, submit a pixel array with `CNFGBlitImage`, and present it with `CNFGSwapBuffers`. It also provides individual pixel drawing and a software-rasterizer configuration. Check backend and platform support before choosing it; the current README says macOS support has moved to the attic.\n\n### Later evidence\n\n5. **[Fenster](https://github.com/zserge/fenster/blob/main/README.md?plain=1)** is particularly close to the desired minimal interface: one window, a caller-owned RGB buffer, and a polling loop that handles events and refreshes the display. Its Linux build uses X11. The [author's article](https://zserge.com/posts/fenster/) is dated January 15, 2023, so this is later evidence, not a verified option available when the question was asked on August 29, 2022.\n\n### If avoiding a display server is the real requirement\n\n6. **[Linux framebuffer devices](https://docs.kernel.org/5.18/fb/framebuffer.html)** expose display memory through `/dev/fb*`, with writing or memory mapping and ioctls for its layout. This can support direct pixel output without a desktop display server, but it does not create an ordinary window. It is only a suitable alternative if direct display access, Linux-specific code, and the device's permissions and hardware constraints are acceptable.\n\nFor the stdin workflow, my implementation recommendation is to read and validate the dimensions, allocate a bounded image buffer, then convert incoming pixels into that buffer. If data can arrive slowly, avoid blocking the UI event loop on stdin: use an input worker or nonblocking input and periodically present completed rows or frames. Define what EOF means for an incomplete image and whether the completed image should remain visible until the user closes the window.\n\nThe distinction in the last sentence of the question matters: a wrapper can hide which desktop display backend it uses, while an ordinary window still needs that backend. MiniFB is the closest small abstraction I found; SDL2 is a practical broader option. The live MiniFB, SDL2, rawdraw and CImg sources were verified for functionality, but their inspected versions were not independently dated to before the question.",
+      "candidate_links": [
+        {
+          "name": "MiniFB (C library)",
+          "url": "https://github.com/emoon/minifb"
+        },
+        {
+          "name": "SDL2 window surfaces",
+          "url": "https://wiki.libsdl.org/SDL2/SDL_GetWindowSurface"
+        },
+        {
+          "name": "CImg / CImgDisplay",
+          "url": "https://www.cimg.eu/CImg_slides.pdf"
+        },
+        {
+          "name": "rawdraw / CNFG",
+          "url": "https://github.com/cntools/rawdraw"
+        },
+        {
+          "name": "Fenster",
+          "url": "https://github.com/zserge/fenster/blob/main/README.md?plain=1"
+        },
+        {
+          "name": "Linux framebuffer device (fbdev)",
+          "url": "https://docs.kernel.org/5.18/fb/framebuffer.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X7d26c15544133d7c",
+      "qid": "T007",
+      "raw_response": "I found four useful candidates or workflows, but the evidence does not establish a single tool that met every requirement on 8 January 2020. The pages inspected are live, undated documentation. Their feature descriptions should not be treated as proof of availability at that cutoff.\n\n**1. SoapUI Open Source — the GUI candidate to investigate first.** SoapUI organizes work into projects and saves each project, including its tests and scripts, as an XML file suitable for version control. Its bundled command-line runner can select a test suite or test case. These are strong matches for separate logical groupings, portable files, and selective execution. However, the Swagger/OpenAPI documentation lists version 2.0 support; it does not establish OAS 3 support. The import section I read specifies a local definition file, so direct import from an arbitrary OpenAPI URL remains unverified. Imported REST services also need test suites to be added. Some runner options are explicitly restricted to ReadyAPI, although the basic runner is included. Sources: [Swagger/OpenAPI support](https://www.soapui.org/docs/rest-testing/openapi-swagger-support/), [project organization and files](https://www.soapui.org/docs/getting-started/projects/working-with-projects/), and [command-line execution](https://www.soapui.org/docs/automation/running-functional-tests/).\n\n**2. OpenAPI-to-Postman plus Newman — a collection-file workflow.** The converter takes an OpenAPI specification file and writes a Postman collection file; Newman runs collections and can select folders or individual requests. Separate collection files and directories can provide the logical groupings and Git workflow you want. Fetching a remote specification before conversion is an additional step: the converter's documented CLI source argument is a file path. This gives a practical CLI-oriented mechanism, but not a replacement graphical workspace editor, and I did not separately verify licensing terms or historical feature versions. Sources: [converter documentation](https://github.com/postmanlabs/openapi-to-postman/blob/develop/README.md) and [Newman](https://github.com/postmanlabs/newman).\n\n**3. Portman — a more integrated OpenAPI-to-collection route.** Its documented CLI accepts a remotely hosted specification, writes a local Postman collection, and can invoke Newman. Its operation filters and generated integration-test folders can help define selected groups of requests. That directly addresses the specification-URL requirement better than the converter's local-file CLI. Multiple configurations and output files could serve as separate workspaces; that is a proposed way to apply the tool, not a verified GUI workspace feature. This is an automation-oriented candidate, and I have not established its availability by the question date or independently checked its licensing. Source: [Portman README and CLI examples](https://github.com/apideck-libraries/portman/blob/main/README.md?plain=1).\n\n**4. Noodle — a terminal client with collections stored beside code.** The current README describes free, Apache-licensed software with YAML request files, folders, OpenAPI/Swagger import, Postman export, and a CLI collection runner supporting request and folder selection. This is a promising fit if a terminal interface is acceptable. Direct OpenAPI URL input was not established by the page inspected, and the documented current features have no verified connection to the 2020 cutoff. Source: [Noodle](https://github.com/noodle-rest/noodle).\n\nFor a GUI workflow, I would first test SoapUI against the actual specification, especially its OpenAPI version. For a CLI workflow, Portman's URL-to-collection path or the converter-plus-Newman combination are useful starting points. Noodle is another filesystem-oriented option to assess against the URL requirement. I would not describe any of these as an unconditional match until those remaining gaps are resolved.\n\nThe discovery included broad client searches, targeted SoapUI and Advanced REST Client searches, and a collection-generation alternative. Advanced REST Client's documentation confirmed its free-tool philosophy, but the inspected evidence did not establish the required command-line execution or Postman export, so it is not included as a candidate. The unauthenticated grep.app endpoint was inaccessible; the code-related evidence above came through web-indexed public GitHub material, not a successful native code-search result.",
+      "candidate_links": [
+        {
+          "name": "SoapUI Open Source",
+          "url": "https://www.soapui.org/docs/rest-testing/openapi-swagger-support/"
+        },
+        {
+          "name": "OpenAPI-to-Postman with Newman",
+          "url": "https://github.com/postmanlabs/openapi-to-postman/blob/develop/README.md"
+        },
+        {
+          "name": "Portman",
+          "url": "https://github.com/apideck-libraries/portman/blob/main/README.md?plain=1"
+        },
+        {
+          "name": "Noodle",
+          "url": "https://github.com/noodle-rest/noodle"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xf53176d29c78304c",
+      "qid": "N002",
+      "raw_response": "## Recommended: Sourcey\n\n[Sourcey](https://github.com/sourcey/sourcey) is the strongest documented match I found. Its official documentation covers the precise combination you described: OpenAPI, an MCP reference, Doxygen-derived C documentation and Markdown guides in one static HTML site. The project identifies its license as AGPL-3.0 and provides a command-line build. You can serve the generated files on your own server. This is a documented fit; I have not run it against your project.\n\nThe input boundary matters: Sourcey consumes Doxygen XML and an MCP snapshot. Your C comments and running MCP server therefore need a preparation step. That is compatible with your request, which does not prohibit a toolchain.\n\n| Your source | Proposed preparation and Sourcey input |\n| --- | --- |\n| OpenAPI file | Use an OpenAPI source tab pointing at the specification. |\n| MCP server | Capture tools, resources and prompts into mcp.json; use an MCP source tab. |\n| C with Doxygen comments | Run Doxygen with XML enabled; point a Doxygen source tab at that XML directory. |\n| Plain Markdown | Add a Markdown source tab and list the pages in its navigation. |\n\nThe [official MCP tutorial](https://sourcey.com/docs/guides/guide-mcp-docs) documents snapshot capture over stdio, SSE and streamable HTTP. For an HTTP server, its capture command has this form:\n\n```sh\nnpx mcp-parser snapshot --http http://localhost:3000/mcp -o mcp.json\n```\n\nUse the transport matching your server, and refresh the snapshot when its exposed interface changes. The [Doxygen integration guide](https://sourcey.com/docs/guides/guide-doxygen-cpp) explicitly includes C as well as C++. Enable XML in your Doxyfile, then run Doxygen; Sourcey reads that generated XML, rather than extracting the C comments itself.\n\nConfigure the four sources as tabs in the same sourcey.config.ts. The [site overview](https://sourcey.com/docs) shows Markdown, OpenAPI and MCP together, and the Doxygen guide shows how to add the remaining adapter. The [navigation reference](https://sourcey.com/docs/config/ref-navigation) explains that each tab has its own source and that Markdown files must be named in navigation.\n\nBuild with:\n\n```sh\nnpx sourcey build\n```\n\nPublish the resulting dist directory. The MCP tutorial explicitly documents own-server deployment. A snapshot is build input, so an MCP service need not render documentation for readers.\n\n**Assessment:** direct documented fit for the requested output, all four source types and self-hosting; the open-source and CLI preferences are also documented. Check the runtime requirements of the release you select: the current README and landing page have newer Node requirements than an older tutorial statement. I would not rely on the tutorial's older minimum. Your OpenAPI version, MCP transport and actual C constructs are unspecified, so a representative local build remains the practical acceptance check.\n\n## Alternative: a Sphinx-based toolchain\n\nA more configurable route is [Sphinx](https://github.com/sphinx-doc/sphinx) with these components:\n\n- [Breathe](https://github.com/breathe-doc/breathe) integrates Doxygen output into Sphinx.\n- [sphinxcontrib-openapi](https://github.com/sphinx-contrib/openapi) renders an OpenAPI file through a Sphinx directive.\n- [MyST-Parser](https://www.sphinx-doc.org/en/master/usage/markdown.html), as documented by Sphinx, adds Markdown input.\n- [mcp-docgen](https://github.com/masterthefly/mcp-docgen) documents MCP-to-Markdown export from its CLI. That generated Markdown could be an input to the same Sphinx project.\n\nThe proposed connection is: generate Doxygen output and MCP Markdown first, include the OpenAPI reference and Markdown guides in one Sphinx document tree, then generate the site's HTML. Sphinx documents HTML output, and Breathe's own example build produces a local HTML directory.\n\n**Assessment:** plausible alternative requiring confirmation, not an established turnkey match. The sources document each component, but I did not establish an end-to-end version combination or verify that mcp-docgen handles your particular server and produces Markdown accepted by the configured parser. Its README's general server-support claim is not a test of your server. I also did not inspect every component's license text, so the complete toolchain's license details remain to be checked; the inspected OpenAPI extension is BSD-2-Clause and mcp-docgen identifies MIT.\n\nThe decisive next check is a small build using one real MCP tool, one OpenAPI operation, one C symbol and one Markdown guide. If those appear in a single navigable HTML output using compatible components, this becomes a viable assembled solution. If the MCP export cannot represent your server, the proposed pipeline needs a different exporter; the evidence does not justify calling the whole combination supported today.\n\nFor this small mixed-source project, I would start with Sourcey because the exact multi-input relationship is already documented, and investigate the Sphinx route if you need its extension ecosystem. These findings use live documentation retrieved on 2026-11-21. The pages' publication dates are mostly unknown, so I am not claiming that every currently documented detail was already available on the question date, 2026-11-09.",
+      "candidate_links": [
+        {
+          "name": "Sourcey",
+          "url": "https://github.com/sourcey/sourcey"
+        },
+        {
+          "name": "Sphinx + Breathe + sphinxcontrib-openapi + MyST-Parser + mcp-docgen",
+          "url": "https://github.com/sphinx-doc/sphinx"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xea40f5e841946a64",
+      "qid": "N010",
+      "raw_response": "For a few Internet-facing Linux SSH servers, I would first check whether the installed OpenSSH already supports per-source authentication penalties. If you specifically want a separate no-Python executable that behaves like fail2ban, fail2ban-rs is the closest documented packaging match found in this search. Reaction is another configurable option; SSHGuard is a useful near fit when avoiding Python is the main requirement.\n\nThese are ranked candidates for evaluation, not a claim that any has been deployed or tested on your machines. Password authentication can remain available with these approaches.\n\n1. OpenSSH PerSourcePenalties — https://www.openssh.org/txt/release-9.8\n\nOpenSSH 9.8 introduced built-in penalties for clients that repeatedly fail or abandon authentication. Penalties accumulate, expire, and can exempt trusted management address ranges. This addresses the narrow SSH problem inside the service already accepting connections, so it adds no separate log-monitoring daemon or Python runtime. The official release notes are dated July 1, 2024, before the August 28, 2026 cutoff.\n\nThe material constraint is version support: check the installed distribution package or backport. It refuses connections within sshd rather than maintaining general firewall bans. Sources shared through NAT or a proxy can represent several people, so their combined behavior matters. This is an alternative to installing a blocker binary, rather than a new standalone executable. The release notes document these behaviors and explicitly call out shared-address considerations.\n\n2. fail2ban-rs — https://docs.rs/crate/fail2ban-rs/latest\n\nThis Rust implementation offers a compiled daemon without Python, with log matching and nftables/iptables blocking. Configure only an SSH jail to retain the narrow operational scope requested. Its packaging is the clearest direct match for deploying one additional program to each host, while continuing to use the host's firewall facilities.\n\nOne successful documentation retrieval rendered version 1.2.1, dated April 13, 2026, and documented single-binary packaging, firewall backends, and journal support. A later retrieval of the same live URL rendered version 1.5.4, dated October 5, 2026. I have separated that later evidence rather than treating every current feature as available by the cutoff. The setup documentation requires Linux and systemd, and firewall commands remain operating-system dependencies. It also describes a separate configuration format, so a fail2ban configuration should not be assumed directly reusable. I have not independently tested the project's speed or reliability claims.\n\n3. Reaction — https://reaction.ppom.me/\nSSH tutorial: https://reaction.ppom.me/get-started/tutorial-en/\n\nReaction watches command output, identifies repeated patterns, and runs configured actions. Its upstream SSH tutorial reads authentication logs through journalctl or tail, extracts source addresses, and connects that detection to firewall blocking. The author's explanation also shows retry counts and time windows. A configuration containing only SSH streams and ban/unban actions would keep the deployment focused.\n\nThe current upstream site identifies the implementation as Rust; the original author article discusses an earlier Go implementation. Neither requires the Python fail2ban runtime, but log-reading and firewall utilities still form part of the setup. The release page opened without usable release text, so I could not establish exact downloadable artifact packaging or cutoff-date availability. Treat the requested single-file installation as something to confirm before choosing this candidate. The original article also marks its old example configuration deprecated; use the current tutorial when implementing it.\n\n4. SSHGuard — https://www.sshguard.net/\n\nSSHGuard already recognizes SSH attacks from system logs and temporarily blocks repeat sources through firewall backends. Its upstream documentation describes IPv6 support, whitelisting, and a small implementation in C and Bourne shell. Those mechanisms closely match the SSH dictionary-attack requirement and avoid Python.\n\nThe caveat is the literal single-binary requirement: SSHGuard is a collection involving shell and firewall integration, and its parser runs separately. It is a better fit if the real goal is a small non-Python package than if every runtime component must be contained in one executable. The current homepage and announcement index were verified, but their retrieved dates did not establish a fully dated version source, so I am leaving the evidence date unknown.\n\n5. nftables per-source SSH connection meters — https://wiki.nftables.org/wiki-nftables/index.php/Meters\n\nThe official nftables documentation gives a dynamic-set example that limits new port-22 connections per source address, with entries that expire. This offers an even smaller operational approach when connection throttling is enough: use existing firewall facilities without a log-monitoring daemon.\n\nIts behavior differs materially from failure-triggered banning. It counts connections, including legitimate reconnects, and does not directly count several password guesses within an already established connection. Adapt the example to the host's existing firewall policy and IPv6 requirements rather than applying its entire example ruleset blindly. Shared-source legitimate traffic needs consideration as well. The opened wiki revision had no verified publication date in the retrieved content.\n\nFor the stated constraints, the practical decision is whether native OpenSSH penalties provide enough control. If they do, they remove an extra service to manage. If explicit log-based firewall bans and one additional compiled program are important, investigate fail2ban-rs first and Reaction next, checking the precise version and dependencies. SSHGuard remains a useful non-Python comparison, and nftables meters provide a simpler connection-level alternative.\n\nDiscovery used nine literal search queries and fourteen opened-document attempts, including failed opens and an unsuccessful unauthenticated grep.app attempt. Public code discovery then used indexed GitHub results through web search; that fallback is not native code-search success. No software was installed or tested, and no excluded question thread or recognized copy was opened.",
+      "candidate_links": [
+        {
+          "name": "OpenSSH PerSourcePenalties",
+          "url": "https://www.openssh.org/txt/release-9.8"
+        },
+        {
+          "name": "fail2ban-rs",
+          "url": "https://docs.rs/crate/fail2ban-rs/latest"
+        },
+        {
+          "name": "Reaction",
+          "url": "https://reaction.ppom.me/"
+        },
+        {
+          "name": "SSHGuard",
+          "url": "https://www.sshguard.net/"
+        },
+        {
+          "name": "nftables per-source SSH connection meters",
+          "url": "https://wiki.nftables.org/wiki-nftables/index.php/Meters"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}

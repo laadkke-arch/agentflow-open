@@ -1,0 +1,323 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "X7897d84615da1098",
+      "qid": "SX01",
+      "raw_response": "I would start with **QOwnNotes**, with **Joplin** as the other strong option. Your essential distinction is between owning accessible note data and merely having an export button. I have treated ordinary Markdown files, in-body hashtags, and inline rendering as preferences; your question explicitly allows other durable open formats and a compatible mobile editor.\n\n### 1. QOwnNotes: the closest fit to a folder of ordinary notes\n\nQOwnNotes has a macOS desktop app, stores notes as Markdown files, supports hierarchical tags, and provides Markdown editing with a preview. Its official README also describes using other editors with the same files. This makes it a good starting point for your preference to keep the underlying formatting visible and maintain access outside the original app. [Official project and feature list](https://github.com/pbek/QOwnNotes)\n\nFor the current Android app, the documented local-folder workflow is concrete: open the corresponding folder on Android, synchronize that folder with your desktop using a file synchronizer, and include the desktop `notes.sqlite` file for shared tags. The Android app edits Markdown and writes changes back to the files. Its tags therefore are not your ideal in-body #hashtags, but this is a documented tagged workflow across the two platforms. [Android setup](https://www.qownnotes.org/getting-started/qownnotes-android.html)\n\nQOwnNotes itself does not perform desktop file synchronization; that is a separate part of the setup. The resulting notes remain plain files that other text editors can read. [Storage and synchronization model](https://www.qownnotes.org/getting-started/concept.html)\n\n**Date qualification:** the official announcement places Android local-folder support in version 26.11.0, released in November 2026. This is a current functional recommendation, not evidence that this exact configuration existed when your question was posted on August 11, 2016. [Dated announcement](https://next.qownnotes.org/blog/2026-11-10-QOwnNotes-Android-local-folders.html)\n\n### 2. Joplin: a more integrated alternative with a database tradeoff\n\nJoplin documents macOS and Android apps, tagging, local offline data, and Markdown notes. It also supports synchronization through providers including Dropbox. [Official overview](https://joplinapp.org/help/) Both desktop and mobile can show the Markdown source and the rendered note, so you can inspect formatting instructions. [Markdown documentation](https://joplinapp.org/help/apps/markdown/)\n\nThe main compromise is storage organization: Joplin keeps notes, tags, and metadata in a local SQLite database. It does not use one directly editable working Markdown file per note. This is an open-data approach, but less immediately convenient for your generic-editor fallback. [Profile specification](https://joplinapp.org/help/dev/spec/user_profile/)\n\nFor portability, its Markdown-with-front-matter exporter includes tag names and other metadata in the exported files. Keep the local profile backed up and retain such exports if you want an easy route into another Markdown editor. [Export specification](https://joplinapp.org/help/dev/spec/interop_with_frontmatter/) Ordinary files were an ideal rather than your only permitted format, so the database arrangement is a tradeoff rather than an automatic failure.\n\n### 3. Simplenote: a provisional option needing one important check\n\nSimplenote documents tags, Markdown, Android access, and a macOS Electron edition with export support. Android can export JSON containing notes and tags. However, the opened help does not establish independent recovery of all current data from its live local storage after service or account loss. I would keep it on a provisional shortlist, not call that durability requirement verified. Confirm that recovery path before entrusting your only copy to it. [Official help](https://simplenote.com/help/)\n\nFor your priorities, I would try the QOwnNotes folder workflow first and Joplin second. Evaluate the editor with a few representative notes and verify that you can recover their text and tags outside the app. These recommendations are based on public documentation, not hands-on integration testing. Except for the explicitly dated QOwnNotes announcement, the relevant live pages do not establish when each feature first became available; they should not be read as a reconstructed 2016 product comparison.",
+      "candidate_links": [
+        {
+          "name": "QOwnNotes desktop + QOwnNotes Android using a synchronized local note folder",
+          "url": "https://github.com/pbek/QOwnNotes"
+        },
+        {
+          "name": "Joplin",
+          "url": "https://joplinapp.org/help/"
+        },
+        {
+          "name": "Simplenote",
+          "url": "https://simplenote.com/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xfe76bcd1c7d0c4a3",
+      "qid": "N012",
+      "raw_response": "I would start with Purelymail for the lowest recurring cost, compare Migadu if your traffic fits its small plan, and pay more for Fastmail if its integrated client experience and message API are valuable. MXroute is another relevant option when several domains or mailboxes share the bill. For regular exports, I would add an independent scheduled IMAP backup whichever host you select.\n\n## Hosting options\n\n1. **Purelymail — closest to the low-cost requirement.** Its [pricing page](https://purelymail.com/pricing) lists $10/year for simple pricing, including custom domains, with a possible move to usage-based pricing for heavier resource consumption. Its [export documentation](https://purelymail.com/docs/mailTransfer) explicitly supports copying messages out through IMAP, its transfer tool, or selected-message downloads from webmail. That gives you a practical exit path as well as a way to maintain your own archive. I did not verify a message-content API, so I would choose it for the core mail-and-export requirements.\n\n2. **Migadu — useful for modest traffic and multiple addresses.** [Micro](https://www.migadu.com/pricing/) is $19/year with 5 GB storage, 200 incoming messages/day and 20 outgoing messages/day, measured across the account. Those limits matter: persistent excess traffic can delay inbound mail or prevent outgoing sends. [Standard protocols](https://www.migadu.com/) make external IMAP exports possible. Its [API](https://www.migadu.com/api/) covers administration of domains, mailboxes and aliases; the documented API is not a substitute for reading message contents through IMAP.\n\n3. **MXroute — a shared hosting allowance across your domains.** The [current entry plan](https://mxroute.com/) is $59/year for 10 GB, with unlimited domains and mailboxes, IMAP/SMTP/POP3, and a 400-message hourly sending limit per account. The provider describes resending messages that fail because of its IP reputation, which is relevant to your delivery concern. It expects customers to understand email basics. Those operational claims are useful screening evidence, but do not establish measured inbox-placement performance.\n\n4. **Fastmail — the clearest optional API fit among these verified options.** [Individual pricing](https://www.fastmail.com/pricing/us/) is $60 for 12 months or $6 monthly, including custom domains and third-party clients. Its [developer documentation](https://www.fastmail.com/dev/) provides both IMAP access and JMAP, with personal API tokens for a private integration. JMAP supports accessing and sending messages, so an agent can use a documented message API. This costs more than Purelymail or Migadu Micro; because the API is only a bonus, it need not determine your choice.\n\n## Make regular export independent of the provider\n\n5. **[imap-backup](https://github.com/joeyates/imap-backup)** is a useful companion to the hosting choice. It can run from cron and retain mail locally, with a default mode that keeps previously copied messages. Its [backup documentation](https://github.com/joeyates/imap-backup/blob/main/docs/commands/backup.md) describes incremental copies into per-folder Mbox files with metadata. Its [restore documentation](https://github.com/joeyates/imap-backup/blob/main/docs/commands/restore.md) requires UIDPLUS and uploads missing messages without replacing existing ones.\n\nI would schedule a daily backup on a machine you control, retain a second copy of that archive, and periodically try restoring a small folder. Choose the archive-preserving mode if your purpose is recovery from accidental deletion: the alternative mirror mode removes local messages when they disappear remotely. This is a proposed setup, not one I deployed or tested.\n\nFor the move, keep control of the domain, configure the selected provider's mail DNS records, import the old mailbox, and test inbound and outbound delivery with the correspondents and receiving services you actually use. Keep the old account accessible during the transition. Check storage needs and ordinary message volume before choosing the cheapest plan.\n\nAll prices above are the live figures retrieved for this research, excluding any separate domain registration cost; I cannot establish that those exact prices were available on 2026-08-11. I also did not run deliverability or uptime measurements, so there is no evidence here that one provider is definitively the most reliable. The documented export paths and explicit quotas are stronger grounds for narrowing the choice than an unsupported reliability ranking.",
+      "candidate_links": [
+        {
+          "name": "Purelymail",
+          "url": "https://purelymail.com/pricing"
+        },
+        {
+          "name": "Migadu",
+          "url": "https://www.migadu.com/pricing/"
+        },
+        {
+          "name": "MXroute",
+          "url": "https://mxroute.com/"
+        },
+        {
+          "name": "Fastmail",
+          "url": "https://www.fastmail.com/pricing/us/"
+        },
+        {
+          "name": "imap-backup",
+          "url": "https://github.com/joeyates/imap-backup"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xd2a4c5a01503f565",
+      "qid": "T059",
+      "raw_response": "You can build a crawler in Java. The useful distinction is between the programming language and the mechanism used to obtain the data. Python is one language choice; Selenium is a browser-automation component, and its official examples support both Java and Python. Choosing Java therefore does not, by itself, remove Selenium's browser-control capabilities. [Selenium](https://www.selenium.dev/)\n\n## Why Python is often recommended\n\nPython can make a small extraction script convenient to write and revise. Its official tutorial describes interactive experimentation, high-level containers, and compact programs with fewer declarations. That supports a development-effort explanation, especially for small exploratory scripts. It does not establish that every programmer will work faster in Python, or that a Python crawler executes faster than a Java crawler. The opened tutorial is a current revision dated October 26, 2026, so it is contextual evidence rather than a verified snapshot of what the questioner could read on April 12, 2023. [Python tutorial](https://docs.python.org/3.11/tutorial/appetite.html)\n\nPython also offers several distinct tools for the task. Requests handles HTTP and exposes response text or JSON; Beautiful Soup helps extract data from HTML or XML. Scrapy supplies a framework for crawling and structured extraction, with an example that follows pagination. These are concrete ecosystem options, not evidence that Java lacks equivalent basic capabilities or that Selenium is required. [Requests](https://requests.readthedocs.io/en/stable/) · [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) · [Scrapy 2.8 overview](https://docs.scrapy.org/en/2.8/intro/overview.html)\n\n## Why Selenium might be recommended\n\nSelenium controls a browser: it can navigate, locate elements, enter text, click controls, and retrieve element text. Those operations are demonstrated in the project's public Java example. They are useful when obtaining the data involves browser interaction, rather than only fetching a response. They still need to be assembled into a crawler with the site's navigation and extraction rules. The source was inspected, not executed against a target site. [Official Java example](https://github.com/SeleniumHQ/seleniumhq.github.io/blob/trunk/examples/java/src/test/java/dev/selenium/getting_started/FirstScript.java)\n\nA page using JavaScript does not automatically mean you must automate a browser. Scrapy's versioned documentation recommends first identifying where the data comes from and, when possible, reproducing the request that supplies it. Browser rendering or interaction is a conditional next option. That suggests a practical first step: inspect whether the desired records are in the returned HTML or a data response before choosing the collection mechanism. [Dynamic-content guidance](https://docs.scrapy.org/en/2.8/topics/dynamic-content.html)\n\n## What disadvantages would Java introduce?\n\nFor a short one-off script, Java can involve more surrounding program structure. The official Selenium examples illustrate this: the Java example has imports, a class and a main method, while the Python example expresses the same basic navigation with fewer lines. This is an example of setup and editing overhead, not a measured universal disadvantage. Your existing fluency and project environment could outweigh it. [Selenium examples](https://www.selenium.dev/)\n\nJava does not inherently require a complicated extraction program. The jsoup cookbook demonstrates fetching and parsing an HTML page and reading its title with a concise API. It also documents request settings such as cookies and timeouts. If the required data is already in the HTTP response, this is a relevant Java alternative to browser automation. [jsoup URL fetching](https://jsoup.org/cookbook/input/load-document-from-url)\n\nThe material inspected does not justify claims that Java is intrinsically worse at crawling, cannot handle dynamic pages, or is necessarily slower than Python. Conversely, it does not establish equal runtime performance. A performance choice would require the actual page workflow and workload; neither is supplied.\n\n## How I would choose with the information given\n\n1. If you already work comfortably in Java, start by checking jsoup for response-based HTML extraction, or the Java Selenium bindings for a browser workflow.\n2. If you are equally comfortable in both languages and want to iterate on a small script, Python with Requests and Beautiful Soup is a reasonable starting point when the response contains the data.\n3. If a browser is required, choose Java or Python Selenium according to the surrounding code and your fluency.\n4. If you want a Python framework for following pages and producing structured records, evaluate Scrapy. Its 2.8 release predates this question. [Scrapy release notes](https://docs.scrapy.org/en/2.8/news.html)\n\nThese are conditional choices, because the question summary does not specify the site, scale, or existing skills. There is no stated mandatory language, prohibited library, platform requirement, or maintenance condition to use as an exclusion. The first unresolved fact is how the target delivers the data: an accessible response favors an HTTP-and-parser approach; a required browser workflow favors browser automation. A missing site description is not evidence that any of these documented tools violates the question's requirements.\n\nEvidence limitations: jsoup's page carries a pre-question publication date, and Scrapy 2.8 is dated February 2, 2023. Other inspected pages are undated live material or explicitly later revisions, so exact historical feature/version availability has not been reconstructed. The unauthenticated GitHub code-search attempt failed; public code was subsequently located through web search and opened without authentication.",
+      "candidate_links": [
+        {
+          "name": "Selenium WebDriver with either Java or Python",
+          "url": "https://www.selenium.dev/"
+        },
+        {
+          "name": "jsoup for direct HTTP and HTML extraction in Java",
+          "url": "https://jsoup.org/cookbook/input/load-document-from-url"
+        },
+        {
+          "name": "Python Requests plus Beautiful Soup",
+          "url": "https://requests.readthedocs.io/en/stable/"
+        },
+        {
+          "name": "Scrapy 2.8",
+          "url": "https://docs.scrapy.org/en/2.8/intro/overview.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X85008d515f57353c",
+      "qid": "N016",
+      "raw_response": "I did not verify an independently sourced, ready-made JavaScript function that meets all the requested constraints, including an AGPL-3.0 license. I did find four useful existing components. They require adaptation or a change in where conversion happens.\n\n1. **sh-syntax** — https://github.com/un-ts/sh-syntax\n\nThis is the closest browser-oriented parsing foundation I verified. Its current documentation describes a complete, JSON-friendly Bash syntax tree, traversal helpers and browser operation through WebAssembly. An adapter could extract literal assignment entries and construct the desired object. The project identifies MIT licensing, so it does not meet the literal AGPL-3.0 requirement. WASM loading and shell-quote decoding remain integration work.\n\n2. **unbash** — https://github.com/webpro-nl/unbash\n\nThis JavaScript/TypeScript parser inspects Bash without executing it and exposes a typed syntax tree plus child traversal. Its synchronous, dependency-free API offers another route to a literal-configuration extractor. The opened repository identifies ISC licensing. It can return partial trees with errors, which the adapter should reject. I did not run the supplied associative-array example.\n\n3. **tree-sitter-bash with Web Tree-sitter** — https://github.com/tree-sitter/tree-sitter-bash/blob/master/src/node-types.json\n\nThe opened grammar schema contains declaration, assignment, array, subscript and quoted-string node types. Official Web Tree-sitter documentation at https://raw.githubusercontent.com/tree-sitter/tree-sitter/master/lib/binding_web/README.md describes JavaScript/browser loading and syntax-tree inspection. This combination could identify the relevant source spans. It requires a grammar WASM artifact, traversal and value decoding; neither exact-example correctness nor AGPL licensing was verified here.\n\n4. **json.bash** — https://github.com/h4l/json.bash\n\nIf the deployment process can emit JSON before the browser reads the file, this Bash library provides object/array JSON generation and preserves strings unless explicit types are requested. That could move conversion to the configuration producer, leaving the browser to read JSON. It is MIT-licensed, requires a Bash environment, and is not a JavaScript parser for an existing config.sh string.\n\nFor this particular format, my suggested implementation boundary is deliberately narrow: accept the array declaration and literal string key/value assignments; reject other statements, substitutions or dynamic expressions rather than guessing their runtime values. Parsing shell syntax alone does not supply Bash execution semantics. Reading the file from OPFS is a separate step before passing its text to the parser.\n\nThe output name also needs an explicit decision: the input uses contract_address, while the requested object uses contract-address. A syntax parser will not infer that rename. The wrapper should specify the mapping, preserve keys such as 1.0 as strings, and build ordinary data properties without allowing special property names to affect prototypes.\n\nThese are component recommendations, not a claim that a finished converter or exact license match was found. If AGPL-3.0 for the dependency itself is mandatory, the independently verified results remain incomplete.\n\nThe evidence cutoff is 2026-07-03. The json.bash changelog dates its initial release and JSON object features to 2023, supporting that alternative before the cutoff. The three parser descriptions came from live pages without a verified dated version, so their availability and exact APIs at the cutoff remain unknown.\n\nSearch limitations: unauthenticated grep.app code search failed; public code was subsequently inspected through web-indexed GitHub material. A later search returned the excluded question, its migrated copy and listing pages despite negative site filters. Those exposures are recorded and excluded from the candidate evidence. No excluded thread was opened or followed.",
+      "candidate_links": [
+        {
+          "name": "sh-syntax",
+          "url": "https://github.com/un-ts/sh-syntax"
+        },
+        {
+          "name": "unbash",
+          "url": "https://github.com/webpro-nl/unbash"
+        },
+        {
+          "name": "tree-sitter-bash with Web Tree-sitter",
+          "url": "https://github.com/tree-sitter/tree-sitter-bash/blob/master/src/node-types.json"
+        },
+        {
+          "name": "json.bash",
+          "url": "https://github.com/h4l/json.bash"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xdc628b653b66906f",
+      "qid": "T026",
+      "raw_response": "SpecFlow is the strongest match for the library you remember, with NBehave a close alternative. Both connect readable scenario text to developer-written C# methods. That combination is much more distinctive than English-looking assertions alone.\n\nThe likely language is Gherkin. Its normal English step keywords are Given, When, Then, And and But; IF and OR are not standard step keywords in the reference I checked. Your recollection could therefore describe the right mechanism while remembering the precise words differently. The text following each keyword is application-specific and must be connected to code. [Gherkin reference](https://cucumber.io/docs/gherkin/reference/)\n\nFor example, a scenario for your description could look like this:\n\n```gherkin\nScenario: Run an operation\n  Given someVar contains \"1234\"\n  When I run the operation\n  Then the expected result is produced\n```\n\nThis is an illustrative example, not a quotation from any project. The developer would implement the variable setup, operation and result check in binding methods.\n\n## Ranked candidates\n\n1. **SpecFlow** — [Dated implementation walkthrough](https://learn.microsoft.com/en-us/archive/msdn-magazine/2010/december/msdn-magazine-bdd-primer-behavior-driven-development-with-specflow-and-watin). SpecFlow parses separate .feature files and matches their English scenario steps to attributed C# methods, providing the middle layer you describe. The December 2010 walkthrough demonstrates the feature-file, generated-test and step-definition workflow, so the timing fits a tool used roughly ten years before your May 2024 question. Its syntax is structured Gherkin rather than arbitrary English or a general IF/OR rules language. This is my first identification hypothesis, not a confirmed identification of your former workplace's library.\n\n2. **NBehave** — [Getting-started documentation, mirrored from the project wiki](https://github-wiki-see.page/m/nbehave/NBehave/wiki/Getting-started). NBehave runs an English .feature file through C# methods decorated with step attributes, including parameter extraction from the sentence. That is another very close match to the custom C# middle layer. The mirrored page carries a May 2017 modification date; an independent [June 2007 announcement](https://dannorth.net/blog/two-flavours-of-bdd/) establishes that the framework existed much earlier. The 2017 example alone does not establish exactly which syntax was available at your earlier job. The primary GitHub repository and wiki were inaccessible through the research tool, so the detailed syntax verification used the public wiki mirror.\n\n3. **Concordion.NET** — [Project documentation](https://concordion.github.io/concordion.net/). Concordion.NET makes readable HTML specifications executable using commands such as setting values, invoking operations and asserting equality, backed by application-specific .NET code. This is a plausible alternative if you remember prose documents connected to C# more strongly than you remember a particular keyword list. Its defining distinction is HTML-based specifications; it is a weaker identification if the input was a plain Gherkin feature file. The inspected documentation is live and undated, so I have not established its availability at the cutoff from this source.\n\n4. **StoryQ** — [Publisher's NuGet package description](https://www.nuget.org/packages/StoryQ). StoryQ provides an English-like fluent BDD grammar inside .NET tests and runs through an existing test runner. Version 2.0.5 is dated January 2011 on NuGet, which fits the remembered period. Its documented interface is embedded in code, making it a weaker match for a separately maintained English file; it becomes more plausible if the memorable part was the sentence-like test structure.\n\n5. **FitNesse with fitSharp** — [Fixture-code explanation](https://fitnesse.org/FitNesse/UserGuide/WritingAcceptanceTests/FixtureCode.html) and [official .NET integration listing](https://fitnesse.org/PlugIns). FitNesse connects readable acceptance-test tables to developer-written fixtures, with fitSharp supplying the .NET integration. This offers the same broad separation between readable specifications and an implementation layer. Tables and a wiki interface distinguish it from the line-oriented English syntax you described. These inspected pages are live and undated; their current content is not evidence of a particular historical version.\n\nI would investigate SpecFlow first, especially if the terms .feature file, step definition or Given/When/Then sound familiar, followed by NBehave. The remaining candidates are alternatives for the same readable-test-to-code mechanism, with their differences called out above.\n\nThe unauthenticated grep.app code-search request was inaccessible. I used public GitHub code and documentation indexed by web search as a code-through-web fallback, without obtaining native code-search results. I did not inspect the original question's answers or identify a definitive match from them.",
+      "candidate_links": [
+        {
+          "name": "SpecFlow",
+          "url": "https://learn.microsoft.com/en-us/archive/msdn-magazine/2010/december/msdn-magazine-bdd-primer-behavior-driven-development-with-specflow-and-watin"
+        },
+        {
+          "name": "NBehave",
+          "url": "https://github-wiki-see.page/m/nbehave/NBehave/wiki/Getting-started"
+        },
+        {
+          "name": "Concordion.NET",
+          "url": "https://concordion.github.io/concordion.net/"
+        },
+        {
+          "name": "StoryQ",
+          "url": "https://www.nuget.org/packages/StoryQ"
+        },
+        {
+          "name": "FitNesse with fitSharp",
+          "url": "https://fitnesse.org/FitNesse/UserGuide/WritingAcceptanceTests/FixtureCode.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X607c6b258dfc0632",
+      "qid": "T048",
+      "raw_response": "For the stated combination of parity storage, scheduled scrubbing, and repair, I would investigate FreeNAS 11.3 with ZFS first. It is the strongest documented option found, but it changes the storage architecture and is not yet a verified drop-in replacement for your Windows Server 2019 VM.\n\n1. FreeNAS/ZFS is the leading complete-storage candidate. Its RAIDZ1 layout is the single-parity alternative I would evaluate for the seven disks. The pool documentation allows RAIDZ1 from three disks upward, although accepting RAIDZ1 in place of literal RAID5 is still a design decision. Creating the new pool overwrites its disks, so migration requires a separate copy of the data. Source: https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/storage.html\n\nThe versioned ZFS guide describes checksum validation and correction using redundant RAIDZ data. FreeNAS also creates a monthly scrub task automatically. Those mechanisms directly address the requested integrity-maintenance behavior within the redundancy's recovery limits. Sources: https://cdn-www.ixsystems.com/documentation/freenas/11.3-RELEASE/zfsprimer.html and https://www.ixsystems.com/documentation/freenas/11.3-RELEASE/tasks.html\n\nThe unresolved part is ESXi integration. The 11.3-U3 installation guide demonstrates virtualized installation but discourages production VM use; that warning is not an explicit statement that ESXi is unsupported. I would verify the actual disk/controller presentation and storage-service connection before calling this deployment a complete match. Keeping Plex in Windows while another host supplies storage is a proposed architecture, not something tested here. Source: https://www.ixsystems.com/documentation/freenas/11.3-U3/install.html\n\n2. Linux MD RAID5 is a second architecture to evaluate if conventional RAID5 matters more than an integrated NAS interface. Official kernel documentation exposes check and repair operations. I did not establish a complete scheduled configuration or prove that its repair semantics cover the corruption you mean. It therefore remains an incomplete option, not an assured replacement. Source: https://www.kernel.org/doc/html/latest/admin-guide/md.html\n\n3. StableBit DrivePool with Scanner is a narrower Windows-oriented component reference. The FAQ describes pooling, duplicated-file recovery, and evacuation when Scanner detects disk damage. That can be useful for preserving a pooled file-access model, but the opened evidence does not establish the requested parity and automatic integrity-repair combination. It would need a separately verified protection design. Source: https://stablebit.com/Support/DrivePool/Faq\n\nI would not present SnapRAID CLI alone as the requested complete automatic solution. It is aimed at infrequently changing media and provides snapshot-parity protection, but its scrub records errors without repairing array files; repair requires a separate fix operation. An external scheduled repair pipeline would need its own verification. That difference also matters for files changing between syncs. Source: https://www.snapraid.it/manual\n\nThe decisive next check is whether a separate storage OS owning the seven disks, with RAIDZ1 accepted as the parity layout, fits the actual host arrangement. If it does, FreeNAS/ZFS has the clearest documented maintenance behavior among these options. If Windows must retain direct storage ownership, the searches here have not established a complete, compliant substitute.\n\nFreeNAS 11.3 was released on January 28, 2020, before the question date. The other evidence is undated live documentation, so I have not treated current wording as proof of 2020 behavior. These are documentation-based findings; no array migration or recovery test was performed. Release source: https://www.truenas.com/blog/truenas-and-freenas-11-3-release-pr/",
+      "candidate_links": [
+        {
+          "name": "FreeNAS 11.3 with a seven-disk ZFS RAIDZ1 pool",
+          "url": "https://cdn-www.ixsystems.com/documentation/freenas/11.3-RELEASE/zfsprimer.html"
+        },
+        {
+          "name": "Linux MD RAID5 with scheduled check/repair and a file-serving layer",
+          "url": "https://www.kernel.org/doc/html/latest/admin-guide/md.html"
+        },
+        {
+          "name": "StableBit DrivePool with Scanner integration — pooling component reference",
+          "url": "https://stablebit.com/Support/DrivePool/Faq"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X144e2b8743ea89b8",
+      "qid": "N007",
+      "raw_response": "I would start with **Brevo** for a small community project, and choose **Amazon SES** if the lowest running cost matters enough to justify AWS onboarding. Both have a documented API route that avoids hosting or configuring your own SMTP server. Brevo documents a direct HTTPS request; SES explicitly supports its API as an alternative to SMTP. genui{\"citation\":{\"refs\":[\"turn335155212view3\",\"turn184566086view1\"]}}\n\nThe missing number is your busiest day's volume. “Thousands of emails” could mean a few thousand spread across a month, or a few thousand immediately after a local event. I would not assume a monthly free allowance can absorb the latter.\n\n## Ranked shortlist\n\n| Rank | Service | Verified cost or allowance | When I would choose it |\n| --- | --- | --- | --- |\n| 1 | [Brevo](https://developers.brevo.com/docs/send-a-transactional-email) | Free: 300 sends/day. Starter begins at $9/month with a 5,000-send tier and no daily sending cap. | A practical starting point for a few thousand messages, using Free only when every day's volume fits. Its plan also lists contact-storage allowances, so check those if you will use Brevo's contact database. |\n| 2 | [Amazon SES](https://aws.amazon.com/ses/pricing/) | A-la-carte outbound sending: $0.10/1,000, so approximately $1 for 10,000 recipient deliveries before data and optional-feature charges. | Lowest verified marginal sending price in this comparison, when you can handle AWS setup and obtain production access. |\n| 3 | [Resend](https://resend.com/pricing.md) | Free: 3,000/month and 100/day. Pro: $20/month for 50,000 with no daily cap. | A small project that fits both free limits, or one that values the documented SDK integration enough to pay the larger minimum. |\n| 4 | [Postmark](https://postmarkapp.com/pricing/) | Basic: $15/month for 10,000; additional usage at $1.80/1,000. Free: only 100/month. | A paid transactional service where 45-day activity retention and delivery diagnostics are useful. |\n| 5 | [Zoho ZeptoMail / Zoho CPaaS email](https://www.zoho.com/zeptomail/pricing.html) | The live page confirms 10,000-email credits valid for six months, but the dollar amount was not readable. | An additional option for irregular sending, pending a current price and account-terms check. |\n\nThe figures above come from the providers' own pages. Brevo's allowance and entry tier, Resend's monthly and daily limits, and Postmark's paid starting tier were readable directly. genui{\"citation\":{\"refs\":[\"turn364327763view2\",\"turn233461305view0\",\"turn335155212view1\"]}} SES's $1 example is arithmetic from the published a-la-carte sending rate, not an all-in quotation. genui{\"citation\":{\"ref\":\"turn184566086view0\"}} Zoho's old pricing URL now redirects to CPaaS; that live page confirms the credit structure but does not substantiate a current dollar price. I would not rely on the older amount still shown in a search excerpt. genui{\"citation\":{\"refs\":[\"turn335155212view2\",\"turn238896710search2\"]}}\n\n## What the choice entails\n\n**Brevo is my default recommendation under the information supplied.** Use its HTTPS transactional endpoint with an API key and a configured sender/domain. The endpoint contains `smtp` in its path, but the documented integration is an HTTP API call; it does not ask you to run an SMTP server. If your project might send more than 300 messages in a day, budget for a suitable paid tier from the outset. genui{\"citation\":{\"refs\":[\"turn335155212view3\",\"turn364327763view2\"]}}\n\n**SES is the cost-first alternative.** New accounts begin in a sandbox limited to verified recipients, 200 messages per 24 hours and one message per second. Production access is a separate approval step, and you still verify your sending identities. That makes it worth testing onboarding before depending on SES for a real community launch. These are account and sending-domain tasks, which differ from the custom SMTP server work you want to avoid. genui{\"citation\":{\"refs\":[\"turn184566086view2\",\"turn184566086view1\"]}} The current pricing page also says new accounts default to Essentials from July 21, 2026, at $0.16/1,000; you can switch to a-la-carte. Check the active plan instead of assuming every account starts at $0.10/1,000. genui{\"citation\":{\"ref\":\"turn184566086view0\"}}\n\n**Resend is attractive if the free limits genuinely fit.** Its official SDK example sends through the API with an API key and requires verification when using your own domain. A single busy day can be the reason to leave Free even when the monthly total is below 3,000. genui{\"citation\":{\"refs\":[\"turn233461305view1\",\"turn233461305view0\"]}} Its pricing FAQ offers an application process for registered nonprofits to receive 50% off paid plans. A noncommercial local project is not automatically a registered nonprofit, so I have not assumed that discount. genui{\"citation\":{\"ref\":\"turn364327763view3\"}}\n\nFor “reliable,” the evidence here establishes documented delivery interfaces and operational features, not comparative inbox-placement results. Postmark lists activity retention, analytics and delivery/bounce information; those help investigate missing messages, but they do not prove that it will outperform the others for your recipients. genui{\"citation\":{\"ref\":\"turn335155212view1\"}} My practical next step would be to send a representative pilot, inspect failures and delivery events, and compare the actual daily peak with the selected plan. No production integration or delivery experiment was performed in this research.\n\nThis review used live public material retrieved on November 21, 2026. The input question is dated June 1, 2026. Several pages are undated, and the SES default-plan change is explicitly later than the question; these figures should therefore be read as the observed current offerings, not a reconstructed June 1 price list.",
+      "candidate_links": [
+        {
+          "name": "Brevo",
+          "url": "https://developers.brevo.com/docs/send-a-transactional-email"
+        },
+        {
+          "name": "Amazon Simple Email Service (SES)",
+          "url": "https://aws.amazon.com/ses/pricing/"
+        },
+        {
+          "name": "Resend",
+          "url": "https://resend.com/pricing.md"
+        },
+        {
+          "name": "Postmark",
+          "url": "https://postmarkapp.com/pricing/"
+        },
+        {
+          "name": "Zoho ZeptoMail / current Zoho CPaaS email service",
+          "url": "https://www.zoho.com/zeptomail/pricing.html"
+        }
+      ],
+      "citation_links": [
+        {
+          "source_ref": "turn184566086view0",
+          "url": "https://aws.amazon.com/ses/pricing/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn184566086view1",
+          "url": "https://docs.aws.amazon.com/us_en/ses/latest/dg/send-email-api.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn184566086view2",
+          "url": "https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn233461305view0",
+          "url": "https://resend.com/pricing.md",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn233461305view1",
+          "url": "https://github.com/resend/resend-node",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn238896710search2",
+          "url": "https://www.zoho.com/zeptomail/pricing.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn335155212view1",
+          "url": "https://postmarkapp.com/pricing/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn335155212view2",
+          "url": "https://www.zoho.com/zeptomail/pricing.html",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn335155212view3",
+          "url": "https://developers.brevo.com/docs/send-a-transactional-email",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn364327763view2",
+          "url": "https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn364327763view3",
+          "url": "https://www.resend.com/pricing?product=transactional",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        }
+      ],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xa64b8a00dcd69ea5",
+      "qid": "N011",
+      "raw_response": "I would start with **Handy** for desktop dictation. It directly covers the basic job of speaking into a shortcut and getting text into the application you are using, with local processing. Because you have not specified an operating system, the shortlist below also includes a Mac-focused option and an Android option.\n\n## Ranked alternatives\n\n1. **[Handy](https://github.com/cjpais/Handy)** — My first desktop option. The project documents local Whisper/Parakeet processing and shortcut-driven text insertion on Windows, macOS and Linux. It is free and open source. Linux users should read the repository's input-tool and Wayland shortcut instructions before assuming installation alone will provide seamless insertion. Use the ordinary local dictation workflow and keep any custom processing local.\n\n2. **[FOSS Voquill](https://voquill.org/)** — Another strong desktop option for Windows, Linux and macOS. Its site describes global-hotkey dictation and local speech recognition, plus on-device text cleanup if you want that later. The same page also mentions optional cloud APIs, so keep the local configuration and leave cloud providers unused. Text polishing is an available extra, not a requirement I have added to your request.\n\n3. **[Superwhisper](https://superwhisper.com/)** — A suitable choice when configured with an on-device speech model. Its [offline documentation](https://superwhisper.com/offline-transcription) covers the downloaded app on Mac, Windows PC and iPhone. Its [model catalogue](https://superwhisper.com/models) distinguishes speech recognition from the optional language-model stage: use local speech recognition and disable rewriting for the simplest entirely local setup. Selecting a cloud rewriting model would send the transcript away even if speech recognition stayed local. The website's browser transcription demo is also cloud-based, so it does not demonstrate offline operation.\n\n4. **[VoiceInk](https://tryvoiceink.com/)** — A particularly relevant option on a Mac. Choose a local speech model and its [Dictation mode](https://tryvoiceink.com/docs/modes), which is documented to paste the transcript without AI enhancement. Current requirements say macOS 15 or later and that local models work best on Apple Silicon. The recommendation to use cloud transcription on Intel Macs makes Intel performance something to evaluate; it is not an explicit statement that local models are unsupported. Ensure app-specific mode triggers do not switch you into a cloud-enhanced mode.\n\n5. **[FUTO Voice Input](https://github.com/futo-org/voice-input/blob/master/README.md)** — The Android-specific option. Its [developer-supplied app listing](https://play.google.com/store/apps/details?hl=en-US&id=org.futo.voiceinput) describes completely offline, on-device processing and optional model downloads. It integrates through Android voice-input interfaces, but keyboard compatibility matters: the README lists supported keyboards and explicitly excludes Gboard and Samsung Keyboard. Choose it with a supported keyboard rather than assuming it can replace the voice button in every keyboard.\n\n## How I would choose\n\nFor an unspecified desktop, try Handy first. FOSS Voquill is another documented local desktop workflow, particularly if you later want local cleanup. On an Apple Silicon Mac, VoiceInk and Superwhisper are also reasonable candidates. On Android, FUTO Voice Input is relevant when the keyboard integration fits.\n\nThe operative requirement is that the **complete configuration you use** stays local. A product offering cloud features does not by itself violate that requirement; enabling cloud speech recognition or cloud rewriting would. Model downloads and installation are separate from sending dictation to a cloud processor.\n\nThese are documentation-based recommendations, not results of installation, accuracy benchmarks or network audits. Your hardware, language and target applications remain untested. Most pages are undated live documentation, so I cannot establish their exact contents on the question date, September 22, 2026. The opened FUTO Play listing explicitly shows a November 16, 2026 update and is therefore post-decision evidence.",
+      "candidate_links": [
+        {
+          "name": "Handy",
+          "url": "https://github.com/cjpais/Handy"
+        },
+        {
+          "name": "FOSS Voquill",
+          "url": "https://voquill.org/"
+        },
+        {
+          "name": "Superwhisper",
+          "url": "https://superwhisper.com/"
+        },
+        {
+          "name": "VoiceInk",
+          "url": "https://tryvoiceink.com/"
+        },
+        {
+          "name": "FUTO Voice Input",
+          "url": "https://github.com/futo-org/voice-input/blob/master/README.md"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}

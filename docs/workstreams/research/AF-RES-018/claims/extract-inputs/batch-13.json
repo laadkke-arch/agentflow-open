@@ -1,0 +1,303 @@
+{
+  "rule": "Read claims/RULES.md. Exhaustively enumerate atomic candidate facts in the frozen raw_response, without checking truth. Exclude question restatements, recommendations and explicit uncertainty from facts; inventory uncertainties separately. Give an exact source_quote for every item. Map an actually supplied URL when present, distinguishing homepage_only, claim_specific and none. citation_links recovers the address of a citation actually printed in that response; it is not new evidence. Preserve any unresolved citation refs separately. Do not infer facts from external knowledge or from the query/document logs. Deduplicate repeated facts within a run. Return reviewed_runs, facts, uncertainties and omissions/limits. No gold or other files.",
+  "output_fields": [
+    "extractor",
+    "reviewed_runs",
+    "facts",
+    "uncertainties",
+    "omissions_or_limits"
+  ],
+  "item_fields": [
+    "run_id",
+    "candidate",
+    "claim",
+    "claim_type",
+    "source_quote",
+    "supplied_urls",
+    "reference_kind",
+    "citation_refs",
+    "unresolved_citation_refs"
+  ],
+  "claim_types": [
+    "price",
+    "license",
+    "offline",
+    "self_hosting",
+    "platform",
+    "feature",
+    "other"
+  ],
+  "reference_kinds": [
+    "homepage_only",
+    "claim_specific",
+    "none"
+  ],
+  "runs": [
+    {
+      "run_id": "Xb8054de92efa9adb",
+      "qid": "T061",
+      "raw_response": "I would provisionally rebuild around Sonarr + Radarr + Bazarr, and evaluate MediaManager on a small separate sample before switching the main library. Your two stated priorities—subtitles for foreign-language programmes and seedbox integration—make the completeness of those workflows more important than the number of interfaces. This is a documentation-based recommendation; I have not deployed or tested either configuration.\n\n## 1. Sonarr + Radarr + Bazarr — my first choice to evaluate\n\nThe strongest evidence I found for your subtitle needs is Bazarr's official setup guide. It documents connections to Sonarr and Radarr, selectable subtitle languages, language profiles, provider configuration, subtitle upgrades, and an automatic synchronization option. Those are directly relevant controls for managing subtitles across an existing TV/movie collection. They do not establish that a provider has good subtitles for your particular programmes and languages, so those should be tested with representative files. [Bazarr setup guide](https://wiki.bazarr.media/Getting-Started/Setup-Guide/)\n\nFor a seedbox, separate the download-client connection from access to the completed files. The indexed official Sonarr documentation describes monitoring downloads through the client's API, importing completed files, and translating reported remote paths into paths Sonarr can access. A path translation therefore does not by itself establish a working file-transfer or mounted-storage arrangement. The same documentation describes preserving torrent data for seeding and using hardlinks or copies when importing, subject to the filesystem and configuration. This evidence was available in an official-source search excerpt; direct wiki reads returned no readable text and a raw-source read was blocked. Treat the exact seedbox configuration as unresolved until a test import succeeds. [Official Sonarr settings source](https://github.com/Servarr/Wiki/blob/master/sonarr/settings.md)\n\nMy proposed setup is to keep the seedbox's downloader, connect the relevant media manager to it, make completed files accessible to that manager, and give Bazarr access to the resulting library. Choose the exact mounting or transfer method to fit the seedbox you already have. If the applications see different paths, configure the applicable mappings. This is a deployment outline, not confirmation that your unnamed provider, client, filesystem or permissions already satisfy it.\n\nThe useful acceptance test is one representative foreign-language episode: obtain it through the intended seedbox route, import it, confirm continued seeding where required by your workflow, fetch the desired subtitle language, and check playback and timing. Repeat with a movie if movies are in scope. A failure should identify whether the problem is downloader access, file visibility, matching, provider coverage or subtitle quality.\n\n**Classification:** a combination of applications covering the proposed TV/movie management stack. **Assessment:** INSUFFICIENT for an unconditional end-to-end recommendation, because the seedbox environment and subtitle languages/providers are unspecified. It remains the better-supported first option to evaluate.\n\n## 2. MediaManager — retain as an integrated alternative, with two specific checks\n\nThe official project describes a unified interface for discovering, managing and automating TV and movie collections. Its configuration documentation connects it to download clients and to Prowlarr or Jackett for indexer access. Plan around those documented components when judging how much administration the unified interface would save. [MediaManager](https://maxdorninger.github.io/MediaManager/latest/) · [Indexer configuration](https://maxdorninger.github.io/MediaManager/latest/configuration/indexers/)\n\nThe download-client documentation includes qBittorrent, Transmission and SABnzbd. It requires the download directories to be accessible to MediaManager; the Transmission section specifically requires matching paths to the same volume. Those statements support client integration, but they do not confirm every remote seedbox arrangement. Verify your exact client and how its completed files reach the server before assuming a complete replacement. [Download clients](https://maxdorninger.github.io/MediaManager/latest/configuration/download-clients/)\n\nFor subtitles, the import documentation explicitly includes existing subtitle files in the episode naming requirements. That is evidence about importing existing files. The sources I could inspect did not establish an automatic subtitle-provider workflow or a supported way to substitute MediaManager for Sonarr/Radarr in Bazarr's integration. I would leave those capabilities unknown rather than claim they are unsupported. [Importing existing media](https://maxdorninger.github.io/MediaManager/latest/importing-existing-media/)\n\nThe two decision-changing checks are therefore: can the intended MediaManager version obtain and manage the subtitle languages you need, and can it import successfully from your actual seedbox while preserving your desired seeding behaviour? Positive evidence on both would make it a credible whole-stack alternative. A documented incompatibility would narrow its usefulness; absence of documentation alone is insufficient grounds to exclude it.\n\nWhen testing an existing-library import, use a sample copy: the import guide describes renaming the old root folders with a leading dot and requires season/episode identifiers in episode video and subtitle filenames. Check the resulting matches and paths before applying that workflow to the full collection. [Importing existing media](https://maxdorninger.github.io/MediaManager/latest/importing-existing-media/)\n\n**Classification:** an application proposed as the main management replacement, with external integrations. **Assessment:** INSUFFICIENT for a verified replacement in this particular setup. It is retained, not rejected.\n\n## Timing and missing context\n\nThe question is dated 8 January 2026. The accessible Bazarr guide displays a 19 November 2026 update, and the indexed Sonarr source displays an August 2026 revision. These establish later documented behaviour, not a complete historical feature comparison as of the question date. MediaManager's import page states 20 December 2025; its other live pages did not expose a reliable publication date. I have kept those distinctions explicit.\n\nThe supplied summary does not include the existing application list, linked prior discussions, exact subtitle languages, seedbox client, operating system or deployment versions. It also does not identify explicit mandatory exclusions. My ranking consequently favours the more directly documented subtitle workflow while leaving MediaManager eligible for the focused checks above.",
+      "candidate_links": [
+        {
+          "name": "Sonarr + Radarr + Bazarr with the existing seedbox downloader",
+          "url": "https://wiki.bazarr.media/Getting-Started/Setup-Guide/"
+        },
+        {
+          "name": "MediaManager",
+          "url": "https://maxdorninger.github.io/MediaManager/latest/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X364bd84c9ae12f8b",
+      "qid": "T037",
+      "raw_response": "For a one-to-three-person team building an accommodation-booking service, I would first compare Django, Laravel, and Rails against the team's existing language experience. The central requirement is an integrated path for ordinary application work: managing listings and bookings, signing users in, giving staff operational screens, running background work, sending messages, and storing property photographs. The following ranking is a design-fit judgment from documentation, not a claim that any candidate was deployed successfully for this particular service.\n\n1. Django 4.1 — https://docs.djangoproject.com/en/4.1/\nDjango is my first candidate when the staff administration interface is a substantial requirement. Its documented model layer, forms, authentication, administrative interface, email utilities, and file APIs cover much of the requested foundation. Use those facilities for listings, hosts, guests, and staff workflows, then add a durable background-job implementation. The customer booking experience still needs application code. The release notes date 4.1 to August 3, 2022: https://docs.djangoproject.com/en/4.1/releases/4.1/. That establishes a version available before the question's September 27, 2022 cutoff; it does not date every subsequent documentation edit.\n\n2. Laravel 9 — https://laravel.com/docs/9.x\nLaravel is particularly attractive when the team knows PHP and wants database access, authentication, queues, mail, and file storage under a common framework. Its documented Eloquent and migration facilities support the CRUD foundation, while queues and scheduling provide places for confirmations and other delayed work. A staff interface still needs to be built or selected as an additional component, and workers and service credentials require operation. Laravel's release table dates version 9 to February 8, 2022: https://laravel.com/docs/9.x/releases/.\n\n3. Ruby on Rails 7 — https://guides.rubyonrails.org/v7.0.0/configuring.html\nRails combines Active Record, view/controller conventions, Active Job, Action Mailer, and Active Storage, making it a strong integrated starting point for booking records, confirmations, asynchronous tasks, and uploaded images. Its Rails 7 announcement also describes the default Hotwire approach to the browser interface. The team must still select or implement its account and staff-administration experience and configure durable job processing. The dated release announcement establishes availability on December 15, 2021: https://rubyonrails.org/2021/12/15/Rails-7-fulfilling-a-vision.\n\n4. Cookiecutter Django — https://github.com/cookiecutter/cookiecutter-django/blob/main/README.md\nThis is a complementary implementation starter for the Django option. Its public template documentation brings together account registration, email-provider integration, media-storage configuration, deployment settings, and optional Celery configuration. That packaging could reduce the initial integration work for a tiny team. Generated code still becomes the team's maintenance responsibility, and the included infrastructure choices need evaluation. I inspected the current main branch, which lists modern dependencies; its exact feature set has not been established as available by September 2022, so its evidence date remains unknown.\n\n5. AdonisJS 5 — https://v5-docs.adonisjs.com/guides/introduction\nFor a team already comfortable with TypeScript and Node.js, AdonisJS offers a cohesive backend structure with a documented ORM, CRUD operations, authentication, mailer, and file facilities. Those modules directly address much of the requested application plumbing without starting from a minimal HTTP library. The inspected introduction does not establish a complete administration package or durable queue solution; those remain integration decisions. Although the documentation is explicitly for version 5, this search did not establish its publication date, so I leave its cutoff status unknown.\n\n6. Supabase — https://supabase.com/blog/supabase-storage\nSupabase offers a different division of responsibility: use its PostgreSQL-backed APIs, identity facilities, and integrated object storage as the application's backend foundation. That could reduce implementation work for records, sign-in, and property images while the team builds the customer interface and booking rules. A storage dashboard is not a complete operational booking console, and the cited source does not establish the full required queue and transactional-mail workflow. Its March 30, 2021 storage announcement supports these core capabilities before the cutoff; later banners and present-day navigation are not treated as historical evidence.\n\nMy provisional selection would be Django when the built-in administration surface saves substantial work, or Laravel/Rails when the team's existing experience makes their conventions cheaper to maintain. Cookiecutter Django is an implementation aid within that choice. AdonisJS provides a TypeScript-oriented alternative, and Supabase is worth considering when outsourcing backend primitives is more valuable than having one application framework. None removes the need to implement booking availability and permissions correctly.\n\nSearch limitations: the unauthenticated grep.app endpoint could not be accessed. Public GitHub material was discovered through indexed web search, which is code-through-web fallback rather than native code-search success. I have not benchmarked, installed, or deployed these candidates, and unknown evidence dates have not been backdated.",
+      "candidate_links": [
+        {
+          "name": "Django 4.1",
+          "url": "https://docs.djangoproject.com/en/4.1/"
+        },
+        {
+          "name": "Laravel 9",
+          "url": "https://laravel.com/docs/9.x"
+        },
+        {
+          "name": "Ruby on Rails 7",
+          "url": "https://guides.rubyonrails.org/v7.0.0/configuring.html"
+        },
+        {
+          "name": "Cookiecutter Django",
+          "url": "https://github.com/cookiecutter/cookiecutter-django/blob/main/README.md"
+        },
+        {
+          "name": "AdonisJS 5",
+          "url": "https://v5-docs.adonisjs.com/guides/introduction"
+        },
+        {
+          "name": "Supabase",
+          "url": "https://supabase.com/blog/supabase-storage"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xc181da29fe4f351d",
+      "qid": "T046",
+      "raw_response": "OAuth/OpenID Connect is not inherently less secure than separate username-and-password logins. The useful comparison here is your current per-service password plus 2FA against Authentik SSO with appropriately enforced MFA. A stolen token issued to one application and a stolen Authentik browser session are different compromises.\n\nOAuth provides authorization; OpenID Connect adds identity authentication. Authentik supports both, so an application described casually as using “OAuth login” may actually use OIDC. Its documented authorization-code flow gives an application its own credentials and tokens; it does not mean every application receives one universal login secret. [Authentik OAuth2/OIDC provider](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/)\n\n### What does “one token compromised” mean?\n\n- **An application's access token:** Its usable privileges depend on the intended resource and scope, and on recipients actually checking them. RFC 9700 recommends audience restriction, least privilege and recipient-side enforcement. A correctly restricted token for one resource should not automatically work at unrelated resources. A reusable bearer token is still a credential an attacker may replay where it is valid.\n- **A refresh token:** This may allow replacement access tokens. Its client binding, granted permissions, rotation and expiry matter; it is not automatically an authorization grant for every service. These are protocol and configuration questions, not a property established by the word “OAuth.” [OAuth security BCP, sections 2.2–2.3](https://www.rfc-editor.org/rfc/rfc9700.html#section-2.2)\n- **An application session cookie:** A service can continue accepting that session after the initial login. That is also true for services you entered using a password and 2FA.\n- **The Authentik SSO session:** This is the more relevant concentration concern. An identity-provider session can support new application logins without repeating authentication unless policy requires a fresh check. Application and identity-provider sessions have separate lifecycles. Compromise of the identity provider itself is broader still because applications trust its authentication assertions. These architectural consequences are distinct from theft of one narrowly scoped access token. [NIST SP 800-63B, sections 7 and 8](https://pages.nist.gov/800-63-3/sp800-63b.html#sec7)\n\nMFA protects the authentication event; it does not make every resulting reusable session secret impossible to steal or reuse. Therefore, keep session theft in both sides of the comparison. Also, do not assume that logging out of the identity provider ends every application session or invalidates every token: check each integration's actual lifecycle. [NIST session and federation guidance](https://pages.nist.gov/800-63-3/sp800-63b.html#sec7)\n\n### Ranked approaches to consider\n\n**1. Authentik OIDC SSO with deliberate application isolation and MFA.** This is the closest fit to your proposed consolidation. Use separate application/provider registrations and verify the applications' issuer, signature, audience and expiry checks. Prefer authorization-code flow with PKCE, precise redirect URIs, minimal privileges and suitable token lifetimes. PKCE protects the code exchange; it is not a cure for replay of an already stolen bearer token. Authentik's current docs describe provider-specific issuers, configurable token lifetimes and PKCE; its setup guide makes refresh-token issuance contingent on requesting and configuring offline_access. These are documented mechanisms, not verification of your applications. [Provider](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/) · [Configuration](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/create-oauth2-provider) · [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html)\n\nThe benefit is a central place to enforce authentication policy; the cost is reliance on that central identity system. I cannot conclude that your proposed deployment is safer until its exact applications, provider configuration and session behavior are checked.\n\n**2. Keep independent per-service passwords and 2FA.** This remains a reasonable choice when limiting the consequences of identity-provider compromise matters more than consolidating logins. Its isolation advantage is an architectural inference conditional on the credentials, recovery paths and administrative access really being independent. Shared secrets, a shared compromised endpoint or a common recovery account can undermine that assumption. Each application also retains its own session-theft and authentication implementation risks. I would not discard your existing 2FA merely because you are evaluating SSO. [Authentication, recovery and session threat model](https://pages.nist.gov/800-63-3/sp800-63b.html#sec8)\n\nThe decisive check is whether a compromise or reset path for one account can authenticate to another service. If it can, the claimed independence needs qualification; if it cannot, local authentication provides a distinct compartmentalization benefit.\n\n**3. Use Authentik for ordinary access and require extra verification for sensitive applications.** This is a narrower mitigation, useful if you want consolidation with less automatic access from an existing SSO session. Authentik documents per-provider authorization flows that can include additional verification. Its authenticator-validation stage can deny users without an enrolled factor, while a Skip setting permits continuation without MFA and a recent-validation threshold can suppress a new challenge. Design and test these settings together. [Authorization flows](https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/) · [MFA validation](https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_validate)\n\nThis only addresses the flows you configure. It does not restore independence from an attacker controlling Authentik, and it does not guarantee that every request inside an already established application session requires MFA. Confirm a fresh challenge occurs at the application boundary you intend.\n\nMy recommendation is to distinguish the particular secret you are worried about before choosing. If the concern is a token stolen from one application, validate audience and privilege boundaries. If the concern is loss of the Authentik session or identity server, independent authentication or selective additional checks directly addresses that different risk. There is no justified blanket verdict that OAuth is weaker, or that SSO is always safer.\n\nThe question supplies no application list, Authentik version, token type or session configuration. The protocol evidence above includes RFC 9700 from January 2025 and the earlier NIST revision. Authentik pages are live and undated; their present content does not establish exactly what was available on March 28, 2025. No integration was run or penetration-tested.",
+      "candidate_links": [
+        {
+          "name": "Authentik OIDC SSO with separate application providers and enforced MFA",
+          "url": "https://docs.goauthentik.io/add-secure-apps/providers/oauth2/"
+        },
+        {
+          "name": "Independent per-service passwords plus 2FA",
+          "url": "https://pages.nist.gov/800-63-3/sp800-63b.html#sec7"
+        },
+        {
+          "name": "Authentik per-application authorization flow with fresh MFA for sensitive access",
+          "url": "https://docs.goauthentik.io/add-secure-apps/flows-stages/flow/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xf0adb9fa39b7139f",
+      "qid": "N017",
+      "raw_response": "My first option to try would be **Vivaldi for Android**, using its ordinary Google Play release. It is the strongest documented match for the particular problem you described: Vivaldi's Android interface help explicitly places a Reload control in the address bar and explains how to keep the browser controls visible while scrolling. That is more useful here than a general claim that a browser has a pleasant interface. [Interface documentation](https://help.vivaldi.com/android/android-appearance/android-vivaldi-mobile-interface/)\n\nI would configure it with the **address bar at the top** and enable **Settings → Appearance & Theme → Show Toolbars While Scrolling**. The same documentation notes that moving the bars to the bottom can put some controls in the menu because of limited space, so the top-bar configuration is the clearest documented starting point for keeping reload easy to reach. Whether that arrangement feels comfortable on your phone is still a personal usability check; I have not run the app on your device. [Interface and visibility settings](https://help.vivaldi.com/android/android-appearance/android-vivaldi-mobile-interface/)\n\nVivaldi also has documented built-in tracker and ad blocking, with controls for individual sites. Choose an enabled blocking level during setup; stronger levels can affect site behavior, so the existence of more aggressive blocking should not be mistaken for a guarantee that every site remains convenient to use. Its official installation guide describes installing directly from Google Play and currently lists Android 10 as the minimum supported version. No source build or alpha channel is needed for that route. [Privacy controls](https://help.vivaldi.com/android/android-privacy/android-tracker-and-ad-blocker/) · [Installation](https://help.vivaldi.com/android/android-install/android-install-and-update-vivaldi-mobile/)\n\nMy ranked shortlist is:\n\n1. **Vivaldi — the best documented fit for the reload issue.** It has affirmative documentation for privacy controls, normal Play installation, and a visible reload control in the proposed configuration. The unresolved part is whether you find its interface usable. I would try this one first, while treating that preference as unverified rather than promising you will like it.\n\n2. **Brave — a plausible alternative if its interface suits you.** Its normal Play listing documents tracking protection and other privacy controls, and it is a ready-made app rather than a build project. Brave also documents Android menu and toolbar customization. However, the primary material I could actually inspect did not establish the present location and accessibility of Reload. I would therefore keep Brave on the shortlist with that check still open, rather than assert that it solves your exact complaint. [Google Play](https://play.google.com/store/apps/details?id=com.brave.browser&hl=en_US) · [Android interface changes](https://brave.com/whats-new/android/)\n\n3. **DuckDuckGo Browser — another privacy-oriented Play-store option to consider.** Its official Android help documents Google Play installation, tracker blocking, and increased encryption. That is enough to establish a relevant alternative, but not enough to verify the reload workflow. An attempted inspection of the public Android code was blocked; search snippets were not sufficient to confirm what the current installed release shows. Its interface and accessible reload control remain checks before adopting it. [Official Android browser help](https://duckduckgo.com/duckduckgo-help-pages/mobile/android)\n\nFor Vivaldi, the decisive remaining check is whether the documented top-bar layout with persistent controls is usable for you. For Brave and DuckDuckGo, also confirm that the normal Play build gives you a reload action you can easily reach from a scrolled page. An acceptable interface and accessible reload would strengthen their fit; an interface that does not meet your requirement would rule out that particular configuration. Missing evidence alone does not establish that a browser lacks the feature.\n\nThis is a documentation-based shortlist, not a hands-on usability comparison. I have not added requirements for extensions, desktop synchronization, a particular rendering engine, or a particular business model because your summary did not specify them. There is also a timing limit: the question is dated October 21, 2026, while the inspected Brave Play listing was updated November 19, 2026. The other principal help pages are live and undated. They support the documented options now, but do not establish an exact historical snapshot of every interface on the question date.",
+      "candidate_links": [
+        {
+          "name": "Vivaldi for Android",
+          "url": "https://help.vivaldi.com/android/android-install/android-install-and-update-vivaldi-mobile/"
+        },
+        {
+          "name": "Brave for Android",
+          "url": "https://play.google.com/store/apps/details?id=com.brave.browser&hl=en_US"
+        },
+        {
+          "name": "DuckDuckGo Browser for Android",
+          "url": "https://duckduckgo.com/duckduckgo-help-pages/mobile/android"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X53e3ed4eb15c6d39",
+      "qid": "N003",
+      "raw_response": "Yes. **PlantUML's Salt is the first option I would try** for the workflow you describe: a compact text description becomes a screen wireframe, much as Mermaid turns text into a diagram.\n\n1. **[PlantUML Salt](https://plantuml.com/salt)** — Salt has short notation for buttons, text fields, checkboxes, radio controls and dropdowns. Braces define layout groups and vertical bars divide columns, so a small form requires only a few lines. This is especially suitable for dialogs and straightforward screen layouts. Its output is schematic; the point is to communicate controls and structure rather than produce a finished interface. The [official version 1.2023.11 guide](https://pdf.plantuml.net/1.2023.11/PlantUML_Language_Reference_Guide_en.pdf) establishes that wireframe support predates November 2026. genui{\"citation\":{\"refs\":[\"turn182837744view0\",\"turn182837744view1\"]}}\n\n2. **[Wiremark](https://github.com/Blackburn-Labs/wiremark)** — A particularly close fit if you want wireframes embedded in Markdown. You write a hierarchy of familiar component names, with indentation specifying containment. Defaults supply layout details, and the renderer produces a sketch-style SVG. It also supports named frames and links between them. The practical caveat is that you need its renderer or a compatible Markdown adapter; a custom fenced block does not acquire rendering support merely by being in a Markdown file. genui{\"citation\":{\"ref\":\"turn569975232view0\"}}\n\n3. **[Wireloom](https://github.com/StardockCorp/Wireloom)** — Another direct text-to-wireframe language, using indented descriptions such as a window containing panels, inputs and buttons. It produces self-contained SVG, which is useful for keeping the editable source beside a specification and including the rendered mockup wherever images are accepted. It also documents annotations and a wider set of UI controls. Choose this for compact screen descriptions; expect deliberately rough wireframes rather than pixel-perfect output. genui{\"citation\":{\"ref\":\"turn569975232view1\"}}\n\n4. **[WireScript](https://wirescript.org/)** — Uses Lisp-style nested expressions to describe screens, layout boxes and components. Its documentation shows a login form expressed entirely in text, reusable layout/component definitions, editor preview support and a CLI with HTML/PNG export. This is worth comparing if you are comfortable with parentheses and want reusable screen structures. Check the particular integration you need: the site lists the Obsidian plugin as coming soon. genui{\"citation\":{\"ref\":\"turn889349822view2\"}}\n\n5. **[WireDSL](https://github.com/Wire-DSL/wire-dsl)** — Provides a dedicated .wire language with project, screen, layout and component declarations, plus a browser preview and command-line rendering. The project documents SVG, PNG and PDF exports. It offers a more explicit structure for layouts and settings, which could suit larger screen specifications, although the syntax is heavier than Salt for a tiny form. genui{\"citation\":{\"ref\":\"turn569975232view2\"}}\n\n6. **[Mockdown, the ASCII-to-HTML implementation](https://github.com/sminnee/mockdown)** — A different approach: arrange input fields, checkboxes, radios and buttons in a fixed-width text document, then have the PHP implementation interpret that notation as an HTML mockup. This can be convenient if you like seeing the approximate arrangement directly in your source. It requires manual text alignment, however, and its repository has been archived since February 2024, so treat it as a legacy option whose setup may need attention. genui{\"citation\":{\"ref\":\"turn182837744view3\"}}\n\nMy suggested starting comparison is **Salt for short forms and conventional dialogs**, then **Wiremark or Wireloom for a Markdown-centered workflow**. That recommendation is based on the documented syntax and output, not a benchmark of how quickly you personally will work.\n\nI inspected these projects' public documentation, but did not install or execute them. For Wiremark, Wireloom, WireScript and WireDSL, the opened pages are current live documentation and I did not verify a dated version available by November 7, 2026; their historical availability remains unknown.",
+      "candidate_links": [
+        {
+          "name": "PlantUML Salt",
+          "url": "https://plantuml.com/salt"
+        },
+        {
+          "name": "Wiremark",
+          "url": "https://github.com/Blackburn-Labs/wiremark"
+        },
+        {
+          "name": "Wireloom",
+          "url": "https://github.com/StardockCorp/Wireloom"
+        },
+        {
+          "name": "WireScript",
+          "url": "https://wirescript.org/"
+        },
+        {
+          "name": "WireDSL",
+          "url": "https://github.com/Wire-DSL/wire-dsl"
+        },
+        {
+          "name": "Mockdown (ASCII-to-HTML implementation)",
+          "url": "https://github.com/sminnee/mockdown"
+        }
+      ],
+      "citation_links": [
+        {
+          "source_ref": "turn182837744view0",
+          "url": "https://plantuml.com/salt",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn182837744view1",
+          "url": "https://pdf.plantuml.net/1.2023.11/PlantUML_Language_Reference_Guide_en.pdf",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn182837744view3",
+          "url": "https://github.com/sminnee/mockdown",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn569975232view0",
+          "url": "https://github.com/Blackburn-Labs/wiremark",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn569975232view1",
+          "url": "https://github.com/StardockCorp/Wireloom",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn569975232view2",
+          "url": "https://github.com/Wire-DSL/wire-dsl",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        },
+        {
+          "source_ref": "turn889349822view2",
+          "url": "https://wirescript.org/",
+          "methods": [
+            "metadata of actual emitted citation re-opened by root"
+          ]
+        }
+      ],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X9b8af93b21bc5c1c",
+      "qid": "T054",
+      "raw_response": "I would begin a controlled comparison with Qwen3-Coder-30B-A3B-Instruct and Devstral Small 2, then consider Qwen3-Coder-Next if the local machine has substantially more memory. I would also change how the agent receives routing and validation feedback. None of the sources inspected demonstrates that one of these models reliably solves this particular KiCad example.\n\nThe available question summary omits the exact model names, quantization formats, hardware, transcripts and images. Consequently, these are candidates to test, not a diagnosis of the reported failure or a claim that an already-tested model is a new alternative.\n\n1. Qwen3-Coder-30B-A3B-Instruct — https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct\n\nThe official card describes a coding-agent model with a dedicated function-call format, 30.5B total parameters and 3.3B activated per token. It is a plausible starting point for producing KiCad MCP calls and code edits. Confirm that the local serving stack uses the appropriate model template and tool parser before comparing results. The active-parameter count does not mean only 3.3B weights need storing. The inspected model card is live and undated, so its exact contents are not established as available by the question date.\n\n2. Devstral Small 2 — https://mistral.ai/news/devstral-2-vibe-cli/\n\nMistral's December 9, 2025 release describes a 24B, Apache-2.0 model for coding agents that can run locally and accepts image inputs. That makes it an interesting second test when screenshots are part of the feedback. Its software-engineering results are not evidence of correct schematic wiring or good PCB routing. Use a backend that actually exposes its tool and image capabilities, and treat screenshot interpretation as supplementary to structured connectivity information.\n\n3. Qwen3-Coder-Next — https://huggingface.co/Qwen/Qwen3-Coder-Next\n\nThe official model card emphasizes long tool-use sequences and recovery from failed execution. It has 80B total parameters with 3B active. This is a candidate for a larger-memory workstation, not an assumption of a small memory footprint: at an idealized four bits per weight, 80 billion weights alone occupy about 40 GB before runtime overhead and caches. The card's date was not established, and no KiCad-specific evaluation was found.\n\n4. Freerouting's KiCad integration — https://github.com/freerouting/freerouting/blob/master/integrations/KiCad/README.md\n\nFor the board-routing part, give the agent a dedicated autorouter after the netlist, footprints and placement are correct. The documented default workflow exports Specctra DSN and imports the routed SES result back into KiCad. The alternative JSON/API bridge is labeled experimental. This component can handle track geometry; it cannot rescue incorrect circuit connectivity or inappropriate design constraints. The opened README is a live version without verified cutoff-date provenance.\n\n5. KiCad CLI ERC/DRC — https://docs.kicad.org/master/en/cli/cli.html\n\nWrap edits in an explicit validation loop using schematic ERC and PCB DRC, which support JSON reports and violation exit codes. Feed the specific violations back to the model, and compare the intended connections with an exported netlist. Confirm the command options against the installed KiCad version, because the opened manual describes nightly KiCad 10.99. Rule checks are useful acceptance signals but cannot establish that a circuit implements its intended behavior.\n\nFor a practical comparison, replay the same small design from the same starting files and use the same tool schemas, context allowance and stopping criteria for every model. Record tool-call validity, netlist correctness, unresolved ERC/DRC findings, unrouted connections, number of repair attempts and runtime. Compare one quantization change at a time where memory permits; this isolates quantization from model-family and prompt changes. A sensible sequence is schematic connectivity, footprint assignment, placement, routing and final validation, with a saved checkpoint and tool feedback between steps.\n\nThis recommendation is an inference from the components' documented capabilities. The public unauthenticated code-search attempt was blocked; public GitHub code and integration documentation were instead discovered through web search. The research did not inspect the source question's answers, run these models, or test the supplied circuit.",
+      "candidate_links": [
+        {
+          "name": "Qwen3-Coder-30B-A3B-Instruct",
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct"
+        },
+        {
+          "name": "Devstral Small 2 (24B)",
+          "url": "https://mistral.ai/news/devstral-2-vibe-cli/"
+        },
+        {
+          "name": "Qwen3-Coder-Next",
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next"
+        },
+        {
+          "name": "Freerouting KiCad integration",
+          "url": "https://github.com/freerouting/freerouting/blob/master/integrations/KiCad/README.md"
+        },
+        {
+          "name": "KiCad CLI ERC/DRC feedback loop",
+          "url": "https://docs.kicad.org/master/en/cli/cli.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "X64b3c8a795a76105",
+      "qid": "T044",
+      "raw_response": "I would start with **Remote Utilities using your own RU Server and Internet-ID connections**, then evaluate **MeshCentral**. Both offer a central-server approach, but the firewall condition needs to be evaluated for the exact connection mode.\n\nYour requirement is that each Windows target work without individual firewall configuration. An outbound connection to your server is a useful architecture for that goal. It still needs to be allowed by the target's existing network policy. Server-side firewall and reachability setup are separate from the target-side restriction in your summary.\n\n## Ranked options\n\n1. **Remote Utilities + self-hosted RU Server — strongest documented fit.** Use its Internet-ID relay mode. The official documentation says that mode does not require an inbound target port, while RU Server provides the self-hosted relay. Windows Host and Agent modules are documented. This is a complete remote-access arrangement, provided the necessary outbound connection already works. Do not assume the direct-connection mode has the same requirements. Sources: [connection ports and server roles](https://www.remoteutilities.com/support/docs/ports-used-by-remote-utilities/) and [Windows requirements](https://www.remoteutilities.com/support/docs/system-requirements/). Classification: app; whole solution; DIRECT_DOCUMENTED for the stated configuration.\n\n2. **MeshCentral + Windows MeshAgents — strong architecture match, with one verification outstanding.** You run the management server, install an agent on each target, and the agent connects back to it. This gives a credible route to central Windows management. The opened guide does not, by itself, prove that your exact agent and firewall setup needs no manual exception. Check that a target connects with its existing rules. Success would establish the missing condition; a mandatory individual exception would contradict it. Source: [MeshCentral guide](https://docs.meshcentral.com/meshcentral/). Classification: app; whole solution; INSUFFICIENT pending that check.\n\n3. **SimpleHelp + Remote Access Service — viable candidate needing network confirmation.** Its official pages document Windows access, hosting on your own infrastructure, and a service that registers with your server. I did not verify the complete firewall requirements for the session transport. Confirm that both registration and remote-control traffic work without individual target changes. Sources: [SimpleHelp](https://simple-help.com/) and [Remote Access Guide](https://api.simple-help.com/remote-access-guide). Classification: app; whole solution; INSUFFICIENT pending firewall verification.\n\n4. **PcHelpWare with a repeater — a narrower support option to investigate.** Its page expressly describes accessing Windows targets without target firewall setup and explains repeater connections. However, the material reviewed does not establish deployment of your own repeater, and the target OS list is old. Verify self-hosted repeater availability and your actual Windows version before selecting it. Do not infer unsupported newer Windows versions solely from their absence in this page. Source: [PcHelpWare](https://uvnc.com/products/pchelpware.html). Classification: app; proposed whole solution; INSUFFICIENT pending self-hosting verification.\n\nFor a practical first trial, configure one central server and one representative Windows target using the documented relay/agent mode, keeping the target firewall unchanged. Verify the desired remote-access operation over the real network path. That would test the unresolved environment condition; this research did not execute or deploy any of these products.\n\n**Date limitation:** The supplied question is dated 2016-12-04. The sources reviewed are live pages, mostly undated, and the SimpleHelp homepage explicitly describes an August 2026 release. These findings do not establish which versions or capabilities were available on the question date. No price, license, or maintenance claims are used to rank the candidates.",
+      "candidate_links": [
+        {
+          "name": "Remote Utilities with a self-hosted RU Server and Internet-ID connections",
+          "url": "https://www.remoteutilities.com/support/docs/ports-used-by-remote-utilities/"
+        },
+        {
+          "name": "MeshCentral with Windows MeshAgents",
+          "url": "https://docs.meshcentral.com/meshcentral/"
+        },
+        {
+          "name": "SimpleHelp with its Remote Access Service",
+          "url": "https://simple-help.com/"
+        },
+        {
+          "name": "PcHelpWare in repeater mode",
+          "url": "https://uvnc.com/products/pchelpware.html"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    },
+    {
+      "run_id": "Xa2550ba150e5b199",
+      "qid": "N007",
+      "raw_response": "For a local-community project sending thousands of transactional emails, I would first compare Amazon SES for usage cost and SMTP2GO or Resend for the amount of integration work you want to take on. All seven candidates below expose hosted email APIs, so a custom SMTP server is unnecessary. The decisive missing detail is whether “thousands” means a monthly total spread over many days or a single event that sends thousands at once: the free daily limits make those very different workloads.\n\nThis ranking is based on fit and the public documentation inspected, not a measured deliverability comparison. Prices are the live terms retrieved on November 21, 2026. They are not automatically evidence of what was available at the question's June 1, 2026 cutoff.\n\n1. **Amazon SES — strongest starting point for minimizing usage charges.** [Pricing](https://aws.amazon.com/ses/pricing/) lists à-la-carte outbound delivery at $0.10 per 1,000 emails, or about $1 for 10,000 before data charges and optional services. The API/SDK route avoids SMTP server administration. The tradeoff is onboarding: [new accounts start in a sandbox](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html) with verified-recipient restrictions and a 200-message daily ceiling, so production access is needed. The current pricing page also describes an Essentials default beginning July 21, 2026; this is explicitly later evidence, and a historical quote should not silently substitute today's plan rules.\n\n2. **SMTP2GO — a useful small paid service with an HTTP API.** The [transactional-email page](https://www.smtp2go.com/benefit/transactional-email/) documents HTTP POST sending despite the SMTP-oriented name. Its [pricing body](https://www.smtp2go.com/pricing/) shows 1,000 emails monthly free and a Starter tier of 10,000 monthly, with reporting and support. There is a material inconsistency: the retrieved body says $10 per month while the page title says plans start at $15. Treat that as a price to confirm. This is a plausible option when reporting and a modest monthly bill matter more than the lowest possible per-message charge.\n\n3. **Resend — a practical developer-oriented choice.** Its [pricing page](https://resend.com/pricing?product=transactional) lists 3,000 emails monthly free, capped at 100 daily, and $20 monthly for 50,000 with no daily cap. The [official public Node.js SDK](https://github.com/resend/resend-node) provides a direct sending example and explains domain verification. This fits a small application's normal notifications well; the free tier does not fit sending a whole community thousands of notices on one day.\n\n4. **MailerSend — particularly relevant if the organization qualifies for its nonprofit program.** The [program page](https://www.mailersend.com/solutions/nonprofits) advertises a 30% discount and a 5,000-email example at $4.90, alongside a hosted API integration. It requires proof of nonprofit status and approval, so “noncommercial local project” should not be assumed to qualify automatically. Its [plan documentation](https://www.mailersend.com/pricing) also makes request limits and log retention worth checking. This could be economical for a recognized local association.\n\n5. **Postmark — worth paying for if diagnosis and visibility are important.** At the 10,000-email setting, its [pricing page](https://postmarkapp.com/pricing) shows Basic at $15 monthly, REST API sending, no daily limit, 45-day message retention, and delivery-related webhooks. Those features could reduce the effort involved in investigating a missed confirmation. The free allowance is only 100 monthly, and there is no intermediate paid tier below 10,000. These documented features do not establish superior real-world reliability.\n\n6. **Brevo — useful when free sends can be spread through the month.** The [HTTP API](https://developers.brevo.com/reference/send-transac-email) supports transactional content and templates. Its [free-plan rules](https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan) allow 300 daily without rollover. They also specify a limited transactional overflow queue, beyond which emails are not delivered. It is therefore a reasonable free candidate for steady daily notifications, but the monthly arithmetic should not be mistaken for capacity to send thousands immediately.\n\n7. **Zoho ZeptoMail / Zoho CPaaS — a prepaid alternative to monthly volume plans.** The [ZeptoMail address](https://www.zoho.com/zeptomail/) now redirects to Zoho CPaaS, whose page says the email API and existing configurations are retained. The [redirected pricing page](https://www.zoho.com/zeptomail/pricing.html) offers blocks of 10,000 emails with six-month credit validity and a first free credit. The actual purchase price did not render, so I cannot substantiate a cost comparison. It remains worth checking for intermittent transactional traffic; the rebrand's date was not established.\n\nMy provisional choice would be SES if the extra account setup is acceptable, or a small managed plan such as SMTP2GO or Resend if simpler integration is the priority. If the project is eligible for nonprofit pricing, obtain MailerSend's approved terms before deciding. For a one-day community-wide batch, choose capacity for that burst rather than relying on a monthly free allowance. Sender verification and delivery-event handling still need attention even with hosted APIs. No emails were sent, no accounts were created, and no service was tested in production.\n\nThe public code-search requirement was attempted through the unauthenticated grep.app API, which was inaccessible. The verified SDK evidence came from public code indexed by web search and then opening the official GitHub repository: this is code-through-web fallback, not a successful native code search. Except for the explicitly later SES pricing transition, the inspected pages did not establish publication dates, so their historical availability remains unknown.",
+      "candidate_links": [
+        {
+          "name": "Amazon Simple Email Service (SES)",
+          "url": "https://aws.amazon.com/ses/pricing/"
+        },
+        {
+          "name": "SMTP2GO",
+          "url": "https://www.smtp2go.com/benefit/transactional-email/"
+        },
+        {
+          "name": "Resend",
+          "url": "https://resend.com/pricing?product=transactional"
+        },
+        {
+          "name": "MailerSend nonprofit program",
+          "url": "https://www.mailersend.com/solutions/nonprofits"
+        },
+        {
+          "name": "Postmark",
+          "url": "https://postmarkapp.com/pricing"
+        },
+        {
+          "name": "Brevo transactional email API",
+          "url": "https://developers.brevo.com/reference/send-transac-email"
+        },
+        {
+          "name": "Zoho ZeptoMail / Zoho CPaaS email API",
+          "url": "https://www.zoho.com/zeptomail/"
+        }
+      ],
+      "citation_links": [],
+      "unresolved_citations": []
+    }
+  ]
+}
