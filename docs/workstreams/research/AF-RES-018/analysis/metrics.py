@@ -7,6 +7,7 @@ from bootstrap import paired_interval
 
 METRICS={
  'grade2_hit_at10':('mean','grade2_hit',None,None,'question hit rate; grade2-eligible questions'),
+ 'grade2_entity_recall_at10_micro':('ratio',None,'grade2_retrieved','gold2_count','auxiliary: unique frozen grade2 entities retrieved / all frozen grade2 entities'),
  'gold_recall_at10_macro':('mean','gold_recall',None,None,'mean within-question known-gold recall'),
  'gold_recall_at10_micro':('ratio',None,'retrieved_relevant','gold_relevant_count','retrieved/frozen relevant entities'),
  'first_related_rank_median':('median','first_known_related_rank',None,None,'rank; no known hit=11, all questions'),
