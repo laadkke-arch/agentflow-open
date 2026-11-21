@@ -27,7 +27,7 @@ def receipt(run):
     }
 
 def audit(path, frozen=None):
-    errors=[]
+    path=path.resolve();errors=[];warnings=[]
     try: r=json.loads(path.read_text())
     except Exception as e:return {'path':str(path.relative_to(ROOT)), 'errors':[str(e)]}
     for k in ['case_id','baseline','raw_response','candidates','queries','opened_documents',
@@ -36,6 +36,8 @@ def audit(path, frozen=None):
     if errors:return {'path':str(path.relative_to(ROOT)), 'errors':errors}
     if r['gold_seen'] is not False or r['other_runs_seen'] is not False:
         errors.append('reported contamination')
+    if r['case_id']!=path.stem or r['baseline']!=path.parent.name:
+        errors.append('assigned path/identity mismatch')
     counts={'search_queries':len(r['queries']),'opened_pages':len(r['opened_documents']),
             'candidate_count':len(r['candidates'])}
     for k,limit in [('search_queries',12),('opened_pages',20),('candidate_count',10)]:
@@ -48,9 +50,16 @@ def audit(path, frozen=None):
     for i,d in enumerate(r['opened_documents']):
         if not d.get('url') or not d.get('at_utc'):errors.append(f'document {i} lacks URL/time')
         if d.get('date_status') not in ['pre_decision','post_decision','unknown']:
-            errors.append(f'document {i} date_status')
+            if str(d.get('date_status','')).startswith('mixed:') and isinstance(d.get('post_decision'),bool):
+                warnings.append(f'document {i} mixed date text retained; post_decision boolean governs conservative temporal analysis')
+            else:errors.append(f'document {i} date_status')
     for k in ['started_at_utc','ended_at_utc']:
-        try:datetime.datetime.fromisoformat(r[k].replace('Z','+00:00'))
+        value=r[k]
+        if k=='ended_at_utc' and value is None and not r.get('checks'):
+            value=r.get('stage1_frozen_at_utc')
+        try:
+            if value.endswith(' UTC'):datetime.datetime.strptime(value,'%Y-%m-%d %H:%M:%S UTC')
+            else:datetime.datetime.fromisoformat(value.replace('Z','+00:00'))
         except Exception:errors.append('bad datetime '+k)
     if frozen:
         if hashlib.sha256(r['raw_response'].encode()).hexdigest()!=frozen['raw_response_sha256']:
@@ -66,7 +75,7 @@ def audit(path, frozen=None):
         for c in checks:
             if c.get('decision') not in ['keep','exclude']:errors.append('invalid check decision')
             if not c.get('reason'):errors.append('check without reason')
-    return {'path':str(path.relative_to(ROOT)), 'errors':errors, 'counts':counts,
+    return {'path':str(path.relative_to(ROOT)), 'errors':errors, 'warnings':warnings, 'counts':counts,
             'execution_status':r.get('execution_status'), 'checks':len(r.get('checks',[]))}
 
 if __name__=='__main__':

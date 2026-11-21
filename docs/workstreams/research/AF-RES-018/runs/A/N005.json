@@ -1,0 +1,382 @@
+{
+  "case_id": "N005",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/RULES_A.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/N005.json"
+  ],
+  "started_at_utc": "2026-11-21T04:23:20Z",
+  "ended_at_utc": "2026-11-21T04:29:27Z",
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "question_retrieval": {
+    "command": "python docs/workstreams/research/AF-RES-018/questions/generate.py --emit N005",
+    "at_utc": "2026-11-21T04:23:28.654175+00:00",
+    "status": "question-only output verified by helper",
+    "sha256": "6dd7cc95d7443f3e4aadaa7c5e1adf524e6a33fca20bd96f44ea3e44c596266f",
+    "outside_search_budget": true
+  },
+  "queries": [
+    {
+      "q": "minimal static web server htmx templates HX-Request Caddy",
+      "at_utc": "2026-11-21T04:23:48Z",
+      "tool": "web_system2",
+      "result_note": "Found Caddy templates and file-serving documentation, htmx documentation, and public example repositories."
+    },
+    {
+      "q": "static site server HTMX partial templates embedded web server Alpine Linux",
+      "at_utc": "2026-11-21T04:23:48Z",
+      "tool": "web_system2",
+      "result_note": "Found Static Web Server's v2 overview, cross-platform repository, and alternative server-rendering examples."
+    },
+    {
+      "q": "https://grep.app/api/search?q=HX-Request%20templates",
+      "at_utc": "2026-11-21T04:24:00Z",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated code-search API attempted via web open; URL was not accessible through the tool. Counted as one query and one failed open; native code search did not succeed."
+    },
+    {
+      "q": "site:github.com/caddyserver/caddy/blob/ modules/caddyhttp/templates Req Header include",
+      "at_utc": "2026-11-21T04:24:03Z",
+      "tool": "code_through_web",
+      "underlying_tool": "web_system1",
+      "result_note": "Code-through-web fallback located Caddy templates.go and tplcontext.go with request headers, includes, and template context; templates.go was subsequently opened."
+    },
+    {
+      "q": "site:nginx.org/en/docs/http/ngx_http_ssi_module.html SSI include if request header",
+      "at_utc": "2026-11-21T04:24:03Z",
+      "tool": "web_system1",
+      "result_note": "Found nginx SSI documentation and core-module request-header variable documentation."
+    },
+    {
+      "q": "site:redbean.dev Lua GetHeader static file server sandbox",
+      "at_utc": "2026-11-21T04:24:03Z",
+      "tool": "web_system1",
+      "result_note": "Found redbean 1.5 and 2.1 primary pages describing embedded Lua and static serving; subsequent opens timed out, so it was not ranked."
+    },
+    {
+      "q": "site:caddyserver.com Linux Windows static binary Caddy Alpine Docker",
+      "at_utc": "2026-11-21T04:25:09Z",
+      "tool": "web_system2",
+      "result_note": "Official installation, architecture, features, and running documentation appeared in search results; Linux, Windows, static binaries, and Docker were described, but Alpine-specific packaging was not established. These result pages were not opened."
+    },
+    {
+      "q": "site:nginx.org/en/docs/http/ngx_http_core_module.html \"$http_name\" arbitrary request header field",
+      "at_utc": "2026-11-21T04:25:09Z",
+      "tool": "web_system2",
+      "result_note": "Official nginx mailing-list search results explain arbitrary custom-header variables, including a dated 2014 reply; these result pages were not opened."
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=HX-Request%20templates",
+      "at_utc": "2026-11-21T04:24:00Z",
+      "status": "blocked",
+      "sections_read": "Unauthenticated code-search endpoint",
+      "confirmed": "Tool reported the endpoint inaccessible; no code-search results were received.",
+      "published_or_version": "unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+      "at_utc": "2026-11-21T04:24:00Z",
+      "status": "opened",
+      "sections_read": "Templates overview, trusted-content warning, syntax, static-site example",
+      "confirmed": "Templates execute over response bodies, support includes and Markdown, and can be combined with file_server; documentation warns against evaluating untrusted content.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://caddyserver.com/docs/caddyfile/directives/file_server",
+      "at_utc": "2026-11-21T04:24:00Z",
+      "status": "opened",
+      "sections_read": "Root handling, sandbox qualification, hide and browse options",
+      "confirmed": "Static paths are resolved under a configured root, but symlinks can expose material outside it; directory listing requires browse, and hide must not be treated as a security boundary on case-insensitive filesystems.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://htmx.org/attributes/hx-select/",
+      "at_utc": "2026-11-21T04:24:00Z",
+      "status": "opened",
+      "sections_read": "Attribute definition and selection example",
+      "confirmed": "hx-select uses a CSS selector to choose response content for swapping, enabling client-side selection from a complete HTML response.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go",
+      "at_utc": "2026-11-21T04:24:24Z",
+      "status": "opened",
+      "sections_read": "Public source file identity; source details subsequently inspected using find",
+      "confirmed": "The public master-branch templates.go file was accessible; follow-up find inspected request/context access and metadata helpers.",
+      "published_or_version": "master branch; no commit date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+      "at_utc": "2026-11-21T04:24:24Z",
+      "status": "opened",
+      "sections_read": "SSI overview, enabling, content types, caching metadata",
+      "confirmed": "SSI processes response commands and is disabled by default; the page documents enabling it and handling response metadata.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://redbean.dev/2.1.html",
+      "at_utc": "2026-11-21T04:24:24Z",
+      "status": "error",
+      "sections_read": "Attempted versioned primary documentation",
+      "confirmed": "Fetch timed out; search snippets were available but the document was not verified.",
+      "published_or_version": "2.1 URL; page fetch failed",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://static-web-server.net/v2/",
+      "at_utc": "2026-11-21T04:24:24Z",
+      "status": "opened",
+      "sections_read": "Overview and feature list",
+      "confirmed": "Overview describes static serving, Linux/Windows/Docker support, a standalone musl-linked binary, optional directory listing, and configurable headers.",
+      "published_or_version": "v2 documentation; live page",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://htmx.org/docs/",
+      "at_utc": "2026-11-21T04:24:24Z",
+      "status": "opened",
+      "sections_read": "Introduction, requests, caching section inspected with subsequent find",
+      "confirmed": "htmx is a browser library that requests and swaps HTML; the later in-document read established its caching guidance.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://caddyserver.com/docs/modules/http.handlers.templates",
+      "at_utc": "2026-11-21T04:24:46Z",
+      "status": "opened",
+      "sections_read": "Module-reference URL rendering",
+      "confirmed": "The opened response rendered an incomplete generic module-index placeholder rather than the detailed template reference; it was not used to verify template capabilities.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+      "at_utc": "2026-11-21T04:24:46Z",
+      "status": "opened",
+      "sections_read": "Second open at line 145: SSI conditionals and include commands",
+      "confirmed": "SSI supports if/elif/else conditional content and file or virtual includes; documentation limits conditional nesting to one level.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "operation": "open",
+      "requested_lineno": 145
+    },
+    {
+      "url": "https://www.redbean.dev/1.5.html",
+      "at_utc": "2026-11-21T04:24:46Z",
+      "status": "error",
+      "sections_read": "Attempted alternative versioned primary documentation",
+      "confirmed": "Fetch timed out again; redbean remained unverified and was omitted from ranked candidates.",
+      "published_or_version": "1.5 URL; page fetch failed",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://htmx.org/docs/",
+      "at_utc": "2026-11-21T04:24:46Z",
+      "status": "opened",
+      "sections_read": "Find Vary: caching and adjacent security section",
+      "confirmed": "Full-page and fragment responses at one URL require Vary: HX-Request and representation-specific ETags; documentation also addresses history restoration and untrusted HTML.",
+      "published_or_version": "live documentation; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "operation": "find",
+      "find_pattern": "Vary",
+      "budget_note": "Conservatively counted as an additional opened-document attempt."
+    },
+    {
+      "url": "https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go",
+      "at_utc": "2026-11-21T04:24:46Z",
+      "status": "opened",
+      "sections_read": "Find .Req: request access, response headers, front-matter splitting, and executeTemplate context construction",
+      "confirmed": "The source documents .Req.Header.Get, response header methods and front-matter splitting; the implementation supplies the incoming request to TemplateContext.",
+      "published_or_version": "master branch; no commit date established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "operation": "find",
+      "find_pattern": ".Req",
+      "budget_note": "Conservatively counted as an additional opened-document attempt."
+    },
+    {
+      "url": "https://www.openoffice.org/",
+      "at_utc": "2026-11-21T04:28:58Z",
+      "status": "opened",
+      "sections_read": "Product identity and current release news",
+      "confirmed": "The official homepage identifies Apache OpenOffice as an office productivity suite; it offers no evidence of relevant HTTP serving or HTMX response assembly. The page contains an October 14, 2026 release announcement.",
+      "published_or_version": "Live homepage featuring Apache OpenOffice 4.1.17 announcement dated 2026-10-14",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "stage": "checks",
+      "date_note": "Conservatively treated as later evidence because the current page explicitly features a release after the 2026-07-25 cutoff; product-category judgment does not depend on that new release."
+    },
+    {
+      "url": "https://www.iis.net/",
+      "at_utc": "2026-11-21T04:28:58Z",
+      "status": "opened",
+      "sections_read": "Product overview and Windows Server identification",
+      "confirmed": "Microsoft describes IIS as its web server for Windows Server, which conflicts with the question's required Linux production platform.",
+      "published_or_version": "Live homepage; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://caddyserver.com/",
+      "at_utc": "2026-11-21T04:28:58Z",
+      "status": "opened",
+      "sections_read": "Automatic HTTPS, free-software status, and static file-server overview",
+      "confirmed": "The homepage describes Caddy's automatic certificate handling, free software status, and built-in static file server; previously opened template documentation and source establish the relevant request-aware composition primitives.",
+      "published_or_version": "Live homepage; no publication date established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Caddy with built-in templates",
+      "url": "https://caddyserver.com/docs/caddyfile/directives/templates",
+      "reason": "Caddy can combine its static file server with request-aware templates and shared-file includes to return full documents or HTMX fragments without a separate application server.",
+      "application_scope": "Primary server candidate for request-time composition of static blog content, common layouts, and page metadata.",
+      "constraints_or_caveat": "HX-Request branching is an inference from documented request access and template primitives, not a tested configuration; trusted templates only, site roots are not symlink sandboxes, and Alpine-specific packaging was not verified.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live documentation and master-branch source were retrieved on 2026-11-21; no dated version establishing availability by 2026-07-25 was verified.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go",
+        "https://caddyserver.com/docs/caddyfile/directives/file_server",
+        "https://htmx.org/docs/"
+      ]
+    },
+    {
+      "rank": 2,
+      "name": "Static Web Server v2 with htmx hx-select",
+      "url": "https://static-web-server.net/v2/",
+      "reason": "A small cross-platform static server plus htmx's client-side fragment selection can serve complete preassembled pages while updating only the desired page region.",
+      "application_scope": "Alternative architecture for a mostly static site whose shared templates can be assembled before deployment.",
+      "constraints_or_caveat": "Does not provide runtime template composition or server-side fragment-only responses; requires a separate build-time assembly step and transfers complete HTML; selected-release security defaults and extension support were not audited.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Live v2 overview and hx-select documentation were retrieved on 2026-11-21 without a dated snapshot establishing the exact capabilities by cutoff.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://htmx.org/attributes/hx-select/"
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "nginx Server Side Includes",
+      "url": "https://nginx.org/en/docs/http/ngx_http_ssi_module.html",
+      "reason": "SSI file inclusion and conditional rendering can combine shared page components inside nginx, with request-header variables providing a basis for HX-Request-dependent output.",
+      "application_scope": "Server-side inclusion of common layout fragments and conditional full-page shells without another application-server process.",
+      "constraints_or_caveat": "HTMX integration is inferred from generic SSI and header primitives and was not tested; SSI is disabled by default, conditional nesting is limited, and Windows/Alpine packaging and a full secure configuration were not verified.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The opened live SSI manual has no established publication date; an older dated mailing-list search result supports custom header access only and does not date the whole proposed combination.",
+      "discovery_catalogue_url": null,
+      "supporting_urls": [
+        "https://nginx.org/en/docs/http/ngx_http_core_module.html"
+      ]
+    }
+  ],
+  "raw_response": "Caddy is the closest fit I found for the requested combination of static files, shared page components, and HTMX-dependent responses in one server process. I would evaluate it first. A second approach can remove runtime template processing altogether: serve preassembled static pages and let htmx select the relevant fragment in the browser. These are configuration and architecture recommendations from documentation, not deployments or security audits.\n\n1. Caddy with its built-in templates handler\n\nCaddy can execute templates over files served by its own file server. Its documentation shows the combination of a site root, templates, and file_server, with support for file inclusion and Markdown rendering. That directly addresses authoring common headers, footers, and other shared content once. Source: https://caddyserver.com/docs/caddyfile/directives/templates\n\nThe public template implementation exposes the incoming request through .Req, including .Req.Header.Get, and provides include/import helpers. My inference is that a template can inspect HX-Request and conditionally emit the page shell around a shared body: a normal navigation receives a complete document, while an HTMX request receives the relevant fragment. That does not require a separate application server. The same source also documents front-matter splitting, which could help separate blog metadata from content. Source: https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go\n\nCaddy's official installation and feature search results identify static binaries, Linux and Windows support, and a Docker distribution. I did not open or test an Alpine-specific package in this run. Sources: https://caddyserver.com/docs/install and https://caddyserver.com/features\n\nThere are two material security qualifications. Caddy's file-server documentation explicitly says that its configured root is not a filesystem sandbox: symlinks inside it can expose files outside it. Its template documentation also warns against evaluating untrusted content, since templates can access capabilities beyond plain HTML rendering. Use a dedicated public directory, avoid symlinks to private data, and process only templates you control. The documentation is not evidence that Caddy is the most secure server. Sources: https://caddyserver.com/docs/caddyfile/directives/file_server and https://caddyserver.com/docs/caddyfile/directives/templates\n\n2. Static Web Server v2 with htmx hx-select\n\nStatic Web Server is an alternative if the primary goal is a small static-serving runtime. Its overview describes a standalone musl-linked binary, Linux and Windows availability, and Docker support. It therefore looks promising for an Alpine production system and Windows development. Source: https://static-web-server.net/v2/\n\nThis option changes how the HTMX requirement is met. The hx-select attribute selects an element from an HTML response before swapping it into the current page. Consequently, the server can return the same complete static HTML file to both ordinary navigation and htmx; htmx extracts the relevant content. Source: https://htmx.org/attributes/hx-select/\n\nTo keep common content out of individual source pages, assemble full pages from shared source templates during a build step. That build-time assembly is an architectural inference, not a verified feature of Static Web Server. It eliminates runtime template evaluation but adds a build step and still transfers the complete HTML response. If server-side generation of only the requested fragment is a strict requirement, this is an alternative design rather than a direct match. Extensibility, certificate automation, and the exact security defaults of a chosen SWS release need separate review.\n\n3. nginx with Server Side Includes\n\nnginx's SSI module can include shared files and conditionally include content. Its request-header variables expose custom request headers, so combining those mechanisms should allow HX-Request-dependent page-shell inclusion while keeping processing inside nginx. This is an inference from the documented primitives, not a preconfigured HTMX integration. Sources: https://nginx.org/en/docs/http/ngx_http_ssi_module.html and https://nginx.org/en/docs/http/ngx_http_core_module.html\n\nSSI is disabled by default and must be enabled for the intended responses. Its documented conditional nesting is limited to one level. This is a viable mechanism for a modest common-layout problem, but less attractive than Caddy here because the configuration and restricted template language introduce more work. I did not verify native Windows production suitability, Alpine packaging, or a complete secure nginx configuration in this run.\n\nFor either server-side approach, returning full pages and fragments from the same URL requires correct cache variation. htmx's documentation calls for Vary: HX-Request and distinct ETags for different representations; it also discusses history restoration settings. These details matter even for content stored in otherwise static files. Source: https://htmx.org/docs/#caching\n\nI would start with Caddy templates if request-time composition is essential, or the static-page/hx-select approach if a build step is acceptable. All evidence above is current documentation or live public code. I did not establish dated versions proving that these exact documented capabilities were available by the question's 2026-07-25 cutoff.",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 17,
+    "candidate_count": 3
+  },
+  "stage1_frozen_at_utc": "2026-11-21T04:26:53Z",
+  "stage1_budget": {
+    "search_queries": 8,
+    "opened_pages": 14,
+    "candidate_count": 3
+  },
+  "checks": [
+    {
+      "check_id": "CK-891e0ba6bb22",
+      "name": "Apache OpenOffice",
+      "url": "https://www.openoffice.org/",
+      "decision": "exclude",
+      "reason": "An office productivity suite provides no relevant HTTP-serving or HTMX page-composition mechanism for this server-selection problem.",
+      "evidence_urls": [
+        "https://www.openoffice.org/"
+      ],
+      "evidence_opened": true,
+      "date_status": "post_decision",
+      "post_decision": true
+    },
+    {
+      "check_id": "CK-e81a0349a2be",
+      "name": "Microsoft IIS for Windows Server",
+      "url": "https://www.iis.net/",
+      "decision": "exclude",
+      "reason": "Its Windows Server platform conflicts with the mandatory Linux/Alpine production requirement, regardless of its web-serving capabilities.",
+      "evidence_urls": [
+        "https://www.iis.net/"
+      ],
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "check_id": "CK-1fd3a1f4f3d4",
+      "name": "Caddy",
+      "url": "https://caddyserver.com/",
+      "decision": "keep",
+      "reason": "Built-in templates expose request headers and file inclusion, supporting static pages and HTMX fragments within one server; trusted templates and filesystem precautions remain necessary.",
+      "evidence_urls": [
+        "https://caddyserver.com/",
+        "https://caddyserver.com/docs/caddyfile/directives/templates",
+        "https://github.com/caddyserver/caddy/blob/master/modules/caddyhttp/templates/templates.go",
+        "https://caddyserver.com/docs/caddyfile/directives/file_server"
+      ],
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false
+    }
+  ],
+  "limitations": [
+    "Unauthenticated grep.app access was blocked; code-through-web fallback succeeded. No native code-search success is claimed.",
+    "Two redbean documentation fetches timed out, and a Caddy module-reference URL rendered an incomplete placeholder.",
+    "Live documentation and master-branch source were not backdated; all ranked candidates remain date_status unknown relative to 2026-07-25.",
+    "No configurations, deployments, comparative security audit, or platform installation tests were performed.",
+    "The SWS plus hx-select option changes the architecture by moving shared-template assembly to build time.",
+    "Search-result snippets were distinguished from opened documents; no source-thread answers or excluded target pages were recognized.",
+    "Opened-page budget conservatively includes the two find operations within already opened documents."
+  ],
+  "execution_status": "completed",
+  "checks_started_at_utc": "2026-11-21T04:28:58Z",
+  "checks_ended_at_utc": "2026-11-21T04:29:27Z",
+  "checks_budget": {
+    "search_queries": 0,
+    "opened_pages": 3,
+    "check_count": 3
+  }
+}
