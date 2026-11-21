@@ -1,0 +1,561 @@
+{
+  "case_id": "T040",
+  "baseline": "A",
+  "execution_agent": "internal separate context",
+  "model_label": "GPT-6 Astra Pro",
+  "context_inputs": [
+    "docs/workstreams/research/AF-RES-018/RULES_A.md",
+    "docs/workstreams/research/AF-RES-018/questions/inputs/T040.json"
+  ],
+  "started_at_utc": "2026-11-21T05:49:34Z",
+  "ended_at_utc": "2026-11-21T05:55:54Z",
+  "question_date": "2018-11-27",
+  "input_mode": "summary",
+  "original_question_command_executed": false,
+  "gold_seen": false,
+  "other_runs_seen": false,
+  "queries": [
+    {
+      "q": "distributed task queue unique jobs deduplication long running tasks visibility timeout",
+      "at_utc": "2026-11-21T05:49:34Z",
+      "tool": "web_system2",
+      "result_note": "Broad discovery returned current queue implementations and explanations of leases, idempotency keys, and repeated execution after missing acknowledgments; no excluded question-thread result was observed."
+    },
+    {
+      "q": "PostgreSQL SKIP LOCKED job queue unique constraint exactly once jobs",
+      "at_utc": "2026-11-21T05:49:34Z",
+      "tool": "web_system2",
+      "result_note": "Explored the relational-queue alternative; results discussed SKIP LOCKED, unique keys, and retry caveats, but mostly recent sources, so official versioned PostgreSQL documentation was opened independently."
+    },
+    {
+      "q": "site:docs.celeryq.dev/en/4.2.0/userguide/tasks.html acks_late long running tasks",
+      "at_utc": "2026-11-21T05:49:46Z",
+      "tool": "web_system1",
+      "result_note": "Returned official Celery 4.2 task documentation and its acknowledgment/idempotency caveats."
+    },
+    {
+      "q": "site:aws.amazon.com/blogs/aws/ SQS FIFO queues 2016 exactly once",
+      "at_utc": "2026-11-21T05:49:46Z",
+      "tool": "web_system1",
+      "result_note": "Returned dated AWS FIFO announcements and the 2016 developer explanation of deduplication and visibility timeouts."
+    },
+    {
+      "q": "https://grep.app/api/search?q=QueueOnce",
+      "at_utc": "2026-11-21T05:49:46Z",
+      "tool": "grep.app",
+      "result_note": "Unauthenticated grep.app API query attempted through the web open surface; tool reported the URL inaccessible. This was not native code-search success."
+    },
+    {
+      "q": "site:github.com/cameronmaske/celery-once \"QueueOnce\"",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "tool": "code_through_web",
+      "result_note": "Code-through-web fallback using web_system1 returned the public Celery Once repository and QueueOnce documentation.",
+      "search_engine": "web_system1"
+    },
+    {
+      "q": "site:github.com/OptimalBits/bull \"jobId\" \"lock\"",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "tool": "code_through_web",
+      "result_note": "Code-through-web fallback using web_system1 returned Bull's public REFERENCE.md, including job IDs and lease renewal.",
+      "search_engine": "web_system1"
+    },
+    {
+      "q": "site:github.com/timgit/pg-boss \"SKIP LOCKED\"",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "tool": "code_through_web",
+      "result_note": "Code-through-web fallback using web_system1 did not surface a pg-boss result in the returned batch; its known public repository was opened directly.",
+      "search_engine": "web_system1"
+    }
+  ],
+  "opened_documents": [
+    {
+      "url": "https://grep.app/api/search?q=QueueOnce",
+      "at_utc": "2026-11-21T05:49:46Z",
+      "status": "blocked",
+      "sections_read": "Unauthenticated code-search endpoint attempt only",
+      "confirmed": "The tool reported that this endpoint was not accessible; no code results were retrieved.",
+      "published_or_version": "unavailable",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.postgresql.org/docs/9.5/sql-select.html",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "status": "opened",
+      "sections_read": "SELECT syntax and Locking Clause, particularly SKIP LOCKED; in-document find used",
+      "confirmed": "SKIP LOCKED skips rows that cannot immediately be locked and is explicitly applicable to multiple consumers of a queue-like table.",
+      "published_or_version": "PostgreSQL 9.5 documentation, currently labeled 9.5.25; live revision undated",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "status": "opened",
+      "sections_read": "Dated article heading; MessageGroupId, deduplication retention, visibility timeout and expiry sections; in-document finds used",
+      "confirmed": "The 2016 explanation describes FIFO grouping, a five-minute producer deduplication window, visibility extension, and duplicate processing when visibility expires.",
+      "published_or_version": "2016-11-21",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.celeryq.dev/en/v4.2.0/userguide/tasks.html",
+      "at_utc": "2026-11-21T05:50:04Z",
+      "status": "opened",
+      "sections_read": "Task introduction, acknowledgments, idempotency, worker-loss behavior and long-running task guidance",
+      "confirmed": "Celery distinguishes acknowledgment before execution from late acknowledgment and warns that retryable processing should be idempotent; it recommends routing long and short work separately.",
+      "published_or_version": "Celery 4.2.0; package release dated 2018-06-10 by separately opened PyPI record",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "status": "opened",
+      "sections_read": "Usage, keys, timeout, unlock_before_run and Redis backend sections; in-document finds used",
+      "confirmed": "QueueOnce deduplicates through a task-and-arguments lock, with configurable key fields and an expiring lock retained through execution by default.",
+      "published_or_version": "live master README; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "status": "opened",
+      "sections_read": "Queue add jobId, advanced lock settings, lock renewal and stalled jobs; in-document finds used",
+      "confirmed": "An existing jobId prevents another regular job from being added; lock renewal controls active ownership, while stalled recovery can lead to repeated processing.",
+      "published_or_version": "live develop REFERENCE.md; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "status": "opened",
+      "sections_read": "Repository introduction and SKIP LOCKED description; in-document find used",
+      "confirmed": "pg-boss is a Node.js job queue using PostgreSQL and nonblocking concurrent job claims.",
+      "published_or_version": "live repository README; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.postgresql.org/docs/9.5/release-9-5.html",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "status": "opened",
+      "sections_read": "Release heading, overview and SQL changes including SKIP LOCKED",
+      "confirmed": "PostgreSQL 9.5 was released on 2016-01-07 and introduced SKIP LOCKED plus INSERT conflict handling.",
+      "published_or_version": "PostgreSQL 9.5 release notes, 2016-01-07",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://docs.celeryq.dev/en/v4.2.0/whatsnew-4.2.html",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "status": "opened",
+      "sections_read": "Celery 4.2 introduction and preface",
+      "confirmed": "This is the version-specific 4.2 task-queue release overview; the release date was established separately from PyPI.",
+      "published_or_version": "Celery 4.2.0, released 2018-06-10 according to separately opened package record",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cameronmaske/celery-once/master/celery_once/tasks.py",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "status": "blocked",
+      "sections_read": "Raw public source retrieval attempted",
+      "confirmed": "The raw GitHub endpoint failed with DisabledError; the same source was subsequently read through the public GitHub HTML page.",
+      "published_or_version": "live master; not retrieved",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://www.postgresql.org/docs/9.5/sql-insert.html",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "status": "opened",
+      "sections_read": "INSERT description, ON CONFLICT clause and unique-index example; in-document find used",
+      "confirmed": "ON CONFLICT DO NOTHING avoids an insert that violates the selected unique constraint, providing an admission-deduplication primitive.",
+      "published_or_version": "PostgreSQL 9.5 documentation, currently labeled 9.5.25; live revision undated",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://pypi.org/project/celery/4.2.0/",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "status": "opened",
+      "sections_read": "Version 4.2.0 package description, key release date and release file dates; in-document finds used",
+      "confirmed": "The package distributes tasks across workers using a broker, including RabbitMQ; the 4.2.0 release files are dated 2018-06-10.",
+      "published_or_version": "Celery 4.2.0, released 2018-06-10; live PyPI wrapper",
+      "date_status": "pre_decision",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once/blob/master/celery_once/tasks.py",
+      "at_utc": "2026-11-21T05:51:24Z",
+      "lineno": 150,
+      "status": "opened",
+      "sections_read": "QueueOnce apply_async, get_key and after_return via in-document finds after opening code page",
+      "confirmed": "The implementation takes the deduplication lock before publishing a new task and normally clears it after task return; ordinary retries bypass fresh lock acquisition.",
+      "published_or_version": "live master tasks.py; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss",
+      "at_utc": "2026-11-21T05:51:24Z",
+      "lineno": 220,
+      "status": "opened",
+      "sections_read": "README example and queue implementation explanation around lines 205-234",
+      "confirmed": "The code example exposes send and work operations, and the text confirms PostgreSQL SKIP LOCKED claims; application-level deduplication settings were not verified on this page.",
+      "published_or_version": "live repository README; repeated open for content verification",
+      "date_status": "unknown",
+      "post_decision": false
+    },
+    {
+      "url": "https://s3browser.com/",
+      "at_utc": "2026-11-21T05:54:50Z",
+      "status": "opened",
+      "sections_read": "Product description, storage-management feature list, and current release heading",
+      "confirmed": "CS Browser is a Windows interface for S3-compatible file and bucket management, including transfers and storage administration; no general distributed arbitrary-job scheduler is described.",
+      "published_or_version": "CS Browser 13.6.9 release heading dated 2026-11-13; current homepage",
+      "date_status": "post_decision",
+      "post_decision": true,
+      "stage": "checks"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "at_utc": "2026-11-21T05:54:50Z",
+      "status": "opened",
+      "sections_read": "Timeout definition and maximum; Managed Instances exception explicitly distinguished",
+      "confirmed": "The page limits standard Lambda function execution to 900 seconds; its separate 5,400-second Managed Instances exception is outside the supplied candidate's scope.",
+      "published_or_version": "live AWS documentation; no publication date displayed",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://slurm.schedmd.com/overview.html",
+      "at_utc": "2026-11-21T05:54:50Z",
+      "status": "opened",
+      "sections_read": "Overview, architecture, resource allocation, job queues and partition time limits",
+      "confirmed": "Slurm allocates cluster resources and launches and monitors queued jobs, with configurable partition limits and worker daemons.",
+      "published_or_version": "live overview; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html",
+      "at_utc": "2026-11-21T05:54:55Z",
+      "status": "opened",
+      "sections_read": "Delivery guarantee and supported notification destinations",
+      "confirmed": "S3 event notifications support Lambda destinations and are designed for at-least-once delivery, so duplicate-free invocation is not supplied by this trigger alone.",
+      "published_or_version": "live AWS documentation; no publication date displayed",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    },
+    {
+      "url": "https://slurm.schedmd.com/job_array.html",
+      "at_utc": "2026-11-21T05:54:55Z",
+      "status": "opened",
+      "sections_read": "Array submission, concurrency limit syntax, identifiers, requeue mentions and System Administration",
+      "confirmed": "Slurm arrays support bounded simultaneous execution and configurable array size, with task identifiers and requeue operations; MaxArraySize must be raised or work split for more than its default 1,001 entries.",
+      "published_or_version": "live job-array documentation; no dated revision established",
+      "date_status": "unknown",
+      "post_decision": false,
+      "stage": "checks"
+    }
+  ],
+  "in_document_reads": [
+    {
+      "url": "https://www.postgresql.org/docs/9.5/sql-select.html",
+      "pattern": "Skipping locked rows",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "pattern": "VisibilityTimeout",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "pattern": "five",
+      "at_utc": "2026-11-21T05:50:23Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once",
+      "pattern": "## Celery Once",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once",
+      "pattern": "timeout",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "pattern": "jobId:",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "pattern": "lockDuration",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss",
+      "pattern": "SKIP LOCKED",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss",
+      "pattern": "Features",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/9.5/release-9-5.html",
+      "pattern": "SKIP LOCKED",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "pattern": "21 NOV 2016",
+      "at_utc": "2026-11-21T05:50:43Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "pattern": "unique",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/timgit/pg-boss",
+      "pattern": "Queue Policies",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once",
+      "pattern": "keys",
+      "at_utc": "2026-11-21T05:51:04Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://pypi.org/project/celery/4.2.0/",
+      "pattern": "Jun 18, 2018",
+      "at_utc": "2026-11-21T05:51:24Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://pypi.org/project/celery/4.2.0/",
+      "pattern": "May 21, 2018",
+      "at_utc": "2026-11-21T05:51:24Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/9.5/sql-insert.html",
+      "pattern": "ON CONFLICT DO NOTHING",
+      "at_utc": "2026-11-21T05:51:24Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once/blob/master/celery_once/tasks.py",
+      "pattern": "raise_or_lock",
+      "at_utc": "2026-11-21T05:51:45Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://github.com/cameronmaske/celery-once/blob/master/celery_once/tasks.py",
+      "pattern": "after_return",
+      "at_utc": "2026-11-21T05:51:45Z",
+      "tool": "web_find"
+    },
+    {
+      "url": "https://pypi.org/project/celery/4.2.0/",
+      "pattern": "Jun 10, 2018",
+      "at_utc": "2026-11-21T05:51:45Z",
+      "tool": "web_find"
+    }
+  ],
+  "exposures": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "PostgreSQL unique job ledger with ON CONFLICT and FOR UPDATE SKIP LOCKED",
+      "url": "https://www.postgresql.org/docs/9.5/sql-select.html",
+      "reason": "A unique logical job key can reject duplicate registration while transactional SKIP LOCKED claims assign different pending jobs to concurrent workers.",
+      "application_scope": "Language-independent durable admission registry, claim ownership, and transactional result recording.",
+      "constraints_or_caveat": "Short claim transactions need explicit leases and recovery; external effects still require idempotency or a shared transaction, and stale workers must not commit after losing ownership.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "The opened PostgreSQL 9.5 release notes date SKIP LOCKED and INSERT conflict handling to 2016-01-07; the live 9.5.25 documentation itself is not treated as a 2016 snapshot.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 2,
+      "name": "Amazon SQS FIFO queues",
+      "url": "https://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/",
+      "reason": "FIFO message deduplication IDs and visibility leases provide managed admission deduplication and distributed claims for independent workers.",
+      "application_scope": "Managed queue with multiple message groups and renewable visibility for long-running work.",
+      "constraints_or_caveat": "Producer deduplication lasts only a bounded window; visibility expiry or a crash before deletion permits repeat processing, so preserve a durable result ledger.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened AWS developer article is dated 2016-11-21.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 3,
+      "name": "Celery 4.2 with a RabbitMQ broker",
+      "url": "https://docs.celeryq.dev/en/v4.2.0/userguide/tasks.html",
+      "reason": "Celery supplies distributed task workers, routing and acknowledgment controls for executing the workload once durable job admission and idempotent effects are supplied.",
+      "application_scope": "Python task execution with independently scalable worker pools for long and short jobs.",
+      "constraints_or_caveat": "Celery alone is not duplicate-registration protection; early acknowledgment can lose unfinished work and late acknowledgment allows retries, with additional worker-loss semantics to configure.",
+      "evidence_opened": true,
+      "date_status": "pre_decision",
+      "post_decision": false,
+      "date_evidence": "Opened PyPI record for Celery 4.2.0 dates release files to 2018-06-10, and the opened task documentation is version 4.2.0.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 4,
+      "name": "Celery Once (QueueOnce)",
+      "url": "https://github.com/cameronmaske/celery-once",
+      "reason": "QueueOnce adds a task-identity lock around Celery submission so equivalent pending or running tasks can be rejected before another copy is queued.",
+      "application_scope": "Reusable admission-lock component for a Celery deployment.",
+      "constraints_or_caveat": "The default one-hour lock can expire during queued-plus-running time; direct calls and retry behavior need review, and the lock is not permanent completion deduplication.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Only live master documentation and source were verified; no pre-2018 revision was established.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 5,
+      "name": "Bull job IDs and renewable job locks",
+      "url": "https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md",
+      "reason": "Bull combines existing-jobId rejection with renewable Redis job locks to reduce duplicate queue entries and concurrent handling in Node.js workers.",
+      "application_scope": "Node.js and Redis queue with job identity, retries, and worker ownership.",
+      "constraints_or_caveat": "Stalled recovery can repeat processing; job deletion removes the retained identity, and CPU-bound handlers can interfere with lock renewal.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "The opened develop reference is live and undated; no historical release snapshot was verified.",
+      "discovery_catalogue_url": null
+    },
+    {
+      "rank": 6,
+      "name": "pg-boss",
+      "url": "https://github.com/timgit/pg-boss",
+      "reason": "pg-boss packages PostgreSQL SKIP LOCKED job claiming behind Node.js send-and-work APIs, reducing the amount of custom queue plumbing.",
+      "application_scope": "PostgreSQL-backed Node.js job execution for an existing relational stack.",
+      "constraints_or_caveat": "The opened page confirms claims, not a complete guarantee against duplicate logical registration or arbitrary external effects; current deduplication and long-job options require further verification.",
+      "evidence_opened": true,
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Only the current public repository introduction and example were opened; availability of this exact behavior by cutoff was not established.",
+      "discovery_catalogue_url": null
+    }
+  ],
+  "raw_response": "For more than 10,000 tasks lasting 30 seconds to one hour, I would use a durable job registry and a bounded pool of workers. The crucial requirements are a stable identity for each logical task, exclusive ownership while it runs, and a completion record that survives worker failure.\n\nThere is a failure case to resolve explicitly: a worker can perform an effect and crash before acknowledging completion. A queue may then retry the task. Consequently, a queue's deduplication feature is not by itself a guarantee that arbitrary task code physically executes only once. Celery's acknowledgment documentation and AWS's FIFO explanation both describe this boundary. The practical goal is one accepted logical job and one committed logical result, using idempotent effects or an appropriate transaction.\n\nRanked candidates\n\n1. PostgreSQL job ledger with a unique job key, ON CONFLICT, and FOR UPDATE SKIP LOCKED.\nhttps://www.postgresql.org/docs/9.5/sql-select.html\nhttps://www.postgresql.org/docs/9.5/sql-insert.html\n\nThis is my strongest starting point if the application already uses PostgreSQL. A unique key prevents two producer attempts from registering the same logical task; workers claim different pending rows transactionally. For hour-long tasks, my proposed design uses a short claim transaction followed by a renewable lease, rather than holding a database transaction open throughout the computation. Completion must verify current ownership. Database results can be committed with the completion record; external operations need their own idempotency contract. The opened 9.5 release notes establish the underlying SQL features on 2016-01-07, although today's versioned documentation is not an archived 2016 page.\nhttps://www.postgresql.org/docs/9.5/release-9-5.html\n\n2. Amazon SQS FIFO queues.\nhttps://aws.amazon.com/blogs/developer/how-the-amazon-sqs-fifo-api-works/\n\nUse a stable MessageDeduplicationId for submission retries, enough MessageGroupIds to permit independent jobs to run concurrently, and extend visibility while a worker is active. The 2016 article documents a five-minute producer deduplication window and acknowledges that processing can repeat after visibility expires. An hour-long runtime therefore needs visibility management; permanent submission or completion deduplication still belongs in a durable application ledger. This is a plausible managed dispatch layer, with supporting evidence dated 2016-11-21.\n\n3. Celery 4.2 with RabbitMQ.\nhttps://docs.celeryq.dev/en/v4.2.0/userguide/tasks.html\n\nCelery supplies task execution, broker integration and separate worker routing for long and short tasks. Pair it with the unique job registry described above. Choose acknowledgments deliberately: acknowledging before execution risks unfinished work after a crash, while late acknowledgment requires safely repeatable tasks. The documented worker-loss exceptions also matter when configuring recovery. Celery is a task runner, not sufficient proof of unique registration. Version 4.2.0 is confirmed before the cutoff by its 2018-06-10 package release.\nhttps://pypi.org/project/celery/4.2.0/\n\n4. Celery Once / QueueOnce.\nhttps://github.com/cameronmaske/celery-once\n\nThis is a focused addition to Celery for rejecting another pending or running invocation with the same task identity. The public implementation acquires a lock before submission and normally releases it after the task returns. Configure the identity to match the business task and make the timeout cover both queue waiting and execution; the documented one-hour default is a poor automatic fit for a task that may itself run for an hour. It does not replace permanent result deduplication. The inspected implementation is current and undated, so historical availability remains unverified.\nhttps://github.com/cameronmaske/celery-once/blob/master/celery_once/tasks.py\n\n5. Bull.\nhttps://github.com/OptimalBits/bull/blob/develop/REFERENCE.md\n\nFor Node.js with Redis, Bull's regular jobId check suppresses another retained job with the same ID, and renewable locks coordinate active workers. Retain completed identities for the required deduplication horizon, or keep a separate ledger. Its stalled-job recovery can run work again, and CPU-heavy handlers can disrupt lease renewal. Those are material constraints for long computations. The current reference verifies these mechanisms, but I have not established a dated version available by the question's cutoff.\n\n6. pg-boss.\nhttps://github.com/timgit/pg-boss\n\nFor Node.js already using PostgreSQL, pg-boss packages the database-claim approach behind job submission and worker APIs. The opened project introduction specifically confirms SKIP LOCKED claims and concurrent workers. It is a useful implementation to inspect before writing a custom database queue. The page examined does not establish every deduplication or long-job setting, and I would retain explicit business-key and result constraints. Its exact historical feature set was not verified.\n\nConfiguration I would carry forward\n\nAssign a deterministic business job ID before enqueueing. Record that ID durably with a uniqueness constraint, and retain its completion identity for as long as repeated registration must be rejected. Run a bounded number of workers sized to actual CPU, memory and I/O requirements; the count of queued jobs alone does not determine capacity.\n\nFor each claimed task, record an owner and a deadline, renew ownership while running, and reject completion from an expired owner. Retry abandoned work only under an explicit policy. Treat the side effect and completion record as one transaction when they share a database; otherwise use an idempotency key understood by the external destination. This ownership-and-result design is my synthesis, not a claim that every listed tool implements it automatically.\n\nBefore selecting a stack, verify behavior when a worker dies after producing its result but before acknowledgment, when a lease expires while an old worker is still alive, and when a producer repeats a submission after the deduplication window. No capacity benchmark or deployment was performed here.\n\nSearch limitations: the unauthenticated grep.app code-search attempt was blocked. Public code was subsequently found through web-indexed GitHub results and inspected through GitHub HTML; this was code-through-web, not successful native code search. Six candidates were retained rather than padding the list, with 8 of 12 queries and 14 of 20 open attempts used. Current, undated evidence has not been silently backdated.",
+  "budget": {
+    "search_queries": 8,
+    "opened_pages": 19,
+    "candidate_count": 6
+  },
+  "budget_limits": {
+    "search_queries": 12,
+    "opened_pages": 20,
+    "candidate_count": 10
+  },
+  "budget_counting_note": "Every explicit open attempt is counted, including failed requests and a repeated pg-boss URL; grep.app counts as one query and one open. Finds operate within already retrieved documents and are logged separately.",
+  "stage1_frozen_at_utc": "2026-11-21T05:53:55Z",
+  "stage1_budget": {
+    "search_queries": 8,
+    "opened_pages": 14,
+    "candidate_count": 6
+  },
+  "checks": [
+    {
+      "check_id": "CK-1912f6fd5f27",
+      "name": "CS Browser (formerly S3 Browser)",
+      "url": "https://s3browser.com/",
+      "decision": "exclude",
+      "reason": "Windows S3 file management and transfer software does not provide a distributed scheduler or deduplicated execution for arbitrary tasks lasting up to an hour.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://s3browser.com/"
+      ],
+      "date_status": "post_decision",
+      "post_decision": true,
+      "date_evidence": "Current homepage identifies version 13.6.9 released 2026-11-13; historical feature scope was not separately established."
+    },
+    {
+      "check_id": "CK-07bf950c2270",
+      "name": "Amazon S3 events + AWS Lambda standard function (Managed Instances 제외)",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+      "decision": "exclude",
+      "reason": "Standard Lambda stops after 15 minutes, preventing direct hour-long execution; S3 events are delivered at least once and need separate deduplication.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Current official documentation was opened; no dated historical snapshot was verified.",
+      "constraints_or_caveat": "Judgment applies to standard function execution exactly as supplied, excluding Managed Instances; a short Lambda dispatcher for a separate worker system would be a different composition."
+    },
+    {
+      "check_id": "CK-0877ac8c27de",
+      "name": "Slurm",
+      "url": "https://slurm.schedmd.com/overview.html",
+      "decision": "keep",
+      "reason": "Provides batch scheduling, resource allocation, and job arrays with concurrency limits for many long tasks; registration deduplication and safe requeue handling remain application responsibilities.",
+      "evidence_opened": true,
+      "evidence_urls": [
+        "https://slurm.schedmd.com/overview.html",
+        "https://slurm.schedmd.com/job_array.html"
+      ],
+      "date_status": "unknown",
+      "post_decision": false,
+      "date_evidence": "Current official overview and job-array documentation were opened; no pre-cutoff snapshot was verified.",
+      "constraints_or_caveat": "Requires an operated Linux cluster; configure job duration, MaxArraySize and submission limits or split arrays, and preserve business job identity across submissions and requeues."
+    }
+  ],
+  "checks_started_at_utc": "2026-11-21T05:54:50Z",
+  "checks_ended_at_utc": "2026-11-21T05:55:54Z",
+  "limitations": [
+    "The fixed summary was the sole question input; no original-question retrieval command was present.",
+    "Native unauthenticated grep.app code search was blocked; discovery used the explicitly logged code-through-web fallback and public GitHub source.",
+    "The first broad queries returned many recent sources; these were not presented as pre-cutoff evidence.",
+    "Celery Once, Bull and pg-boss were verified only against live undated materials; their exact feature availability by 2018-11-27 remains unknown.",
+    "No workload benchmark, deployment, or proof of failure-free exactly-once execution was performed.",
+    "Discovery is frozen; the remaining 4 queries and 6 open attempts are reserved for the parent's three unlabeled checks.",
+    "Checks completed using five additional document opens and no additional search queries; the preceding reservation note records the earlier discovery-freeze state."
+  ],
+  "execution_status": "completed",
+  "stage1_execution_status": "completed",
+  "phase": "completed",
+  "checks_budget": {
+    "search_queries": 0,
+    "opened_pages": 5,
+    "check_count": 3
+  },
+  "budget_remaining": {
+    "search_queries": 4,
+    "opened_pages": 1
+  }
+}
