@@ -141,7 +141,7 @@ def main():
                    claim_error_lower_bound=ratio(vc['false'],len(sampled)),
                    claim_error_upper_bound=ratio(vc['false']+vc['unknown'],len(sampled)))
         obs['recorded_active_seconds']=(obs['stage1_wall_seconds']+obs['checks_wall_seconds']) if obs['stage1_wall_seconds'] is not None and obs['checks_wall_seconds'] is not None else None
-        obs['parent_observed_wall_seconds']=elapsed(states[d['dispatch_index']]['assignment_recorded_at_utc'],states[d['dispatch_index']]['completion_observed_at_utc'])
+        obs['parent_observed_wall_seconds']=elapsed(states[d['dispatch_index']].get('resumed_at_utc',states[d['dispatch_index']]['assignment_recorded_at_utc']),states[d['dispatch_index']]['completion_observed_at_utc'])
         for jid,jrows in judgments.items():
             if not all(rid in jrows for rid in disc_ids):continue
             # For zero-output runs use the plan to distinguish covered from absent judges.
