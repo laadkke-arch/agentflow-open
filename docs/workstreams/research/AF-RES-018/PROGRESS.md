@@ -178,3 +178,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:29:57.152279+00:00
 
 78/106 responses and234/318 probe judgments are complete. This P bundle records N016 and T030 and two transparent budget-field corrections; raw discovery hashes were unchanged. Citation metadata from current-session emitted references restored17 URLs, while5 references from earlier-session P/T036 remain unavailable and are explicitly excluded. Inputs, thresholds and gold remain frozen. Active dispatches79–81 use fresh contexts. Next: dispatch82 onward, then full normalization, blind judging and seeded claim extraction/verification.
+
+## Execution checkpoint — 2026-11-21T08:36:05.137942+00:00
+
+81/106 responses and243/318 probe judgments are complete. T014 A/P and T003 P have passed parent completion audits. T030 A original-input provenance was clarified read-only from its executor’s retained tool result (HTTP200 and frozen SHA256 match), without rewriting the run. Active dispatches82–84 are T003 A and T048 P/A. Next: continue85 onward; do not run judgment or claim sampling until all106 discovery/check records are complete.
