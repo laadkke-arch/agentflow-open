@@ -194,3 +194,7 @@ Recovered dispatches 71–73 have finished with immutable discovery freezes and 
 ## Execution checkpoint — 2026-11-21T08:53:44.584951+00:00
 
 89/106 responses and267/318 probe judgments are complete. N012 P and T001 A are finalized; T001 P is checking probes and SX08 P/A are in discovery. Next: dispatch93 onward. Candidate mapping remains identity-only and explicitly preserves named editions, included components and full-composite boundaries. No H1 outcome statistics have been calculated.
+
+## Execution checkpoint — 2026-11-21T08:57:17.573710+00:00
+
+90/106 responses and270/318 probe judgments are complete, with45 full question pairs. T001 P is finalized. SX08 A/P are in checks, N004 P in discovery. Next: dispatch94 onward. Three candidate-count bookkeeping corrections are documented with unchanged raw-response/candidate hashes; no frozen treatment output or judgment was substantively revised.
