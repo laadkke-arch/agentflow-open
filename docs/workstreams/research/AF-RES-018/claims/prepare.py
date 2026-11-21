@@ -43,6 +43,7 @@ def combine():
     pool=[];uncertainty=[];coverage=[]
     for batch in manifest:
         extracted=load(batch['output']);assert extracted,('missing extraction',batch['output'])
+        packets={r['run_id']:r for r in load(batch['input'])['runs']}
         reviewed=extracted['reviewed_runs'];reviewed=[r['run_id'] if isinstance(r,dict) else r for r in reviewed]
         assert set(reviewed)==set(batch['run_ids']),('unreviewed run',batch['output'])
         for field,target in [('facts',pool),('uncertainties',uncertainty)]:
@@ -52,6 +53,17 @@ def combine():
                 assert hashlib.sha256(raw.encode()).hexdigest()==k['raw_response_sha256']
                 assert item.get('source_quote') and item['source_quote'] in raw,('nonliteral extraction',item)
                 assert item.get('candidate') and item.get('reference_kind') in ['homepage_only','claim_specific','none'],item
+                assert item.get('claim') and item.get('claim_type') in ['price','license','offline','self_hosting','platform','feature','other'],item
+                packet=packets[item['run_id']]
+                links={r['source_ref']:r['url'] for r in packet.get('citation_links',[])}
+                unresolved={r['source_ref'] for r in packet.get('unresolved_citations',[])}
+                supplied=set(item.get('supplied_urls',[]))
+                allowed={r['url'] for r in packet['candidate_links'] if r.get('url')}|set(links.values())
+                assert all(url in allowed or url in raw for url in supplied),('URL not supplied in this response',item)
+                refs=set(item.get('citation_refs',[]))
+                assert refs<=set(links)|unresolved,('invented citation ref',item)
+                assert set(item.get('unresolved_citation_refs',[]))<=refs&unresolved,('incorrect unresolved ref',item)
+                assert all(links[ref] in supplied for ref in refs if ref in links),('printed reference address omitted',item)
                 if item['reference_kind']=='none':assert not item.get('supplied_urls'),item
                 target.append({**item,**k,'extractor':extracted.get('extractor'),'extraction_file':batch['output']})
         coverage.append({'batch':batch['batch'],'reviewed_runs':reviewed,'facts':len(extracted.get('facts',[])),
