@@ -25,7 +25,7 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def main():
+def main(check_only=False):
     inputs=rows(ROOT/'inputs.jsonl')
     targets={d['recipient_id']:d for d in rows(ROOT/'recipient/recipient_targets.jsonl')}
     assert len(inputs)==8 and {d['recipient_id'] for d in inputs}==set(targets)
@@ -91,10 +91,15 @@ def main():
             'limits':['Phrase screening is not proof of no conceptual leakage; source-only author context and read history are separate evidence.',
                       'S vocabulary check is lexical, not a semantic fidelity judgment. R fidelity requires source-grounded author review.',
                       'An opening-event head proves the submitted snapshot, not the earliest privately authored draft.']}
-    (ROOT/'evidence/input-validation.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    if not check_only:
+        (ROOT/'evidence/input-validation.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'status':result['status'],'recipients':8,'queries':16,'failures':failures,
                       'raw_token_counts':{c['recipient_id']:{r:c[r]['raw_tokens'] for r in ['S','R']} for c in checks}},ensure_ascii=False))
     if failures:raise SystemExit(1)
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--check',action='store_true',help='Run the same checks without replacing the original sealed input-validation receipt.')
+    main(check_only=parser.parse_args().check)
