@@ -57,9 +57,23 @@ if bioc.exists():
     for r in csv.DictReader(bioc.open()):
         if r.get('same_archive_reuse')=='1':
             costs.append({'cost_id':r['cost_id'],'ref_ids':r['ref_ids'],'collector':'bioc','round':1,'configuration':'H archive reuse','url':r['url'],'actual_requests':0,'http_exchanges_minimum':0,'transport_failures':0,'empty_success_body':0,'status':None,'received_body_bytes':0,'temporary_stored_bytes':int(r['stored_bytes']),'durable_stored_bytes':'excerpt only','elapsed_seconds':None,'same_archive_reuse':1,'logical_uses':1,'measurement':'actual existing archive reuse; member read timing unmeasured','started_utc':None,'finished_utc':r['finished_utc'],'unmeasured':r['unmeasured']})
-keys=list(dict.fromkeys(k for c in costs for k in c))
-with (P/'costs.csv').open('w',newline='') as f:
-    w=csv.DictWriter(f,keys,lineterminator='\n');w.writeheader();w.writerows(costs)
 summary={'actual_get_operations':sum(r['actual_requests'] for r in costs),'minimum_http_exchanges':sum(r['http_exchanges_minimum'] for r in costs),'transport_failures':sum(r['transport_failures'] for r in costs),'empty_2xx_bodies':sum(r['empty_success_body'] for r in costs),'received_final_body_bytes':sum(r['received_body_bytes'] or 0 for r in costs),'temporary_fetch_stored_bytes':sum(r['temporary_stored_bytes'] or 0 for r in costs if r['actual_requests']),'sum_request_elapsed_seconds':round(sum(r['elapsed_seconds'] or 0 for r in costs),6),'archive_reuse_events':sum(r['same_archive_reuse'] for r in costs),'elapsed_is_not_wall_or_human_time':True,'wire_bytes_measured':False,'second_visit_executed':False}
+prior=collections.defaultdict(list)
+for c in sorted(costs,key=lambda r:r.get('started_utc') or r.get('finished_utc') or ''):
+    if not c['actual_requests']:continue
+    seen_url=prior[c['url']]
+    c['exact_url_request_ordinal']=len(seen_url)+1
+    c['previous_failed_same_url']=bool(seen_url and seen_url[-1]['transport_failures'])
+    c['repeat_kind']='retry_after_failure' if c['previous_failed_same_url'] else ('new_observation_same_url' if seen_url else 'first_measured_url_request')
+    seen_url.append(c)
+summary['same_url_additional_gets']=sum(max(0,len(v)-1) for v in prior.values())
+summary['retry_after_failed_same_url']=sum(bool(r.get('previous_failed_same_url')) for r in costs)
+sim=[]
+if (P/'replay-costs.csv').exists():sim=list(csv.DictReader((P/'replay-costs.csv').open()))
+summary['simulation_rows_excluded_from_actual_totals']=len(sim)
+combined=costs+sim
+keys=list(dict.fromkeys(k for c in combined for k in c))
+with (P/'costs.csv').open('w',newline='') as f:
+    w=csv.DictWriter(f,keys,lineterminator='\n');w.writeheader();w.writerows(combined)
 writej(P/'evidence/cost-summary.json',summary)
 print(json.dumps({'sources':counts,'costs':summary},ensure_ascii=False))
