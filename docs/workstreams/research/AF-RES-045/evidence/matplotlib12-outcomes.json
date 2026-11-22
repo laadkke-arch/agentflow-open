@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "scope": "M01/M02 outcomes, independent subagent spatial review; no shared sealed files edited",
+  "sealed_prediction_sha": "0d998cb3503e8a7f0faf2bf2f8e62dd046a662b1",
+  "sealed_prediction_utc": "2026-11-22T22:19:23Z",
+  "first_outcome_open_utc": "2026-11-22T22:20:03Z",
+  "analysis_written_utc": "2026-11-22T22:26:58Z",
+  "timestamp_note": "First-open UTC was clocked immediately around initial comments/timeline batch; analysis timestamp was checked immediately after writing.",
+  "evidence_level_key": {
+    "D": "maintainer or author decision",
+    "S": "specification/documented behavior",
+    "C": "implementation or diff",
+    "T": "test definition, without assuming execution",
+    "R": "public reported execution or requester rerun",
+    "L": "release description"
+  },
+  "cases": [
+    {
+      "request_id": "M01",
+      "requirement_edition": "MPL-R13430 current initial body; exact creation-body unrecovered",
+      "choices": {
+        "A": "one pre-draw before first save, unchanged projection/data/renderer",
+        "B": "uniform-scale first rendered raster without pre-draw"
+      },
+      "normal_input_status": "Cartesian control and A/B bbox comparison not found in inspected followups",
+      "boundary_input_status": "Original simple Cartopy example: requester says pre-draw works; no recorded numeric bbox/aspect. Exact uniform-scale B never publicly tested in inspected sources.",
+      "evidence": [
+        {
+          "level": "D",
+          "source_id": "MO01",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13430#issuecomment-463400056",
+          "edition_utc": "2019-02-13T22:23:40Z",
+          "finding": "Maintainer proposes canvas.draw before saving."
+        },
+        {
+          "level": "R",
+          "source_id": "MO01",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13430#issuecomment-463401327",
+          "edition_utc": "2019-02-13T22:28:36Z",
+          "finding": "Requester reports simple-example success; separate complex examples raise warnings.",
+          "same_input": "simple example explicitly distinguished from unspecified complex input",
+          "limitation": "Edited shortly after posting; no numeric output or normal control."
+        },
+        {
+          "level": "R",
+          "source_id": "MO01",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13430#issuecomment-631839066",
+          "edition_utc": "2020-05-21T02:21:51Z",
+          "finding": "After downstream improvement first save still too large versus second.",
+          "same_input": "reported original example; comment632306298 corrects import",
+          "limitation": "No pre-draw A/B trial specified; does not refute conditional A."
+        },
+        {
+          "level": "D",
+          "source_id": "MO04",
+          "url": "https://github.com/SciTools/cartopy/pull/1370#issuecomment-569853924",
+          "edition_utc": "2019-12-31T03:02:42Z",
+          "finding": "set_global-in-initializer proposal withdrawn because it prevents autoscaling.",
+          "same_input": "explicitly linked issue, but universal initialization is a third manipulation"
+        },
+        {
+          "level": "C",
+          "source_id": "MO05",
+          "url": "https://github.com/SciTools/cartopy/commit/5e77741d8980f5eead25cb1353601202c1d17826",
+          "edition_utc": "2020-04-10T01:49:01Z",
+          "finding": "Standard patch integration; related downstream1207 correction.",
+          "same_input": "not exact sealed A/B"
+        },
+        {
+          "level": "C",
+          "source_id": "MO06b",
+          "url": "https://github.com/SciTools/cartopy/blob/4703efc6e85a3e0e616889e29382659a741299b9/lib/cartopy/mpl/geoaxes.py#L437-L479",
+          "edition_utc": "2020-07-01T03:43:25Z",
+          "finding": "Shared preparation before tightbbox and draw.",
+          "same_input": "mechanism-relevant, separate later implementation"
+        },
+        {
+          "level": "T",
+          "source_id": "MO06a",
+          "url": "https://github.com/SciTools/cartopy/blob/4703efc6e85a3e0e616889e29382659a741299b9/lib/cartopy/tests/mpl/test_gridliner.py#L239-L280",
+          "edition_utc": "2020-07-01T03:43:25Z",
+          "finding": "Gridliner image test includes changed projection extents; skips Matplotlib<2.0.",
+          "same_input": "different7x5 four-map input, no first/second save assertion",
+          "run_status": "not run here; no CI pass output inspected"
+        },
+        {
+          "level": "L",
+          "source_id": "MO09",
+          "url": "https://scitools.org.uk/cartopy/docs/v0.21/whatsnew/v0.18.html",
+          "edition_utc": "2020-05-03",
+          "finding": "Records1213/1422 layout improvement."
+        },
+        {
+          "level": "L",
+          "source_id": "MO10",
+          "url": "https://scitools.org.uk/cartopy/docs/v0.21/whatsnew/v0.19.html",
+          "edition_utc": "2021-04-21",
+          "finding": "Records1355 bbox/gridliner change."
+        },
+        {
+          "level": "R",
+          "source_id": "MO01",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13430#issuecomment-1333119782",
+          "edition_utc": "2022-12-01T03:39:25Z",
+          "finding": "Contributor reports cannot reproduce on Matplotlib3.6/Cartopy0.21; closes.",
+          "same_input": "claims earlier examples, new version pair",
+          "limitation": "Does not isolate which change or test B; requester thanks is not stated rerun."
+        }
+      ],
+      "predictions": [
+        {
+          "prediction_id": "M01-P1",
+          "classification": "conditional support at requester-report level",
+          "exact_boundary_observation": "limited qualitative report",
+          "normal": "미확인",
+          "reason": "A's operationalization is consistent with requester simple-example report; no donor provenance or general pass-count guarantee."
+        },
+        {
+          "prediction_id": "M01-P2",
+          "classification": "미확인",
+          "exact_boundary_observation": "B never tested",
+          "normal": "미확인",
+          "reason": "A success cannot empirically reject B. Uniform scaling preserving relative geometry is an analytical condition, not an observed B run."
+        }
+      ],
+      "pair_discrimination": {
+        "presealed_relation": "different_conditional",
+        "empirical_unique_support": false,
+        "strict_disposition": "판정불가",
+        "reason": "Only A has qualitative same-example report; competing B and the normal input untested. Sealed B itself predicts failure for internal geometry, so preferred-choice labels must not become a successful unique donor discrimination."
+      },
+      "third_choices": [
+        "initialize every GeoAxes with set_global (explicitly rejected for lost autoscaling)",
+        "move geometry preparation into get_tightbbox (later library implementation)"
+      ],
+      "novelty": {
+        "target_already_original": true,
+        "operation_already_api": true,
+        "operation_in_request": false,
+        "adoption_record": "Requester adopts maintainer pre-draw advice; no record of adopting supplied donor principle."
+      },
+      "breaks": [
+        "Data-driven extent must remain automatic: global initialization violates it.",
+        "Older API cannot override bbox in same way:1355 test skips Matplotlib<2.0.",
+        "Preparing huge transformed artists can be costly;1956 supplies a different-input comparison.",
+        "Different output renderer/backend or complex artists may defeat one pre-draw."
+      ],
+      "minimum_next_test": "At Matplotlib3.0.2+Cartopy0.17.0 run original simple code with corrected cartopy.crs import; log axes bbox after A and both original saves; run B uniform raster scaling; repeat Cartesian control. Preserve font/figure/projection/backend. Record both physical bbox and normalized relative geometry.",
+      "recommended_card_level": "Conditional workflow diagnostic with source+operation+requester report; no unique-discriminator claim."
+    },
+    {
+      "request_id": "M02",
+      "requirement_edition": "MPL-R13522 current initial body; exact creation-body unrecovered",
+      "choices": {
+        "A": "include oversized legend bbox in tight_layout",
+        "B": "exclude legend from layout via existing API, still draw and allow canvas clipping"
+      },
+      "normal_input_status": "10-entry baseline appears in original request; no enumerated post-advice10-entry retest",
+      "boundary_input_status": "Requester's acceptance does not specify30-entry case, font or canvas bbox values",
+      "evidence": [
+        {
+          "level": "D",
+          "source_id": "MO02",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13522#issuecomment-467476150",
+          "edition_utc": "2019-02-26T16:45:32Z",
+          "finding": "Maintainer recommends legend.set_in_layout(False).",
+          "limitation": "Current comment edited after creation."
+        },
+        {
+          "level": "R",
+          "source_id": "MO02",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13522#issuecomment-470121184",
+          "edition_utc": "2019-03-06T14:11:24Z",
+          "finding": "Requester acknowledges it works.",
+          "same_input": "not enumerated; refers to advice in issue",
+          "limitation": "No measured10/30-entry fixed-size result."
+        },
+        {
+          "level": "D",
+          "source_id": "MO02",
+          "url": "https://github.com/matplotlib/matplotlib/issues/13522#issuecomment-467376637",
+          "edition_utc": "2019-02-26T10:03:57Z",
+          "finding": "Before advice, requester considers adding only as many entries as fit.",
+          "same_input": "same goal, third manipulation changes included legend keys"
+        },
+        {
+          "level": "S",
+          "source_id": "MO07",
+          "url": "https://github.com/matplotlib/matplotlib/commit/1d46a93248d6802be4bbf148221198d78f652dc9",
+          "edition_utc": "2019-02-14T21:01:44Z",
+          "finding": "API documentation inclusion predates request; not a later invention."
+        },
+        {
+          "level": "S",
+          "source_id": "MO08a",
+          "url": "https://github.com/matplotlib/matplotlib/blob/8a3ec2f43e7fa287321e9f9e4c6fef24394cd2f9/tutorials/intermediate/tight_layout_guide.py#L155-L165",
+          "edition_utc": "2020-07-29T00:18:05Z",
+          "finding": "Later tutorial corrects obsolete all-artists caveat; historical4x3 legend example atL285–311.",
+          "limitation": "Specification, not same-input test or code fix."
+        },
+        {
+          "level": "C",
+          "source_id": null,
+          "url": null,
+          "finding": "No issue-linked code change identified in inspected timeline/comments.",
+          "limitation": "Existing API advice can resolve usage without new implementation; absence of link is not absence of all code history."
+        },
+        {
+          "level": "T",
+          "source_id": null,
+          "url": null,
+          "finding": "미확인: no inspected acceptance test enumerates10/30 entries and fixed10x3 canvas.",
+          "run_status": "not executed"
+        },
+        {
+          "level": "L",
+          "source_id": null,
+          "url": null,
+          "finding": "No issue-specific release assertion found in inspected path; no required code fix identified."
+        }
+      ],
+      "predictions": [
+        {
+          "prediction_id": "M02-P1",
+          "classification": "conditional shared-choice support at requester-report level; exact boundary 미확인",
+          "reason": "B matches accepted API advice but map suppression does not entail legend-only bbox operation."
+        },
+        {
+          "prediction_id": "M02-P2",
+          "classification": "conditional shared-choice support at requester-report level; exact boundary 미확인",
+          "reason": "Same B result under fixed-font,figure and researcher-added single-page/orientation constraints. CSS does not entail this API."
+        }
+      ],
+      "pair_discrimination": {
+        "presealed_relation": "same_conditional",
+        "empirical_unique_support": false,
+        "strict_disposition": "판별불가",
+        "reason": "Both candidates agree; exclude from discriminative-success numerator irrespective of API success."
+      },
+      "third_choices": [
+        "reduce font (request explicitly rejects)",
+        "omit excess legend entries (changes key completeness)",
+        "allow long legend text to overlap or clip"
+      ],
+      "novelty": {
+        "target_already_original": true,
+        "operation_already_api": true,
+        "operation_in_request": false,
+        "adoption_record": "Requester accepts maintainer API advice; no donor-rule adoption documented."
+      },
+      "breaks": [
+        "Omitting drawn legend keys can make series uninterpretable.",
+        "Removing font/page/orientation constraints reopens CSS scaling/rotation/slicing options.",
+        "Exclusion removes layout cost but does not guarantee all legend content is readable.",
+        "Unmeasured bbox reference can make 'preserves size' ambiguous."
+      ],
+      "minimum_next_test": "At Matplotlib3.0.2 run issue13522 original10x3 three-subplot5:1:5 code with10,20,30 legend entries. Compare A with B and with legend absent, same fonts. Record both data axes bboxes, legend bounds/clipping, warnings. Do not infer30-entry acceptance from short success reply.",
+      "recommended_card_level": "Existing API pointer and explicit constraint tradeoff; usefulness established qualitatively, no new-choice or discriminating-donor claim."
+    }
+  ],
+  "comparisons": [
+    {
+      "source_id": "MC01",
+      "purpose": "cost constraint reversal",
+      "observed": "Author timings for transformed pcolormesh, not exact M01",
+      "inference": "A workflow that prepares everything before measuring can be dominated by geometric work; excluding provably clipped artists is an alternative when the containment invariant holds.",
+      "reproduction": "Use PR1956 supplied N=5000 pcolormesh input and pinned before/after implementations; measure tight_layout separately from rendering, record versions/hardware/patch identity assumptions; no execution performed here."
+    }
+  ],
+  "counts": {
+    "unique_followup_works": 4,
+    "unique_comparison_works": 1,
+    "request_issue_revisits_counted": 0,
+    "release_restatements_counted": 0,
+    "source_log": "matplotlib12-outcome-sources.jsonl"
+  },
+  "no_historical_inspiration_claim": true,
+  "external_independence": "Independent subagent reread within same assisted research task; not external blind reviewer or historical adoption evidence."
+}

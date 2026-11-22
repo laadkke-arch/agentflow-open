@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "phase": "post_seal_reveal",
+  "seal": {
+    "sha": "0d998cb3503e8a7f0faf2bf2f8e62dd046a662b1",
+    "committed_at": "2026-11-22T22:19:23Z",
+    "remote_verified_at": "2026-11-22T22:19:27Z"
+  },
+  "first_outcome_opened_utc": "2026-11-22T22:20:00.421Z",
+  "written_utc": "2026-11-22T22:25:30.908Z",
+  "fixed_inputs": "requests.csv and predictions.csv at seal SHA; no sealed file edited",
+  "cases": [
+    {
+      "request_id": "AUD01",
+      "issue": 407,
+      "prediction_ids": [
+        "AUD01-P1",
+        "AUD01-P2"
+      ],
+      "decision": {
+        "source_id": "AUD-O407-COMMENTS",
+        "url": "https://github.com/audacity/audacity/issues/407#issuecomment-570520646",
+        "date": "2020-01-03T09:46:05Z",
+        "observation": "프로젝트 멤버는 당시 pipe로 선택시각을 읽기 어렵다고 답했고 사용 목적을 포럼에 설명하도록 요청했다. 원작성자는 바로 앞 댓글에서 Nyquist가 알고 있더라도 pipe로 꺼내지 못한다고 분리했다.",
+        "limits": "이는 형식적 API 설계 결정문이나 실행 실패 trace가 아니다."
+      },
+      "implementation": {
+        "source_id": "AUD-O6165",
+        "url": "https://github.com/audacity/audacity/pull/6165",
+        "merge_commit": "0ffa73b9f44acc339e12a350edadd96590dc4b17",
+        "parent_commit": "9346f66908354b61bb5edfc5a2838c04a991913b",
+        "head_reviewed": "7d0252b5973aab7ce7d915697876905ac0ce8fbf",
+        "merged_at": "2024-04-25T10:59:02Z",
+        "location": "GetInfoCommand.cpp diff hunks adding enum/dispatch/SendSelection; fixed source L634–645",
+        "observed_operation": "GetInfo: Type=Selection이 selectedRegion.t0()/t1()를 Start/End로 반환.",
+        "sealed_choice_match": "third_choice_C: 전용 GetTime(A)도 기존 Nyquist 속성 read(B)도 아니다. 최초 agent draft의 generic accessor와 닮았지만 최종봉인B로 소급할 수 없다."
+      },
+      "specification_dispute": {
+        "url": "https://github.com/audacity/audacity/pull/6165#issuecomment-2077257269",
+        "additional_url": "https://github.com/audacity/audacity/pull/6165#issuecomment-2077354485",
+        "observation": "후속 검토자는 audio selection에 시간범위와 track목록 둘 다 필요하다고 지적; 유지보수자는 외부도구 동기화에는 시간만 충분하고 track selectedness는 GetInfo:Tracks에서 얻을 수 있다고 판단.",
+        "scope": "같은 selection이라는 명칭도 시간좌표 조회와 완전선택복원의 목적에서 다르게 평가됨."
+      },
+      "test_code": {
+        "found": false,
+        "coverage": "PR6165 changed files are GetInfoCommand.cpp/h only; no test file. PR6347 changes init.lsp only.",
+        "limit": "이 PR 파일목록은 저장소 전체에 시험이 없다는 증거가 아니다."
+      },
+      "public_run_report": {
+        "url": "https://github.com/audacity/audacity/issues/407#issuecomment-2076865041",
+        "date": "2024-04-25T10:28:52Z",
+        "reporter": "chinakov, CONTRIBUTOR; original requester is buggymcbugfix",
+        "observation": "기여자가 command를 시험했다고 보고하며 Start/End가 올바르다고 적었다.",
+        "attachment_url": "https://github.com/audacity/audacity/assets/139755141/7dad6e5c-ab86-4268-9eb6-1cfd6e3c5a05",
+        "attachment_source_id": "AUD-O407-IMAGE",
+        "attachment_observed_values": {
+          "Start": 2.62385,
+          "End": 5.29415
+        },
+        "attachment_limits": "이미지는 Long Message 출력창만 보이며 선택 입력 UI·binarySHA·실제 pipe 호출이 보이지 않는다.",
+        "same_normal_input": false,
+        "same_boundary_input": false,
+        "requester_retest": false
+      },
+      "wrapper_followup": {
+        "source_id": "AUD-O6347",
+        "url": "https://github.com/audacity/audacity/pull/6347",
+        "merge_commit": "ae0ab087588d5c54c1231ecdf42f4eead5aa11be",
+        "parent_commit": "536728a334f4733c68df8a3b5ab957415cdcdd67",
+        "merged_at": "2024-04-26T12:59:45Z",
+        "location": "nyquist/init.lsp L54–78, especially allowed types L61–62",
+        "observation": "새 Selection 타입을 aud-get-info에 추가. 별도 댓글2078903979의 Tested는 입력·출력 없이 남긴 시험보고.",
+        "same_as_sealed_B": false
+      },
+      "release": {
+        "source_id": "AUD-O360",
+        "url": "https://github.com/audacity/audacity/releases/tag/Audacity-3.6.0",
+        "published_at": "2024-07-16T18:01:23Z",
+        "location": "Other changes > Scripting bullet",
+        "observation": "GetInfo: Type=Selection 추가가 릴리스 설명에 기록됨.",
+        "limit": "특정1.25/2.50/zero-duration 실행결과를 제공하지 않음."
+      },
+      "judgments": [
+        {
+          "prediction_id": "AUD01-P1",
+          "judgment": "판별불가",
+          "reason": "두 후보는 봉인된 수치에 같은 예측. 공개후속은 다른 명령C이며 같은 시험입력도 아님."
+        },
+        {
+          "prediction_id": "AUD01-P2",
+          "judgment": "판별불가",
+          "reason": "같은 수치 예측을 지지하더라도 원리의 유일 판별 성공이 아니며 exact-input 시험 미확인."
+        }
+      ],
+      "same_operation_input_purpose_verified": false,
+      "unique_support": false,
+      "both_rejected": false,
+      "conditional_discrimination_denominator_member": false,
+      "author_donor_adoption": "미확인. 읽은 이슈/PR의 직접 논의에서 제공원전 채택을 연결하는 기록을 보지 못함; 부재 증명 아님.",
+      "revision_history": "timeline shows first title 'Get selection time in script', changed2020-01-03 then2022-06-11. Body edit history not exposed by approved REST timeline; first body version remains unverified.",
+      "recommendation": "기존 선택의 두 경계와 pipe 전달을 별도로 확인하는 조건부 참고. 해결 구현 링크는 직접 반환할 수 있으나 donor가 A/B를 골랐다고 설명할 수 없음.",
+      "minimum_next_evidence": "봉인된A/B 각각을 같은 선택[1.25,2.50]와[1.25,1.25]에서 실행한 출력; pipe 전달·같은binarySHA까지 확인. 그래도 두 donor동일예측이면 판별성은0."
+    },
+    {
+      "request_id": "AUD02",
+      "issue": 511,
+      "prediction_ids": [
+        "AUD02-P1",
+        "AUD02-P2"
+      ],
+      "decision": {
+        "source_id": "AUD-O511-COMMENTS",
+        "url": "https://github.com/audacity/audacity/issues/511#issuecomment-2445034377",
+        "date": "2024-10-29T18:25:22Z",
+        "observation": "멤버가 Audacity4에서 고쳐졌다고 짧게 보고하며 종료.",
+        "limits": "구체적 RGB입력·선택 경로·코드SHA·before/after·대비 정책 없음. 이 한 문장을 A/B 지지로 승격하지 않음."
+      },
+      "subtask": {
+        "source_id": "AUD-O2713",
+        "url": "https://github.com/audacity/audacity/issues/2713",
+        "closing_comment": "https://github.com/audacity/audacity/issues/2713#issuecomment-1150354103",
+        "date": "2022-06-08T20:07:57Z",
+        "observation": "색선택기 이름/preview 개선 논의. 멤버는 post4.x에나 다룰 수 있어 지금 닫는다고 명시. 현재511의checkedsubtask는 구현·시험완료의 증거가 아님.",
+        "input_difference": "기존 네 instrument/color 선택지에 대한 이름/preview 개선으로, 임의RGB전경/배경과 대비보정 fixture가 아님."
+      },
+      "independent_comparison": {
+        "source_id": "AUD-C5653",
+        "url": "https://github.com/audacity/audacity/pull/5653",
+        "merge_commit": "948a1036e122d7f2269d7b1779868bbc8304a951",
+        "merged_at": "2024-02-19T17:44:17Z",
+        "locations": [
+          "PR body QA list: copy/paste/drag/split preserves colors; version3.4↔3.5 persistence",
+          "issuecomment-1829887542: non-default stereo color reverted after channel swap/split",
+          "issuecomment-1829945652: recording default-blue vs generated chosen color",
+          "issuecomment-1834035774: maintainer identifies dependency on5530"
+        ],
+        "observation": "다른 실제 작업에서 색은 signal가독성만이 아니라 clip identity/편집 지속성과 이전판 호환의 상태이기도 함. reported regression means readability-based remapping cannot blindly replace user's preserved color.",
+        "limit": "sealed sameHEXcontrast pair와 다른 입력·목적. AUD02 outcome으로 채점하지 않음."
+      },
+      "implementation": {
+        "found_same_input": false,
+        "scope": "511timeline has no linked resolving commit or PR;2713is deferral; bounded clip-color PR search found1532,5653, neither tested sealed sameHEX fixture. Audacity4 closure assertion has no precise diff in read thread."
+      },
+      "test_code": {
+        "found_same_input": false
+      },
+      "public_run_report": {
+        "found_same_input": false,
+        "requester_retest": false
+      },
+      "judgments": [
+        {
+          "prediction_id": "AUD02-P1",
+          "judgment": "판별불가",
+          "reason": "원규칙도 A/B를 고르지 않음; 후속자료는 색명칭/preview/선언 수준이며 waveform boundarycontrast 입력 없음."
+        },
+        {
+          "prediction_id": "AUD02-P2",
+          "judgment": "미확인",
+          "reason": "WCAG의조건부contrast 예측은 타당한 계산이나 public receiver가 #777777 pair를 변환/보존한 출력이 없음."
+        }
+      ],
+      "same_operation_input_purpose_verified": false,
+      "unique_support": false,
+      "both_rejected": false,
+      "conditional_discrimination_denominator_member": false,
+      "author_donor_adoption": "미확인. 제공접근성/영상지침 채택의 직접 연결 없음.",
+      "revision_history": "2022-03-22T18:00:37Z title changed from 'Allow changing track and background colors in clips' (no selection token) to currenttitle. Preseal current-title query is reproducible, but it is not a reconstruction of historical title-matched list. Current original-report region authenticity remains unverified; post-edited checklist leak retained.",
+      "recommendation": "가독성 요구와 사용자색 보존 요구를 비교할 조건부 참고. 실제 고쳐진 색정책·기본값·접근성예외가 확인되기 전 A/B구현 추천은 보류.",
+      "minimum_next_evidence": "2024-10-29 fix assertion에 대응하는 Audacity4 exactSHA의 arbitraryRGB/background API와 #777777 samecolor 입력의 before/after·contrast·user override 시험."
+    },
+    {
+      "request_id": "AUD03",
+      "issue": 644,
+      "prediction_ids": [
+        "AUD03-P1",
+        "AUD03-P2"
+      ],
+      "decision": {
+        "source_id": "AUD-O644-COMMENTS",
+        "url": "https://github.com/audacity/audacity/issues/644",
+        "observation": "현재 issue는open. 두 댓글은 작업참여질문과외부discussion안내뿐. 11timeline events에 linkedfix/acceptedtest 없음.",
+        "limits": "공개스레드 범위의 미확인. private discussion에 결론이 없다는 증명은 아님; 해당Discord에는 들어가지 않음."
+      },
+      "post_seal_correction": {
+        "correction_id": "AUD-CORR-01",
+        "patch_first_opened_utc": "2026-11-22T22:22:25.972Z",
+        "baseline_omission_confirmed_utc": "2026-11-22T22:22:34.620Z",
+        "direct_source_reopen_utc": "2026-11-22T22:23:44.433Z",
+        "original_error": "Preseal global Experimental.h define와 conditional implementation를 읽고, NoiseReduction.cpp 자체의 local#undef를 놓쳤다. 조건부코드를 active기능처럼 이해할 가능성을 만들었다.",
+        "baseline_url": "https://github.com/audacity/audacity/blob/16d52f63a4183bba77ef7305d14622958dc0d1d5/src/effects/NoiseReduction.cpp#L75-L77",
+        "baseline_fact": "L75–77 comment says selection should not affect this effect owing to missing indication; local#undef EXPERIMENTAL_SPECTRAL_EDITING disables band-specific path.",
+        "after_url": "https://github.com/audacity/audacity/blob/e7d17d1bcedcb1fe75d78eb522de3b46476c94b7/src/effects/NoiseReduction.cpp#L75-L77",
+        "after_fact": "2024 cleanup changes local#undef name to SPECTRAL_EDIT_NOISE_REDUCTION and updates guards; preserves disabled noise-reduction spectral selection.",
+        "affected": "AUD03 API feasibility and interpretation of pre-request code; not toy arithmetic. Original requests/predictions/API drafts unchanged; correction appended only afterseal.",
+        "new_judgment": "좋은 경계원리만으로 사용자가 선택한 spectral region이 이 효과에 전달되지는 않는다. UI에서 표시되지 않는 숨은 영향 때문에 수신측이 의도적으로 비활성화한 조건이 우선."
+      },
+      "implementation": {
+        "source_id": "AUD-O6201",
+        "url": "https://github.com/audacity/audacity/pull/6201",
+        "commit": "e7d17d1bcedcb1fe75d78eb522de3b46476c94b7",
+        "parent_commit": "0b465d6b15a308c743aeb4ce44403bde09a6cc97",
+        "merged_pr_commit": "435ede5b8a1cb4d63df21e92aaad38cb717bd0fa",
+        "date": "2024-04-04T18:01:01Z",
+        "location": "NoiseReduction.cpp diff at75/298/695/834/857; fixed file L75–77",
+        "observation": "후속 change is compile-flag cleanup retaining NR-specific disabling, not adoption of either sealedmask.",
+        "same_as_sealed_A": false,
+        "same_as_sealed_B": false
+      },
+      "test_code": {
+        "found_same_input": false,
+        "scope": "No exact Fs48000,N2048,bin64/86,hard/-6dB/5bin pair found in read issue, bounded PR search or relevantcleanup."
+      },
+      "public_run_report": {
+        "found_same_input": false,
+        "requester_retest": false
+      },
+      "judgments": [
+        {
+          "prediction_id": "AUD03-P1",
+          "judgment": "미확인",
+          "reason": "봉인A toy출력0dB는 arithmeticmodel; 실제 receiver에 동일조작·입력시험없음. local#undef로API적용은막혀있음."
+        },
+        {
+          "prediction_id": "AUD03-P2",
+          "judgment": "미확인",
+          "reason": "봉인B -2.4dB는 정해둔5bin kernel계산; 실제NR프로필·binary출력으로소급할수없음."
+        }
+      ],
+      "same_operation_input_purpose_verified": false,
+      "unique_support": false,
+      "both_rejected": false,
+      "conditional_discrimination_denominator_member": false,
+      "author_donor_adoption": "미확인. 최초요구가AdobeAudition을이미명명; donorfilm/coloring원칙채택은확인못함.",
+      "recommendation": "실제API제약을 먼저 표시한 검증가설 카드만 반환. 시간범위선택·색상feather·주파수binmask의단위/불변조건차이를 명시. activeNR기능 추천으로 반환불가.",
+      "minimum_next_evidence": "선택주파수범위를이효과에명시적으로전달하는fixedbuild/patch와동일noiseprofile·window·overlap·gain설정의bin64/86출력. 현재toy가실제algorithm과같은지도별도검사."
+    }
+  ],
+  "aggregate": {
+    "cases": 3,
+    "predictions": 6,
+    "same_pair_cases": 1,
+    "underdetermined_cases": 1,
+    "different_model_cases": 1,
+    "same_input_public_followup_cases": 0,
+    "discriminating_cases_with_same_input_followup": 0,
+    "unique_support": 0,
+    "both_rejected": 0,
+    "conditional_rate": "해당 없음",
+    "conditional_denominator_unit": "different prediction cases with same operation/input/purpose public evidence",
+    "explicit_outcome_leak_cases": [
+      "AUD02"
+    ],
+    "conservative_any_postrequest_code_exposure_cases": [
+      "AUD01",
+      "AUD02"
+    ],
+    "strict_title_history_exception": [
+      "AUD02"
+    ],
+    "runtime_execution_by_this_agent": 0,
+    "original_requester_retests": 0
+  },
+  "search_limit": "Publicissue/timeline/comments; explicitlylinkedPRs and one release; bounded GitHub PR queries; NRpathcommitlist78 entries. No assertion of exhaustive repository-wide or private-history search."
+}
