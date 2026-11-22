@@ -14,7 +14,7 @@ from time import perf_counter
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from cohort import T0, node_links, python_links, sections
+from cohort import node_links, python_links, sections
 
 HERE = Path(__file__).resolve().parent
 TRACE_FIELDS = ("http_attempts", "http_body_bytes", "git_pack_bytes", "new_objects",
@@ -139,6 +139,11 @@ def git_read(cache, release):
         receipt["route"] = "network_git"
         pinned = ""
         old = set((work / "objects" / "pack").glob("*.pack"))
+        known = set(subprocess.check_output(
+            [*git, "cat-file", "--batch-all-objects", "--batch-check=%(objectname)", "--unordered"]
+        ).splitlines())
+        received = set()
+        receipt["pack_entries"] = 0
         for attempt in range(2):
             env = os.environ | {"GIT_TRACE_CURL": "1", "GIT_TERMINAL_PROMPT": "0"}
             got = subprocess.run(
@@ -160,7 +165,10 @@ def git_read(cache, release):
         for pack in set((work / "objects" / "pack").glob("*.pack")) - old:
             receipt["git_pack_bytes"] += pack.stat().st_size
             indexes = subprocess.check_output([*git, "show-index"], input=pack.with_suffix(".idx").read_bytes())
-            receipt["new_objects"] += len(indexes.splitlines())
+            object_ids = [line.split()[1] for line in indexes.splitlines()]
+            receipt["pack_entries"] += len(object_ids)
+            received.update(object_ids)
+        receipt["new_objects"] = len(received - known)
     tree = {}
     if pinned == release["commit"]:
         paths = ["Doc/library", "Doc/whatsnew", "doc/api", "doc/changelogs", "CHANGELOG.md"]
