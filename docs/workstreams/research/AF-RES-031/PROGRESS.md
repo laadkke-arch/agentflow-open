@@ -8,4 +8,5 @@
 | ③b Q11 첫 실행과 정정 | e969b2f9c33eeaf07a1fdb672bb88a22aba59c5b | jupyter-initial·jupyter-first 수신·송신 로그와 K-AMEND-01 | 빈 폴더 재생·공간정보와 보존 자료 대조 |
 | ④ 재실행·반증 및 다른 분야 | 3f3132022ec5c522d9c9850b600e47e659ee0f93 | receipts/replay·domain, 40개 산입 sources, artifacts·locks, observations·comparison·verify | 필수 세 표와 Q1–Q8 재독, 수용 판정 |
 | ④b Java 원 시험 반증 | 65f0e5dec833881511470a1542f0b9c677692fb8 | JavaHolderControl과 holder 원·재실행, JAV-BIN-SCOPE-01 | 범위를 명시한 결과표와 자체 점검 |
-| ⑤ 결과표·자체 점검·수용 | 다음 묶음에서 이 커밋의 SHA를 기록 | RESULT, SELF_CHECK, acceptance-evidence, verify | 원격 고정 SHA 직접 확인 후 최종 HANDOFF |
+| ⑤ 결과표·자체 점검·수용 | e8b12f3b0d7640df3458de2fef58b70abed0e6b6 | RESULT, SELF_CHECK, acceptance-evidence, verify | 원격 고정 SHA 직접 확인 후 최종 HANDOFF |
+| ⑤b 직접 원문 재독 | 다음 묶음에서 이 커밋의 SHA를 기록 | evidence/source-reread.json과 재독 창 정정 | 이 최종 결과 SHA의 원격 재독 후 HANDOFF |
