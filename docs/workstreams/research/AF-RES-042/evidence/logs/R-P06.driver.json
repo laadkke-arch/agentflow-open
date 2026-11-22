@@ -1,0 +1,613 @@
+{
+  "case_id": "P06",
+  "software_replay_started_utc": "2026-11-22T20:19:15.804017+00:00",
+  "driver_sha256": "de8bad4712e00e626cccf3a6f3c6974c6c1f0797e0d91b5a2fdeb41e63bb709f",
+  "purpose": "API replay with explicit dependency selection",
+  "historical_environment_equivalence": "미확인",
+  "historical_dependency_lock": "미확인; selected replay dependencies are not recovered original dependencies",
+  "human_trial": "not_performed",
+  "human_time": null,
+  "source_pins": [
+    "https://github.com/pandas-dev/pandas/blob/1fb0adb5a7b1ba909fb34a19b1d27c7eccdf4119/web/pandas/pdeps/0006-ban-upcasting.md",
+    "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/dtypes/cast.py",
+    "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/arrays/masked.py",
+    "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/tests/arrays/masked/test_indexing.py"
+  ],
+  "expected_versions": {
+    "python": "3.10.6",
+    "pandas": "1.5.2",
+    "numpy": "1.23.5"
+  },
+  "environment": {
+    "python": "3.10.6",
+    "python_full": "3.10.6 (main, Aug 23 2022, 08:36:38) [GCC 10.2.1 20210110]",
+    "executable": "/tmp/af042/venv/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.31",
+    "machine": "x86_64",
+    "uname": {
+      "system": "Linux",
+      "node": "f145ee4c983a",
+      "release": "6.18.57",
+      "version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+      "machine": "x86_64"
+    },
+    "pandas": "1.5.2",
+    "numpy": "1.23.5"
+  },
+  "inputs": {
+    "initial": [
+      1,
+      2,
+      3
+    ],
+    "t0": [
+      {
+        "index": 0,
+        "value_literal": "4",
+        "value_type": "int"
+      },
+      {
+        "index": 1,
+        "value_literal": "2.0",
+        "value_type": "float"
+      }
+    ],
+    "t1_independent": [
+      {
+        "index": 1,
+        "value_literal": "3.0",
+        "value_type": "float"
+      },
+      {
+        "index": 1,
+        "value_literal": "1.5",
+        "value_type": "float"
+      },
+      {
+        "index": 1,
+        "value_literal": "'potage'",
+        "value_type": "str"
+      }
+    ]
+  },
+  "excluded_scope": [
+    "human performance",
+    "NA",
+    "overflow",
+    "timezone",
+    "locale",
+    "general API compatibility",
+    "historical environment identity"
+  ],
+  "installed_distributions": [
+    {
+      "name": "numpy",
+      "version": "1.23.5"
+    },
+    {
+      "name": "pandas",
+      "version": "1.5.2"
+    },
+    {
+      "name": "pip",
+      "version": "22.2.1"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "2.8.2"
+    },
+    {
+      "name": "pytz",
+      "version": "2022.2.1"
+    },
+    {
+      "name": "setuptools",
+      "version": "63.2.0"
+    },
+    {
+      "name": "six",
+      "version": "1.16.0"
+    }
+  ],
+  "status": "api_replay_matched_expectations",
+  "tests_executed": true,
+  "test_methods_run": 8,
+  "expected_failure_count_required": 3,
+  "expected_failure_count_observed": 3,
+  "expected_failure_count_matches": true,
+  "failures": [],
+  "errors": [],
+  "expected_contract_failures": [
+    {
+      "test_id": "__main__.P06Contracts.test_xfail_numpy_should_reject_fractional_not_truncate",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/af042/upstream/replay_api_contracts.py\", line 365, in test_xfail_numpy_should_reject_fractional_not_truncate\n    with self.assertRaises((TypeError, ValueError)):\nAssertionError: (<class 'TypeError'>, <class 'ValueError'>) not raised\n"
+    },
+    {
+      "test_id": "__main__.P06Contracts.test_xfail_plain_series_should_reject_fractional",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/af042/upstream/replay_api_contracts.py\", line 343, in test_xfail_plain_series_should_reject_fractional\n    with self.assertRaises(TypeError):\nAssertionError: TypeError not raised\n"
+    },
+    {
+      "test_id": "__main__.P06Contracts.test_xfail_plain_series_should_reject_text",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/af042/upstream/replay_api_contracts.py\", line 354, in test_xfail_plain_series_should_reject_text\n    with self.assertRaises(TypeError):\nAssertionError: TypeError not raised\n"
+    }
+  ],
+  "unexpected_successes": [],
+  "skipped": [],
+  "observations": [
+    {
+      "label": "P06.legacy_plain_series.characterization",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1.0,
+          1.5,
+          3.0
+        ],
+        "dtype": "float64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.legacy_plain_series.characterization",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "'potage'",
+          "value_type": "str"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          "potage",
+          3
+        ],
+        "dtype": "object"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t0.int64",
+      "inputs": {
+        "index": 0,
+        "value": {
+          "value_literal": "4",
+          "value_type": "int"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          4,
+          2,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t0.int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "2.0",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            4,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          4,
+          2,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_compatible.int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "3.0",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          3,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t0.Int64",
+      "inputs": {
+        "index": 0,
+        "value": {
+          "value_literal": "4",
+          "value_type": "int"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "Int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          4,
+          2,
+          3
+        ],
+        "dtype": "Int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t0.Int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "2.0",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            4,
+            2,
+            3
+          ],
+          "dtype": "Int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          4,
+          2,
+          3
+        ],
+        "dtype": "Int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_compatible.Int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "3.0",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "Int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          3,
+          3
+        ],
+        "dtype": "Int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_incompatible.int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "exception",
+      "exception": {
+        "type": "TypeError",
+        "message": "Incompatible scalar for declared integer dtype"
+      },
+      "post_state": {
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_incompatible.int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "'potage'",
+          "value_type": "str"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "exception",
+      "exception": {
+        "type": "TypeError",
+        "message": "Incompatible scalar for declared integer dtype"
+      },
+      "post_state": {
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_incompatible.Int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "Int64"
+        }
+      },
+      "outcome": "exception",
+      "exception": {
+        "type": "TypeError",
+        "message": "Invalid value '1.5' for dtype Int64"
+      },
+      "post_state": {
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "dtype": "Int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.t1_incompatible.Int64",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "'potage'",
+          "value_type": "str"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "Int64"
+        }
+      },
+      "outcome": "exception",
+      "exception": {
+        "type": "TypeError",
+        "message": "Invalid value 'potage' for dtype Int64"
+      },
+      "post_state": {
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "dtype": "Int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.numpy_truncation.characterization",
+      "inputs": {
+        "index": 1,
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          1,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.numpy_fractional.expected_contract_failure",
+      "inputs": {
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          1,
+          3
+        ],
+        "dtype": "int64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.legacy_fractional.expected_contract_failure",
+      "inputs": {
+        "value": {
+          "value_literal": "1.5",
+          "value_type": "float"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1.0,
+          1.5,
+          3.0
+        ],
+        "dtype": "float64"
+      },
+      "warnings": []
+    },
+    {
+      "label": "P06.legacy_text.expected_contract_failure",
+      "inputs": {
+        "value": {
+          "value_literal": "'potage'",
+          "value_type": "str"
+        },
+        "before": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "dtype": "int64"
+        }
+      },
+      "outcome": "returned",
+      "output": null,
+      "post_state": {
+        "values": [
+          1,
+          "potage",
+          3
+        ],
+        "dtype": "object"
+      },
+      "warnings": []
+    }
+  ],
+  "software_replay_finished_utc": "2026-11-22T20:19:15.974547+00:00",
+  "interpretation": "Expected failures reproduce defects in historical API choices; they are not passing alternatives or human observations."
+}
