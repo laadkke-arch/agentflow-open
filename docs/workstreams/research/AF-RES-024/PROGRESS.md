@@ -28,3 +28,6 @@
 - 묶음 ④. 마지막 분기 기록의 원격 SHA는 `b4dd9f85e40d5bb49eda4e984418c40e1a9f6a39`다. 2025Q4까지 완주한 뒤 변경 정답과 원문 판독을 별도 파일로 적었다. 최초 수집 캐시를 이어서 재사용한 두 실행의 스냅샷은 최초 산출과 일치했다. Git 팩에 구 객체가 다시 담겨 `git show-index`로 실제 신규 고유 객체를 고쳤다. 분기판의 다음 높은 패치 공개일은 별도 공식 페이지에서 재확인했다.
 - 측정 결과를 `python -B docs/workstreams/research/AF-RES-024/replay.py --out <빈 디렉터리>`로 재생한다. `python -B docs/workstreams/research/AF-RES-024/verify.py`로 수용 분모·정답 출처·상한·공동 원문의 실제 열람을 대조한다.
 - 남은 ID. ④까지의 결과를 원격 새 디렉터리에서 확인하고 자체 점검과 수용 근거를 커밋한다. 마지막에 인계한다.
+
+- 묶음 ④ 검증. 원격 `1606df16ed0ffe5d60bd19064f5c63f9d6eb17c7`을 새 checkout으로 읽었다. 결과 파일 6개 바이트 일치, 정답 없는 정책 실행, 새 네트워크 경로 3개 시점 재확인, 원격 작업 계약 및 공통 검사를 통과했다. [검증 영수증](evidence/verification.json)
+- 종료 점검. [SELF_CHECK.md](SELF_CHECK.md)와 [수용 원장](evidence/acceptance-evidence.json)을 기록하고 커밋한다. 남은 작업은 이 점검 커밋을 원격에서 읽고 최종 HANDOFF.md를 따로 커밋하는 것이다.
