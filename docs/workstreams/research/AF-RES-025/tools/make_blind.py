@@ -42,7 +42,7 @@ source_ids={sid:'S-'+digest([s.get('source_url',s.get('url','')),s.get('version'
 
 def mask(value):
     if isinstance(value,list): return [mask(v) for v in value]
-    if isinstance(value,dict): return {k:mask(v) for k,v in value.items() if k not in ['route','rank','checked_utc','first_seen_rank','first_seen_query','search_receipt_ids']}
+    if isinstance(value,dict): return {k:mask(v) for k,v in value.items() if k not in ['route','rank','checked_utc','first_seen_rank','first_seen_query','search_receipt_ids','sufficient_for_condition','opened_complete','cited_complete','verdict','self_verdict']}
     if isinstance(value,str):
         for old,new in source_ids.items():
             if old: value=value.replace(old,new)
