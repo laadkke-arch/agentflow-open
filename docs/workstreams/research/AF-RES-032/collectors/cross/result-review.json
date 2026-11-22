@@ -1,0 +1,586 @@
+{
+  "audit_id": "AF-RES-032-result-review-cross",
+  "reviewer": "/root/cross_fields",
+  "observed_at_utc": "2026-11-22T08:27:53.180641+00:00",
+  "status": "REVIEW_COMPLETE",
+  "target_result_sha256": "c2c32c79d95cddc6efa1c81f3d7bf25b13e655975e027822d2d8ab0e0eb3e59b",
+  "first_recorded_result_sha256": "cea1ed5c440059e88da7f0cc60244389cd17d82a1375bca53330a783e8c0438f",
+  "target_repository_head": null,
+  "head_note": "No Git commands permitted for this audit; target fixed by inputhashes, not inferred HEAD. Parent commits.",
+  "allowed_writes": [
+    "collectors/cross/RESULT_REVIEW.md",
+    "collectors/cross/result-review.json"
+  ],
+  "external_pages_opened_for_audit": 0,
+  "git_commands_executed": 0,
+  "execution_exit_code": 0,
+  "execution": "Actual local Python parsing, hashing, arithmetic, link-existence checks. No external URL requests. Earlier read failed with AttributeError assuming dedup list was dict. First report assembly incorrectly counted repeated in-row reference links as separate table rows; fixed by extracting only first column. Both failed before writes. Targeted re-reads replaced truncated inspection output.",
+  "independence": "Separate internal review of root aggregation. Reviewer authored Q7,B01/B04/B06 and A masked decisions; not independent external review or new blind reading.",
+  "checks": [
+    {
+      "id": "RR-C01",
+      "condition": "Mandatory tables each contain exactly all18A/B rows",
+      "met": true,
+      "evidence": "RESULT.md tables1–3",
+      "observed": [
+        18,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "RR-C02",
+      "condition": "Final weakness table has3body rows and ends document",
+      "met": true,
+      "evidence": "RESULT.md final table",
+      "observed": null
+    },
+    {
+      "id": "RR-C03",
+      "condition": "Required headers/order and Markdown column counts match",
+      "met": true,
+      "evidence": "RESULT.md and18row files",
+      "observed": []
+    },
+    {
+      "id": "RR-C04",
+      "condition": "395unique source IDs;75minimum originals with stated categories",
+      "met": true,
+      "evidence": "sources.jsonl",
+      "observed": {
+        "A_original": 12,
+        "upstream": 34,
+        "other_primary": 1,
+        "consumer_followup": 8,
+        "cross_field": 8,
+        "B_consumer": 5,
+        "B_auxiliary": 7
+      }
+    },
+    {
+      "id": "RR-C05",
+      "condition": "Aarchive/member-state counts reconstruct from source kinds",
+      "met": true,
+      "evidence": "sources.jsonl actual_CRAN_archive_*,consumer_distributed_html,distributed_html_member",
+      "observed": {
+        "archives": 123,
+        "states": 246,
+        "HTML": 211,
+        "absent": 35
+      }
+    },
+    {
+      "id": "RR-C06",
+      "condition": "All7auxiliary timestamp subtractions match",
+      "met": true,
+      "evidence": "intervals.csv",
+      "observed": [
+        {
+          "reference_id": "A-R01",
+          "clock_pair": "consumer_source_edit→observed_CRAN_publication",
+          "stated_seconds": 52600.0,
+          "computed_seconds": 52600.0,
+          "matches": true,
+          "generic_eligible": "True",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "A-R02",
+          "clock_pair": "consumer_source_edit→observed_CRAN_publication",
+          "stated_seconds": 52600.0,
+          "computed_seconds": 52600.0,
+          "matches": true,
+          "generic_eligible": "True",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "A-R04",
+          "clock_pair": "consumer_source_edit→observed_CRAN_publication",
+          "stated_seconds": 55797.0,
+          "computed_seconds": 55797.0,
+          "matches": true,
+          "generic_eligible": "False",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "A-R05",
+          "clock_pair": "consumer_source_edit→observed_CRAN_publication",
+          "stated_seconds": 510146.0,
+          "computed_seconds": 510146.0,
+          "matches": true,
+          "generic_eligible": "True",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "A-R06",
+          "clock_pair": "consumer_source_edit→observed_CRAN_publication",
+          "stated_seconds": 8352241.0,
+          "computed_seconds": 8352241.0,
+          "matches": true,
+          "generic_eligible": "False",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "A-D02",
+          "clock_pair": "official_upstream_status_report→consumer_source_committer",
+          "stated_seconds": 13480547.0,
+          "computed_seconds": 13480547.0,
+          "matches": true,
+          "generic_eligible": "True",
+          "strict_eligible": "False"
+        },
+        {
+          "reference_id": "B02",
+          "clock_pair": "consumer_source_committer→consumer_publication",
+          "stated_seconds": 14044.0,
+          "computed_seconds": 14044.0,
+          "matches": true,
+          "generic_eligible": "True",
+          "strict_eligible": "False"
+        }
+      ]
+    },
+    {
+      "id": "RR-C07",
+      "condition": "A3source/publication pairs represent2events;B1;all strict clocks ineligible",
+      "met": true,
+      "evidence": "intervals.csv; A-R01/A-R02 share R-C01; RESULT Q6",
+      "observed": null
+    },
+    {
+      "id": "RR-C08",
+      "condition": "A/B Q8 judgments/costs match sealed decisions and receipts",
+      "met": true,
+      "evidence": "comparisons.csv; cross L1/L2/L3 decisions/receipts",
+      "observed": {
+        "A": {
+          "rows": 12,
+          "adjudication": {
+            "유지": 9,
+            "교체": 2,
+            "보류": 1
+          },
+          "views": {
+            "L1": {
+              "decisions": {
+                "보류": 12
+              },
+              "comparison": {
+                "보류": 12
+              },
+              "external_pages": 0,
+              "source_cards": 0
+            },
+            "L2": {
+              "decisions": {
+                "보류": 12
+              },
+              "comparison": {
+                "보류": 12
+              },
+              "external_pages": 0,
+              "source_cards": 0
+            },
+            "L3": {
+              "decisions": {
+                "유지": 9,
+                "교체": 2,
+                "보류": 1
+              },
+              "comparison": {
+                "정답": 11,
+                "보류": 1
+              },
+              "external_pages": 0,
+              "source_cards": 50
+            }
+          }
+        },
+        "B": {
+          "rows": 6,
+          "adjudication": {
+            "유지": 4,
+            "교체": 1,
+            "보류": 1
+          },
+          "views": {
+            "L1": {
+              "decisions": {
+                "보류": 6
+              },
+              "comparison": {
+                "보류": 6
+              },
+              "external_pages": 0,
+              "source_cards": 0
+            },
+            "L2": {
+              "decisions": {
+                "보류": 6
+              },
+              "comparison": {
+                "보류": 6
+              },
+              "external_pages": 0,
+              "source_cards": 0
+            },
+            "L3": {
+              "decisions": {
+                "유지": 4,
+                "교체": 1,
+                "보류": 1
+              },
+              "comparison": {
+                "정답": 5,
+                "보류": 1
+              },
+              "external_pages": 0,
+              "source_cards": 23
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "RR-C09",
+      "condition": "Q8 confounding,card interpretation,exposure and internal scope disclosed",
+      "met": true,
+      "evidence": "RESULT Q8; cross/L3-receipt.json",
+      "observed": null
+    },
+    {
+      "id": "RR-C10",
+      "condition": "ONS vintages and Lowry citation role separated;cross fields outside software denominators",
+      "met": true,
+      "evidence": "RESULT Q7; cross/cases.json; X-S01–X-S08",
+      "observed": null
+    },
+    {
+      "id": "RR-C11",
+      "condition": "B04 original429 and separatecanonical200 fields distinct;source uploads not historicalHTML",
+      "met": true,
+      "evidence": "evidence/rows/B04.md; chains.csv; cross/b/downloads7.json,downloads8.json; CB-S20",
+      "observed": null
+    },
+    {
+      "id": "RR-C12",
+      "condition": "First-edition claims limited to fullyenumerated lineage;remaining gaps disclosed",
+      "met": true,
+      "evidence": "RESULT Q3–Q5; editions.csv",
+      "observed": null
+    },
+    {
+      "id": "RR-C13",
+      "condition": "Row artifact/hash/href fields and ID-labelledURL links match;local linked files exist",
+      "met": true,
+      "evidence": "RESULT+18row files vs references.jsonl/sources.jsonl",
+      "observed": {
+        "source_links": 197,
+        "field_errors": [],
+        "url_errors": [],
+        "missing_local_links": []
+      }
+    },
+    {
+      "id": "RR-C14",
+      "condition": "Acceptance30conditions/24true/6false retains scope deviations",
+      "met": true,
+      "evidence": "evidence/acceptance-evidence.json;scope-deviations.md",
+      "observed": null
+    },
+    {
+      "id": "RR-C15",
+      "condition": "Common regression5/5exit0 receipt exists and excludes later RESULT",
+      "met": true,
+      "evidence": "evidence/checks/common-retry-execution.json;common-retry-receipt.json",
+      "observed": "6ac3d4d9c11f5a750401535a05caed29ed5daf01"
+    },
+    {
+      "id": "RR-C16",
+      "condition": "Actual late deliverable receipt38/38exit0 matches45current input hashes; first37/38failure and future HANDOFF gate are separate",
+      "met": true,
+      "evidence": [
+        "evidence/deliverable-check.json",
+        "evidence/deliverable-check-first-run.json",
+        "RESULT.md verification paragraph",
+        "SELF_CHECK.md finalverification section"
+      ],
+      "observed": {
+        "completed_at_utc": "2026-11-22T08:26:50.280213+00:00",
+        "target_HEAD": "6ac3d4d9c11f5a750401535a05caed29ed5daf01",
+        "input_hashes_checked": 45,
+        "mismatches": [],
+        "passed": 38,
+        "total": 38,
+        "exit_code": 0,
+        "first_passed": 37,
+        "first_total": 38,
+        "first_exit_code": 1,
+        "deferred": [
+          "HANDOFF.md required by --final"
+        ]
+      }
+    }
+  ],
+  "passed_checks": 16,
+  "findings": [
+    {
+      "id": "RR-F01",
+      "severity": "medium",
+      "location": "RESULT table1 A-R03",
+      "before": "2025-10-30 MDN source path change cited R-U13, a Dec2020 fixed body",
+      "correction": "Use R-U17 commit2d78abb3e793352e24e976ce0e68c08d817bd7f3; R-U13 only for legacy semantics",
+      "evidence": [
+        "R-U13",
+        "R-U17",
+        "https://github.com/mdn/content/commit/2d78abb3e793352e24e976ce0e68c08d817bd7f3"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F02",
+      "severity": "medium",
+      "location": "RESULT Q3–Q4 A-R04",
+      "before": "Old anchor wording implied fragment existed in originalhref",
+      "correction": "Redirect added #rstudio-ide-oss-downloads; original href has no fragment",
+      "evidence": [
+        "references.jsonl A-R04",
+        "R-U04"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F03",
+      "severity": "medium",
+      "location": "RESULT verification paragraph",
+      "before": "Acceptance file described as existing while absent; final receipt unnamed",
+      "correction": "Acceptance30/24/6 exists. RESULT now links actual common/session/deliverable receipts. Final local document check38/38 exit0 at its45input hashes; first37/38failure retained. Fixed remote result reread and final HANDOFF session check remain future workflow.",
+      "evidence": [
+        "evidence/acceptance-evidence.json",
+        "evidence/checks/common-retry-execution.json",
+        "evidence/deliverable-check.json",
+        "evidence/deliverable-check-first-run.json",
+        "SELF_CHECK.md finalverification section"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F04",
+      "severity": "medium",
+      "location": "RESULT Q1–Q2 scope",
+      "before": "Global no retracking wording conflicted with JupyterLab3failedrequests",
+      "correction": "Restrict no reuse to A starting sample and disclose B01 deviation/cost",
+      "evidence": [
+        "evidence/scope-deviations.md",
+        "collectors/cross/b/attempts.jsonl"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F05",
+      "severity": "medium",
+      "location": "B04 row current_http.final_url and chains.csv",
+      "before": "Separate canonicalGET200 destination stored as oldGET final_url although old request429",
+      "correction": "final_urlnull/status429; separately_opened_canonical_url/status200; separate receipts",
+      "evidence": [
+        "collectors/cross/b/downloads7.json:google75712",
+        "collectors/cross/b/downloads8.json:google-sitemapindex",
+        "CB-S20"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F06",
+      "severity": "low",
+      "location": "RESULT Q8 AURLonly row",
+      "before": "판독자 전원 could imply multiple A readers",
+      "correction": "12행 모두 보류",
+      "evidence": [
+        "collectors/cross/L1-receipt.json"
+      ],
+      "status": "resolved_rechecked"
+    },
+    {
+      "id": "RR-F07",
+      "severity": "low",
+      "location": "RESULT Q7 museum sentence",
+      "before": "Current Airplane Flying title could be read as1936caption",
+      "correction": "현재 Airplane Flying으로 식별되는 작품; oldcaption Suprematist composition(after a drawing of1913)",
+      "evidence": [
+        "X-S06 PDF126/127/218;printed124/215",
+        "X-S07 object79269"
+      ],
+      "status": "resolved_rechecked"
+    }
+  ],
+  "resolved_findings": 7,
+  "partially_resolved_findings": 0,
+  "remaining_actions": [
+    {
+      "action": "Commit fixed result, reread it remotely, run final session check and separately commit HANDOFF",
+      "reason": "Normal remaining parent workflow; not an unresolved RESULT audit defect; no claim these future steps already passed",
+      "owner": "root"
+    }
+  ],
+  "strict_latency": {
+    "A_found": 0,
+    "A_attempts": 12,
+    "B_found": 0,
+    "B_attempts": 6,
+    "conditional_eligible_denominator": 0,
+    "conditional_label": "해당 없음"
+  },
+  "input_sha256": {
+    "RESULT.md": "c2c32c79d95cddc6efa1c81f3d7bf25b13e655975e027822d2d8ab0e0eb3e59b",
+    "sources.jsonl": "eb85acaadebbfb3642983a73fb2eb8c9ae0f86e6ef1c804f2610fd357f653e30",
+    "references.jsonl": "4619053263c403b7136bd7ca571c890db5226cba29e989b721ce74662a9e6742",
+    "editions.csv": "849d38236a1e5a94542ffd1ed3b3a9f9c8e130aa3ddbac505d4ed282935bebeb",
+    "chains.csv": "258e642c52636b740d4a873c88f4ab81c780256bd901cd8787cf8261d423da79",
+    "intervals.csv": "1f63fdcd4ec62b79d7e68b55a307d6090db9dadb1fc93617c05afe9e8835bcbb",
+    "comparisons.csv": "0b91fcc61ad746b0484f2cafe91d6dd53ba4991c1a46094915dd09306fecdd26",
+    "SELF_CHECK.md": "ac26472b2d7ed10dcb9c6823537aeb18cf97b6ab8ab59975d9fb4847ec847371",
+    "evidence/counts.json": "f46693c99380bc952facacc1a2a91ed16da3ce88be1834c7a83a6b95d4b5233e",
+    "evidence/source-deduplication.json": "ade735018736c6bf2aaef65b4bf64c1376c4bda852f8368bcd3674f1a58badc2",
+    "evidence/acceptance-evidence.json": "7b61337e27c7917cf525cdfecdf50445ff76f8b6d17c4670b471a612ec38694a",
+    "evidence/comparison-protocol-note.md": "a7b8e14177b3d302fedd58659c5be2921f3861d90f0d4de7cc95ca6f23f5caea",
+    "evidence/primary-reread.json": "393b5c5fb2c0541787617e4544f692d0ca1cfa8ffaad8a5b85126545c4752505",
+    "collectors/cross/cases.json": "1790f17dacccb21b63c3257bc29abdce1461592b81b5ed011c9e8625ef0763c0",
+    "collectors/cross/sources.jsonl": "ccd6846b4f6ccedebef5b9de102adf7765764bb6a9b28b21c72dd9ce02f4d6be",
+    "collectors/cross/L1-decisions.json": "996f6c241c50117d5e926e2e148ac21f8c8b7d143ec50607ae25a8180b944fbd",
+    "collectors/cross/L2-decisions.json": "8bcd41e89e143b9345dd94c99cc0698085196a262dc5988a5c9400218fa30a5c",
+    "collectors/cross/L3-decisions.json": "417ee8508c8725eb929b14e8edf37ed81b69b41d483a2af1887126dd7584bdf7",
+    "collectors/cross/L3-receipt.json": "4cbfa2eeeea237a739c7bfd395cf5136b2c9cd2e9f5b5d2e003ebba8cb24bf6d",
+    "collectors/cross/b/cases.json": "51a882f889206d845430e0effa51109d761fbd137f1d1af863ef16fa08daba7b",
+    "collectors/cross/b/downloads7.json": "9675009c07e3a9174209a46dcfc15ba1688f493c11897442fd8c39200aac18bb",
+    "collectors/cross/b/downloads8.json": "8929fc371bb8c26b91144dbea91c67f30488dc272ef85bb1c310d2b978d02165",
+    "collectors/cran/integration-audit.json": "da46ead931b716a217b30005653dc842886db2a004e4c8749a71175586d6bea3",
+    "collectors/offline/audit-root.json": "24b62bc4d5a1eb8e4b738413aa091a2e447ba331e38ed57fe977d7f64733469d",
+    "evidence/checks/common-retry-execution.json": "300139d21df8536841abfd2784609745b5a3c12ebf49491bbf9f04194fa62fa6",
+    "evidence/checks/common-retry-receipt.json": "a2a2ccbb7679b46cf3ef001804a6dc44cc06fb14eed54b07bbdb7eb3595dfb60",
+    "evidence/checks/session-pre-result-execution.json": "05a9528eb9b34dc392c385aceef64f68ae475428817698fb7dec6e31f4115b21",
+    "evidence/rows/A-D01.md": "46636d611895a9f9bd5e553a87874b744df560121114c39d1b1f4e95b2e22e8a",
+    "evidence/rows/A-D02.md": "7628d5962aef42c5af0423692e015aafd587523756fc2b0b0db2a259ad8465de",
+    "evidence/rows/A-D03.md": "2e339fb03d1007a04c20389147300852a8fcc144ddba9a09802f357f59c088d3",
+    "evidence/rows/A-D04.md": "7874b7238c097c392bdcd4aa6de5dfd6eb62cf4c3f8e595aa0793ee5f7fe10dc",
+    "evidence/rows/A-D05.md": "8377c857a174a509f220742939ab65f2e5c298b30d86c245d4d219b275c10aab",
+    "evidence/rows/A-D06.md": "2f659e0a706d9bfa46353b1033d3dee0a7971c311b85278a19538c7ad584e2d2",
+    "evidence/rows/A-R01.md": "8d025aeaa7bd6c6e8e54a61119a78b4a36cbbc727e6ce8144481624a6bf6c1e2",
+    "evidence/rows/A-R02.md": "da7306cb6729bab646c331d7bd184b4da8dfb7e5b89c8039c2061b0bbfc40506",
+    "evidence/rows/A-R03.md": "1e941bab7741034f656d9892421d51a2ba8998f47ca4f3f12b75ba7faefebc1f",
+    "evidence/rows/A-R04.md": "88133820d290ea844e82acc7dab0ca6f3bf1354946332c978cd8f4cb5a2ec3d0",
+    "evidence/rows/A-R05.md": "bf5c92cbb83fcc3a0c4eaf7cc7a42151f54a4bf8f7a0aff710d77d2b93922c8a",
+    "evidence/rows/A-R06.md": "2fdeabb57a364a0b2e21b0c5a10d6f5e290f579f637e8e92c9311cdc9ac7a1de",
+    "evidence/rows/B01.md": "e88e035e365a071e02f5d916465a96b550cc3a6204fecfb52d53d1e32458b47c",
+    "evidence/rows/B02.md": "183408f34305f8b3287964a8acfdd8681cd86249a10403781797a6bc3f92fdd2",
+    "evidence/rows/B03.md": "8b5d48c1a3af3be2997484d7794c8309abed6b313333b1d4870961b9952c0bea",
+    "evidence/rows/B04.md": "cf2e0df46275ac7e513a6695e429846388843b8e0dfb5af01c8130b09b0824c3",
+    "evidence/rows/B05.md": "c63063e27f31ea947ed6564a587ac57a5d1a07c682bef540a4cdae744c150c7e",
+    "evidence/rows/B06.md": "be6f996cbb5d847bf546ae6e4e2eb4d3099ea3046576d940167c388750141628",
+    "evidence/deliverable-check.json": "10fbda1ef2ff4b86f12fe2ae3e66614827e7239d32f15203e3f1f079aad6bd83",
+    "evidence/deliverable-check-first-run.json": "fb18857308f9e0ceed20dfecc84ed925e3152adbcd309ed831ed738c1b1eb416"
+  },
+  "reconstructed_counts": {
+    "source_rows": 395,
+    "unique_source_ids": 395,
+    "minimum_originals": 75,
+    "A": {
+      "archives": 123,
+      "states": 246,
+      "HTML": 211,
+      "absent": 35
+    },
+    "comparisons": {
+      "A": {
+        "rows": 12,
+        "adjudication": {
+          "유지": 9,
+          "교체": 2,
+          "보류": 1
+        },
+        "views": {
+          "L1": {
+            "decisions": {
+              "보류": 12
+            },
+            "comparison": {
+              "보류": 12
+            },
+            "external_pages": 0,
+            "source_cards": 0
+          },
+          "L2": {
+            "decisions": {
+              "보류": 12
+            },
+            "comparison": {
+              "보류": 12
+            },
+            "external_pages": 0,
+            "source_cards": 0
+          },
+          "L3": {
+            "decisions": {
+              "유지": 9,
+              "교체": 2,
+              "보류": 1
+            },
+            "comparison": {
+              "정답": 11,
+              "보류": 1
+            },
+            "external_pages": 0,
+            "source_cards": 50
+          }
+        }
+      },
+      "B": {
+        "rows": 6,
+        "adjudication": {
+          "유지": 4,
+          "교체": 1,
+          "보류": 1
+        },
+        "views": {
+          "L1": {
+            "decisions": {
+              "보류": 6
+            },
+            "comparison": {
+              "보류": 6
+            },
+            "external_pages": 0,
+            "source_cards": 0
+          },
+          "L2": {
+            "decisions": {
+              "보류": 6
+            },
+            "comparison": {
+              "보류": 6
+            },
+            "external_pages": 0,
+            "source_cards": 0
+          },
+          "L3": {
+            "decisions": {
+              "유지": 4,
+              "교체": 1,
+              "보류": 1
+            },
+            "comparison": {
+              "정답": 5,
+              "보류": 1
+            },
+            "external_pages": 0,
+            "source_cards": 23
+          }
+        }
+      }
+    }
+  },
+  "limits": [
+    "No external originals reopened; ID/URL agreement is not independent content verification.",
+    "Reviewed row structured data/key narrative/counterarguments; earlier collector primary-byte audit claims remain scoped to their own receipts.",
+    "Later modifications outside these hashes require their own checks."
+  ]
+}

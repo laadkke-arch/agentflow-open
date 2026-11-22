@@ -1,0 +1,512 @@
+{
+  "audit_id": "AF-RES-032-integration-cran",
+  "audited_at_utc": "2026-11-22T08:03:38.099378Z",
+  "target_HEAD": "ffbce62e4c01459ebbfb006a5d6c67e425ed7c17",
+  "target_scope": "Working-tree integration files at input hashes; not later commits",
+  "auditor": "/root/cran_a",
+  "independence": "Separate internal audit of root aggregation. Auditor authored R collection and B masked-card judgments; not fully independent primary-source verification or external review.",
+  "status": "PASS_WITH_NONBLOCKING_NOTES",
+  "exit_code": 0,
+  "passed": 27,
+  "total": 27,
+  "input_sha256": {
+    "sources.jsonl": "eb85acaadebbfb3642983a73fb2eb8c9ae0f86e6ef1c804f2610fd357f653e30",
+    "evidence/source-deduplication.json": "ade735018736c6bf2aaef65b4bf64c1376c4bda852f8368bcd3674f1a58badc2",
+    "evidence/counts.json": "f46693c99380bc952facacc1a2a91ed16da3ce88be1834c7a83a6b95d4b5233e",
+    "references.jsonl": "4619053263c403b7136bd7ca571c890db5226cba29e989b721ce74662a9e6742",
+    "chains.csv": "6dafbc73592270340070fdfc8c0b976f8a99b71333e29bf929d54b4eb5e2768c",
+    "intervals.csv": "ada545a9b32397b11c6e3c60dcd56d95d6de31cd25de79b9ea0a6e66a57e5987"
+  },
+  "before_fix_input_sha256": {
+    "sources.jsonl": "a4043d2dfe7517291572d5c717dbd847e0ae2f5dc9f16724682d9c9df20fc99c",
+    "evidence/source-deduplication.json": "302fd76526e42a22528f759b6face683327975d1fe103fa58829ba24573ae07e",
+    "references.jsonl": "289f141cd5f2369fa767c849a14e8cbac22e92a58fb0dd6214d3425cefb5b106",
+    "intervals.csv": "1fabbc38d7e0463cf2909f90acc27d6f37d514885a51c02f5baf8c9b25c08c3b"
+  },
+  "checks": [
+    {
+      "check_id": "IA01",
+      "condition": "Source ledger IDs unique and row count matches",
+      "met": true,
+      "evidence": "sources.jsonl",
+      "observed": 395,
+      "note": ""
+    },
+    {
+      "check_id": "IA02",
+      "condition": "Minimum selected total/category sums match",
+      "met": true,
+      "evidence": "sources.jsonl; counts.json",
+      "observed": {
+        "A_original": 12,
+        "upstream": 34,
+        "other_primary": 1,
+        "consumer_followup": 8,
+        "cross_field": 8,
+        "B_consumer": 5,
+        "B_auxiliary": 7
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA03",
+      "condition": "Counted source metadata complete",
+      "met": true,
+      "evidence": "sources.jsonl",
+      "observed": {},
+      "note": "Explicitly unknown dates are allowed; unknown is not verified."
+    },
+    {
+      "check_id": "IA04",
+      "condition": "No counted minimum group or exact identity group has two representatives",
+      "met": true,
+      "evidence": "sources.jsonl",
+      "observed": {
+        "minimum_duplicates": {},
+        "identity_duplicates": {}
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA05",
+      "condition": "Minimum selection and exact body identity are separated",
+      "met": true,
+      "evidence": "source-deduplication.json; R-S01/R-F141/R-S04/R-F026",
+      "observed": [],
+      "note": ""
+    },
+    {
+      "check_id": "IA06",
+      "condition": "Shared counted archive URL pairs are distinct HTML members",
+      "met": true,
+      "evidence": "sources.jsonl",
+      "observed": [
+        [
+          "PY-S01",
+          "PY-S02"
+        ],
+        [
+          "PG-S01",
+          "PG-S02"
+        ],
+        [
+          "SQL-S01",
+          "SQL-S02"
+        ],
+        [
+          "R-S01",
+          "R-S02"
+        ],
+        [
+          "R-S03",
+          "R-S04"
+        ],
+        [
+          "R-S05",
+          "R-S06"
+        ],
+        [
+          "R-F023",
+          "R-F024"
+        ]
+      ],
+      "note": ""
+    },
+    {
+      "check_id": "IA07",
+      "condition": "A first twelve rows are byte-identical to remote seal",
+      "met": true,
+      "evidence": "references.jsonl; seal168d90b8519bcb4f673acc659bbaae895f79fca5",
+      "observed": {
+        "bytes": 50326,
+        "sha256": "b3c2f68b905102f0fa682ab45a34c0f3401a69b61ba0a59327045e04a626d562"
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA08",
+      "condition": "A sampling dimensions reproduce",
+      "met": true,
+      "evidence": "references.jsonl",
+      "observed": {
+        "projects": {
+          "CPython documentation": 2,
+          "PostgreSQL": 2,
+          "SQLite": 2,
+          "knitr": 2,
+          "rmarkdown": 2,
+          "dplyr": 2
+        },
+        "routes": {
+          "D": 6,
+          "R": 6
+        }
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA09",
+      "condition": "All recursive source IDs resolve",
+      "met": true,
+      "evidence": "references.jsonl; chains.csv; intervals.csv",
+      "observed": [],
+      "note": ""
+    },
+    {
+      "check_id": "IA10",
+      "condition": "Chains cover all A/B references exactly once",
+      "met": true,
+      "evidence": "chains.csv",
+      "observed": 18,
+      "note": ""
+    },
+    {
+      "check_id": "IA11",
+      "condition": "A archive/member counts independently reconstruct from normalized sources",
+      "met": true,
+      "evidence": "sources.jsonl URLs + member/read_location + findings.member_present",
+      "observed": {
+        "archives": 123,
+        "states": 246,
+        "present": 211,
+        "absent": 35,
+        "by_reference": {
+          "A-D01": 19,
+          "A-D02": 19,
+          "A-D03": 21,
+          "A-D04": 21,
+          "A-D05": 5,
+          "A-D06": 5,
+          "A-R01": 26,
+          "A-R02": 26,
+          "A-R03": 32,
+          "A-R04": 32,
+          "A-R05": 20,
+          "A-R06": 20
+        }
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA12",
+      "condition": "A correction reference/event counts distinct and correct",
+      "met": true,
+      "evidence": "chains.csv",
+      "observed": {
+        "references": [
+          "A-D02",
+          "A-D04",
+          "A-R01",
+          "A-R02",
+          "A-R05"
+        ],
+        "source_events": 4
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA13",
+      "condition": "B recorded counts/caps reproduce",
+      "met": true,
+      "evidence": "references.jsonl",
+      "observed": {
+        "queries": 18,
+        "candidates": 17
+      },
+      "note": "Recorded counters checked; searches not rerun."
+    },
+    {
+      "check_id": "IA14",
+      "condition": "B media/duplicate denominators separated",
+      "met": true,
+      "evidence": "references.jsonl; counts.json",
+      "observed": {
+        "HTML": 5,
+        "archives": 3,
+        "versioned_web": 2,
+        "missing_HTML": 1,
+        "A_duplicate": 1,
+        "extra_independent": 4
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA15",
+      "condition": "B additional href-change excludes duplicate A case",
+      "met": true,
+      "evidence": "chains.csv",
+      "observed": [
+        "B02",
+        "B05"
+      ],
+      "note": ""
+    },
+    {
+      "check_id": "IA16",
+      "condition": "Purpose verdict counts reproduce",
+      "met": true,
+      "evidence": "chains.csv; counts.json",
+      "observed": {
+        "A": {
+          "유지": 9,
+          "교체": 2,
+          "보류": 1
+        },
+        "B": {
+          "유지": 4,
+          "교체": 1,
+          "보류": 1
+        }
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA17",
+      "condition": "Unknown strict start clocks are not zero-day/censored observations",
+      "met": true,
+      "evidence": "intervals.csv",
+      "observed": {
+        "examined_A": 12,
+        "examined_B": 6,
+        "eligible_pairs": 0,
+        "conditional_denominator": 0,
+        "right_censored": 0
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA18",
+      "condition": "Seven auxiliary second differences reproduce",
+      "met": true,
+      "evidence": "intervals.csv",
+      "observed": [],
+      "note": "A-D02 is report-minute to source-second nominal difference, not server-enforcement latency."
+    },
+    {
+      "check_id": "IA19",
+      "condition": "Seven auxiliary event/source flat joins restored",
+      "met": true,
+      "evidence": "intervals.csv",
+      "observed": 7,
+      "note": ""
+    },
+    {
+      "check_id": "IA20",
+      "condition": "Eligible source-publication counts match separately from other clocks",
+      "met": true,
+      "evidence": "intervals.csv; counts.json",
+      "observed": {
+        "A_pairs": 3,
+        "A_source_events": 2,
+        "B_pairs": 1
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA21",
+      "condition": "B minimum-purpose/intent fields now include extractor provenance",
+      "met": true,
+      "evidence": "references.jsonl B1–B6",
+      "observed": 6,
+      "note": ""
+    },
+    {
+      "check_id": "IA22",
+      "condition": "B02 publication clock populated consistently",
+      "met": true,
+      "evidence": "chains.csv B02; intervals.csv B02",
+      "observed": {
+        "time": "2022-05-04T00:20:02Z",
+        "role": "CRAN DESCRIPTION Date/Publication of httr1.4.3 with actual built HTML",
+        "source_id": "B02-httr-1.4.3"
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA23",
+      "condition": "B04 source README/upload clock not promoted to historical HTML",
+      "met": true,
+      "evidence": "references.jsonl B04; chains.csv B04",
+      "observed": {
+        "member": "sphinx-sitemap-2.2.0/README.rst",
+        "clock": {
+          "times": [
+            "2020-08-06T02:13:55.526488Z",
+            "2022-11-12T03:41:08.913002Z"
+          ],
+          "role": "PyPI source upload; not HTML publication"
+        }
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA24",
+      "condition": "Live-web reader report excluded from offline same-medium failure chain",
+      "met": true,
+      "evidence": "chains.csv A-D02; counts.json",
+      "observed": {
+        "source_id": "P-U06",
+        "time": "2022-04-10T13:49:56.066Z",
+        "same_purpose": "broad documentation-reporting goal only; exact sealed docs-query click unconfirmed",
+        "same_exposure_medium": false,
+        "included_strict_reader_chain": false,
+        "sealed_query_clicked": null
+      },
+      "note": ""
+    },
+    {
+      "check_id": "IA25",
+      "condition": "SQLite sparse coverage limitation preserved",
+      "met": true,
+      "evidence": "sources.jsonl; chains.csv; counts.json",
+      "observed": {
+        "actual_states_read": 5,
+        "listed_reported": 51,
+        "unread_reported": 46
+      },
+      "note": "Five states reconstructed independently; 51-entry external index not reopened by this audit."
+    },
+    {
+      "check_id": "IA26",
+      "condition": "R retirement/replacement excluded from same-purpose correction",
+      "met": true,
+      "evidence": "chains.csv; intervals.csv",
+      "observed": [
+        "R04 document retirement",
+        "R06 new Star Wars example"
+      ],
+      "note": ""
+    },
+    {
+      "check_id": "IA27",
+      "condition": "Inputs unchanged during this verification",
+      "met": true,
+      "evidence": [
+        "sources.jsonl",
+        "evidence/source-deduplication.json",
+        "evidence/counts.json",
+        "references.jsonl",
+        "chains.csv",
+        "intervals.csv"
+      ],
+      "observed": {
+        "sources.jsonl": "eb85acaadebbfb3642983a73fb2eb8c9ae0f86e6ef1c804f2610fd357f653e30",
+        "evidence/source-deduplication.json": "ade735018736c6bf2aaef65b4bf64c1376c4bda852f8368bcd3674f1a58badc2",
+        "evidence/counts.json": "f46693c99380bc952facacc1a2a91ed16da3ce88be1834c7a83a6b95d4b5233e",
+        "references.jsonl": "4619053263c403b7136bd7ca571c890db5226cba29e989b721ce74662a9e6742",
+        "chains.csv": "6dafbc73592270340070fdfc8c0b976f8a99b71333e29bf929d54b4eb5e2768c",
+        "intervals.csv": "ada545a9b32397b11c6e3c60dcd56d95d6de31cd25de79b9ea0a6e66a57e5987"
+      },
+      "note": ""
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "IA-F01",
+      "before": "Broad duplicate groups joined distinct href/library states and missing-member inventories, implying excessive body identity.",
+      "evidence": [
+        "R-S01/R-F033/R-F141/R-F155",
+        "R-S04/R-F026"
+      ],
+      "after": "minimum_counting_group explicitly conservative; duplicate_group exact bytes/URI; collector grouping preserved separately.",
+      "resolved": true
+    },
+    {
+      "id": "IA-F02",
+      "before": "Seven auxiliary top-level source_ids/event_key fields empty despite nested evidence.",
+      "after": "Seven flat joins restored.",
+      "resolved": true
+    },
+    {
+      "id": "IA-F03",
+      "before": "Six B minimum_success/intent_unknown fields null despite L2 input.",
+      "after": "Extractor input copied with provenance; A seal unchanged.",
+      "resolved": true
+    },
+    {
+      "id": "IA-F04",
+      "before": "B02 publication clock null while first-new/interval had exact CRAN stamp.",
+      "after": "Publication clock normalized with source ID.",
+      "resolved": true
+    }
+  ],
+  "nonblocking_notes": [
+    {
+      "id": "IA-N01",
+      "finding": "Count source IDs as sets; repeated auxiliary IDs do not change current minimum count or arithmetic.",
+      "repeated_auxiliary_ids": [],
+      "resolved": true
+    },
+    {
+      "id": "IA-N02",
+      "finding": "75 is a conservative selected minimum, not an exhaustive census of all distinct manuscript states."
+    },
+    {
+      "id": "IA-N03",
+      "finding": "Historical publication dates, SQLite46 unread editions, B04 missing historical HTML, and reader same-medium evidence remain known research gaps."
+    }
+  ],
+  "computed_counts": {
+    "selected": 75,
+    "categories": {
+      "A_original": 12,
+      "upstream": 34,
+      "other_primary": 1,
+      "consumer_followup": 8,
+      "cross_field": 8,
+      "B_consumer": 5,
+      "B_auxiliary": 7
+    },
+    "archive_states": {
+      "archives": 123,
+      "states": 246,
+      "present": 211,
+      "absent": 35,
+      "by_reference": {
+        "A-D01": 19,
+        "A-D02": 19,
+        "A-D03": 21,
+        "A-D04": 21,
+        "A-D05": 5,
+        "A-D06": 5,
+        "A-R01": 26,
+        "A-R02": 26,
+        "A-R03": 32,
+        "A-R04": 32,
+        "A-R05": 20,
+        "A-R06": 20
+      }
+    },
+    "A_verdicts": {
+      "유지": 9,
+      "교체": 2,
+      "보류": 1
+    },
+    "B_verdicts": {
+      "유지": 4,
+      "교체": 1,
+      "보류": 1
+    },
+    "strict_pairs": 0,
+    "conditional_denominator": 0
+  },
+  "execution_attempts": [
+    {
+      "stage": "initial audit pack",
+      "exit_code": 1,
+      "reason": "KeyError full_collector_fields after root normalized schema; stopped before audit file writes; corrected by using normalized findings.member_present."
+    },
+    {
+      "stage": "schema-adapted audit pack",
+      "exit_code": 0
+    }
+  ],
+  "execution_method": "Actual local Python inline aggregation; git show/rev-parse read-only; input hashes and condition observations retained.",
+  "external_primary_pages_opened_for_audit": 0,
+  "primary_source_scope": "395 integrated metadata records parsed; counted records and critical counterexample rows read. No claim that all external originals/render-equivalent bodies were independently reopened.",
+  "mutation_scope": [
+    "collectors/cran/INTEGRATION_AUDIT.md",
+    "collectors/cran/integration-audit.json"
+  ],
+  "root_ledgers_modified_by_auditor": false
+}
