@@ -12,3 +12,10 @@
 ## 커밋 원장
 
 첫 커밋 자신의 SHA는 저장 뒤 다음 묶음에서 기록한다. 최종 커밋은 HANDOFF 단독이며 자신의 SHA 대신 원격 branch/path와 부모검증판을 안내한다.
+
+## 묶음1 원격 확인
+
+- 원격 scope 커밋 `68269ef22b4b07e751fcc3093361e8d5b390dda9`. GitHub fetch_file로 SCOPE 바이트를 다시 읽고 fetch 후 로컬 HEAD를 같은 커밋으로 맞췄다.
+- 최초 로컬 커밋 bf5bd8f는 HTTPS push 인증정보 부재로 원격에 올라가지 않았다. 기존 승인된 GitHub 연결 도구의 tree/commit/branch 동작으로 같은 파일을 저장했다. 새 인증정보·계정·권한은 만들지 않았다. 인계 기준은 위 원격 SHA다.
+- Wikidata WD01 실제 merge1038289881→undo1048159568, 별도consumer1039041773→1048159950 확보. 정책3개 직접읽음. 역사페이지 일부가 막혀 해당 후보는 제외원장에 남긴다.
+- 추가 공식호스트 shell 관측: phabricator.wikimedia.org/T237262 403(03:15:17Z), commons.wikimedia.org portrait403(03:15:21Z). 웹 본문열람은 성공했으며 HTTP코드와 혼동하지 않았다.
