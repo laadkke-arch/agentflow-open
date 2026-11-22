@@ -32,6 +32,12 @@
 3. 고정 SHA의 RESULT/SELF_CHECK/수용파일을 원격에서 재독하고 `python -B -m workbench.session check docs/workstreams/research/AF-RES-036/manifest.json --fetch`를 실제 실행한다.
 4. 실제 결과 SHA·미충족·다음 첫 자료·검사영수증을 HANDOFF에 적고 마지막 커밋을 확인한다.
 
+## #2 고정 결과·인계
+
+결과 묶음은 **`ef839d30d300e20f092dd7f0d57542f0773b77f8`**으로 원격에 고정했다. 2026-11-22 17:25:14 UTC에GitHub에서RESULT·SELF_CHECK·수용·집계·검사6파일의본문을다시읽어모두일치함을확인했다. 같은결과SHA에서원장81/81,문서21/21,`workbench.session check --fetch` exit0/passed/remote_checked(17:25:49 UTC)를확인했다. 영수증은`evidence/result-remote-reread.json`, `review/resume-quant/audit-result-sha.json`, `evidence/document-check-result-sha.json`, `evidence/checks/session-result-execution.json`이다.
+
+위 확인 뒤 **HANDOFF.md를작성했다**. 상태는REVIEW_READY_WITH_GAPS(28/33)다. 완료된묶음을다시반복할필요가없다. 남은연구의첫자료는NULDL000040/ESTCR17253의Norton표기이전고정catalog record와정정영수증이며,기존12참조와48판독은보존한다. 최종인계SHA는`git log -1 --format=%H -- docs/workstreams/research/AF-RES-036/HANDOFF.md`로확인한다. 자기커밋SHA를미리만들어기록하지않는다.
+
 셸 push는 인증 없음(exit128)으로 실패했다. 계정/credential을 변경하지 않고 기존 GitHub connector의 지정 계정으로 tree/commit/ref를 만들었다. 원격 branch는 시작 integration의 자손이다. 이후 묶음도 원격 커밋 후 fetch/read로 확인한다. 내부 local-only 39277b4는 원격 완료 SHA가 아니다.
 
 ## 카드 공개 전 판독 개선
