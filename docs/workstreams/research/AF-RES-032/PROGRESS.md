@@ -6,3 +6,5 @@
 
 로컬 셸 실행과 원격 조회를 구별한다. root가 커밋하고 수집자는 자기 collectors 경로만 작성한다.
 
+
+| ② A12 원문·목적 봉인 | `168d90b8519bcb4f673acc659bbaae895f79fca5`; references SHA256 `b3c2f68b905102f0fa682ab45a34c0f3401a69b61ba0a59327045e04a626d562` | 07:18:08Z 원격 references blob `e38024668d0b0321056831dad761f421c28bd792`; evidence/a-seal-remote.json | 상류·후속 판 조사 허용; B6 소비자 검색 전 별도 봉인 |
