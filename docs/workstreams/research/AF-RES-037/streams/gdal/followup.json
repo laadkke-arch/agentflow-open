@@ -1,0 +1,771 @@
+[
+  {
+    "case_id": "A-G01",
+    "initial_source_id": "GDAL-001",
+    "strict_judgment": "C1 (소프트웨어 내부 선례; 타 분야 유입 사슬 부적격)",
+    "retrospective_judgment": "N/U: GitHub 생태계의 편익은 설명되지만 비소프트웨어 원리를 가져왔다는 직접 연결은 발견하지 못함",
+    "beforeafter": {
+      "before": "GDAL 소스는 OSGeo SVN, 이슈는 Trac; GitHub는 기여 PR을 받고 수동 이식하는 미러였다.",
+      "initial_proposal": "소스와 신규 이슈의 권위 있는 위치를 GitHub로 이동하되 기존 Trac 티켓은 그대로 둔다. 기존 #번호 참조를 Trac 절대 URL로 바꾸고 과거 소스 이력을 보존한다.",
+      "after": "주 저장소와 신규 티켓을 GitHub로 전환했다. 기존 Trac 티켓 수정은 유지하고 위키 전체 이관·정기 백업은 분리했다.",
+      "post_initial_change": "위키 이관을 뜻한다는 리뷰어의 오해를 정정해 범위를 더 명시했지만 주 설계 선택은 유지했다."
+    },
+    "first_donor_link": {
+      "receiver_url": "https://trac.osgeo.org/gdal/wiki/rfc71_github_migration?version=1",
+      "receiver_date": "2018-03-19T20:26:16+00:00",
+      "locator": "Motivations; Exit strategy",
+      "named_sources": [
+        "GitHub",
+        "Subversion",
+        "Trac",
+        "GitLab",
+        "python-github-backup"
+      ],
+      "field": "소프트웨어 저장소/기여 인프라",
+      "nonsoftware_donor": "미확인",
+      "new_to_author": "미확인"
+    },
+    "explicit_causal_change": "미확인: 비소프트웨어 제공 원리 때문에 기존 선택을 수정했다는 진술 없음",
+    "timeline": [
+      {
+        "date": "2018-03-19T20:26:16Z",
+        "event": "최초 번호RFC v1",
+        "source_ids": [
+          "GDAL-001"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc71_github_migration?version=1"
+      },
+      {
+        "date": "2018-03-19",
+        "event": "위키 이관 제안과 범위 오해의 정정",
+        "source_ids": [
+          "GDAL-M048254",
+          "GDAL-M048255",
+          "GDAL-M048256"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2018-March/048255.html"
+      },
+      {
+        "date": "2018-03-23T11:12:04Z",
+        "event": "가결·SVN 커밋 중단 요청",
+        "source_ids": [
+          "GDAL-M048295"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2018-March/048295.html"
+      },
+      {
+        "date": "2018-03-23T14:09:30Z",
+        "event": "GitHub 주 저장소 전환 완료 공지",
+        "source_ids": [
+          "GDAL-M048296"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2018-March/048296.html"
+      },
+      {
+        "date": "2018-03-23T14:24:57Z",
+        "event": "Trac 고정 v7에 implemented 기록",
+        "source_ids": [
+          "GDAL-V71-7"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc71_github_migration?version=7"
+      }
+    ],
+    "same_purpose_implementation": {
+      "status": "완료 공지와 고정 RFC 상태 확인",
+      "commit_sha": "해당 없음: 운영 전환이며 단일 코드 합병 SHA로 표현할 수 없음",
+      "source_ids": [
+        "GDAL-M048296",
+        "GDAL-V71-7"
+      ],
+      "scope": "소스·신규 티켓의 권위 위치, 기존 Trac 수정 유지, 웹사이트 갱신 job 변경",
+      "runtime_test": "미실행: 당시 GitHub/Trac 권한 상태를 재연하지 않음"
+    },
+    "object_authority": {
+      "input": "소스 이력·열린 PR·Trac 티켓",
+      "same_object": "기존 소스 변경 이력과 원 Trac 티켓 번호",
+      "decision_actor": "GDAL PSC/저장소 관리자",
+      "before_state": "SVN 원본·GitHub 미러·Trac 신규 티켓",
+      "after_state": "GitHub 원본·기존 Trac 티켓 유지",
+      "constraint": "같은 #1234라도 저장소별 티켓 권위가 달라 절대 Trac URL이 필요; SHA 재작성으로 PR 관계가 끊김"
+    },
+    "counterevidence": [
+      {
+        "type": "동일 이름/다른 권한 범위",
+        "fact": "위키 링크 정정과 전체 위키 이동이 혼동됐고 저자가 범위를 재설명했다.",
+        "source_ids": [
+          "GDAL-M048254",
+          "GDAL-M048255",
+          "GDAL-M048256"
+        ]
+      },
+      {
+        "type": "채택 비용",
+        "fact": "기존 열린 PR 약20개가 강제로 닫혀 rebase/re-submit이 필요했다.",
+        "source_ids": [
+          "GDAL-M048296"
+        ]
+      },
+      {
+        "type": "원안의 제외를 나중 철회로 잘못 세지 않음",
+        "fact": "전체 티켓 이관·정기 백업 제외는 최초안에 이미 있었다. 공급자 제약 때문에 후속 취소됐다고 볼 근거가 없다.",
+        "source_ids": [
+          "GDAL-001",
+          "GDAL-V71-7"
+        ]
+      }
+    ],
+    "weakest_junction": "비소프트웨어 제공 원문 및 그로 인한 선택 변경",
+    "unknowns": [
+      "저자가 어느 비소프트웨어 분야를 새로 읽었는지",
+      "정기 GitHub 백업 후속 운영",
+      "모든 기존 링크의 보존 여부"
+    ],
+    "card": {
+      "use": "이슈 번호의 권위를 보존하며 저장소를 옮길 때 원 티켓 절대URL과 PR 재기반 비용을 함께 검토",
+      "basis": "RFC71 Details of migration; 완료 메일 첫 세 단락",
+      "do_not_transfer": "백업·위키·모든 과거 티켓의 일괄 이관이 완료됐다고 확대하지 말 것",
+      "links": [
+        "https://trac.osgeo.org/gdal/wiki/rfc71_github_migration?version=1",
+        "https://lists.osgeo.org/pipermail/gdal-dev/2018-March/048296.html"
+      ]
+    },
+    "checked_utc": "2026-11-22T18:56:34.367225+00:00",
+    "phase2_initial_freeze": "7a33c17be2d25b2c1936038205187e8108bf4482",
+    "historical_search_index": "미확인",
+    "strict_chain_complete": false,
+    "author_first_learned_source": "미확인",
+    "novel_to_this_sample": true,
+    "viewpoints": {
+      "developer": "초기RFC·리뷰·고정구현",
+      "standards_editor": "해당 없음: 비소프트웨어표준편집자근거없음",
+      "end_user": "운영/배포공지 또는 호환성/실행결과설명; 직접 사용자실험은미확인"
+    },
+    "recount_flags": {
+      "sampling_eligible": true,
+      "implementation_observed": true,
+      "named_software_source": true,
+      "contemporary_crossfield_source_available": "해당 없음: 비소프트웨어 제공 원문 미확인",
+      "author_crossfield_reference": "미확인",
+      "post_initial_design_adjustment_observed": false,
+      "explicit_crossfield_causal_change": "미확인",
+      "strict_chain_complete": false,
+      "broader_existing_mechanism_analogy": false,
+      "positive_grade_reversed_by_counterevidence": false
+    }
+  },
+  {
+    "case_id": "A-G02",
+    "initial_source_id": "GDAL-002",
+    "strict_judgment": "C1 (기존 pytest 전환 설명; 비소프트웨어 제공 원리 미확인)",
+    "retrospective_judgment": "N/U: 다른 테스트 프레임워크의 적용을 타 분야 원리 채택으로 재분류할 수 없음",
+    "beforeafter": {
+      "before": "자체 Python 테스트 하네스, 모듈별 분기 프로세스, skip/fail/success 문자열, CI 외부의 환경별 패치.",
+      "initial_proposal": "pytest와 assertions/fixtures로 변환하고 최소 기존 CI·개별모듈·서브프로세스·Python2/3 지원을 유지한다. 처음은 포팅, 테스트 독립성은 후속 단계다.",
+      "after": "pytest 탐색·assertion·fixture 기반으로 옮겼고 드라이버 미존재 skip와 기존 모듈 작업디렉터리를 유지한다. ASAN에서는 파일별 별도 프로세스다.",
+      "post_initial_change": "CI의 pytest-sugar 비활성화를 확정했고 출력량 제한에 맞춘 옵션 조정이 뒤따랐다. 모든 시험의 독립화·parallelization·require_files는 후속 작업으로 남았다."
+    },
+    "first_donor_link": {
+      "receiver_url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=1",
+      "receiver_date": "2018-12-03T14:00:57+00:00",
+      "locator": "Proposal; Plan Phase1",
+      "named_sources": [
+        "pytest",
+        "pytest-sugar",
+        "Black",
+        "2014 pytest presentation"
+      ],
+      "field": "소프트웨어 시험 프레임워크",
+      "nonsoftware_donor": "미확인",
+      "new_to_author": "미확인"
+    },
+    "explicit_causal_change": "소프트웨어 제약으로 변경은 명시됨; 비소프트웨어 출처 인과는 미확인",
+    "timeline": [
+      {
+        "date": "2018-10-02T21:40:38Z",
+        "event": "PR963 생성; 번호RFC보다 선행한 구현 경로",
+        "source_ids": [
+          "GDAL-P963"
+        ],
+        "url": "https://github.com/OSGeo/gdal/pull/963"
+      },
+      {
+        "date": "2018-11-28T23:07:23Z",
+        "event": "xfail 실행이 다른 시험에 영향을 줘 skip으로 수정했다고 저자 보고",
+        "source_ids": [
+          "GDAL-P963"
+        ],
+        "url": "https://github.com/OSGeo/gdal/pull/963#issuecomment-442640332"
+      },
+      {
+        "date": "2018-12-03T14:00:57Z",
+        "event": "최초 번호RFC v1",
+        "source_ids": [
+          "GDAL-002"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=1"
+      },
+      {
+        "date": "2018-12-04/05",
+        "event": "fixture·C API 직접 검증 우려와 작성자의 구현 범위 설명",
+        "source_ids": [
+          "GDAL-M049412",
+          "GDAL-M049413"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2018-December/049413.html"
+      },
+      {
+        "date": "2018-12-10T22:03:53Z",
+        "event": "PSC 가결",
+        "source_ids": [
+          "GDAL-M049448"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2018-December/049448.html"
+      },
+      {
+        "date": "2018-12-11T09:53:55Z",
+        "event": "PR963 병합",
+        "source_ids": [
+          "GDAL-P963",
+          "GDAL-C72INI",
+          "GDAL-C72CONF",
+          "GDAL-C72CI"
+        ],
+        "url": "https://github.com/OSGeo/gdal/commit/59d0840b1980d1a1a84701b6dae5fc5c78e999f5"
+      },
+      {
+        "date": "2018-12-11T23:01:15Z",
+        "event": "CI 출력량 제한으로 -ra 사용이 해결했다고 보고",
+        "source_ids": [
+          "GDAL-P963"
+        ],
+        "url": "https://github.com/OSGeo/gdal/pull/963#issuecomment-446395777"
+      }
+    ],
+    "same_purpose_implementation": {
+      "status": "병합 코드·설정 직접 확인",
+      "commit_sha": "59d0840b1980d1a1a84701b6dae5fc5c78e999f5",
+      "source_ids": [
+        "GDAL-P963",
+        "GDAL-C72INI",
+        "GDAL-C72CONF",
+        "GDAL-C72CI"
+      ],
+      "scope": "기존 Python autotest의 pytest 포팅. 테스트 프레임워크 교체 자체와 호환 지원 확인; 전면 독립화·새 C++ 직접 시험은 제외",
+      "runtime_test": "미실행: 과거 compiler/pytest/driver/ASAN 환경을 재구성하지 않음"
+    },
+    "object_authority": {
+      "input": "기존 테스트 함수·GDAL 드라이버·CI 환경",
+      "same_object": "각 테스트가 확인하는 성공/실패 목적",
+      "decision_actor": "포팅 작성자·리뷰어·GDAL PSC",
+      "before_state": "자체 runner, success/fail/skip 문자열, 모듈별 프로세스",
+      "after_state": "pytest collection/assertion; 통상 단일 process, ASAN 예외",
+      "constraint": "skip은 실행하지 않으나 xfail은 실행하므로 원치 않는 상태 변화가 남을 수 있음; SWIG 통과 시험은 C API 직접 시험과 다름"
+    },
+    "counterevidence": [
+      {
+        "type": "제공 도구 제약에 따른 축소",
+        "fact": "pytest-sugar는 Travis buffering과 충돌해 CI에서 제외; ASAN은 메모리·진단 비용 때문에 모듈별 프로세스 유지.",
+        "source_ids": [
+          "GDAL-V72-14",
+          "GDAL-C72CI"
+        ]
+      },
+      {
+        "type": "다른 객체/다른 검증 권한",
+        "fact": "SWIG wrapper 테스트가 C API 결함을 가릴 위험은 도구 교체로 해결하지 않았다.",
+        "source_ids": [
+          "GDAL-M049412",
+          "GDAL-M049413"
+        ]
+      },
+      {
+        "type": "원안 예시와 반영 분리",
+        "fact": "require_files fixture는 미래 예시이며 이미 구현된 기능이 아니라고 작성자가 명시. parametrization ID 개선도 후속 PR 약속에 그쳤다.",
+        "source_ids": [
+          "GDAL-M049413",
+          "GDAL-M049453"
+        ]
+      },
+      {
+        "type": "상태 전이 차이",
+        "fact": "xfail→skip 수정은 실행/미실행의 차이로 필요했다. 이름만 비슷한 비성공 테스트를 같게 처리하면 잘못 이식한다.",
+        "source_ids": [
+          "GDAL-P963"
+        ]
+      }
+    ],
+    "weakest_junction": "비소프트웨어 제공 원문·저자 유입 진술",
+    "unknowns": [
+      "후속 require_files 도입 여부",
+      "모든 환경의 과거 시험 통과 재현",
+      "외부 분야 원리와의 독립 발명 관계"
+    ],
+    "card": {
+      "use": "기존 하네스를 교체할 때 실패 결과뿐 아니라 테스트가 실행하는지와 process 수명을 보존",
+      "basis": "PR963 xfail/skip 토론; 합병 ASAN script L49–66",
+      "do_not_transfer": "pytest 도입만으로 fixture 격리·C API 직접 검증·병렬 안전성까지 확보했다고 하지 말 것",
+      "links": [
+        "https://github.com/OSGeo/gdal/pull/963#issuecomment-442640332",
+        "https://github.com/OSGeo/gdal/blob/59d0840b1980d1a1a84701b6dae5fc5c78e999f5/gdal/ci/travis/gcc52_stdcpp14_sanitize/script.sh#L49-L66"
+      ]
+    },
+    "checked_utc": "2026-11-22T18:56:34.367225+00:00",
+    "phase2_initial_freeze": "7a33c17be2d25b2c1936038205187e8108bf4482",
+    "historical_search_index": "미확인",
+    "strict_chain_complete": false,
+    "author_first_learned_source": "미확인",
+    "novel_to_this_sample": true,
+    "viewpoints": {
+      "developer": "초기RFC·리뷰·고정구현",
+      "standards_editor": "해당 없음: 비소프트웨어표준편집자근거없음",
+      "end_user": "운영/배포공지 또는 호환성/실행결과설명; 직접 사용자실험은미확인"
+    },
+    "recount_flags": {
+      "sampling_eligible": true,
+      "implementation_observed": true,
+      "named_software_source": true,
+      "contemporary_crossfield_source_available": "해당 없음: 비소프트웨어 제공 원문 미확인",
+      "author_crossfield_reference": "미확인",
+      "post_initial_design_adjustment_observed": true,
+      "explicit_crossfield_causal_change": "미확인",
+      "strict_chain_complete": false,
+      "broader_existing_mechanism_analogy": false,
+      "positive_grade_reversed_by_counterevidence": false
+    }
+  },
+  {
+    "case_id": "A-G03",
+    "initial_source_id": "GDAL-003",
+    "strict_judgment": "C1: 축 정의/데이터 축 매핑은 최초 실질안에 이미 존재. 후속 WKT 기본값 조정은 별도 하위 선택이며 새 타 분야 원리 발견의 C3로 세지 않음",
+    "retrospective_judgment": "R/C1: 지리측정 규범이 소프트웨어 표현의 제약으로 작동한 선례는 가능하나 인지 시점·새 유입이 기존 선택을 바꾼 인과는 미확인",
+    "beforeafter": {
+      "before": "GDAL≤2.4는 WKT1 트리와 CSV CRS 정의를 유지하고 WGS84 피벗에 의존했다. RFC20은 GIS 순서와 다른 AXIS를 기본 WKT에서 제거했다.",
+      "initial_proposal": "PROJ6 PJ/통합DB·WKT2·후기 바인딩을 사용한다. 공식 CRS 축 순서/식별자를 보존하며 data-axis↔SRS-axis 매핑을 별도로 둔다. 새 SRS 기본은 권위기관 축 순서, 드라이버는 전통 GIS 순서 전략을 명시한다.",
+      "after": "PROJ6의 CRS 정의와 데이터 축 매핑을 분리한다. 새 SRS는 권위기관 순서이고 드라이버/API호출은 전통 GIS 매핑을 명시할 수 있다.",
+      "post_initial_change": "축 매핑 설계는 유지. 별도로 CLI WKT1→WKT2:2018 기본값, 비호환 Geographic3D API fallback WKT2:2015→2018, OSR_WKT_FORMAT 선택값 추가. 전역 API WKT2 기본은 고려했으나 기존 파일 호환성 때문에 채택하지 않았다.",
+      "fixed_before_code": {
+        "source_id": "GDAL-C72CTBEFORE",
+        "sha": "59d0840b1980d1a1a84701b6dae5fc5c78e999f5",
+        "locator": "autotest/osr/osr_ct.py L35–100",
+        "fact": "별도축전략없이(-117.5,32)에서UTM변환;RFC73기본테스트는(32,-117.5),전통GIS매핑명시테스트는(-117.5,32)"
+      }
+    },
+    "first_donor_link": {
+      "receiver_url": "https://trac.osgeo.org/gdal/wiki/rfc73_proj6_wkt2_srsbarn?version=2",
+      "receiver_date": "2019-01-09T15:19:42+00:00",
+      "locator": "Motivation WKT2; Axis order issues; initial v2 L146–251",
+      "named_sources": [
+        "OGC12-063r5/ISO19162:2015",
+        "EPSG CRS definitions",
+        "GeoServer WCS coverageFunction/data-axis mapping",
+        "PROJ transformations"
+      ],
+      "field": "측지학/지리정보 표준 및 같은 GIS 생태계 구현",
+      "nonsoftware_donor": "지리측정 규칙과 소프트웨어 교환 포맷 규칙이 섞여 있음; 영역 경계를 명시해야 함",
+      "new_to_author": "미확인",
+      "read_statement": "RFC v2가 해당 표준과 동작을 지목하지만 저자의 최초 독서 날짜는 없음",
+      "donor_urls": [
+        "http://docs.opengeospatial.org/is/12-063r5/12-063r5.html",
+        "https://docs.geoserver.org/stable/en/user/extensions/wcs20eo/index.html"
+      ],
+      "donor_publication_and_availability": "OGC WKT2015판 공개/절은root의ROOT-P01로별도확인. Geoserver stable URL은2019인용은확인되나당시페이지내용복원은미확인."
+    },
+    "explicit_causal_change": "축매핑의 후속 새 출처 인과 미확인. WKT 출력 기본값의 변경/유지는 직접 저자 진술로 확인되지만 인과는 사용성·호환성·리뷰에 있으며 새로운 타 분야 원리 유입을 명시하지 않음",
+    "timeline": [
+      {
+        "date": "2018-11-14T21:55:13Z",
+        "event": "현재 squash commit의 author date; 이 시점 최종 내용 공개를 뜻하지 않음",
+        "source_ids": [
+          "GDAL-P1185"
+        ],
+        "url": "https://github.com/OSGeo/gdal/commit/8e5eeb35bf76390e3134a4ea7076dab7d478ea0e"
+      },
+      {
+        "date": "2019-01-08T16:15:16Z",
+        "event": "PR1185 공개 생성",
+        "source_ids": [
+          "GDAL-P1185"
+        ],
+        "url": "https://github.com/OSGeo/gdal/pull/1185"
+      },
+      {
+        "date": "2019-01-09T15:19:42Z",
+        "event": "최초 실질 RFC v2: 이미 mapping선택과 구현done 진술",
+        "source_ids": [
+          "GDAL-003"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc73_proj6_wkt2_srsbarn?version=2"
+      },
+      {
+        "date": "2019-01-14T11:42:08Z",
+        "event": "CLI WKT2 기본값을 제안하며 area-of-use 편익 설명",
+        "source_ids": [
+          "GDAL-M049587"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049587.html"
+      },
+      {
+        "date": "2019-01-21T20:59:33Z",
+        "event": "GRASS 개발자가 WKT2 전환을 권고하되 BBOX를 권고로 해석",
+        "source_ids": [
+          "GDAL-M049635"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049635.html"
+      },
+      {
+        "date": "2019-01-22T21:30:55Z",
+        "event": "작성자가 WKT Extent를 인용해 CRS 범위와 grid operation 범위 구별",
+        "source_ids": [
+          "GDAL-M049649"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049649.html"
+      },
+      {
+        "date": "2019-01-25T19:25:42Z",
+        "event": "v5: API/CLI WKT 기본값 분리",
+        "source_ids": [
+          "GDAL-V73-5"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc73_proj6_wkt2_srsbarn?version=5"
+      },
+      {
+        "date": "2019-01-25T19:27:04Z",
+        "event": "작성자: 호환성 때문에 전역 API기본변경 포기, CLI만WKT2",
+        "source_ids": [
+          "GDAL-M049658"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049658.html"
+      },
+      {
+        "date": "2019-01-28T13:02:43Z",
+        "event": "Geographic3D 질문에 구 OGC08-015r2와 아직미공개 새판을 설명",
+        "source_ids": [
+          "GDAL-M049665"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049665.html"
+      },
+      {
+        "date": "2019-01-31T09:28:07Z",
+        "event": "가결 선언",
+        "source_ids": [
+          "GDAL-M049677"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049677.html"
+      },
+      {
+        "date": "2019-01-31T20:00:34Z",
+        "event": "PR1185 합병",
+        "source_ids": [
+          "GDAL-P1185",
+          "GDAL-C73SRS",
+          "GDAL-C73CTTEST",
+          "GDAL-C73SRSINFO"
+        ],
+        "url": "https://github.com/OSGeo/gdal/commit/ab9e80368ef662712c963191fd86fde2c5b75600"
+      }
+    ],
+    "subdecisions": [
+      {
+        "id": "A-G03-axis",
+        "prior": "RFC20 방식의 AXIS 생략",
+        "initial": "CRS 권위정의 유지 + 별도 data-axis 매핑",
+        "later": "동일",
+        "author_link": "v2 Axis order issues",
+        "judgment": "C1",
+        "implementation": [
+          "GDAL-C73SRS",
+          "GDAL-C73CTTEST"
+        ]
+      },
+      {
+        "id": "A-G03-wkt-default",
+        "prior": "최초안의 CLI WKT1 우선, 비호환경우 WKT2:2015",
+        "initial": "WKT2:2015/2018 선택지원 자체는 이미 있음",
+        "later": "CLI WKT2:2018 기본, API WKT1 유지 + 설정값",
+        "author_link": "GDAL-M049587,GDAL-M049658",
+        "judgment": "명시 조정 확인; 새 타 분야 유입 인과는 미확인",
+        "implementation": [
+          "GDAL-C73SRS",
+          "GDAL-C73SRSINFO"
+        ]
+      },
+      {
+        "id": "A-G03-extent",
+        "prior": "리뷰어가 BBOX를 권고범위로 제안",
+        "initial": "RFC에는 late binding/area-of-use 연산 선택이 이미 있음",
+        "later": "CRS 범위와 grid-coordinate-operation 범위 의미를 구별해 설명",
+        "author_link": "GDAL-M049649,GDAL-M049651",
+        "judgment": "명칭 동일/제약 다른 교정 설명; 독립 결정 변화 미확인",
+        "implementation": []
+      },
+      {
+        "id": "A-G03-geographic3d",
+        "prior": "독자가 PostGIS geography와 비교 질문",
+        "initial": "Geographic3D 지원은 최초안에 이미 있음",
+        "later": "OGC08-015r2 §B.1.2.1(a)로 3축 정의 설명",
+        "author_link": "GDAL-M049665",
+        "judgment": "결정 뒤 원문 지목; C1 이하",
+        "implementation": []
+      }
+    ],
+    "same_purpose_implementation": {
+      "status": "합병 코드와 동일 매핑 목적 시험 정적 확인",
+      "commit_sha": "ab9e80368ef662712c963191fd86fde2c5b75600",
+      "source_ids": [
+        "GDAL-P1185",
+        "GDAL-C73SRS",
+        "GDAL-C73CTTEST",
+        "GDAL-C73SRSINFO"
+      ],
+      "scope": "authority-compliant 초기값, GIS swap매핑, 명시매핑을 쓰는 좌표변환시험, gdalsrsinfo WKT2:2018 기본",
+      "runtime_test": "미실행: 당시 PROJ master·GDAL ABI를 재현하지 않음; 코드존재와 테스트성공을 동일시하지 않음"
+    },
+    "object_authority": {
+      "input": "데이터의 좌표 튜플·CRS 식별자·좌표연산 요청",
+      "same_object": "EPSG 등 권위자가 정의한 CRS의 동일성",
+      "decision_actor": "CRS 권위자는축정의; 데이터생산자/드라이버는 저장순서; GDAL API는 둘을 매핑",
+      "before_state": "GIS 순서에 맞지 않는 AXIS를 WKT1에서 숨김",
+      "after_state": "CRS정의는유지, data-axis-to-SRS-axis mapping별도",
+      "constraint": "EPSG코드를유지하면서축정의만바꾸면동일CRS를거짓표시; CRS BBOX와gridoperation BBOX를같은강도로강제하면잘못됨"
+    },
+    "counterevidence": [
+      {
+        "type": "동일 이름/다른 제약",
+        "fact": "Extent/BBOX는 CRS의 적용범위와 grid기반변환의 유효영역에서 강도가 다르다.",
+        "source_ids": [
+          "GDAL-M049649",
+          "GDAL-M049651"
+        ]
+      },
+      {
+        "type": "호환성 때문에 전면반영 포기",
+        "fact": "전역 exportToWKT를 WKT2로 바꾸자는 의견을 검토했으나 기존 VRT/aux.xml 호환성 때문에 유지,CLI만변경.",
+        "source_ids": [
+          "GDAL-M049635",
+          "GDAL-M049658",
+          "GDAL-V73-5",
+          "GDAL-C73SRSINFO"
+        ]
+      },
+      {
+        "type": "결정 뒤 원문 설명",
+        "fact": "Geographic3D 표준 출처를 정확히 밝힌01-28메일은 이미01-09원안과구현제안뒤다.",
+        "source_ids": [
+          "GDAL-003",
+          "GDAL-M049665"
+        ]
+      },
+      {
+        "type": "의존성 우려와 실제 철회 구별",
+        "fact": "PROJ6에서 구 API가 제거된다는 우려는7에서제거된다는정정으로풀렸다. 축설계철회로세지않음.",
+        "source_ids": [
+          "GDAL-P1185"
+        ]
+      }
+    ],
+    "weakest_junction": "최초안 이전의 저자 노출·변경 전 선택·특정 비소프트웨어 원리 인과. 원안의 이미정한축선택과 후속CLI기본값 조정을 합치면 오양성",
+    "unknowns": [
+      "저자 최초 독서/노출 시점",
+      "2018/2019 WKT 초안의 정확 당시 공개판과 검색색인",
+      "축mapping제안이 특정 WCS읽기 때문에 생겼는지",
+      "WKT2018기본값에대한 정확표준조항의 별도 인과",
+      "실제 런타임시험/모든 드라이버반영"
+    ],
+    "card": {
+      "use": "권위 CRS 정의를 유지하면서 데이터 저장축순서를 별도 매핑하려는 설계; 출력을 바꾸더라도 기존 저장파일 호환성과 나눠 결정",
+      "basis": "RFC73 v2 Axis order issues; Jan25 compatibilitydecision",
+      "do_not_transfer": "이 단편을 표준이 모든파일의축순서·BBOX강도·API출력기본을 단일하게 강제한다는 뜻으로 일반화하지 말 것",
+      "links": [
+        "https://trac.osgeo.org/gdal/wiki/rfc73_proj6_wkt2_srsbarn?version=2",
+        "https://lists.osgeo.org/pipermail/gdal-dev/2019-January/049658.html"
+      ]
+    },
+    "checked_utc": "2026-11-22T18:56:34.367225+00:00",
+    "phase2_initial_freeze": "7a33c17be2d25b2c1936038205187e8108bf4482",
+    "historical_search_index": "미확인",
+    "strict_chain_complete": false,
+    "author_first_learned_source": "미확인",
+    "novel_to_this_sample": true,
+    "viewpoints": {
+      "developer": "초기RFC·리뷰·고정구현",
+      "standards_editor": "A-G03에서는 OGC원문·축권위/Extent구별을 root원장과연결",
+      "end_user": "운영/배포공지 또는 호환성/실행결과설명; 직접 사용자실험은미확인"
+    },
+    "recount_flags": {
+      "sampling_eligible": true,
+      "implementation_observed": true,
+      "named_software_source": true,
+      "contemporary_crossfield_source_available": true,
+      "author_crossfield_reference": true,
+      "post_initial_design_adjustment_observed": true,
+      "explicit_crossfield_causal_change": "미확인",
+      "strict_chain_complete": false,
+      "broader_existing_mechanism_analogy": true,
+      "positive_grade_reversed_by_counterevidence": false
+    }
+  },
+  {
+    "case_id": "A-G04",
+    "initial_source_id": "GDAL-004",
+    "strict_judgment": "C1 (이미 진행된 소프트웨어 문서화 구조 이관의 공식화)",
+    "retrospective_judgment": "N/U: 인쇄분야 원리를 인용해 문서 생성구조를 바꾼 사건으로 보기는 어려움",
+    "beforeafter": {
+      "before": "Doxygen 기반 사이트와 흩어진 Trac 위키·raw HTML 문서.",
+      "initial_proposal": "reStructuredText/Sphinx·RTD 테마·GitHub 편집링크·GitHub Pages/Azure Pipelines로 재구성한다. Doxygen API 렌더링과 Breathe 연결은 유지하고 기존 번역은 초기 이관에서 제외한다.",
+      "after": "Sphinx/RTD 계열 테마, GitHub 편집링크, HTML/PDF 배포와 Breathe API연결을 구현·배포했다고 발표했다.",
+      "post_initial_change": "투표 뒤 기본 사이트를전환하고 편집링크경로와 Azure pipeline이름을수정했다. 번역이관을 후속포기한것이 아니라 원래범위에서제외했다."
+    },
+    "first_donor_link": {
+      "receiver_url": "https://trac.osgeo.org/gdal/wiki/rfc74_sphinx?version=1",
+      "receiver_date": "2019-05-19T16:42:14+00:00",
+      "locator": "Motivation; Proposal",
+      "named_sources": [
+        "Sphinx",
+        "ReadTheDocs",
+        "PROJ",
+        "MapServer",
+        "Breathe",
+        "GitHub Pages",
+        "Azure Pipelines"
+      ],
+      "field": "소프트웨어 문서화/다른 GIS 프로젝트 사이트",
+      "nonsoftware_donor": "미확인",
+      "new_to_author": "미확인"
+    },
+    "explicit_causal_change": "비소프트웨어 원리 인과 미확인; 다른 소프트웨어의 Sphinx 구조 모방과 기여 편익 진술은 원안에 이미 존재",
+    "timeline": [
+      {
+        "date": "2019-05-13T16:14:00Z",
+        "event": "보존 Git author/committer date상 doc scaffolding; 정확한 공개push시각은미확인",
+        "source_ids": [
+          "GDAL-H74"
+        ],
+        "url": "https://github.com/OSGeo/gdal/commit/7650b2917a7c008560e3d17616363c3100755bc7"
+      },
+      {
+        "date": "2019-05-19T16:42:14Z",
+        "event": "최초RFC74 v1; 제목RFC73오기는보존",
+        "source_ids": [
+          "GDAL-004"
+        ],
+        "url": "https://trac.osgeo.org/gdal/wiki/rfc74_sphinx?version=1"
+      },
+      {
+        "date": "2019-05-19T16:54:52Z",
+        "event": "저자가이미진행된sprint작업을RFC로공식화한다고설명",
+        "source_ids": [
+          "GDAL-M050244"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-May/050244.html"
+      },
+      {
+        "date": "2019-05-23T09:27:24Z",
+        "event": "가결",
+        "source_ids": [
+          "GDAL-M050272"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-May/050272.html"
+      },
+      {
+        "date": "2019-05-23T16:19:36Z",
+        "event": "고정conf.py에theme/Breathe/PDF/GitHub편집경로존재",
+        "source_ids": [
+          "GDAL-C74CONF"
+        ],
+        "url": "https://github.com/OSGeo/gdal/commit/3a9f10aaca02876a01e090ef8437e513a4877fdf"
+      },
+      {
+        "date": "2019-05-23T16:29:52Z",
+        "event": "gdal.org주요내용이관완료발표",
+        "source_ids": [
+          "GDAL-M050273"
+        ],
+        "url": "https://lists.osgeo.org/pipermail/gdal-dev/2019-May/050273.html"
+      }
+    ],
+    "same_purpose_implementation": {
+      "status": "구성 코드와 공식 완료 공지 확인",
+      "commit_sha": "3a9f10aaca02876a01e090ef8437e513a4877fdf",
+      "source_ids": [
+        "GDAL-C74CONF",
+        "GDAL-M050273",
+        "GDAL-M050277"
+      ],
+      "scope": "Sphinx테마·GitHub편집·Breathe·PDF구성,주요내용배포. 모든리다이렉트와번역확인은제외",
+      "runtime_test": "미실행: 당시 Azure 배포·DNS·전체링크검사를재연하지않음"
+    },
+    "object_authority": {
+      "input": "Doxygen API문서·rawHTML·Trac위키내용",
+      "same_object": "공식GDAL문서내용과기존외부링크",
+      "decision_actor": "문서작성자·Sphinx빌드·GDAL PSC",
+      "before_state": "문서가 여러형식/위키에나뉨",
+      "after_state": "rst원문과CI생성HTML/PDF,API는Doxygen+Breathe",
+      "constraint": "서로다른사이트의UI구조모방이지인쇄의행위규칙인용이아님;기존번역은자동따라오지않음"
+    },
+    "counterevidence": [
+      {
+        "type": "공식화와발견시점분리",
+        "fact": "최초RFC전에Sphinx작업과prototype이이미진행됨. RFC가새원리를발견하게해선택을바꿨다는설명과맞지않음.",
+        "source_ids": [
+          "GDAL-004",
+          "GDAL-M050244"
+        ]
+      },
+      {
+        "type": "선택범위제한",
+        "fact": "기존번역은처음부터이관대상에서빠졌고누락페이지/링크는제보를받겠다고함. 모든내용보존완료로세지않음.",
+        "source_ids": [
+          "GDAL-004",
+          "GDAL-M050273"
+        ]
+      },
+      {
+        "type": "잔여접합비용",
+        "fact": "편집URL경로와CI파이프라인이름을추가수정해야했다.",
+        "source_ids": [
+          "GDAL-C74CONF",
+          "GDAL-M050277"
+        ]
+      }
+    ],
+    "weakest_junction": "비소프트웨어 제공 원문 및 기존 선택 변경 연결",
+    "unknowns": [
+      "기존번역의후속이관",
+      "모든redirect성공",
+      "기여율/최종사용자가독성의실측효과",
+      "인쇄분야원리의특정유입"
+    ],
+    "card": {
+      "use": "문서의원문편집과생성/배포경로를한곳에모으면서API생성기와기존링크를별도로연결",
+      "basis": "RFC74 Proposal/Considerations; 완료공지",
+      "do_not_transfer": "번역·모든URL·문서품질개선효과가자동확보됐다고하지말것",
+      "links": [
+        "https://trac.osgeo.org/gdal/wiki/rfc74_sphinx?version=1",
+        "https://lists.osgeo.org/pipermail/gdal-dev/2019-May/050273.html"
+      ]
+    },
+    "checked_utc": "2026-11-22T18:56:34.367225+00:00",
+    "phase2_initial_freeze": "7a33c17be2d25b2c1936038205187e8108bf4482",
+    "historical_search_index": "미확인",
+    "strict_chain_complete": false,
+    "author_first_learned_source": "미확인",
+    "novel_to_this_sample": true,
+    "viewpoints": {
+      "developer": "초기RFC·리뷰·고정구현",
+      "standards_editor": "해당 없음: 비소프트웨어표준편집자근거없음",
+      "end_user": "운영/배포공지 또는 호환성/실행결과설명; 직접 사용자실험은미확인"
+    },
+    "recount_flags": {
+      "sampling_eligible": true,
+      "implementation_observed": true,
+      "named_software_source": true,
+      "contemporary_crossfield_source_available": "해당 없음: 비소프트웨어 제공 원문 미확인",
+      "author_crossfield_reference": "미확인",
+      "post_initial_design_adjustment_observed": true,
+      "explicit_crossfield_causal_change": "미확인",
+      "strict_chain_complete": false,
+      "broader_existing_mechanism_analogy": false,
+      "positive_grade_reversed_by_counterevidence": false
+    }
+  }
+]
