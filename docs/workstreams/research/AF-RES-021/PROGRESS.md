@@ -20,3 +20,5 @@
 - ②-3 Q09–Q12 입력 · 이 문단을 추가한 커밋. 구버전 고정, 현행 이행, 단일 프록시와 scheme별 프록시를 다른 사용으로 보존했다. 파일 생성 뒤 키를 봉인하고 다음으로 마지막 판독을 실행한다.
 - ②-3 원격 확인 `b70f9e83bfe7bc1bfd850ac6541ddae57d996b3a`.
 - ③-3 Q09–Q12 판독 · 이 문단을 추가한 커밋. [입력](evidence/input-b3.json), [영수증](evidence/read-b3.json). 전체 판독 로그를 봉인하고 다음은 두 판정원 채점과 재실행.
+- ③-3 원격 확인 `400da5d787a86b8ed58447f892416e6d9916770a`. 모든 원 로그 135행을 저장한 뒤 [채점](evidence/score-receipt.json)에 키를 공개했다.
+- ④ 집계·반례 · 이 문단을 추가한 커밋. [결과](RESULT.md), [집계](metrics.csv), [진단](evidence/diagnostics.json), [준비](evidence/preparation.json), [원장](sources.json). 다음은 네 표·분모·바이트 재생과 수용 조건 확인.
