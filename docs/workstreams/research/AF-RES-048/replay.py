@@ -165,7 +165,9 @@ def measure(views, trials, by_member, evidence):
             records.append(dict(case=case, method=method, state="missing", representatives=None,
                                 original_pool_ids=None, direct=None, reachable=None, max_in_one=None,
                                 gain_direct=None, loss_direct=None, gain_reachable=None, loss_reachable=None,
-                                id_trial_counts=None, trial_ids=None, hidden_known_members=None))
+                                id_trial_counts=None, trial_ids=None, hidden_known_members=None,
+                                outside_reachable=None, gain_outside=None, loss_outside=None,
+                                unshown_by_capacity=None, hidden_in_shown_groups=None))
             continue
         original, _ = evidence.complete(case, (r["url"] for r in by_member.values()
                                                if r["case"] == case and r["state"] == "observed"))
@@ -173,17 +175,24 @@ def measure(views, trials, by_member, evidence):
         reachable = [set(p["complete_ids"]) & original for p in subset]
         direct = set().union(*(ids for p, ids in zip(subset, reachable) if p["kind"] == "direct"))
         any_path = set().union(*reachable)
+        outside = set().union(*(set(t["complete_ids"]) - original for t in subset))
         record = dict(case=case, method=method, state="observed", representatives=view["representatives"],
                       original_pool_ids=sorted(original), direct=sorted(direct), reachable=sorted(any_path),
                       max_in_one=max((len(x) for x in reachable), default=0),
                       id_trial_counts={alt: sum(alt in ids for ids in reachable) for alt in sorted(original)},
                       trial_ids=[p["id"] for p in subset],
                       hidden_known_members=[m for g in view["groups"] for m in g["members"]
-                                            if m not in view["representatives"]])
+                                            if m not in view["representatives"]],
+                      outside_reachable=sorted(outside),
+                      unshown_by_capacity=[m for g in view["groups"][3:] for m in g["members"]],
+                      hidden_in_shown_groups=[m for g in view["groups"][:3] for m in g["members"][1:]])
         baseline = record if method == "A" else next(r for r in records if r["case"] == case and r["method"] == "A")
         for dst in ("direct", "reachable"):
             record[f"gain_{dst}"] = sorted(set(record[dst]) - set(baseline[dst]))
             record[f"loss_{dst}"] = sorted(set(baseline[dst]) - set(record[dst]))
+        recorded_outside = set(baseline["outside_reachable"])
+        record["gain_outside"] = sorted(outside - recorded_outside)
+        record["loss_outside"] = sorted(recorded_outside - outside)
         records.append(record)
     return records
 
