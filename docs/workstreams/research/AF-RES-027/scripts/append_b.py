@@ -72,7 +72,7 @@ def main():
         for i,alt in enumerate(c.get("secondary_attempts",[]),1):
             row={k:"" for k in fields}
             row.update(frame_id="F-"+c["case_id"]+"-ALT"+str(i),sample="B_CANDIDATE",ecosystem="conda-forge",
-              consumer_project=alt["project"],reference_id=c["case_id"],selection_status="EXCLUDED_OR_LEFT_CENSORED",
+              consumer_project=alt["project"],reference_id=c["case_id"],selection_status="EXCLUDED_OR_UNRESOLVED",
               reason=alt["status"],outcome_used="True",ledger_url=c["upstream"]["proposal_url"])
             old.append(row)
     with framepath.open("w",newline="") as f:

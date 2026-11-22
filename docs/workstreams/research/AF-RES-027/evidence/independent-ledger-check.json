@@ -1,0 +1,1114 @@
+{
+  "title": "AF-RES-027 independent ledger arithmetic and denominator check",
+  "reviewer": "/root/conda_a",
+  "checked_utc": "2026-11-22T06:12:49.655527+00:00",
+  "independence_statement": "Same-model separate internal arithmetic/ledger check, not external independent review or blinded research. Reviewer collected A-conda evidence but did not reuse scripts/build_ledgers.py or its calculations. CSV/JSON files parsed anew using Python standard library.",
+  "scope": [
+    "upstream.csv",
+    "chains.csv",
+    "verdicts.csv",
+    "intervals.csv",
+    "references.jsonl",
+    "frame.csv",
+    "sources.json",
+    "evidence/counts.json"
+  ],
+  "excluded_scope": [
+    "RESULT.md still being written",
+    "remote verification of the not-yet-committed assembly",
+    "fresh semantic rereading of all87 counted external originals",
+    "historic package/CI execution"
+  ],
+  "head_before_assembly_commit": "17229e1bde153aaf29290dceae4dad9172fe987f",
+  "input_snapshots": [
+    {
+      "path": "upstream.csv",
+      "sha256": "fb58f473e1567677ee0093515166baa71c3dda984e71f5594a2511e22d2b42fa",
+      "bytes": 71857
+    },
+    {
+      "path": "chains.csv",
+      "sha256": "6f64c623c3cefd5cc04831705321803ba23a48d5b7c6294c166c5796a9cdb32b",
+      "bytes": 84016
+    },
+    {
+      "path": "verdicts.csv",
+      "sha256": "306625d5b63f52d2928a3662c0e5862c5f19b37343f8e23ff3d30b533844946a",
+      "bytes": 94205
+    },
+    {
+      "path": "intervals.csv",
+      "sha256": "daff88b619f42e935666787f292d5d3af691fe662620f5a84c5b6a7267aeb987",
+      "bytes": 10188
+    },
+    {
+      "path": "references.jsonl",
+      "sha256": "c656098063977fc2edef290587c66c8cdfbdd2bfd9501fb5a3391beeb2a9cae0",
+      "bytes": 30558
+    },
+    {
+      "path": "frame.csv",
+      "sha256": "5b2d57004027b5572cab2aa901ead24b1a6f8071e1f022ae6c9cc64124e947a8",
+      "bytes": 11223
+    },
+    {
+      "path": "sources.json",
+      "sha256": "5995567cf5f9816ac16052c765a66a274aa164b471b7336c50819574cf10abec",
+      "bytes": 616140
+    },
+    {
+      "path": "evidence/counts.json",
+      "sha256": "d9b3e950ee6b46de3affc27d4729853b12c80dcc41320749b9fdf20c0afc3bdd",
+      "bytes": 3521
+    }
+  ],
+  "methods": [
+    "csv.DictReader and json.loads; no import or execution of scripts/build_ledgers.py",
+    "Independent Counter/set grouping from rows, with B_CANDIDATE excluded from six attempts",
+    "Fixed consumer commit/path/token/purpose equality for two A/B overlaps",
+    "UTC datetime subtraction including uncertainty interval direction and365*86400 windows",
+    "Source ID referential integrity, canonical-work/URL uniqueness and parseable Git-commit duplicate check"
+  ],
+  "computed_counts": {
+    "A_references": 12,
+    "A_projects": 12,
+    "A_by_ecosystem": {
+      "conda-forge": 6,
+      "Homebrew": 6
+    },
+    "B_attempts": 6,
+    "B_A_overlap": 2,
+    "B_projects": 6,
+    "distinct_A_B_projects": 16,
+    "A_selected_upstream_event_keys": 10,
+    "B_selected_upstream_event_keys": 6,
+    "A_B_deduplicated_selected_upstream_event_keys": 14,
+    "A_verdicts": {
+      "MAINTAINED_FOR_PURPOSE": 5,
+      "INCOMPATIBLE_FOR_STATED_PURPOSE": 2,
+      "UNDECIDABLE": 5
+    },
+    "B_verdicts": {
+      "MAINTAINED_FOR_PURPOSE": 3,
+      "UNDECIDABLE": 3
+    },
+    "A_strict_complete_chains": 0,
+    "B_original_strict_complete_chains": 0,
+    "A_strict_Tu_Tc_pairs": 0,
+    "A_source_commit_to_published_source_pairs": 3,
+    "A_source_commit_to_published_source_reference_count": 2,
+    "H02_first_distribution_interval_eligible": false,
+    "B_auxiliary_source_response_pairs": 1,
+    "B_auxiliary_source_integration_pairs": 1,
+    "B_auxiliary_source_release_pairs": 1,
+    "A_direct_party_failure_report_references": 2,
+    "A_human_harm_unconfirmed": 12,
+    "source_ledger_rows": 348,
+    "conservative_unique_originals": 87,
+    "B_new_reference_records": 4,
+    "source_minimum_categories": {
+      "A_historical": 12,
+      "upstream": 37,
+      "consumer_followup": 30,
+      "B_additional_historical": 4,
+      "cross_domain": 4
+    }
+  },
+  "counted_raw_category_counts": {
+    "historical": 12,
+    "upstream": 37,
+    "followup": 19,
+    "b_consumer_original": 1,
+    "consumer_followup": 11,
+    "consumer_historical": 3,
+    "cross_domain_upstream": 2,
+    "cross_domain_consumer": 2
+  },
+  "resolved_findings": [
+    {
+      "id": "SER-01",
+      "finding": "A-C03 window_start_upper empty despite Tu_upper and window_end_upper",
+      "correction_observed": "2020-01-02T10:36:25.650Z now populated",
+      "impact": "No denominator or numeric result changed"
+    },
+    {
+      "id": "SER-02",
+      "finding": "New B rows had empty exposure/runtime/latency booleans",
+      "correction_observed": "All18 chain rows now explicitly false",
+      "impact": "Removed ambiguity; no observed success added"
+    },
+    {
+      "id": "SER-03",
+      "finding": "B-C01..03 artifact windows lacked flat scope limitation",
+      "correction_observed": "selected artifact availability, not exact consumer exposure; contents or source checkpoint only",
+      "impact": "Prevents source date being treated as exposure"
+    },
+    {
+      "id": "SER-04",
+      "finding": "B original interval rows lacked source_ids",
+      "correction_observed": "All six B interval rows now have resolving source ID lists",
+      "impact": "Date/reason provenance restored"
+    },
+    {
+      "id": "DATE-BC01",
+      "finding": "Missing B-C01 source snapshot date",
+      "correction_observed": "2020-01-30T03:32:50Z from existing BC-S06; source snapshot meaning explicit",
+      "impact": "No denominator or interval change"
+    },
+    {
+      "id": "SOURCE-C04",
+      "finding": "RC interval linked check-runs C-F55, stable interval linked RC C-F18",
+      "correction_observed": "RC:C-F15,C-F18,C-F56; stable:C-F15,C-F20,C-F19; official tag objects confirm fixed edition identity",
+      "impact": "Provenance corrected; numeric endpoints unchanged"
+    },
+    {
+      "id": "MASK-SERIALIZATION",
+      "finding": "Flattened dict omitted answerable/unanswerable key boundaries",
+      "correction_observed": "All18 A-conda L1/L2/L3 strings retain available/can_answer/cannot_answer keys and values",
+      "impact": "Original judgments unchanged; scope interpretable"
+    }
+  ],
+  "checks": [
+    {
+      "condition": "counts.json agrees with independent calculation: A_references",
+      "met": true,
+      "observed": 12,
+      "expected": 12,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_projects",
+      "met": true,
+      "observed": 12,
+      "expected": 12,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_by_ecosystem",
+      "met": true,
+      "observed": {
+        "conda-forge": 6,
+        "Homebrew": 6
+      },
+      "expected": {
+        "Homebrew": 6,
+        "conda-forge": 6
+      },
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_attempts",
+      "met": true,
+      "observed": 6,
+      "expected": 6,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_A_overlap",
+      "met": true,
+      "observed": 2,
+      "expected": 2,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_projects",
+      "met": true,
+      "observed": 6,
+      "expected": 6,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: distinct_A_B_projects",
+      "met": true,
+      "observed": 16,
+      "expected": 16,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_selected_upstream_event_keys",
+      "met": true,
+      "observed": 10,
+      "expected": 10,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_selected_upstream_event_keys",
+      "met": true,
+      "observed": 6,
+      "expected": 6,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_B_deduplicated_selected_upstream_event_keys",
+      "met": true,
+      "observed": 14,
+      "expected": 14,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_verdicts",
+      "met": true,
+      "observed": {
+        "MAINTAINED_FOR_PURPOSE": 5,
+        "INCOMPATIBLE_FOR_STATED_PURPOSE": 2,
+        "UNDECIDABLE": 5
+      },
+      "expected": {
+        "MAINTAINED_FOR_PURPOSE": 5,
+        "INCOMPATIBLE_FOR_STATED_PURPOSE": 2,
+        "UNDECIDABLE": 5
+      },
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_verdicts",
+      "met": true,
+      "observed": {
+        "MAINTAINED_FOR_PURPOSE": 3,
+        "UNDECIDABLE": 3
+      },
+      "expected": {
+        "MAINTAINED_FOR_PURPOSE": 3,
+        "UNDECIDABLE": 3
+      },
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_strict_complete_chains",
+      "met": true,
+      "observed": 0,
+      "expected": 0,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_original_strict_complete_chains",
+      "met": true,
+      "observed": 0,
+      "expected": 0,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_strict_Tu_Tc_pairs",
+      "met": true,
+      "observed": 0,
+      "expected": 0,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_source_commit_to_published_source_pairs",
+      "met": true,
+      "observed": 3,
+      "expected": 3,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_source_commit_to_published_source_reference_count",
+      "met": true,
+      "observed": 2,
+      "expected": 2,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: H02_first_distribution_interval_eligible",
+      "met": true,
+      "observed": false,
+      "expected": false,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_auxiliary_source_response_pairs",
+      "met": true,
+      "observed": 1,
+      "expected": 1,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_auxiliary_source_integration_pairs",
+      "met": true,
+      "observed": 1,
+      "expected": 1,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_auxiliary_source_release_pairs",
+      "met": true,
+      "observed": 1,
+      "expected": 1,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_direct_party_failure_report_references",
+      "met": true,
+      "observed": 2,
+      "expected": 2,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: A_human_harm_unconfirmed",
+      "met": true,
+      "observed": 12,
+      "expected": 12,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: source_ledger_rows",
+      "met": true,
+      "observed": 348,
+      "expected": 348,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: conservative_unique_originals",
+      "met": true,
+      "observed": 87,
+      "expected": 87,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: B_new_reference_records",
+      "met": true,
+      "observed": 4,
+      "expected": 4,
+      "note": ""
+    },
+    {
+      "condition": "counts.json agrees with independent calculation: source_minimum_categories",
+      "met": true,
+      "observed": {
+        "A_historical": 12,
+        "upstream": 37,
+        "consumer_followup": 30,
+        "B_additional_historical": 4,
+        "cross_domain": 4
+      },
+      "expected": {
+        "A_historical": 12,
+        "upstream": 37,
+        "consumer_followup": 30,
+        "B_additional_historical": 4,
+        "cross_domain": 4
+      },
+      "note": ""
+    },
+    {
+      "condition": "A prespecified minimum and project cap",
+      "met": true,
+      "observed": {
+        "rows": 12,
+        "project_max": 1
+      },
+      "expected": "12; 6+6; <=2 per project",
+      "note": ""
+    },
+    {
+      "condition": "A outcome used false in selection frame",
+      "met": true,
+      "observed": [],
+      "expected": [],
+      "note": "Independent ledger field check; does not replay the historical freeze chronology."
+    },
+    {
+      "condition": "Reference keys unique and equal across four main ledgers",
+      "met": true,
+      "observed": {
+        "upstream.csv": 18,
+        "chains.csv": 18,
+        "verdicts.csv": 18
+      },
+      "expected": "18 each",
+      "note": ""
+    },
+    {
+      "condition": "B overlaps are the same fixed consumer reference and purpose",
+      "met": true,
+      "observed": [
+        {
+          "B": "B-H01",
+          "A": "A-H02",
+          "equal_fields": {
+            "consumer_project": true,
+            "consumer_commit": true,
+            "consumer_path": true,
+            "consumer_file_url": true,
+            "package": true,
+            "raw_reference": true,
+            "purpose": true
+          }
+        },
+        {
+          "B": "B-H03",
+          "A": "A-H06",
+          "equal_fields": {
+            "consumer_project": true,
+            "consumer_commit": true,
+            "consumer_path": true,
+            "consumer_file_url": true,
+            "package": true,
+            "raw_reference": true,
+            "purpose": true
+          }
+        }
+      ],
+      "expected": "B-H01=A-H02; B-H03=A-H06",
+      "note": ""
+    },
+    {
+      "condition": "Event deduplication uses nonempty observed event keys",
+      "met": true,
+      "observed": {
+        "A": [
+          "A-C01-U1",
+          "A-C02-U1",
+          "A-C03-U1",
+          "A-C04-U1",
+          "A-C05-U1",
+          "A-C06-U1",
+          "HB-CPP-RULES-2026",
+          "HB-PKGCONF-2024",
+          "HB-QT5-ALIAS-2021",
+          "HB-SDL2-COMPAT-2026"
+        ],
+        "B": [
+          "CF-MAMBA-SPLIT-2021",
+          "CF-MATPLOTLIB-ROOT-2019",
+          "CF-QT-META-2022",
+          "HB-PKGCONF-2024",
+          "HB-PYTHON-DEFAULT-2020",
+          "HB-QT5-ALIAS-2021"
+        ],
+        "shared": [
+          "HB-PKGCONF-2024",
+          "HB-QT5-ALIAS-2021"
+        ]
+      },
+      "expected": "10+6-2=14",
+      "note": "Supplier edit/episode groups include routine version successors. These are not failure counts or statistically independent events. Auxiliary Qt repair is not added."
+    },
+    {
+      "condition": "All nonempty source ID links resolve",
+      "met": true,
+      "observed": [],
+      "expected": [],
+      "note": ""
+    },
+    {
+      "condition": "B original interval source ID provenance populated",
+      "met": true,
+      "observed": [],
+      "expected": [],
+      "note": ""
+    },
+    {
+      "condition": "Counted original keys and URLs are unique and nonempty",
+      "met": true,
+      "observed": {
+        "source_id": {},
+        "canonical_work_key": {},
+        "original_url": {}
+      },
+      "expected": {},
+      "note": "This checks ledger keys/URLs, not independent semantic re-reading of all87 originals."
+    },
+    {
+      "condition": "No same fixed Git commit counted twice among parseable original URLs",
+      "met": true,
+      "observed": {},
+      "expected": {},
+      "note": "PR/API-release semantic grouping remains dependent on declared canonical work keys; not all source types encode a commit."
+    },
+    {
+      "condition": "87 counted rows have direct-read location, content, provenance and limits",
+      "met": true,
+      "observed": [],
+      "expected": [],
+      "note": ""
+    },
+    {
+      "condition": "All eight populated numeric intervals recompute including range direction",
+      "met": true,
+      "observed": [
+        {
+          "interval_id": "A-C04-TcRC",
+          "eligible": true,
+          "numeric_role": "SOURCE_PUBLICATION",
+          "calculated_lower_seconds": 76027.0,
+          "calculated_upper_seconds": 76027.0,
+          "errors": []
+        },
+        {
+          "interval_id": "A-C04-TcStable",
+          "eligible": true,
+          "numeric_role": "SOURCE_PUBLICATION",
+          "calculated_lower_seconds": 1004454.0,
+          "calculated_upper_seconds": 1004454.0,
+          "errors": []
+        },
+        {
+          "interval_id": "A-C06-TcSource",
+          "eligible": true,
+          "numeric_role": "SOURCE_PUBLICATION",
+          "calculated_lower_seconds": 863997.0,
+          "calculated_upper_seconds": 863997.0,
+          "errors": []
+        },
+        {
+          "interval_id": "A-H02-AssetMetadata",
+          "eligible": false,
+          "numeric_role": "METADATA_ARITHMETIC_ONLY",
+          "calculated_lower_seconds": 1941780.0,
+          "calculated_upper_seconds": 1941782.0,
+          "errors": []
+        },
+        {
+          "interval_id": "A-C04-ConditionalMetadata",
+          "eligible": false,
+          "numeric_role": "CONDITIONAL_METADATA_ONLY",
+          "calculated_lower_seconds": 18983.897,
+          "calculated_upper_seconds": 19163.014,
+          "errors": []
+        },
+        {
+          "interval_id": "B-C03-R2-UploadCommit",
+          "eligible": true,
+          "numeric_role": "SCOPED_SOURCE_RESPONSE",
+          "calculated_lower_seconds": 19700.839,
+          "calculated_upper_seconds": 19700.839,
+          "errors": []
+        },
+        {
+          "interval_id": "B-C03-R2-UploadMerge",
+          "eligible": true,
+          "numeric_role": "SCOPED_SOURCE_INTEGRATION",
+          "calculated_lower_seconds": 86726.839,
+          "calculated_upper_seconds": 86726.839,
+          "errors": []
+        },
+        {
+          "interval_id": "B-C03-R2-CommitRelease",
+          "eligible": true,
+          "numeric_role": "SOURCE_PUBLICATION",
+          "calculated_lower_seconds": 6487807.0,
+          "calculated_upper_seconds": 6487807.0,
+          "errors": []
+        }
+      ],
+      "expected": "8 correct",
+      "note": "For uncertain start, lower=end-start_upper and upper=end_upper-start. Arithmetic alone does not establish propagation eligibility."
+    },
+    {
+      "condition": "A-H02-AssetMetadata excluded from eligible intervals",
+      "met": true,
+      "observed": {
+        "eligible": "false",
+        "numeric_role": "METADATA_ARITHMETIC_ONLY",
+        "scope": "Content checked in actual archive; metadata is not a proved first-public-access bound"
+      },
+      "expected": false,
+      "note": ""
+    },
+    {
+      "condition": "A-C04-ConditionalMetadata excluded from eligible intervals",
+      "met": true,
+      "observed": {
+        "eligible": "false",
+        "numeric_role": "CONDITIONAL_METADATA_ONLY",
+        "scope": "OnlyifinitialLinuxCPython3.6/3.7/3.8artifactwasused:artifactupload→pincommit"
+      },
+      "expected": false,
+      "note": ""
+    },
+    {
+      "condition": "Nine artifact-anchored windows are exactly365days, including leap years",
+      "met": true,
+      "observed": [
+        {
+          "reference_id": "A-C01",
+          "seconds": 31536000.0,
+          "limit": "artifact availability, not exact consumer exposure",
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "A-C02",
+          "seconds": 31536000.0,
+          "limit": "artifact availability, not exact consumer exposure",
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "A-C03",
+          "seconds": 31536000.0,
+          "limit": "artifact availability, not exact consumer exposure",
+          "upper_seconds": 31536000.0,
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "A-C04",
+          "seconds": 31536000.0,
+          "limit": "artifact availability, not exact consumer exposure",
+          "upper_seconds": 31536000.0,
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "A-C05",
+          "seconds": 31536000.0,
+          "limit": "Firstretainedplatformartifactisacomparisonanchor,notconsumerexposure",
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "A-C06",
+          "seconds": 31536000.0,
+          "limit": "artifact availability, not exact consumer exposure",
+          "upper_seconds": 31536000.0,
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "B-C01",
+          "seconds": 31536000.0,
+          "limit": "selected artifact availability, not exact consumer exposure; contents or source checkpoint only",
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "B-C02",
+          "seconds": 31536000.0,
+          "limit": "selected artifact availability, not exact consumer exposure; contents or source checkpoint only",
+          "last_source_not_after_window": true
+        },
+        {
+          "reference_id": "B-C03",
+          "seconds": 31536000.0,
+          "limit": "selected artifact availability, not exact consumer exposure; contents or source checkpoint only",
+          "last_source_not_after_window": true
+        }
+      ],
+      "expected": "9 windows,31536000s each",
+      "note": "A6+B-conda3; all9 now have explicit last-source time <=windowend. B-C01 time is a mainline source snapshot supported by BC-S06. A source checkpoint is not consumer exposure."
+    },
+    {
+      "condition": "Unknown supplier dates do not become formal365day windows",
+      "met": true,
+      "observed": [],
+      "expected": [],
+      "note": "Homebrew provisional sourcecommitter+365 text remains a stated provisional range, not a Tu window."
+    },
+    {
+      "condition": "No source/artifact date asserted as exact consumer exposure or runtime deployment",
+      "met": true,
+      "observed": {
+        "all18_chain_flags_false": true,
+        "upstream_actual_exposure_times_present": 0
+      },
+      "expected": "18 false;0 exposure times",
+      "note": ""
+    },
+    {
+      "condition": "Empty numeric fields are not filled as zero delay",
+      "met": true,
+      "observed": {
+        "not_estimated_rows": 18,
+        "all_have_reason": true
+      },
+      "expected": "18 no-estimate rows with reasons/censoring",
+      "note": ""
+    },
+    {
+      "condition": "Mamba initial successor observation not counted as left-censored transition",
+      "met": true,
+      "observed": {
+        "frame_reason": "First observed imported code in2022 uses libmambapy and excludes mamba imports; predecessor conda/conda branch not traced. Earlier mamba reference and existence/timing of a transition are unconfirmed. Do not count as a statistical left-censored correction.",
+        "left_censored_secondary": 0,
+        "unresolved": 1
+      },
+      "expected": "0 censored;1 unresolved predecessor",
+      "note": ""
+    },
+    {
+      "condition": "No formal primary left/right censored interval",
+      "met": true,
+      "observed": {
+        "censoring_labels": {
+          "NOT_APPLICABLE_NO_CORRECTIVE_EVENT_DEMONSTRATED": 3,
+          "EXACT_EXPOSURE_UNRESOLVED_NOT_RIGHT_CENSORED": 1,
+          "PURPOSE_INCOMPARABLE_NOT_LEFT_OR_RIGHT_CENSORED": 1,
+          "PRE_EXISTING_FAILURE_BEFORE_SUPPLIER_FIX; EXACT_PLATFORM_EXPOSURE_UNRESOLVED": 1,
+          "START_UNRESOLVED; formal right/left censoring not assigned": 6,
+          "NOT_APPLICABLE_NO_EVENT": 2,
+          "No correction-latency estimate. Retirement is a competing reference change, not a right-censored error.": 1,
+          "No required name correction for this CLI purpose observed; do not report as an uncorrected-error rate or latency censor.": 1,
+          "Original-event correction interval ineligible because requirements change. Auxiliary repair pair is measured with scoped source endpoints.": 1,
+          "INDETERMINATE_UPSTREAM_EFFECTIVE_DATE": 1
+        }
+      },
+      "expected": "0 formal left/right censored",
+      "note": "Read labels with their negations. NOT_RIGHT_CENSORED and not-a-latency statements must not be counted by substring matching."
+    },
+    {
+      "condition": "Qt repair intervals remain B_AUX and exclude original Qt5.12 purpose",
+      "met": true,
+      "observed": {
+        "aux_ids": [
+          "B-C03-R2-UploadCommit",
+          "B-C03-R2-UploadMerge",
+          "B-C03-R2-CommitRelease"
+        ],
+        "original_eligible": "false"
+      },
+      "expected": "3 auxiliary metrics;original ineligible",
+      "note": ""
+    }
+  ],
+  "remaining_limits": [
+    "The87 count is independently reproduced from conservative source flags and duplicate keys; this audit is not an independent re-reading of every external original.",
+    "Selected supplier events14 are distinct edit/episode keys, not14 failures or statistically independent experiments.",
+    "A12 are12 projects, not proven12 independent people; Spyder upstream/consumer lineage overlap remains.",
+    "All runtime effects and human misrecommendation harms remain unverified; source-release publication metrics are narrower than deployment.",
+    "Final remote acceptance must verify these input hashes or rerun the audit if the assembled ledgers change."
+  ],
+  "result": "PASS_WITH_STATED_LIMITS",
+  "passed_conditions": 47,
+  "total_conditions": 47,
+  "initial_full_check_utc": "2026-11-22T05:57:01.831355+00:00",
+  "incremental_verification": {
+    "checked_utc": "2026-11-22T06:12:49.655527+00:00",
+    "method": "Reversed only declared supplemental edits in memory and recovered prior hashes. Re-read BC-S06 and official tag objects; compared every A-conda mask field with original dict; recomputed all numeric intervals. Did not import or execute build_ledgers.py.",
+    "checks": [
+      {
+        "condition": "Only four declared input files changed",
+        "met": true,
+        "evidence": {
+          "upstream.csv": false,
+          "chains.csv": true,
+          "verdicts.csv": true,
+          "intervals.csv": true,
+          "references.jsonl": false,
+          "frame.csv": false,
+          "sources.json": true,
+          "evidence/counts.json": false
+        }
+      },
+      {
+        "condition": "Reversing only declared edits reproduces all four previous file hashes",
+        "met": true,
+        "evidence": {
+          "chains.csv": {
+            "reconstructed_prior_sha256": "1d4205803ddb242dcbb093aad42872843ca23be98de8ee4c21fb34ce17fe8ef0",
+            "expected_prior_sha256": "1d4205803ddb242dcbb093aad42872843ca23be98de8ee4c21fb34ce17fe8ef0",
+            "matches": true
+          },
+          "verdicts.csv": {
+            "reconstructed_prior_sha256": "6790778bf843828eb4d69f2ba71cb863ea7b4cf71098da274abc4ee55def85d5",
+            "expected_prior_sha256": "6790778bf843828eb4d69f2ba71cb863ea7b4cf71098da274abc4ee55def85d5",
+            "matches": true
+          },
+          "intervals.csv": {
+            "reconstructed_prior_sha256": "fe7181ff1646db003f24de5f244d1a31517f115d8213d0244110b8618b099804",
+            "expected_prior_sha256": "fe7181ff1646db003f24de5f244d1a31517f115d8213d0244110b8618b099804",
+            "matches": true
+          },
+          "sources.json": {
+            "reconstructed_prior_sha256": "f6a037985b536311166a680bdb1431875179177dae65ea4e08eb03521a016124",
+            "expected_prior_sha256": "f6a037985b536311166a680bdb1431875179177dae65ea4e08eb03521a016124",
+            "matches": true
+          }
+        }
+      },
+      {
+        "condition": "B-C01 snapshot time agrees with preexisting BC-S06 and precedes window end",
+        "met": true,
+        "evidence": {
+          "time": "2020-01-30T03:32:50Z",
+          "source_id": "BC-S06",
+          "source_date_field": "cutoff2020-01-30T11:41:31.953Z; last mainline snapshot2020-01-30T03:32:50Z",
+          "meaning": "Mainline source snapshot; not dependency-file edit, release or actual consumer exposure"
+        }
+      },
+      {
+        "condition": "All18 A-conda mask cells preserve original dict keys, values and order",
+        "met": true,
+        "evidence": [
+          {
+            "reference_id": "A-C01",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C01",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C01",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C02",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C02",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C02",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C03",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C03",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C03",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C04",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C04",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C04",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C05",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C05",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C05",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C06",
+            "field": "L1_address_only",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C06",
+            "field": "L2_function_version",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          },
+          {
+            "reference_id": "A-C06",
+            "field": "L3_source_time_relation",
+            "matches": true,
+            "keys": [
+              "available",
+              "can_answer",
+              "cannot_answer"
+            ]
+          }
+        ]
+      },
+      {
+        "condition": "Pandas RC and stable interval source IDs match fixed edition roles",
+        "met": true,
+        "evidence": [
+          {
+            "id": "A-C04-TcRC",
+            "sources": [
+              "C-F15",
+              "C-F18",
+              "C-F56"
+            ],
+            "matches": true
+          },
+          {
+            "id": "A-C04-TcStable",
+            "sources": [
+              "C-F15",
+              "C-F20",
+              "C-F19"
+            ],
+            "matches": true
+          }
+        ]
+      },
+      {
+        "condition": "Official annotated tag checks reuse two existing source groups; originals stay87",
+        "met": true,
+        "evidence": [
+          {
+            "id": "C-F18",
+            "tag": "v1.1.0rc0",
+            "target_commit": "bfac13628394ac7317bb94833319bd6bf87603af",
+            "tag_object_url": "https://api.github.com/repos/pandas-dev/pandas/git/tags/e43d709e7c2c204c5274afa725dfde99dd5a63bf",
+            "matches": true,
+            "limit": "Annotated tag timestamp is not release publication or actual consumer exposure."
+          },
+          {
+            "id": "C-F20",
+            "tag": "v1.1.0",
+            "target_commit": "d9fff2792bf16178d4e450fe7384244e50635733",
+            "tag_object_url": "https://api.github.com/repos/pandas-dev/pandas/git/tags/d9c3f01140844e4efe6edee0b0d7b2b88fb13c6c",
+            "matches": true,
+            "limit": "Annotated tag timestamp is not release publication or actual consumer exposure."
+          }
+        ]
+      },
+      {
+        "condition": "All eight numeric intervals independently recompute after source-ID changes",
+        "met": true,
+        "evidence": [
+          {
+            "id": "A-C04-TcRC",
+            "lower_seconds": 76027.0,
+            "upper_seconds": 76027.0,
+            "matches": true
+          },
+          {
+            "id": "A-C04-TcStable",
+            "lower_seconds": 1004454.0,
+            "upper_seconds": 1004454.0,
+            "matches": true
+          },
+          {
+            "id": "A-C06-TcSource",
+            "lower_seconds": 863997.0,
+            "upper_seconds": 863997.0,
+            "matches": true
+          },
+          {
+            "id": "A-H02-AssetMetadata",
+            "lower_seconds": 1941780.0,
+            "upper_seconds": 1941782.0,
+            "matches": true
+          },
+          {
+            "id": "A-C04-ConditionalMetadata",
+            "lower_seconds": 18983.897,
+            "upper_seconds": 19163.014,
+            "matches": true
+          },
+          {
+            "id": "B-C03-R2-UploadCommit",
+            "lower_seconds": 19700.839,
+            "upper_seconds": 19700.839,
+            "matches": true
+          },
+          {
+            "id": "B-C03-R2-UploadMerge",
+            "lower_seconds": 86726.839,
+            "upper_seconds": 86726.839,
+            "matches": true
+          },
+          {
+            "id": "B-C03-R2-CommitRelease",
+            "lower_seconds": 6487807.0,
+            "upper_seconds": 6487807.0,
+            "matches": true
+          }
+        ]
+      }
+    ],
+    "passed_conditions": 7,
+    "total_conditions": 7,
+    "numeric_denominator_or_verdict_change": false
+  }
+}
