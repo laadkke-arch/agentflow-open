@@ -21,9 +21,12 @@ def pick(x,*keys,default=None):
 def write_jsonl(path,rows):path.write_text(''.join(js(r)+'\n' for r in rows))
 def write_csv(path,rows,fields):
  with path.open('w',newline='') as f:
-  w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
+  w=csv.DictWriter(f,fieldnames=fields,lineterminator='\n');w.writeheader()
   for row in rows:
-   w.writerow({k:js(row.get(k)) if isinstance(row.get(k),(dict,list)) else row.get(k) for k in fields})
+   # Canonical LF prevents connector text transfer from changing artifact bytes.
+   # Nested raw JSON retains escaped CRs; display text normalizes logical newlines.
+   values={k:js(row.get(k)) if isinstance(row.get(k),(dict,list)) else row.get(k) for k in fields}
+   w.writerow({k:v.replace('\r\n','\n').replace('\r','\n') if isinstance(v,str) else v for k,v in values.items()})
 
 # These are canonical experiment IDs already present in software-b/studies.jsonl.
 # In particular, NCQ's two cohorts must not be joined only by their shared family.
