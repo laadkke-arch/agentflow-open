@@ -106,6 +106,7 @@ def main():
              'pool_slots': len(pool), 'filled_pool_slots': sum(bool(c['url']) for c in normalized),
              'unique_pool_urls': len({c['url'] for c in normalized if c['url']}),
              'fixed_pool_documents': len({c['document_group'] for c in normalized if c['url']}),
+             'unique_original_documents_in_pool': len({next(s['duplicate_group'] for s in sources if s['source_id'] == c['source_ids'][0]) for c in normalized if c['url']}),
              'required_atoms': sum(len(r['required_atoms']) for r in reqs),
              'nonempty_relation_pairs': len(pairs),
              'unconfirmed_identity_candidates': sum(not c['identity_verified'] for c in normalized if c['url']),
