@@ -17,3 +17,7 @@
 공통 gate: fixed6ac3d4d의 첫 localclone backup은 누락 object로 exit1; 공식 원격 freshclone 재실행은 doctor/acceptance/research-case/original-smoke/sessions 5/5 exit0. evidence/checks/common-check-*와 common-retry-*에 둘 다 보존. root session check --fetch도6ac3d4d HEAD+작업트리에서 exit0, 최신통합630fa68a677d66fc59baa7bd92ea40fdc1ad3a06과 계약hash동일. 후기 RESULT문서를 공통 gate가 검사한 것으로 쓰지 않는다.
 
 추가 감사 정정: Python nominal 시계의 잔여 precision 문구를 바로잡음; B04 old429와 별도 canonical200의 provenance를 분리; MDN2025 경로변경 근거R-U17·RStudio redirect추가anchor·박물관 현재작품명 구분. A봉인·카드입력·판정·집계불변, postseal-amendments에기록.
+
+| ⑤ 결과·자체점검·수용 판정 | e8c8e3b371967a029d6284fb632242aae20d69da | 08:31:01Z 고정본문 재독; evidence/result-remote-reread.json; RESULT blob18fffebdc84492c2b8c3308f3a3e0dea1fb2fc10 / SELF_CHECK blob82beb12390feb0248db3ab231711aa0e700fe541 / acceptance blob7022f42e998474bd315dbdf45762bfd258fee647 | 결과SHA check --fetch 및38/38 exit0 뒤 HANDOFF 작성 |
+
+⑥ 인계는 이 파일과 HANDOFF 및 고정결과 재독/검사 영수증을 별도 마지막 commit에 둔다. 그 commit 자체 SHA는 branch HEAD와 최종 응답에서 확인한다. RESULT·SELF_CHECK·수용의 고정결과내용은 바꾸지 않는다.
