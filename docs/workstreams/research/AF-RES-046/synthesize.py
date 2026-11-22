@@ -95,8 +95,8 @@ def main():
     cases = []
     evidence = {
         "L-P1": {"same_public": None, "any_public": "2023-03-23T18:46:25Z", "any_sha": "540db96b8179c2ed83e427b9d501b04d68ee1804", "any_change_ref": "L-P1-3;L-P1-4", "same_prestarted": False, "any_prestarted": True},
-        "L-P2": {"same_public": "2023-03-20T17:37:25Z", "any_public": "2023-03-20T17:37:25Z", "any_sha": "f95152e78c8baa2b1f4e07ecebb31496b3956c65", "any_change_ref": "L-P2-6", "same_prestarted": True, "any_prestarted": True},
-        "L-S1": {"same_public": None, "any_public": "2023-02-14T09:22:46Z", "any_sha": "feaabb7e6f2ccecced7a6847a267ad54b026f8a3", "any_change_ref": "S-C08", "same_prestarted": False, "any_prestarted": False},
+        "L-P2": {"same_public": None, "any_public": None, "any_sha": "f95152e78c8baa2b1f4e07ecebb31496b3956c65", "any_change_ref": "L-P2-6", "same_prestarted": True, "any_prestarted": True},
+        "L-S1": {"same_public": None, "any_public": "2023-02-14T09:22:47Z", "any_sha": "feaabb7e6f2ccecced7a6847a267ad54b026f8a3", "any_change_ref": "S-C08", "same_prestarted": False, "any_prestarted": False},
         "L-S2": {"same_public": "2023-02-06T07:57:51Z", "any_public": "2023-02-06T07:57:51Z", "any_sha": "eb6a658b0ada3464e0fa79da716f57af053141fe", "any_change_ref": "S-C09", "same_prestarted": False, "any_prestarted": False},
     }
     for stream in ("pandas", "sklearn"):
@@ -192,6 +192,22 @@ def main():
             if c["slot_id"] in ("L-P1", "L-P2"):
                 c["strict_reason_before_opened_recovery"] = c["strict_reason"]
                 c["strict_reason"] = "원 작성자 response patch와 첫 링크 변경 이유 연결 미확인; 타인 대안은 먼저 착수" if c["slot_id"] == "L-P1" else "같은 작성자 후속 patch는 있지만 같은 재설계가 첫 링크 전에 이미 공개; 첫 링크의 명시 기여 연결 없음"
+        if c["slot_id"] == "L-P2":
+            c["same_author_change_before_publication_recheck"] = c["same_author_same_purpose_change"]
+            c["same_author_same_purpose_change"] = None
+            c["same_author_change_status"] = "미확인: exact f95152e publication within primary window not established; successor PR creation precedes closure but first recovered SHA-specific review follows closure"
+            c["any_author_same_purpose_change"] = None
+            c["any_author_change_status"] = "미확인 in primary window for same publication-boundary reason"
+            c["post_closure_same_author_same_purpose_change_confirmed"] = True
+            c["post_closure_patch_public_by"] = "2023-03-20T20:36:41Z"
+            c["publication_recheck_source"] = "https://github.com/pandas-dev/pandas/pull/52089#pullrequestreview-1349354160"
+            c["source_ids"].append("RR-LP2-FIRST-PUBLIC")
+            c["missing"] = "정확 f95152e가 원PR종결17:38:10Z까지 공개됐다는 head/review 기록; 이후20:36:41Z리뷰에서는확인. 첫링크의기여와사람노동도미확인"
+            c["strict_reason"] = "선행재설계와첫링크기여미확인에더해,같은작성자후속patch의주창내정확공개SHA미확인. 종결뒤실제patch는확인"
+        if c["slot_id"] == "N-S4":
+            c["source_ids"].append("S-ARCH-COST-25261")
+        if c["slot_id"] == "L-S1":
+            c["source_ids"].append("S-ARCH-SUCCESSOR-25605")
     write_json("cases.json", cases)
     by_slot = {c["slot_id"]: c for c in cases}
     for r in frame:
@@ -241,7 +257,7 @@ def main():
     actor_sens = []
     for name, excluded in (("all_first_link_slots", set()), ("exclude_prelink_same_author_redesign", {"L-P2"}), ("exclude_prelink_any_author_same_purpose_implementation", {"L-P1", "L-P2"})):
         cs = [c for c in cases if c["first_qualifying_link_observed"] and c["slot_id"] not in excluded]
-        actor_sens.append({"rule": name, "excluded_slots": sorted(excluded), "denominator_first_link_slots": len(cs), "same_author_change_confirmed": sum(c["same_author_same_purpose_change"] is True for c in cs), "same_author_change_unknown": sum(c["same_author_same_purpose_change"] is None for c in cs), "any_author_change_confirmed": sum(c["any_author_same_purpose_change"] is True for c in cs), "strict_confirmed": 0})
+        actor_sens.append({"rule": name, "excluded_slots": sorted(excluded), "denominator_first_link_slots": len(cs), "same_author_change_confirmed": sum(c["same_author_same_purpose_change"] is True for c in cs), "same_author_change_unknown": sum(c["same_author_same_purpose_change"] is None for c in cs), "any_author_change_confirmed": sum(c["any_author_same_purpose_change"] is True for c in cs), "any_author_change_unknown": sum(c["any_author_same_purpose_change"] is None for c in cs), "strict_confirmed": 0})
     write_json("evidence/statistics.json", {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "frame_rows": len(frame), "frame_groups": dict(Counter(r["repository"] + "/" + r["stratum"] for r in frame)),
@@ -251,7 +267,8 @@ def main():
         "main_window": groups[-2:], "time_boundary_sensitivity": groups, "actor_and_prework_sensitivity": actor_sens,
         "explicit_reading_confirmed": 0, "specific_target_content_engagement_confirmed": 2,
         "first_review_acknowledgement_confirmed": 3, "explicit_first_discovery_confirmed": 0,
-        "specific_target_prior_authorship": 1, "same_author_change_unobserved": ["L-P1"], "same_author_change_unknown": ["L-S1"],
+        "specific_target_prior_authorship": 1, "same_author_change_unobserved": ["L-P1"], "same_author_change_unknown": ["L-P2", "L-S1"],
+        "publication_boundary_correction": "R03: earlier same-author2/4 and any-author4/4 become1/4 and3/4; L-P2 exact patch first recovered public anchor20:36:41 is after17:38:10 closure, despite successor PR opening45 seconds before closure. Actual later change remains confirmed.",
         "human_time": {"active_logs": 0, "in_window_author_duration_selfreports": 0, "out_of_window_other_person_qualitative_selfreport": 1, "quality_matched_time_pairs": 0, "saved_seconds": None},
         "interpretation": "Counts are observations within fixed small strata. Missing labor is not zero labor; conditional denominator zero means not applicable. Any-author sensitivity includes continuation of an already-started alternative in L-P1.",
         "change_denominator_notes": "All change counts in main_window and sensitivity mean after the first qualifying reviewer URL. Natural strata have zero such URLs: the conditional change ratio is not applicable, not a claim that no revision occurred. N-P1 is an observed no-link functional revision counterexample.",

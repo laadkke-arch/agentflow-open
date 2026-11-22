@@ -113,6 +113,7 @@ def sources():
                     "raw_count_in_minimum": proposed, "raw_allocation": allocation,
                     "read_status": first(raw, "access_status", "read_status", "reading_method", default="stream semantic reading receipt"),
                     "query": raw.get("query"), "attempt_recorded_utc": raw.get("recorded_utc"),
+                    "later_interpretation_correction": "R03: PR52089 creation17:37:25 does not establish exact f95152e public head. First recovered SHA-specific review1349354160 at20:36:41 follows original closure17:38:10; primary-window code publication unknown; see RR-LP2-FIRST-PUBLIC." if sid in ("P-PR-52089", "P-C-f95152e78c8b") else None,
                     "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number,
                 })
     (ROOT / "sources.jsonl").write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in output))
@@ -227,6 +228,21 @@ def events():
                 "public_time_limitation": "0–1 second after REST PR created_at; original event ID/raw archive not independently recovered",
                 "source_ids": o["source_id"], "stream": "archive supplement", "stream_file": "initial-public-heads.csv", "stream_record": number,
             })
+    for row in output:
+        if row["event_id"] == "followup-pr-52089":
+            row["sha_association_before_publication_recheck"] = row["sha"]
+            row["sha"] = ""
+            row["observed_before_publication_recheck"] = row["observed"]
+            row["observed"] = "후속 PR52089가 원PR종결45초전에 개설됨. 당시 head 미복구; current/surviving f95152e를 이 개설시각에 소급 고정하지 않음"
+            row["public_time_limitation"] = "R03: exact f95152e first recovered SHA-specific review20:36:41Z after17:38:10Z closure; PR creation alone does not publish that exact revision"
+    extra_events = [
+        {"event_id":"PUB-LP2-1349354160","slot_id":"L-P2","pr_number":"51116","event_type":"post_closure_sha_specific_review","actor":"mroeschke","actor_role":"reviewer on successor52089","public_at":"2023-03-20T20:36:41Z","review_submitted_at":"2023-03-20T20:36:41Z","sha":"f95152e78c8baa2b1f4e07ecebb31496b3956c65","original_commit_id":"f95152e78c8baa2b1f4e07ecebb31496b3956c65","review_id":"1349354160","url":"https://github.com/pandas-dev/pandas/pull/52089#pullrequestreview-1349354160","location":"review.submitted_at/commit_id/state","observed":"Actual same-author successor patch fixed by approval, but after original PR first closure. Primary-window exact publication remains unknown.","within_primary_window":"false","source_ids":"RR-LP2-FIRST-PUBLIC","public_time_limitation":"First recovered exact SHA public anchor, not claimed actual first publication."},
+        {"event_id":"PUB-COST-25261","slot_id":"N-S4","pr_number":"25274","event_type":"prehistory_consumer_qualitative_selfreport","actor":"gerardkr","actor_role":"consumer, not sampled PR author","public_at":"2022-12-30T18:33:16Z","sha":"","url":"https://github.com/scikit-learn/scikit-learn/issues/25261","location":"IssuesEvent opened body/Describe the bug/second paragraph","observed":"many hours cost sentence present in original opening body; numeric active time unknown, outside PR window and another person.","within_primary_window":"false","source_ids":"S-ARCH-COST-25261","public_time_limitation":"Documented normalized public event mirror; original raw event ID not independently recovered."},
+        {"event_id":"PUB-S1-25605","slot_id":"L-S1","pr_number":"25535","event_type":"successor_opened_exact_head","actor":"fcharras","actor_role":"other author","public_at":"2023-02-14T09:22:47Z","sha":"feaabb7e6f2ccecced7a6847a267ad54b026f8a3","url":"https://github.com/scikit-learn/scikit-learn/pull/25605","location":"PullRequestEvent opened head/base;1commit2files","observed":"Opened headfeaabb7e/basea897a34 verifies recovered two-file other-author patch in primary window.","within_primary_window":"true","source_ids":"S-ARCH-SUCCESSOR-25605","public_time_limitation":"REST creation09:22:46; opened event09:22:47 is distinct exact-head public observation."},
+    ]
+    for row in extra_events:
+        row.update({"stream":"publication recheck","stream_file":"streams/root/sources-supplement-boundary.jsonl" if row["slot_id"]=="L-P2" else "streams/sklearn/successor-publication-recovery.json","stream_record":"specified source_id"})
+        output.append(row)
     write_csv("events.csv", output)
     return output
 
@@ -237,6 +253,27 @@ def optional_csv(name):
         if not path.exists():
             raise FileNotFoundError(path)
         for number, raw in enumerate(read_csv(path), 1):
+            if name == "changes.csv" and raw.get("change_id") == "L-P2-6":
+                raw["phase_before_publication_recheck"] = raw["phase"]
+                raw["public_anchor_before_publication_recheck"] = raw["public_anchor_at"]
+                raw["phase"] = "post_closure_first_verified_SHA_publication; primary_window_publication_unknown"
+                raw["public_anchor_at"] = "2023-03-20T20:36:41Z"
+                raw["public_anchor_kind"] = "review1349354160 fixes f95152e; after sampled PR closure17:38:10"
+                raw["within_primary_window"] = "미확인 for exact patch; first recovered public anchor is outside"
+                raw["source_ids"] = raw["source_id"] + ";RR-LP2-FIRST-PUBLIC"
+                raw["causality"] = "Same-author same-purpose actual successor code confirmed, but exact patch not established public within primary window; prior redesign and first-link contribution unresolved"
+            if name == "changes.csv" and raw.get("change_id") == "S-C08":
+                raw["platform_public_bound_before_recheck"] = raw["platform_public_bound"]
+                raw["platform_public_bound"] = "2023-02-14T09:22:47Z exact opened head; REST PR creation09:22:46 is separate"
+                raw["source_ids"] += ";S-ARCH-SUCCESSOR-25605"
+            if name == "labor.csv" and raw["slot_id"] == "L-P2":
+                raw["successor_patch_primary_window_publication"] = "미확인; PR opened45sec before closure but exact SHA first recovered in review after closure"
+                raw["successor_patch_public_by"] = "2023-03-20T20:36:41Z; post_closure"
+                raw["source_ids"] += ";RR-LP2-FIRST-PUBLIC"
+            if name == "labor.csv" and raw["slot_id"] == "N-S4":
+                raw["source_ids"] += ";S-ARCH-COST-25261"
+            if name == "labor.csv" and raw["slot_id"] == "L-S1":
+                raw["source_ids"] += ";S-ARCH-SUCCESSOR-25605"
             rows.append({**raw, "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number})
     write_csv(name, rows)
     return rows

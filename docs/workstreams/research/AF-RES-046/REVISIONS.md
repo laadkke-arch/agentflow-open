@@ -21,3 +21,15 @@
 - 영향행: baselines12, frame선정12+탈락25272, cases12, opening사건12추가. 원stream파일·당시선정판정은수정하지않았다. root에기존값과복원값을함께저장한다.
 - 원집계/새집계: 자연8/링크0, 추가4/링크4, 같은작성자후속변경2,엄격0,주창노동측정0은모두동일. 슬롯교체0·최소수추가0. 첫공개판복원만0/12→12/12(미러근거), rawevent독립확인0/12는유지.
 - 재개/반증: initial-public-heads.csv와두stream initial-public-head-recovery.json의정확SQL/URL로같은opened행확인. raw event를독립확보할수있을때eventID·head/base·bodyhash를대조한다. 결과가충돌하면복원상태를내리고원판정을남긴다.
+
+
+## R03 · 실제 패치의 공개 경계 재검증에 따른 확정 분자 하향
+
+- 증거 기준을 느슨하게 바꾼 것이 아니라 기존 공개시각/고정판 기준을 더 정확히 적용했다. 원판정은c9afe55a923a5cb432e5b0de2ada91dddd7e36aa에고정돼있다.
+- 원판정: L-P2의후속52089개설17:37:25와survivingcommit f95152e를연결하여원PR종결17:38:10보다45초전에actualpatch공개라고세었다. 기본동일인2/4·타인포함4/4.
+- 새자료:52089opened행은정상query200/0행으로미회수,4일관련사건조회도첫회수head연결은종결뒤. GitHubreview1349354160 submitted_at2023-03-20T20:36:41Z가f95152e를직접고정한다. currenthead/PRcreated/committerdate를동일공개판으로추정하지않는다.
+- 새판정: 실제같은작성자·같은목적후속코드는존재하지만주창내정확SHA공개는미확인. L-P2의same_author/any_author주창값모두null로내린다. 기본동일인확인1/4·미관측1·미확인2,타인포함확인3/4·미확인1. 엄격0/4·노동0관측은변함없다. 30일감도same1/linked2·any2/linked2;60/90일same1/4·any3/4. 선행동일인L-P2제외1/3·any3/3,선행타인까지P1/P2제외1/2·any2/2.
+- 관련보완:52043/51784/51166의openedhead복원은선행착수·사전작성근거를강화한다.52053openinghead는미회수이나종결전3/20 17:17:26review1349064316이final19e8640을고정한다.그변경의최초착수가firstlink뒤라는뜻은아니므로새양성분자로올리지않는다.
+- 비용시점보완:25261 IssuesEvent openedbody에manyhours문구확인.비수치·다른사람·주창전구분유지.25605openedheadfeaabb7e는09:22:47이벤트에서확인되며REST생성09:22:46과분리한다.
+- 영향행:cases L-P2/L-S1/N-S4, changes L-P2-6/S-C08, labor 해당행, events followup-pr-52089의SHA연결철회+보완3행,통계/필수표/수용원장. 원stream기록은역사로유지하고현재root판정이이를보완한다. 신규사례0·최소저작추가0.
+- 판정을뒤집을최소자료:2023-03-20T17:38:10Z까지의52089head=f95152e인원opened/push/review/event또는동등공개불변판.확보되면원2/4조건을되살릴수있지만첫링크인과·노동근거는별도다.

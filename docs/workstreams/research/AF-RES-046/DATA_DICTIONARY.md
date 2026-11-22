@@ -40,7 +40,7 @@ Git `author_date`/`committer_date`, 플랫폼 review `submitted_at`, 댓글 `cre
 
 `cases.json`은 고정된12슬롯의 판정을 정규화한다. `same_author_same_purpose_change=null`은 링크 없음 또는 실제 패치 미복구를 뜻하므로 `same_author_change_status`와 함께 읽는다. 자연층의 링크 뒤 변경 조건부 분모는0이며 해당 없음이다. 자연층에서 수정 자체가 없었다는 뜻이 아니다.
 
-`prelink_same_author_redesign_confirmed`는 L-P2만, `prelink_any_author_same_purpose_implementation_confirmed`는 L-P1/L-P2다. L-S1/L-S2의 기존 문제·실패·넓은 작업과 특정 후속 교정의 선행 구현을 구별한다. 타인 포함4/4는 같은 작성자의 채택률이 아니며, L-P1에서는 이미 시작한 다른 구현의 계속 작업을 포함한다.
+`prelink_same_author_redesign_confirmed`는 L-P2만, `prelink_any_author_same_purpose_implementation_confirmed`는 L-P1/L-P2다. L-S1/L-S2의 기존 문제·실패·넓은 작업과 특정 후속 교정의 선행 구현을 구별한다. R03의 타인 포함 확인3/4·미확인1은 같은 작성자의 채택률이 아니며, L-P1에서는 이미 시작한 다른 구현의 계속 작업을 포함한다.
 
 `changes.csv`, `labor.csv`는 stream별 열을 손실 없이 합집합으로 보존한다. 비어 있는 다른 stream의 열은0으로 해석하지 않는다. 공통키는 `slot_id`, 원행은 `stream_file`/`stream_record`다. pandas `sha/source_id`와 sklearn `post_sha/source_ids`, pandas `elapsed_seconds`와 sklearn `elapsed_observation_seconds`는 같은 역할의 열이다. 패치 수의 anchor는 stream별 명시된 기준을 사용하며 한 번의 사람 작업 세션으로 바꾸지 않는다.
 
@@ -56,3 +56,8 @@ Git object의 stream `published_at`/`modified_at`는 실제로 git author/commit
 `initial-public-heads.csv`는12선정슬롯의opened head/base/body동일성/이벤트시각/PR생성/원문query/diff를연결한다. `opening_base_sha`, `head_parents`, `pr_diff_merge_base`는서로다른값이다. `head_metadata_source_id=RR-OPEN-P2`는새head87ade9fa의실제parent cfa3bfd를확인한독립GitHub재열람이다. 현재baselines의initial_candidate_sha는실제opened head이며기존후보/parent/미확인상태를별도*_before_archive열에보존한다. cases의first_public_head_verified는문서화된공개미러+불변GitHubdiff기준이며rawevent원본독립확인을뜻하지않는다. `raw_event_independent_corroboration=false`를함께읽는다.
 
 R02는원stream기록을덮어쓰지않는다. rootevents는원156개에ARCH-* opened복원12개를추가해168개다. PR 사례는여전히12개이며원문최소수도54개다. 복원과재방문은추가최소배당0이다. 후보SHA변경에따른git날짜/parent교체는실제새head의metadata와연결하고PRbase를parent로대입하지않는다.
+
+
+## R03 공개 경계 정정
+
+`same_author_same_purpose_change`/`any_author_same_purpose_change`의L-P2는null(주창미확인)이다. 실제f95152e후속코드는확인되지만첫회수exactSHA리뷰20:36:41은원PR종결뒤다. PR개설17:37:25와SHA공개를합치지않는다. `post_closure_same_author_same_purpose_change_confirmed=true`를별도보존한다. 원2/4동일인·4/4타인포함집계는c9afe55에남고현재는1/4·3/4다. rootevents171=156+opening12+공개경계보완3이며,이추가사건은표본수를늘리지않는다. 변경원장L-P2-6의phase/publicanchor원값은*_before_publication_recheck열에보존한다.
