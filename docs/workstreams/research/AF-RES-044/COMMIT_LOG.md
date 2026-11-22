@@ -9,3 +9,7 @@
 ## ② 원요구·raw href·보강 풀·메타데이터 봉인
 
 원격 `b36cc513ccbc1616168401ec9564866038e880a3`, tree `0dcddae3d9a803f73ab8420b9ec3feeada11f031`. 원격 ref를 조건부 전진한 뒤 fetch로 확인. 28개 파일; 80노출·72슬롯·원자·metadata. CSV 전송의 LF 정규화는 동일 행/순서이며 별도 봉인 정정으로 보존한다.
+
+## ②b 원격 봉인 바이트·후기 브라우저 진단
+
+원격 `8c22675a2e90134c386f362cdd2aabe7d14d252e`, tree `9a658b1203d7aebc92e39a358cc1dd95a168e295`. CSV LF 바이트 해시 정정과 v1 보존, Pandoc DOM 복구의 원 HTML 한계, Requests의 별도 browser 성공1회를 기록했다. 원풀·순서·요구를 바꾸지 않았다.
