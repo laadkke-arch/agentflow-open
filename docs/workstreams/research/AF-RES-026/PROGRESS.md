@@ -40,3 +40,9 @@ RESULT의 네 필수 표, Q1–Q8, 정확히3개의 마지막 약점 행,24행 �
 결과·자체 점검·수용 근거 커밋은 `ed14e806a5a7bf4e6195fd12024c482d31768449`이며 세 파일 모두 원격 exact SHA에서 확인했다. 이 커밋의 own verify는18 PASS/0 FAIL/1 SKIP, explicit session check --fetch는 PASS/remote_checked(통합21c5176, 계약동일, 소유밖0)다. 공통검사는 부분복제의 과거 객체 누락으로 첫 실패를 남긴 뒤, 필터 없는 공개 clone의 같은 ed14에서 재실행해 PASS했다. common check-all은 활성세션0이므로 원격계약검증을 주장하지 않고 별도 explicit 영수증을 사용한다.
 
 마지막 확인 ID는 common retry `20261122T060608Z-be6bb4f7`, 완료2026-11-22T06:06:25.615 UTC다. 현재 acceptance의 미충족은 S01 전체미노출 조건1건이다. 다음 첫 행동은 이 검증 보강본을 커밋·원격 확인한 다음에만 HANDOFF를 작성하여 마지막 별도 커밋을 만드는 것이다. 검사 도중 생성된 임시clone/TMPDIR/대형bundle은 정리했으며 소규모 실행영수증·로그는 소유 경로에 보존했다.
+
+## ⑥ 인계
+
+최종 검증 보강 commit `25c7345d8673bc763b2fc7d442a35a803621b656`에서 SELF_CHECK·acceptance-evidence·verification-summary를 GitHub exact SHA로 다시 읽은 뒤 HANDOFF를 작성했다. 최종 상태는 REVIEW_READY_WITH_GAPS, 수용18조건 중17충족/1미충족(S01 사전노출)이다. 마지막 확인 ID는 위 결과 커밋의 acceptance 원격 재읽기다. 이 단계는 HANDOFF와 이 진행 기록을 포함한 별도 마지막 커밋이며 해당 SHA는 `git log -1 --format='%H' origin/work/research-af-res-026 -- docs/workstreams/research/AF-RES-026/HANDOFF.md`로 고정 확인한다.
+
+다음 첫 행동: 진행 담당의 고정 T0 재판독/검토. 공통 색인에는 HANDOFF의 상태·결과SHA·인계SHA 반영을 제안한다. 이번 작업에서 공통 색인·계약·dot-control을 수정하거나 main에 병합하지 않았다.
