@@ -53,3 +53,13 @@ sources.json 각 항목: source_id, case_ids, questions, url, published_or_versi
 3. B 고유발견·중복·반례/타분야.
 4. 시점/비용 재대조·표·SELF_CHECK·수용근거, 명령실행/해시/분모검사.
 5. HANDOFF 마지막커밋 및 고정SHA 원격본문 재독.
+
+
+## 동결 뒤 코딩 감사 — 표집 규칙은 변경하지 않음
+
+- 통합 정본은 루트 decisions.jsonl/sources.json/costs.csv와 evidence/statistics.json이다. stream 원장의 원래 플래그/집계는 단계별 연구 기록이며 raw_stream_flags·stream_count_in_minimum 등으로 보존한다. 같은 unknown 단어라도 생애첫인지·초기표적인지·늦은지식사건은 다르므로 단순합산하지 않는다.
+- 엄격 관측하한A0/24와 초기인지미확인3/24(A06,A07,A09)를병기한다. 최종조건이후발인A06을분리하면인지기록완성후보는A07/A09.0~2/24는지정해법·주체·공개구간의인지기록완성일뿐엄격인과상한이나모집단추정이아니다. 생애최초인지와사적최초필요24/24불명은다른측정이다.
+- 초기원문에이미대안이있고후속결과가바뀌어도새발견으로세지않는다. A20은기지검토로연결에서제외, A01/A19는기지제약교정으로별도. B09의고정gist날짜는확보했으나운영시행은불명. B08은JSONEncoder호환확장점부분재사용이고YAML은후속추가다.
+- 알려진공개제안메일/PR날짜는timeline.csv의proposal열에따로내보낸다. A14의상위Hive필요와구체Catalogv2일자를구별한다. commit author시각은실제publicpush시각·사적구상일이아니다. 댓글구간의양끝과본문편집불명을표시한다.
+- 최소문헌수는동일판/저작의단순보강을추가제외한153개를기준으로한다(결정43/후속66/공식판34/타분야4/기타6).12개제외와AP-D32재분류는evidence/source-count-overrides.json에있다. 사실을지우는것이아니라독립문헌수증가를억제한보수판정이다.
+- 표본을다시고르지않았으며결과를완전히몰랐다는실험적맹검주장도하지않는다. 최초manifest기준435a509...는유지하고foundation전진을작업브랜치에합치지않는다.
