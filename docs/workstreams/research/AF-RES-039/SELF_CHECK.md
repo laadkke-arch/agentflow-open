@@ -1,0 +1,19 @@
+# AF-RES-039 · 자체 점검
+
+| 질문 | 실행으로 지지된 판단과 직접 읽은 근거 | 반례 및 남은 확인 |
+| --- | --- | --- |
+| Q1 저장물 | 24개 저장 행에서 각 B의 UTF-8가 12/12 같다. R01/G05의 4개 패킷 경계는 네트워크 없이 확인했다. 별도 프로세스 48개에서 strace가 성공한 작업 파일 open을 검사했다. 동일 자료 중복은 gawk 5.0.1의 Preface와 I/O 섹션에서 확인했다. [패킷 4행](evidence/packet-boundaries.jsonl) · [감사 영수증](evidence/receipts.json) · [gawk-doc 원판](https://deb.debian.org/debian/pool/non-free/g/gawk-doc/gawk-doc_5.1.0-1_all.deb) | C2 H 안에는 출처 경로와 시각 문자열이 있다. 프로그램은 036 로컬 출처 경로를 열지 않았다. 추가 OS namespace는 실행할 수 없었고 strace 실제 성공 open 범위로 한정한다. |
+| Q2 기준 | T현재는 G02 목적과 예제의 실제 근거로 유지, R01은 새 릴리스 §2로 교체 기준을 만들었다. T복원은 G02 N Intro 475B·H 두 발췌의 해시로 독립 확인 수준을 구분했다. [현재 기준](evidence/current-criteria.jsonl) · [G02 릴리스](https://github.com/scop/bash-completion/releases/tag/2.11) · [R01 §2](https://bioconductor.org/packages/release/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html#preparing-quantification-input-to-deseq2) | 새 기준 4/12와 전체 실험의 완료율을 별도로 제시한다. 기준 없는 8/12를 오류나 합격으로 간주하면 현재 판정 결론이 달라진다. 보관 본문은 당시의 독립 HTTP 증명이 아니다. |
+| Q3 실행·예산 | 48/48 실행, 24/24 인접 교대 짝, 94 논리 GET 및 15 문서 교환. 논리 예산 초과와 30초 초과는 0이다. G02의 302 한 건 때문에 문서 교환 엄격 평가는 별도로 계산했다. [원실행 48행](attempts.jsonl) · [G02 공표 README](https://raw.githubusercontent.com/scop/bash-completion/refs/tags/2.11/README.md) | CONNECT 403 80회에 발행처 교환이 없다. 도구의 네트워크 관측을 차단 없는 원문 조회 성공률로 읽을 수 없다. 엄격은 동일 경로의 절단값이다. |
+| Q4 깨진 조건 | G03 Preface 177행에서 2018판 요구가 확인됐다. G05 현재 본문과 10.1.0의 같은 -MM 규칙을 직접 읽었다. R01은 tarball, 3.11 HTML, release HTML을 서로 다른 요청으로 계측했다. G02 C1은 200 목록 이후 H 본문 0건이고 C2는 302를 거쳐 한 발췌를 얻었다. [G03 배포](https://deb.debian.org/debian/pool/non-free/g/gawk-doc/gawk-doc_5.1.0-1_all.deb) · [G05 현재 절](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html#index-MM) · [코드화/fixture](evidence/receipts.json) | G03 발행처 anchor와 R01 원 tarball 부재 여부는 미확인이고 실제 archive 멤버 부재·timeout은 본실행에서 관측되지 않았다. 합성 확인을 라이브로 올리지 않았다. G02 HTML 드리프트는 정확 발췌 변화와 구별했다. |
+| Q5 비용 | 원실행 1,680,304B를 오류·성공 body로 재검산했다. 저장 25,992B 증분, H 표시 10,448B, 별도 로컬 파일 시간을 집계했다. GitHub의 변동 HTML을 실제 4회 읽어 URL과 해시 중복 가정의 차이를 확인했다. [원장](attempts.jsonl) · [G02 저장소](https://github.com/scop/bash-completion/) · [로컬 비용](evidence/local-storage-cost.json) | 요청 시간 합, 실행 벽시계, 도구 시간 합이 다르다. TLS·사람 노동·요금·보관 운영비는 미확인이다. |
+| Q6 모의 차이 | 원실행 원격 커밋 후에만 모의 CSV와 같은 ID·과업을 조인했다. G02 태그 목록, 2.11 README redirect와 별도 릴리스 노트가 locator와 물리 예산의 차이를 실증한다. [모의 원본](https://github.com/laadkke-arch/agentflow-open/blob/5682b0d61a80edc159d4b510d213bbb4c69543be/docs/workstreams/research/AF-RES-036/replay-costs.csv) · [2.11 release](https://github.com/scop/bash-completion/releases/tag/2.11) · [짝별 조인](pairs.csv) | 경로 실패에서 절감액을 만들 수 없다. 현재 목적과 N 전체 재구성의 동등성도 미확인이다. R01/G05 재실행 8건 일치는 거부/표시 경로의 반복성을 지지한다. |
+| Q7 채택 조건 | BLS 2023 Q4 Table 1 Hartford와 2024 Q1 Capitol은 다른 경계다. ONS는 같은 mid-2022에 두 경계판을 제공한다. 나고야 서지 Note는 최초 판의 프린터 귀속을 명시 정정한다. 과거 목적의 C2 H 표시 이득과 현재 목적의 H 효과를 구별했다. [BLS 2023 공표](https://www.bls.gov/news.release/archives/cewqtr_05222024.htm) · [BLS 2024 공표](https://www.bls.gov/news.release/archives/cewqtr_08212024.htm) · [나고야 서지](https://da.adm.thers.ac.jp/en/item/n003-20230901-00040) | 같은 ID의 전후 서지 스냅샷·수정시각과 ONS XLSX 세부 셀은 미확인이다. 실제 동등 성공 복원 짝이 있어야 손익분기 수를 계산할 수 있다. |
+
+## 주요 검산
+
+- 현재 두 구성에서 유지 1/12, 교체 0/12, 보류 11/12를 다시 세었다. 기준 확정 짝 4개 중 성공 1개와 보류 3개다.
+- 정확 N은 각 1/12, 정확 H 표시는 C1 0/12, C2 12/12, 정확 N+H는 0/12 대 1/12다. 논리·엄격 양쪽에서 전체 성공 분자는 같다. G02 C2의 독립 H 일치는 논리 기준 1/2 발췌에서 엄격 기준 0/2로 바뀐다.
+- 48행·24짝 차이 및 12개 보관 B 중복을 산술로 대조했다. G02 외 발행 HTTP 200 접근은 본실행에서 0이다. 네트워크 없는 경계 점검, 실제 실패, 공개 웹의 계측 불능 및 로컬 H 표시를 구분했다.
+- 소비자 문서 12작품은 원 href와 주변 목적을 직접 열어 대조했다. Debian/Bioconda의 발행 배포물에서 고정 멤버 해시 일치 8, 다른 판 HTML 4였다. R03/R04/R06의 고정 작성 소스는 따로 확인했으며 같은 작품을 중복 산입하지 않았다. 고유 원문 33건과 범주별 최소 건수를 파일에서 다시 세었다. [자료 원장](sources.jsonl)
+- 발행 자료를 직접 열어 보강하고 자체 검증했다. 독립 모델·사람 판독, 무제한 네트워크 환경의 재현, 별도 작업자의 새 채팅 인수는 미확인이다.
