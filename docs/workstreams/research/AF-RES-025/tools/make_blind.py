@@ -44,6 +44,8 @@ def mask(value):
     if isinstance(value,list): return [mask(v) for v in value]
     if isinstance(value,dict): return {k:mask(v) for k,v in value.items() if k not in ['route','rank','checked_utc','first_seen_rank','first_seen_query','search_receipt_ids','sufficient_for_condition','opened_complete','cited_complete','verdict','self_verdict']}
     if isinstance(value,str):
+        value=value.replace('R의59.0.0과 다른 판이 open되어', '별도 관측의 59.0.0과 다른 판이 열려')
+        value=value.replace('G의같은원문Fossies접근실패는소급성공처리하지않음.', '같은 원문 Fossies 접근 실패를 소급 성공 처리하지 않음.')
         for old,new in source_ids.items():
             if old: value=value.replace(old,new)
     return value
