@@ -1,0 +1,122 @@
+{
+  "review_id": "AF-RES-026-INTEGRATION-REVIEW-01",
+  "reviewed_utc": "2026-11-22T05:50:28Z",
+  "clock_source": "clock.curr_time actual call: 2026-11-22 05:50:28 UTC",
+  "reviewer": "/root/sqlite",
+  "requested_by": "/root",
+  "scope": "사후 자료 통합·집계 교차검토. 봉인된 문구와 계열 판정, 통합 정의 및 분모의 일치 여부를 점검했다.",
+  "independent_double_original_reading": false,
+  "blinded_review": false,
+  "reviewer_relationship": "SQLite T0/T1을 작성한 동일 담당자의 사후 검토이며, root 통합자가 이미 한 판독을 가린 독립 재판독이 아니다.",
+  "new_external_originals_counted": 0,
+  "t0_seal_commit": "68fc97fadceb46f9945a71fcc53730e29f6c62bf",
+  "record_commit_status_at_creation": "root의 ⑤ 묶음 커밋 대기; 이 기록 자체의 원격 커밋·재독을 수행했다고 주장하지 않음",
+  "reviewed_snapshots": [
+    {"path": "SCOPE.md", "sha256": "1e614f4645572d2beb214128ae0b93bc95989ea6694399f839ab49d3ca127d92"},
+    {"path": "ANALYSIS_RULES.md", "sha256": "7ccfeac7a214d66265d82fc82faa3ab7a65d4dac378e8ee49c9b0d6e46d5174a"},
+    {"path": "analysis.csv", "sha256": "70371cdd334f5ff9bdbab1760ff7f58f8001c76dd4ca0ecaeb01834f858576f1"},
+    {"path": "strategy-summary.csv", "sha256": "0275a9e0ca13b11a8c5d20182ae4fd4b396c57a92c7bb73f9925252ba3b60cc6"},
+    {"path": "adjudication-overrides.json", "sha256": "73ee08c810ea7c12fe139f876375950e23952374f89f9418263afa918a4352a9"},
+    {"path": "evidence/metrics.json", "sha256": "5c104971bf706f78d7267204b44324070bcec0041193bfe0095bb46e7f7c751b"},
+    {"path": "evidence/source-counts.json", "sha256": "f0d10009009b80f5ea0a2fb67fbfc25171e6a6f6ef8c4b39e21c00fb44aeb18b"},
+    {"path": "evidence/window-audit.json", "sha256": "a00573bc3387c163f805f5fe3894e99c0f084fceb3735a3b22f5914cf7938e9b"}
+  ],
+  "frozen_inputs_preservation": {
+    "changed_by_this_review": false,
+    "checked_files": [
+      {"path": "streams/sqlite/initial.jsonl", "sha256": "1135277c1fa579ab0be3a2af784e5d52f6fd3c2faeecb5f21e3537464546ef40", "matches_previously_recorded_seal_hash": true},
+      {"path": "streams/sqlite/frozen-responses.jsonl", "sha256": "b49397b7d79d056076c7eb6080f49e4b24faabaaddd518824ae2fe06e4b4d690", "matches_previously_recorded_seal_hash": true}
+    ],
+    "limit": "이 검토에서 직접 재계산한 불변 해시는 위 SQLite 두 파일이다. 전체 24건의 원격 봉인 검증은 별도 t0-seal 영수증의 범위다."
+  },
+  "findings": [
+    {
+      "id": "IR01",
+      "kind": "corrected_aggregation_and_postseal_definition_alignment",
+      "status": "accepted_by_root_and_reflected_in_reviewed_snapshots",
+      "title": "한정 기술응답과 전체 사용 승인의 분리",
+      "case_ids": ["S08", "S03", "S01", "P01"],
+      "observation": "처음에는 공통 사례 목록을 I와 C 양쪽에 적용하여 전체 사용 승인을 I4/C4로 집계했다. S08 C는 원래 NOT NULL 입력 조건을 포함하지 않으며, S03 C는 OFF 유지 필수성의 값이 미확정이고 다른 가지에 추가 참조 의미 확인이 남아 있다.",
+      "stages": [
+        {"order": 1, "full_use_I": 4, "full_use_C": 4, "meaning": "발견 당시 공통 목록 집계", "case_set_I_and_C": ["S01", "S03", "S08", "P01"]},
+        {"order": 2, "full_use_I": 4, "full_use_C": 3, "meaning": "S08 C의 필수조건 누락을 반영한 중간 수정", "correction_kind": "집계 적용 오류 교정", "root_acceptance": "root가 전략별 목록 I=[S01,S03,S08,P01], C=[S01,S03,P01]로 나누겠다고 수용", "recorded_adjudication_utc": "2026-11-22T05:46:29.871734+00:00"},
+        {"order": 3, "full_use_I": 4, "full_use_C": 2, "meaning": "S03 C의 미확정 분기를 엄격 전체 사용 승인에서 제외한 최종 수정", "correction_kind": "계열의 넓은 승인 태그와 통합 정의의 사후 정합화", "root_acceptance": "root가 S03 C의 엄격 전체 사용 승인 제외와 가능한 A 가지만 세는 C3 민감도를 수용", "recorded_adjudication_utc": "2026-11-22T05:48:15.061991+00:00"}
+      ],
+      "final_counts": {"all_denominator": 24, "limited_I": 13, "limited_C": 14, "full_use_I": 4, "full_use_C": 2, "strict_unexposed_denominator": 23, "strict_full_use_I": 3, "strict_full_use_C": 1},
+      "sensitivity": "S03의 drop/recreate 가지가 가능한 경로라는 넓은 해석이면 C3. 신규 작성자 사실에 의한 개선도, 사전 등록된 정의 변경도 아니다.",
+      "interpretation_limit": "S08 C의 제한된 바인딩 설명 자체가 거짓이라고 판정하지 않는다. S03 원 계열 태그와 봉인 문구를 보존한다. full-use는 limited-support 안의 하위집합이며 별도 결과로 더하지 않는다.",
+      "evidence": [
+        {"file": "streams/sqlite/frozen-responses.jsonl", "locator": "S08.C; S03.C; S01.C"},
+        {"file": "streams/sqlite/case-analysis.jsonl", "locator": "S08.strategies.C.approval_for_entire_goal; S03.strategies.C"},
+        {"file": "streams/postgres/frozen-responses.jsonl", "locator": "P01.C"},
+        {"file": "adjudication-overrides.json", "locator": "case_overrides.S08; case_overrides.S03; grounded_full_use_approval_cases_by_strategy; grounded_full_use_approval_sensitivity"},
+        {"file": "ANALYSIS_RULES.md", "locator": "전체 사용 승인 경계의 사후 교차검토"},
+        {"file": "strategy-summary.csv", "locator": "all_24/I; all_24/C; strict_unexposed/I; strict_unexposed/C"}
+      ]
+    },
+    {
+      "id": "IR02",
+      "kind": "interpretation_boundary_to_preserve_not_new_error",
+      "status": "already_explicit_in_current_scope_and_verified",
+      "title": "원판 식별 24, 추가 보강 18, 미노출 23의 증거 수준",
+      "observation": "24건은 공개 보존 전문·artifact/Message-ID·응답 순서의 연결이다. 추가 보강18은 S8 Fossil artifact, C8 Hypermail 서버 수신시각, P04/P05 첫 답 인용의 이질적인 근거다. 추가 보강18과 미노출23의 교집합은17이다. S01은 보강되었으나 답 문구에 노출되었다.",
+      "qualification": "PostgreSQL raw RFC822 Received는0/8이며 P04 인용 일치는 실질 질문 전문에 한정된다. 인사·서명까지 동일한 전체 본문 일치는 P05이다. 원판 미확인0은 연구의 공개 아카이브 식별 기준 아래의 값이지 모든 제출시각 불확실성0을 뜻하지 않는다.",
+      "recommended_wording": "공개 보존 전문·식별·응답순서 연결24, 추가 교차근거18, 답 미노출23. 교차근거18 전체를 동일한 원형 서버시각·본문 독립 인증으로 부르지 않는다.",
+      "evidence": [
+        {"file": "SCOPE.md", "locator": "사후 실행 범위 설명의 원판 증거 단락"},
+        {"file": "evidence/metrics.json", "locator": "subsets.extra_original_corroboration; subsets.strict_unexposed; unknown_original_extremes"},
+        {"file": "streams/postgres/notes-t1.md", "locator": "원판 보강 요약; 30일·90일 범위와 원판 보강"},
+        {"file": "streams/postgres/initial-quote-crosschecks.json", "locator": "P04; P05"},
+        {"file": "streams/sqlite/initial.jsonl", "locator": "S01 exposure/original_version"}
+      ]
+    },
+    {
+      "id": "IR03",
+      "kind": "interpretation_boundary_to_preserve_not_new_error",
+      "status": "strict_flags_and_weak_sensitivity_verified",
+      "title": "Q 변수 회수0과 실제 일반 명확화의 구별",
+      "observation": "봉인한 같은 변수의 엄격 신규 값은0/24이고8개 값은 T0에 이미 있었으며16개는 추가 값이 미확정이다. 약한 해석3은 C05 부분 기존 workflow, P03 local 지시대상, S04 COMMIT 주장과 공개재현의 불일치다. 실제 다른 변수의 명확화 왕복은7개 있으므로 신규 값0을 아무도 질문에 답하지 않았다는 뜻으로 읽지 않는다.",
+      "machine_use_boundary": "analysis.csv의 S04/C05 q_value_status=author_existing_fact는 발화 성격의 기록이다. 이 문자열만으로 신규 회수 수를 산출하지 말고 q_new_author_value_strict 및 adjudication_note를 함께 사용한다.",
+      "sensitivity": "0–3은 모든 약한 해석을 허용할 때의 코딩 민감도이며 신뢰구간·질문 효과·채택 효과가 아니다. 직접 같은 변수 답 하위집합의 분모0은 비율 해당 없음이다.",
+      "evidence": [
+        {"file": "analysis.csv", "locator": "S04; P03; C05; q_value_already_T0; q_new_author_value_strict; q_still_unconfirmed_after_window"},
+        {"file": "evidence/metrics.json", "locator": "weak_author_value_sensitivity; direct_answer_denominator; subsets.all_24.counts"},
+        {"file": "adjudication-overrides.json", "locator": "case_overrides.S04; case_overrides.P03; case_overrides.C05"},
+        {"file": "ANALYSIS_RULES.md", "locator": "Q 값 회수; 판독 오류와 사용자 정보의 분리"}
+      ]
+    },
+    {
+      "id": "IR04",
+      "kind": "interpretation_boundary_to_preserve_not_new_error",
+      "status": "pair_counts_and_window_meaning_verified",
+      "title": "주 대화7, 구현1, 달력 대기와 가상 왕복의 경계",
+      "observation": "주 대화 왕복7은 S01 3, S04 3, C07 설계 대상/목적1이다. 기술 입력만의 민감도는6이다. 구현 C06의 별도1을 더한 서로 다른 쌍은8이다. C06 구현쌍도 실제로30일 안이며 90일 구현 열에 배치했다는 사실이31–90일의 사건을 뜻하지 않는다.",
+      "cost_boundary": "전략별 행은 같은 실제 관측을 공유하므로7을 I/C/Q별로 더하지 않는다. S04 일부 대기구간이 겹치므로 시간 합계를 절감 가능한 달력시간으로 부르지 않는다. 가상 I/C 추가0, Q 답이 온다는 조건의 최소1은 관측한 전략 효과가 아니다.",
+      "evidence": [
+        {"file": "evidence/actual-roundtrips.json", "locator": "primary_pairs; implementation_pairs; note"},
+        {"file": "analysis.csv", "locator": "actual_clarification_roundtrips_primary; actual_clarification_roundtrips_technical_only; implementation_conversation_extra_pairs; S01/S04/C07/C06"},
+        {"file": "strategy.csv", "locator": "actual_roundtrip_counts_shared_across_strategies; expected_additional_roundtrips_lower_bound_if_answered"},
+        {"file": "ANALYSIS_RULES.md", "locator": "분모·비용·검열"}
+      ]
+    },
+    {
+      "id": "IR05",
+      "kind": "interpretation_boundary_to_preserve_not_new_error",
+      "status": "behavior_and_record_units_verified",
+      "title": "진전·실패·원문·원장·후속의 서로 다른 관측 단위",
+      "observation": "넓은 진전3은 S01 새 자가실행 성공1, C05 기존 workflow 수용1, C06 공급자 개발1이다. 미노출23에서는 외부 사용자의 새 실행 성공0이다. S04/S08의 실제 실패는 별도 실제 개입에 대한 보고이며 미전송 I/C의 실패가 아니다.",
+      "unit_counts": {"unique_works": 61, "sampled_conversations": 24, "frame_rows": 149, "root_screening_rows": 40, "included_roots": 24, "excluded_roots": 16, "reply_metadata_rows": 87, "after_cap_rows": 22, "followup_rows": 137, "public_messages": 114, "revisions": 4, "censoring_summaries": 11, "adjacent_unlinked_records": 8},
+      "unit_boundary": "61저작은61독립 사건·사람·채택이 아니다. source-counts의 excluded72에는 curl 답장56이 포함되므로 root제외72로 부르지 않는다. frame149의 세부 reason을 다시 대조했다. 검열 요약의 날짜 경계 차이3은 실제 공개 발화의 창 변경으로 세지 않는다.",
+      "evidence": [
+        {"file": "analysis.csv", "locator": "S01/C05/C06 progress_kind; S04/S08 reported_failure_other_actual_intervention"},
+        {"file": "evidence/metrics.json", "locator": "subsets.all_24.counts; subsets.strict_unexposed.counts"},
+        {"file": "frame.csv", "locator": "family/decision/reason별 전체149행"},
+        {"file": "evidence/source-counts.json", "locator": "frame_decisions; unique_external_works_counted; definition"},
+        {"file": "evidence/window-audit.json", "locator": "record_types; clock_origin_boundary_differences"},
+        {"file": "SCOPE.md", "locator": "frame149 및 후속137 설명 단락"}
+      ]
+    }
+  ],
+  "overall_disposition": "IR01의 집계 적용 및 정의 불일치는 root가 수용하여 수정했고 최신 스냅샷에서 확인했다. IR02–IR05는 새 오류 판정이 아니라 최종 RESULT/SELF_CHECK와 후속 기계 집계에서 유지해야 할 경계다. 이 기록 생성 전에 canonical 파일이나 봉인 파일을 직접 고치지 않았다.",
+  "remaining_limit": "최종 RESULT.md가 아직 검토 대상에 포함되지 않았다. 원문 전체의 독립 중복 판독이나 인과 검증을 수행한 것으로 사용하지 않는다."
+}

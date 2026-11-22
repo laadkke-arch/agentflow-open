@@ -26,3 +26,11 @@ CLI start --fetch는 manifest-cli.json에 성공 영수증을 보존했다. 최�
 이 묶음은 출처159행/최소수61저작, 후속137행, 두 시점·두 판정원별 조건294행, 질문24행/전략72행과 민감도6분모를 고정한다. 마지막 원문 검토 ID는 X-S2 날짜·절 교정, 마지막 대조 ID는 S08/C의 NOT NULL 누락이다. 원래 문구를 고치지 않고 전체 사용 승인 집계만 I4/C2으로 나눈다. P03은 엄격0/넓은 해석1을 보존한다. 실제 추가 질문 왕복은 주 대화7쌍과 별도 구현1쌍이며, PostgreSQL의 단순 답장9쌍을 질문 왕복으로 세지 않았다. 마지막 도구 접근 실패와 대체 범위는 각 계열 raw/mirror 기록 및 evidence/postseal-original-review.json에 있다.
 
 다음 첫 행동: RESULT의 네 표와 Q1–Q8 해석,SELF_CHECK·acceptance evidence를 만들고 검산 및 원격 확인을 마친 뒤에만 HANDOFF 작성. common 진행표·계약·색인 변경은 인계의 제안으로만 전달한다.
+
+## ⑤ 필수 표·분모·자체 점검
+
+④ 원격 커밋 `a9dd0998e8428c74cd7722c19a06223ac5c7df20`의 evidence/metrics.json을 다시 읽어24/72 및 I4/C2, 엄격 신규Q0을 확인했다.
+
+RESULT의 네 필수 표, Q1–Q8, 정확히3개의 마지막 약점 행,24행 행렬·소급표와 SELF_CHECK를 작성했다. 보류 문장에도 근거 범위 확대가 있는 C01/C·C02/I/C와 SQLite6문구의 실제 링크 누락을 명제별 점검에 보존했다. S03의 최초 변수 요약 방향 오류는 원본을 바꾸지 않고 보고서 표시만 교정했다. 마지막 판독 ID는 C02-coverage 및 S03-display-correction이다.
+
+보고서 형식 포함 자체 검산18 PASS/0 FAIL/1 SKIP을 우선 확인했다. SKIP은 주석이 추가된 현재 SCOPE의 해시이며 원 봉인9파일 검산은 PASS다. 다음 첫 행동은 이 결과 묶음을 커밋·원격 확인하고, 고정 SHA에 대한 최종 verification 및 session check --fetch와 공통 검사 영수증을 남기는 것이다. 소유 경로를 지키기 위해 공통 검사의 임시 출력은 소유 경로 안의 격리 복사본에서 생성한다. 수용 근거·자체 점검의 최종 원격 확인 전 HANDOFF를 작성하지 않는다.
