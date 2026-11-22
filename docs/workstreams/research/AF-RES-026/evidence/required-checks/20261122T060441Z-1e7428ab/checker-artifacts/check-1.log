@@ -1,0 +1,113 @@
+=== repo-intake/test stdout ===
+
+=== repo-intake/test stderr ===
+test_bad_input_container (test_task.RepositoryIdentityTests.test_bad_input_container) ... ok
+test_clone_aliases (test_task.RepositoryIdentityTests.test_clone_aliases) ... ok
+test_collect_preserves_indices (test_task.RepositoryIdentityTests.test_collect_preserves_indices) ... ok
+test_distinct_owner_not_merged (test_task.RepositoryIdentityTests.test_distinct_owner_not_merged) ... ok
+test_idempotent_canonical_identity (test_task.RepositoryIdentityTests.test_idempotent_canonical_identity) ... ok
+test_reject_ambiguous_or_deceptive (test_task.RepositoryIdentityTests.test_reject_ambiguous_or_deceptive) ... ok
+test_rejected_credentials_not_echoed (test_task.RepositoryIdentityTests.test_rejected_credentials_not_echoed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+OK
+
+=== repo-intake/demo stdout ===
+{
+  "repositories": [
+    {
+      "key": "github.com/other-owner/cpython",
+      "input_indices": [
+        7
+      ]
+    },
+    {
+      "key": "github.com/psf/requests",
+      "input_indices": [
+        5
+      ]
+    },
+    {
+      "key": "github.com/python/cpython",
+      "input_indices": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "index": 3,
+      "reason": "expected exactly /owner/repository, not a subpage"
+    },
+    {
+      "index": 4,
+      "reason": "only GitHub repository roots are supported"
+    },
+    {
+      "index": 6,
+      "reason": "queries, fragments and encoded paths need manual review"
+    }
+  ],
+  "input_count": 8,
+  "existence_checked": false
+}
+
+=== repo-intake/demo stderr ===
+
+=== reference-audit/test stdout ===
+
+=== reference-audit/test stderr ===
+test_does_not_collapse_subpages (test_task.ReferenceTests.test_does_not_collapse_subpages) ... ok
+test_duplicate_id (test_task.ReferenceTests.test_duplicate_id) ... ok
+test_invalid_id (test_task.ReferenceTests.test_invalid_id) ... ok
+test_invalid_input (test_task.ReferenceTests.test_invalid_input) ... ok
+test_missing_source (test_task.ReferenceTests.test_missing_source) ... ok
+test_repeated_marker (test_task.ReferenceTests.test_repeated_marker) ... ok
+test_reuses_root_identity (test_task.ReferenceTests.test_reuses_root_identity) ... ok
+test_unused (test_task.ReferenceTests.test_unused) ... ok
+test_valid_reference (test_task.ReferenceTests.test_valid_reference) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.001s
+
+OK
+
+=== reference-audit/demo stdout ===
+{
+  "ok": true,
+  "errors": [],
+  "used": [
+    "api-doc",
+    "upstream"
+  ],
+  "unused": [
+    "alternate-clone"
+  ],
+  "duplicate_repository_sources": {
+    "github.com/python/cpython": [
+      "upstream",
+      "alternate-clone"
+    ]
+  },
+  "claim_truth_checked": false,
+  "network_accessed": false
+}
+
+=== reference-audit/demo stderr ===
+
+Traceback (most recent call last):
+  File "/workspace/scratch/f7aa0910b8d1/docs/workstreams/research/AF-RES-026/evidence/cloud-check-temp-a3jt7qru/checkout/scripts/acceptance.py", line 108, in <module>
+    execute(args.require_git)
+  File "/workspace/scratch/f7aa0910b8d1/docs/workstreams/research/AF-RES-026/evidence/cloud-check-temp-a3jt7qru/checkout/scripts/acceptance.py", line 84, in execute
+    command(['git','bundle','create',str(bundle),'--all','HEAD'],ROOT)
+  File "/workspace/scratch/f7aa0910b8d1/docs/workstreams/research/AF-RES-026/evidence/cloud-check-temp-a3jt7qru/checkout/scripts/acceptance.py", line 28, in command
+    raise RuntimeError(f'command failed ({proc.returncode}): {argv}\n{proc.stdout}\n{proc.stderr}')
+RuntimeError: command failed (1): ['git', 'bundle', 'create', '/workspace/scratch/f7aa0910b8d1/docs/workstreams/research/AF-RES-026/evidence/cloud-check-temp-a3jt7qru/checkout/.workbench/source.bundle', '--all', 'HEAD']
+
+fatal: unable to read cd97243aa037c0bd83dd84710e3f944187e21226
+error: pack-objects died
+

@@ -144,3 +144,9 @@ python docs/workstreams/research/AF-RES-026/verify.py --require-report --record 
 S03의 최초 missing_variable 요약은 legacy를 끌 수 없다는 방향이어서 OFF 유지 필수를 묻는 봉인 Q/R3와 반대였다. 원본을 보존하고 RESULT/행렬의 표시만 교정했다. OFF가 선택 가능하다고 단정하지 않고 필수 여부 미확인으로 쓴다. [교정 근거](adjudication-overrides.json)의 S03과 [봉인 Q](frozen-responses.jsonl)를 대조한다.
 
 [SQLite 인용 감사](streams/sqlite/citation-coverage.json)는 기술 지지와 짧은 문구 실제 링크를 분리해16문구 중6인용 누락을 기록했다. [curl 명제 감사](streams/curl/citation-coverage.json)는 C01/C의 JS 비실행→일반 대체 불가능, C02/I·C의 외부서비스/비교 필수성이라는 범위 확대를 발견했다. 세 문구 모두 원래 보류이며 승인/진전 수치를 사후 바꾸는 새 사실이 아니다. 두 감사는 축이 달라 하나의 인용 완결률로 합산하지 않는다.
+
+## 실제 검산 영수증
+
+고정 결과 `ed14e806a5a7bf4e6195fd12024c482d31768449`에서 보고서 포함 자체 검산은18 PASS/0 FAIL/1 SKIP, 종료코드0이었다. SKIP은 수정 주석을 허용한 현재 SCOPE 해시이며, 봉인9파일은 모두 일치했다. [verification](evidence/verification.json)은 실제 입력해시와 검사HEAD를 포함한다. 별도 [session check --fetch](evidence/session-check-receipt.json)는 PASS/remote_checked, 통합 `21c517691e8d8882f0e66ef262b32fe3ad39b630`의 계약과 동일, 소유밖변경0·오류0을 확인했다. 통합SHA는검사시점의계약확인이며이번차수다른연구결과를분석입력으로추가한것이아니다. 후속수용근거/인계문서는이전실행에포함됐다고하지않는다.
+
+공통 검사는 [두 시도와 원문 영수증](evidence/required-checks/README.md)에 보존했다. 첫 partial clone의 과거 객체 누락으로 Git bundle 단계가 실패했고, 공개 저장소를 필터 없이 다시 복제한 같은 ed14에서55개 단위검사·test/demo·export·Git bundle 복원과 공통5명령이 통과했다. 공통코드는 수정하지 않았다. common check-all은 활성 세션0으로 원격 세션을 검사하지 않았으므로, 이를 앞의 explicit manifest --fetch와 혼합하지 않는다. [검증 범위 요약](evidence/verification-summary.json).
