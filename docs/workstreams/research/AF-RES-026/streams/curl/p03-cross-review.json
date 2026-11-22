@@ -1,0 +1,87 @@
+{
+  "case_id": "P03",
+  "reviewer": "/root/curl",
+  "review_kind": "post-seal targeted original-first cross-review; not preregistered independent blinded replication",
+  "known_context": "통합자가 유일한 조건변화 양성의 강도를 확인하려는 대상이라고 알려 주었음. 따라서 결과 존재에 대해 완전 가림 아님. 해당 후속 본문/판정 파일은 phase1 전에 열지 않음.",
+  "scope": "기존 frozen 변수의 원문 충분성 및 후속 신규사실 판정만 검토. 새 변수·가상 I/C/Q·전략 재채점 없음.",
+  "phase1": {
+    "first_original_open_utc": "2026-11-22T05:27:07Z",
+    "first_read_conclusion_saved_utc": "2026-11-22T05:28:01.986806+00:00",
+    "original_url": "https://www.postgresql.org/message-id/DB9PR07MB7180EDC1ACD3222532399E1CCB499%40DB9PR07MB7180.eurprd07.prod.outlook.com",
+    "message_id": "DB9PR07MB7180EDC1ACD3222532399E1CCB499@DB9PR07MB7180.eurprd07.prod.outlook.com",
+    "original_date_display": "2022-01-03 16:26:33",
+    "full_original_body_read": true,
+    "html_sha256": "11af0c1881d6e0833995523c5abeee3aa9a06398dda035ebf2dabca422ff5a8f",
+    "other_postgres_T1_files_read_before_this_save": false,
+    "followup_messages_read_before_this_save": false,
+    "conclusion": "실제 운영 쿼리에서 IN/ID 집합을 만드는 테이블이 로컬인지 동일 외부서버인지 첫 글만으로 확정할 수 없다. 예제는 literal SELECT UNION이며 어느 테이블에서도 ID를 읽지 않는다. 실제 select는 따로 있다고 명시되어 있다.",
+    "support": [
+      {
+        "locator": "L19",
+        "finding": "tbl_link가 postgres_fdw table이라는 사실은 명시. 필터 대상의 원격성은 확인되지만 ID 생성 테이블의 위치를 말하지 않음."
+      },
+      {
+        "locator": "L20",
+        "finding": "SELECT UNION은 예제이고 실제 select는 다르다고 명시. 실제 select의 FROM/서버/테이블은 생략."
+      },
+      {
+        "locator": "L26–29, L36–39",
+        "finding": "IN 집합은 상수 또는 SELECT 상수 UNION이다. INTO local_1은 결과 저장대상이며 ID 생성 원천의 위치 증거가 아니다."
+      },
+      {
+        "locator": "L40–51",
+        "finding": "예제 plan에 Foreign Scan과 local Hash/Result/Append가 보이지만 이것만으로 생략된 실제 ID select의 저장위치를 확정할 수 없다."
+      }
+    ],
+    "interpretation_boundary": "예제의 상수 집합 평가와 실제 업무용 ID 집합의 원천을 구분한다. 첫 글의 정보로 예제의 병목을 해석할 여지는 있으나 실제 테이블 위치까지 안다는 주장과 다르다.",
+    "counter_hypothesis_checked": "local_1이라는 이름이나 예제의 Result/Append가 실제 ID 테이블의 로컬성을 이미 증명한다는 해석을 점검했으나, 저장대상/축약 예제라는 이유로 기각.",
+    "confidence": "high for original-location-not-explicit; no judgment yet on later author value or suitability change"
+  },
+  "phase1_sha256": "37b9344911f41d5d831a9263d743355753f7f18a49b9c182534fa62460e9f274",
+  "phase2": {
+    "first_postgres_case_analysis_read_utc": "2026-11-22T05:28:08Z",
+    "first_followup_message_open_utc": "2026-11-22T05:28:13Z",
+    "comparison_saved_utc": "2026-11-22T05:29:54.310221+00:00",
+    "reviewed_files": [
+      "streams/postgres/case-analysis.jsonl: P03 only"
+    ],
+    "followup_url": "https://www.postgresql.org/message-id/DB9PR07MB718015C40BC021957A7165F5CB4C9%40DB9PR07MB7180.eurprd07.prod.outlook.com",
+    "followup_message_id": "DB9PR07MB718015C40BC021957A7165F5CB4C9@DB9PR07MB7180.eurprd07.prod.outlook.com",
+    "followup_date_display": "2022-01-06 10:20:49",
+    "followup_html_sha256": "fdb2a5ed182062e403816a25caa9670f6f7d0eb6406244811222e48651db3dd3",
+    "observed": [
+      {
+        "locator": "L23–26",
+        "finding": "작성자는 IN절의 결과를 local table이라 부르고 그 local 쪽이 remote보다 작다고 자신의 경우를 설명한다."
+      },
+      {
+        "locator": "L28–31",
+        "finding": "여전히 상수 UNION의 예제 SQL을 반복하고 실제 ID 원천의 FROM/테이블/foreign server를 밝히지는 않는다."
+      },
+      {
+        "locator": "L113–114 (인용된 Kyotaro의 앞선 답)",
+        "finding": "응답자는 이 예제의 inner subquery가 foreign scan이 아니므로 local join이라고 설명했다. 이는 작성자가 독립적으로 원천 위치를 확인한 증거와 다르다."
+      }
+    ],
+    "comparison_to_existing_analysis": {
+      "agrees": [
+        "T0에 실제 ID 원천의 위치가 명시되지 않았음",
+        "후속의 local이라는 표현은 실제 작성자 새 본문에 있음; 제3자 말만 인용한 것은 아님",
+        "직접 질문에 대한 답이 아니며 성공/개선 실행 보고가 아님",
+        "새 DELETE 요구를 T0에 소급하지 않는 구분은 타당"
+      ],
+      "qualification": [
+        "후속 local table은 실제 원천 base table인지, 예제에서 로컬 평가되는 파생 ID 결과집합인지 명확히 분리하지 않는다.",
+        "후속의 자기 사례 설명을 실제 데이터 원천의 확인으로 읽는 해석은 가능하지만, 그대로 물리적 source=local이 확정됐다고 한 단계 더 강하게 쓰면 과장이다.",
+        "예제의 실행위치를 변수로 읽으면 T0 plan의 local Result/Hash가 이미 답을 제공하고 신규 정보가 아니다. 실제 업무용 원천을 변수로 읽으면 T0에는 없지만 후속의 지시 대상이 모호하다."
+      ]
+    },
+    "review_conclusion": "조건부 동의: 작성자가 local이라고 추가 설명했다는 관측은 유지한다. 그러나 실제 ID 원천 테이블 위치의 확정과 그 사실 하나로 remote-join 후보가 확실히 탈락했다는 강한 양성은 이 q_value_source만으로 확정하지 않는다.",
+    "suggested_reporting": "주장 범위를 작성자의 local 설명으로 한정하고, 실제 원천까지 뜻한다는 해석을 붙인 넓은 집계 1건과 엄격 위치 확정 집계 0건을 민감도로 분리할 것을 권고. 이는 전략 재채점이 아니라 유일 양성 근거의 지시 대상 강도 점검이다.",
+    "minimum_resolving_evidence": "동일 최초 SELECT INTO의 실제 ID-producing SELECT에 FROM이 있는 축약 SQL 및 그 relation이 local 또는 어느 foreign server인지 명시한 작성자 자료. 후속의 새 DELETE 쿼리만으로 대신하지 않음.",
+    "independence_limit": "후속 내용은 최초판 메모 뒤 열었으나 양성 사례라는 선정 이유는 알고 있었고 표적 사례 한 건만 검토했다. 일반 독립 판독 정확도/일치율로 사용 금지.",
+    "new_hypothetical_I_C_Q_created": false,
+    "existing_strategies_rescored": false,
+    "first_memo_hash_unchanged": true
+  }
+}
