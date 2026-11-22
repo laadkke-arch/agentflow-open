@@ -1,0 +1,349 @@
+{
+  "packet_id": "P415f8f3436b9",
+  "question": {
+    "id": "Q08",
+    "ledger": "python",
+    "scope": "whole",
+    "title": "Supporting Symlinks in Wheels",
+    "caller": [
+      "Python wheel build backends",
+      "Wheel installers and uninstallers",
+      "Binary-library distributors using wheel package namespaces"
+    ],
+    "input": [
+      "A wheel archive and .dist-info/LINKS source_path,target_path entries",
+      "Its extracted package/namespace roots and target paths",
+      "The platform’s available symlink/junction capabilities"
+    ],
+    "output": [
+      "Platform-relevant links in installed wheel packages without default duplication of file contents",
+      "Rejected dangling, cyclic, out-of-wheel, or unsupported links",
+      "Backend-produced link metadata consistent with included targets and wheel major version"
+    ],
+    "limits": [
+      "Wheel-Version must be at least 2.0 for wheels generated with LINKS in the first text.",
+      "Both paths must remain inside namespaces/packages supplied by the same wheel after path resolution.",
+      "Hardlinks and PEP 660 editable-installation support are intentionally left to future work.",
+      "The LINKS example appears to orient real-file/alias names differently from the prose requiring target_path to exist. This unresolved direction ambiguity is preserved; neither supplier evidence nor an adapter may silently repair it.",
+      "No specific maximum symlink depth is fixed; the security section requires bounded checking."
+    ],
+    "whole_must": [
+      {
+        "id": "Q08-W1",
+        "predicate": "A generated wheel with LINKS declares Wheel-Version at least 2.0 so older installers do not silently omit the links.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Wheel Major Version Bump",
+            "lines": [
+              80,
+              85
+            ],
+            "excerpt": "Wheel Major Version Bump\n------------------------\n\nThis PEP requires a wheel major version bump, so the ``Wheel-Version`` for wheels generated with\n``LINKS`` **MUST** be at least version ``2.0``, so that older installers do not silently fail to\ninstall symlinks and break user environments. For more see :pep:`777`."
+          }
+        ],
+        "falsifying_input": "Produce a wheel containing link metadata and inspect its Wheel-Version; present it to an installer limited to wheel 1.x.",
+        "failure_condition": "It declares a 1.x format or an older installer silently installs an incomplete package."
+      },
+      {
+        "id": "Q08-W2",
+        "predicate": "The .dist-info/LINKS file represents source_path,target_path pairs within the wheel’s package/namespace roots, with the stated non-dangling target requirement.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/New LINKS Metadata File",
+            "lines": [
+              87,
+              100
+            ],
+            "excerpt": "New ``LINKS`` Metadata File\n---------------------------\n\nTo enable cross-platform symlinks, this PEP introduces a new wheel metadata file, ``LINKS``. An\nexample of a ``LINKS`` file is below::\n\n    my_package/libfoo.so.3.1.4,my_package/libfoo.so.3\n    my_package/libfoo.so.3,my_package/libfoo.so\n\nThe format of ``LINKS``, as can seen above, is ``source_path,target_path`` where ``source_path``\nis a path relative to the root of any namespace or package root in the wheel. ``target_path`` is a\n*non-dangling* path (i.e. a path that exists on the filesystem after the wheel's contents are\nextracted) in a package or namespace of any package in the wheel. This means that if a wheel\ncontains multiple packages, all paths in packages in the wheel are acceptable."
+          }
+        ],
+        "falsifying_input": "Supply LINKS entries covering two package roots in one wheel plus a missing target.",
+        "failure_condition": "The metadata is not representable as the specified pairs or a dangling target is accepted. The first text’s example/prose orientation conflict remains unresolved."
+      },
+      {
+        "id": "Q08-W3",
+        "predicate": "The installer resolves each path before validating that BOTH source and target remain within namespaces/packages coming from the wheel.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              105,
+              110
+            ],
+            "excerpt": "Installers **MUST** resolve the paths of any link contained in the ``LINKS`` file *before*\ndeciding if any ``source_path`` or ``target_path`` are valid. Installers **MUST** verify that\n``source_path`` and ``target_path`` are located inside any namespace or package coming from the\nwheel.  Installers **MUST** reject cyclic symlinks in wheels. Installers **MAY** error if a long\nchain of symlinks (symlinks pointing to symlinks many times repeated) exceeds a limit set by the\ninstaller."
+          }
+        ],
+        "falsifying_input": "Use a path containing parent traversal or an already-existing symlink whose resolved destination is outside every package root supplied by the wheel.",
+        "failure_condition": "A lexical-prefix check accepts an escaping resolved path."
+      },
+      {
+        "id": "Q08-W4",
+        "predicate": "The installer rejects cyclic link graphs and bounds depth checking to avoid unbounded cyclic/long-chain processing.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification; Security Implications",
+            "lines": [
+              163,
+              168
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests"
+          }
+        ],
+        "falsifying_input": "Provide A to B, B to A, and a chain exceeding the checker’s declared depth bound.",
+        "failure_condition": "A cycle is accepted or validation runs without a finite depth bound; no particular numeric limit is invented."
+      },
+      {
+        "id": "Q08-W5",
+        "predicate": "Installation checks for LINKS, extracts ordinary package/data files first, and validates that every target exists in an extracted package namespace before link creation.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              112,
+              118
+            ],
+            "excerpt": "Installers **MUST** follow the following steps when handling a wheel with symlinks:\n\n1. Check for the existance of a ``LINKS`` file in the ``.dist-info``. If it does not exist,\n   no further steps are required.\n2. Extract all files in the wheel packages and data directory as in wheel 1.x.\n3. Verify that for each ``source_path`` and ``target_path`` pairs, the ``target_path`` exists in\n   one of the package namespaces just extracted."
+          }
+        ],
+        "falsifying_input": "Provide a wheel where one declared target is absent after extraction, alongside valid entries.",
+        "failure_condition": "The installer creates links without detecting the absent target or tries to use not-yet-extracted targets."
+      },
+      {
+        "id": "Q08-W6",
+        "predicate": "The installer checks whether the current platform can create a suitable link for each file/folder pair and raises an error when it cannot.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              119,
+              124
+            ],
+            "excerpt": "4. Next, check that the installer can make some kind of link for each pair in the site directory.\n   If the installer cannot make a link for the file/folder ``target_path`` for the current\n   platform, an error **MUST** be raised. An example of a failure mode would be a UNIX symlink to\n   a file target, where the installer is running on Windows and the installer cannot make\n   symlinks but can make junctions. In this case the installer **MUST** error because it cannot\n   handle the link."
+          }
+        ],
+        "falsifying_input": "Request a file symlink on a platform where the installer can only create directory junctions.",
+        "failure_condition": "The unsupported file link is reported as successfully installed."
+      },
+      {
+        "id": "Q08-W7",
+        "predicate": "For supported entries the installer creates a platform-relevant link and does not copy target content by default; copying may be an explicit alternate configuration only.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              125,
+              130
+            ],
+            "excerpt": "5. Finally, the installer **MUST** add a platform-relevant link between ``source_path`` and\n   ``target_path``.\n\nInstallers **MUST NOT** by default copy files instead of generating a symlink when handling\nsymlinks. Installers **MAY** have such behavior available under an alternate configuration or\ncommand line flag."
+          }
+        ],
+        "falsifying_input": "Install a supported link with default options and inspect the result and disk-content duplication.",
+        "failure_condition": "The default silently copies the file instead of creating a link."
+      },
+      {
+        "id": "Q08-W8",
+        "predicate": "Build backends apply the target’s inclusion decision to the symlink and verify that LINKS contains no dangling symlinks.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Build Backend Specification",
+            "lines": [
+              132,
+              139
+            ],
+            "excerpt": "Build Backend Specification\n---------------------------\n\nWhen creating a wheel, build backends **MUST** treat symlinks in the same way as its target when\ndeciding whether to include the symlink in a wheel. Build backends **MUST** verify that there are\nno dangling symlinks in the ``LINKS`` file. Build backends **SHOULD** recognize platform-relevant\nsymlinks that would be included in builds. On Unix this is typically symlinks, on Windows this\nincludes symlinks and junctions."
+          }
+        ],
+        "falsifying_input": "Exclude a target from the build while a symlink to it is present, or include a symlink whose target is missing.",
+        "failure_condition": "The backend emits a dangling metadata entry or includes/excludes the symlink inconsistently with the target."
+      },
+      {
+        "id": "Q08-W9",
+        "predicate": "Removal does not follow symlinks into their target contents.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Security Implications",
+            "lines": [
+              163,
+              170
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests\n\nDo not follow symlinks on removal."
+          }
+        ],
+        "falsifying_input": "Uninstall a package containing a link while the target data must remain outside that link’s own removal operation.",
+        "failure_condition": "The uninstaller traverses the link and deletes its target contents."
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q08-P1",
+        "predicate": "Resolve both endpoint paths before checking containment in the packages/namespaces supplied by the wheel.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              105,
+              110
+            ],
+            "excerpt": "Installers **MUST** resolve the paths of any link contained in the ``LINKS`` file *before*\ndeciding if any ``source_path`` or ``target_path`` are valid. Installers **MUST** verify that\n``source_path`` and ``target_path`` are located inside any namespace or package coming from the\nwheel.  Installers **MUST** reject cyclic symlinks in wheels. Installers **MAY** error if a long\nchain of symlinks (symlinks pointing to symlinks many times repeated) exceeds a limit set by the\ninstaller."
+          }
+        ],
+        "falsifying_input": "Pass an endpoint that resolves outside the permitted roots through a symlink or parent traversal.",
+        "failure_condition": "A validator accepts it because its unnormalized spelling looks internal.",
+        "inherited_from": [
+          "Q08-W3"
+        ]
+      },
+      {
+        "id": "Q08-P2",
+        "predicate": "Reject each target missing from the already-extracted package tree.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              114,
+              118
+            ],
+            "excerpt": "1. Check for the existance of a ``LINKS`` file in the ``.dist-info``. If it does not exist,\n   no further steps are required.\n2. Extract all files in the wheel packages and data directory as in wheel 1.x.\n3. Verify that for each ``source_path`` and ``target_path`` pairs, the ``target_path`` exists in\n   one of the package namespaces just extracted."
+          }
+        ],
+        "falsifying_input": "Pass one valid edge and one edge whose target does not exist in the extracted tree.",
+        "failure_condition": "The graph is marked valid despite the missing target.",
+        "inherited_from": [
+          "Q08-W2",
+          "Q08-W5"
+        ]
+      },
+      {
+        "id": "Q08-P3",
+        "predicate": "Reject cyclic link dependencies and use bounded traversal for chains.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Security Implications",
+            "lines": [
+              163,
+              168
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests"
+          }
+        ],
+        "falsifying_input": "Validate A to B, B to A, then a chain exceeding the documented checker bound.",
+        "failure_condition": "The cycle passes or validation can traverse indefinitely.",
+        "inherited_from": [
+          "Q08-W4"
+        ]
+      }
+    ],
+    "independent_partial_purpose": "Validate an already-extracted wheel’s LINKS graph against its package roots: resolve paths, reject escapes and missing targets, and reject cycles with bounded traversal before creating any links.",
+    "remaining_adapter": [
+      "Resolve the first draft’s source/target direction ambiguity without silently rewriting it",
+      "Emit LINKS and coordinate the wheel-major-version transition",
+      "Integrate extraction, per-platform capability checks, and actual link creation",
+      "Implement build-backend target inclusion rules and no-follow removal",
+      "Define clear user errors and optional explicit copying policy"
+    ],
+    "original_named_families": [
+      "Python wheels",
+      "CPython zipfile",
+      "Unix",
+      "Windows",
+      "numpy",
+      "scipy",
+      "pyarrow",
+      "pytorch",
+      "jax",
+      "libtorch",
+      "packaging.python.org"
+    ],
+    "original_named_components": [
+      ".dist-info/LINKS",
+      "METADATA",
+      "RECORD",
+      "Wheel-Version 2.0",
+      "PEP 777 / Wheel 2.0",
+      "PEP 660",
+      "symlinks",
+      "Windows junctions",
+      "Windows Dev Mode / symlink group policy",
+      "dlopen",
+      "soname",
+      "real name",
+      "linker name",
+      "libfoo.so.3.1.4",
+      "libfoo.so.3",
+      "libfoo.so",
+      "pip"
+    ],
+    "same_name_wrong_actor_output_failure": {
+      "criterion": "A library called links that extracts web hyperlinks, or an archive tool listing names without safe same-wheel link creation/validation, has the wrong actor/input/output.",
+      "falsifying_input": "Pass a LINKS edge whose resolved target escapes the installed wheel’s roots.",
+      "wrong_output": "The tool returns a list of URLs/names or creates an unchecked link instead of rejecting the wheel link plan."
+    },
+    "initial_url": "https://github.com/python/peps/blob/78c4086b041db07a2d560884d658e7b3990b5a6d/peps/pep-0778.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0778-78c4086b041d.rst"
+  },
+  "candidates": [
+    {
+      "candidate_token": "Kfcbce2dd20",
+      "name": "PyPA wheel version gate and unpack/spread contract",
+      "proposed_use": "Use major-version rejection and extraction ordering when integrating a later wheel-link stage.",
+      "citations": [
+        {
+          "url": "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+          "section": "Installing a wheel L92–116; File contents/Wheel-Version L188–224",
+          "evidence_ids": [
+            "Ed1e03d33f9940f96"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_token": "K4a2f0fab62",
+      "name": "PyPA installed-project RECORD lifecycle contract",
+      "proposed_use": "Track installed files and coordinate later removal using the standard metadata inventory.",
+      "citations": [
+        {
+          "url": "https://packaging.python.org/en/latest/specifications/recording-installed-packages/",
+          "section": "The RECORD file, L128–169",
+          "evidence_ids": [
+            "E9632b41bcbe36ffd"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "E0c6a7186df95c904",
+      "original_url": "https://packaging.python.org/en/latest/specifications/section-distribution-metadata/",
+      "file": "judging/evidence/E0c6a7186df95c904.json"
+    },
+    {
+      "evidence_id": "E68b02e3bb36d9ed5",
+      "original_url": "https://packaging.python.org/en/latest/specifications/",
+      "file": "judging/evidence/E68b02e3bb36d9ed5.json"
+    },
+    {
+      "evidence_id": "E9632b41bcbe36ffd",
+      "original_url": "https://packaging.python.org/en/latest/specifications/recording-installed-packages/",
+      "file": "judging/evidence/E9632b41bcbe36ffd.json"
+    },
+    {
+      "evidence_id": "Ed1e03d33f9940f96",
+      "original_url": "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+      "file": "judging/evidence/Ed1e03d33f9940f96.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

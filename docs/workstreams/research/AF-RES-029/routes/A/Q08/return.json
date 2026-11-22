@@ -1,0 +1,88 @@
+{
+  "question_id": "Q08",
+  "route": "A",
+  "budget": {
+    "navigation": 2,
+    "body_opens": 3,
+    "body_successes": 2,
+    "body_failures_or_unusable": 1,
+    "common_reuse_count": 3,
+    "common_reuse_additional_calls": 0,
+    "server_transfer_bytes": "미계측",
+    "token_cost": "미계측",
+    "local_utf8_response_json_bytes": 136013
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Goomba link package preflight and symlink lifecycle",
+      "proposed_use": "Reuse the package linker's destination-resolution checks and no-follow unlink mechanics as building blocks for wheel link integration.",
+      "citations": [
+        {
+          "url": "https://pkg.go.dev/github.com/richinsley/goomba/link",
+          "section": "Overview L194–203; ErrUnsafePath L257–260; Unlink L335–338; Link L459–466",
+          "source_id": "Q08-A-S1"
+        }
+      ],
+      "opened_evidence": "The supplier API confines resolved destinations to an environment prefix and sources to the package directory, validates planned writes, recreates symlinks, and removes links without following them.",
+      "remaining_adapter": "Translate wheel metadata into its conda-oriented model and enforce the narrower set of package roots supplied by this wheel. Missing-target and bounded-cycle rejection are not established; those core validation requirements remain.",
+      "limitations": "Conda installation is the supplied actor/output, not Wheel-Version 2.0/LINKS. Prefix containment alone permits a broader domain than same-wheel package containment. No complete frozen partial validator or whole installer is claimed. The draft's source/target orientation ambiguity remains unresolved; no package was installed."
+    },
+    {
+      "rank": 2,
+      "name": "Bazel FilesetOutputTree relative-symlink traversal",
+      "proposed_use": "Reuse the bounded relative-link traversal algorithm when designing the graph-checking portion of a wheel-link validator.",
+      "citations": [
+        {
+          "url": "https://bazel.googlesource.com/bazel.git/%2B/e749da2f60025e2462f7cc7eea0457eb5734a51a/src/main/java/com/google/devtools/build/lib/actions/FilesetOutputTree.java",
+          "section": "MAX_SYMLINK_TRAVERSALS L44; relative resolution L278–319; full resolution and error handling L228–275",
+          "source_id": "Q08-A-S2"
+        }
+      ],
+      "opened_evidence": "Implementation tracks seen links and a 256-traversal bound. Cyclic, too-long and unresolved links produce warnings and are omitted from the resolved mapping.",
+      "remaining_adapter": "Convert fileset inputs, enforce both endpoint containment and extracted-target existence, and turn incomplete resolution into a rejecting validation result. The implementation currently warns rather than rejects the entire link plan.",
+      "limitations": "Internal Bazel component, not a wheel installer or ready-made complete validator. Its treatment of missing/outside targets tolerates omissions. The initial draft's direction ambiguity is preserved; no execution or suitability of all dependencies was tested."
+    }
+  ],
+  "started_utc": "2026-11-22T08:19:14.782Z",
+  "ended_utc": "2026-11-22T08:21:05.958381+00:00",
+  "context": {
+    "worker": "route_a",
+    "isolation": "Separate Route A worker; no Route B results or other route judgments supplied or read.",
+    "authorized_initial_batch_inputs": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11"
+    ],
+    "subsequent_input_authorization": "Root authorized all even inputs after B scheduling prerequisites; no B content supplied.",
+    "common_commit": "5543465bd18542d3994280ebaab3487ae04a1e04",
+    "initial_questions_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+    "same_worker_prior_questions": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11",
+      "Q02",
+      "Q04",
+      "Q06"
+    ],
+    "cross_question_memory": true,
+    "independent_human_reading": false,
+    "sampled_current_proposals_opened": false
+  },
+  "serialization_gate": {
+    "checked_utc": "2026-11-22T08:21:05.958508+00:00",
+    "candidate_count": 2,
+    "distinct_document_urls": [
+      "https://bazel.googlesource.com/bazel.git/%2B/e749da2f60025e2462f7cc7eea0457eb5734a51a/src/main/java/com/google/devtools/build/lib/actions/FilesetOutputTree.java",
+      "https://pkg.go.dev/github.com/richinsley/goomba/link"
+    ],
+    "url_count": 2,
+    "posthoc_truncation": false
+  }
+}

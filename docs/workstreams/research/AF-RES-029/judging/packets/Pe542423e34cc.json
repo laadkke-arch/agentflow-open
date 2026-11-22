@@ -1,0 +1,386 @@
+{
+  "packet_id": "Pe542423e34cc",
+  "question": {
+    "id": "Q10",
+    "ledger": "numpy",
+    "scope": "whole",
+    "title": "NEP 47 — Adopting the array API standard",
+    "caller": {
+      "text": "Downstream numerical library authors and end users who want one function implementation to accept arrays from conforming libraries without hard dependencies on each library.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 19,
+          "line_end": 23
+        },
+        {
+          "section": "Adoption in downstream libraries",
+          "line_start": 97,
+          "line_end": 123
+        }
+      ]
+    },
+    "input": {
+      "text": "Conforming array objects and supported Python scalars, shape/axis arguments, supported dtype literals and CPU device information. Array-like coercion is a separate explicit step.",
+      "source_positions": [
+        {
+          "section": "High-level design",
+          "line_start": 182,
+          "line_end": 215
+        },
+        {
+          "section": "Functions in the namespace",
+          "line_start": 231,
+          "line_end": 259
+        },
+        {
+          "section": "Device support",
+          "line_start": 313,
+          "line_end": 328
+        }
+      ]
+    },
+    "output": {
+      "text": "Arrays from the selected conforming namespace with the prescribed dtype, shape and device semantics; a single selected element remains a 0-D array. Interchange produces an ndarray view on producer memory.",
+      "source_positions": [
+        {
+          "section": "High-level design",
+          "line_start": 182,
+          "line_end": 210
+        },
+        {
+          "section": "DLPack support",
+          "line_start": 270,
+          "line_end": 297
+        },
+        {
+          "section": "Indexing",
+          "line_start": 389,
+          "line_end": 395
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "boundary",
+        "text": "The target is the 2021 standard and the separate NumPy namespace. Changes to the upstream standard itself are out of scope.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 61,
+            "line_end": 81
+          }
+        ]
+      },
+      {
+        "kind": "boundary",
+        "text": "Only bool, 8/16/32/64-bit signed/unsigned integers and 32/64-bit floats are in this initial standard. Complex, string, object, datetime and structured dtypes are outside the described portable core.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules",
+            "line_start": 334,
+            "line_end": 349
+          },
+          {
+            "section": "High-level design",
+            "line_start": 211,
+            "line_end": 215
+          }
+        ]
+      },
+      {
+        "kind": "undefined",
+        "text": "Mixed-kind casting, Python scalar overflow, clipping beyond the slice extent and mutation mixed with possible views are not portable guarantees in this first text.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules",
+            "line_start": 351,
+            "line_end": 364
+          },
+          {
+            "section": "Indexing",
+            "line_start": 397,
+            "line_end": 409
+          },
+          {
+            "section": "The array object",
+            "line_start": 422,
+            "line_end": 426
+          }
+        ]
+      },
+      {
+        "kind": "preference",
+        "text": "The namespace name and array class name are tentative; exact class hierarchy and dtype object implementation are alternatives. Matching the operational contracts matters more than those spellings.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 63,
+            "line_end": 69
+          },
+          {
+            "section": "The array object",
+            "line_start": 428,
+            "line_end": 430
+          },
+          {
+            "section": "The dtype objects",
+            "line_start": 475,
+            "line_end": 507
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q10-W01",
+        "predicate": "Provide the separate standard array namespace and array object needed for portable array construction and numerical operations across conforming libraries, with namespace discovery for downstream callers.",
+        "source_positions": [
+          {
+            "section": "Abstract; Adoption in downstream libraries; High-level design",
+            "line_start": 19,
+            "line_end": 123
+          },
+          {
+            "section": "High-level design",
+            "line_start": 175,
+            "line_end": 215
+          },
+          {
+            "section": "Appendix namespace selector",
+            "line_start": 545,
+            "line_end": 564
+          }
+        ],
+        "falsifying_input": "Run a downstream function that obtains xp from two same-library arrays and uses xp.mean and xp.std. A wrapper tied only to a global NumPy namespace, with no conforming array namespace, fails the full design.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W02",
+        "predicate": "Array operations obey the described array-object/indexing contract: no ordinary methods beyond dunders, no integer advanced indexing, single-array boolean indexing, and scalar selection returns a 0-D array.",
+        "source_positions": [
+          {
+            "section": "High-level design; Indexing",
+            "line_start": 182,
+            "line_end": 191
+          },
+          {
+            "section": "Indexing",
+            "line_start": 389,
+            "line_end": 409
+          },
+          {
+            "section": "The array object",
+            "line_start": 416,
+            "line_end": 426
+          }
+        ],
+        "falsifying_input": "For a 2-D array, a[0,0] returning a NumPy scalar or silently accepting forbidden integer-array advanced indexing falsifies this contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W03",
+        "predicate": "Functions use explicit supported array inputs, positional-only/keyword-only contracts, inline type annotations and dtype literals, without relying on __array_ufunc__ or __array_function__ dispatch.",
+        "source_positions": [
+          {
+            "section": "High-level design; Functions in the namespace",
+            "line_start": 193,
+            "line_end": 264
+          }
+        ],
+        "falsifying_input": "Call a namespace reduction with a Python list or an object that only implements __array_function__, or give dtype=\"float32\". Implicit coercion/legacy dispatch or acceptance of string dtype syntax fails the frozen namespace contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W04",
+        "predicate": "Supported dtype promotion is value independent and treats 0-D arrays like higher-dimensional arrays; dtype objects can be compared for equality and reused as dtype arguments.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules; The dtype objects",
+            "line_start": 334,
+            "line_end": 369
+          },
+          {
+            "section": "The dtype objects",
+            "line_start": 467,
+            "line_end": 473
+          }
+        ],
+        "falsifying_input": "Promote two same-kind array dtypes while varying only scalar-shaped operand values; a result-type change, or inability to pass x.dtype to array creation, falsifies the contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W05",
+        "predicate": "Support DLPack producer export via __dlpack__ and consumer import via from_dlpack, yielding an ndarray view without copying the exchanged array data.",
+        "source_positions": [
+          {
+            "section": "DLPack support for zero-copy data interchange",
+            "line_start": 267,
+            "line_end": 300
+          }
+        ],
+        "falsifying_input": "Import a supported CPU producer and inspect whether the returned ndarray shares its storage. A materialized copy, Python list or metadata-only descriptor fails this exchange action.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W06",
+        "predicate": "Expose device identity on arrays and device selection in creation calls, with the NumPy implementation accepting CPU and rejecting unsupported devices.",
+        "source_positions": [
+          {
+            "section": "Syntax for device support",
+            "line_start": 303,
+            "line_end": 328
+          }
+        ],
+        "falsifying_input": "Create an array with an unsupported GPU device through the NumPy namespace. Silent CPU allocation despite that request, or no readable device attribute, falsifies the contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W07",
+        "predicate": "Integrate the required underlying operations: matrix stacks for missing linalg functions, keepdims on argmin/argmax, and an asarray mode that never copies.",
+        "source_positions": [
+          {
+            "section": "High-level design",
+            "line_start": 217,
+            "line_end": 222
+          }
+        ],
+        "falsifying_input": "Ask asarray never-copy conversion to transform storage that would require copying, or request argmin(..., keepdims=True). Silently copying or dropping the axis instead of preserving it fails full integration.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W08",
+        "predicate": "The new namespace must not deprecate, remove or otherwise break the existing NumPy API as its adoption mechanism.",
+        "source_positions": [
+          {
+            "section": "Backward compatibility",
+            "line_start": 165,
+            "line_end": 169
+          }
+        ],
+        "falsifying_input": "Install/use the new namespace and rerun existing main-namespace NumPy calls. Removal or changed legacy behavior caused by the new namespace falsifies the compatibility boundary.",
+        "source_id": "Q10-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q10-P01",
+        "predicate": "Accept a producer object supporting __dlpack__ and return an ndarray through a consumer import function.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 293,
+            "line_end": 297
+          }
+        ],
+        "falsifying_input": "Pass a supported producer; a result that is only a capsule, shape descriptor or serialized payload fails the requested array output.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-P02",
+        "predicate": "The imported ndarray views producer data without an exchange-time data copy.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 270,
+            "line_end": 279
+          }
+        ],
+        "falsifying_input": "Exchange a CPU array and compare backing storage; allocating a separate buffer falsifies zero-copy interchange.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-P03",
+        "predicate": "Provide the NumPy producer-side __dlpack__ export as well as consumer import, retaining a device-aware interchange protocol.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 282,
+            "line_end": 297
+          }
+        ],
+        "falsifying_input": "A consumer-only helper with no NumPy producer export, or a protocol unable to identify its supported device, is incomplete for this interchange component.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Exchange a supported CPU array between NumPy and another conforming producer/consumer without copying. That data handoff is useful before the standardized namespace, new array class and all numerical operations are complete.",
+    "remaining_adapter": "Wire the provided exchange functions into NumPy object methods and namespace entry points while respecting the provider lifetime contract. Full namespace functions, casting, indexing, devices and compatibility remain. If the adapter must implement the DLPack producer/consumer conversion or copying avoidance itself, the returned component has not completed the partial action.",
+    "same_name_wrong_actor_output_failure": "A similarly named array API page that merely lists mathematical functions, or a from_dlpack helper yielding a tensor from a different library without a NumPy ndarray consumer, does not establish the exact partial output. A serialization format called zero-copy without a live producer-to-ndarray memory view also fails.",
+    "initial_url": "https://github.com/numpy/numpy/blob/0f2b4b235eb580590eaa744bf015d51e2e675afc/doc/neps/nep-0047-array-api-standard.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-47.rst"
+  },
+  "candidates": [
+    {
+      "candidate_token": "Kd9932dd6d1",
+      "name": "array-api-strict",
+      "proposed_use": "Use the minimal NumPy-backed array namespace as a test implementation for downstream portable array operations.",
+      "citations": [
+        {
+          "url": "https://data-apis.org/array-api-strict/",
+          "section": "Purpose/version L13–19; strict API and array behavior L58–72; Caveats L73–80",
+          "evidence_ids": [
+            "Eacdfae1327bb572c"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_token": "K29fe78f3c6",
+      "name": "NumPy DLPack import/export",
+      "proposed_use": "Exchange a supported CPU array between NumPy and another DLPack library without copying; request copy=False on the NumPy consumer.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+          "section": "numpy.from_dlpack contract, parameters and ndarray return L97–121; example L133–140",
+          "evidence_ids": [
+            "Eb3ab8a1b74799214"
+          ]
+        },
+        {
+          "url": "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs",
+          "section": "The DLPack Protocol L109–115; Example: DLPack L277–338",
+          "evidence_ids": [
+            "E644df4baa58a773a"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "E0af593325af01777",
+      "original_url": "https://cache-docs.scipy.org/doc/scipy/dev/api-dev/array_api.html",
+      "file": "judging/evidence/E0af593325af01777.json"
+    },
+    {
+      "evidence_id": "E644df4baa58a773a",
+      "original_url": "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs",
+      "file": "judging/evidence/E644df4baa58a773a.json"
+    },
+    {
+      "evidence_id": "E896cbbdf11fcf5ed",
+      "original_url": "https://data-apis.org/array-api/2024.12/design_topics/data_interchange.html",
+      "file": "judging/evidence/E896cbbdf11fcf5ed.json"
+    },
+    {
+      "evidence_id": "Eacdfae1327bb572c",
+      "original_url": "https://data-apis.org/array-api-strict/",
+      "file": "judging/evidence/Eacdfae1327bb572c.json"
+    },
+    {
+      "evidence_id": "Eb3ab8a1b74799214",
+      "original_url": "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+      "file": "judging/evidence/Eb3ab8a1b74799214.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

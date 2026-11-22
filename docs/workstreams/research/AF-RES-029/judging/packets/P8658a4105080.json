@@ -1,0 +1,391 @@
+{
+  "packet_id": "P8658a4105080",
+  "question": {
+    "id": "Q11",
+    "ledger": "numpy",
+    "scope": "whole",
+    "title": "NEP 55 — Add a UTF-8 Variable-Width String DType to NumPy",
+    "caller": {
+      "text": "NumPy users and downstream libraries currently using object string arrays, including Pandas, scikit-learn, h5py and PyTables.",
+      "source_positions": [
+        {
+          "section": "Usage and Impact",
+          "line_start": 176,
+          "line_end": 193
+        }
+      ]
+    },
+    "input": {
+      "text": "N-dimensional arrays or array-like data of arbitrarily sized Python strings; optional user-provided missing sentinel and coerce flag; numeric/other inputs may be converted to strings by default or rejected in strict mode.",
+      "source_positions": [
+        {
+          "section": "Python API",
+          "line_start": 331,
+          "line_end": 370
+        },
+        {
+          "section": "Missing data support",
+          "line_start": 498,
+          "line_end": 523
+        },
+        {
+          "section": "Coercing non-strings",
+          "line_start": 610,
+          "line_end": 628
+        }
+      ]
+    },
+    "output": {
+      "text": "A first-class NumPy StringDType array backed by variable-width UTF-8 storage, yielding Python str scalars and supporting mutations, vector operations and serialization with the specified missing-data behavior.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 16,
+          "line_end": 29
+        },
+        {
+          "section": "Python API",
+          "line_start": 331,
+          "line_end": 364
+        },
+        {
+          "section": "Detailed description",
+          "line_start": 295,
+          "line_end": 307
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "out_of_scope",
+        "text": "Do not change ordinary dtype inference for strings; no new built-in missing sentinel, unknown-encoding memory-map dtype, generic bytes fix or fast SIMD string implementation is required.",
+        "source_positions": [
+          {
+            "section": "Proposed work",
+            "line_start": 144,
+            "line_end": 171
+          },
+          {
+            "section": "Backward compatibility",
+            "line_start": 285,
+            "line_end": 290
+          }
+        ]
+      },
+      {
+        "kind": "environment",
+        "text": "Target integration is NumPy 2.0 but the new DType and file format can slip to 2.1. The initial external prototype requires NUMPY_EXPERIMENTAL_DTYPE_API. These are initial proposal constraints, not current-environment claims.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 722,
+            "line_end": 734
+          },
+          {
+            "section": "Implementation",
+            "line_start": 778,
+            "line_end": 782
+          }
+        ]
+      },
+      {
+        "kind": "unsupported_interface",
+        "text": "Python buffer protocol and idiomatic Cython typed memoryviews are explicitly unsupported for this layout without future changes.",
+        "source_positions": [
+          {
+            "section": "Cython Support and the Buffer Protocol",
+            "line_start": 480,
+            "line_end": 493
+          }
+        ]
+      },
+      {
+        "kind": "preference",
+        "text": "Small-string optimization, a 32-bit length field and the exact np.strings rename are alternatives or future optimizations, not mandatory gates. Locale-aware ordering, case folding and normalization are future work.",
+        "source_positions": [
+          {
+            "section": "Memory layout",
+            "line_start": 423,
+            "line_end": 435
+          },
+          {
+            "section": "Casts and ufuncs",
+            "line_start": 638,
+            "line_end": 642
+          },
+          {
+            "section": "np.strings namespace",
+            "line_start": 667,
+            "line_end": 670
+          }
+        ]
+      },
+      {
+        "kind": "performance_not_threshold",
+        "text": "Preliminary prototype benchmark numbers are reported by the author; they do not define a required speedup. Arbitrary missing sentinels may require holding the GIL while sorting.",
+        "source_positions": [
+          {
+            "section": "Performance",
+            "line_start": 195,
+            "line_end": 283
+          },
+          {
+            "section": "Other Sentinels",
+            "line_start": 579,
+            "line_end": 590
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q11-W01",
+        "predicate": "Provide a first-class NumPy variable-width UTF-8 string DType with no per-array maximum string-length parameter and Python str scalar behavior, while leaving ordinary string inference unchanged.",
+        "source_positions": [
+          {
+            "section": "Abstract; Python API; Backward compatibility",
+            "line_start": 16,
+            "line_end": 29
+          },
+          {
+            "section": "Python API",
+            "line_start": 331,
+            "line_end": 364
+          },
+          {
+            "section": "Backward compatibility",
+            "line_start": 285,
+            "line_end": 290
+          }
+        ],
+        "falsifying_input": "Construct a multidimensional array containing \"a\", \"é\" and a much longer later element, then extract an item. Truncation, an object-only container, fixed maximum width, or changing np.array([\"a\"]) inference falsifies full integration.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W02",
+        "predicate": "Support default non-string-to-string coercion and a coerce=False mode that rejects non-string data during array creation.",
+        "source_positions": [
+          {
+            "section": "Coercing non-strings",
+            "line_start": 607,
+            "line_end": 628
+          }
+        ],
+        "falsifying_input": "Create StringDType(coerce=False) from [\"x\", 7]. Silently stringifying 7, or requiring a separate caller validation pass because the DType does not enforce the rule, falsifies this contract.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W03",
+        "predicate": "Accept user-provided missing sentinels with the proposed categories: NaN-like propagation and sorting-last behavior, string sentinels treated as strings, and errors for unsupported-object comparisons.",
+        "source_positions": [
+          {
+            "section": "Missing data support",
+            "line_start": 495,
+            "line_end": 590
+          }
+        ],
+        "falsifying_input": "Create an array with na_object=np.nan and add/sort it; losing the sentinel or sorting it as an ordinary string fails. With na_object=None, silently comparing/sorting it as a string also fails.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W04",
+        "predicate": "Provide datatype-managed variable-width UTF-8 storage and a supported C interface for allocation, copying and freeing, so downstream code can use string-array data without reducing it to generic Python-object references.",
+        "source_positions": [
+          {
+            "section": "Proposed work",
+            "line_start": 124,
+            "line_end": 142
+          },
+          {
+            "section": "Memory layout and Managing Heap Allocations",
+            "line_start": 383,
+            "line_end": 421
+          }
+        ],
+        "falsifying_input": "A downstream C operation needs supported access to the typed string buffers. A generic Python-object array with no datatype-managed string storage or C allocation/access interface fails; a safe alternative allocator is not excluded solely for its layout.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W05",
+        "predicate": "Support in-place string mutation, including length growth, without data races or use-after-free within the advertised concurrent-access contract.",
+        "source_positions": [
+          {
+            "section": "Mutation and Thread Safety",
+            "line_start": 437,
+            "line_end": 478
+          }
+        ],
+        "falsifying_input": "Enlarge a string while another thread accesses it under the implementation's documented supported concurrency contract. A use-after-free or data race, or forbidding all element mutation, fails the outcome; a different safe synchronization scheme does not.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W06",
+        "predicate": "Provide round-trip casts to built-in dtypes, comparisons in Unicode-code-point order, string add, string/integer multiply, isnan, and rejection of binary operations between unequal StringDType parameterizations.",
+        "source_positions": [
+          {
+            "section": "Casts, ufunc support, and string manipulation functions",
+            "line_start": 630,
+            "line_end": 648
+          }
+        ],
+        "falsifying_input": "Concatenate two string arrays or call isnan on a NaN sentinel; absent ufunc dispatch fails. Combining unequal na_object/coerce descriptors without the specified error also fails.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W07",
+        "predicate": "Support lossless NumPy npy/npz serialization of variable-width string data without requiring pickle, and support pickling/unpickling when requested.",
+        "source_positions": [
+          {
+            "section": "Proposed work",
+            "line_start": 141,
+            "line_end": 142
+          },
+          {
+            "section": "Serialization",
+            "line_start": 672,
+            "line_end": 695
+          }
+        ],
+        "falsifying_input": "Save/reload a variable-width string array with long and non-ASCII elements under allow_pickle=False. Refusal or string loss fails; a supported safe format encoding need not use the exact initially proposed version-4 sidecar header.",
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-W08",
+        "predicate": "Integrate the new DType with supported NumPy array functionality and string manipulation operations, including advanced indexing and the Python/C DType interfaces.",
+        "source_positions": [
+          {
+            "section": "Usage and Impact; Python API; Implementation",
+            "line_start": 176,
+            "line_end": 193
+          },
+          {
+            "section": "Python API",
+            "line_start": 309,
+            "line_end": 376
+          },
+          {
+            "section": "Casts, ufuncs and string namespace",
+            "line_start": 630,
+            "line_end": 670
+          },
+          {
+            "section": "Implementation",
+            "line_start": 745,
+            "line_end": 771
+          }
+        ],
+        "falsifying_input": "Apply advanced indexing and a string uppercase operation to a multidimensional StringDType array. A standalone one-dimensional string store that cannot participate in NumPy indexing/ufunc behavior fails this subsystem requirement.",
+        "source_id": "Q11-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q11-P01",
+        "predicate": "Construct a NumPy array of variable-width UTF-8 strings of unequal lengths without a maximum-length scan or truncation, retaining the first-class string dtype.",
+        "source_positions": [
+          {
+            "section": "Problems with Fixed-Width Strings; Python API",
+            "line_start": 78,
+            "line_end": 87
+          },
+          {
+            "section": "Python API",
+            "line_start": 331,
+            "line_end": 341
+          }
+        ],
+        "falsifying_input": "Construct [\"a\", \"é\", \"a much longer string\"]. A fixed-width truncated result, a required maximum-width scan, or a generic Python list fails the partial storage/construction purpose.",
+        "inherits": [
+          "Q11-W01"
+        ],
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-P02",
+        "predicate": "In strict mode reject non-string inputs during construction rather than silently coercing them or requiring a second caller-side validation pass.",
+        "source_positions": [
+          {
+            "section": "Coercing non-strings",
+            "line_start": 610,
+            "line_end": 628
+          }
+        ],
+        "falsifying_input": "Pass [\"ok\", 42] with coerce=False. A successful array containing \"42\" falsifies strict validation.",
+        "inherits": [
+          "Q11-W02"
+        ],
+        "source_id": "Q11-FIRST"
+      },
+      {
+        "id": "Q11-P03",
+        "predicate": "Return a NumPy array that supports its ordinary shape/indexing use and produces Python string scalars; a foreign scalar or one-dimensional-only container is not this output.",
+        "source_positions": [
+          {
+            "section": "Usage and Impact; Python API",
+            "line_start": 176,
+            "line_end": 193
+          },
+          {
+            "section": "Python API",
+            "line_start": 331,
+            "line_end": 364
+          }
+        ],
+        "falsifying_input": "Construct a 2-by-2 string array and select a scalar element. A foreign table-column object lacking NumPy array shape/indexing is insufficient.",
+        "inherits": [
+          "Q11-W01",
+          "Q11-W08"
+        ],
+        "source_id": "Q11-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Load and validate heterogeneous-length UTF-8 text into a typed NumPy array in one construction pass. This immediately replaces an object-array sanitization pass even before the entire allocator, missing-data matrix, serialization and string namespace migration are finished.",
+    "remaining_adapter": "Select/import the provided dtype, pass coerce=False and translate an existing array-like input boundary. Full first-design work still includes all sentinel semantics, arena/C interfaces, thread-safe mutation, casts/ufuncs and npy/npz sidecar serialization. If the adapter must implement variable-width storage or strict validation itself, partial completion is not established.",
+    "same_name_wrong_actor_output_failure": "Pandas StringDtype, an Apache Arrow string column, a TensorFlow RaggedTensor or a fixed-width NumPy Unicode dtype may share string terminology, but the partial action requires a multidimensional typed NumPy array with strict construction semantics. Converting such a foreign object to a generic object array is not the requested output.",
+    "initial_url": "https://github.com/numpy/numpy/blob/1c013e78112a94e7a2975212df2304606b0d1d1c/doc/neps/nep-0055-string_dtype.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-55.rst"
+  },
+  "candidates": [
+    {
+      "candidate_token": "Ka31a1b327f",
+      "name": "NumPy ndarray user guide",
+      "proposed_use": "Load and validate heterogeneous-length UTF-8 text into a typed NumPy array in one construction pass. This immediately replaces an object-array sanitization pass even before the entire allocator, missing-data matrix, serialization and string namespace migration are finished.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/numpy-user.pdf",
+          "section": "PDF printed pp3–11 / tool pages6–15: ndarray shape/dtype L109–138, creation L188–211, indexing L397–414",
+          "evidence_ids": [
+            "Ec335bc95110c3dd9"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_token": "Kda5971ae17",
+      "name": "NumPy variable-width string arrays",
+      "proposed_use": "Load and validate heterogeneous-length UTF-8 text into a typed NumPy array in one construction pass. This immediately replaces an object-array sanitization pass even before the entire allocator, missing-data matrix, serialization and string namespace migration are finished.",
+      "citations": [
+        {
+          "url": "https://numpy.org/devdocs/user/basics.strings.html",
+          "section": "Variable-width strings L73–89; Missing data L90–135; coercion L140–150",
+          "evidence_ids": [
+            "Eebead09b3e733d3c"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "Ec335bc95110c3dd9",
+      "original_url": "https://numpy.org/doc/stable/numpy-user.pdf",
+      "file": "judging/evidence/Ec335bc95110c3dd9.json"
+    },
+    {
+      "evidence_id": "Eebead09b3e733d3c",
+      "original_url": "https://numpy.org/devdocs/user/basics.strings.html",
+      "file": "judging/evidence/Eebead09b3e733d3c.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

@@ -1,0 +1,327 @@
+{
+  "packet_id": "Pfd4c68aa9ed3",
+  "question": {
+    "id": "Q12",
+    "ledger": "numpy",
+    "scope": "partial",
+    "title": "NEP 53 — Evolving the NumPy C-API for NumPy 2.0",
+    "caller": {
+      "text": "A downstream C/Cython extension maintainer building against NumPy headers and distributing a binary extension.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 15,
+          "line_end": 42
+        },
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 90,
+          "line_end": 107
+        }
+      ]
+    },
+    "input": {
+      "text": "Downstream extension source, newer NumPy headers and an optional NPY_TARGET_VERSION baseline such as NPY_1_22_API_VERSION; absence of the macro selects a suitably old API by default.",
+      "source_positions": [
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 93,
+          "line_end": 107
+        }
+      ]
+    },
+    "output": {
+      "text": "A binary built with the newer headers that exposes/uses only the selected compatible API surface and runs on the chosen older NumPy baseline; the wider design additionally seeks one rebuilt binary for both NumPy 1.x and 2.0.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 22,
+          "line_end": 42
+        },
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 93,
+          "line_end": 107
+        },
+        {
+          "section": "Implementation",
+          "line_start": 213,
+          "line_end": 218
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "partial_boundary",
+        "text": "The bounded action is compile-time API selection for an older baseline. NumPy 2.0 API-table translation, layout changes, downstream source edits and packaging are remaining full-design integration.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 245
+          }
+        ]
+      },
+      {
+        "kind": "out_of_scope",
+        "text": "Passing state/context for CPython subinterpreters or HPy is not part of this design. Concrete API removals are illustrative and may be reconsidered case by case.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 63,
+            "line_end": 84
+          },
+          {
+            "section": "Alternatives",
+            "line_start": 250,
+            "line_end": 257
+          }
+        ]
+      },
+      {
+        "kind": "version_branch",
+        "text": "The first design discusses NumPy 1.25 followed by 2.0; Cython 3 could hide struct-layout changes, while supporting Cython 2.x would require downstream macro/Python-object changes. Do not assume either ecosystem transition already occurred.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 33,
+            "line_end": 42
+          },
+          {
+            "section": "Impact on Cython users",
+            "line_start": 158,
+            "line_end": 175
+          }
+        ]
+      },
+      {
+        "kind": "public_date_caveat",
+        "text": "The initial text reports presentation at a 2023-04-03 planning meeting. No meeting contents or immutable first meeting design were retrieved. The recorded initial_date is the verified numbered-NEP PR creation on 2023-04-13, and both dates remain in the same sampling period.",
+        "source_positions": [
+          {
+            "section": "Discussion",
+            "line_start": 271,
+            "line_end": 277
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q12-W01",
+        "predicate": "Compile against newer NumPy while targeting an older API by default, with an explicit target-version selection mechanism and opt-in access to newer API.",
+        "source_positions": [
+          {
+            "section": "Abstract; Backwards compatible builds",
+            "line_start": 33,
+            "line_end": 42
+          },
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 107
+          }
+        ],
+        "falsifying_input": "Build an extension with newer headers and target NPY_1_22_API_VERSION. If only installing old build headers can target 1.22, the requested new-header build mechanism is absent.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W02",
+        "predicate": "Hide struct fields and API functions introduced after the selected target unless the caller opts into a newer API surface.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 218
+          }
+        ],
+        "falsifying_input": "At an old selected target, compile source that refers to a field/function introduced only after that target. If the default/old-target headers expose it as usable without opt-in, the gate is falsified.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W03",
+        "predicate": "After recompilation/adaptation against NumPy 2.0, allow one downstream binary to work with both NumPy 1.x and 2.0, rather than requiring two incompatible binary distributions.",
+        "source_positions": [
+          {
+            "section": "Abstract; End-user and packaging impact",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "End-user and packaging impact",
+            "line_start": 177,
+            "line_end": 190
+          }
+        ],
+        "falsifying_input": "Compile one downstream extension against the 2.0 design and import it under the supported 1.x and 2.0 runtimes. Failure on either solely due to the intended cross-version compatibility mechanism falsifies the full migration goal.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W04",
+        "predicate": "Newly compiled downstream extensions must reach compatible runtime implementations when the NumPy C-API/ABI evolves across the supported runtimes; the compatibility integration must not dispatch through incompatible API-table entries.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "NumPy 2 compatibility and API table changes",
+            "line_start": 227,
+            "line_end": 245
+          }
+        ],
+        "falsifying_input": "Import and execute the same rebuilt extension on supported NumPy 1.x and 2.0 runtimes after an API-table change. A call landing at an incompatible function pointer fails the outcome; a correct header-only bridge is not excluded merely for lacking a separate package.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W05",
+        "predicate": "Allow substantive NumPy C-API/ABI evolution through downstream recompilation and documented adaptation, rather than requiring all old binary layouts and exposed API entries to remain frozen indefinitely.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "Motivation and Scope",
+            "line_start": 48,
+            "line_end": 65
+          },
+          {
+            "section": "Implementation",
+            "line_start": 221,
+            "line_end": 225
+          }
+        ],
+        "falsifying_input": "Propose a supported API removal or public-structure change with a documented downstream adaptation. A design that can maintain its compatibility promise only by forbidding every such C-API/ABI change fails the evolution goal.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W06",
+        "predicate": "Manage the C-API break through explicit downstream recompilation and documented replacements/adaptation for removed or changed API, keeping large state/context rewrites outside this proposal.",
+        "source_positions": [
+          {
+            "section": "Adding state; Implementation; Backward compatibility",
+            "line_start": 67,
+            "line_end": 84
+          },
+          {
+            "section": "Implementation",
+            "line_start": 221,
+            "line_end": 225
+          },
+          {
+            "section": "Backward compatibility",
+            "line_start": 263,
+            "line_end": 268
+          }
+        ],
+        "falsifying_input": "A downstream extension using a changed/removed C-API entry must have a documented adaptation path after recompilation. Requiring every call to gain an unrelated HPy context, or no replacement guidance for a changed entry, fails the full migration boundary.",
+        "source_id": "Q12-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q12-P01",
+        "predicate": "Let the caller select the oldest supported NumPy API at compile time while using newer NumPy headers.",
+        "source_positions": [
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 104
+          }
+        ],
+        "falsifying_input": "With newer headers, request NPY_1_22_API_VERSION. Requiring a separate installation of 1.22 headers instead of honoring the target setting falsifies the partial operation.",
+        "inherits": [
+          "Q12-W01"
+        ],
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-P02",
+        "predicate": "Default to an older compatible API and hide newer fields/functions unless a newer target is selected.",
+        "source_positions": [
+          {
+            "section": "Abstract; Implementation",
+            "line_start": 33,
+            "line_end": 37
+          },
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 218
+          }
+        ],
+        "falsifying_input": "Omit the target macro and attempt to reference an API addition newer than the advertised default target; exposure without opt-in falsifies the compatibility gate.",
+        "inherits": [
+          "Q12-W01",
+          "Q12-W02"
+        ],
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-P03",
+        "predicate": "The resulting extension using only the selected API must actually be compatible with that older NumPy runtime; changing a preprocessor label alone is insufficient.",
+        "source_positions": [
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 104
+          }
+        ],
+        "falsifying_input": "Compile a source that uses only the selected baseline API with newer headers and load it on that baseline runtime. An ABI/import failure caused by the target mechanism falsifies the promised output.",
+        "inherits": [
+          "Q12-W01"
+        ],
+        "source_id": "Q12-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Build a downstream extension using current build headers while retaining an older runtime baseline. This directly removes the need to compile only against the oldest supported NumPy, even before NumPy 2.0 table/layout migration is implemented.",
+    "remaining_adapter": "Set the version macro/build flag and choose a supported baseline in the extension build. Wider 2.0 compatibility still requires descriptor access adaptation, API-table translation/import handling, recompilation and packaging. If the adapter must hide new APIs or implement binary compatibility itself, the returned item has not completed this partial action.",
+    "same_name_wrong_actor_output_failure": "CPython Py_LIMITED_API or a Python packaging requires-python marker selects a different actor/API boundary; neither proves compatibility with an older NumPy C-API. A version string printed by a build tool without controlling exported NumPy symbols or resulting binary compatibility also fails.",
+    "initial_url": "https://github.com/numpy/numpy/blob/bf0835ac5d7a7301f05706ae0d5adce191d43ec2/doc/neps/nep-0053-c-abi-evolution.md",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-53.md"
+  },
+  "candidates": [
+    {
+      "candidate_token": "Kd7af20617e",
+      "name": "NumPy NPY_TARGET_VERSION compatibility selection",
+      "proposed_use": "Compile a downstream extension with newer NumPy headers while selecting an older supported C-API baseline.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/dev/depending_on_numpy.html",
+          "section": "Build-time dependency L40–59; NumPy 2.0-specific advice and baseline example L80–123",
+          "evidence_ids": [
+            "Ebbe59c8388b26aa9"
+          ]
+        },
+        {
+          "url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+          "section": "Including and importing the C API L4533–4578; Checking the API Version L4686–4727",
+          "evidence_ids": [
+            "Edddcfc088e236c4d"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "E33935d147fcdab4f",
+      "original_url": "https://numpy.org/devdocs/reference/c-api/array.html",
+      "file": "judging/evidence/E33935d147fcdab4f.json"
+    },
+    {
+      "evidence_id": "Ebbe59c8388b26aa9",
+      "original_url": "https://numpy.org/doc/stable/dev/depending_on_numpy.html",
+      "file": "judging/evidence/Ebbe59c8388b26aa9.json"
+    },
+    {
+      "evidence_id": "Edddcfc088e236c4d",
+      "original_url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+      "file": "judging/evidence/Edddcfc088e236c4d.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

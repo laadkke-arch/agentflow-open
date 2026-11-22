@@ -1,0 +1,148 @@
+{
+  "started_utc": "2026-11-22T08:04:56.221Z",
+  "prior_questions": [
+    "Q01"
+  ],
+  "candidates": [],
+  "sources": [
+    {
+      "source_id": "GO-Q03-INITIAL",
+      "kind": "frozen_initial_design",
+      "publisher": "golang/go issue author",
+      "original_url": "https://github.com/golang/go/issues/70887",
+      "version_date": "GitHub IssuesEvent 44884695587 action=opened; archive generation 1734473127936128",
+      "checked_utc": "2026-11-22T08:06:05.335Z",
+      "directly_read_sections": [
+        "Named initial_text_file read in full; Q03-S1 through Q03-S3"
+      ],
+      "verified_finding": "The request changes the concurrent-map-write detector branch itself to a recoverable panic.",
+      "limitations": "No current proposal body or later comments read.",
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "frozen_input",
+      "receipt": "streams/go/bodies/70887-initial.md",
+      "duplicate_group": "go-70887-initial",
+      "counted_eligibility": true,
+      "returned_evidence": false
+    },
+    {
+      "source_id": "Q03-C-S1",
+      "kind": "supplier_runtime_manual",
+      "publisher": "Go Authors",
+      "original_url": "https://go.googlesource.com/go/%2B/917b60b4944c4a7c764d64f3973d2588ed36f8e8/src/runtime/HACKING.md",
+      "version_date": "Go commit 917b60b4944c4a7c764d64f3973d2588ed36f8e8",
+      "checked_utc": "2026-11-22T08:06:05.335Z",
+      "directly_read_sections": [
+        "L30–60; relevant Error handling and reporting L40–46"
+      ],
+      "verified_finding": "Guidelines specify fatal for racing map writes.",
+      "limitations": "A guideline is not a detector implementation or a recovery demonstration.",
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q03/open-1.json",
+      "duplicate_group": "go-runtime-hacking",
+      "counted_eligibility": true,
+      "returned_evidence": false
+    },
+    {
+      "source_id": "Q03-C-S2",
+      "kind": "supplier_runtime_manual_mirror",
+      "publisher": "Go Authors",
+      "original_url": "https://golang.google.cn/src/runtime/HACKING",
+      "version_date": "Current official Go China source mirror; exact tag unreported",
+      "checked_utc": "2026-11-22T08:06:05.335Z",
+      "directly_read_sections": [
+        "L135–160; relevant Error handling and reporting L145–151"
+      ],
+      "verified_finding": "The official mirror also specifies fatal for racing map writes.",
+      "limitations": "Same document family as the fixed common original; not independently counted.",
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q03/open-2.json",
+      "duplicate_group": "go-runtime-hacking",
+      "counted_eligibility": false,
+      "returned_evidence": false
+    },
+    {
+      "source_id": "Q03-A-S1",
+      "kind": "supplier_implementation",
+      "publisher": "Go Authors",
+      "original_url": "https://go.dev/src/internal/runtime/maps/runtime_fast64.go",
+      "version_date": "Current go.dev source; immutable commit/tag not supplied",
+      "checked_utc": "2026-11-22T08:06:05.335Z",
+      "directly_read_sections": [
+        "Tool L289–337 (source code lines181–229)",
+        "Tool L426–431 (source code lines318–323)",
+        "Tool L507–550 (source code lines399–442)"
+      ],
+      "verified_finding": "runtime_mapassign_fast64 invokes fatal on the detected writing overlap; panic(errNilAssign) is confined to the nil-map case.",
+      "limitations": "No recoverable detector-to-signal path was found in the delivered branch; no program execution or historical availability test.",
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q03/open-1.json",
+      "duplicate_group": "go-maps-runtime-fast64",
+      "counted_eligibility": true,
+      "returned_evidence": false
+    },
+    {
+      "source_id": "Q03-A-S2",
+      "kind": "supplier_implementation",
+      "publisher": "Go Authors",
+      "original_url": "https://github.com/golang/go/blob/master/src/internal/runtime/maps/runtime.go",
+      "version_date": "master; exact commit not supplied by delivered excerpt",
+      "checked_utc": "2026-11-22T08:06:05.335Z",
+      "directly_read_sections": [
+        "Tool L1126–1206, runtime_mapassign entry and small-map path"
+      ],
+      "verified_finding": "The generic assignment implementation likewise calls fatal at writing overlap and after a failed writing-state check.",
+      "limitations": "Only delivered source excerpt read; no catch test and no assertion about unreturned file lines.",
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q03/open-2.json",
+      "duplicate_group": "go-maps-runtime",
+      "counted_eligibility": true,
+      "returned_evidence": false
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "prior_questions": [
+        "Q01"
+      ],
+      "description": "Worker retains earlier Route A observations and the six authorized odd input packets; no Route B results supplied."
+    },
+    {
+      "question_id": "Q03",
+      "route": "A",
+      "stage": "search",
+      "kind": "later_behavior_snippets",
+      "description": "Current-runtime source snippets and current third-party posts described fatal/recover behavior. They remained discovery-only, and frozen requirements and literal queries were unchanged."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q03/open-1.json",
+      "read_sections": [
+        "L30–60"
+      ],
+      "cited": false
+    },
+    {
+      "receipt": "common/Q03/open-2.json",
+      "read_sections": [
+        "L135–160"
+      ],
+      "cited": false
+    }
+  ],
+  "selection_rationale": "The fast64 assignment implementation from search 1 provided rank 9 was selected first for the exact frozen actor. The generic assignment implementation at rank 3 was the next most directly relevant original. The rank-1 map container page was broader; generic recovery wrappers, concurrent-safe replacement maps and secondary tutorials do not supply the requested detector-to-catchable-signal path. Common runtime guidance was locally reread.",
+  "empty_resource_explanation": "Empty final array: the directly read detector implementations call fatal at the relevant branch. A generic panic/recover helper would leave the adapter implementing the core action. Two body calls remain unused; no extra search or rescue open."
+}

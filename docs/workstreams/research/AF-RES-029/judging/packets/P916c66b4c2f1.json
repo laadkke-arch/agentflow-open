@@ -1,0 +1,164 @@
+{
+  "packet_id": "P916c66b4c2f1",
+  "question": {
+    "id": "Q01",
+    "ledger": "go",
+    "scope": "partial",
+    "title": "proposal: Go 2: Array or variadic destructuring to discrete variables",
+    "caller": "A Go developer processing optional heterogeneous arguments in NewExtParam(value interface{}, opts ...interface{}).",
+    "input": "An array or variadic sequence; concrete initial example is opts ...interface{}, plus an ordered list of destination variables.",
+    "output": "Separate destination variables receive available sequence values from left to right; destinations past the input length receive a null/nil value.",
+    "limits": [
+      "Only the initial heterogeneous options example and stated array/variadic boundary are fixed. The text does not resolve the static type of a missing value for every possible typed array.",
+      "Extra source elements do not require extra destinations; only specified destinations are assigned.",
+      "The long strconv/type-switch example illustrates existing caller processing, not a requirement that the supplier perform numeric parsing.",
+      "No speed target, concurrency guarantee, general pattern matching or generics requirement is supplied."
+    ],
+    "whole_must": [
+      {
+        "predicate_id": "Q01-W1",
+        "requirement": "Provide a Go-level array/variadic destructuring assignment that binds separate destination variables without caller-written per-element length/index checks.",
+        "source_sections": [
+          "Q01-S1",
+          "Q01-S2"
+        ],
+        "falsifying_input": "In a Go function with opts=[]interface{}{7,\"x\"}, attempting a three-variable destructuring still requires the caller to implement len(opts) checks and opts[i] extraction.",
+        "id": "Q01-W1",
+        "predicate": "Provide a Go-level array/variadic destructuring assignment that binds separate destination variables without caller-written per-element length/index checks."
+      },
+      {
+        "predicate_id": "Q01-W2",
+        "requirement": "Assign the supplied destinations in left-to-right source order, and do not require more destinations than the caller specified.",
+        "source_sections": [
+          "Q01-S3"
+        ],
+        "falsifying_input": "Input [10,20,30] with two destinations produces (20,10), rejects the unused third value, or requires a third destination.",
+        "id": "Q01-W2",
+        "predicate": "Assign the supplied destinations in left-to-right source order, and do not require more destinations than the caller specified."
+      },
+      {
+        "predicate_id": "Q01-W3",
+        "requirement": "For the heterogeneous options boundary, produce nil/null for a destination beyond the source length so the caller can test it.",
+        "source_sections": [
+          "Q01-S2",
+          "Q01-S3"
+        ],
+        "falsifying_input": "Input [10] with three interface-valued destinations panics, rejects the arity mismatch, or yields non-null fabricated values in positions two and three.",
+        "id": "Q01-W3",
+        "predicate": "For the heterogeneous options boundary, produce nil/null for a destination beyond the source length so the caller can test it."
+      }
+    ],
+    "partial_must": [
+      {
+        "predicate_id": "Q01-P1",
+        "requirement": "Extract an ordered fixed-width group of values from an array/variadic-like sequence without the caller implementing individual element extraction.",
+        "source_sections": [
+          "Q01-S1",
+          "Q01-S2",
+          "Q01-S3"
+        ],
+        "falsifying_input": "For [10,20,30] and width two, the component only exposes raw indexing and requires the adapter to implement the extraction loop.",
+        "inherited_from_whole": [
+          "Q01-W1",
+          "Q01-W2"
+        ],
+        "id": "Q01-P1",
+        "predicate": "Extract an ordered fixed-width group of values from an array/variadic-like sequence without the caller implementing individual element extraction."
+      },
+      {
+        "predicate_id": "Q01-P2",
+        "requirement": "Preserve left-to-right values, truncate unused trailing source positions, and pad missing heterogeneous positions with null/nil.",
+        "source_sections": [
+          "Q01-S2",
+          "Q01-S3"
+        ],
+        "falsifying_input": "For input [10] and width three the result is not (10,null,null), or for [10,20,30] and width two it rejects rather than returning the first two values.",
+        "inherited_from_whole": [
+          "Q01-W2",
+          "Q01-W3"
+        ],
+        "id": "Q01-P2",
+        "predicate": "Preserve left-to-right values, truncate unused trailing source positions, and pad missing heterogeneous positions with null/nil."
+      }
+    ],
+    "independent_partial_purpose": "Prepare a fixed-width, null-padded tuple of optional argument values for validation before Go language syntax is integrated.",
+    "independently_useful_next_action": "The caller can check the three extracted option positions for nil and perform the existing per-type processing.",
+    "remaining_adapter": "Bind the prepared positions to Go variables and integrate any new compiler syntax/type rules; retain caller-specific numeric/type conversions. An adapter that implements sequence extraction or missing-value padding itself does not establish partial completion.",
+    "preferences": [
+      "The example syntax is sz, sc, pr := opts...; punctuation is an illustrated syntax preference, while the assignment semantics are mandatory.",
+      "Less code clutter and easier understanding are motivations, not measured performance predicates."
+    ],
+    "original_named_families": [
+      "Go",
+      "PHP",
+      "VB",
+      "C#"
+    ],
+    "original_named_components": [
+      "NewExtParam",
+      "opts ...interface{}",
+      "strconv.ParseInt",
+      "type assertion",
+      "map second result",
+      "PHP list"
+    ],
+    "template_named_components": [
+      "vet",
+      "gopls",
+      "gofmt",
+      "goimports"
+    ],
+    "named_component_roles": {
+      "PHP list": "Explicit existing analogy for the same value-retrieval use; rediscovery is not a new target.",
+      "VB/C#": "Author-background knowledge, not supplier requirements.",
+      "strconv.ParseInt": "Existing downstream type conversion, outside the destructuring action."
+    },
+    "same_name_wrong_actor_output_failure": "A list API that appends values, enumerates variable names, or returns a string representation does not perform ordered destructuring with missing-position nulls, even if it is named list/unpack.",
+    "initial_url": "https://github.com/golang/go/issues/56094",
+    "fixed_version": "GitHub IssuesEvent 24459672617 action=opened; archive generation 1665137126539782",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/go/bodies/56094-initial.md"
+  },
+  "candidates": [
+    {
+      "candidate_token": "Kfff4dfdc3d",
+      "name": "JavaScript destructuring",
+      "proposed_use": "Prepare a fixed-width, null-padded tuple of optional argument values for validation before Go language syntax is integrated.",
+      "citations": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring",
+          "section": "Description and defaults L241–373; Array destructuring L376–400, L437–566",
+          "evidence_ids": [
+            "E513900890968df8c"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_token": "K09cbe24cf2",
+      "name": "PHP array destructuring",
+      "proposed_use": "Prepare a fixed-width, null-padded tuple of optional argument values for validation before Go language syntax is integrated.",
+      "citations": [
+        {
+          "url": "https://www.php.net/manual/en/language.types.array.php",
+          "section": "Array destructuring L472–555; array-key behavior L377–382",
+          "evidence_ids": [
+            "E489b7d69fc2ceb41"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "E489b7d69fc2ceb41",
+      "original_url": "https://www.php.net/manual/en/language.types.array.php",
+      "file": "judging/evidence/E489b7d69fc2ceb41.json"
+    },
+    {
+      "evidence_id": "E513900890968df8c",
+      "original_url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring",
+      "file": "judging/evidence/E513900890968df8c.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

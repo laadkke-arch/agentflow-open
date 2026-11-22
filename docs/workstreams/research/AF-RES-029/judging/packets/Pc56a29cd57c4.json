@@ -1,0 +1,160 @@
+{
+  "packet_id": "Pc56a29cd57c4",
+  "question": {
+    "id": "Q03",
+    "ledger": "go",
+    "scope": "partial",
+    "title": "proposal: Change concurrent map writes from fatal to panic",
+    "caller": "A Go runtime map-assignment path and an application/API request handler that has a recovery boundary.",
+    "input": "A map write attempted while the runtime concurrent-write detection condition is true; initial code uses h.flags & hashWriting in mapassign_fast64.",
+    "output": "A catchable panic for the detected concurrent map write, enabling a recovery boundary to contain the failure and respond to the affected request instead of immediately terminating the service.",
+    "limits": [
+      "The author acknowledges correct map access should use a mutex; this request concerns handling a detected misuse, not making unsynchronized maps safe.",
+      "The first text does not establish memory safety or map integrity after a race. Such guarantees must not be inferred.",
+      "The cited 90% preference is the proposer’s claim, not a measured acceptance criterion.",
+      "No behavior is specified for concurrent races the existing detector misses."
+    ],
+    "whole_must": [
+      {
+        "predicate_id": "Q03-W1",
+        "requirement": "At the runtime concurrent-map-write detection branch, signal panic instead of an uncatchable fatal termination.",
+        "source_sections": [
+          "Q03-S1"
+        ],
+        "falsifying_input": "The hashWriting overlap branch still calls fatal, while only nil-map writes or unrelated application errors panic.",
+        "id": "Q03-W1",
+        "predicate": "At the runtime concurrent-map-write detection branch, signal panic instead of an uncatchable fatal termination."
+      },
+      {
+        "predicate_id": "Q03-W2",
+        "requirement": "Allow a valid recovery boundary to catch that specific concurrent-map-write panic and keep the process available.",
+        "source_sections": [
+          "Q03-S2",
+          "Q03-S3"
+        ],
+        "falsifying_input": "A request handler with an applicable recover boundary still loses the whole service when the detector reports concurrent map writes.",
+        "id": "Q03-W2",
+        "predicate": "Allow a valid recovery boundary to catch that specific concurrent-map-write panic and keep the process available."
+      },
+      {
+        "predicate_id": "Q03-W3",
+        "requirement": "Preserve a failing/terminating path for code without a recovery boundary while permitting the recovering API caller to produce an error response such as HTTP 500.",
+        "source_sections": [
+          "Q03-S2",
+          "Q03-S3"
+        ],
+        "falsifying_input": "Without recover the invalid write silently succeeds, or with recover the API cannot finish the affected request with an error response.",
+        "id": "Q03-W3",
+        "predicate": "Preserve a failing/terminating path for code without a recovery boundary while permitting the recovering API caller to produce an error response such as HTTP 500."
+      }
+    ],
+    "partial_must": [
+      {
+        "predicate_id": "Q03-P1",
+        "requirement": "Provide the actual map-detector-to-catchable-signal path for detected overlapping writes, rather than a generic panic helper outside the detector.",
+        "source_sections": [
+          "Q03-S1"
+        ],
+        "falsifying_input": "The component only offers recover() or an exception wrapper; Go’s concurrent-map-write branch still terminates via fatal.",
+        "inherited_from_whole": [
+          "Q03-W1"
+        ],
+        "id": "Q03-P1",
+        "predicate": "Provide the actual map-detector-to-catchable-signal path for detected overlapping writes, rather than a generic panic helper outside the detector."
+      },
+      {
+        "predicate_id": "Q03-P2",
+        "requirement": "Demonstrate that the resulting signal can be caught at an appropriate recovery boundary without mandatory immediate process termination.",
+        "source_sections": [
+          "Q03-S2",
+          "Q03-S3"
+        ],
+        "falsifying_input": "The component reports a concurrent-write error by process exit or an uncatchable runtime failure.",
+        "inherited_from_whole": [
+          "Q03-W2"
+        ],
+        "id": "Q03-P2",
+        "predicate": "Demonstrate that the resulting signal can be caught at an appropriate recovery boundary without mandatory immediate process termination."
+      }
+    ],
+    "independent_partial_purpose": "Contain the detected map-write failure as a recoverable runtime signal before adding request-specific response handling.",
+    "independently_useful_next_action": "The application recovery boundary can log/translate the caught signal and finish the affected request with an error response.",
+    "remaining_adapter": "Integrate the verified detector behavior into the target Go runtime/version and wire the application recovery boundary to request cleanup/HTTP error reporting. A generic wrapper that leaves fatal unchanged forces the adapter to implement the core action and fails partial completion.",
+    "preferences": [
+      "HTTP 500 is the stated example of request containment, not a requirement for a particular web framework.",
+      "No requirement to restore a raced map to a valid state is invented."
+    ],
+    "original_named_families": [
+      "Go runtime",
+      "Go map implementation"
+    ],
+    "original_named_components": [
+      "mapassign_fast64",
+      "maptype",
+      "hmap",
+      "h.flags & hashWriting",
+      "fatal",
+      "panic",
+      "plainError",
+      "recover",
+      "mutex",
+      "HTTP 500",
+      "raceenabled",
+      "getcallerpc",
+      "racewritepc",
+      "abi.FuncPCABIInternal",
+      "unsafe.Pointer"
+    ],
+    "named_component_roles": {
+      "panic/recover": "Already explicit mechanism; merely rediscovering generic panic/recover documentation is not a new implementation of the requested map-detector behavior.",
+      "mapassign_fast64": "Exact actor shown in the first draft; generic application error wrappers do not replace this runtime branch."
+    },
+    "same_name_wrong_actor_output_failure": "A function named Panic or Recover operating on ordinary returned errors or nil-map writes has the wrong triggering input/actor if concurrent-map-write detection still invokes fatal.",
+    "initial_url": "https://github.com/golang/go/issues/70887",
+    "fixed_version": "GitHub IssuesEvent 44884695587 action=opened; archive generation 1734473127936128",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/go/bodies/70887-initial.md"
+  },
+  "candidates": [
+    {
+      "candidate_token": "K406386a37b",
+      "name": "Go runtime error handling, current mirror",
+      "proposed_use": "Contain the detected map-write failure as a recoverable runtime signal before adding request-specific response handling.",
+      "citations": [
+        {
+          "url": "https://golang.google.cn/src/runtime/HACKING",
+          "section": "Error handling and reporting L145–151",
+          "evidence_ids": [
+            "E71bccad1e99709e2"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_token": "Kb7c3807f00",
+      "name": "Go runtime error handling",
+      "proposed_use": "Contain the detected map-write failure as a recoverable runtime signal before adding request-specific response handling.",
+      "citations": [
+        {
+          "url": "https://go.googlesource.com/go/%2B/917b60b4944c4a7c764d64f3973d2588ed36f8e8/src/runtime/HACKING.md",
+          "section": "Error handling and reporting L40–46",
+          "evidence_ids": [
+            "E7c1c747b9fb98739"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "E71bccad1e99709e2",
+      "original_url": "https://golang.google.cn/src/runtime/HACKING",
+      "file": "judging/evidence/E71bccad1e99709e2.json"
+    },
+    {
+      "evidence_id": "E7c1c747b9fb98739",
+      "original_url": "https://go.googlesource.com/go/%2B/917b60b4944c4a7c764d64f3973d2588ed36f8e8/src/runtime/HACKING.md",
+      "file": "judging/evidence/E7c1c747b9fb98739.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

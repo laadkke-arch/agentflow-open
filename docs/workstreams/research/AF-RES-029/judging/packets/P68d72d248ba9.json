@@ -1,0 +1,277 @@
+{
+  "packet_id": "P68d72d248ba9",
+  "question": {
+    "id": "Q07",
+    "ledger": "python",
+    "scope": "partial",
+    "title": "Documentation Metadata in Typing",
+    "caller": [
+      "Python library authors attaching documentation to annotated symbols",
+      "Runtime introspection code and static analysis/editor/documentation tools"
+    ],
+    "input": [
+      "A documentation string, including a possible multiline string",
+      "A top-level Annotated type for a class attribute, function/method parameter, return value, or variable",
+      "For conforming static tooling, a statically accessible value"
+    ],
+    "output": [
+      "A runtime-checkable DocInfo-style object whose documentation attribute retains the supplied string",
+      "Documentation bound to the correct annotated symbol",
+      "Tool-interpreted multiline documentation cleaned like inspect.cleandoc()"
+    ],
+    "limits": [
+      "First file/header says PEP 755; official PR rename provenance maps this same event to canonical PEP 727. Do not conflate it with the later independent PEP numbered 755.",
+      "The first API is doc(documentation) returning DocInfo; later names are not silently substituted.",
+      "Dynamic expressions may be omitted by static tools; aliases outside the final annotation, nested type-parameter/union documentation, and duplicate doc entries are not required.",
+      "Markup choice is deferred; no Markdown or reST parser requirement is invented."
+    ],
+    "whole_must": [
+      {
+        "id": "Q07-W1",
+        "predicate": "A callable taking the single documentation string returns a runtime-checkable metadata object whose documentation attribute contains the exact same string.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/typing.doc",
+            "lines": [
+              83,
+              151
+            ],
+            "excerpt": "The main proposal is to have a new function ``doc()`` in the ``typing`` module.\nEven though this is not strictly related to the type annotations, it's expected\nto go in ``Annotated`` type annotations, and to interact with type annotations.\n\nThere's also the particular benefit that it could be implemented in the\n``typing_extensions`` package to have support for older versions of Python and\nearly adopters of this proposal.\n\nThis ``doc()`` function would receive one single parameter ``documentation`` with\na documentation string.\n\nThis string could be a multi-line string, in which case, when extracted by tools,\nshould be interpreted cleaning up indentation as if using ``inspect.cleandoc()``,\nthe same procedure used for docstrings.\n\nThis string could probably contain markup, like Markdown or reST. As that could\nbe highly debated, that decision is left for a future proposal, to focus here\non the main functionality.\n\nThis specification targets static analysis tools and editors, and as such, the\nvalue passed to ``doc()`` should allow static evaluation and analysis. If a\ndeveloper passes as the value something that requires runtime execution\n(e.g. a function call) the behavior of static analysis tools is unspecified\nand they could omit it from their process and results. For static analysis\ntools to be conformant with this specification they need only to support\nstatically accessible values.\n\nAn example documenting the attributes of a class, or in this case, the keys\nof a ``TypedDict``, could look like this:\n\n.. code-block::\n\n    from typing import Annotated, TypedDict, NotRequired, doc\n\n\n    class User(TypedDict):\n        firstname: Annotated[str, doc(\"The user's first name\")]\n        lastname: Annotated[str, doc(\"The user's last name\")]\n\n\nAn example documenting the parameters of a function could look like this:\n\n.. code-block::\n\n    from typing import Annotated, doc\n\n\n    def create_user(\n        lastname: Annotated[str, doc(\"The **last name** of the newly created user\")],\n        firstname: Annotated[str | None, doc(\"The user's **first name**\")] = None,\n    ) -> Annotated[User, doc(\"The created user after saving in the database\")]:\n        \"\"\"\n        Create a new user in the system, it needs the database connection to be already\n        initialized.\n        \"\"\"\n        pass\n\n\nThe return of the ``doc()`` function is an instance of a class that can be checked\nand used at runtime, defined as:\n\n.. code-block::\n\n    class DocInfo:\n        def __init__(self, documentation: str):\n            self.documentation = documentation\n\n...where the attribute ``documentation`` contains the same value string passed to\nthe function ``doc()``."
+          }
+        ],
+        "falsifying_input": "Construct documentation metadata from an indented multiline string, inspect its type and documentation attribute at runtime.",
+        "failure_condition": "It returns only rendered HTML, drops the raw string, or has no runtime-inspectable documentation value."
+      },
+      {
+        "id": "Q07-W2",
+        "predicate": "Documentation attaches through Annotated to the intended top-level class attribute, parameter, return value, or variable rather than requiring a separate docstring micro-language.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Abstract; Specification/typing.doc",
+            "lines": [
+              18,
+              20
+            ],
+            "excerpt": "This document proposes a way to complement docstrings to add additional documentation\nto Python symbols using type annotations with ``Annotated`` (in class attributes,\nfunction and method parameters, return values, and variables)."
+          }
+        ],
+        "falsifying_input": "Annotate two neighboring parameters and a return with distinct documentation strings, then identify the documentation for each.",
+        "failure_condition": "The strings are assigned to the wrong symbol or require the caller to build a custom docstring parser."
+      },
+      {
+        "id": "Q07-W3",
+        "predicate": "Static analysis/editor support handles statically accessible documentation values without requiring execution of arbitrary runtime expressions.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/typing.doc",
+            "lines": [
+              102,
+              108
+            ],
+            "excerpt": "This specification targets static analysis tools and editors, and as such, the\nvalue passed to ``doc()`` should allow static evaluation and analysis. If a\ndeveloper passes as the value something that requires runtime execution\n(e.g. a function call) the behavior of static analysis tools is unspecified\nand they could omit it from their process and results. For static analysis\ntools to be conformant with this specification they need only to support\nstatically accessible values."
+          }
+        ],
+        "falsifying_input": "Analyze an annotation with a literal documentation string while the surrounding function or module has effects that must not be executed merely to obtain the literal.",
+        "failure_condition": "The tool cannot use the literal unless it executes arbitrary application code."
+      },
+      {
+        "id": "Q07-W4",
+        "predicate": "When tooling interprets multiline documentation, it cleans indentation as inspect.cleandoc() would, while the metadata object itself retains the original value.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/typing.doc",
+            "lines": [
+              91,
+              96
+            ],
+            "excerpt": "This ``doc()`` function would receive one single parameter ``documentation`` with\na documentation string.\n\nThis string could be a multi-line string, in which case, when extracted by tools,\nshould be interpreted cleaning up indentation as if using ``inspect.cleandoc()``,\nthe same procedure used for docstrings."
+          }
+        ],
+        "falsifying_input": "Provide a multiline string with a common indent and a differently indented first line, then ask the documentation tool to present it.",
+        "failure_condition": "The interpreted text retains incidental source indentation or destroys intentional relative indentation."
+      },
+      {
+        "id": "Q07-W5",
+        "predicate": "The mechanism complements existing docstrings and is opt-in for library authors.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Rationale",
+            "lines": [
+              61,
+              73
+            ],
+            "excerpt": "This proposal intends to address these shortcomings by extending and complementing the\ninformation in docstrings, keeping backwards compatibility with existing docstrings,\nand doing it in a way that leverages the Python language and structure, via type\nannotations with ``Annotated``, and a new function in ``typing``.\n\nThe reason why this would belong in the standard Python library instead of an\nexternal package is because although the implementation would be quite trivial,\nthe actual power and benefit from it would come from being a standard, so that\neditors and other tools could implement support for it.\n\nThis doesn't deprecate current usage of docstrings, it's transparent to common\ndevelopers (library users), and it's only opt-in for library authors that would\nlike to adopt it."
+          }
+        ],
+        "falsifying_input": "Use an ordinary function docstring together with an Annotated parameter carrying the new metadata.",
+        "failure_condition": "The mechanism removes/replaces the existing docstring or requires unrelated authors to adopt it."
+      },
+      {
+        "id": "Q07-W6",
+        "predicate": "For a nested Annotated example, tooling supports the outer/top-level documentation for the whole parameter; inner conditional cases remain optional.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/Nested Annotated",
+            "lines": [
+              241,
+              272
+            ],
+            "excerpt": "Nested ``Annotated``\n--------------------\n\nContinuing with the same idea above, if ``Annotated`` was used nested and used\nmultiple times in the same parameter, ``doc()`` would refer to the type it\nis annotating.\n\nSo, in an example like:\n\n.. code-block::\n\n    def hi(\n      to: Annotated[\n            Annotated[str, doc(\"A user name\")] | Annotated[list, doc(\"A list of user names\")],\n            doc(\"Who to say hi to\"),\n      ],\n    ) -> None: ...\n\n\nThe documentation for the whole parameter ``to`` would be considered to be\n\"``Who to say hi to``\".\n\nThe documentation for the case where that parameter ``to`` is specifically a ``str``\nwould be considered to be \"``A user name``\".\n\nThe documentation for the case where that parameter ``to`` is specifically a\n``list`` would be considered to be \"``A list of user names``\".\n\nImplementers would only be required to support the top level use case, where the\ndocumentation for ``to`` is considered to be \"``Who to say hi to``\".\nThey could optionally support having conditional documentation for when the type\nof the parameter passed is of one type or another, but they are not required to do so."
+          }
+        ],
+        "falsifying_input": "Use the first draft’s nested parameter whose outer documentation is Who to say hi to and whose inner cases have different text.",
+        "failure_condition": "The whole parameter receives only an inner branch’s documentation or has no outer documentation."
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q07-P1",
+        "predicate": "The provider supplies the single-string metadata carrier as a runtime-inspectable object with an unchanged documentation value.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/typing.doc",
+            "lines": [
+              141,
+              151
+            ],
+            "excerpt": "The return of the ``doc()`` function is an instance of a class that can be checked\nand used at runtime, defined as:\n\n.. code-block::\n\n    class DocInfo:\n        def __init__(self, documentation: str):\n            self.documentation = documentation\n\n...where the attribute ``documentation`` contains the same value string passed to\nthe function ``doc()``."
+          }
+        ],
+        "falsifying_input": "Construct metadata from a string containing indentation and punctuation, then read its documentation attribute.",
+        "failure_condition": "Only a formatted fragment or a modified/absent string is available.",
+        "inherited_from": [
+          "Q07-W1"
+        ]
+      },
+      {
+        "id": "Q07-P2",
+        "predicate": "The carrier can be associated with the actual top-level Annotated symbol and retrieved for that symbol without a separate documentation micro-language.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Specification/typing.doc",
+            "lines": [
+              110,
+              138
+            ],
+            "excerpt": "An example documenting the attributes of a class, or in this case, the keys\nof a ``TypedDict``, could look like this:\n\n.. code-block::\n\n    from typing import Annotated, TypedDict, NotRequired, doc\n\n\n    class User(TypedDict):\n        firstname: Annotated[str, doc(\"The user's first name\")]\n        lastname: Annotated[str, doc(\"The user's last name\")]\n\n\nAn example documenting the parameters of a function could look like this:\n\n.. code-block::\n\n    from typing import Annotated, doc\n\n\n    def create_user(\n        lastname: Annotated[str, doc(\"The **last name** of the newly created user\")],\n        firstname: Annotated[str | None, doc(\"The user's **first name**\")] = None,\n    ) -> Annotated[User, doc(\"The created user after saving in the database\")]:\n        \"\"\"\n        Create a new user in the system, it needs the database connection to be already\n        initialized.\n        \"\"\"\n        pass"
+          }
+        ],
+        "falsifying_input": "Attach first-name and last-name strings to two different annotated parameters and retrieve each.",
+        "failure_condition": "A global function docstring is returned for both, or the caller must implement the core association/parser.",
+        "inherited_from": [
+          "Q07-W2"
+        ]
+      },
+      {
+        "id": "Q07-P3",
+        "predicate": "The partial metadata operation coexists with the existing function/class docstring.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q07-first",
+            "section": "Rationale",
+            "lines": [
+              61,
+              73
+            ],
+            "excerpt": "This proposal intends to address these shortcomings by extending and complementing the\ninformation in docstrings, keeping backwards compatibility with existing docstrings,\nand doing it in a way that leverages the Python language and structure, via type\nannotations with ``Annotated``, and a new function in ``typing``.\n\nThe reason why this would belong in the standard Python library instead of an\nexternal package is because although the implementation would be quite trivial,\nthe actual power and benefit from it would come from being a standard, so that\neditors and other tools could implement support for it.\n\nThis doesn't deprecate current usage of docstrings, it's transparent to common\ndevelopers (library users), and it's only opt-in for library authors that would\nlike to adopt it."
+          }
+        ],
+        "falsifying_input": "Give a function an ordinary docstring plus one documented Annotated parameter.",
+        "failure_condition": "Adding or reading metadata destroys/replaces the docstring.",
+        "inherited_from": [
+          "Q07-W5"
+        ]
+      }
+    ],
+    "independent_partial_purpose": "Construct a runtime-inspectable documentation metadata object, attach it to one top-level Annotated symbol, and retrieve the exact original documentation string for a programmatic consistency check.",
+    "remaining_adapter": [
+      "Conforming static-analysis/editor consumption of static values",
+      "Clean multiline presentation and optional markup decisions",
+      "Support for all top-level symbol forms and the mandatory outer nested-annotation case",
+      "Standard-library naming/integration and older-version distribution",
+      "Optional aliases, union/type-parameter cases, and duplicate policy remain optional"
+    ],
+    "original_named_families": [
+      "Python typing",
+      "typing_extensions",
+      "numpy docstring style",
+      "Google docstring style",
+      "Keras docstring style",
+      "reST",
+      "Markdown",
+      "FastAPI",
+      "Typer",
+      "SQLModel",
+      "Asyncer",
+      "Pydantic",
+      "Strawberry",
+      "mkdocstrings",
+      "VS Code",
+      "PyCharm"
+    ],
+    "original_named_components": [
+      "Annotated",
+      "typing.doc()",
+      "DocInfo",
+      "documentation attribute",
+      "inspect.cleandoc()",
+      "TypedDict",
+      "NotRequired",
+      "typing.deprecated() / PEP 702",
+      "PEP 681",
+      "datetime.utcnow()",
+      "pyproject.toml",
+      "dataclass_transform",
+      "Doc (explicit alternative class name under Bike Shedding)"
+    ],
+    "same_name_wrong_actor_output_failure": {
+      "criterion": "A doc or Doc function producing prose/HTML for an entire module, or a metadata object about validation rather than the annotated symbol’s documentation string, is the wrong operation.",
+      "falsifying_input": "Attach two distinct parameter documentation strings and request only the second parameter’s runtime metadata.",
+      "wrong_output": "The result is the function docstring, a schema validation description detached from Annotated, or the first parameter’s text."
+    },
+    "initial_url": "https://github.com/python/peps/blob/03f6d6ebd28296b82dd50dae3e88678a51442604/pep-0755.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0727-03f6d6ebd282.rst"
+  },
+  "candidates": [],
+  "opened_evidence": [
+    {
+      "evidence_id": "E2dd4909b3620f031",
+      "original_url": "https://docs.python.org/3/library/typing.html",
+      "file": "judging/evidence/E2dd4909b3620f031.json"
+    },
+    {
+      "evidence_id": "E2fee27ee68bcbd0b",
+      "original_url": "https://github.com/python/cpython/blob/main/Doc/library/typing.rst?plain=1",
+      "file": "judging/evidence/E2fee27ee68bcbd0b.json"
+    },
+    {
+      "evidence_id": "E319c3bf011ca0300",
+      "original_url": "",
+      "file": "judging/evidence/E319c3bf011ca0300.json"
+    },
+    {
+      "evidence_id": "E5fb8a67dc4777184",
+      "original_url": "",
+      "file": "judging/evidence/E5fb8a67dc4777184.json"
+    },
+    {
+      "evidence_id": "Ea73465f5be3ec282",
+      "original_url": "https://docs.python.org/3/library/typing.html",
+      "file": "judging/evidence/Ea73465f5be3ec282.json"
+    },
+    {
+      "evidence_id": "Ec014f8983c210791",
+      "original_url": "https://docs.python.org/3/library/typing.html",
+      "file": "judging/evidence/Ec014f8983c210791.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

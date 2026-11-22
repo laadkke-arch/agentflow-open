@@ -1,0 +1,169 @@
+{
+  "started_utc": "2026-11-22T08:02:32.363Z",
+  "prior_questions": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "PHP array destructuring ([] / list)",
+      "proposed_use": "Use PHP's existing positional destructuring to prepare an ordered fixed-width group with ignored trailing elements and null for missing positions.",
+      "citations": [
+        {
+          "url": "https://www.php.net/manual/en/language.types.array.php",
+          "section": "Array destructuring L472–555, especially L474–485, L502–511 and L549–555; undefined array-key behavior L377–382",
+          "source_id": "Q01-C-S1"
+        }
+      ],
+      "opened_evidence": [
+        "common/Q01/open-1.json"
+      ],
+      "remaining_adapter": "Transfer values across a PHP/Go boundary and integrate Go variables or syntax; the original first text already names PHP list for this use.",
+      "limitations": "Missing keys emit warnings. The PHP construct supplies no Go-level destructuring or native heterogeneous Go binding."
+    },
+    {
+      "rank": 2,
+      "name": "JavaScript array destructuring with explicit null defaults",
+      "proposed_use": "Extract a fixed set of ordered optional values using destructuring, configuring a null default on each destination.",
+      "citations": [
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring",
+          "section": "Default value L332–348; Array destructuring L376–400; Ignoring some returned values L437–453; iteration bound L518–551",
+          "source_id": "Q01-C-S2"
+        }
+      ],
+      "opened_evidence": [
+        "common/Q01/open-2.json"
+      ],
+      "remaining_adapter": "Configure default expressions and transfer values into Go; language/compiler integration remains.",
+      "limitations": "Unconfigured missing positions yield undefined. The delivered examples establish defaults generally, not a tested Go adapter."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "GO-Q01-INITIAL",
+      "kind": "frozen_initial_design",
+      "publisher": "golang/go issue author",
+      "original_url": "https://github.com/golang/go/issues/56094",
+      "version_date": "GitHub IssuesEvent 24459672617 action=opened; archive generation 1665137126539782",
+      "checked_utc": "2026-11-22T08:04:42.302Z",
+      "directly_read_sections": [
+        "Named initial_text_file read; Q01-S1 through Q01-S4"
+      ],
+      "verified_finding": "The frozen boundary is ordered heterogeneous option extraction with nil padding.",
+      "limitations": "No later issue body or comments read.",
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "frozen_input",
+      "receipt": "streams/go/bodies/56094-initial.md",
+      "duplicate_group": "go-56094-initial",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q01-C-S1",
+      "kind": "supplier_manual",
+      "publisher": "PHP documentation",
+      "original_url": "https://www.php.net/manual/en/language.types.array.php",
+      "version_date": "Mutable PHP manual; [] since PHP 7.1; PHP 8 warning distinction",
+      "checked_utc": "2026-11-22T08:04:42.302Z",
+      "directly_read_sections": [
+        "L377–382",
+        "L472–555"
+      ],
+      "verified_finding": "Destructuring preserves positional assignment, ignores omitted destinations and produces null with warnings for missing keys.",
+      "limitations": "No native Go implementation or interop verified.",
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q01/open-1.json",
+      "duplicate_group": "php-arrays",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q01-C-S2",
+      "kind": "supplier_language_reference",
+      "publisher": "Mozilla MDN",
+      "original_url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring",
+      "version_date": "Current mutable MDN page",
+      "checked_utc": "2026-11-22T08:04:42.302Z",
+      "directly_read_sections": [
+        "L241–255",
+        "L332–348",
+        "L376–400",
+        "L437–453",
+        "L518–551"
+      ],
+      "verified_finding": "Destructuring extracts ordered values and ignores excess input; defaults apply to absent/undefined values.",
+      "limitations": "Null defaults require configuration; Go integration is absent.",
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q01/open-2.json",
+      "duplicate_group": "mdn-destructuring",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q01-A-S1",
+      "kind": "supplier_manual",
+      "publisher": "SWIG",
+      "original_url": "https://www.swig.org/Doc4.1/Varargs.html",
+      "version_date": "SWIG 4.1 manual, chapter 17",
+      "checked_utc": "2026-11-22T08:04:42.302Z",
+      "directly_read_sections": [
+        "Returned L0–503; relevant section 17.4 L107–148 and typemap example L186–248"
+      ],
+      "verified_finding": "The fixed-argument wrapper can supply NULL defaults but assumes suitable typed C arguments; the typemap example extracts values using caller code.",
+      "limitations": "Not returned: C call generation is a different output, uniform types are emphasized, and excess arguments can error.",
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q01/open-1.json",
+      "duplicate_group": "swig-varargs-4.1",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "context",
+      "kind": "authorized_batch_input_exposure",
+      "description": "The initial combined local read included the six permitted odd Route A input packets; output truncation was resolved by per-question reads. No opposite-route or later-judgment artifacts were read."
+    },
+    {
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "First completed Route A question; same worker will retain this route's observations across later questions."
+    },
+    {
+      "question_id": "Q01",
+      "route": "A",
+      "stage": "search",
+      "kind": "search_snippets_not_evidence",
+      "description": "All returned snippets are discovery-only; later implementation/status wording may have appeared, including a closed/implemented Incan RFC result. No sampled proposal or followup was opened."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q01/open-1.json",
+      "read_sections": [
+        "L377–382",
+        "L472–555"
+      ],
+      "cited": true
+    },
+    {
+      "receipt": "common/Q01/open-2.json",
+      "read_sections": [
+        "L241–255",
+        "L332–348",
+        "L376–400",
+        "L437–453",
+        "L518–551"
+      ],
+      "cited": true
+    }
+  ],
+  "selection_rationale": "Frozen-purpose relevance and supplier provenance favored the two common language references. Search 1 rediscovered MDN at provided rank 1 and its same-document source mirror at rank 7; reused the sealed body without another call. Search 2's SWIG original at provided rank 7 directly discussed NULL-filled fixed argument wrappers, so it received one evidence open; its actor/output and homogeneous-type constraints kept it out of the final candidates. General C varargs access, third-party tutorials, mirrors and proposal snippets were not opened.",
+  "empty_resource_explanation": "Two final candidates; no third supplied component was directly evidenced to improve the frozen heterogeneous extraction boundary. Three of four new body calls remain unused; no rescue opens."
+}

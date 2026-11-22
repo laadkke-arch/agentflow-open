@@ -1,0 +1,178 @@
+{
+  "started_utc": "2026-11-22T08:22:45.976Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07",
+    "Q09",
+    "Q11",
+    "Q02",
+    "Q04",
+    "Q06",
+    "Q08",
+    "Q10"
+  ],
+  "subsequent_input_authorization": "Root authorized Q12 after its B scheduling prerequisite; no B content supplied.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy NPY_TARGET_VERSION compatibility selection",
+      "proposed_use": "Compile a downstream extension with newer NumPy headers while selecting an older supported C-API baseline.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/dev/depending_on_numpy.html",
+          "section": "Build-time dependency L40–59; NumPy 2.0-specific advice and baseline example L80–123",
+          "source_id": "Q12-A-S1"
+        },
+        {
+          "url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+          "section": "Including and importing the C API L4533–4578; Checking the API Version L4686–4727",
+          "source_id": "Q12-C01"
+        }
+      ],
+      "opened_evidence": "The downstream manual guarantees an older compatible default API and shows NPY_TARGET_VERSION set before headers to opt into a later baseline. It gives NumPy 1.25-to-1.19 as the default example. The C-API manual defines the selected feature version and import-time runtime compatibility checks.",
+      "remaining_adapter": "Choose a baseline supported by the selected NumPy/Python toolchain, set the target consistently in each extension module, import the C API, and validate the built wheel on its oldest runtime. Wider API/layout migration remains distinct.",
+      "limitations": "No extension was compiled or imported. Specific header gates for every newer field/function were not inspected; documented API exposure and compatibility are the evidence. The exact oldest default of the current 2.5 headers is not established by the historical 1.25 example. A target macro does not make arbitrary Python/NumPy version combinations valid."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Q12-FIRST",
+      "kind": "frozen_initial_proposal",
+      "publisher": "NumPy",
+      "original_url": "https://github.com/numpy/numpy/blob/bf0835ac5d7a7301f05706ae0d5adce191d43ec2/doc/neps/nep-0053-c-abi-evolution.md",
+      "version_date": "Commit bf0835ac5d7a7301f05706ae0d5adce191d43ec2; initial Created field 2022-04-10 left unchanged",
+      "checked_utc": "2026-11-22T08:24:33.069Z",
+      "directly_read_sections": [
+        "L1–297"
+      ],
+      "verified_finding": "Frozen compile-time baseline-selection partial purpose distinguished from full 2.0 migration.",
+      "limitations": "Date caveat remains as supplied in sanitized input; no current NEP/PR or meeting content retrieved.",
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "initial",
+      "receipt": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-53.md",
+      "duplicate_group": "initial-NEP53",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q12-C01",
+      "kind": "supplier_original_c_api_manual_source",
+      "publisher": "NumPy",
+      "original_url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+      "version_date": "main unpinned",
+      "checked_utc": "2026-11-22T08:24:33.069Z",
+      "directly_read_sections": [
+        "L4533–4578",
+        "L4686–4727"
+      ],
+      "verified_finding": "Selected feature-version macro and import-time compatibility checks.",
+      "limitations": "Does not itself specify exact current default or all hidden declarations.",
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q12/open-1.json",
+      "duplicate_group": "numpy-c-api-array-version-manual",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q12-C02",
+      "kind": "supplier_original_c_api_manual",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/devdocs/reference/c-api/array.html",
+      "version_date": "NumPy v2.6.dev0",
+      "checked_utc": "2026-11-22T08:24:33.069Z",
+      "directly_read_sections": [
+        "L2385–2388",
+        "L2403–2431",
+        "L2488–2512"
+      ],
+      "verified_finding": "Rendered version of target-feature and runtime-check documentation.",
+      "limitations": "Conservative duplicate group with source main; no second independent count and not cited.",
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q12/open-2.json",
+      "duplicate_group": "numpy-c-api-array-version-manual",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q12-A-S1",
+      "kind": "supplier_original_downstream_manual",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/doc/stable/dev/depending_on_numpy.html",
+      "version_date": "NumPy v2.5; historical examples of 1.25 and 2.0 transition retained",
+      "checked_utc": "2026-11-22T08:24:33.069Z",
+      "directly_read_sections": [
+        "Delivered/read L0–132; substantive L24–123"
+      ],
+      "verified_finding": "Older default API, explicit target macro and cross-version packaging guidance.",
+      "limitations": "No local compile/import or symbol-hiding experiment; exact current oldest baseline not enumerated. Some 2.0 release-planning prose is historical.",
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q12/open-1.json",
+      "duplicate_group": "numpy-downstream-authors-2.5",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "A retains all eleven previously processed question contexts; no B results read."
+    },
+    {
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "route_body",
+      "kind": "later_status_in_supplier_manual",
+      "description": "Current supplier manual describes already-landed defaults and the 2.0 transition. These are supplier contracts/version context, not substituted first-draft requirements."
+    },
+    {
+      "question_id": "Q12",
+      "route": "A",
+      "stage": "route_search_discovery",
+      "kind": "wrong_actor_discovery",
+      "description": "Second frozen query returned CPython limited-API and other platform API versioning pages. They were not opened or treated as NumPy evidence."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q12/open-1.json",
+      "read_sections": [
+        "L4533–4578",
+        "L4686–4727"
+      ],
+      "cited_sections": [
+        "L4533–4578",
+        "L4686–4727"
+      ],
+      "cited": true,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q12/open-2.json",
+      "read_sections": [
+        "L2385–2388",
+        "L2403–2431",
+        "L2488–2512"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q12/baseline-return.json",
+      "read_sections": [
+        "complete local baseline"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    }
+  ],
+  "selection_rationale": "Prepared one candidate and two unique cited originals before serialization. First-ranked NumPy downstream manual directly addresses the selected operation and complements common import/version documentation. Later/versioned mirrors and wrong-actor CPython/OS APIs add no required candidate. Only one new body request was used; no implementation or runtime evidence was invented to fill remaining gaps.",
+  "empty_resource_explanation": "No second independent component retained because the relevant results describe the same NumPy target mechanism; other API-targeting systems govern different runtime boundaries."
+}

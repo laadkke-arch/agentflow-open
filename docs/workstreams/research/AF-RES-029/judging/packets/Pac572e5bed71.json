@@ -1,0 +1,173 @@
+{
+  "packet_id": "Pac572e5bed71",
+  "question": {
+    "id": "Q04",
+    "ledger": "go",
+    "scope": "whole",
+    "title": "proposal: cmd/compile: ability to export functions as WASM exports",
+    "caller": "A Go developer exposing a function and a JavaScript/WebAssembly host invoking the compiled function.",
+    "input": "A Go function selected for export in a GOOS=js GOARCH=wasm build, a compiled module with its memory/stack interface, and native argument values; the concrete example is Bar(id int).",
+    "output": "A directly exported WebAssembly instance symbol that the host can invoke after placing native values into the Go stack, with the Go function receiving the intended argument.",
+    "limits": [
+      "The first text targets the js/wasm environment and does not require a standalone WASI environment.",
+      "The proposed compiler marker may be a directive or an instruction; exact //go:wasmexport spelling is an example.",
+      "Memory allocator access for strings/slices is mentioned as possibly needed, not a fully specified mandatory allocator API.",
+      "The abstract example’s stack offset and internal names are illustrative ABI details; no stable ABI guarantee is stated.",
+      "No numeric performance threshold or universal Go-type marshaller is required."
+    ],
+    "whole_must": [
+      {
+        "predicate_id": "Q04-W1",
+        "requirement": "Provide a mechanism in the Go build/toolchain to select a Go function for a direct WebAssembly export.",
+        "source_sections": [
+          "Q04-S2",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The only supported path wraps the function in js.Func/js.Value and attaches it to globalThis; the compiler cannot emit a selected direct export.",
+        "id": "Q04-W1",
+        "predicate": "Provide a mechanism in the Go build/toolchain to select a Go function for a direct WebAssembly export."
+      },
+      {
+        "predicate_id": "Q04-W2",
+        "requirement": "Publish the selected function as a host-addressable WebAssembly instance export alongside the module’s built-in exports.",
+        "source_sections": [
+          "Q04-S2",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The host can locate only built-in bridge symbols or a JavaScript global, not the selected Go function in the instance export table.",
+        "id": "Q04-W2",
+        "predicate": "Publish the selected function as a host-addressable WebAssembly instance export alongside the module’s built-in exports."
+      },
+      {
+        "predicate_id": "Q04-W3",
+        "requirement": "Permit the host to prepare native argument values through the module’s Go memory/stack boundary, rather than limiting every argument to a wrapped js.Value.",
+        "source_sections": [
+          "Q04-S1",
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "For Bar(123), the host can pass only js.Value references, cannot reach the target stack memory, or writes an unrelated copy invisible to the Go function.",
+        "id": "Q04-W3",
+        "predicate": "Permit the host to prepare native argument values through the module’s Go memory/stack boundary, rather than limiting every argument to a wrapped js.Value."
+      },
+      {
+        "predicate_id": "Q04-W4",
+        "requirement": "Support invoking the directly exported function after argument preparation so the Go function observes the intended native value.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "After placing integer 123 into the designated argument slot, invoking the export does not call Bar or Bar observes a different/uninitialized value.",
+        "id": "Q04-W4",
+        "predicate": "Support invoking the directly exported function after argument preparation so the Go function observes the intended native value."
+      }
+    ],
+    "partial_must": [
+      {
+        "predicate_id": "Q04-P1",
+        "requirement": "Write a supplied native 32-bit integer at a caller-specified byte offset in a view of WebAssembly linear memory using the example’s little-endian representation.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "Given value 0x01020304 and a valid offset, the component cannot produce bytes 04 03 02 01 at that offset without the adapter implementing byte encoding/writing.",
+        "inherited_from_whole": [
+          "Q04-W3"
+        ],
+        "id": "Q04-P1",
+        "predicate": "Write a supplied native 32-bit integer at a caller-specified byte offset in a view of WebAssembly linear memory using the example’s little-endian representation."
+      },
+      {
+        "predicate_id": "Q04-P2",
+        "requirement": "Mutate the same memory buffer visible to the executing WebAssembly/Go module, so the prepared argument can be consumed by the subsequent export call.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The memory-writing operation changes a detached copy or ordinary JS object, leaving the module’s designated stack argument bytes unchanged.",
+        "inherited_from_whole": [
+          "Q04-W3",
+          "Q04-W4"
+        ],
+        "id": "Q04-P2",
+        "predicate": "Mutate the same memory buffer visible to the executing WebAssembly/Go module, so the prepared argument can be consumed by the subsequent export call."
+      }
+    ],
+    "independent_partial_purpose": "Prepare the integer argument bytes for an already exported low-level function in the module’s memory, an independently usable host-side step before invoking that function.",
+    "independently_useful_next_action": "Once the stack argument slot contains the intended integer bytes, the host can invoke an already known direct export.",
+    "remaining_adapter": "Implement/choose the Go export declaration and linker integration, obtain the export and stack pointer, select the ABI-correct offset, and invoke the function. The adapter may choose addresses but must not implement the component’s core integer encoding/memory write. A memory writer alone does not satisfy the whole Go-export protocol.",
+    "preferences": [
+      "Compiler directive //go:wasmexport and foo·Bar naming are illustrative choices.",
+      "Allocator access for complex strings/slices remains an open integration issue in this first text."
+    ],
+    "original_named_families": [
+      "Go",
+      "WebAssembly",
+      "JavaScript",
+      "Wasmer"
+    ],
+    "original_named_components": [
+      "GOOS=js GOARCH=wasm",
+      "window/globalThis",
+      "wasm_exec.js",
+      "wasm_export_resume",
+      "js.Value",
+      "//go:wasmexport",
+      "CallImport",
+      "WebAssembly instance exports",
+      "DataView",
+      "DataView.setInt32",
+      "getsp",
+      "mem",
+      "foo·Bar",
+      "go._inst.exports",
+      "Bar(id int)",
+      "fmt.Println"
+    ],
+    "named_component_roles": {
+      "Wasmer": "Explicit original background export/import reference; a returned Wasmer component needs novelty coding within this named family.",
+      "DataView.setInt32": "Explicitly shown as the native integer argument-preparation component; rediscovery for this same use is already named.",
+      "wasm_exec.js": "Existing bridge context; a generic JS callback wrapper alone does not satisfy direct export requirements."
+    },
+    "same_name_wrong_actor_output_failure": "An export keyword that exports JavaScript module bindings, or a data-view API that formats values for display, has the wrong actor/output; neither emits a Go WebAssembly function nor writes its shared linear-memory argument slot.",
+    "initial_url": "https://github.com/golang/go/issues/58584",
+    "fixed_version": "GitHub IssuesEvent 27172305960 action=opened; archive generation 1676667926153386",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/go/bodies/58584-initial.md"
+  },
+  "candidates": [
+    {
+      "candidate_token": "K82e64b20d8",
+      "name": "WebAssembly module export section and linear-memory contract",
+      "proposed_use": "Use the specification as a reusable representation contract for inspecting or constructing named function and memory exports for a host-accessible module.",
+      "citations": [
+        {
+          "url": "https://webassembly.github.io/gc/core/_download/WebAssembly.pdf",
+          "section": "2.5.10 Exports, returned lines1060-1077",
+          "evidence_ids": [
+            "Eaabb13cfe3e849d3"
+          ]
+        },
+        {
+          "url": "https://webassembly.github.io/gc/core/_download/WebAssembly.pdf",
+          "section": "5.5.10 Export Section, returned lines8908-8919",
+          "evidence_ids": [
+            "Eaabb13cfe3e849d3"
+          ]
+        }
+      ]
+    }
+  ],
+  "opened_evidence": [
+    {
+      "evidence_id": "Eaabb13cfe3e849d3",
+      "original_url": "https://webassembly.github.io/gc/core/_download/WebAssembly.pdf",
+      "file": "judging/evidence/Eaabb13cfe3e849d3.json"
+    },
+    {
+      "evidence_id": "Ed7da5399c042fc84",
+      "original_url": "",
+      "file": "judging/evidence/Ed7da5399c042fc84.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

@@ -1,0 +1,95 @@
+{
+  "question_id": "Q10",
+  "route": "A",
+  "budget": {
+    "navigation": 2,
+    "body_opens": 3,
+    "body_successes": 3,
+    "body_failures_or_unusable": 0,
+    "common_reuse_count": 3,
+    "common_reuse_additional_calls": 0,
+    "server_transfer_bytes": "미계측",
+    "token_cost": "미계측",
+    "local_utf8_response_json_bytes": 111040
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy DLPack import/export",
+      "proposed_use": "Exchange a supported CPU array between NumPy and another DLPack library without copying; request copy=False on the NumPy consumer.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+          "section": "numpy.from_dlpack contract, parameters and ndarray return L97–121; example L133–140",
+          "source_id": "Q10-A-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs",
+          "section": "The DLPack Protocol L109–115; Example: DLPack L277–338",
+          "source_id": "Q10-A-S2"
+        }
+      ],
+      "opened_evidence": "NumPy documents an ndarray return, copy=False rejecting necessary copies, and the __dlpack__/__dlpack_device__ protocol. Its CPU import example demonstrates producer mutation visible in the NumPy view; a reverse example exports a NumPy array to PyTorch.",
+      "remaining_adapter": "Connect supported producer objects at the numerical-library boundary and respect ownership, device and mutability constraints. The complete standardized namespace remains separate.",
+      "limitations": "Examples were read, not executed. Default copy=None may copy; strict no-copy use requires copy=False and exporter support. The guide describes read-only imported arrays and restrictions on exporting read-only inputs. Unsupported dtypes/layouts and all lifetime edge cases were not tested."
+    },
+    {
+      "rank": 2,
+      "name": "array-api-strict",
+      "proposed_use": "Use the minimal NumPy-backed array namespace as a test implementation for downstream portable array operations.",
+      "citations": [
+        {
+          "url": "https://data-apis.org/array-api-strict/",
+          "section": "Purpose/version L13–19; strict API and array behavior L58–72; Caveats L73–80",
+          "source_id": "Q10-A-S3"
+        }
+      ],
+      "opened_evidence": "The manual specifies standard-only functions/signatures, dtype literals, restricted indexing and 0-D arrays instead of scalars.",
+      "remaining_adapter": "Select and verify the frozen 2021 API edition, integrate namespace discovery, and reconcile CPU-device and production-use requirements.",
+      "limitations": "Supplier targets testing, not production dependency use. Current standard edition is 2025.12; earlier editions are configurable but 2021 support was not directly checked. Device labels include simulated devices, and type-validation/conformance caveats are explicit. No full frozen-design success is claimed."
+    }
+  ],
+  "started_utc": "2026-11-22T08:21:06.227Z",
+  "ended_utc": "2026-11-22T08:22:45.710935+00:00",
+  "context": {
+    "worker": "route_a",
+    "isolation": "Separate Route A worker; no Route B results or other route judgments supplied or read.",
+    "authorized_initial_batch_inputs": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11"
+    ],
+    "subsequent_input_authorization": "Root authorized Q10/Q12 after their B scheduling prerequisites; no B content supplied.",
+    "common_commit": "5543465bd18542d3994280ebaab3487ae04a1e04",
+    "initial_questions_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+    "same_worker_prior_questions": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11",
+      "Q02",
+      "Q04",
+      "Q06",
+      "Q08"
+    ],
+    "cross_question_memory": true,
+    "independent_human_reading": false,
+    "sampled_current_proposals_opened": false
+  },
+  "serialization_gate": {
+    "checked_utc": "2026-11-22T08:22:45.711078+00:00",
+    "candidate_count": 2,
+    "distinct_document_urls": [
+      "https://data-apis.org/array-api-strict/",
+      "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+      "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs"
+    ],
+    "url_count": 3,
+    "posthoc_truncation": false
+  }
+}

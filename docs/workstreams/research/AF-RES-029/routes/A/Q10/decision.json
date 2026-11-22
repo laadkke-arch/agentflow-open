@@ -1,0 +1,228 @@
+{
+  "started_utc": "2026-11-22T08:21:06.227Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07",
+    "Q09",
+    "Q11",
+    "Q02",
+    "Q04",
+    "Q06",
+    "Q08"
+  ],
+  "subsequent_input_authorization": "Root authorized Q10/Q12 after their B scheduling prerequisites; no B content supplied.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy DLPack import/export",
+      "proposed_use": "Exchange a supported CPU array between NumPy and another DLPack library without copying; request copy=False on the NumPy consumer.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+          "section": "numpy.from_dlpack contract, parameters and ndarray return L97–121; example L133–140",
+          "source_id": "Q10-A-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs",
+          "section": "The DLPack Protocol L109–115; Example: DLPack L277–338",
+          "source_id": "Q10-A-S2"
+        }
+      ],
+      "opened_evidence": "NumPy documents an ndarray return, copy=False rejecting necessary copies, and the __dlpack__/__dlpack_device__ protocol. Its CPU import example demonstrates producer mutation visible in the NumPy view; a reverse example exports a NumPy array to PyTorch.",
+      "remaining_adapter": "Connect supported producer objects at the numerical-library boundary and respect ownership, device and mutability constraints. The complete standardized namespace remains separate.",
+      "limitations": "Examples were read, not executed. Default copy=None may copy; strict no-copy use requires copy=False and exporter support. The guide describes read-only imported arrays and restrictions on exporting read-only inputs. Unsupported dtypes/layouts and all lifetime edge cases were not tested."
+    },
+    {
+      "rank": 2,
+      "name": "array-api-strict",
+      "proposed_use": "Use the minimal NumPy-backed array namespace as a test implementation for downstream portable array operations.",
+      "citations": [
+        {
+          "url": "https://data-apis.org/array-api-strict/",
+          "section": "Purpose/version L13–19; strict API and array behavior L58–72; Caveats L73–80",
+          "source_id": "Q10-A-S3"
+        }
+      ],
+      "opened_evidence": "The manual specifies standard-only functions/signatures, dtype literals, restricted indexing and 0-D arrays instead of scalars.",
+      "remaining_adapter": "Select and verify the frozen 2021 API edition, integrate namespace discovery, and reconcile CPU-device and production-use requirements.",
+      "limitations": "Supplier targets testing, not production dependency use. Current standard edition is 2025.12; earlier editions are configurable but 2021 support was not directly checked. Device labels include simulated devices, and type-validation/conformance caveats are explicit. No full frozen-design success is claimed."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Q10-FIRST",
+      "kind": "frozen_initial_proposal",
+      "publisher": "NumPy",
+      "original_url": "https://github.com/numpy/numpy/blob/0f2b4b235eb580590eaa744bf015d51e2e675afc/doc/neps/nep-0047-array-api-standard.rst",
+      "version_date": "Commit 0f2b4b235eb580590eaa744bf015d51e2e675afc; Created 2021-01-21",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L1–123",
+        "L165–430",
+        "L467–564"
+      ],
+      "verified_finding": "Frozen 2021 separate-namespace design and independent NumPy DLPack handoff purpose.",
+      "limitations": "No current NEP or followup body opened.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "initial",
+      "receipt": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-47.rst",
+      "duplicate_group": "initial-NEP47",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q10-C01",
+      "kind": "supplier_original_developer_manual",
+      "publisher": "SciPy",
+      "original_url": "https://cache-docs.scipy.org/doc/scipy/dev/api-dev/array_api.html",
+      "version_date": "SciPy v1.18.0; development selector",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L30–166",
+        "L398–416"
+      ],
+      "verified_finding": "Namespace-selection and downstream validation examples; array-api-strict test backend link observed.",
+      "limitations": "SciPy guidance is not the frozen NumPy object implementation. No separate success inference; not cited.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q10/open-1.json",
+      "duplicate_group": "scipy-array-api-dev-1.18",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q10-C02",
+      "kind": "supplier_original_specification",
+      "publisher": "Consortium for Python Data API Standards",
+      "original_url": "https://data-apis.org/array-api/2024.12/design_topics/data_interchange.html",
+      "version_date": "Array API 2024.12",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L50–98"
+      ],
+      "verified_finding": "Device-aware DLPack interchange design and single-device strided-data boundary.",
+      "limitations": "Later standard edition and design contract, not NumPy implementation; not cited.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q10/open-2.json",
+      "duplicate_group": "array-api-2024.12-data-interchange",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q10-A-S1",
+      "kind": "supplier_original_api_reference",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/doc/stable/reference/generated/numpy.from_dlpack.html",
+      "version_date": "NumPy v2.5",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L97–140"
+      ],
+      "verified_finding": "Concrete ndarray consumer; copy=False guarantees no data copy or raises BufferError; accepts device-aware producers.",
+      "limitations": "Exporter may not support requested capability. No execution.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q10/open-1.json",
+      "duplicate_group": "numpy-from-dlpack-2.5",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q10-A-S2",
+      "kind": "supplier_original_manual_examples",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/doc/stable/user/basics.interoperability.html?highlight=mechanism+overriding+ufuncs",
+      "version_date": "NumPy v2.5",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L56–115 interoperability/protocol; L194–209 PyTorch context; L277–338 DLPack examples"
+      ],
+      "verified_finding": "CPU view sharing example and reverse NumPy-to-PyTorch producer use are supplied.",
+      "limitations": "Read-only and GPU-copy limits; examples not run; highlighted URL retained as received.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q10/open-2.json",
+      "duplicate_group": "numpy-interoperability-2.5",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q10-A-S3",
+      "kind": "supplier_original_manual",
+      "publisher": "Consortium for Python Data API Standards",
+      "original_url": "https://data-apis.org/array-api-strict/",
+      "version_date": "Current docs supports standard 2025.12; no package revision returned",
+      "checked_utc": "2026-11-22T08:22:44.458Z",
+      "directly_read_sections": [
+        "L13–85"
+      ],
+      "verified_finding": "A strict array implementation for portability testing, with explicit signature/indexing/scalar and caveat documentation.",
+      "limitations": "Not verified in the frozen 2021 configuration; fake-device and type-checking caveats. API/flags child page not opened.",
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q10/open-3.json",
+      "duplicate_group": "array-api-strict-current",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "A retains all earlier processed questions, including NumPy Q09/Q11. No B results supplied."
+    },
+    {
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "route_search_discovery",
+      "kind": "later_proposal_followup_snippets",
+      "description": "Searches showed current NEP47, its discussion and DLPack issue 19013. They were not opened; initial purpose unchanged."
+    },
+    {
+      "question_id": "Q10",
+      "route": "A",
+      "stage": "route_body",
+      "kind": "later_status_in_supplier_manual",
+      "description": "array-api-strict manual describes its move from numpy.array_api and later standards; treated as observed version/limitations only."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q10/open-1.json",
+      "read_sections": [
+        "L30–166",
+        "L398–416"
+      ],
+      "cited": false,
+      "additional_calls": 0,
+      "followed_link": {
+        "id": 70,
+        "receipt": "routes/A/Q10/open-3.json"
+      }
+    },
+    {
+      "receipt": "common/Q10/open-2.json",
+      "read_sections": [
+        "L50–98"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q10/baseline-return.json",
+      "read_sections": [
+        "complete local baseline"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    }
+  ],
+  "selection_rationale": "Prepared exactly two candidates and three distinct cited documents. NumPy's concrete no-copy ndarray exchange is the closest exact independent action; array-api-strict offers broader namespace behavior with declared target/version gaps. Supplier consumer docs and interoperability examples outrank mirrors; an actually delivered common link supplied the strict implementation. No fourth body request was needed.",
+  "empty_resource_explanation": "No generic mathematical API list or foreign-tensor-only importer was retained as a NumPy ndarray handoff."
+}

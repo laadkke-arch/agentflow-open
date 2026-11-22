@@ -1,0 +1,262 @@
+{
+  "packet_id": "Paf4ebe483963",
+  "question": {
+    "id": "Q06",
+    "ledger": "python",
+    "scope": "partial",
+    "title": "Make UTF-8 mode default",
+    "caller": [
+      "Python application authors using implicit text encodings",
+      "Users configuring Python startup and compatibility behavior"
+    ],
+    "input": [
+      "UTF-8 text files, stdio, pipes, and filesystem paths",
+      "Existing locale configuration",
+      "PYTHONUTF8, -X utf8, PYTHONIOENCODING, and optional explicit encoding=\"locale\""
+    ],
+    "output": [
+      "Consistent UTF-8 defaults across the listed I/O surfaces",
+      "Locale-module behavior unaffected by UTF-8 mode",
+      "Preserved opt-outs and explicit locale-based reads for compatibility"
+    ],
+    "limits": [
+      "The first draft targets Python-Version 3.12 and says its mode change may arrive in 3.11 if possible; the latter is a preference, not a requirement.",
+      "The first draft requires locale.getpreferredencoding()/locale to be unaffected by UTF-8 mode; do not substitute later PEP behavior.",
+      "Existing non-UTF-8 implicit inputs can fail or corrupt text; compatibility controls are part of the boundary.",
+      "The first Created field is XX-Mar-2022; publication date comes from PR #2443, not from repairing that placeholder."
+    ],
+    "whole_must": [
+      {
+        "id": "Q06-W1",
+        "predicate": "Python starts with UTF-8 mode enabled by default, giving files, stdio, and pipes consistent implicit UTF-8 encoding.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Abstract; Enable UTF-8 mode by default",
+            "lines": [
+              14,
+              17
+            ],
+            "excerpt": "This PEP proposes making UTF-8 mode [1]_ on by default.\n\nWith this change, Python uses UTF-8 for default encoding of files, stdio, and\npipes consistently."
+          }
+        ],
+        "falsifying_input": "Start with an ordinary non-UTF-8 locale and no UTF-8 opt-in; read/write representative non-ASCII UTF-8 text through implicit text APIs.",
+        "failure_condition": "The default remains locale-dependent or one of files/stdio/pipes uses another encoding."
+      },
+      {
+        "id": "Q06-W2",
+        "predicate": "The mode affects stdio, filesystem encoding, TextIOWrapper, and the named APIs built on TextIOWrapper.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Specification/Changes to UTF-8 mode",
+            "lines": [
+              47,
+              56
+            ],
+            "excerpt": "After this change, UTF-8 mode affects to:\n\n* stdio\n\n   * User can override stdio encoding with ``PYTHONIOENCODING``.\n\n* filesystem encoding\n\n* ``TextIOWrapper`` and APIs using it including ``open()``,\n  ``Path.read_text()``, ``subprocess.Popen(cmd, text=True)``, etc..."
+          }
+        ],
+        "falsifying_input": "Exercise open(), Path.read_text(), and subprocess.Popen(..., text=True) with UTF-8 non-ASCII text under a non-UTF-8 locale.",
+        "failure_condition": "One listed I/O surface still interprets the bytes using a locale codec."
+      },
+      {
+        "id": "Q06-W3",
+        "predicate": "Enabling UTF-8 mode does not override locale.getpreferredencoding() or other locale-module behavior.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Specification/Changes to UTF-8 mode",
+            "lines": [
+              42,
+              45
+            ],
+            "excerpt": "Currently, UTF-8 mode affects to ``locale.getpreferredencoding()``.\n\nThis PEP proposes to remove this override. UTF-8 mode will not affect to\n``locale`` module."
+          }
+        ],
+        "falsifying_input": "Record the locale module’s encoding in a configured non-UTF-8 locale and enable UTF-8 mode.",
+        "failure_condition": "The mode changes that locale-module answer to UTF-8."
+      },
+      {
+        "id": "Q06-W4",
+        "predicate": "PYTHONIOENCODING can override stdio encoding.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Specification/Changes to UTF-8 mode",
+            "lines": [
+              47,
+              51
+            ],
+            "excerpt": "After this change, UTF-8 mode affects to:\n\n* stdio\n\n   * User can override stdio encoding with ``PYTHONIOENCODING``."
+          }
+        ],
+        "falsifying_input": "Enable the UTF-8 default and supply a supported non-UTF-8 PYTHONIOENCODING value for stdio.",
+        "failure_condition": "The stdio override is ignored."
+      },
+      {
+        "id": "Q06-W5",
+        "predicate": "Users can disable the UTF-8 mode with either PYTHONUTF8=0 or -X utf8=0.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Specification/Enable UTF-8 mode by default",
+            "lines": [
+              61,
+              66
+            ],
+            "excerpt": "Enable UTF-8 mode by default\n----------------------------\n\nPython enables UTF-8 mode by default.\n\nUser can disable UTF-8 mode by setting ``PYTHONUTF8=0`` or ``-X utf8=0``."
+          }
+        ],
+        "falsifying_input": "Run separate processes with PYTHONUTF8=0 and -X utf8=0 under a non-UTF-8 locale.",
+        "failure_condition": "Either documented disable mechanism leaves UTF-8 mode enabled."
+      },
+      {
+        "id": "Q06-W6",
+        "predicate": "The compatibility path allows discovery of implicit default-encoding use through EncodingWarning and explicit encoding=\"locale\" to keep locale decoding.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Backward Compatibility",
+            "lines": [
+              79,
+              83
+            ],
+            "excerpt": "To resolve this backward incompatibility, users can do:\n\n* Disable UTF-8 mode\n* Use ``EncodingWarning`` to find where the default encoding is used and use\n  ``encoding=\"locale\"`` option to keep using locale encoding. [2]_"
+          }
+        ],
+        "falsifying_input": "Run code with an implicit open under EncodingWarning, then read a valid locale-encoded non-UTF-8 file using encoding=\"locale\" while UTF-8 mode is on.",
+        "failure_condition": "Implicit uses cannot be diagnosed through the stated warning facility, or explicit locale decoding is overridden by UTF-8."
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q06-P1",
+        "predicate": "Under the provider’s supported UTF-8 mode, a Python TextIOWrapper/open-style file read without an explicit per-call encoding decodes UTF-8 non-ASCII bytes correctly.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Abstract; Specification/Changes to UTF-8 mode",
+            "lines": [
+              47,
+              56
+            ],
+            "excerpt": "After this change, UTF-8 mode affects to:\n\n* stdio\n\n   * User can override stdio encoding with ``PYTHONIOENCODING``.\n\n* filesystem encoding\n\n* ``TextIOWrapper`` and APIs using it including ``open()``,\n  ``Path.read_text()``, ``subprocess.Popen(cmd, text=True)``, etc..."
+          }
+        ],
+        "falsifying_input": "Read a UTF-8 file containing café under a non-UTF-8 locale with the mode enabled and no encoding argument.",
+        "failure_condition": "The read gives mojibake, an avoidable decoding error, or requires the caller to implement a decoder.",
+        "inherited_from": [
+          "Q06-W1",
+          "Q06-W2"
+        ]
+      },
+      {
+        "id": "Q06-P2",
+        "predicate": "The partial action retains the first draft’s locale-module isolation requirement.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Specification/Changes to UTF-8 mode",
+            "lines": [
+              42,
+              45
+            ],
+            "excerpt": "Currently, UTF-8 mode affects to ``locale.getpreferredencoding()``.\n\nThis PEP proposes to remove this override. UTF-8 mode will not affect to\n``locale`` module."
+          }
+        ],
+        "falsifying_input": "Compare locale.getpreferredencoding() before and during the supported mode in a non-UTF-8 locale.",
+        "failure_condition": "The mode changes locale-module reporting.",
+        "inherited_from": [
+          "Q06-W3"
+        ]
+      },
+      {
+        "id": "Q06-P3",
+        "predicate": "An explicit encoding=\"locale\" read can still use the configured locale codec under the mode.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q06-first",
+            "section": "Backward Compatibility",
+            "lines": [
+              79,
+              83
+            ],
+            "excerpt": "To resolve this backward incompatibility, users can do:\n\n* Disable UTF-8 mode\n* Use ``EncodingWarning`` to find where the default encoding is used and use\n  ``encoding=\"locale\"`` option to keep using locale encoding. [2]_"
+          }
+        ],
+        "falsifying_input": "Read a non-UTF-8 file that is valid in the configured locale with encoding=\"locale\".",
+        "failure_condition": "The explicit locale request is silently replaced by UTF-8.",
+        "inherited_from": [
+          "Q06-W6"
+        ]
+      }
+    ],
+    "independent_partial_purpose": "Read a UTF-8 text file through the existing Python text-I/O path under UTF-8 mode, while preserving locale reporting and an explicit locale-encoding read when needed.",
+    "remaining_adapter": [
+      "Enable the mode by default at interpreter startup",
+      "Apply defaults to stdio, pipes, and filesystem encoding",
+      "Wire both startup opt-outs and PYTHONIOENCODING precedence",
+      "Run warning-based migration and communicate compatibility changes"
+    ],
+    "original_named_families": [
+      "Python",
+      "Ruby",
+      "Java / JDK 18 / JEP 400",
+      "node.js",
+      "Go",
+      "Rust",
+      "VS Code",
+      "Windows notepad",
+      "JSON",
+      "TOML",
+      "YAML"
+    ],
+    "original_named_components": [
+      "UTF-8 mode / PEP 540",
+      "locale.getpreferredencoding()",
+      "locale",
+      "TextIOWrapper",
+      "open()",
+      "Path.read_text()",
+      "subprocess.Popen(cmd, text=True)",
+      "PYTHONIOENCODING",
+      "PYTHONUTF8=0",
+      "-X utf8=0",
+      "EncodingWarning / PEP 597",
+      "encoding=\"locale\"",
+      "Ruby external_encoding / Encoding.default_external"
+    ],
+    "same_name_wrong_actor_output_failure": {
+      "criterion": "A UTF-8 option affecting source-code syntax, a terminal’s display, or a standalone bytes codec does not establish the requested Python default text-I/O behavior.",
+      "falsifying_input": "Read the UTF-8 café file through open() without encoding under a non-UTF-8 locale.",
+      "wrong_output": "The editor displays the file correctly, but the application returns mojibake or raises a decoding error."
+    },
+    "initial_url": "https://github.com/python/peps/blob/72f4666aca21e695fb21a2aaea3b6df81c567a3d/pep-0686.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0686-72f4666aca21.rst"
+  },
+  "candidates": [],
+  "opened_evidence": [
+    {
+      "evidence_id": "E1d457a280b9d1f74",
+      "original_url": "https://docs.python.org/3/library/os.html",
+      "file": "judging/evidence/E1d457a280b9d1f74.json"
+    },
+    {
+      "evidence_id": "E24e87c0d9d1167e0",
+      "original_url": "https://github.com/python/cpython/blob/main/Doc/library/io.rst?plain=1",
+      "file": "judging/evidence/E24e87c0d9d1167e0.json"
+    },
+    {
+      "evidence_id": "E298595b7f0f766ff",
+      "original_url": "https://github.com/python/cpython/blob/main/Doc/library/locale.rst?plain=1",
+      "file": "judging/evidence/E298595b7f0f766ff.json"
+    },
+    {
+      "evidence_id": "E6857484659b80af5",
+      "original_url": "https://github.com/python/cpython/blob/main/Doc/library/os.rst",
+      "file": "judging/evidence/E6857484659b80af5.json"
+    }
+  ],
+  "instructions": "Read ADJUDICATION.md. No route/rank/self-verdict information is included. Do not read key.json or route/search directories. Judge only delivered originals and exact cited sections. Record unknowns; do not invent missing functionality or adapters."
+}

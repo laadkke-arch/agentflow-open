@@ -1,0 +1,228 @@
+{
+  "started_utc": "2026-11-22T08:19:14.782Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07",
+    "Q09",
+    "Q11",
+    "Q02",
+    "Q04",
+    "Q06"
+  ],
+  "subsequent_input_authorization": "Root authorized all even inputs after B scheduling prerequisites; no B content supplied.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Goomba link package preflight and symlink lifecycle",
+      "proposed_use": "Reuse the package linker's destination-resolution checks and no-follow unlink mechanics as building blocks for wheel link integration.",
+      "citations": [
+        {
+          "url": "https://pkg.go.dev/github.com/richinsley/goomba/link",
+          "section": "Overview L194–203; ErrUnsafePath L257–260; Unlink L335–338; Link L459–466",
+          "source_id": "Q08-A-S1"
+        }
+      ],
+      "opened_evidence": "The supplier API confines resolved destinations to an environment prefix and sources to the package directory, validates planned writes, recreates symlinks, and removes links without following them.",
+      "remaining_adapter": "Translate wheel metadata into its conda-oriented model and enforce the narrower set of package roots supplied by this wheel. Missing-target and bounded-cycle rejection are not established; those core validation requirements remain.",
+      "limitations": "Conda installation is the supplied actor/output, not Wheel-Version 2.0/LINKS. Prefix containment alone permits a broader domain than same-wheel package containment. No complete frozen partial validator or whole installer is claimed. The draft's source/target orientation ambiguity remains unresolved; no package was installed."
+    },
+    {
+      "rank": 2,
+      "name": "Bazel FilesetOutputTree relative-symlink traversal",
+      "proposed_use": "Reuse the bounded relative-link traversal algorithm when designing the graph-checking portion of a wheel-link validator.",
+      "citations": [
+        {
+          "url": "https://bazel.googlesource.com/bazel.git/%2B/e749da2f60025e2462f7cc7eea0457eb5734a51a/src/main/java/com/google/devtools/build/lib/actions/FilesetOutputTree.java",
+          "section": "MAX_SYMLINK_TRAVERSALS L44; relative resolution L278–319; full resolution and error handling L228–275",
+          "source_id": "Q08-A-S2"
+        }
+      ],
+      "opened_evidence": "Implementation tracks seen links and a 256-traversal bound. Cyclic, too-long and unresolved links produce warnings and are omitted from the resolved mapping.",
+      "remaining_adapter": "Convert fileset inputs, enforce both endpoint containment and extracted-target existence, and turn incomplete resolution into a rejecting validation result. The implementation currently warns rather than rejects the entire link plan.",
+      "limitations": "Internal Bazel component, not a wheel installer or ready-made complete validator. Its treatment of missing/outside targets tolerates omissions. The initial draft's direction ambiguity is preserved; no execution or suitability of all dependencies was tested."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "PY-Q08-first",
+      "kind": "frozen_initial_proposal",
+      "publisher": "Python",
+      "original_url": "https://github.com/python/peps/blob/78c4086b041db07a2d560884d658e7b3990b5a6d/peps/pep-0778.rst",
+      "version_date": "Commit 78c4086b041db07a2d560884d658e7b3990b5a6d; Created 2024-05-18",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "L1–260"
+      ],
+      "verified_finding": "Whole LINKS design and independent complete graph-validation purpose, including unresolved example/prose direction ambiguity.",
+      "limitations": "Current PEP/followup bodies not read.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "initial",
+      "receipt": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0778-78c4086b041d.rst",
+      "duplicate_group": "initial-pep778",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q08-C01",
+      "kind": "supplier_original_specification",
+      "publisher": "PyPA",
+      "original_url": "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+      "version_date": "en/latest; common metadata last updated 2026-11-18",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "L92–116",
+        "L188–236",
+        "L253–262",
+        "L284–295"
+      ],
+      "verified_finding": "Ordinary wheel version gate, extraction and metadata contract.",
+      "limitations": "No LINKS validation/creation implementation. Not cited as a completed link operation.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q08/open-1.json",
+      "duplicate_group": "pypa-wheel-format-current",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q08-C02",
+      "kind": "supplier_original_specification",
+      "publisher": "PyPA",
+      "original_url": "https://packaging.python.org/en/latest/specifications/recording-installed-packages/",
+      "version_date": "en/latest; common metadata last updated 2026-11-18",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "L87–182"
+      ],
+      "verified_finding": "Installed-file RECORD and ordinary uninstall contract.",
+      "limitations": "No no-follow algorithm or graph validation. Read but not cited.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q08/open-2.json",
+      "duplicate_group": "pypa-installed-projects-current",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q08-A-S1",
+      "kind": "supplier_original_api_reference",
+      "publisher": "Goomba / richinsley",
+      "original_url": "https://pkg.go.dev/github.com/richinsley/goomba/link",
+      "version_date": "v0.1.0; published 2026-10-18",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "L100–116 version; L194–203 overview; L257–265 errors; L335–342 unlink; L389–403 exists; L410–478 types/Link"
+      ],
+      "verified_finding": "Resolved-path preflight, prefix/package confinement and no-follow link removal are documented.",
+      "limitations": "Conda-specific policy; cycle/depth and non-dangling requirements not verified; only L0–478 of reported 666 delivered.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q08/open-1.json",
+      "duplicate_group": "goomba-link-v0.1.0",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q08-A-S2",
+      "kind": "supplier_original_implementation",
+      "publisher": "Bazel Authors",
+      "original_url": "https://bazel.googlesource.com/bazel.git/%2B/e749da2f60025e2462f7cc7eea0457eb5734a51a/src/main/java/com/google/devtools/build/lib/actions/FilesetOutputTree.java",
+      "version_date": "Commit e749da2f60025e2462f7cc7eea0457eb5734a51a; blob 98726276edd32e22484294ec5da5bd5e571ac5de",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "L0–12 provenance; L38–169 tree/visitor; L196–330 resolution and failure handling"
+      ],
+      "verified_finding": "Seen-set and 256 bound; warnings on cyclic, long and unresolved links.",
+      "limitations": "Does not throw for these invalid graph cases; no same-wheel endpoint or physical-target check.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q08/open-2.json",
+      "duplicate_group": "bazel-fileset-output-tree",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q08-A-S3",
+      "kind": "unusable_body_attempt",
+      "publisher": "Vercel Labs/GitHub",
+      "original_url": "https://github.com/vercel-labs/skills/blob/main/src/installer.ts",
+      "version_date": "main; crawled today; exact revision not returned",
+      "checked_utc": "2026-11-22T08:21:04.733Z",
+      "directly_read_sections": [
+        "Local scan of delivered L0–1401 for symlink/cycle terms; inspected L1340–1401 line-number scaffold"
+      ],
+      "verified_finding": "Only GitHub chrome/line-number scaffolding reached the excerpt; no installer source body read.",
+      "limitations": "Search snippets not evidence; total 3870 does not imply full text. No retry/expansion.",
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q08/open-3.json",
+      "duplicate_group": "vercel-skills-installer",
+      "counted_eligibility": false
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "A retains odd inputs and Q02/Q04/Q06 results, without opposite-route artifacts."
+    },
+    {
+      "question_id": "Q08",
+      "route": "A",
+      "stage": "route_search_discovery",
+      "kind": "later_proposal_followup_snippets",
+      "description": "Literal queries returned current PEP778, WheelNext followup material and related PEP660. Their snippets/titles were incidentally seen; no proposal or followup body opened."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q08/open-1.json",
+      "read_sections": [
+        "L92–116",
+        "L188–236",
+        "L253–262",
+        "L284–295"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q08/open-2.json",
+      "read_sections": [
+        "L87–182"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q08/baseline-return.json",
+      "read_sections": [
+        "complete local baseline"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    }
+  ],
+  "selection_rationale": "Bounded final preparation selected two candidates and two unique original URLs. Goomba's preflight is closest to the path-policy task, while Bazel supplies actual bounded link traversal; both expose important remaining core gaps. General link creation, common wheel bookkeeping and build frontends were less relevant. Vercel source yielded no body and was not retried. Candidate order follows frozen-purpose relevance then official original provenance, with search-provided ranks retained in discovery logs.",
+  "empty_resource_explanation": "The returned components are limited reuse proposals; no complete wheel LINKS implementation or entire frozen partial validator was established.",
+  "receipt_assessments": [
+    {
+      "receipt": "routes/A/Q08/open-3.json",
+      "status": "unusable_original_body_page_scaffold_only",
+      "body_usable": false,
+      "actual_returned_line_ranges": [
+        {
+          "start": 0,
+          "end": 1401
+        }
+      ],
+      "reported_total_lines": 3870,
+      "explanation": "Line-labeled response remains preserved; semantic assessment excludes scaffold from body successes."
+    }
+  ]
+}

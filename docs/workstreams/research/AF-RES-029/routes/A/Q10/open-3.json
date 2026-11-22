@@ -1,0 +1,52 @@
+{
+  "receipt_id": "Q10-A-open-3",
+  "question_id": "Q10",
+  "route": "A",
+  "stage": "route",
+  "tool": "mcp__codex_apps__search_service_web_run",
+  "request": {
+    "click": [
+      {
+        "ref_id": "turn483404585view0",
+        "id": 70
+      }
+    ],
+    "response_length": "long"
+  },
+  "started_utc": "2026-11-22T08:21:55.402Z",
+  "ended_utc": "2026-11-22T08:21:55.670Z",
+  "elapsed_ms": 268,
+  "operation_type": "evidence_body_click",
+  "navigation_debit": 0,
+  "body_open_debit": 1,
+  "status": "readable_excerpt",
+  "success": true,
+  "thrown_error": null,
+  "actual_returned_line_ranges": [
+    {
+      "start": 0,
+      "end": 96
+    }
+  ],
+  "source_version": [
+    "array-api-strict documentation (https://data-apis.org/array-api-strict/)\n【turn263520687view0】 [wordlim: 200] Crawled: yesterday; Content type: text/html; Source: click({\"ref_id\":\"turn483404585view0\",\"id\":70}); Total lines: 97"
+  ],
+  "provided_result_order": [
+    {
+      "provided_position": 1,
+      "ref_id": "turn263520687view0"
+    }
+  ],
+  "server_transfer_bytes": "미계측",
+  "token_cost": "미계측",
+  "local_utf8_response_json_bytes": 9337,
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "array-api-strict documentation (https://data-apis.org/array-api-strict/)\n【turn263520687view0】 [wordlim: 200] Crawled: yesterday; Content type: text/html; Source: click({\"ref_id\":\"turn483404585view0\",\"id\":70}); Total lines: 97\nL0: [Input] [Input] 【0†Skip to content】\nL1: \nL2: 【1†array-api-strict documentation】\nL3: \nL4: 【1†array-api-strict documentation】\nL5: \nL6: [Input: Search] [Input] [Input]\nL7: \nL8:   * 【2†API Reference】\nL9:   * 【3†Changelog】\nL10:   * 【4†Releasing】\nL11: \nL12: 【1†Back to top】\nL13: # array-api-strict【5†¶】\nL14: \nL15: `array_api_strict` is a strict, minimal implementation of the 【6†Python array API】\nL16: \nL17: The purpose of array-api-strict is to provide an implementation of the array API for consuming libraries to test against so they can be completely sure their usage of the array API is portable.\nL18: It is not intended to be used by end-users. End-users of the array API should just use their favorite array library (NumPy, CuPy, PyTorch, etc.) as usual. It is also not intended to be used as a dependency by consuming libraries. Consuming library code should use the 【7†array-api-compat】 package to support the array API. Rather, it is intended to be used in the test suites of consuming libraries to test their array API usage.\nL19: `array-api-strict` currently supports the 【8†2025.12】 version of the standard. Support for previous versions is also implemented, 【9†and can be enabled with a flag】.\nL20: ## Install【10†¶】\nL21: \nL22: `array-api-strict` is available on both 【11†PyPI†pypi.org】\nL23: \nL24:     python -m pip install array-api-strict\nL25: \nL26: \nL27: and 【12†Conda-forge†anaconda.org】\nL28: \nL29:     conda install --channel conda-forge array-api-strict\nL30: \nL31: \nL32: array-api-strict supports NumPy 1.26 and NumPy 2.0-2.4.\nL33: ## Rationale【13†¶】\nL34: \nL35: The array API has many functions and behaviors that are required to be implemented by conforming libraries, but it does not, in most cases, disallow implementing additional functions, keyword arguments, and behaviors that aren’t explicitly required by the standard.\nL36: However, this poses a problem for consumers of the array API, as they may accidentally use a function or rely on a behavior which just happens to be implemented in every array library they test against (e.g., NumPy and PyTorch), but isn’t required by the standard and may not be included in other libraries.\nL37: array-api-strict solves this problem by providing a strict, minimal implementation of the array API standard. Only those functions and behaviors that are explicitly required by the standard are implemented. For example, most NumPy functions accept Python scalars as inputs:\nL38: \nL39:     >>> import numpy as np\nL40:     >>> np.sin(0.0)\nL41:     0.0\nL42: However, the standard only specifies function inputs on `Array` objects. And indeed, some libraries, such as PyTorch, do not allow this:\nL43: \nL44:     >>> import torch\nL45:     >>> torch.sin(0.0)\nL46:     Traceback (most recent call last):\nL47:       File \"<stdin>\", line 1, in <module>\nL48:     TypeError: sin(): argument 'input' (position 1) must be Tensor, not float\nL49: In array-api-strict, this is also an error:\nL50: \nL51:     >>> import array_api_strict as xp\nL52:     >>> xp.sin(0.0)\nL53:     Traceback (most recent call last):\nL54:     ...\nL55:     AttributeError: 'float' object has no attribute 'dtype'\nL56: \nL57: \nL58: Here is an (incomplete) list of the sorts of ways that array-api-strict is strict/minimal:\nL59: \nL60:   * Only those functions and methods that are 【14†defined in the standard】 are included.\nL61:   * In those functions, only the keyword-arguments that are defined by the standard are included. All signatures in array-api-strict use 【15†positional-only arguments】. As noted above, only `array_api_strict` array objects are accepted by functions, except in the places where the standard allows Python scalars (i.e., functions do not automatically call `asarray` on their inputs).\nL62: \nL63:   * Only those 【16†dtypes that are defined in the standard】 are included.\nL64:   * All functions and methods reject inputs if the standard does not require the input dtype(s) to be supported. This is one of the most restrictive aspects of the library. For example, in NumPy, most transcendental functions like `sin` will accept integer array inputs, but the 【17†standard only requires them to accept floating-point inputs】, so in array-api-strict, `sin(asarray(0))` will raise an exception.\nL65:   * The 【18†indexing】 semantics required by the standard are limited compared to those implemented by NumPy (e.g., out-of-bounds slices are not supported, integer array indexing is not supported, only a single boolean array index is supported).\nL66: \nL67:   * There are no distinct “scalar” objects as in NumPy. There are only 0-D arrays.\nL68: \nL69:   * Dtype objects are just empty objects that only implement 【19†equality comparison】. The way to access dtype objects in the standard is by name, like `xp.float32`.\nL70:   * The array object type itself is private and should not be accessed. Subclassing or otherwise trying to directly initialize this object is not supported. Arrays should be created with one of the 【20†array creation functions】 such as `asarray`.\nL71: \nL72:   * Optional behavior such as 【21†optional extensions】, functions that use data-dependent shapes, and boolean indexing are enabled by default but can disabled with the 【9†array-api-strict flags】.\nL73: ## Caveats【22†¶】\nL74: \nL75: array-api-strict is a thin pure Python wrapper around NumPy. NumPy 2.0 fully supports the array API but NumPy 1.26 does not, so many behaviors are wrapped in NumPy 1.26 to provide array API compatible behavior. Although it is based on NumPy, mixing NumPy arrays with array-api-strict arrays is not supported. This should generally raise an error, as it indicates a potential portability issue, but this hasn’t necessarily been tested thoroughly.\nL76:   1. array-api-strict is validated against the 【23†array API test suite†github.com】. However, there may be a few minor instances where NumPy deviates from the standard in a way that is inconvenient to workaround in array-api-strict, since it aims to remain pure Python. You can see the full list of tests that are known to fail in the 【24†xfails file†github.com】.\nL77:   2. array-api-strict is just a thin, pure Python wrapper around `numpy.ndarray` and `numpy` functions. As such, the performance should be mostly comparable to NumPy, but nonetheless, performance is not a primary concern for this library, since it is only intended to be used for testing purposes.\nL78:   3. Since NumPy is a CPU-only library, the 【25†device support】 in array-api-strict is superficial only. array-api-strict supports three ‘devices’; the default `CPU_DEVICE`, `Device(\"device1\")` and `Device(\"device2\")`. This allows testing of arrays on different devices, without the need for special hardware. `x.device` is always a `Device` object, and `device` keywords to creation functions only accept the above three device objects or `None`.\nL79: A future version of array-api-strict 【26†may add support for a CuPy backend†github.com】 so that more significant device support can be tested.\nL80:   4. Although only array types are expected in array-api-strict functions, currently most functions do not do extensive type checking on their inputs, so a sufficiently duck-typed object may pass through silently (or at best, you may get `AttributeError` instead of `TypeError`). However, all type signatures have type annotations (based on those from the standard), so this deviation may be tested with type checking. This 【27†behavior may improve in the future†github.com】.\nL81: ## Relationship to `numpy.array_api`【28†¶】\nL82: \nL83: Previously this implementation was available as `numpy.array_api`, but it was moved to a separate package for NumPy 2.0.\nL84: The history of this repo prior to commit 【29†fbefd42e4d11e9be20e0a4785f2619fc1aef1e7c†github.com】 was generated automatically from the numpy git history, using the following 【30†git-filter-repo†github.com】 command:\nL85:     git_filter_repo.py --path numpy/array_api/ --path-rename numpy/array_api:array_api_strict --replace-text <(echo -e \"numpy.array_api==>array_api_strict\\n from ..core==>from numpy.core\\n from .._core==>from numpy._core\\n from ..linalg==>from numpy.linalg\\n from numpy import array_api==>import array_api_strict\") --commit-callback 'commit.message = commit.message.rstrip() + b\"\\n\\n Original NumPy Commit: \" + commit.original_id'\nL86: Copyright © 2024, Consortium for Python Data API Standards\nL87: \nL88: Made with 【31†Sphinx†www.sphinx-doc.org】 and 【32†@pradyunsg†pradyunsg.me】's 【33†Furo†github.com】\nL89: \nL90: On this page\nL91: \nL92:   * 【1†array-api-strict】\nL93:     * 【10†Install】\nL94:     * 【13†Rationale】\nL95:     * 【22†Caveats】\nL96:     * 【28†Relationship to `numpy.array_api`】\n"
+      }
+    ],
+    "isError": false
+  }
+}

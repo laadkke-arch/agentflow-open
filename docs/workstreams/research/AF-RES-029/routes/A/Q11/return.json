@@ -1,0 +1,73 @@
+{
+  "question_id": "Q11",
+  "route": "A",
+  "budget": {
+    "navigation": 2,
+    "body_opens": 2,
+    "body_successes": 2,
+    "body_failures_or_unusable": 0,
+    "common_reuse_count": 3,
+    "common_reuse_additional_calls": 0,
+    "server_transfer_bytes": "미계측",
+    "token_cost": "미계측",
+    "local_utf8_response_json_bytes": 89551
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy StringDType",
+      "proposed_use": "Construct typed NumPy arrays of variable-width UTF-8 text with constructor-enforced strict validation; use the documented allocator-mediated C interface for downstream string access and replacement.",
+      "citations": [
+        {
+          "url": "https://numpy.org/devdocs/user/basics.strings.html",
+          "section": "Variable-width strings L73–89; Missing data support L90–137; Coercing non-strings L138–150",
+          "source_id": "Q11-C-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/2.1/reference/c-api/strings.html",
+          "section": "Examples L72–116; Types L119–145; Functions L192–224",
+          "source_id": "Q11-A-S1"
+        }
+      ],
+      "opened_evidence": "The user guide constructs unequal-length strings without a maximum-width parameter and rejects a non-string under coerce=False. It documents missing-sentinel examples. The C API shows UTF-8 loading/copy-packing and a descriptor-owned allocator protected by mutex acquisition/release.",
+      "remaining_adapter": "Import/select StringDType and set coerce=False at the existing input boundary; downstream C code must acquire/release the allocator and pack replacement strings rather than modify borrowed data.",
+      "limitations": "No execution was performed. Delivered sources do not establish the whole frozen contract: lossless npy/npz with allow_pickle=False, full casts/ufunc and unequal-parameter rejection matrix, freeing interface, or concurrent growing-mutation safety were not verified. Python str scalar behavior and multidimensional StringDType indexing were not specifically demonstrated in these excerpts. NumPy 2.1 C documentation and 2.6.dev0 user documentation are mixed editions; compatibility in one release was not tested."
+    }
+  ],
+  "started_utc": "2026-11-22T08:10:44.432Z",
+  "ended_utc": "2026-11-22T08:14:24.461977+00:00",
+  "context": {
+    "worker": "route_a",
+    "isolation": "Separate Route A worker; no Route B results or other route judgments supplied or read.",
+    "authorized_initial_batch_inputs": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11"
+    ],
+    "common_commit": "5543465bd18542d3994280ebaab3487ae04a1e04",
+    "initial_questions_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+    "same_worker_prior_questions": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09"
+    ],
+    "cross_question_memory": true,
+    "independent_human_reading": false,
+    "sampled_current_proposals_opened": false
+  },
+  "serialization_gate": {
+    "checked_utc": "2026-11-22T08:14:24.462165+00:00",
+    "candidate_count": 1,
+    "distinct_document_urls": [
+      "https://numpy.org/devdocs/user/basics.strings.html",
+      "https://numpy.org/doc/2.1/reference/c-api/strings.html"
+    ],
+    "url_count": 2,
+    "posthoc_truncation": false
+  }
+}

@@ -23,3 +23,14 @@ Remote verification receipts and bundle commit IDs are appended after each commi
 - Common-start commit `5543465bd18542d3994280ebaab3487ae04a1e04` remotely reread; blob `7479dcfb9002f781de9779875795f86110b400b3`, 106 sealed files rehashed with zero mismatches. Separate fresh A and B contexts started after reread; odd A / even B first.
 
 - Reading rules were operationalized before the coordinator inspected route outcomes: remote commit `dd5dd2296fc5480c5d8e4b1fe7ba86b643e38430`, `ADJUDICATION.md` reread through GitHub. Rules preserve the frozen predicates and distinguish opened text from exact returned citations.
+
+- Fresh-context input audit and planned post-seal probes: `506827b9f21420f7b98e5cf157c2c7895b7c1877`; audit machine record reread at that remote SHA. Structural checks pass; strict sampling blindness and complete discovery receipts do not.
+
+- A completed12 returns with24 searches and28 additional body requests. B Q11 assigned before any Q11 operation to a fresh same-model context using the same sealed rule. Timing and zero opposite-route sharing are recorded in `evidence/route-coordination.jsonl`.
+
+## Actual routes and masked input bundle
+
+- All24 A/B original returns are sealed;36 observations including12 common starts. Actual experimental web operations116. Recorded budget/return/alternation checks152 passed.
+- A24 searches/28 body debits; B18 navigation/29 body debits. Captured responses, errors and original ranks retained. Different find-as-navigation interpretation remains a separate sensitivity.
+- Offline assembly:12 initial design groups and32 distinct actually A/B-returned supplier document groups; cross-field phase has not started.
+- Masked36 packets and80 delivered-response bodies are frozen separately from the route/rank key. Readers pre-read only initial designs before packet access.

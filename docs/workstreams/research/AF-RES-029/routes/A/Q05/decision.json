@@ -1,0 +1,201 @@
+{
+  "started_utc": "2026-11-22T08:06:06.681Z",
+  "prior_questions": [
+    "Q01",
+    "Q03"
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "CPython 3.13 frame-locals proxy and PyFrame_GetLocals",
+      "proposed_use": "Give a debugger a write-through view of the selected frame's existing local variables and retain an up-to-date frame namespace view.",
+      "citations": [
+        {
+          "url": "https://docs.python.org/3.13/c-api/frame.html",
+          "section": "PyFrame_GetBack L32–38; PyFrame_GetGenerator L59–66; PyFrame_GetLocals L105–113; Frame locals proxies L118–132",
+          "source_id": "Q05-A-S1"
+        },
+        {
+          "url": "https://docs.python.org/3.13/c-api/reflection.html",
+          "section": "PyEval_GetLocals L10–17; PyEval_GetFrame L25–30; PyEval_GetFrameLocals L38–44",
+          "source_id": "Q05-A-S3"
+        }
+      ],
+      "opened_evidence": [
+        "routes/A/Q05/open-1.json",
+        "routes/A/Q05/open-3.json"
+      ],
+      "remaining_adapter": "Select the desired frame and wire debugger resume behavior; repeated GetBack can traverse callers. The first draft's live locals(), deprecated-API exception behavior and dynamic-name example still require separate integration.",
+      "limitations": "The reflected locals() path explicitly snapshots optimized scopes, and the old borrowed-reference API remains available. No delivered test demonstrates threaded generator/coroutine resumption, arbitrary-name execution, or view equality. This is not a claim of whole-draft completion."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "PY-Q05-first",
+      "kind": "frozen_initial_design",
+      "publisher": "Mark Shannon / Python PEP authors",
+      "original_url": "https://github.com/python/peps/blob/b06bbdf9c6ace7ac4b2bcd81c5d60637351ce08a/pep-06xx.rst",
+      "version_date": "b06bbdf9c6ace7ac4b2bcd81c5d60637351ce08a; created 30-Jul-2021",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Entire named first-text file; Abstract, Specification/Python, Specification/C-API and Backwards Compatibility"
+      ],
+      "verified_finding": "The frozen first draft requires live locals() and frame.f_locals, including the stated old-API failure.",
+      "limitations": "No later PEP body opened; malformed initial examples were not silently repaired.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "frozen_input",
+      "receipt": "streams/python/originals/pep-0667-b06bbdf9c6ac.rst",
+      "duplicate_group": "pep-0667-first",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q05-C-S1",
+      "kind": "supplier_manual",
+      "publisher": "Python Software Foundation",
+      "original_url": "https://docs.python.org/3/library/inspect.html",
+      "version_date": "Tool title Python 3.15.2, mutable /3/ alias",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Types and members L0–55, especially f_locals L46"
+      ],
+      "verified_finding": "Lists the frame namespace attribute.",
+      "limitations": "Attribute naming does not establish write-through mutation or the frozen full behavior.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q05/open-1.json",
+      "duplicate_group": "python-inspect",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q05-C-S2",
+      "kind": "supplier_manual_version",
+      "publisher": "Python Software Foundation",
+      "original_url": "https://docs.python.org/3.11/library/inspect.html",
+      "version_date": "Tool title Python 3.11.18",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Types and members L0–55, especially f_locals L44"
+      ],
+      "verified_finding": "Lists the older frame namespace attribute.",
+      "limitations": "No live-mutation evidence; same manual family not independently counted.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q05/open-2.json",
+      "duplicate_group": "python-inspect",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q05-A-S1",
+      "kind": "supplier_c_api_manual",
+      "publisher": "Python Software Foundation",
+      "original_url": "https://docs.python.org/3.13/c-api/frame.html",
+      "version_date": "Tool title Python 3.13.18; page updated Oct 26, 2026",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Delivered L0–234; relevant L32–38, L59–66, L105–150"
+      ],
+      "verified_finding": "PyFrame_GetLocals returns a modifying proxy for optimized frames; its view stays up to date.",
+      "limitations": "Threaded suspended-frame mutation and extra-key name resolution are not demonstrated.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q05/open-1.json",
+      "duplicate_group": "python-c-api-frame",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q05-A-S2",
+      "kind": "supplier_manual_excerpt_unusable_for_target_section",
+      "publisher": "Python Software Foundation",
+      "original_url": "https://docs.python.org/3.13/builtins/functions.html",
+      "version_date": "Tool title Python 3.13.18",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Delivered L0–358; locals() appears only as index/link references at L14 and L334"
+      ],
+      "verified_finding": "The requested locals link resolved to an excerpt that did not deliver the locals() definition.",
+      "limitations": "No locals semantics inferred from the unreturned part; counted attempt-only for frozen purpose.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q05/open-2.json",
+      "duplicate_group": "python-builtins-functions",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q05-A-S3",
+      "kind": "supplier_c_api_manual",
+      "publisher": "Python Software Foundation",
+      "original_url": "https://docs.python.org/3.13/c-api/reflection.html",
+      "version_date": "Tool title Python 3.13.18; page updated Oct 26, 2026",
+      "checked_utc": "2026-11-22T08:07:32.743Z",
+      "directly_read_sections": [
+        "Delivered L0–66; relevant L10–17, L25–30, L38–44"
+      ],
+      "verified_finding": "Reflection documents a cached borrowed PyEval_GetLocals result and a snapshot locals-equivalent path for optimized scopes.",
+      "limitations": "These conflict with parts of the earliest draft; no arbitrary-depth single-call API is shown.",
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q05/open-3.json",
+      "duplicate_group": "python-c-api-reflection",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "prior_questions": [
+        "Q01",
+        "Q03"
+      ],
+      "description": "Earlier Route A results remain in worker memory; only sanitized odd inputs and named common receipts were supplied."
+    },
+    {
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "search",
+      "kind": "sampled_later_proposal_snippets",
+      "description": "Search 1 returned current PEP 667, its mirrors/source and related PEP 558 snippets. None was opened or treated as original supplier evidence; queries and earliest-draft predicates remained fixed."
+    },
+    {
+      "question_id": "Q05",
+      "route": "A",
+      "stage": "route_body",
+      "kind": "incidental_later_status_reference",
+      "description": "The official frame/reflection manuals mention PEP 667 and version-3.13 changes. Those references were not followed."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q05/open-1.json",
+      "read_sections": [
+        "L0–55"
+      ],
+      "cited": false
+    },
+    {
+      "receipt": "common/Q05/open-2.json",
+      "read_sections": [
+        "L0–55"
+      ],
+      "cited": false
+    }
+  ],
+  "receipt_assessments": [
+    {
+      "receipt": "routes/A/Q05/open-2.json",
+      "body_status": "readable_original_excerpt_but_target_section_unreturned",
+      "counted_for_frozen_evidence": false,
+      "body_open_debit": 1
+    }
+  ],
+  "selection_rationale": "Search 1's first eligible supplier original after the excluded current PEP was the versioned 3.13 frame C API at provided rank 2. It directly covers the requested explicit-frame mapping. Its observed locals and Reflection links were opened strictly as evidence-body targets (no navigation/index use); Reflection addresses the frozen old-API and current-frame requirements. The common inspect attribute tables did not establish mutation. Duplicate versions/translations, current proposals and third-party snippets were not opened.",
+  "empty_resource_explanation": "One bounded candidate and two cited document URLs. The builtin body did not return the locals() section; its receipt is retained without an expansion. The remaining body call is unused."
+}

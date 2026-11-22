@@ -1,0 +1,93 @@
+{
+  "question_id": "Q09",
+  "route": "A",
+  "budget": {
+    "navigation": 2,
+    "body_opens": 2,
+    "body_successes": 2,
+    "body_failures_or_unusable": 0,
+    "common_reuse_count": 2,
+    "common_reuse_additional_calls": 0,
+    "server_transfer_bytes": "미계측",
+    "token_cost": "미계측",
+    "local_utf8_response_json_bytes": 125985
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy 2.x result-type promotion (np.result_type / PyArray_ResultType)",
+      "proposed_use": "Resolve a concrete NumPy result dtype before executing an arithmetic loop, keeping Python scalars weak and NumPy dtype information explicit.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/reference/arrays.promotion.html",
+          "section": "Detailed behavior of Python scalars L71–107; builtin type classes and result_type L139–150; prior behavior note L191",
+          "source_id": "Q09-C-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/stable/reference/c-api/array.html",
+          "section": "PyArray_ResultType L724–727; legacy scalar-kind paths L1926–1937; Data Type Promotion and Inspection L1992–2006",
+          "source_id": "Q09-A-S2"
+        }
+      ],
+      "opened_evidence": [
+        "common/Q09/open-1.json",
+        "routes/A/Q09/open-2.json"
+      ],
+      "remaining_adapter": "Pass concrete NumPy inputs and Python scalar values to the Python-level resolver; C integration must preserve Python-scalar provenance. Connect the descriptor to dispatch and conversion separately.",
+      "limitations": "No execution or custom-DType conformance test. Builtin scalar type objects are not interchangeable with weak scalar values; the C API excerpt alone does not establish that provenance mapping."
+    },
+    {
+      "rank": 2,
+      "name": "JAX weak-type promotion system",
+      "proposed_use": "Consider the documented type-lattice resolver for a mixed scalar/array dtype calculation while preserving explicit operand dtypes.",
+      "citations": [
+        {
+          "url": "https://docs.jax.dev/en/latest/101/type_promotion.html",
+          "section": "Type-lattice explanation and table L318–367, especially uint16 row L349 and weak-int row L362; Weakly-typed values L376–394",
+          "source_id": "Q09-A-S1"
+        }
+      ],
+      "opened_evidence": [
+        "routes/A/Q09/open-1.json"
+      ],
+      "remaining_adapter": "Map explicitly typed NumPy inputs to strongly typed JAX values and preserve required 64-bit types through the supported configuration; connect only a verified dtype result to NumPy dispatch.",
+      "limitations": "JAX promotion is already named in the first text. Untyped JAX 0-D construction stays weak; its float/integer promotion differs from NumPy, and the exact adapter and resolver call were not executed."
+    }
+  ],
+  "started_utc": "2026-11-22T08:09:00.294Z",
+  "ended_utc": "2026-11-22T08:10:36.100560+00:00",
+  "context": {
+    "worker": "route_a",
+    "isolation": "Separate Route A worker; no Route B results or other route judgments supplied or read.",
+    "authorized_initial_batch_inputs": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07",
+      "Q09",
+      "Q11"
+    ],
+    "common_commit": "5543465bd18542d3994280ebaab3487ae04a1e04",
+    "initial_questions_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+    "same_worker_prior_questions": [
+      "Q01",
+      "Q03",
+      "Q05",
+      "Q07"
+    ],
+    "cross_question_memory": true,
+    "independent_human_reading": false,
+    "sampled_current_proposals_opened": false
+  },
+  "serialization_gate": {
+    "checked_utc": "2026-11-22T08:10:36.100703+00:00",
+    "candidate_count": 2,
+    "distinct_document_urls": [
+      "https://docs.jax.dev/en/latest/101/type_promotion.html",
+      "https://numpy.org/doc/stable/reference/arrays.promotion.html",
+      "https://numpy.org/doc/stable/reference/c-api/array.html"
+    ],
+    "url_count": 3,
+    "posthoc_truncation": false
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "started_utc": "2026-11-22T08:14:41.990Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07",
+    "Q09",
+    "Q11"
+  ],
+  "subsequent_input_authorization": "Root authorized even inputs after opposite-route scheduling prerequisites, without supplying any B content; Q02 read next.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "golang.org/x/perf/benchfmt Reader and UnitMetadataMap",
+      "proposed_use": "Parse benchmark unit declarations incrementally into a unit-keyed metadata map and expose direction/assumption accessors to a benchmark consumer.",
+      "citations": [
+        {
+          "url": "https://pkg.go.dev/golang.org/x/perf/benchfmt",
+          "section": "Overview L201–206; Reader.Result/Scan/Units L385–405; UnitMetadata and UnitMetadataMap L500–549",
+          "source_id": "Q02-A-S2"
+        },
+        {
+          "url": "https://go.googlesource.com/perf/%2B/HEAD/benchfmt/reader.go",
+          "section": "Scan L131–193; parseUnitLine L331–379",
+          "source_id": "Q02-A-S3"
+        }
+      ],
+      "opened_evidence": "The API exposes metadata records and a normalized-unit map, with better={higher,lower} and assume={nothing,exact}. The parser reads key=value pairs and reports an error for differing values of the same unit/key.",
+      "remaining_adapter": "Connect producer/CLI input and reporting. Supporting the frozen higher/lower=better/worse aliases and detecting contradictions across those differently named keys would require normalization not established here.",
+      "limitations": "The documented direction spelling is an alternative canonical form, but the parser does not itself normalize arbitrary synonymous keys. No CLI -unit path or whole-contract completion was verified. Parser errors are nonfatal records that consumers must inspect; execution was not performed."
+    },
+    {
+      "rank": 2,
+      "name": "golang.org/x/perf/cmd/benchstat",
+      "proposed_use": "Consume benchmark unit assumptions when summarizing and comparing measurements.",
+      "citations": [
+        {
+          "url": "https://pkg.go.dev/golang.org/x/perf/cmd/benchstat",
+          "section": "Units L376–380",
+          "source_id": "Q02-A-S1"
+        }
+      ],
+      "opened_evidence": "The command documents nonparametric statistics under the default assume=nothing and single-sample comparisons under assume=exact, warning on variation.",
+      "remaining_adapter": "Supply unit metadata and integrate any required CLI declaration and direction-alias validation.",
+      "limitations": "Benchstat is already explicitly named by the initial proposal, not a newly identified family. This section alone establishes neither all four direction formulations nor contradictory-alias rejection or CLI configuration."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "GO-Q02-INITIAL",
+      "kind": "frozen_initial_proposal",
+      "publisher": "Go",
+      "original_url": "https://github.com/golang/go/issues/43744",
+      "version_date": "GitHub IssuesEvent 14843519105 action=opened; archive generation 1610831111133334",
+      "checked_utc": "2026-11-22T08:16:07.542Z",
+      "directly_read_sections": [
+        "L1–29"
+      ],
+      "verified_finding": "Frozen benchmark-unit purpose and five whole gates read from the sealed opened-event text.",
+      "limitations": "No current issue/followup body was opened.",
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "initial",
+      "receipt": "docs/workstreams/research/AF-RES-029/streams/go/bodies/43744-initial.md",
+      "duplicate_group": "initial-go43744",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q02-A-S1",
+      "kind": "supplier_original_command_manual",
+      "publisher": "Go Authors",
+      "original_url": "https://pkg.go.dev/golang.org/x/perf/cmd/benchstat",
+      "version_date": "Displayed v0.0.0-...-4febdb0; published 2026-11-17",
+      "checked_utc": "2026-11-22T08:16:07.542Z",
+      "directly_read_sections": [
+        "L95–149 metadata; L200–276 examples/filtering; L374–387 units/tips"
+      ],
+      "verified_finding": "Default nonparametric and exact-measurement behavior is documented.",
+      "limitations": "No complete CLI unit-declaration or direction matrix established.",
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q02/open-1.json",
+      "duplicate_group": "go-benchstat-command",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q02-A-S2",
+      "kind": "supplier_original_api_reference",
+      "publisher": "Go Authors",
+      "original_url": "https://pkg.go.dev/golang.org/x/perf/benchfmt",
+      "version_date": "Displayed v0.0.0-...-4febdb0; published 2026-11-17",
+      "checked_utc": "2026-11-22T08:16:07.542Z",
+      "directly_read_sections": [
+        "L95–137 version; L201–206 overview; L313–337 Files; L360–405 Reader; L495–549 UnitMetadata"
+      ],
+      "verified_finding": "Streaming metadata records, unit/property map, direction and assumption helpers.",
+      "limitations": "Total page 651 lines, actual delivered L0–602 only; no inference about missing tail. Synonym normalization not documented.",
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q02/open-2.json",
+      "duplicate_group": "go-benchfmt-api",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q02-A-S3",
+      "kind": "supplier_original_implementation",
+      "publisher": "Go Authors",
+      "original_url": "https://go.googlesource.com/perf/%2B/HEAD/benchfmt/reader.go",
+      "version_date": "HEAD; delivered blob 817fd41d04d3998a48ad1200e8845a91e1c24c8c",
+      "checked_utc": "2026-11-22T08:16:07.542Z",
+      "directly_read_sections": [
+        "L0–29 provenance; L78–103 reset; L115–195 Scan; L319–379 parseUnitLine; L438–444 Units"
+      ],
+      "verified_finding": "Unit parsing emits metadata/error records incrementally; same-key different-value declarations produce SyntaxError.",
+      "limitations": "Conflict handling is indexed by the literal metadata key, so contradictions spanning higher/lower keys are not proven rejected. HEAD edition not tied to pkg.go.dev module version.",
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q02/open-3.json",
+      "duplicate_group": "go-benchfmt-reader",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "A worker retains the six odd-question contexts. Only the authorized Q02 input and named initial/baseline were added; no B content read."
+    },
+    {
+      "question_id": "Q02",
+      "route": "A",
+      "stage": "route_search_discovery",
+      "kind": "incidental_proposal_snippet",
+      "description": "Searches showed sampled issue 43744 and the benchmark-format proposal document as titles/snippets. Neither current body was opened or used as evidence; frozen purpose retained."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q02/baseline-return.json",
+      "read_sections": [
+        "complete local packet"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    }
+  ],
+  "selection_rationale": "Preselected two candidates and three unique document URLs before serialization. Supplier command manual, exact unit API and reader implementation match the purpose; mirrors and unrelated benchmark metadata were not opened. Benchfmt is the distinct component within the already-named family. Its gaps remain explicit. Search ranks were preserved, with official purpose relevance prioritized. No fourth request was used to repair unmet predicates.",
+  "empty_resource_explanation": "The common start had no eligible provider pages or candidates; A therefore used its independent literal searches and retained only the two directly read supplier components."
+}

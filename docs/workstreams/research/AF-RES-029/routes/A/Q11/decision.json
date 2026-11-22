@@ -1,0 +1,210 @@
+{
+  "started_utc": "2026-11-22T08:10:44.432Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07",
+    "Q09"
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy StringDType",
+      "proposed_use": "Construct typed NumPy arrays of variable-width UTF-8 text with constructor-enforced strict validation; use the documented allocator-mediated C interface for downstream string access and replacement.",
+      "citations": [
+        {
+          "url": "https://numpy.org/devdocs/user/basics.strings.html",
+          "section": "Variable-width strings L73–89; Missing data support L90–137; Coercing non-strings L138–150",
+          "source_id": "Q11-C-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/2.1/reference/c-api/strings.html",
+          "section": "Examples L72–116; Types L119–145; Functions L192–224",
+          "source_id": "Q11-A-S1"
+        }
+      ],
+      "opened_evidence": "The user guide constructs unequal-length strings without a maximum-width parameter and rejects a non-string under coerce=False. It documents missing-sentinel examples. The C API shows UTF-8 loading/copy-packing and a descriptor-owned allocator protected by mutex acquisition/release.",
+      "remaining_adapter": "Import/select StringDType and set coerce=False at the existing input boundary; downstream C code must acquire/release the allocator and pack replacement strings rather than modify borrowed data.",
+      "limitations": "No execution was performed. Delivered sources do not establish the whole frozen contract: lossless npy/npz with allow_pickle=False, full casts/ufunc and unequal-parameter rejection matrix, freeing interface, or concurrent growing-mutation safety were not verified. Python str scalar behavior and multidimensional StringDType indexing were not specifically demonstrated in these excerpts. NumPy 2.1 C documentation and 2.6.dev0 user documentation are mixed editions; compatibility in one release was not tested."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Q11-FIRST",
+      "kind": "frozen_initial_proposal",
+      "publisher": "NumPy",
+      "original_url": "https://github.com/numpy/numpy/blob/1c013e78112a94e7a2975212df2304606b0d1d1c/doc/neps/nep-0055-string_dtype.rst",
+      "version_date": "Git commit 1c013e78112a94e7a2975212df2304606b0d1d1c; initial created 2023-06-29",
+      "checked_utc": "2026-11-22T08:14:23.368Z",
+      "directly_read_sections": [
+        "Initial text read locally; exact frozen sections in Q11 input packet; local reread L350–478 after display truncation"
+      ],
+      "verified_finding": "Frozen whole and partial purpose used without revision.",
+      "limitations": "Purpose-defining initial proposal only; no current proposal body or status read.",
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "initial",
+      "receipt": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-55.rst",
+      "duplicate_group": "initial-NEP55",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q11-C-S1",
+      "kind": "supplier_original_manual",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/devdocs/user/basics.strings.html",
+      "version_date": "NumPy v2.6.dev0; StringDType added 2.0",
+      "checked_utc": "2026-11-22T08:14:23.368Z",
+      "directly_read_sections": [
+        "L36–150: string-array context, fixed-width inference, variable-width construction, sentinels, coercion"
+      ],
+      "verified_finding": "Typed variable-width UTF-8 arrays, strict constructor option, and documented sentinel categories.",
+      "limitations": "Full scalar/N-D, concurrency, ufunc matrix and serialization contracts were not established.",
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q11/open-1.json",
+      "duplicate_group": "numpy-strings",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q11-C-S2",
+      "kind": "supplier_original_manual",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/doc/stable/numpy-user.pdf",
+      "version_date": "PDF Release 2.5.0",
+      "checked_utc": "2026-11-22T08:14:23.368Z",
+      "directly_read_sections": [
+        "L109@P8–138@P9: ndarray shape and dtype; L188@P10–211@P11: construction; L397@P15–414@P15: indexing"
+      ],
+      "verified_finding": "Generic ndarray guide describes array shape, creation and indexing.",
+      "limitations": "Delivered initial excerpt contains no StringDType chapter; not independent string-specific evidence and not cited.",
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q11/open-2.json",
+      "duplicate_group": "numpy-userguide",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q11-A-S1",
+      "kind": "supplier_original_c_api_manual",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/doc/2.1/reference/c-api/strings.html",
+      "version_date": "NumPy v2.1; NpyString API added 2.0",
+      "checked_utc": "2026-11-22T08:14:23.368Z",
+      "directly_read_sections": [
+        "Delivered L0–239; substantive L66–224; citations L72–116, L119–145, L192–224"
+      ],
+      "verified_finding": "Allocator-mediated UTF-8 load/pack and explicit mutex contract are documented. Packed storage is opaque.",
+      "limitations": "No whole-system proof, runtime stress test, freeing interface or no-pickle serialization established.",
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q11/open-1.json",
+      "duplicate_group": "numpy-npystring-api",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q11-A-S2",
+      "kind": "supplier_original_type_index",
+      "publisher": "NumPy",
+      "original_url": "https://numpy.org/devdocs/reference/routines.dtypes.html",
+      "version_date": "NumPy v2.6.dev0",
+      "checked_utc": "2026-11-22T08:14:23.368Z",
+      "directly_read_sections": [
+        "Delivered L0–135; DType classes L45–57; Strings and Bytestrings L100–104"
+      ],
+      "verified_finding": "The module index lists numpy.dtypes.StringDType.",
+      "limitations": "Click returned a type index with only the class name, not a detailed StringDType behavioral reference. Not used for completion evidence.",
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q11/open-2.json",
+      "duplicate_group": "numpy-dtypes-index",
+      "counted_eligibility": false
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "description": "Same isolated A worker previously handled Q01,Q03,Q05,Q07,Q09 and saw the authorized odd-question input batch. No B results were read."
+    },
+    {
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "route_search_discovery",
+      "kind": "later_answer_status_snippet_exposure",
+      "description": "Literal searches incidentally returned current NEP55, NEP58 and a StringDType cast issue. Snippets/titles were seen; no current proposal or followup body was opened. Frozen purposes and literal queries were unchanged."
+    },
+    {
+      "question_id": "Q11",
+      "route": "A",
+      "stage": "common_reuse",
+      "kind": "current_supplier_version_exposure",
+      "description": "Common user documentation and newly opened supplier API are current or post-initial implementation documentation. Versions are recorded; they do not revise the frozen initial task."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q11/open-1.json",
+      "read_sections": [
+        "L36–150"
+      ],
+      "cited_sections": [
+        "L73–89",
+        "L90–137",
+        "L138–150"
+      ],
+      "cited": true,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q11/open-2.json",
+      "read_sections": [
+        "L109@P8–138@P9",
+        "L188@P10–211@P11",
+        "L397@P15–414@P15"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    },
+    {
+      "receipt": "common/Q11/baseline-return.json",
+      "read_sections": [
+        "complete local baseline packet"
+      ],
+      "cited": false,
+      "additional_calls": 0
+    }
+  ],
+  "selection_rationale": "Prepared one candidate and two unique cited document URLs before first final serialization. The exact NumPy actor/output matches the frozen purpose most closely. The first search's supplier C API documentation adds direct storage/access evidence; official docs outrank mirrors and unrelated foreign arena implementations by purpose relevance/provenance. The type-index click supplied only a name and is not promoted to behavioral evidence. No additional requests were made to rescue missing scalar, serialization or full-subsystem proof.",
+  "empty_resource_explanation": "No extra candidate was retained: unrelated arena/string containers do not produce the required NumPy StringDType output.",
+  "receipt_assessments": [
+    {
+      "receipt": "routes/A/Q11/open-1.json",
+      "status": "readable_relevant_original",
+      "actual_returned_line_ranges": [
+        {
+          "start": 0,
+          "end": 239
+        }
+      ]
+    },
+    {
+      "receipt": "routes/A/Q11/open-2.json",
+      "status": "readable_type_index_only",
+      "actual_returned_line_ranges": [
+        {
+          "start": 0,
+          "end": 135
+        }
+      ],
+      "target_limitation": "StringDType listed at L104; detailed behavior absent. Body debit retained."
+    }
+  ]
+}

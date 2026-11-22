@@ -1,0 +1,199 @@
+{
+  "started_utc": "2026-11-22T08:09:00.294Z",
+  "prior_questions": [
+    "Q01",
+    "Q03",
+    "Q05",
+    "Q07"
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "NumPy 2.x result-type promotion (np.result_type / PyArray_ResultType)",
+      "proposed_use": "Resolve a concrete NumPy result dtype before executing an arithmetic loop, keeping Python scalars weak and NumPy dtype information explicit.",
+      "citations": [
+        {
+          "url": "https://numpy.org/doc/stable/reference/arrays.promotion.html",
+          "section": "Detailed behavior of Python scalars L71–107; builtin type classes and result_type L139–150; prior behavior note L191",
+          "source_id": "Q09-C-S1"
+        },
+        {
+          "url": "https://numpy.org/doc/stable/reference/c-api/array.html",
+          "section": "PyArray_ResultType L724–727; legacy scalar-kind paths L1926–1937; Data Type Promotion and Inspection L1992–2006",
+          "source_id": "Q09-A-S2"
+        }
+      ],
+      "opened_evidence": [
+        "common/Q09/open-1.json",
+        "routes/A/Q09/open-2.json"
+      ],
+      "remaining_adapter": "Pass concrete NumPy inputs and Python scalar values to the Python-level resolver; C integration must preserve Python-scalar provenance. Connect the descriptor to dispatch and conversion separately.",
+      "limitations": "No execution or custom-DType conformance test. Builtin scalar type objects are not interchangeable with weak scalar values; the C API excerpt alone does not establish that provenance mapping."
+    },
+    {
+      "rank": 2,
+      "name": "JAX weak-type promotion system",
+      "proposed_use": "Consider the documented type-lattice resolver for a mixed scalar/array dtype calculation while preserving explicit operand dtypes.",
+      "citations": [
+        {
+          "url": "https://docs.jax.dev/en/latest/101/type_promotion.html",
+          "section": "Type-lattice explanation and table L318–367, especially uint16 row L349 and weak-int row L362; Weakly-typed values L376–394",
+          "source_id": "Q09-A-S1"
+        }
+      ],
+      "opened_evidence": [
+        "routes/A/Q09/open-1.json"
+      ],
+      "remaining_adapter": "Map explicitly typed NumPy inputs to strongly typed JAX values and preserve required 64-bit types through the supported configuration; connect only a verified dtype result to NumPy dispatch.",
+      "limitations": "JAX promotion is already named in the first text. Untyped JAX 0-D construction stays weak; its float/integer promotion differs from NumPy, and the exact adapter and resolver call were not executed."
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "Q09-FIRST",
+      "kind": "frozen_initial_design",
+      "publisher": "Sebastian Berg / NumPy",
+      "original_url": "https://github.com/numpy/numpy/blob/ff5e9b79b1f94e0b438c459f630e505610382670/doc/neps/nep-0050-scalar-promotion.rst",
+      "version_date": "ff5e9b79b1f94e0b438c459f630e505610382670; created 2021-01-10",
+      "checked_utc": "2026-11-22T08:10:35.017Z",
+      "directly_read_sections": [
+        "Entire named initial text; Abstract, Proposed Weak Promotion, Implementation and Related Work"
+      ],
+      "verified_finding": "The partial boundary resolves dtype from kinds and explicit dtypes, without scalar magnitude inspection.",
+      "limitations": "Initial typos/alternatives retained; no current NEP body opened.",
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "frozen_input",
+      "receipt": "streams/numpy/first_texts/NEP-50.rst",
+      "duplicate_group": "nep-50-first",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q09-C-S1",
+      "kind": "supplier_manual",
+      "publisher": "NumPy Developers",
+      "original_url": "https://numpy.org/doc/stable/reference/arrays.promotion.html",
+      "version_date": "Tool title NumPy v2.5, stable alias",
+      "checked_utc": "2026-11-22T08:10:35.017Z",
+      "directly_read_sections": [
+        "L20–175",
+        "L185–202; especially L71–107, L139–150 and L191"
+      ],
+      "verified_finding": "Current promotion treats Python scalar kind separately from precision and shows a concrete result_type output.",
+      "limitations": "No execution; full NumPy-scalar/0-D/N-D matrix was not tested.",
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q09/open-1.json",
+      "duplicate_group": "numpy-promotion",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q09-C-S2",
+      "kind": "supplier_manual_development_version",
+      "publisher": "NumPy Developers",
+      "original_url": "https://numpy.org/devdocs/reference/arrays.promotion.html",
+      "version_date": "Tool title NumPy v2.6.dev0",
+      "checked_utc": "2026-11-22T08:10:35.017Z",
+      "directly_read_sections": [
+        "L20–175",
+        "L185–218"
+      ],
+      "verified_finding": "The development manual repeats weak-scalar behavior and separately documents cast safety.",
+      "limitations": "Same manual family; not independently counted, and development text is not historical availability evidence.",
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "common_reuse",
+      "receipt": "common/Q09/open-2.json",
+      "duplicate_group": "numpy-promotion",
+      "counted_eligibility": false
+    },
+    {
+      "source_id": "Q09-A-S1",
+      "kind": "supplier_manual",
+      "publisher": "JAX Authors",
+      "original_url": "https://docs.jax.dev/en/latest/101/type_promotion.html",
+      "version_date": "latest mutable JAX manual; no package version in excerpt",
+      "checked_utc": "2026-11-22T08:10:35.017Z",
+      "directly_read_sections": [
+        "Delivered L0–427; type-promotion table L318–367; weak values L376–394; strict mode L395–420"
+      ],
+      "verified_finding": "The table resolves uint16 with weak integer to uint16; explicit dtype construction creates a strong scalar array.",
+      "limitations": "Default weak 0-D arrays, X64 configuration and other promotion differences require adapter validation; source cites no historical version.",
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q09/open-1.json",
+      "duplicate_group": "jax-type-promotion",
+      "counted_eligibility": true
+    },
+    {
+      "source_id": "Q09-A-S2",
+      "kind": "supplier_c_api_manual",
+      "publisher": "NumPy Developers",
+      "original_url": "https://numpy.org/doc/stable/reference/c-api/array.html",
+      "version_date": "NumPy v2.5; stable mutable alias",
+      "checked_utc": "2026-11-22T08:10:35.017Z",
+      "directly_read_sections": [
+        "Returned L672–676, L678–845, L1872–2034; relevant L724–727, L1926–1937, L1992–2006"
+      ],
+      "verified_finding": "PyArray_ResultType provides an operation dtype from arrays/dtypes; common-DType APIs work on classes and return descriptors.",
+      "limitations": "The excerpt does not show how to carry Python weak-scalar provenance through array conversion, and adjacent legacy APIs retain older behaviors.",
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "route_body",
+      "receipt": "routes/A/Q09/open-2.json",
+      "duplicate_group": "numpy-c-api-array",
+      "counted_eligibility": true
+    }
+  ],
+  "exposures": [
+    {
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "context",
+      "kind": "same_worker_memory",
+      "prior_questions": [
+        "Q01",
+        "Q03",
+        "Q05",
+        "Q07"
+      ],
+      "description": "Earlier Route A observations and authorized odd-input packets remain in worker memory; no Route B or judgment files read."
+    },
+    {
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "search",
+      "kind": "sampled_later_proposal_snippets",
+      "description": "Both literal searches returned current NEP 50 and mirrors; one also returned NEP 47. Those proposal bodies were not opened or used as evidence."
+    },
+    {
+      "question_id": "Q09",
+      "route": "A",
+      "stage": "route_body",
+      "kind": "incidental_later_status_reference",
+      "description": "NumPy and JAX supplier manuals mention NumPy 2/NEP 50 behavior. These supplier statements were recorded with current versions, without changing the frozen draft or implying historical availability."
+    }
+  ],
+  "common_reuse": [
+    {
+      "receipt": "common/Q09/open-1.json",
+      "read_sections": [
+        "L20–175",
+        "L185–202"
+      ],
+      "cited": true
+    },
+    {
+      "receipt": "common/Q09/open-2.json",
+      "read_sections": [
+        "L20–175",
+        "L185–218"
+      ],
+      "cited": false
+    }
+  ],
+  "selection_rationale": "The two highest-purpose supplier manuals were the common NumPy promotion page (rank 1 in both queries) and JAX's original promotion manual (search 2 provided rank 13), whose weak-kind table directly addressed the partial resolver. The current NumPy C API at search 1 rank 6 was read with a single targeted find request for PyArray_ResultType, counted as one evidence-body request. Older result_type manuals, duplicate NumPy editions, proposal bodies and mirrors were not opened.",
+  "empty_resource_explanation": "Two candidates, three distinct cited document URLs. Two new body requests remain unused; common receipts were reused locally with zero calls."
+}
