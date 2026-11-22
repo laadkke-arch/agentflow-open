@@ -138,3 +138,20 @@ cp "$p/probes/af_res025_scalar_probe.rs" "$p/probes/scalar_boundaries.rs" "$rust
 - **2021 Arrow 원문 직접 재독**은 Apache mailing archive HTTP 접근이 가능한 곳에서 025의 restore_inputs.py Q01 Q02와 이 작업의 source-attempts.jsonl을 연다. 처음 두 raw Message-ID의 본문 SHA-256 일치, 제안과 수락 메일의 각각 독립 Message-ID 확인이 첫 행동이다. tracker의 재현은 최초 메일을 대신하지 않는다.
 - **대형 Parquet 또는 IPC**는 작은 두 스트림과 C Data 고주소의 범위 밖이다. 같은 PyArrow와 Java에서 길이 2,147,487,744의 채워진 Binary payload와 4바이트 tail을 가진 단일 논리 청크를 고정하고, 예산을 잰 뒤 생성·Parquet read·IPC write·Java tail read를 별도 영수증으로 닫는다. 파일 쓰기량·row group·압축 및 Arrow chunk 분리를 먼저 기록한다.
 - **WMS 의미부터 화면까지**는 Blue Lake ZIP과 CRS:84/EPSG:4326을 모두 지원하는 로컬 서비스에서 Lakes 범위를 두 순서와 고의 바꾼 순서로 요청하고 동일한 위치의 픽셀을 확인한다. 이번 측정은 ZIP의 헤더와 CTL fixture 판독이다.
+
+## Java 원본 논리행 반례의 별도 재생
+
+```sh
+holder_run=$(mktemp -d)
+mkdir "$holder_run/classes"
+java_cp=$(cat "$cache/setup/java/java.cp")
+"$cache/tools/jdk/bin/javac" -cp "$java_cp" -d "$holder_run/classes" "$p/probes/JavaHolderControl.java"
+(
+  cd "$holder_run"
+  "$cache/tools/jdk/bin/java" --add-opens=java.base/java.nio=ALL-UNNAMED \
+    -Darrow.cdata.library.path="$cache/java-dist/lib/arrow_cdata_jni/x86_64" \
+    -cp "$holder_run/classes:$java_cp" JavaHolderControl
+)
+```
+
+두 입력은 같은 holder에 hello world와 null을 설정한다. 원 방식은 producer/ABI/consumer가 0/0/0이며 setValueCount(2)만 추가한 대조는 2/2/2다. 원본 JUnit은 별도 그대로 실행했다.
