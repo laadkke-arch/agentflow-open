@@ -19,3 +19,8 @@
 - 최초 로컬 커밋 bf5bd8f는 HTTPS push 인증정보 부재로 원격에 올라가지 않았다. 기존 승인된 GitHub 연결 도구의 tree/commit/branch 동작으로 같은 파일을 저장했다. 새 인증정보·계정·권한은 만들지 않았다. 인계 기준은 위 원격 SHA다.
 - Wikidata WD01 실제 merge1038289881→undo1048159568, 별도consumer1039041773→1048159950 확보. 정책3개 직접읽음. 역사페이지 일부가 막혀 해당 후보는 제외원장에 남긴다.
 - 추가 공식호스트 shell 관측: phabricator.wikimedia.org/T237262 403(03:15:17Z), commons.wikimedia.org portrait403(03:15:21Z). 웹 본문열람은 성공했으며 HTTP코드와 혼동하지 않았다.
+
+## 묶음2a — Wikidata 원격 저장
+
+- 커밋 `add402d0203693fa2d0c9efc3b07a9e9d9a614fb`; 고정판 events.jsonl을 GitHub에서 다시 읽고 로컬 fetch로 동일 HEAD 확인.
+- 다음 소프트웨어 묶음은 core5사건(SW01/02/03/05/06), 보충SW04, 정책3, 독립소비자3. HTTP200이면서 CLI가 빠진 tree-sitter와 현재404인 libxml++3 파일의 고정판 열람을 분리했다.
