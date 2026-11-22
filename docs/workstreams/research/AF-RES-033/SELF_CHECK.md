@@ -74,16 +74,19 @@ R05–L06을 더 좁게 읽는 **증거 강도 민감도**도 남긴다. VPL의 
 
 ## 현재 확인한 검사와 최종 검사와의 경계
 
-| 검사 층 | 이 문서 작성 시점에 확인한 사실 | 이후 확인할 영수증·담당 범위 |
-| --- | --- | --- |
-| 기존 입력·원문 감사 | initial-source-binding, resume-input-audit, resume-donor-audit 및 분야별 attempts의 실제 입력/원문/해시 검사를 읽음. 현재 핵심 행수·분포를 읽기 전용으로 재계산 | 기존 영수증이 검증한 파일/당시판 범위를 유지. 이후 새 파일까지 검사됐다고 확대하지 않음 |
-| 현재 작업트리 종합 검산 | 작성 시점에는 최종 영수증 미작성 | evidence/pre-result-validation.json: root/별도 검산자가 실제 집계·모든 ID 조인·해시·범위 검사 뒤 기록 |
-| 결과 봉인 전 계약 검사 | 작성 시점에는 최종 영수증 미작성 | evidence/session-check.json: 실제 workbench.session check의 대상·명령·종료코드 기록 |
-| 고정 결과 SHA 재검 | 작성 시점에는 미실행/미작성 | evidence/final-verification.json: 고정 결과 SHA의 검산 및 원격 재독 묶음. 이 SELF_CHECK의 사전 기대를 실행 결과로 사용하지 않음 |
-| 고정 결과 SHA 계약 검사 | 작성 시점에는 미실행/미작성 | evidence/final-session-check.json: 고정 결과에 --fetch를 적용한 실제 출력·종료코드 |
-| RESULT·수용 파일 원격 직접 재독 | 관측889c5e7 봉인은 완료됐지만 최종 RESULT/수용 파일의 재독을 아직 증명하지 않음 | evidence/remote-result-read.json: 실제 고정 SHA의 RESULT.md와 evidence/acceptance-evidence.json 원격 응답·해시·판독. 최종 HANDOFF에서 실제값으로 확정 |
+초기 작성 때의 미완료 표시는 결과 후보89a5b4f46912c01fedd0bbb9ee66dad371eb30b3에 보존돼 있다. 아래는 그 후보를 실제 검사하고 원격 재독한 뒤의 갱신이며 Q1–Q7의 근거·판정·집계는 바꾸지 않았다.
 
-계약 검사 통과는 경로·의존 SHA·작업 상태의 검사다. 그 통과만으로 매핑 의미, 직접 인용 부재, 사용자 유용성을 인증하지 않는다. 위 예정 영수증이 실패하거나 필수 자료가 빠지면 완료로 표현하지 말고 실제 미충족과 다음 첫 명령을 HANDOFF에 적어야 한다.
+| 검사 층 | 실제 확인한 사실 | 영수증·범위 |
+| --- | --- | --- |
+| 기존 입력·원문 감사 | initial-source-binding, resume-input-audit, resume-donor-audit와 분야별 실제 원문/해시 검사 및 독립 집계 | 기존 시점·파일 범위를 유지하며 원문 링크를 읽은 것으로 대체하지 않음 |
+| 결과 봉인 전 작업트리 검산 | 네 명령 모두 종료0, 핵심 파일 전후 해시 불변 | [pre-result-validation](evidence/pre-result-validation.json); 당시 HEAD889c5e와 작업트리 파일 해시 |
+| 결과 봉인 전 계약 검사 | --fetch 종료0·passed·소유밖/충돌/오류0 | [session-check](evidence/session-check.json); HEAD889c5e, 통합421009aa06da33c5b57ababec1fb624cf43410c2 |
+| 고정 결과 후보 SHA 재검 | 89a5b4f46912c01fedd0bbb9ee66dad371eb30b3에서 입력/검색재생/재집계/원문포함결과검산 네 명령 모두 종료0, 핵심 해시 불변 | [result-candidate-verification](evidence/result-candidate-verification.json) |
+| 고정 결과 후보 계약 검사 | 같은89a5b4f에서 --fetch 종료0·passed·오류0 | [result-candidate-session-check](evidence/result-candidate-session-check.json); 통합421009aa06da33c5b57ababec1fb624cf43410c2 |
+| 고정 후보 RESULT·SELF_CHECK·수용 파일 원격 재독 | GitHub에서89a5b4f의 세 전체본문을 수신해 로컬 고정본문과 문자/바이트 내용 및 Git blob SHA 일치 확인. 0/8·144분포·마지막3약점·미충족 A07/A10 및 당시 대기 A31/A32를 재독 | [result-candidate-remote-read](evidence/result-candidate-remote-read.json) |
+| 갱신된 수용 파일의 최종 고정판 재검 | 이 갱신을 커밋한 뒤 다시 검사할 단계. 아직 수행한 것으로 소급하지 않음 | evidence/final-verification.json, evidence/final-session-check.json, evidence/remote-result-read.json을 실제로 기록한 뒤에만 HANDOFF 작성 |
+
+계약 검사 통과는 경로·의존 SHA·작업 상태의 검사다. 매핑 의미, 직접 인용 부재, 사용자 유용성의 인증이 아니다. 마지막 갱신판 검사와 재독의 실제 SHA/종료코드는 최종 HANDOFF와 해당 영수증이 확정한다. A07/R04 요구 강도와 A10/T02 표제 잔존은 검사 성공으로 없애지 않은 원 실험 편차다.
 
 ## 남겨야 할 가장 중요한 약점 세 건
 
