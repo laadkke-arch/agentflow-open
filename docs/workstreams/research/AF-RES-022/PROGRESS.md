@@ -56,3 +56,10 @@
 - 검사:통합36/36,각Q원문위치9/9,공통sessioncheck--fetch exit0,소유경로밖변경0. 초기F3별칭/HTMLmarker실패는삭제하지않고수정·재검사결과와함께보존.
 - 미충족8조건은수용근거에false.양성목표6연결/3생산유지,최초사적필요/공개코드,팀가용일,역사운영재현,인과절감량,EPO원dossier,최초전이/사후명명고리가남는다. 각사례다음입력은minimum_next_record.
 - 다음첫행동: 이묶음을먼저커밋하고GitHub에서SELF_CHECK/수용근거/RESULT읽기확인.그뒤에만HANDOFF작성·마지막별도커밋.수용상태는REVIEW_READY_WITH_GAPS.
+
+
+### 묶음④ 원격 확인과 참조 정정
+
+- 결과/SELF_CHECK/수용근거커밋: `3e28772096c8abbcbe83dc16fc2bebb961ffafe5`. GitHub고정판세파일을읽고blob SHA를대조했다. 묶음38개파일모두원격blob과로컬UTF-8바이트해시가같다.
+- 인계직전수용근거의EPO차단ID참조오기를CF-BLOCK-1..3으로정정했다. evidence/reference-audit.json이정확한자료ID의존재를확인한다. 표본/주장/분모변경없음.
+- HANDOFF는이참조정정을별도커밋·원격확인한뒤작성한다. 최종진행상태·결과commit확인경로·재개입력은HANDOFF를기준으로한다.
