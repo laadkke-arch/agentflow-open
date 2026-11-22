@@ -1,0 +1,247 @@
+{
+  "review_id": "AF-RES-047-RJ-ROOT-STATIC-01",
+  "reviewed_utc": "2026-11-22T22:45:30.029561+00:00",
+  "method": "동일모델 별도문맥의 static integration review. 외부 독립 판독·눈가림 평가·원 과학실행 재현 아님. root파일 수정 없음.",
+  "scope": [
+    "R_local vs external-publisher R",
+    "external edition U vs local declaration",
+    "candidate value vs strictV",
+    "A/B leakage of C evidence",
+    "duplicate work and allocation axes"
+  ],
+  "snapshot_files": {
+    "scripts/consolidate.py": {
+      "sha256": "1683e0ba6443681a8e30793d276931c069511093e550cf056bbe0b76d25c5cd7",
+      "bytes": 18903
+    },
+    "cases.json": {
+      "sha256": "c4383e4608055502b70814804768dde47e1297139808cbc0ada79e9997bbb180",
+      "bytes": 62967
+    },
+    "readings.csv": {
+      "sha256": "0e4ab10762ca0a7a2194a0742675c984157e51d28493951e4bed6975cc808ad1",
+      "bytes": 42304
+    },
+    "analysis-summary.json": {
+      "sha256": "d39e04e6d8ef3fd0a092f14d56990a70dca3d8fca2790537d89545d597abc3f9",
+      "bytes": 2918
+    },
+    "source-count-summary.json": {
+      "sha256": "f0f21a300b289afbaecc08f2e499ca235afdbfb3d640e0c67e964e570869737d",
+      "bytes": 1645
+    },
+    "sources.jsonl": {
+      "sha256": "35d293e0e2d47e14a29b52c8d4779371ed9b045b3af67c33d9cd2f9fa4276b9e",
+      "bytes": 400653
+    }
+  },
+  "concurrent_update_limit": "Initial findings from22:40:04–22:43:47UTC; closingfilehashesfirstcaptured22:45:30 duringupdates. Explicitlatest_recheck records rootfixes andnewRUCsource; no claimtheseareoneimmutable remotecommit.",
+  "checks": {
+    "cases": 8,
+    "readings": 24,
+    "case_flags": {
+      "publisher_exists": 6,
+      "specific_usage": 2,
+      "run_link": 0,
+      "local_run_link": 2,
+      "value_checked": 0,
+      "candidate_value_checked": 1,
+      "strict_positive": 0
+    },
+    "source_ids_unique": true,
+    "admitted_work_ids_unique": true,
+    "admitted_count": 31,
+    "no_counted_failed_access": true
+  },
+  "findings": [
+    {
+      "id": "RIR-01",
+      "severity": "high",
+      "status": "resolved_during_review",
+      "axis": "A/B-to-C information boundary",
+      "observation": "RUN A/B visible_values is missing, but shared fields carry C-level output/log details. RUN02 field contains POS1,END63267,DP0 and missing_reason contains selectedCHROM1/DP0. RUN01 field carries y4096 and target_time contains exact test/preprocess log times. Their own configuration evidence says graph/log/HDF5/VCF contents are added in C.",
+      "locations": [
+        "scripts/consolidate.py:232",
+        "scripts/consolidate.py:245",
+        "readings.csv data rows RUN01/A,B and RUN02/A,B (CSVrows20,21,23,24)",
+        "cases.json RUN01.field/target_time; RUN02.field/missing_reason"
+      ],
+      "impact": "If the full rows are evidence packets, A/B expose C-derived facts despite visible_values guarding. Primary RUN02 value1 also appears in A/B missing_reason; masked numeric cells alone do not enforce boundaries. Aggregate U/R/V counts currently remain conservative.",
+      "minimum_correction": "Use configuration-specific packet field/time/missingness; keep neutral selected-field criterion(firstrecord CHROM/coord_x) without C row values. Put full-case after-review details in explicit auditor_context columns and exclude them from packet/result excerpts. Retain full details in C and first8-slot table.",
+      "validation": "Search RUN01/RUN02 A/B packet columns for63488,4096,CHROM1,END63267,DP0 and C-onlylogtimes; only neutralselectioncriteria and explicit missing slot should remain.",
+      "initial_status": "correction_required",
+      "resolved_verified_utc": "2026-11-22T22:47:13.327625+00:00",
+      "resolution_observed": "Root now uses neutral packet_field/packet_time and configuration-specific missing_reason; full fields move to explicitly excluded audit_only_* columns. RUN A/B primary values remain missing."
+    },
+    {
+      "id": "RIR-02",
+      "severity": "medium",
+      "status": "resolved_during_review",
+      "axis": "externalU vs localU schema",
+      "observation": "RUN01 top-level specific_usage=false and readings.usage_specific=false correctly denote external U, but cases.json RUN01.C.specific_usage=true retains the local declaration under the same unqualified name.",
+      "locations": [
+        "scripts/consolidate.py:174-180",
+        "scripts/consolidate.py:226-230",
+        "cases.json RUN01.specific_usage",
+        "cases.json RUN01.C.specific_usage",
+        "readings.csv RUN01/C usage_specific=false local_usage_specific=true"
+      ],
+      "impact": "Current aggregate1/2 externalU is correct, but a reader consuming nested cases.C.specific_usage would obtain2/2 and conflate localfile use with externalpublisher edition.",
+      "minimum_correction": "Normalize nested config flags too: external specific_usage=false/local_usage_specific=true; preserve source flag in specific_usage_collection_original or explicit local field. Apply same named axes consistently in JSON/CSV/summary.",
+      "validation": "Each final caseC externalU/R/V agrees with top-level flags. RUN01 externalUfalse/localUtrue; RUN02 externalUtrue/localUtrue.",
+      "initial_status": "correction_required",
+      "resolved_verified_utc": "2026-11-22T22:47:13.327625+00:00",
+      "resolution_observed": "Nested RUN01.C.specific_usage nowfalse and specific_usage_localtrue; source original flag preserved. RUN02 retains bothtrue."
+    },
+    {
+      "id": "RIR-03",
+      "severity": "medium",
+      "status": "resolved_during_review",
+      "axis": "latest fragment and cumulative values",
+      "observation": "Root RJ01/RJ02/RJ03 B/C configurations are older than the latest rjournal fragment. The fragment now explicitly unions A/B/C visible_urls and visible_values; root still lists only delta-style values in B/C.",
+      "locations": [
+        "cases.json RJ01.B,C; RJ02.B,C; RJ03.B,C",
+        "collection/rjournal/cases.json corresponding nodes",
+        "scripts/consolidate.py:216-225"
+      ],
+      "impact": "No score changes, but fixed visible-value evidence differs between canonical root and reviewed fragment.",
+      "minimum_correction": "Rerun consolidation after latest fragment inputs and compare hashes. Preserve cumulative known values; unknown placeholders may become known without being asserted as values.",
+      "validation": "Root RJ config objects match latest fragment after normalization; A links and known values remain visible in B/C.",
+      "initial_status": "regeneration_required",
+      "resolved_verified_utc": "2026-11-22T22:47:13.327625+00:00",
+      "resolution_observed": "Latestroot RJ01/02/03 A/B/C objects match updated rjournal fragments."
+    },
+    {
+      "id": "RIR-04",
+      "severity": "low",
+      "status": "evidence_link_clarification_recommended",
+      "axis": "unique works and qualifying semantic reading",
+      "observation": "W-WOMBAT-run minimum credit is attached to catalogue-metadata sourceR-FR-ZEN-10091550, whose locator is metadata.description/files. A later same-work source R-ARCHIVE-wombat-aux directly reads actual protein-quantification output. Similar first-row metadata counting occurs for selected CPM run.",
+      "locations": [
+        "sources.jsonl sourceR-FR-ZEN-10091550",
+        "sources.jsonl sourceR-ARCHIVE-wombat-aux",
+        "sources.jsonl sourceR-FR-ZEN-7676923",
+        "source-count-summary.json method"
+      ],
+      "impact": "A genuine qualifying same-work read exists, so no demonstrated inflation of total30. But admitted row alone does not show the stronger semantic evidence, and method text says screening metadata add zero.",
+      "minimum_correction": "Add qualifying_source_ids to admitted work or move the representative credit to an actual run content read; keep totalone perwork and one allocation.",
+      "validation": "Every admitted work has an explicit qualifying semantic-reading source, including metadata-first works; count unchanged if evidencealreadyexists."
+    },
+    {
+      "id": "RIR-05",
+      "severity": "low",
+      "status": "definition_hardening_recommended",
+      "axis": "24-total vs allocation quotas",
+      "observation": "minimum24_met uses all30 admittedworks, including4 supplementary; quota_eligible_unique_works is26. all_allocations_met=false correctly preserves publisher7/8 shortage.",
+      "locations": [
+        "scripts/consolidate.py:259-261",
+        "source-count-summary.json minimum24_met/quota_eligible_unique_works/all_allocations_met"
+      ],
+      "impact": "No current numeric false positive because26 eligibleworks alreadyexceed24. A future revision could make minimum24_met true through supplementary works despite insufficient required-role works.",
+      "minimum_correction": "Name general direct24 separately; define task minimum24 using quota-eligible unique works and keep all role allocations as a distinct necessary gate.",
+      "validation": "Current values remain true for eligible24, false for allallocations until actualpublisher8thwork qualifies; no role replacement by generic explanation."
+    }
+  ],
+  "passed_axes": [
+    {
+      "axis": "Rlocal/externalR",
+      "observation": "Bothrun caseslocal_run_link=true; externalrun_link=false throughoutcases/readings/summary; differentpreprocess/runUUIDs notcollapsed.",
+      "evidence": [
+        "cases.json RUN01/RUN02",
+        "analysis-summary.json execution_supplement",
+        "readings.csv RUN01/C,RUN02/C"
+      ]
+    },
+    {
+      "axis": "externalU aggregate",
+      "observation": "RUN01 localonly excludedfromexternalU; RUN02 exactpublisher contentURL declaration retained despiteunverifiedgzipbyteequivalence; RJ02 Ulimitedto16filenameversions.",
+      "evidence": [
+        "analysis-summary.json definitions andexecution_supplement",
+        "cases.json RUN01/RUN02/RJ02"
+      ]
+    },
+    {
+      "axis": "candidate/strictV",
+      "observation": "RJ03 candidate_value_checked=true, value_checked/strict_positive=false; all8casesstrictVfalse. Author0/386 andrunoutputrereadsnotpromoted.",
+      "evidence": [
+        "analysis-summary.json natural_primary_after_A01",
+        "cases.json RJ02/RJ03/RUN01/RUN02"
+      ]
+    },
+    {
+      "axis": "dedup/roleaggregation",
+      "observation": "No repeated admittedwork_id or identicaladmittedfinalURLobserved. CRAN16components andIrisvariants areoneworkeach. Requiredrolecounts8/7/7/2/2 andsupplementary4keptseparate; allallocationsfalse.",
+      "evidence": [
+        "sources.jsonl admittedrows",
+        "source-count-summary.json"
+      ]
+    }
+  ],
+  "overall": "Root updates resolved material packet-boundary,nestedU,andstalefragment findings during review. Core P/U/R/V counters remain conservative. Remaining2low recommendations do not establish currentcountinflation. FinalRESULT/acceptance stillrequiresitsown fixedsnapshotreview.",
+  "initial_observation_baseline": {
+    "read_utc_range": "2026-11-22T22:40:04Z/2026-11-22T22:43:47Z",
+    "ledger_rows": 261,
+    "admitted_works": 30,
+    "quota_eligible": 26,
+    "allocation": [
+      8,
+      7,
+      7,
+      2,
+      2
+    ],
+    "all_allocations_met": false
+  },
+  "latest_recheck": {
+    "verified_utc": "2026-11-22T22:47:13.327625+00:00",
+    "ledger_rows": 280,
+    "admitted_works": 31,
+    "quota_eligible": 27,
+    "allocation": {
+      "consumer_original": 8,
+      "publisher_edition_file_correction": 8,
+      "author_contemporary_record": 7,
+      "official_statistics": 2,
+      "supplementary": 4,
+      "earth_science": 2
+    },
+    "all_allocations_met": true,
+    "new_publisher_work": "S-E060 NOAA-RUC-ESRL-GSL-radiosonde-archive; preserved original provider page, not new exportedition; captureUTC keptseparate.",
+    "new_publisher_work_static_check_only": true,
+    "material_findings_resolved": [
+      "RIR-01",
+      "RIR-02",
+      "RIR-03"
+    ],
+    "remaining_low_recommendations": [
+      "RIR-04",
+      "RIR-05"
+    ]
+  },
+  "snapshot_files_at_recheck": {
+    "scripts/consolidate.py": {
+      "sha256": "1683e0ba6443681a8e30793d276931c069511093e550cf056bbe0b76d25c5cd7",
+      "bytes": 18903
+    },
+    "cases.json": {
+      "sha256": "c4383e4608055502b70814804768dde47e1297139808cbc0ada79e9997bbb180",
+      "bytes": 62967
+    },
+    "readings.csv": {
+      "sha256": "0e4ab10762ca0a7a2194a0742675c984157e51d28493951e4bed6975cc808ad1",
+      "bytes": 42304
+    },
+    "analysis-summary.json": {
+      "sha256": "d39e04e6d8ef3fd0a092f14d56990a70dca3d8fca2790537d89545d597abc3f9",
+      "bytes": 2918
+    },
+    "source-count-summary.json": {
+      "sha256": "f0f21a300b289afbaecc08f2e499ca235afdbfb3d640e0c67e964e570869737d",
+      "bytes": 1645
+    },
+    "sources.jsonl": {
+      "sha256": "35d293e0e2d47e14a29b52c8d4779371ed9b045b3af67c33d9cd2f9fa4276b9e",
+      "bytes": 400653
+    }
+  }
+}

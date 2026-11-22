@@ -266,6 +266,13 @@ def consolidate():
             })
     csv_write(ROOT / 'readings.csv', readings)
     sources = source_rows()
+    # A work can first appear as metadata and later be read as original content.
+    # Keep those later locations attached to its single admitted representative.
+    for source in sources:
+        if source['count_toward_minimum']:
+            source['same_work_content_evidence_source_ids'] = [other['source_id'] for other in sources
+                if other['work_id'] == source['work_id'] and other['access_status'] not in
+                ['metadata_only', 'failed', 'access_failed', 'authentication_redirect', 'tool_fetch_failed', 'unsupported_content_type']]
     (ROOT / 'sources.jsonl').write_text(''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in sources))
     admitted = [row for row in sources if row['count_toward_minimum']]
     allocation = Counter(row['minimum_category'] for row in admitted)
@@ -277,6 +284,8 @@ def consolidate():
         'required_allocation': REQUIRED,
         'quota_eligible_unique_works': sum(allocation.get(key, 0) for key in REQUIRED),
         'minimum24_met': len(admitted) >= 24,
+        'minimum24_all_admitted_met': len(admitted) >= 24,
+        'minimum24_required_roles_met': sum(allocation.get(key, 0) for key in REQUIRED) >= 24,
         'all_allocations_met': all(allocation.get(key, 0) >= n for key, n in REQUIRED.items()),
         'method': 'Same work counted once. Selection/screening metadata, mirrors, extra versions, failed access and revisits add zero. Supplementary works do not fill missing core quotas. Original admission flags and collection line retained.',
     })
