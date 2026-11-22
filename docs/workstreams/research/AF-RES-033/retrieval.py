@@ -50,8 +50,9 @@ def features(text):
             'window_id': f'W{len(windows)+1:03d}',
             'raw_token_start_1based': k+1,
             'raw_token_end_1based': k+len(ms),
-            'normalized_char_start_0based': start,
-            'normalized_char_end_exclusive': end,
+            'coordinate_space': 'Unicode NFC source text, then Python str.lower()',
+            'lowercase_normalized_char_start_0based': start,
+            'lowercase_normalized_char_end_exclusive': end,
             'text_line_start_1based': 1+lower[:start].count('\n'),
             'text_line_end_1based': 1+lower[:end].count('\n'),
             'normalized_window_sha256': digest(window_text),
@@ -59,6 +60,7 @@ def features(text):
         })
     ts = [m.group() for m in matches if m.group() not in STOP]
     return {'source_text_sha256':digest(text), 'normalized_text_sha256':digest(normalized),
+            'lowercase_normalized_text_sha256':digest(lower),
             'raw_token_count':len(matches), 'length':len(ts),
             'term_frequency':dict(sorted(Counter(ts).items())), 'windows':windows}
 
@@ -72,6 +74,11 @@ def score(query_terms, tf, length, avg_length, idf):
 
 def rank(corpus, inputs):
     n = len(corpus)
+    assert n == 18 and len({d['candidate_id'] for d in corpus}) == 18, 'Need 18 unique candidates'
+    assert len({d['source_id'] for d in corpus}) == 18, 'Candidate documents must be unique'
+    assert Counter(d['field'] for d in corpus) == {'library':6,'transport':6,'statistics':6}, 'Need six per donor field'
+    assert len(inputs) == 8 and len({q['recipient_id'] for q in inputs}) == 8, 'Need eight unique recipients'
+    assert Counter(q['repository'] for q in inputs) == {'rust-lang/rfcs':4,'kubernetes/enhancements':4}, 'Need four per recipient repository'
     df = Counter(term for d in corpus for term in d['features']['term_frequency'])
     idf = {t: math.log(1+(n-c+.5)/(c+.5)) for t,c in df.items()}
     avg_length = sum(d['features']['length'] for d in corpus)/n
@@ -100,7 +107,9 @@ def rank(corpus, inputs):
                     'candidate_id':d['candidate_id'],'source_id':d['source_id'],
                     'score':format(s,'.17g'),'positive_score':s>0,'returned_top1':i<=1 and s>0,'returned_top3':i<=3 and s>0,
                     'query_sha256':digest(query),'source_text_sha256':d['features']['source_text_sha256'],
-                    'returned_window_id':w.get('window_id',''),'window_score':format(ws_score,'.17g'),
+                    'best_window_id':w.get('window_id',''),
+                    'returned_window_id':w.get('window_id','') if i<=3 and s>0 else '',
+                    'window_score':format(ws_score,'.17g'),
                     'window_raw_token_start':w.get('raw_token_start_1based',''),'window_raw_token_end':w.get('raw_token_end_1based',''),
                     'window_line_start':w.get('text_line_start_1based',''),'window_line_end':w.get('text_line_end_1based',''),
                     'window_sha256':w.get('normalized_window_sha256',''),
@@ -116,7 +125,7 @@ def rank(corpus, inputs):
 
 def write_csv(path, rows):
     with Path(path).open('w',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+        w=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');w.writeheader();w.writerows(rows)
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--check',action='store_true')
