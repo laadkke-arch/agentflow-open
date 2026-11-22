@@ -1,0 +1,257 @@
+{
+  "question_id": "Q11",
+  "route": "R",
+  "completed_utc": "2026-11-22T05:19:52.688Z",
+  "queries": [
+    "Q11-R-1",
+    "Q11-R-2",
+    "Q11-R-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 첫적격 원문 순위1,3,4,5,6;2는mirror 제외.5원문 중 Precinct는 rewritten-summary 판독만 얻어 원문수 제외, 재시도1. 후속질의들의 MCP Tasks는 예산뒤라 열지 않음.",
+  "sources": [
+    {
+      "source_id": "JP-C025",
+      "url": "https://github.com/openai/codex/blob/main/codex-rs/rollout-trace/src/model/runtime.rs",
+      "title": "Codex rollout trace runtime model",
+      "version": "main; fixed commit unknown",
+      "sections": [
+        "ToolCall struct rendered L1063–1152"
+      ],
+      "observation": "호출 원payload와 실행중 runtime사건을 구분하고 같은ToolCall ID에 연관시킨다.",
+      "limitation": "trace자료형이며 수신executor가 입력metadata로 실행동작을 고르는 코드가 아니다.",
+      "producer": "OpenAI Codex maintainers",
+      "receipt_ids": [
+        "Q11-R-O1"
+      ]
+    },
+    {
+      "source_id": "JP-C026",
+      "url": "https://github.com/appstrate/appstrate/blob/main/docs/architecture/SIDECAR.md",
+      "title": "Appstrate sidecar architecture",
+      "version": "main; fixed commit unknown",
+      "sections": [
+        "Reserved _meta vocabulary L263–277"
+      ],
+      "observation": "tool descriptor의 marker로 runtime능력을 연결하고 tool-result _meta는 응답상태와 사건을 담는다.",
+      "limitation": "descriptor·result·manifest의metadata를 구분한다. per-cell execute입력 metadata와 동일하지 않다.",
+      "producer": "Appstrate maintainers",
+      "receipt_ids": [
+        "Q11-R-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C027",
+      "url": "https://pkg.go.dev/github.com/precinct-dev/precinct%40v0.0.0-20260409003421-a1fe87c117e0/internal/gateway/middleware",
+      "title": "Precinct middleware API",
+      "version": "v0.0.0-20260409003421-a1fe87c117e0",
+      "sections": [
+        "Tool-provided rewritten summary: ExtensionRequest/Response L2593–2652"
+      ],
+      "observation": "도구가 제시한 요약에서는 request body와tool명·securityflags·sessionID가 분리되고 sidecar가 allow/block/flag를 응답한다.",
+      "limitation": "원URL과 canonicalURL 1회재시도 모두 rewritten summary로 표기됐다. 원문본문 검증 실패로 최소원문수 제외. code실행 요청인지와 당시판도 미확인.",
+      "producer": "Precinct maintainers via pkg.go.dev tool summary",
+      "receipt_ids": [
+        "Q11-R-O3",
+        "Q11-R-O3-retry"
+      ],
+      "count_in_minimum": false,
+      "count_reason": "공식API원본 URL은 열었으나 도구가 rewritten summary만 제공; 원문 직접판독 기준 미충족",
+      "original_body_verified": false
+    },
+    {
+      "source_id": "JP-C028",
+      "url": "https://docs.ogc.org/is/12-084r2/12-084r2.html",
+      "title": "OGC OWS Context Atom encoding",
+      "version": "OGC12-084r2 / OWC1.0; publication date not read",
+      "sections": [
+        "§6.2.4 Operation L1113–1132",
+        "Payload L1194–1216",
+        "Extension L1352–1354"
+      ],
+      "observation": "operation은 URL·method·payload·다른namespace extension을 담으며 code필드는 GetMap 같은 동작식별자다.",
+      "limitation": "code는 실행 소스문자열이 아니다. 별도 확장이 실제 실행옵션으로 읽힌다는 계약은 미확인.",
+      "producer": "Open Geospatial Consortium",
+      "receipt_ids": [
+        "Q11-R-O4"
+      ]
+    },
+    {
+      "source_id": "JP-C029",
+      "url": "https://docs.progress.com/bundle/marklogic-server-develop-rest-api-12/page/topics/extensions.html",
+      "title": "MarkLogic REST resource extensions",
+      "version": "MarkLogic Server12 docs; fixed revision date unknown",
+      "sections": [
+        "JavaScript Resource Extension Interface L114–170"
+      ],
+      "observation": "extension handler가 context,params,input을 분리해 받으며 params는 클라이언트가 보낸 확장별값이다.",
+      "limitation": "실행코드는 서버에 설치된 module이다. 셀 소스문자열을 body로 받아그 metadata와함께 eval하는 원문은 읽지 않았다.",
+      "producer": "Progress / MarkLogic",
+      "receipt_ids": [
+        "Q11-R-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K023",
+      "target_name": "Codex ToolCall trace metadata",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C025"
+      ],
+      "proposed_use": "호출별metadata 분리를 셀실행 입력으로 혼동하는 음성대조",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "실행요청 자체가 아닌 사후trace자료의 호출payload/사건 연관.",
+        "Q11-P2": "trace저장/분석 목적; 수신실행주체의 옵션해석 증거 없음.",
+        "Q11-P3": "원payload와 관측자료는 분리."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "단어·구조 유사성을 사용경계로 제한해 검사. 셀 실행 기능을 원문 밖에서 있다고 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 1
+    },
+    {
+      "candidate_id": "JP-K024",
+      "target_name": "Appstrate MCP descriptor/result metadata",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C026"
+      ],
+      "proposed_use": "descriptor/result _meta namespace를 실행입력 확장으로 옮길 수 있는지 검토",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "도구descriptor 또는result metadata이며 셀별입력요청과 다름.",
+        "Q11-P2": "runtime의descriptor routing은 존재하지만 실행입력metadata 읽기와는 다른 시점·주체.",
+        "Q11-P3": "metadata분리는 있으나 잘못된 호출방향."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "단어·구조 유사성을 사용경계로 제한해 검사. 셀 실행 기능을 원문 밖에서 있다고 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 3
+    },
+    {
+      "candidate_id": "JP-K025",
+      "target_name": "Precinct extension sidecar request",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C027"
+      ],
+      "proposed_use": "작업요청과 보조필드를 sidecar에 분리전달하는 후보; 공식고정본문 재확보 전보류",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2",
+        "Q11-P3"
+      ],
+      "condition_findings": {
+        "Q11-P1": "body와options 분리라는 요약은 있으나 원문과 code/task단위 확인 부족.",
+        "Q11-P2": "allow/block/flag gateway 판단으로 보이나 실제 실행수신 경계 미확인.",
+        "Q11-P3": "원문 미확인; 불변body 전달 계약은 입증하지 않음."
+      },
+      "historical_availability": "conflict",
+      "researcher_inference": "단어·구조 유사성을 사용경계로 제한해 검사. 셀 실행 기능을 원문 밖에서 있다고 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4,
+      "historical_version": "2026-04-09 pseudo-version after2021-04-22; earlier equivalent unknown"
+    },
+    {
+      "candidate_id": "JP-K026",
+      "target_name": "OWS Context operation extensions",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C028"
+      ],
+      "proposed_use": "동일단어 code와namespace가 다른 실행경계인 반례",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "code는 연산명이고 실행할 소스코드가 아님.",
+        "Q11-P2": "context문서의 확장요소가 실제 실행옵션으로 읽히는 규약 미확인.",
+        "Q11-P3": "payload와 extension분리만 확인."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "단어·구조 유사성을 사용경계로 제한해 검사. 셀 실행 기능을 원문 밖에서 있다고 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 5
+    },
+    {
+      "candidate_id": "JP-K027",
+      "target_name": "MarkLogic REST extension params",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C029"
+      ],
+      "proposed_use": "셀코드 수신endpoint를 구현할 때 body와params를 분리하는 부품; 실제 code-execution adapter는 미검증",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q11-P1"
+      ],
+      "condition_findings": {
+        "Q11-P1": "서버설치module에 params와body를 보내는 인터페이스지만 실행소스코드가 그body인 계약 미확인.",
+        "Q11-P2": "수신handler가 params를 읽어 작업을 처리할 수 있음.",
+        "Q11-P3": "params를 input과 별개로 전달하며 코드문법 주입 불필요."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "단어·구조 유사성을 사용경계로 제한해 검사. 셀 실행 기능을 원문 밖에서 있다고 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 6
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K025",
+    "JP-K027",
+    "JP-K023"
+  ],
+  "return_note": "보류2 먼저, 완결부품0이므로 근접오답 최초순1건까지 반환. Q11 G의 기지제품 부품과 달리 R은 동명이의 metadata경계를 많이찾음.",
+  "result_annotations": {
+    "1:2": {
+      "selection": "ineligible",
+      "reason": "Codex mirror/repost not original provider"
+    },
+    "1:7": {
+      "selection": "ineligible",
+      "reason": "GitHub-lookalike mirror not original provider"
+    },
+    "3:3": {
+      "selection": "duplicate",
+      "reason": "same MCP SEP1686 source as3:1"
+    },
+    "3:4": {
+      "selection": "ineligible",
+      "reason": "third-party fork of MCP specification"
+    },
+    "3:7": {
+      "selection": "ineligible",
+      "reason": "repost of MCP SEP1686"
+    }
+  },
+  "status": "frozen_before_next_question"
+}

@@ -1,0 +1,271 @@
+{
+  "question_id": "Q11",
+  "route": "G",
+  "completed_utc": "2026-11-22T05:18:08.045Z",
+  "queries": [
+    "Q11-G-1",
+    "Q11-G-2",
+    "Q11-G-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 순위2,3,4,6,8을 열람. 순위1 지원글·10 목록 제외;5는4와 동일문서,7은 kernelspec 설명/필드의 schema재표현으로 같은 upstream 내용중복. 현재 ipykernel의 원제안 후속구현 계보는 미확인 노출한계.",
+  "sources": [
+    {
+      "source_id": "JP-C020",
+      "url": "https://github.com/jupyter/nbformat/blob/main/docs/format_description.rst",
+      "title": "nbformat file format",
+      "version": "main; fixed commit unknown",
+      "sections": [
+        "Code cells L232–250",
+        "Metadata L418–469"
+      ],
+      "observation": "cell.source와 cell.metadata가 분리돼 있으며 JSON값·namespace를 담을 수 있다.",
+      "limitation": "저장형식이다. execute request의 전달이나 커널 해석을 규정하지 않는다. 최초문서가 이미 nbformat을 명시한다.",
+      "producer": "Jupyter nbformat maintainers",
+      "receipt_ids": [
+        "Q11-G-O1"
+      ]
+    },
+    {
+      "source_id": "JP-C021",
+      "url": "https://github.com/ipython/ipykernel/blob/main/ipykernel/kernelbase.py",
+      "title": "ipykernel Kernel.execute_request",
+      "version": "main; fixed commit/tag unknown",
+      "sections": [
+        "Kernel.execute_request rendered L3506–3578",
+        "Kernel.do_execute signature L3643–3665"
+      ],
+      "observation": "parent.content.code와 parent.metadata를 분리해 얻고 수신 do_execute가 cell_meta를 받는 경우 전달한다. code는 별도인자다.",
+      "limitation": "main의 현재코드이며 당시태그를 아직 검증하지 않았다. 셀파일 전체자동전송은 호출자 책임이다. 원JEP 후속구현인지 계보는 아직 열지 않았다.",
+      "producer": "IPython/ipykernel maintainers",
+      "receipt_ids": [
+        "Q11-G-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C022",
+      "url": "https://github.com/jupyter/nbclient/blob/main/docs/client.rst",
+      "title": "NBClient executing notebooks",
+      "version": "main; fixed commit unknown",
+      "sections": [
+        "Execution arguments L198–219",
+        "Hooks L220–244"
+      ],
+      "observation": "셀별 hook에 current NotebookNode와 cell_index를 보내며 실행전후 callback을 둔다.",
+      "limitation": "셀 metadata를 원격 커널 request로 전송하는 경계를 입증하지 않는다. 클라이언트 hook과 수신커널을 혼동할 수 있다.",
+      "producer": "Jupyter nbclient maintainers",
+      "receipt_ids": [
+        "Q11-G-O3"
+      ]
+    },
+    {
+      "source_id": "JP-C023",
+      "url": "https://github.com/jupyter/jupyter_client/blob/main/docs/kernels.rst",
+      "title": "Jupyter Client kernel specs",
+      "version": "main; fixed commit unknown",
+      "sections": [
+        "Kernel specs L260–282"
+      ],
+      "observation": "kernelspec metadata는 kernel 선택을 돕는 namespace 속성이고 argv/env는 시작값이다.",
+      "limitation": "커널명세의 메타데이터와 셀별 실행요청의 메타데이터는 다른 호출경계다.",
+      "producer": "Jupyter Client maintainers",
+      "receipt_ids": [
+        "Q11-G-O4"
+      ]
+    },
+    {
+      "source_id": "JP-C024",
+      "url": "https://jupyter-mcp-server.datalayer.tech/architecture/",
+      "title": "Datalayer Jupyter MCP Server Architecture",
+      "version": "current documentation; version/date not stated",
+      "sections": [
+        "Document and execution identity L37–48",
+        "Execution L87–96",
+        "Extension hooks L125–140"
+      ],
+      "observation": "문서셀과 실행 backend를 구별하고 notebook/cellID가 있는 HTTP실행과 코드실행 경로를 나눈다.",
+      "limitation": "임의 셀 metadata가 실행선택에 전달되는 API계약은 읽은 절에 없다. config변수와 셀별 metadata를 혼동하면 안 된다.",
+      "producer": "Datalayer project maintainers",
+      "receipt_ids": [
+        "Q11-G-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K018",
+      "target_name": "nbformat cell metadata",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C020"
+      ],
+      "proposed_use": "cell metadata 저장포맷을 실행전달 부품으로 쓸 수 있는지 검토",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "cell내 code/metadata는 분리되지만 실행요청 연관전달은 아님.",
+        "Q11-P2": "저장/표시형식으로 수신 실행주체 전달을 입증하지 못함.",
+        "Q11-P3": "source와 metadata는 별도 JSON필드."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "호스트 Jupyter의 부품은 신규 제품으로 세지 않음. 제안 사용은 명세 경계를 제한한 연구자 해석.",
+      "first_seen_query": 1,
+      "first_seen_rank": 2
+    },
+    {
+      "candidate_id": "JP-K019",
+      "target_name": "ipykernel execute_request cell_meta adapter",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C021"
+      ],
+      "proposed_use": "메시지 metadata에 셀별옵션을 넣는 클라이언트와 cell_meta를 받는 Kernel 하위클래스의 수신어댑터; 파일metadata 자동복제는 범위밖",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": true,
+      "provider_status": "support",
+      "missing_conditions": [],
+      "condition_findings": {
+        "Q11-P1": "한 parent 메시지의 content.code와 metadata를 분리해 같은 do_execute 호출에 연관시킴.",
+        "Q11-P2": "수신 do_execute의 인자 수용여부를 검사해 cell_meta를 주므로 하위 kernel이 읽거나 무시할 수 있음.",
+        "Q11-P3": "code 문자열에 metadata 문법을 주입하지 않고 별도인자로 넘김."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "호스트 Jupyter의 부품은 신규 제품으로 세지 않음. 제안 사용은 명세 경계를 제한한 연구자 해석.",
+      "first_seen_query": 1,
+      "first_seen_rank": 3
+    },
+    {
+      "candidate_id": "JP-K020",
+      "target_name": "NBClient cell hooks",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C022"
+      ],
+      "proposed_use": "클라이언트 실행 hook에서 cell정보를 읽는 보조부품; 원격kernel 옵션전달 대체가능 여부는 보류",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": true,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "전체 NotebookNode를 cell 실행 hook과 연관시킴.",
+        "Q11-P2": "client측 hook이며 수신 kernel이 metadata를 읽는 전달경계는 미확인.",
+        "Q11-P3": "hook인자와 원 source가 분리되어 마법구문 삽입은 불필요."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "호스트 Jupyter의 부품은 신규 제품으로 세지 않음. 제안 사용은 명세 경계를 제한한 연구자 해석.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4
+    },
+    {
+      "candidate_id": "JP-K021",
+      "target_name": "Jupyter kernelspec metadata",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C023"
+      ],
+      "proposed_use": "kernelspec metadata의 namespace구조를 셀실행옵션으로 혼동한 근접오답",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "metadata 단위가 cell/execute가 아닌 kernel명세.",
+        "Q11-P2": "client의 kernel선택용이며 수신kernel의 셀실행 입력이 아님.",
+        "Q11-P3": "code본문과 별개이지만 잘못된 수명주기."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "호스트 Jupyter의 부품은 신규 제품으로 세지 않음. 제안 사용은 명세 경계를 제한한 연구자 해석.",
+      "first_seen_query": 1,
+      "first_seen_rank": 6
+    },
+    {
+      "candidate_id": "JP-K022",
+      "target_name": "Datalayer notebook/cell execution routing",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C024"
+      ],
+      "proposed_use": "셀정체성과 실행backend를 분리하는 MCP실행경계의 참고",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q11-P1",
+        "Q11-P2"
+      ],
+      "condition_findings": {
+        "Q11-P1": "document/cellID를 실행요청과 묶지만 임의 구조화 셀metadata 전달은 미확인.",
+        "Q11-P2": "backend선택은 설정/선행context이고 셀metadata의 직접해석 계약은 없음.",
+        "Q11-P3": "code와 문서정체성은 별도경로로 관리."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "호스트 Jupyter의 부품은 신규 제품으로 세지 않음. 제안 사용은 명세 경계를 제한한 연구자 해석.",
+      "first_seen_query": 1,
+      "first_seen_rank": 8
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K019",
+    "JP-K020",
+    "JP-K022"
+  ],
+  "return_note": "ipykernel 경계는 현재코드로 완결이나 기지호스트의 새부품으로 주분자 제외. 나머지 보류2.",
+  "result_annotations": {
+    "1:1": {
+      "selection": "ineligible",
+      "reason": "support thread; excluded original-provider selection"
+    },
+    "1:5": {
+      "selection": "duplicate",
+      "reason": "rendered nbclient docs same source as1:4"
+    },
+    "1:7": {
+      "selection": "duplicate",
+      "reason": "kernelspec metadata definition copied from1:6; same behavior/source lineage"
+    },
+    "1:10": {
+      "selection": "ineligible",
+      "reason": "product list not candidate original"
+    },
+    "2:2": {
+      "selection": "duplicate",
+      "reason": "nbformat source rendering of1:2"
+    },
+    "2:7": {
+      "selection": "ineligible",
+      "reason": "support thread"
+    },
+    "2:10": {
+      "selection": "other_proposal_exposure_not_opened",
+      "reason": "different JEP add-schema; not Q11 original proposal; budget exhausted"
+    },
+    "3:2": {
+      "selection": "other_proposal_exposure_not_opened",
+      "reason": "snippet mentions JEP91 subshell design; different proposal not opened"
+    },
+    "3:7": {
+      "selection": "duplicate",
+      "reason": "nbformat same document other version"
+    },
+    "3:8": {
+      "selection": "duplicate",
+      "reason": "nbformat PDF same origin"
+    }
+  },
+  "status": "frozen_before_R"
+}

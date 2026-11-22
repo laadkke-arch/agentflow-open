@@ -1,0 +1,207 @@
+{
+  "question_id": "Q12",
+  "route": "R",
+  "completed_utc": "2026-11-22T05:21:44.300Z",
+  "queries": [
+    "Q12-R-1",
+    "Q12-R-2",
+    "Q12-R-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 순위1,3,4,5,6 원문URL5건.2는용어정의만으로구체후보동작부족 제외. CTX·context-hub의유사계보가열람중확인되어 최소수1건으로보수계상하되5URL열람비용은그대로. 질의2CI런처후보들은예산뒤라열지않음.",
+  "sources": [
+    {
+      "source_id": "JP-C030",
+      "url": "https://json-schema.org/overview/use-cases",
+      "title": "JSON Schema use cases",
+      "version": "current; date/commit unpinned",
+      "sections": [
+        "Model-driven UI constraints and UI generation L43–52"
+      ],
+      "observation": "선언 제약에서 UI검증과 form생성이 가능하다는 목적을 제시한다.",
+      "limitation": "구체적인 실행기 또는 argv/env 대입·프로세스시작 구현은 없다. 처음부터 알려진 JSON Schema.",
+      "producer": "JSON Schema project",
+      "receipt_ids": [
+        "Q12-R-O1"
+      ]
+    },
+    {
+      "source_id": "JP-C031",
+      "url": "https://json-schema.org/learn/getting-started-step-by-step",
+      "title": "JSON Schema first schema tutorial",
+      "version": "draft2020-12 example; current guide",
+      "sections": [
+        "Introduction L47–76",
+        "Properties and required/ranges L79–133",
+        "Validate section L232–250"
+      ],
+      "observation": "type·properties·required·범위 제약을 같은 schema로검증한다.",
+      "limitation": "schema는검증언어; 사용자form이나process실행기를 자동으로 제공한다는 증거가 아니다. 가이드고정판 미확인.",
+      "producer": "JSON Schema project",
+      "receipt_ids": [
+        "Q12-R-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C032",
+      "url": "https://docs.ctxllm.com/mcp/custom-tools.html",
+      "title": "CTX Custom Tools",
+      "version": "current docs; fixed release unknown",
+      "sections": [
+        "Run Tools L148–174",
+        "Schema Definition L438–476",
+        "Template Variables L479–497",
+        "Environment L509–527"
+      ],
+      "observation": "재사용 tool설정에 typed/default/required schema를 두고 값으로 cmd args/env를 치환해실행한다.",
+      "limitation": "읽은절에서는 사용자에게 form/입력을 요청하는 경계 및 enum허용값 검증을 확인하지 못했다. 실행판/출시일 미확인.",
+      "producer": "CTX maintainers",
+      "receipt_ids": [
+        "Q12-R-O3"
+      ],
+      "lineage_id": "ctx-context-hub-tools"
+    },
+    {
+      "source_id": "JP-C033",
+      "url": "https://github.com/context-hub/generator/blob/main/docs/mcp/tools/tools_guide.md",
+      "title": "Context Hub tools guide",
+      "version": "main; commit unknown",
+      "sections": [
+        "Tools with Arguments L440–515",
+        "CommandExecutor L201–219"
+      ],
+      "observation": "LLM 또는 user input의 동적값을 schema로자동검증하고 executeWithArguments로 실행한다. argv/env 템플릿을 보인다.",
+      "limitation": "CTX와 동일 제품·같은 메커니즘의 문서계보로 보수적 중복 처리한다. enum 및 실제 사용자입력 prompt와 당시판은 확인하지 못했다.",
+      "producer": "context-hub maintainers",
+      "receipt_ids": [
+        "Q12-R-O4"
+      ],
+      "lineage_id": "ctx-context-hub-tools",
+      "count_in_minimum": false,
+      "count_reason": "동일 CTX tools 메커니즘의 상세가이드; 원문판/계보를 추가확인 전 복수최소수 산입 안함"
+    },
+    {
+      "source_id": "JP-C034",
+      "url": "https://cosmo-tech.github.io/run-orchestrator/1.3.1/tutorial/getting_started/",
+      "title": "Cosmo Tech Run Template Orchestrator tutorial",
+      "version": "1.3.1",
+      "sections": [
+        "CommandTemplate schema L398–449",
+        "Step schema L451–517",
+        "EnvironmentVariable L528–549",
+        "Run simple step L554–617"
+      ],
+      "observation": "commandTemplate와 step을분리하고 step의 args/env가 default를재정의한다. csm-orc run 예제가실제명령을실행한다.",
+      "limitation": "schema가검증하는것은오케스트레이션문서다. 별도사용자 parameter prompt·enum검증은 이튜토리얼에서확인못했다.1.3.1 출시일 미확인.",
+      "producer": "Cosmo Tech",
+      "receipt_ids": [
+        "Q12-R-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K028",
+      "target_name": "JSON Schema validation and UI generation",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C030",
+        "JP-C031"
+      ],
+      "proposed_use": "처음안의 JSON Schema 입력부품을 전체실행기로 잘못세는 반례",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q12-P1",
+        "Q12-P3"
+      ],
+      "condition_findings": {
+        "Q12-P1": "같은 schema재사용은되지만 실행template은아님.",
+        "Q12-P2": "타입/필수/범위검증과 UI생성가능목적을확인; 실제prompt구현은별도.",
+        "Q12-P3": "실행명령/env대입과process시작은제공하지않는검증/선언계층."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "입력 UI에서 실행까지의 전체 경계를 요구하며 form/validation만으로 전체대체라 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 1
+    },
+    {
+      "candidate_id": "JP-K029",
+      "target_name": "CTX parameterized custom tools",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C032",
+        "JP-C033"
+      ],
+      "proposed_use": "사용자매개변수입력기를추가하는전제로 schema→검증→명령치환부품 사용; form및enum확인전전체추천보류",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q12-P2"
+      ],
+      "condition_findings": {
+        "Q12-P1": "한 tool정의에동적arguments를넣으므로조합별명세복제를피함.",
+        "Q12-P2": "type/default/required자동검증은확인; 사용자입력요청UI 및 enum허용값처리근거부족.",
+        "Q12-P3": "{{arg}}를cmd args/env로대입하고 ToolService/CommandExecutor로실행."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "입력 UI에서 실행까지의 전체 경계를 요구하며 form/validation만으로 전체대체라 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4
+    },
+    {
+      "candidate_id": "JP-K030",
+      "target_name": "Cosmo Tech Run Template Orchestrator",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C034"
+      ],
+      "proposed_use": "실행template와instance를나누는전체설계선례; 사용자입력계층별도검증필요",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q12-P2"
+      ],
+      "condition_findings": {
+        "Q12-P1": "CommandTemplate를참조하는Step으로공통실행정의를재사용.",
+        "Q12-P2": "실행json문서schema는있으나 사용자입력을요청하고파라미터허용값으로검증하는경계미확인.",
+        "Q12-P3": "args/env값을실제csm-orc run명령실행에사용."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "입력 UI에서 실행까지의 전체 경계를 요구하며 form/validation만으로 전체대체라 추정하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 6
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K029",
+    "JP-K030",
+    "JP-K028"
+  ],
+  "return_note": "최초명시 JSONSchema는신규아님. CTX/오케스트레이터는실행부분이있지만사용자요청/검증전체근거가비어보류.",
+  "result_annotations": {
+    "1:2": {
+      "selection": "ineligible",
+      "reason": "terminology/glossary not a concrete candidate execution or validation mechanism"
+    },
+    "1:5": {
+      "selection": "opened_same_lineage",
+      "reason": "details read; conservatively same CTX tool source lineage as1:4, excluded minimum count"
+    },
+    "1:9": {
+      "selection": "ineligible",
+      "reason": "tool catalog excluded"
+    },
+    "3:7": {
+      "selection": "duplicate",
+      "reason": "same OpenAI article query-parameter variant as3:6"
+    }
+  },
+  "status": "frozen_before_G"
+}

@@ -1,0 +1,227 @@
+{
+  "question_id": "Q09",
+  "route": "G",
+  "completed_utc": "2026-11-22T05:09:37.371033+00:00",
+  "queries": [
+    "Q09-G-1",
+    "Q09-G-2",
+    "Q09-G-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 제공순위1~5가 모두 공식 원문이며 구독/출력 전달이라는 구체 대응이 있어 첫5개를 열었다. 이후 질의의 더 직접적인 후보를 이 단계에서 선택하지 않았다.",
+  "sources": [
+    {
+      "source_id": "JP-C001",
+      "url": "https://documentation.sas.com/api/docsets/esppsapi/v_001/content/esppsapi.pdf?locale=en",
+      "title": "SAS Event Stream Processing Publish/Subscribe API Reference",
+      "version": "2020.1–2021.2.1, November 2021 v_001-P1",
+      "sections": [
+        "Using User-supplied Callback Functions p7-8, lines250-258",
+        "Guaranteed Delivery p52-54, lines1713-1781"
+      ],
+      "observation": "READY는 필요한 수의 subscriber acknowledgment 연결이 publisher에 성립했다는 publisher callback이다. 보장에는 input event block 하나당 output block 하나 조건이 있다. client/subscriber가 구독 준비를 관측하는 신호와는 주체가 다르다.",
+      "limitation": "2021-01-05 이전 해당 기능 배포판은 이 문서만으로 확정 못함. Jupyter식 실행요청/출력 경로를 직접 보장하지 않는다.",
+      "producer": "SAS Institute",
+      "receipt_ids": [
+        "Q09-G-O1",
+        "Q09-G-O1-section"
+      ]
+    },
+    {
+      "source_id": "JP-C002",
+      "url": "https://docs.redhat.com/en/documentation/JBoss_Enterprise_Application_Platform/5/html/hornetq_user_guide/ch03s02s02",
+      "title": "HornetQ User Guide 3.2.2 Publish-Subscribe Pattern",
+      "version": "Red Hat JBoss EAP5 documentation",
+      "sections": [
+        "3.2.2 lines386-394"
+      ],
+      "observation": "각 topic subscription으로 복제하고 durable subscription은 소비할 때까지 보관할 수 있다. 구독 생성 완료 신호나 클라이언트의 첫 실행 gate는 해당 절에 없다.",
+      "limitation": "지속 보관과 구독 준비 확인은 서로 다른 조건. 현재 지원상태/최초 배포일은 미확인.",
+      "producer": "Red Hat / HornetQ",
+      "receipt_ids": [
+        "Q09-G-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C003",
+      "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber",
+      "title": "Azure Architecture Center Publisher-Subscriber Pattern",
+      "version": "Last updated2026-03-06",
+      "sections": [
+        "Solution lines41-58",
+        "Problems and considerations lines78-99",
+        "When to use lines121-126"
+      ],
+      "observation": "pub/sub 출력은 단방향이며 subscriber 상태를 publisher에 알리려면 별도 request-reply 경로가 필요하다고 구분한다. 버퍼링·구독과 delivery semantics를 설명하지만 구독 준비 barrier의 구현 계약은 없다.",
+      "limitation": "설계 원리 문서이지 특정 구현의 준비 신호 보장 근거가 아니다. 현재 문서를 과거판으로 소급할 수 없다.",
+      "producer": "Microsoft",
+      "receipt_ids": [
+        "Q09-G-O3"
+      ]
+    },
+    {
+      "source_id": "JP-C004",
+      "url": "https://docs.cloud.google.com/pubsub/docs/subscription-overview",
+      "title": "Google Cloud Pub/Sub Subscription overview",
+      "version": "Last updated2026-11-10 UTC",
+      "sections": [
+        "Subscription overview lines102-106",
+        "Subscription workflow lines107-114",
+        "Default subscription properties lines131-141"
+      ],
+      "observation": "구독 생성 이후에 발행된 메시지가 해당 subscriber에 제공된다. ack는 전달 후의 처리확인이고 at-least-once 중복 가능성이 있다.",
+      "limitation": "이 페이지는 create subscription의 완료 응답/즉시 readiness와 실행요청 결합 계약을 명시하지 않는다. 2021 당시판은 미확인.",
+      "producer": "Google Cloud",
+      "receipt_ids": [
+        "Q09-G-O4"
+      ]
+    },
+    {
+      "source_id": "JP-C005",
+      "url": "https://github.com/nats-io/nats.net/blob/main/tools/site_src/documentation/core/queue.md",
+      "title": "NATS .NET Queue Groups",
+      "version": "main observed2026-11-22; commit not fixed",
+      "sections": [
+        "Queue Groups rendered lines195-227"
+      ],
+      "observation": "일반 pub/sub의 팬아웃과 queue group의 소비자별 무작위 분배를 구별한다. queue group 예시는 요청/응답 load balancing이며 준비완료를 확인하지 않는다.",
+      "limitation": "queue group의 한소비자 전달은 모든 출력 subscriber에 복제하는 사용과 다르다. main의 당시판은 미확인.",
+      "producer": "NATS maintainers",
+      "receipt_ids": [
+        "Q09-G-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K001",
+      "target_name": "SAS ESP guaranteed-delivery READY callback",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C001"
+      ],
+      "proposed_use": "READY를 출력 경로가 준비됐다는 신호로 삼아 첫 실행/출력 전 gate에 사용하는 후보",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q09-P1"
+      ],
+      "condition_findings": {
+        "Q09-P1": "READY 수신 주체는 publisher이며 요구된 subscriber/client 관측 신호가 아니다.",
+        "Q09-P2": "publisher가 발행을 기다리는 순서는 있지만 실행요청을 보내는 client로의 준비확인 경로가 필요하다."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "추가 애플리케이션 ready 회신을 설계하면 원리 참고는 가능하나 그 회신의 안전성은 이번 근거에 없다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 1
+    },
+    {
+      "candidate_id": "JP-K002",
+      "target_name": "HornetQ durable topic subscription",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C002"
+      ],
+      "proposed_use": "출력 topic의 durable subscription으로 최초 출력 손실을 줄이는 후보",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q09-P1",
+        "Q09-P2"
+      ],
+      "condition_findings": {
+        "Q09-P1": "구독 완료를 client가 어떻게 확인하는지 해당 절에 없음.",
+        "Q09-P2": "이미 성립한 durable subscription 보관은 지지하지만 최초 execution gate는 확인 안 됨."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "지속 보관을 추가하는 도입이며 기존 ZeroMQ readiness 확인에 바로 대입할 수 없다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 2
+    },
+    {
+      "candidate_id": "JP-K003",
+      "target_name": "Azure publisher-subscriber plus request-reply pattern",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C003"
+      ],
+      "proposed_use": "출력 pub/sub 외에 준비를 회신하는 경로를 추가하는 설계 선례",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q09-P1",
+        "Q09-P2"
+      ],
+      "condition_findings": {
+        "Q09-P1": "역방향 상태회신 필요성만 명시; 실제 출력구독완료를 확인한 시점과는 연결 안 됨.",
+        "Q09-P2": "별도 request-reply 성공이 출력 subscriber 준비보다 뒤라는 보장이 없음."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "두 채널의 순서관계를 별도 증명해야 하며 단순 패턴 병치는 충분하지 않다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 3
+    },
+    {
+      "candidate_id": "JP-K004",
+      "target_name": "Google Cloud Pub/Sub subscription creation",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C004"
+      ],
+      "proposed_use": "실행 전에 결과 topic의 subscription을 생성하여 생성이후 출력을 받을 경계를 만드는 후보",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q09-P1"
+      ],
+      "condition_findings": {
+        "Q09-P1": "subscription 생성 이후 메시지 범위는 확인하지만 생성완료 응답의 readiness 계약은 이 원문 밖.",
+        "Q09-P2": "생성이후 발행 메시지 제공은 지지. 실행요청과 결합은 연구자 제안."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "클라우드 broker로 경계를 바꾸는 비용/호출계약 추가 확인 필요.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4
+    },
+    {
+      "candidate_id": "JP-K005",
+      "target_name": "NATS queue group subscription",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C005"
+      ],
+      "proposed_use": "출력 subscriber 배치/분배에 queue group을 쓰는 후보",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q09-P1",
+        "Q09-P2"
+      ],
+      "condition_findings": {
+        "Q09-P1": "준비 확인 신호 없음.",
+        "Q09-P2": "모든 출력 subscriber에 복제가 아니라 group 내 한소비자 분배이므로 그 경계로 대체하면 다른 client가 출력을 못 받는다."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "부하분산 요청처리에는 맞지만 동일 실행 출력의 다중구독을 대체하지 않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 5
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K002",
+    "JP-K003",
+    "JP-K004"
+  ],
+  "return_note": "적합0. 보류3을 최초검색순으로 반환하고 충돌2는 후보원장에 보존. 모든 반환은 검증된 신규 적중이 아니며 opened_complete/cited_complete=false.",
+  "status": "route_frozen_before_Q09_R"
+}

@@ -1,0 +1,277 @@
+{
+  "question_id": "Q10",
+  "route": "G",
+  "completed_utc": "2026-11-22T05:15:31.775Z",
+  "queries": [
+    "Q10-G-1",
+    "Q10-G-2",
+    "Q10-G-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 순위2,3,4,6과 질의2 순위1이 첫5원문. 지원Q&A/재게시 제외,판·문서미러 중복 제외. 질의1 최초10뒤2건은 노출만기록. Windows문서는 공식정규URL에1회 재열람.",
+  "sources": [
+    {
+      "source_id": "JP-C015",
+      "url": "https://www.etsi.org/deliver/etsi_tr/129900_129999/129941/17.01.00_60/tr_129941v170100p.pdf",
+      "title": "ETSI TR129941 Guidelines on port allocation",
+      "version": "V17.1.0 Release17 2022-05",
+      "sections": [
+        "AnnexB.2–B.3 p29–30 L961–994"
+      ],
+      "observation": "서비스의 동적 포트가 청취 중이면 클라이언트에 재할당되지 않아야 하며 구성파일·IPC·DNS기반 발견을 설명한다.",
+      "limitation": "실제 child bind후 launcher회신의 구현/시험은 아니다. 판은 2021-01 최초안보다 늦다.",
+      "producer": "ETSI / 3GPP",
+      "receipt_ids": [
+        "Q10-G-O1"
+      ]
+    },
+    {
+      "source_id": "JP-C016",
+      "url": "https://datatracker.ietf.org/doc/html/rfc6056",
+      "title": "RFC6056 Port randomization",
+      "version": "January2011 RFC6056",
+      "sections": [
+        "§3.1 p9–10 L463–529"
+      ],
+      "observation": "bind 후 listen전에도 포트가 점유돼야 함을 보안 반례로 설명한다. LISTEN상태만 막으면 공백이 있다.",
+      "limitation": "배정 알고리즘 권고이며 프로세스 시작 보고·채널 manifest는 범위 밖이다.",
+      "producer": "IETF / RFC Editor",
+      "receipt_ids": [
+        "Q10-G-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C017",
+      "url": "https://learn.microsoft.com/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse",
+      "title": "Winsock SO_REUSEADDR and SO_EXCLUSIVEADDRUSE",
+      "version": "current official article; WindowsNT4SP4/XP/Server2003+ distinctions",
+      "sections": [
+        "Using SO_REUSEADDR L49–52",
+        "Using SO_EXCLUSIVEADDRUSE L53–79",
+        "Enhanced socket security L81–115"
+      ],
+      "observation": "독점 옵션은 bind전 설정하며 재사용 옵션은 같은 포트의 전달을 불확정으로 만들 수 있다. OS·주소·사용자에 따라 표가 다르다.",
+      "limitation": "특정 Windows소켓 제약이다. startup report·published manifest를 제공하지 않음. 최초열람 도구가 rewritten summary로 표시하여 같은 공식en-us URL로1회 재열람했다.",
+      "producer": "Microsoft",
+      "receipt_ids": [
+        "Q10-G-O3",
+        "Q10-G-O3-retry"
+      ]
+    },
+    {
+      "source_id": "JP-C018",
+      "url": "https://github.com/tuulbelt/port-resolver",
+      "title": "Tuulbelt port-resolver README",
+      "version": "README main; v0.1.0/v0.2.0/v0.3.0 feature headings; commit/tag date unknown",
+      "sections": [
+        "Problem and features L233–263",
+        "PortManager API L475–516",
+        "Library composition L549–553"
+      ],
+      "observation": "파일 registry를 semaphore로 원자적으로 수정하고 PID·tag별 port할당을 기록한다. 여러port·범위 예약을 제공한다.",
+      "limitation": "원자성이 registry 보호라는 점은 명확하나 OS소켓을 bind상태로 유지·전달하는 근거는 없다. 기능별 출시일/실제테스트 미확인.",
+      "producer": "tuulbelt maintainers",
+      "receipt_ids": [
+        "Q10-G-O4"
+      ]
+    },
+    {
+      "source_id": "JP-C019",
+      "url": "https://datatracker.ietf.org/doc/rfc7605/",
+      "title": "RFC7605 Transport port use",
+      "version": "August2015 RFC7605",
+      "sections": [
+        "§6 p9–10 L500–555"
+      ],
+      "observation": "호스트 내 서비스는 동적port를 bind하고 구성파일/IPC로 client에 알릴 수 있음을 명시한다.",
+      "limitation": "어떤 API가 주소를 잡고 회신·저장하는지 구현명세가 없다. 정확한 다중채널/재접속 계약 부족.",
+      "producer": "IETF / RFC Editor",
+      "receipt_ids": [
+        "Q10-G-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K013",
+      "target_name": "3GPP dynamic-port discovery",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C015"
+      ],
+      "proposed_use": "3GPP dynamic-port discovery의 자원할당/발견 규칙을 kernel startup에 대응",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q10-P1",
+        "Q10-P2",
+        "Q10-P3"
+      ],
+      "condition_findings": {
+        "Q10-P1": "청취 중 포트 재할당 금지와 부팅순서 권고는 있으나 원자적 child할당의 구현근거 부족.",
+        "Q10-P2": "IPC 등 발견 수단을 열거하지만 bind 완료 보고 계약 미명시.",
+        "Q10-P3": "서비스이름 발견은 가능하나 kernel다중채널·후속연결 재사용 계약 부족."
+      },
+      "historical_availability": "conflict",
+      "researcher_inference": "설계에 적용할 경계는 연구자의 제안이며 실제 채택이나 구현완료를 주장하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 2,
+      "historical_version": "opened edition2022-05 after2021-01-05; earlier equivalent unknown"
+    },
+    {
+      "candidate_id": "JP-K014",
+      "target_name": "RFC6056 port ownership constraints",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C016"
+      ],
+      "proposed_use": "RFC6056 port ownership constraints의 자원할당/발견 규칙을 kernel startup에 대응",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q10-P2",
+        "Q10-P3"
+      ],
+      "condition_findings": {
+        "Q10-P1": "bind–listen 사이도 보호해야 한다는 필수 경계 확인.",
+        "Q10-P2": "child의 실제 주소 회신 없음.",
+        "Q10-P3": "프로세스별/채널별 공개정보 재사용 없음."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "설계에 적용할 경계는 연구자의 제안이며 실제 채택이나 구현완료를 주장하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 3,
+      "historical_version": "RFC6056 January2011"
+    },
+    {
+      "candidate_id": "JP-K015",
+      "target_name": "Winsock exclusive socket binding",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C017"
+      ],
+      "proposed_use": "Winsock exclusive socket binding의 자원할당/발견 규칙을 kernel startup에 대응",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q10-P2",
+        "Q10-P3"
+      ],
+      "condition_findings": {
+        "Q10-P1": "SO_EXCLUSIVEADDRUSE를 bind전에 설정하는 OS별 배타성 규정.",
+        "Q10-P2": "launcher회신 프로토콜 없음.",
+        "Q10-P3": "다중채널 manifest 공개/재사용 없음."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "설계에 적용할 경계는 연구자의 제안이며 실제 채택이나 구현완료를 주장하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4
+    },
+    {
+      "candidate_id": "JP-K016",
+      "target_name": "Tuulbelt port-resolver registry",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C018"
+      ],
+      "proposed_use": "Tuulbelt port-resolver registry의 자원할당/발견 규칙을 kernel startup에 대응",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q10-P1",
+        "Q10-P2",
+        "Q10-P3"
+      ],
+      "condition_findings": {
+        "Q10-P1": "파일registry의 원자성과 실제 OS소켓의 점유유지는 다름; 후자의 근거 없음.",
+        "Q10-P2": "주소 선택 library이나 child가 bind 완료 후 보고하는 계약 없음.",
+        "Q10-P3": "태그/할당목록은 있어도 laterclient용 실제 연결manifest는 미확인."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "설계에 적용할 경계는 연구자의 제안이며 실제 채택이나 구현완료를 주장하지 않음.",
+      "first_seen_query": 1,
+      "first_seen_rank": 6
+    },
+    {
+      "candidate_id": "JP-K017",
+      "target_name": "RFC7605 local port discovery",
+      "candidate_class": "same_field_design",
+      "source_ids": [
+        "JP-C019"
+      ],
+      "proposed_use": "RFC7605 local port discovery의 자원할당/발견 규칙을 kernel startup에 대응",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q10-P1",
+        "Q10-P2",
+        "Q10-P3"
+      ],
+      "condition_findings": {
+        "Q10-P1": "server가 동적port에 bind한다는 원칙만 있어 원자적 구현 미확인.",
+        "Q10-P2": "IPC로 client에 전달하는 관계는 있으나 완료 회신 API 미명시.",
+        "Q10-P3": "구성파일/IPC를 제시하나 실제다중채널 규약/재사용 증거 없음."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "설계에 적용할 경계는 연구자의 제안이며 실제 채택이나 구현완료를 주장하지 않음.",
+      "first_seen_query": 2,
+      "first_seen_rank": 1,
+      "historical_version": "RFC7605 August2015"
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K013",
+    "JP-K014",
+    "JP-K015"
+  ],
+  "return_note": "모든 후보에 whole-design필수묶음 공백; 사전순서대로 보류상위3.",
+  "result_annotations": {
+    "1:1": {
+      "selection": "ineligible",
+      "reason": "support Q&A not provider original"
+    },
+    "1:5": {
+      "selection": "ineligible",
+      "reason": "wiki mirror/repost not original provider page"
+    },
+    "1:7": {
+      "selection": "duplicate",
+      "reason": "same port-resolver README/overview source lineage and behavior as1:6"
+    },
+    "1:8": {
+      "selection": "duplicate",
+      "reason": "RFC6056 mirror of1:3"
+    },
+    "1:9": {
+      "selection": "ineligible",
+      "reason": "support Q&A excluded"
+    },
+    "1:10": {
+      "selection": "duplicate",
+      "reason": "same ETSI TR different edition"
+    },
+    "2:4": {
+      "selection": "ineligible",
+      "reason": "book notes secondary"
+    },
+    "2:7": {
+      "selection": "duplicate",
+      "reason": "RFC6056 format duplicate"
+    },
+    "2:8": {
+      "selection": "duplicate",
+      "reason": "Node child_process source equivalent of2:2; neither opened this route"
+    }
+  },
+  "status": "frozen_before_next_question"
+}

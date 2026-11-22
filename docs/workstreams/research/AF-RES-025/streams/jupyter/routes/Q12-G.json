@@ -1,0 +1,257 @@
+{
+  "question_id": "Q12",
+  "route": "G",
+  "completed_utc": "2026-11-22T05:23:25.363Z",
+  "queries": [
+    "Q12-G-1",
+    "Q12-G-2",
+    "Q12-G-3"
+  ],
+  "original_open_attempts": 5,
+  "selection_note": "질의1 순위1,3,4,5,6이첫5원문;2는BCM같은원문다른판중복. NVIDIA문서동일원문§16.6를이어읽어form·validation와명세복제반례확인. 검색제목과Posit열람판불일치보존.",
+  "sources": [
+    {
+      "source_id": "JP-C035",
+      "url": "https://docs.nvidia.com/base-command-manager/product-manuals/admin/jupyter",
+      "title": "NVIDIA BCM Jupyter Kernel Creator",
+      "version": "current administrator manual; examples basecm11; fixed publication date unknown",
+      "sections": [
+        "§16.5.1.1 L669–692",
+        "§16.6 L992–1009",
+        "§16.6.1.1–3 L1140–1212",
+        "Kernel provisioning L475–582"
+      ],
+      "observation": "동적dialog의 type/oneof/default/limits값을 template에치환한다. 선택완료뒤새kernel.json과Launcher항목을만든다.",
+      "limitation": "가장가까운form/실행선례이지만선택조합별실제명세파일을생성한다. 그증식회피가원질문핵심이다. HPC플랫폼도입범위와당시판미검증.",
+      "producer": "NVIDIA Base Command Manager",
+      "receipt_ids": [
+        "Q12-G-O1",
+        "Q12-G-O1-section"
+      ]
+    },
+    {
+      "source_id": "JP-C036",
+      "url": "https://docs.posit.co/ide/server-pro/user/jupyter-lab/guide/jupyter-kernel-management.html",
+      "title": "Posit Workbench Jupyter kernel management",
+      "version": "opened release2026.10.0; search title2026.11.0 mismatch",
+      "sections": [
+        "User-Created kernels L176–201"
+      ],
+      "observation": "가상환경을만들고 ipykernel install로kernel등록후Launcher에서선택한다.",
+      "limitation": "환경별등록방식으로조합별명세증식을없애는설계가아니다. 검색제목과열람판이달라열람판을기록.",
+      "producer": "Posit",
+      "receipt_ids": [
+        "Q12-G-O2"
+      ]
+    },
+    {
+      "source_id": "JP-C037",
+      "url": "https://jupyterlab.readthedocs.io/en/stable/user/documents_kernels.html",
+      "title": "JupyterLab Documents and Kernels",
+      "version": "4.6.6",
+      "sections": [
+        "Documents and Kernels L30–45",
+        "Subshell consoles L46–54"
+      ],
+      "observation": "텍스트문서를kernel/console에연결하고code를전달한다. 기존kernel내동시subshell기능도있다.",
+      "limitation": "parameter형새프로세스시작명세나타입/default검증form은이문서에없다. 기존kernel연결은호출경계가다름.",
+      "producer": "JupyterLab maintainers",
+      "receipt_ids": [
+        "Q12-G-O3"
+      ]
+    },
+    {
+      "source_id": "JP-C038",
+      "url": "https://github.com/trungleduc/jupyter_app_launcher",
+      "title": "jupyter_app_launcher README",
+      "version": "main; requiresJupyterLab>=3.1; exactrelease unknown",
+      "sections": [
+        "Purpose and capabilities L199–209",
+        "Installation L221–231"
+      ],
+      "observation": "YAML로Launcher항목을추가해predefinedcommand/로컬webserver/문서등을시작한다.",
+      "limitation": "사용자입력을요청하는typedparameter template·검증·값치환의전체근거는README에서찾지못했다.",
+      "producer": "trungleduc/jupyter_app_launcher maintainers",
+      "receipt_ids": [
+        "Q12-G-O4"
+      ]
+    },
+    {
+      "source_id": "JP-C039",
+      "url": "https://jupyterlab.readthedocs.io/en/stable/user/commands.html",
+      "title": "JupyterLab Commands",
+      "version": "4.6.6",
+      "sections": [
+        "console:create L821–856"
+      ],
+      "observation": "console생성명령이kernelPreference/id/name/language와시작기본값,cwd를받는다.",
+      "limitation": "형식있는명령인자목록은있지만동적사용자form과임의argv/env치환기능을입증하지않는다.",
+      "producer": "JupyterLab maintainers",
+      "receipt_ids": [
+        "Q12-G-O5"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "JP-K031",
+      "target_name": "NVIDIA BCM Kernel Creator",
+      "candidate_class": "complete_product",
+      "source_ids": [
+        "JP-C035"
+      ],
+      "proposed_use": "HPC형kernel입력form과실행template의선례; 명세증식제약때문에그대로채택보류",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q12-P1"
+      ],
+      "condition_findings": {
+        "Q12-P1": "template재사용은되지만선택뒤새kernel.json/Launcher항목을생성하므로조합별실행명세복제를회피하지못함.",
+        "Q12-P2": "생성dialog,type/oneof/default/limits가명시됨.",
+        "Q12-P3": "Jinja2kernel/submit script에값을반영해kernel프로세스를시작함."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "실제반환은새대상/기지부품을구별하고명세증식회피까지확인한다. 호스트부품은주지표신규로세지않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 1
+    },
+    {
+      "candidate_id": "JP-K032",
+      "target_name": "Posit environment kernel registration",
+      "candidate_class": "complete_product",
+      "source_ids": [
+        "JP-C036"
+      ],
+      "proposed_use": "환경별kernel등록을매개변수형실행기로혼동하는반례",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q12-P1",
+        "Q12-P2"
+      ],
+      "condition_findings": {
+        "Q12-P1": "각환경을새kernel로등록해명세/항목이늘어나는방식.",
+        "Q12-P2": "타입/enum/default입력form없음.",
+        "Q12-P3": "등록된kernel을선택해실행가능하나매개변수치환전체근거부족."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "실제반환은새대상/기지부품을구별하고명세증식회피까지확인한다. 호스트부품은주지표신규로세지않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 3
+    },
+    {
+      "candidate_id": "JP-K033",
+      "target_name": "JupyterLab document-console attachment",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C037"
+      ],
+      "proposed_use": "기존kernel/console재사용을새프로세스매개변수실행과혼동한경계반례",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": true,
+      "provider_status": "conflict",
+      "missing_conditions": [
+        "Q12-P1",
+        "Q12-P2",
+        "Q12-P3"
+      ],
+      "condition_findings": {
+        "Q12-P1": "명세template이아닌문서와kernel연결동작.",
+        "Q12-P2": "사용자parameter schema검증form없음.",
+        "Q12-P3": "문서code를kernel에실행하는것과새process의argv/env시작은다름."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "실제반환은새대상/기지부품을구별하고명세증식회피까지확인한다. 호스트부품은주지표신규로세지않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 4
+    },
+    {
+      "candidate_id": "JP-K034",
+      "target_name": "jupyter_app_launcher YAML actions",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C038"
+      ],
+      "proposed_use": "YAML실행항목확장부품;동적parameter지원은추가원문이필요",
+      "new_target": true,
+      "initial_named_target": false,
+      "new_use_in_known_target": false,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q12-P1",
+        "Q12-P2"
+      ],
+      "condition_findings": {
+        "Q12-P1": "단일YAML항목의동적조합template역할은README근거부족.",
+        "Q12-P2": "typed입력요청/검증/default근거없음.",
+        "Q12-P3": "predefinedcommand실행가능; 사용자값대입은미확인."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "실제반환은새대상/기지부품을구별하고명세증식회피까지확인한다. 호스트부품은주지표신규로세지않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 5
+    },
+    {
+      "candidate_id": "JP-K035",
+      "target_name": "JupyterLab console:create preferences",
+      "candidate_class": "reusable_part",
+      "source_ids": [
+        "JP-C039"
+      ],
+      "proposed_use": "기존Jupyter명령인자에서kernel생성옵션의사용경계를확인",
+      "new_target": false,
+      "initial_named_target": true,
+      "new_use_in_known_target": true,
+      "provider_status": "hold",
+      "missing_conditions": [
+        "Q12-P1",
+        "Q12-P2",
+        "Q12-P3"
+      ],
+      "condition_findings": {
+        "Q12-P1": "한명령여러args는있으나실행명세parameter화의전체목적은미확인.",
+        "Q12-P2": "타입/default목록은있지만사용자parameter입력form/검증미확인.",
+        "Q12-P3": "kernel선택/시작옵션이며임의argv/env치환명세는아님."
+      },
+      "historical_availability": "unknown",
+      "researcher_inference": "실제반환은새대상/기지부품을구별하고명세증식회피까지확인한다. 호스트부품은주지표신규로세지않는다.",
+      "first_seen_query": 1,
+      "first_seen_rank": 6
+    }
+  ],
+  "return_candidate_ids": [
+    "JP-K034",
+    "JP-K035",
+    "JP-K031"
+  ],
+  "return_note": "보류2후가장먼저발견한NVIDIA근접오답반환. 필수조건하나를위반하는가장구체적반례.",
+  "result_annotations": {
+    "1:2": {
+      "selection": "duplicate",
+      "reason": "NVIDIA BCM same chapter other product edition"
+    },
+    "1:8": {
+      "selection": "ineligible",
+      "reason": "survey/extension list not candidate provider original"
+    },
+    "2:2": {
+      "selection": "duplicate",
+      "reason": "NetBeans same API different edition"
+    },
+    "2:6": {
+      "selection": "duplicate",
+      "reason": "Jenkins API implementation/Javadoc same behavior; no extra candidate opened"
+    },
+    "3:9": {
+      "selection": "duplicate",
+      "reason": "Jupyter Server stable/latest same API document"
+    }
+  },
+  "status": "all_routes_frozen"
+}
