@@ -24,3 +24,10 @@
 
 - 커밋 `add402d0203693fa2d0c9efc3b07a9e9d9a614fb`; 고정판 events.jsonl을 GitHub에서 다시 읽고 로컬 fetch로 동일 HEAD 확인.
 - 다음 소프트웨어 묶음은 core5사건(SW01/02/03/05/06), 보충SW04, 정책3, 독립소비자3. HTTP200이면서 CLI가 빠진 tree-sitter와 현재404인 libxml++3 파일의 고정판 열람을 분리했다.
+
+## 묶음2b — 소프트웨어 원격 저장
+
+- 커밋 `60cb76c1a8f64abe585a99a789833450446ce7af`; 고정판 software/events.jsonl 다시읽기·fetch 확인.
+- ROR core6은 ROR01/02/05/06/07/08, 보충03/04. 같은 ID의 대상 오염 정정과 literal merge를 분리한다. release-candidate 고정 JSON과 배포댓글을 구분하며 전체 release dump를 읽은 것으로 쓰지 않는다.
+- root가 ROR rc-v1.38/rc-v1.60의041xzk838 고정JSON을 직접 재열람: 이탈리아 이름·도메인·부모로 정정한 파일에도 Spain/Leioa 위치가 남는다. 현재서비스전체오류가 아니라 이 고정파일의 불일치다.
+- root가 Homebrew readline rollback 및 tree-sitter split 고정diff, AcoustIDissue114 본문을 재열람했다. 편집자실패설명과 이번실행검증을 분리한다.
