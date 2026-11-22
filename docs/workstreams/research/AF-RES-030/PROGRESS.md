@@ -25,3 +25,9 @@ A24와 선정 B8의 원작성자·질문·직접답·권고·새 실행을 연�
 ## 묶음⑤ — 결과·분모 검산·수용
 
 RESULT에 전32사례→분모/비용→실제대조3필수표를 먼저 배치했다. 독립 배열검산과 원고검토를 구분했고4개 표현교정을 반영했다. source입력hash를Git LF정규화로 맞췄고201/46 및 sources본문hash는불변. root 첫검사95/99 exit1은 B_screen/분기접두사 검사기오류였으며 교정후99/99 exit0. 실제 session check --fetch exit0, 최신통합f1d420d 계약동일. 결과는 REVIEW_READY_WITH_GAPS: 원판O0, 전체최초필드 무노출사전완성부족, 역사환경 독립실행미실시. 다음: 결과·자체점검·수용파일 원격고정SHA 재독 후 마지막 HANDOFF commit.
+
+묶음⑤ 원격 고정 SHA `453d3806ae1e7c6e16b231bfcbe0be8ac8e3de66`; 결과/자체점검/수용/분모/출처의6파일원격재독 및Git blob6/6일치. 32사례/8개Q행/최소46 확인.
+
+## 묶음⑥ — 원격 고정 결과 재독 뒤 마지막 인계
+
+연구결과 SHA453d3806을고정하고 원격재독영수증을 남긴 뒤 HANDOFF를작성했다. 최종데이터·session검사는 해당결과SHA 대상이며 인계형식은별도검사한다. 상태 REVIEW_READY_WITH_GAPS, 공통dot-control/STATE수정없음. 본마지막commit에HANDOFF·영수증·이진행원장을 함께보존하며 마지막원격SHA는최종응답에전달한다.
