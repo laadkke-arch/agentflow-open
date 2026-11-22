@@ -1,0 +1,857 @@
+{
+  "question": {
+    "id": "Q12",
+    "question_id": "Q12",
+    "ledger": "numpy",
+    "canonical_id": "NEP-53",
+    "scope": "partial",
+    "whole_or_partial": "partial",
+    "title": "NEP 53 — Evolving the NumPy C-API for NumPy 2.0",
+    "initial_url": "https://github.com/numpy/numpy/blob/bf0835ac5d7a7301f05706ae0d5adce191d43ec2/doc/neps/nep-0053-c-abi-evolution.md",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-53.md",
+    "initial_text_sha256": "05f4a10deda2577a26528310c1bd32ba3e56a0a30b0ad40ee642dd8a4b1c2dac",
+    "caller": {
+      "text": "A downstream C/Cython extension maintainer building against NumPy headers and distributing a binary extension.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 15,
+          "line_end": 42
+        },
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 90,
+          "line_end": 107
+        }
+      ]
+    },
+    "input": {
+      "text": "Downstream extension source, newer NumPy headers and an optional NPY_TARGET_VERSION baseline such as NPY_1_22_API_VERSION; absence of the macro selects a suitably old API by default.",
+      "source_positions": [
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 93,
+          "line_end": 107
+        }
+      ]
+    },
+    "output": {
+      "text": "A binary built with the newer headers that exposes/uses only the selected compatible API surface and runs on the chosen older NumPy baseline; the wider design additionally seeks one rebuilt binary for both NumPy 1.x and 2.0.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 22,
+          "line_end": 42
+        },
+        {
+          "section": "Backwards compatible builds",
+          "line_start": 93,
+          "line_end": 107
+        },
+        {
+          "section": "Implementation",
+          "line_start": 213,
+          "line_end": 218
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "partial_boundary",
+        "text": "The bounded action is compile-time API selection for an older baseline. NumPy 2.0 API-table translation, layout changes, downstream source edits and packaging are remaining full-design integration.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 245
+          }
+        ]
+      },
+      {
+        "kind": "out_of_scope",
+        "text": "Passing state/context for CPython subinterpreters or HPy is not part of this design. Concrete API removals are illustrative and may be reconsidered case by case.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 63,
+            "line_end": 84
+          },
+          {
+            "section": "Alternatives",
+            "line_start": 250,
+            "line_end": 257
+          }
+        ]
+      },
+      {
+        "kind": "version_branch",
+        "text": "The first design discusses NumPy 1.25 followed by 2.0; Cython 3 could hide struct-layout changes, while supporting Cython 2.x would require downstream macro/Python-object changes. Do not assume either ecosystem transition already occurred.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 33,
+            "line_end": 42
+          },
+          {
+            "section": "Impact on Cython users",
+            "line_start": 158,
+            "line_end": 175
+          }
+        ]
+      },
+      {
+        "kind": "public_date_caveat",
+        "text": "The initial text reports presentation at a 2023-04-03 planning meeting. No meeting contents or immutable first meeting design were retrieved. The recorded initial_date is the verified numbered-NEP PR creation on 2023-04-13, and both dates remain in the same sampling period.",
+        "source_positions": [
+          {
+            "section": "Discussion",
+            "line_start": 271,
+            "line_end": 277
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q12-W01",
+        "predicate": "Compile against newer NumPy while targeting an older API by default, with an explicit target-version selection mechanism and opt-in access to newer API.",
+        "source_positions": [
+          {
+            "section": "Abstract; Backwards compatible builds",
+            "line_start": 33,
+            "line_end": 42
+          },
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 107
+          }
+        ],
+        "falsifying_input": "Build an extension with newer headers and target NPY_1_22_API_VERSION. If only installing old build headers can target 1.22, the requested new-header build mechanism is absent.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W02",
+        "predicate": "Hide struct fields and API functions introduced after the selected target unless the caller opts into a newer API surface.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 218
+          }
+        ],
+        "falsifying_input": "At an old selected target, compile source that refers to a field/function introduced only after that target. If the default/old-target headers expose it as usable without opt-in, the gate is falsified.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W03",
+        "predicate": "After recompilation/adaptation against NumPy 2.0, allow one downstream binary to work with both NumPy 1.x and 2.0, rather than requiring two incompatible binary distributions.",
+        "source_positions": [
+          {
+            "section": "Abstract; End-user and packaging impact",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "End-user and packaging impact",
+            "line_start": 177,
+            "line_end": 190
+          }
+        ],
+        "falsifying_input": "Compile one downstream extension against the 2.0 design and import it under the supported 1.x and 2.0 runtimes. Failure on either solely due to the intended cross-version compatibility mechanism falsifies the full migration goal.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W04",
+        "predicate": "Newly compiled downstream extensions must reach compatible runtime implementations when the NumPy C-API/ABI evolves across the supported runtimes; the compatibility integration must not dispatch through incompatible API-table entries.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "NumPy 2 compatibility and API table changes",
+            "line_start": 227,
+            "line_end": 245
+          }
+        ],
+        "falsifying_input": "Import and execute the same rebuilt extension on supported NumPy 1.x and 2.0 runtimes after an API-table change. A call landing at an incompatible function pointer fails the outcome; a correct header-only bridge is not excluded merely for lacking a separate package.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W05",
+        "predicate": "Allow substantive NumPy C-API/ABI evolution through downstream recompilation and documented adaptation, rather than requiring all old binary layouts and exposed API entries to remain frozen indefinitely.",
+        "source_positions": [
+          {
+            "section": "Abstract",
+            "line_start": 22,
+            "line_end": 42
+          },
+          {
+            "section": "Motivation and Scope",
+            "line_start": 48,
+            "line_end": 65
+          },
+          {
+            "section": "Implementation",
+            "line_start": 221,
+            "line_end": 225
+          }
+        ],
+        "falsifying_input": "Propose a supported API removal or public-structure change with a documented downstream adaptation. A design that can maintain its compatibility promise only by forbidding every such C-API/ABI change fails the evolution goal.",
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-W06",
+        "predicate": "Manage the C-API break through explicit downstream recompilation and documented replacements/adaptation for removed or changed API, keeping large state/context rewrites outside this proposal.",
+        "source_positions": [
+          {
+            "section": "Adding state; Implementation; Backward compatibility",
+            "line_start": 67,
+            "line_end": 84
+          },
+          {
+            "section": "Implementation",
+            "line_start": 221,
+            "line_end": 225
+          },
+          {
+            "section": "Backward compatibility",
+            "line_start": 263,
+            "line_end": 268
+          }
+        ],
+        "falsifying_input": "A downstream extension using a changed/removed C-API entry must have a documented adaptation path after recompilation. Requiring every call to gain an unrelated HPy context, or no replacement guidance for a changed entry, fails the full migration boundary.",
+        "source_id": "Q12-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q12-P01",
+        "predicate": "Let the caller select the oldest supported NumPy API at compile time while using newer NumPy headers.",
+        "source_positions": [
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 104
+          }
+        ],
+        "falsifying_input": "With newer headers, request NPY_1_22_API_VERSION. Requiring a separate installation of 1.22 headers instead of honoring the target setting falsifies the partial operation.",
+        "inherits": [
+          "Q12-W01"
+        ],
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-P02",
+        "predicate": "Default to an older compatible API and hide newer fields/functions unless a newer target is selected.",
+        "source_positions": [
+          {
+            "section": "Abstract; Implementation",
+            "line_start": 33,
+            "line_end": 37
+          },
+          {
+            "section": "Implementation",
+            "line_start": 213,
+            "line_end": 218
+          }
+        ],
+        "falsifying_input": "Omit the target macro and attempt to reference an API addition newer than the advertised default target; exposure without opt-in falsifies the compatibility gate.",
+        "inherits": [
+          "Q12-W01",
+          "Q12-W02"
+        ],
+        "source_id": "Q12-FIRST"
+      },
+      {
+        "id": "Q12-P03",
+        "predicate": "The resulting extension using only the selected API must actually be compatible with that older NumPy runtime; changing a preprocessor label alone is insufficient.",
+        "source_positions": [
+          {
+            "section": "Backwards compatible builds",
+            "line_start": 93,
+            "line_end": 104
+          }
+        ],
+        "falsifying_input": "Compile a source that uses only the selected baseline API with newer headers and load it on that baseline runtime. An ABI/import failure caused by the target mechanism falsifies the promised output.",
+        "inherits": [
+          "Q12-W01"
+        ],
+        "source_id": "Q12-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Build a downstream extension using current build headers while retaining an older runtime baseline. This directly removes the need to compile only against the oldest supported NumPy, even before NumPy 2.0 table/layout migration is implemented.",
+    "remaining_adapter": "Set the version macro/build flag and choose a supported baseline in the extension build. Wider 2.0 compatibility still requires descriptor access adaptation, API-table translation/import handling, recompilation and packaging. If the adapter must hide new APIs or implement binary compatibility itself, the returned item has not completed this partial action.",
+    "same_name_wrong_actor_output_failure": "CPython Py_LIMITED_API or a Python packaging requires-python marker selects a different actor/API boundary; neither proves compatibility with an older NumPy C-API. A version string printed by a build tool without controlling exported NumPy symbols or resulting binary compatibility also fails.",
+    "route_order": [
+      "B",
+      "A"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q12/open-1.json",
+    "common/Q12/open-2.json"
+  ],
+  "common_baseline_return": "common/Q12/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q12",
+    "provider_pages": [
+      {
+        "rank": 1,
+        "provider_id": "numpy/numpy",
+        "publisher": "NumPy developers; Array API section author attributed to Travis E. Oliphant",
+        "type": "official_manual_source",
+        "official_url_prefixes": [
+          "https://github.com/numpy/numpy/"
+        ],
+        "body_status": "original_text_partial",
+        "read_sections": [
+          "Including and importing the C API, returned lines4533-4578",
+          "Mechanism details and dynamic linking, returned lines4579-4685",
+          "Checking the API Version, returned lines4686-4727"
+        ],
+        "version": {
+          "branch": "main",
+          "commit": null,
+          "document": "doc/source/reference/c-api/array.rst"
+        },
+        "finding": "The manual defines target-feature and runtime-version macros, says NPY_TARGET_VERSION can change targeted features, and describes import-time compatibility checks.",
+        "limitations": [
+          "Only selected original passages were returned; no target-version header implementation was opened.",
+          "The default older target and hiding of newer fields/functions are not established by these returned passages.",
+          "No compile/import test on an older runtime was performed."
+        ],
+        "duplicate_group": "numpy-c-api-array-version-manual",
+        "countability": {
+          "eligible": true,
+          "reason": "Original NumPy manual source read; conservative representative of mirrored chapter."
+        },
+        "source_id": "Q12-C01",
+        "requested_url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+        "final_url": "https://github.com/numpy/numpy/blob/main/doc/source/reference/c-api/array.rst",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q12/open-1.json",
+        "source_ref": "turn905510019view0",
+        "checked_utc": "2026-11-22T07:50:03.521Z",
+        "returned_line_ranges": [
+          [
+            142,
+            214
+          ],
+          [
+            350,
+            370
+          ],
+          [
+            1606,
+            1613
+          ],
+          [
+            1630,
+            1650
+          ],
+          [
+            1669,
+            1673
+          ],
+          [
+            1675,
+            1677
+          ],
+          [
+            1723,
+            1725
+          ],
+          [
+            2039,
+            2046
+          ],
+          [
+            3901,
+            3902
+          ],
+          [
+            4027,
+            4034
+          ],
+          [
+            4487,
+            4880
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 56,
+            "label": "numpy",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 144,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 57,
+            "label": "doc",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 145,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 58,
+            "label": "source",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 146,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 59,
+            "label": "reference",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 147,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 60,
+            "label": "c-api",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 148,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 61,
+            "label": "Raw",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 168,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": null,
+            "label": "https://docs.python.org/3/c-api/memory.html#raw-memory-interface",
+            "href": "https://docs.python.org/3/c-api/memory.html#raw-memory-interface",
+            "source_line": 4773,
+            "displayed_host": null,
+            "href_limit": "Absolute URL visibly printed in returned text."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": false,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      },
+      {
+        "rank": 2,
+        "provider_id": "numpy/numpy",
+        "publisher": "NumPy developers",
+        "type": "official_manual",
+        "official_url_prefixes": [
+          "https://numpy.org/devdocs/",
+          "https://numpy.org/doc/"
+        ],
+        "body_status": "original_text_partial",
+        "read_sections": [
+          "Including and importing the C API, returned lines2385-2388 and2403-2431",
+          "Mechanism details and dynamic linking, returned lines2432-2487",
+          "Checking the API Version, returned lines2488-2512"
+        ],
+        "version": {
+          "observed_title": "NumPy v2.6.dev0 Manual",
+          "url_selector": "devdocs",
+          "exact_revision": null
+        },
+        "finding": "Rendered documentation repeats target-feature/version macros and import-time ABI/API checking; it exposes cross-reference labels for integration details.",
+        "limitations": [
+          "Partial original text only;2890+ other reported lines not all returned.",
+          "Conservative mirror of the source chapter, so not a second independent source.",
+          "No default-target/hiding implementation or binary runtime experiment was read."
+        ],
+        "duplicate_group": "numpy-c-api-array-version-manual",
+        "countability": {
+          "eligible": false,
+          "reason": "Original body read but conservative duplicate of C01 manual chapter."
+        },
+        "source_id": "Q12-C02",
+        "requested_url": "https://numpy.org/devdocs/reference/c-api/array.html",
+        "final_url": "https://numpy.org/devdocs/reference/c-api/array.html",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q12/open-2.json",
+        "source_ref": "turn368122029view0",
+        "checked_utc": "2026-11-22T07:50:20.913Z",
+        "returned_line_ranges": [
+          [
+            116,
+            171
+          ],
+          [
+            173,
+            173
+          ],
+          [
+            273,
+            273
+          ],
+          [
+            720,
+            722
+          ],
+          [
+            726,
+            736
+          ],
+          [
+            868,
+            874
+          ],
+          [
+            1064,
+            1066
+          ],
+          [
+            1073,
+            1073
+          ],
+          [
+            1078,
+            1090
+          ],
+          [
+            1252,
+            1252
+          ],
+          [
+            1369,
+            1372
+          ],
+          [
+            1948,
+            1954
+          ],
+          [
+            1969,
+            1987
+          ],
+          [
+            1999,
+            1999
+          ],
+          [
+            2015,
+            2017
+          ],
+          [
+            2080,
+            2103
+          ],
+          [
+            2385,
+            2388
+          ],
+          [
+            2403,
+            2635
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 44,
+            "label": "npy_intp",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 118,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 29,
+            "label": "PyArrayObject",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 118,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 49,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 118,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 50,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 123,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 51,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 128,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 52,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 134,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 30,
+            "label": "PyObject",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 139,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 53,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 139,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 54,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 143,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 55,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 148,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 56,
+            "label": "`PyArray_SetBaseObject`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 152,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 57,
+            "label": "`NPY_ARRAY_WRITEBACKIFCOPY`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 154,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 36,
+            "label": "PyArray_Descr",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 155,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 58,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 155,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 59,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 160,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 60,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 61,
+            "label": "`numpy.ndarray.item`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 168,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 62,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 170,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 63,
+            "label": "`PyCapsule`",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 171,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 64,
+            "label": "`__array_finalize__`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 171,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 66,
+            "label": "`PyArray_FromAny`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 173,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 104,
+            "label": "`NPY_ARRAY_FORCECAST`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 273,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 105,
+            "label": "`PyArray_CheckFromAny`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 273,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 244,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 728,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 245,
+            "label": "`numpy.result_type`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 731,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 246,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 733,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 78,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 874,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 76,
+            "label": "`PyArray_DescrFromType`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 1969,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 250,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2518,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 112,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2549,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 31,
+            "label": "`PyArray_Type`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2635,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": false,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      }
+    ],
+    "allowed_provider_ids": [
+      "numpy/numpy"
+    ],
+    "allowed_url_prefixes": [
+      "https://github.com/numpy/numpy/",
+      "https://numpy.org/devdocs/",
+      "https://numpy.org/doc/"
+    ],
+    "common_start_status": "completed",
+    "budgets": {
+      "navigation": 1,
+      "body_opens": 2,
+      "max_neutral_searches": 1,
+      "max_body_opens": 2,
+      "retries": 0,
+      "extra_find_or_click_calls": 0,
+      "failed_opens_count_in_budget": true
+    },
+    "instrumentation": {
+      "search_tool": "mcp__codex_apps__search_service_web_run",
+      "search_engine_argument": "system2_search_query",
+      "query_language": "English",
+      "domain_filter": null,
+      "recency_filter": null,
+      "response_length": "long",
+      "exact_query_once": true,
+      "original_response_and_hash_saved": true,
+      "no_extra_evidence_gathering": true,
+      "route_AB_results_read": false,
+      "other_study_records_read": false,
+      "worker_model": "Inherited GPT-6 Astra Pro session; no independent human reader",
+      "body_reading": "Original text returned by open only; no snippet promoted to body evidence.",
+      "duplicate_rule": "Skip exact fragment/highlight/tracking aliases and clearly identical same-edition raw/rendered mirrors; retain ambiguous main-versus-numbered/development editions and count likely mirrors conservatively as one original.",
+      "duplicate_rule_note": "Main source and devdocs render likely share this chapter, but exact edition/commit equality was unknown before the second attempt. First two hits retained and conservatively counted as one document group; the more informative rank3 was not opened."
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "literal_queries": [
+    "NumPy NPY_TARGET_VERSION backward compatible extension builds",
+    "C API target version opt in new functions compile latest headers older runtime"
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "question": {
+    "id": "Q02",
+    "question_id": "Q02",
+    "ledger": "go",
+    "canonical_id": "golang/go#43744",
+    "scope": "whole",
+    "whole_or_partial": "whole",
+    "title": "proposal: benchmark unit properties",
+    "initial_url": "https://github.com/golang/go/issues/43744",
+    "fixed_version": "GitHub IssuesEvent 14843519105 action=opened; archive generation 1610831111133334",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/go/bodies/43744-initial.md",
+    "initial_text_sha256": "2777084f04618155dfcd0f4a3d0d23f60420e53c325b7ce6ac593ad0c3a4e884",
+    "source_id": "GO-Q02-INITIAL",
+    "caller": "A benchmark producer and a consumer/comparison tool such as benchstat handling custom measurement units.",
+    "input": "Benchmark results plus unit-name/key/value metadata supplied in the result stream or through a command-line flag.",
+    "output": "A consistent per-unit interpretation of beneficial direction and statistical assumptions, applied to subsequent benchmark measurements; conflicting properties produce an error.",
+    "limits": [
+      "Behavior for benchmark results preceding a unit declaration is explicitly unspecified.",
+      "Streaming consumers must not be forced to buffer all results merely in case a later property appears.",
+      "Normal-distribution support is deliberately omitted; no such mandatory requirement may be added.",
+      "The author expresses no strong opinion on exact syntax; Unit/key=value and -unit are concrete proposed representations, not an exclusive punctuation requirement."
+    ],
+    "source_sections": [
+      {
+        "section_id": "Q02-S1",
+        "heading": "Motivation: custom unit properties and benchstat",
+        "line_start": 1,
+        "line_end": 1
+      },
+      {
+        "section_id": "Q02-S2",
+        "heading": "In-band and CLI representations and alternatives",
+        "line_start": 3,
+        "line_end": 12
+      },
+      {
+        "section_id": "Q02-S3",
+        "heading": "Conflict error and forward propagation",
+        "line_start": 14,
+        "line_end": 16
+      },
+      {
+        "section_id": "Q02-S4",
+        "heading": "Direction and statistical semantics",
+        "line_start": 18,
+        "line_end": 22
+      },
+      {
+        "section_id": "Q02-S5",
+        "heading": "Default-unit and exact-size examples",
+        "line_start": 24,
+        "line_end": 27
+      }
+    ],
+    "whole_must": [
+      {
+        "predicate_id": "Q02-W1",
+        "requirement": "Carry per-unit key/value properties through both benchmark-stream declarations and an equivalent tool command-line configuration, and expose them to benchmark consumers.",
+        "source_sections": [
+          "Q02-S1",
+          "Q02-S2"
+        ],
+        "falsifying_input": "A custom text-bytes property supplied through a CLI option cannot reach the comparison tool, or only an unrelated benchmark-name tag is produced.",
+        "id": "Q02-W1",
+        "predicate": "Carry per-unit key/value properties through both benchmark-stream declarations and an equivalent tool command-line configuration, and expose them to benchmark consumers."
+      },
+      {
+        "predicate_id": "Q02-W2",
+        "requirement": "Reject conflicting properties specified for the same unit.",
+        "source_sections": [
+          "Q02-S3"
+        ],
+        "falsifying_input": "The same unit is declared higher=better and lower=better, and the consumer silently accepts both or overwrites one without an error.",
+        "id": "Q02-W2",
+        "predicate": "Reject conflicting properties specified for the same unit."
+      },
+      {
+        "predicate_id": "Q02-W3",
+        "requirement": "Apply a declaration to all following benchmark results with that unit; allow streaming without requiring retrospective buffering.",
+        "source_sections": [
+          "Q02-S3"
+        ],
+        "falsifying_input": "After a custom-unit declaration, a later result uses no property or a different property, or the parser cannot emit earlier results until end of input.",
+        "id": "Q02-W3",
+        "predicate": "Apply a declaration to all following benchmark results with that unit; allow streaming without requiring retrospective buffering."
+      },
+      {
+        "predicate_id": "Q02-W4",
+        "requirement": "Support all four higher/lower combined with better/worse formulations and interpret beneficial direction consistently.",
+        "source_sections": [
+          "Q02-S4"
+        ],
+        "falsifying_input": "higher=better and lower=worse are treated as opposite meanings, or one of the four allowed forms is rejected.",
+        "id": "Q02-W4",
+        "predicate": "Support all four higher/lower combined with better/worse formulations and interpret beneficial direction consistently."
+      },
+      {
+        "predicate_id": "Q02-W5",
+        "requirement": "Support assume=nothing and assume=exact with nothing as default; nothing uses nonparametric treatment and exact does not require repeated sampling to increase confidence.",
+        "source_sections": [
+          "Q02-S4",
+          "Q02-S5"
+        ],
+        "falsifying_input": "An omitted assumption forces a normal model, or a file-size unit marked exact is rejected for lacking repeated samples.",
+        "id": "Q02-W5",
+        "predicate": "Support assume=nothing and assume=exact with nothing as default; nothing uses nonparametric treatment and exact does not require repeated sampling to increase confidence."
+      }
+    ],
+    "partial_must": [
+      {
+        "predicate_id": "Q02-P1",
+        "requirement": "Parse a unit declaration/configuration into a unit-keyed property record usable by a benchmark tool.",
+        "source_sections": [
+          "Q02-S2"
+        ],
+        "falsifying_input": "Unit text-bytes lower=better assume=exact yields only raw text and requires the adapter to implement the unit/property parser.",
+        "inherited_from_whole": [
+          "Q02-W1"
+        ],
+        "id": "Q02-P1",
+        "predicate": "Parse a unit declaration/configuration into a unit-keyed property record usable by a benchmark tool."
+      },
+      {
+        "predicate_id": "Q02-P2",
+        "requirement": "Normalize all four direction forms and the nothing/exact assumptions, preserving nothing as the default.",
+        "source_sections": [
+          "Q02-S4"
+        ],
+        "falsifying_input": "lower=worse is not recognized as larger-is-better, or omitting assume does not produce the nothing/default interpretation.",
+        "inherited_from_whole": [
+          "Q02-W4",
+          "Q02-W5"
+        ],
+        "id": "Q02-P2",
+        "predicate": "Normalize all four direction forms and the nothing/exact assumptions, preserving nothing as the default."
+      },
+      {
+        "predicate_id": "Q02-P3",
+        "requirement": "When merging declarations for one unit, signal contradictory properties as an error.",
+        "source_sections": [
+          "Q02-S3"
+        ],
+        "falsifying_input": "Merging higher=better with lower=better for ns/op silently succeeds.",
+        "inherited_from_whole": [
+          "Q02-W2"
+        ],
+        "id": "Q02-P3",
+        "predicate": "When merging declarations for one unit, signal contradictory properties as an error."
+      }
+    ],
+    "independent_partial_purpose": "Validate and normalize benchmark-unit declarations into a usable per-unit metadata map before integrating them with a complete result stream and comparison UI.",
+    "independently_useful_next_action": "A benchmark consumer can inspect the normalized direction/assumption map, reject conflicts, then use it when interpreting subsequent results.",
+    "remaining_adapter": "Connect normalized records to the CLI and stream producers, apply them to following benchmark records, and wire their meanings into statistical/reporting consumers. If the adapter must implement the property parser, normalization or conflict rule, the component has not completed the partial action.",
+    "preferences": [
+      "Unit and -unit key=value spellings are proposed concrete syntax; alternative equally expressive spellings are not automatically conflicts.",
+      "Built-in examples ns/op lower=better and MB/s higher=better illustrate expected defaults; no universal fixed list of units is specified."
+    ],
+    "original_named_families": [
+      "Go benchmark format",
+      "Go testing package",
+      "benchstat"
+    ],
+    "original_named_components": [
+      "Unit metadata record",
+      "-unit flag",
+      "Benchmark result line",
+      "higher/lower=better/worse",
+      "assume=nothing/exact",
+      "ns/op",
+      "MB/s",
+      "text-bytes"
+    ],
+    "named_component_roles": {
+      "benchstat": "Explicit intended consumer family; returning benchstat itself is already named, while a distinct previously unnamed component inside that family must be separately identified.",
+      "Go benchmark format": "Explicit existing format; the linked older format proposal is prior context, not this sampled event."
+    },
+    "same_name_wrong_actor_output_failure": "A physical-unit conversion API that converts metres to feet, or a test-runner unit label, does not supply benchmark direction/assumption metadata or conflict/propagation semantics.",
+    "route_order": [
+      "B",
+      "A"
+    ]
+  },
+  "common_open_receipts": [],
+  "common_baseline_return": "common/Q02/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q02",
+    "provider_pages": [],
+    "allowed_provider_ids": [],
+    "allowed_url_prefixes": [],
+    "common_start_status": "empty_no_eligible_provider_pages",
+    "budgets": {
+      "navigation": 1,
+      "body_opens": 0,
+      "max_neutral_searches": 1,
+      "max_body_opens": 2,
+      "retries": 0,
+      "extra_find_or_click_calls": 0,
+      "failed_opens_count_in_budget": true
+    },
+    "instrumentation": {
+      "search_tool": "mcp__codex_apps__search_service_web_run",
+      "search_engine_argument": "system2_search_query",
+      "query_language": "English",
+      "domain_filter": null,
+      "recency_filter": null,
+      "response_length": "long",
+      "exact_query_once": true,
+      "original_response_and_hash_saved": true,
+      "no_extra_evidence_gathering": true,
+      "route_AB_results_read": false,
+      "other_study_records_read": false,
+      "worker_model": "Inherited GPT-6 Astra Pro session; no independent human reader",
+      "body_reading": "Original text returned by open only; no snippet promoted to body evidence.",
+      "duplicate_rule": "Skip exact fragment/highlight/tracking aliases and clearly identical same-edition raw/rendered mirrors; retain ambiguous main-versus-numbered/development editions and count likely mirrors conservatively as one original.",
+      "duplicate_rule_note": "No ambiguous duplicate selection needed."
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "navigation_rule": "Follow actually observed common-provider links: table of contents/reference index, then API/type with greatest overlap with distinctive frozen input/output terms, then official example. Ties on-page order then lexical URL. At most two navigation/index requests, each response used as evidence also debits body limit. No new provider or guessed deep URL."
+}

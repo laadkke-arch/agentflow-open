@@ -1,0 +1,427 @@
+{
+  "question": {
+    "id": "Q04",
+    "question_id": "Q04",
+    "ledger": "go",
+    "canonical_id": "golang/go#58584",
+    "scope": "whole",
+    "whole_or_partial": "whole",
+    "title": "proposal: cmd/compile: ability to export functions as WASM exports",
+    "initial_url": "https://github.com/golang/go/issues/58584",
+    "fixed_version": "GitHub IssuesEvent 27172305960 action=opened; archive generation 1676667926153386",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/go/bodies/58584-initial.md",
+    "initial_text_sha256": "1d574e030b6a13cb89aea2e9219a8c665c43088d2737f148b432ee6aac31f616",
+    "source_id": "GO-Q04-INITIAL",
+    "caller": "A Go developer exposing a function and a JavaScript/WebAssembly host invoking the compiled function.",
+    "input": "A Go function selected for export in a GOOS=js GOARCH=wasm build, a compiled module with its memory/stack interface, and native argument values; the concrete example is Bar(id int).",
+    "output": "A directly exported WebAssembly instance symbol that the host can invoke after placing native values into the Go stack, with the Go function receiving the intended argument.",
+    "limits": [
+      "The first text targets the js/wasm environment and does not require a standalone WASI environment.",
+      "The proposed compiler marker may be a directive or an instruction; exact //go:wasmexport spelling is an example.",
+      "Memory allocator access for strings/slices is mentioned as possibly needed, not a fully specified mandatory allocator API.",
+      "The abstract example’s stack offset and internal names are illustrative ABI details; no stable ABI guarantee is stated.",
+      "No numeric performance threshold or universal Go-type marshaller is required."
+    ],
+    "source_sections": [
+      {
+        "section_id": "Q04-S1",
+        "heading": "Background and existing global/js.Value restriction",
+        "line_start": 1,
+        "line_end": 18
+      },
+      {
+        "section_id": "Q04-S2",
+        "heading": "Mark functions and publish direct instance exports",
+        "line_start": 20,
+        "line_end": 24
+      },
+      {
+        "section_id": "Q04-S3",
+        "heading": "Calling exports and memory/stack preparation",
+        "line_start": 26,
+        "line_end": 31
+      },
+      {
+        "section_id": "Q04-S4",
+        "heading": "Go and JavaScript abstract example",
+        "line_start": 33,
+        "line_end": 59
+      }
+    ],
+    "whole_must": [
+      {
+        "predicate_id": "Q04-W1",
+        "requirement": "Provide a mechanism in the Go build/toolchain to select a Go function for a direct WebAssembly export.",
+        "source_sections": [
+          "Q04-S2",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The only supported path wraps the function in js.Func/js.Value and attaches it to globalThis; the compiler cannot emit a selected direct export.",
+        "id": "Q04-W1",
+        "predicate": "Provide a mechanism in the Go build/toolchain to select a Go function for a direct WebAssembly export."
+      },
+      {
+        "predicate_id": "Q04-W2",
+        "requirement": "Publish the selected function as a host-addressable WebAssembly instance export alongside the module’s built-in exports.",
+        "source_sections": [
+          "Q04-S2",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The host can locate only built-in bridge symbols or a JavaScript global, not the selected Go function in the instance export table.",
+        "id": "Q04-W2",
+        "predicate": "Publish the selected function as a host-addressable WebAssembly instance export alongside the module’s built-in exports."
+      },
+      {
+        "predicate_id": "Q04-W3",
+        "requirement": "Permit the host to prepare native argument values through the module’s Go memory/stack boundary, rather than limiting every argument to a wrapped js.Value.",
+        "source_sections": [
+          "Q04-S1",
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "For Bar(123), the host can pass only js.Value references, cannot reach the target stack memory, or writes an unrelated copy invisible to the Go function.",
+        "id": "Q04-W3",
+        "predicate": "Permit the host to prepare native argument values through the module’s Go memory/stack boundary, rather than limiting every argument to a wrapped js.Value."
+      },
+      {
+        "predicate_id": "Q04-W4",
+        "requirement": "Support invoking the directly exported function after argument preparation so the Go function observes the intended native value.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "After placing integer 123 into the designated argument slot, invoking the export does not call Bar or Bar observes a different/uninitialized value.",
+        "id": "Q04-W4",
+        "predicate": "Support invoking the directly exported function after argument preparation so the Go function observes the intended native value."
+      }
+    ],
+    "partial_must": [
+      {
+        "predicate_id": "Q04-P1",
+        "requirement": "Write a supplied native 32-bit integer at a caller-specified byte offset in a view of WebAssembly linear memory using the example’s little-endian representation.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "Given value 0x01020304 and a valid offset, the component cannot produce bytes 04 03 02 01 at that offset without the adapter implementing byte encoding/writing.",
+        "inherited_from_whole": [
+          "Q04-W3"
+        ],
+        "id": "Q04-P1",
+        "predicate": "Write a supplied native 32-bit integer at a caller-specified byte offset in a view of WebAssembly linear memory using the example’s little-endian representation."
+      },
+      {
+        "predicate_id": "Q04-P2",
+        "requirement": "Mutate the same memory buffer visible to the executing WebAssembly/Go module, so the prepared argument can be consumed by the subsequent export call.",
+        "source_sections": [
+          "Q04-S3",
+          "Q04-S4"
+        ],
+        "falsifying_input": "The memory-writing operation changes a detached copy or ordinary JS object, leaving the module’s designated stack argument bytes unchanged.",
+        "inherited_from_whole": [
+          "Q04-W3",
+          "Q04-W4"
+        ],
+        "id": "Q04-P2",
+        "predicate": "Mutate the same memory buffer visible to the executing WebAssembly/Go module, so the prepared argument can be consumed by the subsequent export call."
+      }
+    ],
+    "independent_partial_purpose": "Prepare the integer argument bytes for an already exported low-level function in the module’s memory, an independently usable host-side step before invoking that function.",
+    "independently_useful_next_action": "Once the stack argument slot contains the intended integer bytes, the host can invoke an already known direct export.",
+    "remaining_adapter": "Implement/choose the Go export declaration and linker integration, obtain the export and stack pointer, select the ABI-correct offset, and invoke the function. The adapter may choose addresses but must not implement the component’s core integer encoding/memory write. A memory writer alone does not satisfy the whole Go-export protocol.",
+    "preferences": [
+      "Compiler directive //go:wasmexport and foo·Bar naming are illustrative choices.",
+      "Allocator access for complex strings/slices remains an open integration issue in this first text."
+    ],
+    "original_named_families": [
+      "Go",
+      "WebAssembly",
+      "JavaScript",
+      "Wasmer"
+    ],
+    "original_named_components": [
+      "GOOS=js GOARCH=wasm",
+      "window/globalThis",
+      "wasm_exec.js",
+      "wasm_export_resume",
+      "js.Value",
+      "//go:wasmexport",
+      "CallImport",
+      "WebAssembly instance exports",
+      "DataView",
+      "DataView.setInt32",
+      "getsp",
+      "mem",
+      "foo·Bar",
+      "go._inst.exports",
+      "Bar(id int)",
+      "fmt.Println"
+    ],
+    "named_component_roles": {
+      "Wasmer": "Explicit original background export/import reference; a returned Wasmer component needs novelty coding within this named family.",
+      "DataView.setInt32": "Explicitly shown as the native integer argument-preparation component; rediscovery for this same use is already named.",
+      "wasm_exec.js": "Existing bridge context; a generic JS callback wrapper alone does not satisfy direct export requirements."
+    },
+    "same_name_wrong_actor_output_failure": "An export keyword that exports JavaScript module bindings, or a data-view API that formats values for display, has the wrong actor/output; neither emits a Go WebAssembly function nor writes its shared linear-memory argument slot.",
+    "route_order": [
+      "B",
+      "A"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q04/open-1.json",
+    "common/Q04/open-2.json"
+  ],
+  "common_baseline_return": "common/Q04/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q04",
+    "provider_pages": [
+      {
+        "rank": 1,
+        "provider_id": "W3C-WebAssembly-core",
+        "publisher": "W3C WebAssembly Working Group",
+        "type": "official_technical_specification",
+        "official_url_prefixes": [
+          "https://www.w3.org/TR/wasm-core/"
+        ],
+        "body_status": "fetch_failed",
+        "read_sections": [],
+        "version": {
+          "selector": "unversioned /TR/wasm-core/",
+          "observed_version": null
+        },
+        "finding": "The open returned a fetch error: content length exceeded 16777217 bytes.",
+        "limitations": [
+          "No original body was returned.",
+          "Failure consumed common body attempt1; no replacement was opened."
+        ],
+        "duplicate_group": "w3c-webassembly-core-current",
+        "countability": {
+          "eligible": false,
+          "reason": "Failed fetch, not an original read."
+        },
+        "source_id": "Q04-C01",
+        "requested_url": "https://www.w3.org/TR/wasm-core/",
+        "final_url": null,
+        "final_url_basis": "Fetch failed; final URL unknown",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q04/open-1.json",
+        "source_ref": "turn143305294view0",
+        "checked_utc": "2026-11-22T07:46:13.818Z",
+        "returned_line_ranges": [],
+        "links": [],
+        "summary_only": false,
+        "full_document_read": false,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      },
+      {
+        "rank": 2,
+        "provider_id": "WebAssembly/gc-core-specification",
+        "publisher": "WebAssembly Community Group, gc specification project",
+        "type": "official_technical_specification",
+        "official_url_prefixes": [
+          "https://webassembly.github.io/gc/core/"
+        ],
+        "body_status": "original_text_partial",
+        "read_sections": [
+          "2.5.3 Functions, returned lines963-980",
+          "2.5.5 Memories, returned lines991-1002",
+          "2.5.8 Data Segments, returned lines1033-1047",
+          "2.5.9 Start Function, returned lines1048-1056",
+          "2.5.10 Exports, returned lines1060-1077",
+          "2.5.11 Imports, returned lines1078-1090",
+          "5.5.10 Export Section, returned lines8908-8919"
+        ],
+        "version": {
+          "label": "Release 2.0 + tail calls + function references + gc",
+          "draft_date": "2024-12-09",
+          "total_reported_lines": 15159
+        },
+        "finding": "The returned original passages define named host-visible function/memory exports, byte-vector linear memory, and the binary export section.",
+        "limitations": [
+          "Sparse returned passages only; most of the PDF was not returned.",
+          "No Go compiler marker, Go stack argument ABI or host DataView write implementation was read.",
+          "The only explicit external URL in returned text is an ACM reference; no in-project navigable URL was returned."
+        ],
+        "duplicate_group": "webassembly-gc-core-draft-2024-12-09",
+        "countability": {
+          "eligible": true,
+          "reason": "Original official specification passages read; one distinct document group."
+        },
+        "source_id": "Q04-C02",
+        "requested_url": "https://webassembly.github.io/gc/core/_download/WebAssembly.pdf",
+        "final_url": "https://webassembly.github.io/gc/core/_download/WebAssembly.pdf",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q04/open-2.json",
+        "source_ref": "turn268915651view0",
+        "checked_utc": "2026-11-22T07:46:20.734Z",
+        "returned_line_ranges": [
+          [
+            912,
+            927
+          ],
+          [
+            945,
+            949
+          ],
+          [
+            960,
+            1103
+          ],
+          [
+            1115,
+            1121
+          ],
+          [
+            1397,
+            1411
+          ],
+          [
+            1440,
+            1461
+          ],
+          [
+            1495,
+            1510
+          ],
+          [
+            1525,
+            1548
+          ],
+          [
+            2501,
+            2516
+          ],
+          [
+            2553,
+            2569
+          ],
+          [
+            2610,
+            2621
+          ],
+          [
+            2647,
+            2658
+          ],
+          [
+            2688,
+            2706
+          ],
+          [
+            2733,
+            2754
+          ],
+          [
+            2793,
+            2802
+          ],
+          [
+            3291,
+            3310
+          ],
+          [
+            4240,
+            4256
+          ],
+          [
+            4274,
+            4288
+          ],
+          [
+            7397,
+            7408
+          ],
+          [
+            7447,
+            7451
+          ],
+          [
+            7537,
+            7540
+          ],
+          [
+            8806,
+            8818
+          ],
+          [
+            8851,
+            8855
+          ],
+          [
+            8861,
+            8919
+          ],
+          [
+            8951,
+            8955
+          ],
+          [
+            8992,
+            8998
+          ],
+          [
+            10937,
+            10943
+          ],
+          [
+            12092,
+            12106
+          ]
+        ],
+        "links": [
+          {
+            "link_id": null,
+            "label": "https://dl.acm.org/citation.cfm?doid=3062341.3062363",
+            "href": "https://dl.acm.org/citation.cfm?doid=3062341.3062363",
+            "source_line": 1117,
+            "displayed_host": null,
+            "href_limit": "Absolute URL visibly printed in returned text."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": false,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      }
+    ],
+    "allowed_provider_ids": [
+      "W3C-WebAssembly-core",
+      "WebAssembly/gc-core-specification"
+    ],
+    "allowed_url_prefixes": [
+      "https://webassembly.github.io/gc/core/",
+      "https://www.w3.org/TR/wasm-core/"
+    ],
+    "common_start_status": "completed_with_fetch_failure",
+    "budgets": {
+      "navigation": 1,
+      "body_opens": 2,
+      "max_neutral_searches": 1,
+      "max_body_opens": 2,
+      "retries": 0,
+      "extra_find_or_click_calls": 0,
+      "failed_opens_count_in_budget": true
+    },
+    "instrumentation": {
+      "search_tool": "mcp__codex_apps__search_service_web_run",
+      "search_engine_argument": "system2_search_query",
+      "query_language": "English",
+      "domain_filter": null,
+      "recency_filter": null,
+      "response_length": "long",
+      "exact_query_once": true,
+      "original_response_and_hash_saved": true,
+      "no_extra_evidence_gathering": true,
+      "route_AB_results_read": false,
+      "other_study_records_read": false,
+      "worker_model": "Inherited GPT-6 Astra Pro session; no independent human reader",
+      "body_reading": "Original text returned by open only; no snippet promoted to body evidence.",
+      "duplicate_rule": "Skip exact fragment/highlight/tracking aliases and clearly identical same-edition raw/rendered mirrors; retain ambiguous main-versus-numbered/development editions and count likely mirrors conservatively as one original.",
+      "duplicate_rule_note": "No ambiguous duplicate selection needed."
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "navigation_rule": "Follow actually observed common-provider links: table of contents/reference index, then API/type with greatest overlap with distinctive frozen input/output terms, then official example. Ties on-page order then lexical URL. At most two navigation/index requests, each response used as evidence also debits body limit. No new provider or guessed deep URL."
+}

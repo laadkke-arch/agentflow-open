@@ -11,3 +11,11 @@ Remote verification receipts and bundle commit IDs are appended after each commi
 | 1b. Method corrections and original-return gate | committed + remotely read | `2018c4347e345e194e74ca5c929ee5f529bde595`; protocol.py | Finish and seal twelve first-original inputs before search |
 
 | 1c. Twelve first texts, predicates and literal queries | local seal before search | evidence/input-seal.json; 2,976 frame rows; 12 events (6 whole/6 partial); 68 whole and 33 partial predicates | Publish and reread the input commit, then run common starts |
+
+| 1d. All twelve inputs | committed + remotely read | `3475576d56b4307bd75964b9a27dc2a60093efbf`; evidence/input-remote.json | Run exactly twelve common neutral queries and freeze up to two provider pages each |
+
+## Common starts sealed
+
+- 12 neutral queries; all first-ten provided ranks retained. 22 body-open attempts, including failures and unusable excerpts. No replacement beyond the two-open cap.
+- 24 route-specific inputs exclude common search snippets and all opposite-route material. Exact originals and provider boundaries remain available.
+- Common and route-input hashes: `evidence/common-seal.json`. A/B has not started. Ambiguous mirror policy correction is separately timestamped.

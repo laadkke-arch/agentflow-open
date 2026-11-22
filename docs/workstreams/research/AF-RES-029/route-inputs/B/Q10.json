@@ -1,0 +1,1261 @@
+{
+  "question": {
+    "id": "Q10",
+    "question_id": "Q10",
+    "ledger": "numpy",
+    "canonical_id": "NEP-47",
+    "scope": "whole",
+    "whole_or_partial": "whole",
+    "title": "NEP 47 — Adopting the array API standard",
+    "initial_url": "https://github.com/numpy/numpy/blob/0f2b4b235eb580590eaa744bf015d51e2e675afc/doc/neps/nep-0047-array-api-standard.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-47.rst",
+    "initial_text_sha256": "a46cdd8edbc29e30698bf1b8350a687353618be63937ef8f20b68e500a7be486",
+    "caller": {
+      "text": "Downstream numerical library authors and end users who want one function implementation to accept arrays from conforming libraries without hard dependencies on each library.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 19,
+          "line_end": 23
+        },
+        {
+          "section": "Adoption in downstream libraries",
+          "line_start": 97,
+          "line_end": 123
+        }
+      ]
+    },
+    "input": {
+      "text": "Conforming array objects and supported Python scalars, shape/axis arguments, supported dtype literals and CPU device information. Array-like coercion is a separate explicit step.",
+      "source_positions": [
+        {
+          "section": "High-level design",
+          "line_start": 182,
+          "line_end": 215
+        },
+        {
+          "section": "Functions in the namespace",
+          "line_start": 231,
+          "line_end": 259
+        },
+        {
+          "section": "Device support",
+          "line_start": 313,
+          "line_end": 328
+        }
+      ]
+    },
+    "output": {
+      "text": "Arrays from the selected conforming namespace with the prescribed dtype, shape and device semantics; a single selected element remains a 0-D array. Interchange produces an ndarray view on producer memory.",
+      "source_positions": [
+        {
+          "section": "High-level design",
+          "line_start": 182,
+          "line_end": 210
+        },
+        {
+          "section": "DLPack support",
+          "line_start": 270,
+          "line_end": 297
+        },
+        {
+          "section": "Indexing",
+          "line_start": 389,
+          "line_end": 395
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "boundary",
+        "text": "The target is the 2021 standard and the separate NumPy namespace. Changes to the upstream standard itself are out of scope.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 61,
+            "line_end": 81
+          }
+        ]
+      },
+      {
+        "kind": "boundary",
+        "text": "Only bool, 8/16/32/64-bit signed/unsigned integers and 32/64-bit floats are in this initial standard. Complex, string, object, datetime and structured dtypes are outside the described portable core.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules",
+            "line_start": 334,
+            "line_end": 349
+          },
+          {
+            "section": "High-level design",
+            "line_start": 211,
+            "line_end": 215
+          }
+        ]
+      },
+      {
+        "kind": "undefined",
+        "text": "Mixed-kind casting, Python scalar overflow, clipping beyond the slice extent and mutation mixed with possible views are not portable guarantees in this first text.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules",
+            "line_start": 351,
+            "line_end": 364
+          },
+          {
+            "section": "Indexing",
+            "line_start": 397,
+            "line_end": 409
+          },
+          {
+            "section": "The array object",
+            "line_start": 422,
+            "line_end": 426
+          }
+        ]
+      },
+      {
+        "kind": "preference",
+        "text": "The namespace name and array class name are tentative; exact class hierarchy and dtype object implementation are alternatives. Matching the operational contracts matters more than those spellings.",
+        "source_positions": [
+          {
+            "section": "Motivation and Scope",
+            "line_start": 63,
+            "line_end": 69
+          },
+          {
+            "section": "The array object",
+            "line_start": 428,
+            "line_end": 430
+          },
+          {
+            "section": "The dtype objects",
+            "line_start": 475,
+            "line_end": 507
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q10-W01",
+        "predicate": "Provide the separate standard array namespace and array object needed for portable array construction and numerical operations across conforming libraries, with namespace discovery for downstream callers.",
+        "source_positions": [
+          {
+            "section": "Abstract; Adoption in downstream libraries; High-level design",
+            "line_start": 19,
+            "line_end": 123
+          },
+          {
+            "section": "High-level design",
+            "line_start": 175,
+            "line_end": 215
+          },
+          {
+            "section": "Appendix namespace selector",
+            "line_start": 545,
+            "line_end": 564
+          }
+        ],
+        "falsifying_input": "Run a downstream function that obtains xp from two same-library arrays and uses xp.mean and xp.std. A wrapper tied only to a global NumPy namespace, with no conforming array namespace, fails the full design.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W02",
+        "predicate": "Array operations obey the described array-object/indexing contract: no ordinary methods beyond dunders, no integer advanced indexing, single-array boolean indexing, and scalar selection returns a 0-D array.",
+        "source_positions": [
+          {
+            "section": "High-level design; Indexing",
+            "line_start": 182,
+            "line_end": 191
+          },
+          {
+            "section": "Indexing",
+            "line_start": 389,
+            "line_end": 409
+          },
+          {
+            "section": "The array object",
+            "line_start": 416,
+            "line_end": 426
+          }
+        ],
+        "falsifying_input": "For a 2-D array, a[0,0] returning a NumPy scalar or silently accepting forbidden integer-array advanced indexing falsifies this contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W03",
+        "predicate": "Functions use explicit supported array inputs, positional-only/keyword-only contracts, inline type annotations and dtype literals, without relying on __array_ufunc__ or __array_function__ dispatch.",
+        "source_positions": [
+          {
+            "section": "High-level design; Functions in the namespace",
+            "line_start": 193,
+            "line_end": 264
+          }
+        ],
+        "falsifying_input": "Call a namespace reduction with a Python list or an object that only implements __array_function__, or give dtype=\"float32\". Implicit coercion/legacy dispatch or acceptance of string dtype syntax fails the frozen namespace contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W04",
+        "predicate": "Supported dtype promotion is value independent and treats 0-D arrays like higher-dimensional arrays; dtype objects can be compared for equality and reused as dtype arguments.",
+        "source_positions": [
+          {
+            "section": "Dtypes and casting rules; The dtype objects",
+            "line_start": 334,
+            "line_end": 369
+          },
+          {
+            "section": "The dtype objects",
+            "line_start": 467,
+            "line_end": 473
+          }
+        ],
+        "falsifying_input": "Promote two same-kind array dtypes while varying only scalar-shaped operand values; a result-type change, or inability to pass x.dtype to array creation, falsifies the contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W05",
+        "predicate": "Support DLPack producer export via __dlpack__ and consumer import via from_dlpack, yielding an ndarray view without copying the exchanged array data.",
+        "source_positions": [
+          {
+            "section": "DLPack support for zero-copy data interchange",
+            "line_start": 267,
+            "line_end": 300
+          }
+        ],
+        "falsifying_input": "Import a supported CPU producer and inspect whether the returned ndarray shares its storage. A materialized copy, Python list or metadata-only descriptor fails this exchange action.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W06",
+        "predicate": "Expose device identity on arrays and device selection in creation calls, with the NumPy implementation accepting CPU and rejecting unsupported devices.",
+        "source_positions": [
+          {
+            "section": "Syntax for device support",
+            "line_start": 303,
+            "line_end": 328
+          }
+        ],
+        "falsifying_input": "Create an array with an unsupported GPU device through the NumPy namespace. Silent CPU allocation despite that request, or no readable device attribute, falsifies the contract.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W07",
+        "predicate": "Integrate the required underlying operations: matrix stacks for missing linalg functions, keepdims on argmin/argmax, and an asarray mode that never copies.",
+        "source_positions": [
+          {
+            "section": "High-level design",
+            "line_start": 217,
+            "line_end": 222
+          }
+        ],
+        "falsifying_input": "Ask asarray never-copy conversion to transform storage that would require copying, or request argmin(..., keepdims=True). Silently copying or dropping the axis instead of preserving it fails full integration.",
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-W08",
+        "predicate": "The new namespace must not deprecate, remove or otherwise break the existing NumPy API as its adoption mechanism.",
+        "source_positions": [
+          {
+            "section": "Backward compatibility",
+            "line_start": 165,
+            "line_end": 169
+          }
+        ],
+        "falsifying_input": "Install/use the new namespace and rerun existing main-namespace NumPy calls. Removal or changed legacy behavior caused by the new namespace falsifies the compatibility boundary.",
+        "source_id": "Q10-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q10-P01",
+        "predicate": "Accept a producer object supporting __dlpack__ and return an ndarray through a consumer import function.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 293,
+            "line_end": 297
+          }
+        ],
+        "falsifying_input": "Pass a supported producer; a result that is only a capsule, shape descriptor or serialized payload fails the requested array output.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-P02",
+        "predicate": "The imported ndarray views producer data without an exchange-time data copy.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 270,
+            "line_end": 279
+          }
+        ],
+        "falsifying_input": "Exchange a CPU array and compare backing storage; allocating a separate buffer falsifies zero-copy interchange.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      },
+      {
+        "id": "Q10-P03",
+        "predicate": "Provide the NumPy producer-side __dlpack__ export as well as consumer import, retaining a device-aware interchange protocol.",
+        "source_positions": [
+          {
+            "section": "DLPack support",
+            "line_start": 282,
+            "line_end": 297
+          }
+        ],
+        "falsifying_input": "A consumer-only helper with no NumPy producer export, or a protocol unable to identify its supported device, is incomplete for this interchange component.",
+        "inherits": [
+          "Q10-W05"
+        ],
+        "source_id": "Q10-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Exchange a supported CPU array between NumPy and another conforming producer/consumer without copying. That data handoff is useful before the standardized namespace, new array class and all numerical operations are complete.",
+    "remaining_adapter": "Wire the provided exchange functions into NumPy object methods and namespace entry points while respecting the provider lifetime contract. Full namespace functions, casting, indexing, devices and compatibility remain. If the adapter must implement the DLPack producer/consumer conversion or copying avoidance itself, the returned component has not completed the partial action.",
+    "same_name_wrong_actor_output_failure": "A similarly named array API page that merely lists mathematical functions, or a from_dlpack helper yielding a tensor from a different library without a NumPy ndarray consumer, does not establish the exact partial output. A serialization format called zero-copy without a live producer-to-ndarray memory view also fails.",
+    "route_order": [
+      "B",
+      "A"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q10/open-1.json",
+    "common/Q10/open-2.json"
+  ],
+  "common_baseline_return": "common/Q10/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q10",
+    "provider_pages": [
+      {
+        "rank": 1,
+        "provider_id": "scipy/scipy",
+        "publisher": "SciPy developers",
+        "type": "official_developer_manual_and_example",
+        "official_url_prefixes": [
+          "https://cache-docs.scipy.org/doc/scipy/",
+          "https://docs.scipy.org/doc/scipy/",
+          "https://github.com/scipy/scipy/"
+        ],
+        "body_status": "original_text_partial",
+        "read_sections": [
+          "Support and Using array API standard support, returned lines30-84",
+          "Example capabilities table, returned lines85-99",
+          "Implementation notes, returned lines100-105",
+          "Adding array API standard support to a SciPy function, returned lines106-166",
+          "JAX support, returned lines167-203",
+          "Adding tests introduction, returned lines398-416"
+        ],
+        "version": {
+          "observed_title": "SciPy v1.18.0 Manual",
+          "url_selector": "scipy/dev",
+          "exact_revision": null
+        },
+        "finding": "SciPy documents namespace selection using array_namespace, compatibility wrappers, input validation and conversion around compiled CPU code.",
+        "limitations": [
+          "Only selected passages of the752-line manual were returned.",
+          "This is SciPy integration guidance, not a separate NumPy2021 array object implementation.",
+          "The manual labels support experimental and partly covered; no runtime or standards-conformance test was executed.",
+          "Links to array-api-compat, JAX, DLPack-related projects or other suppliers do not add those providers to SciPy's allowed project."
+        ],
+        "duplicate_group": "scipy-array-api-dev-1.18",
+        "countability": {
+          "eligible": true,
+          "reason": "Original SciPy manual and official code examples read."
+        },
+        "source_id": "Q10-C01",
+        "requested_url": "https://cache-docs.scipy.org/doc/scipy/dev/api-dev/array_api.html",
+        "final_url": "https://cache-docs.scipy.org/doc/scipy/dev/api-dev/array_api.html",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q10/open-1.json",
+        "source_ref": "turn483404585view0",
+        "checked_utc": "2026-11-22T07:48:55.295Z",
+        "returned_line_ranges": [
+          [
+            30,
+            229
+          ],
+          [
+            233,
+            233
+          ],
+          [
+            235,
+            235
+          ],
+          [
+            295,
+            296
+          ],
+          [
+            298,
+            310
+          ],
+          [
+            314,
+            320
+          ],
+          [
+            322,
+            326
+          ],
+          [
+            332,
+            334
+          ],
+          [
+            336,
+            340
+          ],
+          [
+            343,
+            357
+          ],
+          [
+            359,
+            416
+          ],
+          [
+            557,
+            560
+          ],
+          [
+            574,
+            575
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 15,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 30,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 16,
+            "label": "Python array API standard",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 36,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 17,
+            "label": "RFC",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 37,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 18,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 40,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 19,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 85,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 20,
+            "label": "MArray",
+            "displayed_host": "mdhaber.github.io",
+            "href": null,
+            "source_line": 96,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 21,
+            "label": "the tracker issue",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 99,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 22,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 100,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 23,
+            "label": "array-api-compat",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 102,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 24,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 106,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 25,
+            "label": "`fft`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 26,
+            "label": "`ndimage`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 27,
+            "label": "`signal`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 28,
+            "label": "Caveats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 29,
+            "label": "`special`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 165,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 30,
+            "label": "xsf project",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 166,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 31,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 167,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 32,
+            "label": "at",
+            "displayed_host": "docs.jax.dev",
+            "href": null,
+            "source_line": 170,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 33,
+            "label": "xp.where",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 172,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 34,
+            "label": "array_api_extra.apply_where",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 172,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 35,
+            "label": "Common Gotchas in JAX",
+            "displayed_host": "docs.jax.dev",
+            "href": null,
+            "source_line": 176,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 36,
+            "label": "array_api_extra.at",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 179,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 37,
+            "label": "array_api_extra.lazy_apply",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 182,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 38,
+            "label": "pure_callback",
+            "displayed_host": "docs.jax.dev",
+            "href": null,
+            "source_line": 182,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 39,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 204,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 40,
+            "label": "`scipy.stats`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 222,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 41,
+            "label": "`scipy.stats.cramervonmises_2samp`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 224,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 42,
+            "label": "`scipy.stats.spearmanrho`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 225,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 43,
+            "label": "`scipy.stats.cramervonmises`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 227,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 44,
+            "label": "`scipy.stats.chisquare`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 228,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 47,
+            "label": "default datatypes",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 235,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 61,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 302,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 62,
+            "label": "JAX support",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 304,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 63,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 305,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 64,
+            "label": "adding array API support",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 320,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 66,
+            "label": "scipy.constants.value",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 324,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 67,
+            "label": "`scipy.linalg.blas`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 326,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 69,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 332,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 70,
+            "label": "array_api_strict",
+            "displayed_host": "data-apis.org",
+            "href": null,
+            "source_line": 334,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 72,
+            "label": "RFC: Should Dask support remain a priority? #24205",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 362,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 73,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 363,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 74,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 374,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 75,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 377,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 76,
+            "label": "#",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 398,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 77,
+            "label": "cupy",
+            "displayed_host": "cupy.dev",
+            "href": null,
+            "source_line": 404,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 78,
+            "label": "dask.array",
+            "displayed_host": "www.dask.org",
+            "href": null,
+            "source_line": 406,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 79,
+            "label": "jax.numpy",
+            "displayed_host": "docs.jax.dev",
+            "href": null,
+            "source_line": 408,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 80,
+            "label": "numpy",
+            "displayed_host": "numpy.org",
+            "href": null,
+            "source_line": 410,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 81,
+            "label": "torch",
+            "displayed_host": "pytorch.org",
+            "href": null,
+            "source_line": 412,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 82,
+            "label": "pytest fixture",
+            "displayed_host": "docs.pytest.org",
+            "href": null,
+            "source_line": 413,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 83,
+            "label": "array_api_compat",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 413,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 55,
+            "label": "default dtype",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 560,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": false,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      },
+      {
+        "rank": 2,
+        "provider_id": "data-apis/array-api",
+        "publisher": "Consortium for Python Data API Standards, Array API project",
+        "type": "official_technical_specification",
+        "official_url_prefixes": [
+          "https://data-apis.org/array-api/"
+        ],
+        "body_status": "original_text_complete",
+        "read_sections": [
+          "Data interchange mechanisms, lines50-69",
+          "DLPack: An in-memory tensor structure, lines70-90",
+          "Non-supported use cases, lines91-98",
+          "Observed navigation and API-specification links, lines10-49"
+        ],
+        "version": {
+          "standard_edition": "2024.12",
+          "copyright_as_returned": "2020-2026"
+        },
+        "finding": "The standard describes device-aware, stable-ABI exchange and recommends DLPack, with copies only when needed and limits to strided single-device memory.",
+        "limitations": [
+          "Edition2024.12 differs from the frozen2021 target.",
+          "This is a design specification, not a read NumPy producer/consumer implementation.",
+          "The NumPy ndarray output and absolute no-copy boundary were not demonstrated.",
+          "DLPack documentation is an external project link, outside this page's narrow Array API provider prefix."
+        ],
+        "duplicate_group": "array-api-2024.12-data-interchange",
+        "countability": {
+          "eligible": true,
+          "reason": "Complete returned original standard section."
+        },
+        "source_id": "Q10-C02",
+        "requested_url": "https://data-apis.org/array-api/2024.12/design_topics/data_interchange.html",
+        "final_url": "https://data-apis.org/array-api/2024.12/design_topics/data_interchange.html",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q10/open-2.json",
+        "source_ref": "turn487544070view0",
+        "checked_utc": "2026-11-22T07:49:09.315Z",
+        "returned_line_ranges": [
+          [
+            0,
+            103
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 0,
+            "label": "Skip to content",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 0,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 1,
+            "label": "",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 2,
+            "label": "Consortium for Python Data API Standards",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 11,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 3,
+            "label": "Design topics & constraints",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 12,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 4,
+            "label": "Purpose and scope",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 16,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 5,
+            "label": "Use cases",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 17,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 6,
+            "label": "Assumptions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 18,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 7,
+            "label": "Copy-view behavior and mutability",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 21,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 8,
+            "label": "Data-dependent output shapes",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 22,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 9,
+            "label": "Lazy vs. eager execution",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 23,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 10,
+            "label": "Data interchange mechanisms",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 24,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 11,
+            "label": "Data interchange mechanisms",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 25,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 12,
+            "label": "DLPack: An in-memory tensor structure",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 26,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 13,
+            "label": "Non-supported use cases",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 27,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 14,
+            "label": "Device support",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 28,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 15,
+            "label": "Static typing",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 29,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 16,
+            "label": "Accuracy",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 30,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 17,
+            "label": "Exceptions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 31,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 18,
+            "label": "Complex Numbers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 32,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 19,
+            "label": "C API",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 33,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 20,
+            "label": "Parallelism",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 34,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 21,
+            "label": "Future API standard evolution",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 35,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 22,
+            "label": "API specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 36,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 23,
+            "label": "Extensions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 37,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 24,
+            "label": "Usage Data",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 39,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 25,
+            "label": "Verification - test suite",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 40,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 26,
+            "label": "Benchmark suite",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 41,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 27,
+            "label": "Changelog per API standard version",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 43,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 28,
+            "label": "License",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 44,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 29,
+            "label": "assumptions-dependencies",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 52,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 30,
+            "label": "Data Types",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 59,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 31,
+            "label": "DLPack",
+            "displayed_host": "dmlc.github.io",
+            "href": null,
+            "source_line": 72,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 32,
+            "label": "buffer protocol",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 78,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 33,
+            "label": "here",
+            "displayed_host": "numba.pydata.org",
+            "href": null,
+            "source_line": 79,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 34,
+            "label": "RFC to adopt DLPack",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 83,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 35,
+            "label": "Python specification of DLPack",
+            "displayed_host": "dmlc.github.io",
+            "href": null,
+            "source_line": 87,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 36,
+            "label": "Sphinx",
+            "displayed_host": "www.sphinx-doc.org",
+            "href": null,
+            "source_line": 103,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 37,
+            "label": "Material for Sphinx",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 103,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": null,
+            "label": "https://dmlc.github.io/dlpack/latest/†dmlc.github.io",
+            "href": "https://dmlc.github.io/dlpack/latest/†dmlc.github.io",
+            "source_line": 85,
+            "displayed_host": null,
+            "href_limit": "Absolute URL visibly printed in returned text."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": true,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      }
+    ],
+    "allowed_provider_ids": [
+      "data-apis/array-api",
+      "scipy/scipy"
+    ],
+    "allowed_url_prefixes": [
+      "https://cache-docs.scipy.org/doc/scipy/",
+      "https://data-apis.org/array-api/",
+      "https://docs.scipy.org/doc/scipy/",
+      "https://github.com/scipy/scipy/"
+    ],
+    "common_start_status": "completed",
+    "budgets": {
+      "navigation": 1,
+      "body_opens": 2,
+      "max_neutral_searches": 1,
+      "max_body_opens": 2,
+      "retries": 0,
+      "extra_find_or_click_calls": 0,
+      "failed_opens_count_in_budget": true
+    },
+    "instrumentation": {
+      "search_tool": "mcp__codex_apps__search_service_web_run",
+      "search_engine_argument": "system2_search_query",
+      "query_language": "English",
+      "domain_filter": null,
+      "recency_filter": null,
+      "response_length": "long",
+      "exact_query_once": true,
+      "original_response_and_hash_saved": true,
+      "no_extra_evidence_gathering": true,
+      "route_AB_results_read": false,
+      "other_study_records_read": false,
+      "worker_model": "Inherited GPT-6 Astra Pro session; no independent human reader",
+      "body_reading": "Original text returned by open only; no snippet promoted to body evidence.",
+      "duplicate_rule": "Skip exact fragment/highlight/tracking aliases and clearly identical same-edition raw/rendered mirrors; retain ambiguous main-versus-numbered/development editions and count likely mirrors conservatively as one original.",
+      "duplicate_rule_note": "No ambiguous duplicate selection needed."
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "navigation_rule": "Follow actually observed common-provider links: table of contents/reference index, then API/type with greatest overlap with distinctive frozen input/output terms, then official example. Ties on-page order then lexical URL. At most two navigation/index requests, each response used as evidence also debits body limit. No new provider or guessed deep URL."
+}

@@ -1,0 +1,310 @@
+{
+  "question": {
+    "id": "Q05",
+    "question_id": "Q05",
+    "ledger": "python",
+    "canonical_id": "pep-0667",
+    "scope": "whole",
+    "whole_or_partial": "whole",
+    "title": "Consistent views of namespaces",
+    "initial_url": "https://github.com/python/peps/blob/b06bbdf9c6ace7ac4b2bcd81c5d60637351ce08a/pep-06xx.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0667-b06bbdf9c6ac.rst",
+    "initial_text_sha256": "f8d48202059e51b24a88ef608871afb5ee8553fb35a10b1437abd3379a40bc6a",
+    "caller": [
+      "Python code inspecting or modifying its active local namespace",
+      "Debuggers and other tools inspecting a Python execution frame",
+      "C extension authors obtaining a current or caller-depth frame namespace"
+    ],
+    "input": [
+      "An active function, class, or module frame and its local names/values",
+      "Mapping reads/writes, including arbitrary extra name/value pairs",
+      "A frame object or a caller-stack depth for the proposed C entry points"
+    ],
+    "output": [
+      "Live mapping views from BOTH locals() and frame.f_locals that remain synchronized with underlying variables",
+      "Writes through a namespace view visible to running code and subsequent reads",
+      "C access to the same frame-local view; safe failure of the old borrowed-reference API"
+    ],
+    "limits": [
+      "The earliest draft specifies live locals(); a snapshot-only locals() result conflicts with this frozen text.",
+      "Threaded code, generators, and coroutines are expressly in scope.",
+      "No numerical performance target is specified.",
+      "The first example contains nonlocal var without its enclosing context and a sys._getframe(0) pseudocode ambiguity; preserve these as draft defects, not silently repaired executable code.",
+      "Exact error-message wording is illustrative (like), not mandatory."
+    ],
+    "whole_must": [
+      {
+        "id": "Q05-W1",
+        "predicate": "Both locals() and frame.f_locals expose a live mapping view of the relevant execution namespace; writes to either view and underlying local-variable writes are immediately visible in the other directions.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Abstract; Rationale; Specification/Python",
+            "lines": [
+              22,
+              25
+            ],
+            "excerpt": "This PEP proposes make the views of namespaces consistent once more.\nModifications to ``locals()`` will show in the underlying variables,\n``frame.f_locals`` will be consistent with ``locals()`` and will be\nconsistent with the underlying variables regardless of threading or coroutines."
+          },
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/Python",
+            "lines": [
+              90,
+              93
+            ],
+            "excerpt": "All writes to the ``f_locals`` mapping will be immediately visible\nin the underlying variables. All changes to the underlying variables\nwill be immediately visible in the mapping. The ``f_locals`` is a full\nmapping, and can have arbitrary key-value pairs added to it."
+          }
+        ],
+        "falsifying_input": "Within a function set x=1, retain v=locals(), assign v[\"x\"]=2, then change x=3 and read v[\"x\"] and frame.f_locals[\"x\"].",
+        "failure_condition": "A view write leaves x at 1, or a later variable assignment leaves either view stale; a snapshot-only locals() implementation fails."
+      },
+      {
+        "id": "Q05-W2",
+        "predicate": "Namespace access remains consistent in class and function scopes and when execution involves threads, generators, or coroutines.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Motivation; Backwards Compatibility/Python",
+            "lines": [
+              149,
+              154
+            ],
+            "excerpt": "The current implementation has many corner cases and oddities.\nCode that works around those may need to be changed.\nCode that uses ``locals()`` for simple templating, or print debugging,\nwill continue to work correctly. Debuggers and other tools that use\n``f_locals`` to modify local variables, will now work correctly,\neven in the presence of threaded code, coroutines and generators."
+          },
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Motivation",
+            "lines": [
+              34,
+              54
+            ],
+            "excerpt": "For example::\n\n    class C:\n        x = 1\n        locals()['x'] = 2\n        print(x)\n\nprints ``2``\n\nbut::\n\n    def f():\n        x = 1\n        locals()['x'] = 2\n        print(x)\n    f()\n\nprints ``1``\n\nThis is inconsistent, and confusing.\nWith this PEP both examples would print ``2``."
+          }
+        ],
+        "falsifying_input": "Apply the same existing-local mutation in an ordinary function and a suspended generator/coroutine that resumes under the supported threading model.",
+        "failure_condition": "A mapping works only in class scope, or changes disappear when the function/generator/coroutine resumes."
+      },
+      {
+        "id": "Q05-W3",
+        "predicate": "The view implements the stated mapping interface and retains arbitrary extra key/value pairs; the first-text example also expects its inserted name to be usable rather than lost.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/Python",
+            "lines": [
+              81,
+              109
+            ],
+            "excerpt": "``frame.f_locals`` will return a view object on the frame that\nimplements the ``collections.abc.Mapping`` interface.\n\n``locals()`` will be defined simply as::\n\n    def locals():\n        return sys._getframe(0).f_locals\n\n\nAll writes to the ``f_locals`` mapping will be immediately visible\nin the underlying variables. All changes to the underlying variables\nwill be immediately visible in the mapping. The ``f_locals`` is a full\nmapping, and can have arbitrary key-value pairs added to it.\n\nFor example::\n\n    def test():\n        nonlocal var\n        x = 1\n        locals()['x'] = 2\n        locals()['y'] = 4\n        locals()['z'] = 5\n        y\n        print(dict(locals()), x)\n\n``test()`` will print ``{'x': 2, 'y': 4, 'z': 5} 2``\n\nIn 3.10, the above will fail with a ``NameError`` as ``y`` \nas the definition ``locals()['y'] = 4`` is lost."
+          }
+        ],
+        "falsifying_input": "Add x=2, y=4, z=5 through the live namespace view, then enumerate it and exercise the example’s subsequent y access.",
+        "failure_condition": "Keys vanish on refresh/resumption or the asserted name-access behavior is absent. The malformed nonlocal example makes literal execution unresolved; do not call it verified by silently repairing the draft."
+      },
+      {
+        "id": "Q05-W4",
+        "predicate": "The C interface provides the equivalent of PyEval_Locals(int depth) for the selected stack depth and PyFrame_GetLocals(frame) for an explicit frame.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/C-API",
+            "lines": [
+              111,
+              120
+            ],
+            "excerpt": "C-API\n-----\n\nTwo new C-API functions will be added::\n\n    PyObject *PyEval_Locals(int depth)\n    PyObject *PyFrame_GetLocals(PyFrameObject *f)\n\n``PyEval_Locals(depth)`` is equivalent to: ``sys._getframe(depth).f_locals``\n``PyFrame_GetLocals(f)`` is equivalent to: ``f.f_locals``"
+          }
+        ],
+        "falsifying_input": "From nested callers request depth 0 and depth 1, and separately request an explicit suspended frame.",
+        "failure_condition": "Only the current C function’s own namespace is returned regardless of depth, or the explicit frame returns an unrelated/cached dictionary."
+      },
+      {
+        "id": "Q05-W5",
+        "predicate": "The old PyEval_GetLocals() path raises an exception indicating that the unsafe borrowed-reference interface must be replaced.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/C-API",
+            "lines": [
+              122,
+              128
+            ],
+            "excerpt": "The existing  C-API function ``PyEval_GetLocals()`` will always raise an\nexception with a message like::\n\n    PyEval_GetLocals() is unsafe. Please use PyEval_Locals() instead.\n\nThis is necessary as ``PyEval_GetLocals()`` \nreturns a borrowed reference which cannot be made safe."
+          }
+        ],
+        "falsifying_input": "Call the old PyEval_GetLocals() in an otherwise valid active frame.",
+        "failure_condition": "It silently returns the old borrowed dictionary rather than raising as the draft requires."
+      },
+      {
+        "id": "Q05-W6",
+        "predicate": "Repeated views over an unchanged optimized frame compare equal and expose the same current state; object identity across accesses need not be stable.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/Behavior of f_locals for optimized functions",
+            "lines": [
+              130,
+              139
+            ],
+            "excerpt": "Behavior of f_locals for optimized functions\n--------------------------------------------\n\nAlthough ``f.f_locals`` behaves as if it were the namespace of the function, \nsome differences will be observable, \nmost notably that ``f.f_locals is f.f_locals`` may be ``False``.\n\nHowever ``f.f_locals == f.f_locals`` will be ``True`` and\nany changes to the underlying variables, by any means, will be\nvisible to all accesses to those variables."
+          }
+        ],
+        "falsifying_input": "Obtain two views for one unchanged frame, compare them, then modify one underlying local and read through both.",
+        "failure_condition": "Equal frame state produces unequal mappings, or one retained view does not observe the change."
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q05-P1",
+        "predicate": "The returned mapping refers to the requested frame and supports a write to an existing local that running code observes.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/Python",
+            "lines": [
+              81,
+              93
+            ],
+            "excerpt": "``frame.f_locals`` will return a view object on the frame that\nimplements the ``collections.abc.Mapping`` interface.\n\n``locals()`` will be defined simply as::\n\n    def locals():\n        return sys._getframe(0).f_locals\n\n\nAll writes to the ``f_locals`` mapping will be immediately visible\nin the underlying variables. All changes to the underlying variables\nwill be immediately visible in the mapping. The ``f_locals`` is a full\nmapping, and can have arbitrary key-value pairs added to it."
+          }
+        ],
+        "falsifying_input": "For frame f with x=1, set the returned mapping’s x to 2 and resume f.",
+        "failure_condition": "f still observes x=1, or another frame is modified.",
+        "inherited_from": [
+          "Q05-W1",
+          "Q05-W3"
+        ]
+      },
+      {
+        "id": "Q05-P2",
+        "predicate": "The same retained view immediately observes later changes made by the underlying frame.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Specification/Python",
+            "lines": [
+              90,
+              93
+            ],
+            "excerpt": "All writes to the ``f_locals`` mapping will be immediately visible\nin the underlying variables. All changes to the underlying variables\nwill be immediately visible in the mapping. The ``f_locals`` is a full\nmapping, and can have arbitrary key-value pairs added to it."
+          }
+        ],
+        "falsifying_input": "Retain a mapping, let the frame change x from 2 to 3, and read its x.",
+        "failure_condition": "It returns a cached 2.",
+        "inherited_from": [
+          "Q05-W1",
+          "Q05-W6"
+        ]
+      },
+      {
+        "id": "Q05-P3",
+        "predicate": "The frame-mutation operation retains the first text’s thread/generator/coroutine consistency boundary.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q05-first",
+            "section": "Backwards Compatibility/Python",
+            "lines": [
+              149,
+              154
+            ],
+            "excerpt": "The current implementation has many corner cases and oddities.\nCode that works around those may need to be changed.\nCode that uses ``locals()`` for simple templating, or print debugging,\nwill continue to work correctly. Debuggers and other tools that use\n``f_locals`` to modify local variables, will now work correctly,\neven in the presence of threaded code, coroutines and generators."
+          }
+        ],
+        "falsifying_input": "Modify an existing local through the view of a suspended generator/coroutine and resume it in the supported threaded execution case.",
+        "failure_condition": "The edit is overwritten or lost on resumption.",
+        "inherited_from": [
+          "Q05-W2"
+        ]
+      }
+    ],
+    "independent_partial_purpose": "Let a debugger read and modify an existing local variable through the active frame’s live namespace mapping, then resume execution and observe the value.",
+    "remaining_adapter": [
+      "Live locals() behavior for every scope, including the first text’s extra-name example",
+      "Caller-depth and explicit-frame C APIs and old-API failure migration",
+      "Language/interpreter integration and preservation of simple templating/debug-print behavior",
+      "Resolution of the first draft’s pseudocode and dynamic-name ambiguities"
+    ],
+    "original_named_families": [
+      "Python"
+    ],
+    "original_named_components": [
+      "locals()",
+      "frame.f_locals",
+      "collections.abc.Mapping",
+      "sys._getframe",
+      "PyEval_Locals(int depth)",
+      "PyFrame_GetLocals(PyFrameObject *f)",
+      "PyEval_GetLocals()",
+      "bugs.python.org/issue30744"
+    ],
+    "same_name_wrong_actor_output_failure": {
+      "criterion": "A mapping called locals, namespace, or frame that contains a copied database/object dictionary, another language’s stack frame, or a snapshot of this Python frame does not perform the frozen active-frame mutation.",
+      "falsifying_input": "Modify map[\"x\"] for a Python frame with x=1 and resume that frame.",
+      "wrong_output": "The map displays 2 while the intended frame still reads 1."
+    },
+    "route_order": [
+      "A",
+      "B"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q05/open-1.json",
+    "common/Q05/open-2.json"
+  ],
+  "common_baseline_return": "common/Q05/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q05",
+    "opened": [
+      {
+        "provided_rank": 1,
+        "url": "https://docs.python.org/3/library/inspect.html",
+        "receipt": "common/Q05/open-1.json",
+        "source_id": "Q05-C-S1",
+        "body_open_number": 1,
+        "status": "readable_excerpt",
+        "read_sections": [
+          "Types and members L9–50, especially f_locals L46"
+        ],
+        "version": "Tool title Python 3.15.2, mutable /3/ alias",
+        "duplicate_group": "python-inspect",
+        "limitation": "Visible returned excerpt does not specify write-through or locals() semantics; title version is observed, not independently release-verified."
+      },
+      {
+        "provided_rank": 6,
+        "url": "https://docs.python.org/3.11/library/inspect.html",
+        "receipt": "common/Q05/open-2.json",
+        "source_id": "Q05-C-S2",
+        "body_open_number": 2,
+        "status": "readable_excerpt",
+        "read_sections": [
+          "Types and members L9–45, especially f_locals L44"
+        ],
+        "version": "Tool title Python 3.11.18",
+        "duplicate_group": "python-inspect",
+        "limitation": "No write-through evidence in read excerpt; same document family counted once."
+      }
+    ],
+    "allowed_providers": [
+      {
+        "id": "cpython-stdlib",
+        "prefixes": [
+          "https://docs.python.org/",
+          "https://github.com/python/cpython/"
+        ]
+      }
+    ],
+    "budget": {
+      "navigation": 1,
+      "body_opens": 2,
+      "body_successes": 2,
+      "body_failures": 0
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "literal_queries": [
+    "Python locals write through frame local variables mapping",
+    "Python C API frame locals mapping caller depth debugger thread coroutine"
+  ]
+}

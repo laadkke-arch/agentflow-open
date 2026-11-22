@@ -1,0 +1,2245 @@
+{
+  "question": {
+    "id": "Q08",
+    "question_id": "Q08",
+    "ledger": "python",
+    "canonical_id": "pep-0778",
+    "scope": "whole",
+    "whole_or_partial": "whole",
+    "title": "Supporting Symlinks in Wheels",
+    "initial_url": "https://github.com/python/peps/blob/78c4086b041db07a2d560884d658e7b3990b5a6d/peps/pep-0778.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/python/originals/pep-0778-78c4086b041d.rst",
+    "initial_text_sha256": "9eaaa1ffc811625d62728786b8d1e09a08a80e9b318b6a8be02562bdb36ac586",
+    "caller": [
+      "Python wheel build backends",
+      "Wheel installers and uninstallers",
+      "Binary-library distributors using wheel package namespaces"
+    ],
+    "input": [
+      "A wheel archive and .dist-info/LINKS source_path,target_path entries",
+      "Its extracted package/namespace roots and target paths",
+      "The platform’s available symlink/junction capabilities"
+    ],
+    "output": [
+      "Platform-relevant links in installed wheel packages without default duplication of file contents",
+      "Rejected dangling, cyclic, out-of-wheel, or unsupported links",
+      "Backend-produced link metadata consistent with included targets and wheel major version"
+    ],
+    "limits": [
+      "Wheel-Version must be at least 2.0 for wheels generated with LINKS in the first text.",
+      "Both paths must remain inside namespaces/packages supplied by the same wheel after path resolution.",
+      "Hardlinks and PEP 660 editable-installation support are intentionally left to future work.",
+      "The LINKS example appears to orient real-file/alias names differently from the prose requiring target_path to exist. This unresolved direction ambiguity is preserved; neither supplier evidence nor an adapter may silently repair it.",
+      "No specific maximum symlink depth is fixed; the security section requires bounded checking."
+    ],
+    "whole_must": [
+      {
+        "id": "Q08-W1",
+        "predicate": "A generated wheel with LINKS declares Wheel-Version at least 2.0 so older installers do not silently omit the links.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Wheel Major Version Bump",
+            "lines": [
+              80,
+              85
+            ],
+            "excerpt": "Wheel Major Version Bump\n------------------------\n\nThis PEP requires a wheel major version bump, so the ``Wheel-Version`` for wheels generated with\n``LINKS`` **MUST** be at least version ``2.0``, so that older installers do not silently fail to\ninstall symlinks and break user environments. For more see :pep:`777`."
+          }
+        ],
+        "falsifying_input": "Produce a wheel containing link metadata and inspect its Wheel-Version; present it to an installer limited to wheel 1.x.",
+        "failure_condition": "It declares a 1.x format or an older installer silently installs an incomplete package."
+      },
+      {
+        "id": "Q08-W2",
+        "predicate": "The .dist-info/LINKS file represents source_path,target_path pairs within the wheel’s package/namespace roots, with the stated non-dangling target requirement.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/New LINKS Metadata File",
+            "lines": [
+              87,
+              100
+            ],
+            "excerpt": "New ``LINKS`` Metadata File\n---------------------------\n\nTo enable cross-platform symlinks, this PEP introduces a new wheel metadata file, ``LINKS``. An\nexample of a ``LINKS`` file is below::\n\n    my_package/libfoo.so.3.1.4,my_package/libfoo.so.3\n    my_package/libfoo.so.3,my_package/libfoo.so\n\nThe format of ``LINKS``, as can seen above, is ``source_path,target_path`` where ``source_path``\nis a path relative to the root of any namespace or package root in the wheel. ``target_path`` is a\n*non-dangling* path (i.e. a path that exists on the filesystem after the wheel's contents are\nextracted) in a package or namespace of any package in the wheel. This means that if a wheel\ncontains multiple packages, all paths in packages in the wheel are acceptable."
+          }
+        ],
+        "falsifying_input": "Supply LINKS entries covering two package roots in one wheel plus a missing target.",
+        "failure_condition": "The metadata is not representable as the specified pairs or a dangling target is accepted. The first text’s example/prose orientation conflict remains unresolved."
+      },
+      {
+        "id": "Q08-W3",
+        "predicate": "The installer resolves each path before validating that BOTH source and target remain within namespaces/packages coming from the wheel.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              105,
+              110
+            ],
+            "excerpt": "Installers **MUST** resolve the paths of any link contained in the ``LINKS`` file *before*\ndeciding if any ``source_path`` or ``target_path`` are valid. Installers **MUST** verify that\n``source_path`` and ``target_path`` are located inside any namespace or package coming from the\nwheel.  Installers **MUST** reject cyclic symlinks in wheels. Installers **MAY** error if a long\nchain of symlinks (symlinks pointing to symlinks many times repeated) exceeds a limit set by the\ninstaller."
+          }
+        ],
+        "falsifying_input": "Use a path containing parent traversal or an already-existing symlink whose resolved destination is outside every package root supplied by the wheel.",
+        "failure_condition": "A lexical-prefix check accepts an escaping resolved path."
+      },
+      {
+        "id": "Q08-W4",
+        "predicate": "The installer rejects cyclic link graphs and bounds depth checking to avoid unbounded cyclic/long-chain processing.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification; Security Implications",
+            "lines": [
+              163,
+              168
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests"
+          }
+        ],
+        "falsifying_input": "Provide A to B, B to A, and a chain exceeding the checker’s declared depth bound.",
+        "failure_condition": "A cycle is accepted or validation runs without a finite depth bound; no particular numeric limit is invented."
+      },
+      {
+        "id": "Q08-W5",
+        "predicate": "Installation checks for LINKS, extracts ordinary package/data files first, and validates that every target exists in an extracted package namespace before link creation.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              112,
+              118
+            ],
+            "excerpt": "Installers **MUST** follow the following steps when handling a wheel with symlinks:\n\n1. Check for the existance of a ``LINKS`` file in the ``.dist-info``. If it does not exist,\n   no further steps are required.\n2. Extract all files in the wheel packages and data directory as in wheel 1.x.\n3. Verify that for each ``source_path`` and ``target_path`` pairs, the ``target_path`` exists in\n   one of the package namespaces just extracted."
+          }
+        ],
+        "falsifying_input": "Provide a wheel where one declared target is absent after extraction, alongside valid entries.",
+        "failure_condition": "The installer creates links without detecting the absent target or tries to use not-yet-extracted targets."
+      },
+      {
+        "id": "Q08-W6",
+        "predicate": "The installer checks whether the current platform can create a suitable link for each file/folder pair and raises an error when it cannot.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              119,
+              124
+            ],
+            "excerpt": "4. Next, check that the installer can make some kind of link for each pair in the site directory.\n   If the installer cannot make a link for the file/folder ``target_path`` for the current\n   platform, an error **MUST** be raised. An example of a failure mode would be a UNIX symlink to\n   a file target, where the installer is running on Windows and the installer cannot make\n   symlinks but can make junctions. In this case the installer **MUST** error because it cannot\n   handle the link."
+          }
+        ],
+        "falsifying_input": "Request a file symlink on a platform where the installer can only create directory junctions.",
+        "failure_condition": "The unsupported file link is reported as successfully installed."
+      },
+      {
+        "id": "Q08-W7",
+        "predicate": "For supported entries the installer creates a platform-relevant link and does not copy target content by default; copying may be an explicit alternate configuration only.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              125,
+              130
+            ],
+            "excerpt": "5. Finally, the installer **MUST** add a platform-relevant link between ``source_path`` and\n   ``target_path``.\n\nInstallers **MUST NOT** by default copy files instead of generating a symlink when handling\nsymlinks. Installers **MAY** have such behavior available under an alternate configuration or\ncommand line flag."
+          }
+        ],
+        "falsifying_input": "Install a supported link with default options and inspect the result and disk-content duplication.",
+        "failure_condition": "The default silently copies the file instead of creating a link."
+      },
+      {
+        "id": "Q08-W8",
+        "predicate": "Build backends apply the target’s inclusion decision to the symlink and verify that LINKS contains no dangling symlinks.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Build Backend Specification",
+            "lines": [
+              132,
+              139
+            ],
+            "excerpt": "Build Backend Specification\n---------------------------\n\nWhen creating a wheel, build backends **MUST** treat symlinks in the same way as its target when\ndeciding whether to include the symlink in a wheel. Build backends **MUST** verify that there are\nno dangling symlinks in the ``LINKS`` file. Build backends **SHOULD** recognize platform-relevant\nsymlinks that would be included in builds. On Unix this is typically symlinks, on Windows this\nincludes symlinks and junctions."
+          }
+        ],
+        "falsifying_input": "Exclude a target from the build while a symlink to it is present, or include a symlink whose target is missing.",
+        "failure_condition": "The backend emits a dangling metadata entry or includes/excludes the symlink inconsistently with the target."
+      },
+      {
+        "id": "Q08-W9",
+        "predicate": "Removal does not follow symlinks into their target contents.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Security Implications",
+            "lines": [
+              163,
+              170
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests\n\nDo not follow symlinks on removal."
+          }
+        ],
+        "falsifying_input": "Uninstall a package containing a link while the target data must remain outside that link’s own removal operation.",
+        "failure_condition": "The uninstaller traverses the link and deletes its target contents."
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q08-P1",
+        "predicate": "Resolve both endpoint paths before checking containment in the packages/namespaces supplied by the wheel.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              105,
+              110
+            ],
+            "excerpt": "Installers **MUST** resolve the paths of any link contained in the ``LINKS`` file *before*\ndeciding if any ``source_path`` or ``target_path`` are valid. Installers **MUST** verify that\n``source_path`` and ``target_path`` are located inside any namespace or package coming from the\nwheel.  Installers **MUST** reject cyclic symlinks in wheels. Installers **MAY** error if a long\nchain of symlinks (symlinks pointing to symlinks many times repeated) exceeds a limit set by the\ninstaller."
+          }
+        ],
+        "falsifying_input": "Pass an endpoint that resolves outside the permitted roots through a symlink or parent traversal.",
+        "failure_condition": "A validator accepts it because its unnormalized spelling looks internal.",
+        "inherited_from": [
+          "Q08-W3"
+        ]
+      },
+      {
+        "id": "Q08-P2",
+        "predicate": "Reject each target missing from the already-extracted package tree.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Specification/Installer Behavior Specification",
+            "lines": [
+              114,
+              118
+            ],
+            "excerpt": "1. Check for the existance of a ``LINKS`` file in the ``.dist-info``. If it does not exist,\n   no further steps are required.\n2. Extract all files in the wheel packages and data directory as in wheel 1.x.\n3. Verify that for each ``source_path`` and ``target_path`` pairs, the ``target_path`` exists in\n   one of the package namespaces just extracted."
+          }
+        ],
+        "falsifying_input": "Pass one valid edge and one edge whose target does not exist in the extracted tree.",
+        "failure_condition": "The graph is marked valid despite the missing target.",
+        "inherited_from": [
+          "Q08-W2",
+          "Q08-W5"
+        ]
+      },
+      {
+        "id": "Q08-P3",
+        "predicate": "Reject cyclic link dependencies and use bounded traversal for chains.",
+        "source_positions": [
+          {
+            "source_id": "PY-Q08-first",
+            "section": "Security Implications",
+            "lines": [
+              163,
+              168
+            ],
+            "excerpt": "In particular, the following checks **MUST** be made by installers:\n\n1. That the symlinks do not point outside of any packages or namespaces coming from the wheel\n2. That the symlinks are not dangling (the target exists at install time)\n3. That the symlinks are not cyclical, stopping after a certain depth of checking to avoid denial\n   of service requests"
+          }
+        ],
+        "falsifying_input": "Validate A to B, B to A, then a chain exceeding the documented checker bound.",
+        "failure_condition": "The cycle passes or validation can traverse indefinitely.",
+        "inherited_from": [
+          "Q08-W4"
+        ]
+      }
+    ],
+    "independent_partial_purpose": "Validate an already-extracted wheel’s LINKS graph against its package roots: resolve paths, reject escapes and missing targets, and reject cycles with bounded traversal before creating any links.",
+    "remaining_adapter": [
+      "Resolve the first draft’s source/target direction ambiguity without silently rewriting it",
+      "Emit LINKS and coordinate the wheel-major-version transition",
+      "Integrate extraction, per-platform capability checks, and actual link creation",
+      "Implement build-backend target inclusion rules and no-follow removal",
+      "Define clear user errors and optional explicit copying policy"
+    ],
+    "original_named_families": [
+      "Python wheels",
+      "CPython zipfile",
+      "Unix",
+      "Windows",
+      "numpy",
+      "scipy",
+      "pyarrow",
+      "pytorch",
+      "jax",
+      "libtorch",
+      "packaging.python.org"
+    ],
+    "original_named_components": [
+      ".dist-info/LINKS",
+      "METADATA",
+      "RECORD",
+      "Wheel-Version 2.0",
+      "PEP 777 / Wheel 2.0",
+      "PEP 660",
+      "symlinks",
+      "Windows junctions",
+      "Windows Dev Mode / symlink group policy",
+      "dlopen",
+      "soname",
+      "real name",
+      "linker name",
+      "libfoo.so.3.1.4",
+      "libfoo.so.3",
+      "libfoo.so",
+      "pip"
+    ],
+    "same_name_wrong_actor_output_failure": {
+      "criterion": "A library called links that extracts web hyperlinks, or an archive tool listing names without safe same-wheel link creation/validation, has the wrong actor/input/output.",
+      "falsifying_input": "Pass a LINKS edge whose resolved target escapes the installed wheel’s roots.",
+      "wrong_output": "The tool returns a list of URLs/names or creates an unchecked link instead of rejecting the wheel link plan."
+    },
+    "route_order": [
+      "B",
+      "A"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q08/open-1.json",
+    "common/Q08/open-2.json"
+  ],
+  "common_baseline_return": "common/Q08/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q08",
+    "provider_pages": [
+      {
+        "rank": 3,
+        "provider_id": "PyPA/packaging.python.org",
+        "publisher": "Python Packaging Authority (PyPA)",
+        "type": "official_technical_specification",
+        "official_url_prefixes": [
+          "https://packaging.python.org/en/latest/"
+        ],
+        "body_status": "original_text_complete",
+        "read_sections": [
+          "Installing a wheel, lines92-116",
+          "File contents and Wheel-Version, lines188-224",
+          "The .dist-info directory, lines225-236",
+          "The .data directory, lines253-262",
+          "History, lines284-295",
+          "Navigation/contents links, lines7-85 and316-336"
+        ],
+        "version": {
+          "url_selector": "en/latest",
+          "last_updated_as_returned": "2026-11-18",
+          "wheel_version_example": "1.0"
+        },
+        "finding": "The specification gives version rejection, unpack/spread steps and metadata/hash requirements for ordinary wheels.",
+        "limitations": [
+          "It does not provide the requested LINKS graph validator or symlink creation implementation.",
+          "The current text says scripts contains only regular files; future link support and full first-draft compatibility remain unassessed.",
+          "No installer was executed."
+        ],
+        "duplicate_group": "pypa-wheel-format-current",
+        "countability": {
+          "eligible": true,
+          "reason": "Complete returned original official specification; one document group."
+        },
+        "source_id": "Q08-C01",
+        "requested_url": "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+        "final_url": "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q08/open-1.json",
+        "source_ref": "turn833990957view0",
+        "checked_utc": "2026-11-22T07:47:49.705Z",
+        "returned_line_ranges": [
+          [
+            0,
+            336
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 0,
+            "label": "Skip to content",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 0,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 1,
+            "label": "Python Packaging User Guide",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 2,
+            "label": "Overview of Python Packaging",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 7,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 3,
+            "label": "The Packaging Flow",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 8,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 4,
+            "label": "Tutorials",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 9,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 5,
+            "label": "Installing Packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 10,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 6,
+            "label": "Managing Application Dependencies",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 11,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 7,
+            "label": "Packaging Python Projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 12,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 8,
+            "label": "Guides",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 13,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 9,
+            "label": "Installation",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 14,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 10,
+            "label": "Install packages in a virtual environment using pip and venv",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 15,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 11,
+            "label": "Installing stand alone command line tools",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 16,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 12,
+            "label": "Installing pip/setuptools/wheel with Linux Package Managers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 17,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 13,
+            "label": "Installing scientific packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 18,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 14,
+            "label": "Building and Publishing",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 19,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 15,
+            "label": "Writing your `pyproject.toml`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 20,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 16,
+            "label": "Packaging and distributing projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 21,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 17,
+            "label": "Dropping support for older Python versions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 22,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 18,
+            "label": "Packaging binary extensions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 23,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 19,
+            "label": "Packaging namespace packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 24,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 20,
+            "label": "Creating and packaging command-line tools",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 25,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 21,
+            "label": "Creating and discovering plugins",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 26,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 22,
+            "label": "Using TestPyPI",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 27,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 23,
+            "label": "Making a PyPI-friendly README",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 28,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 24,
+            "label": "Publishing package distribution releases using GitHub Actions CI/CD workflows",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 29,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 25,
+            "label": "How to modernize a `setup.py` based project?",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 30,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 26,
+            "label": "Licensing examples and user scenarios",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 31,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 27,
+            "label": "Hosting",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 32,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 28,
+            "label": "Package index mirrors and caches",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 33,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 29,
+            "label": "Hosting your own simple repository",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 34,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 30,
+            "label": "Tool recommendations",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 35,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 31,
+            "label": "Analyzing PyPI package downloads",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 36,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 32,
+            "label": "Discussions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 37,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 33,
+            "label": "Versioning",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 38,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 34,
+            "label": "Deploying Python applications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 39,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 35,
+            "label": "install_requires vs requirements files",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 40,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 36,
+            "label": "Distribution package vs. import package",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 41,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 37,
+            "label": "Package Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 42,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 38,
+            "label": "src layout vs flat layout",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 43,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 39,
+            "label": "Is `setup.py` deprecated?",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 44,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 40,
+            "label": "Single-sourcing the Project Version",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 45,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 41,
+            "label": "Supporting downstream packaging",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 46,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 42,
+            "label": "Specifications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 47,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 43,
+            "label": "Package Distribution Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 48,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 44,
+            "label": "Names and normalization",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 49,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 45,
+            "label": "Core metadata specifications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 50,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 46,
+            "label": "Version specifiers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 51,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 47,
+            "label": "Dependency specifiers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 52,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 48,
+            "label": "`pyproject.toml` specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 53,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 49,
+            "label": "Dependency Groups",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 54,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 50,
+            "label": "Inline script metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 55,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 51,
+            "label": "Platform compatibility tags",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 56,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 52,
+            "label": "Well-known Project URLs in Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 57,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 53,
+            "label": "`glob` patterns",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 58,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 54,
+            "label": "License Expression",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 59,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 55,
+            "label": "Package Installation Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 60,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 56,
+            "label": "Recording installed projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 61,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 57,
+            "label": "Entry points specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 62,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 58,
+            "label": "Recording the Direct URL Origin of installed distributions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 63,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 59,
+            "label": "Direct URL Data Structure",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 64,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 60,
+            "label": "Python Virtual Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 65,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 61,
+            "label": "Externally Managed Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 66,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 62,
+            "label": "Package Distribution File Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 67,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 63,
+            "label": "Source distribution format",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 68,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 64,
+            "label": "Wheel distribution format",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 69,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 65,
+            "label": "Package Index Interfaces",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 70,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 66,
+            "label": "The `.pypirc` file",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 71,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 67,
+            "label": "Simple repository API",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 72,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 68,
+            "label": "File Yanking",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 73,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 69,
+            "label": "Index hosted attestations",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 74,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 70,
+            "label": "Project Status Markers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 75,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 71,
+            "label": "Python Description Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 76,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 72,
+            "label": "`build-details.json`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 77,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 73,
+            "label": "v1.0",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 78,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 74,
+            "label": "Reproducible Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 79,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 75,
+            "label": "`pylock.toml` Specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 80,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 76,
+            "label": "JSON Schemas",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 81,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 77,
+            "label": "Project Summaries",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 82,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 78,
+            "label": "Glossary",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 83,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 79,
+            "label": "How to Get Support",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 84,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 80,
+            "label": "Contribute to this guide",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 85,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 81,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 87,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 82,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 91,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 83,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 92,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 84,
+            "label": "installation paths defined by sysconfig",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 109,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 85,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 117,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 86,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 128,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 87,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 135,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 88,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 136,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 89,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 176,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 90,
+            "label": "name normalization",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 179,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 91,
+            "label": "Version specifier specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 180,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 92,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 188,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 93,
+            "label": "normalized version",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 190,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 94,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 225,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 95,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 237,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 96,
+            "label": "PEP 639",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 243,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 97,
+            "label": "REUSE licensing framework",
+            "displayed_host": "reuse.software",
+            "href": null,
+            "source_line": 245,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 98,
+            "label": "PEP 770",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 246,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 99,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 247,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 100,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 250,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 101,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 253,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 102,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 264,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 103,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 265,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 104,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 268,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 105,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 274,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 106,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 284,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 107,
+            "label": "PEP 427",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 286,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 108,
+            "label": "PEP 815",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 295,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 109,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 296,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 110,
+            "label": "Sphinx",
+            "displayed_host": "www.sphinx-doc.org",
+            "href": null,
+            "source_line": 313,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 111,
+            "label": "@pradyunsg",
+            "displayed_host": "pradyunsg.me",
+            "href": null,
+            "source_line": 313,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 112,
+            "label": "Furo",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 313,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": true,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      },
+      {
+        "rank": 4,
+        "provider_id": "PyPA/packaging.python.org",
+        "publisher": "Python Packaging Authority (PyPA)",
+        "type": "official_technical_specification",
+        "official_url_prefixes": [
+          "https://packaging.python.org/en/latest/"
+        ],
+        "body_status": "original_text_complete",
+        "read_sections": [
+          "Recording installed projects and .dist-info, lines87-122",
+          "The METADATA file, lines123-127",
+          "The RECORD file, lines128-169",
+          "The INSTALLER file, lines170-182",
+          "Navigation/contents links, lines7-85 and227-238"
+        ],
+        "version": {
+          "url_selector": "en/latest",
+          "last_updated_as_returned": "2026-11-18"
+        },
+        "finding": "The document defines installed-file CSV records, required record completeness and ordinary package-removal obligations.",
+        "limitations": [
+          "No symlink graph validation or no-follow link-removal algorithm is supplied in the returned specification.",
+          "A RECORD contract alone does not create LINKS metadata or platform links.",
+          "No actual package installation/removal was performed."
+        ],
+        "duplicate_group": "pypa-installed-projects-current",
+        "countability": {
+          "eligible": true,
+          "reason": "Separate complete returned original official specification."
+        },
+        "source_id": "Q08-C02",
+        "requested_url": "https://packaging.python.org/en/latest/specifications/recording-installed-packages/",
+        "final_url": "https://packaging.python.org/en/latest/specifications/recording-installed-packages/",
+        "final_url_basis": "URL reported in open title; no independent redirect check",
+        "open_receipt_path": "docs/workstreams/research/AF-RES-029/common/Q08/open-2.json",
+        "source_ref": "turn270578062view0",
+        "checked_utc": "2026-11-22T07:48:02.899Z",
+        "returned_line_ranges": [
+          [
+            0,
+            238
+          ]
+        ],
+        "links": [
+          {
+            "link_id": 0,
+            "label": "Skip to content",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 0,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 1,
+            "label": "Python Packaging User Guide",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 2,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 2,
+            "label": "Overview of Python Packaging",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 7,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 3,
+            "label": "The Packaging Flow",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 8,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 4,
+            "label": "Tutorials",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 9,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 5,
+            "label": "Installing Packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 10,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 6,
+            "label": "Managing Application Dependencies",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 11,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 7,
+            "label": "Packaging Python Projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 12,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 8,
+            "label": "Guides",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 13,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 9,
+            "label": "Installation",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 14,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 10,
+            "label": "Install packages in a virtual environment using pip and venv",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 15,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 11,
+            "label": "Installing stand alone command line tools",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 16,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 12,
+            "label": "Installing pip/setuptools/wheel with Linux Package Managers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 17,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 13,
+            "label": "Installing scientific packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 18,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 14,
+            "label": "Building and Publishing",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 19,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 15,
+            "label": "Writing your `pyproject.toml`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 20,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 16,
+            "label": "Packaging and distributing projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 21,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 17,
+            "label": "Dropping support for older Python versions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 22,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 18,
+            "label": "Packaging binary extensions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 23,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 19,
+            "label": "Packaging namespace packages",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 24,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 20,
+            "label": "Creating and packaging command-line tools",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 25,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 21,
+            "label": "Creating and discovering plugins",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 26,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 22,
+            "label": "Using TestPyPI",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 27,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 23,
+            "label": "Making a PyPI-friendly README",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 28,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 24,
+            "label": "Publishing package distribution releases using GitHub Actions CI/CD workflows",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 29,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 25,
+            "label": "How to modernize a `setup.py` based project?",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 30,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 26,
+            "label": "Licensing examples and user scenarios",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 31,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 27,
+            "label": "Hosting",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 32,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 28,
+            "label": "Package index mirrors and caches",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 33,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 29,
+            "label": "Hosting your own simple repository",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 34,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 30,
+            "label": "Tool recommendations",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 35,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 31,
+            "label": "Analyzing PyPI package downloads",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 36,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 32,
+            "label": "Discussions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 37,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 33,
+            "label": "Versioning",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 38,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 34,
+            "label": "Deploying Python applications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 39,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 35,
+            "label": "install_requires vs requirements files",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 40,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 36,
+            "label": "Distribution package vs. import package",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 41,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 37,
+            "label": "Package Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 42,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 38,
+            "label": "src layout vs flat layout",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 43,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 39,
+            "label": "Is `setup.py` deprecated?",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 44,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 40,
+            "label": "Single-sourcing the Project Version",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 45,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 41,
+            "label": "Supporting downstream packaging",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 46,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 42,
+            "label": "Specifications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 47,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 43,
+            "label": "Package Distribution Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 48,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 44,
+            "label": "Names and normalization",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 49,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 45,
+            "label": "Core metadata specifications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 50,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 46,
+            "label": "Version specifiers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 51,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 47,
+            "label": "Dependency specifiers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 52,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 48,
+            "label": "`pyproject.toml` specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 53,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 49,
+            "label": "Dependency Groups",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 54,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 50,
+            "label": "Inline script metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 55,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 51,
+            "label": "Platform compatibility tags",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 56,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 52,
+            "label": "Well-known Project URLs in Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 57,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 53,
+            "label": "`glob` patterns",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 58,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 54,
+            "label": "License Expression",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 59,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 55,
+            "label": "Package Installation Metadata",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 60,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 56,
+            "label": "Recording installed projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 61,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 57,
+            "label": "Entry points specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 62,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 58,
+            "label": "Recording the Direct URL Origin of installed distributions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 63,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 59,
+            "label": "Direct URL Data Structure",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 64,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 60,
+            "label": "Python Virtual Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 65,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 61,
+            "label": "Externally Managed Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 66,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 62,
+            "label": "Package Distribution File Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 67,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 63,
+            "label": "Source distribution format",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 68,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 64,
+            "label": "Wheel distribution format",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 69,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 65,
+            "label": "Package Index Interfaces",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 70,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 66,
+            "label": "The `.pypirc` file",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 71,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 67,
+            "label": "Simple repository API",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 72,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 68,
+            "label": "File Yanking",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 73,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 69,
+            "label": "Index hosted attestations",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 74,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 70,
+            "label": "Project Status Markers",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 75,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 71,
+            "label": "Python Description Formats",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 76,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 72,
+            "label": "`build-details.json`",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 77,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 73,
+            "label": "v1.0",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 78,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 74,
+            "label": "Reproducible Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 79,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 75,
+            "label": "`pylock.toml` Specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 80,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 76,
+            "label": "JSON Schemas",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 81,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 77,
+            "label": "Project Summaries",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 82,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 78,
+            "label": "Glossary",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 83,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 79,
+            "label": "How to Get Support",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 84,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 80,
+            "label": "Contribute to this guide",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 85,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 81,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 87,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 82,
+            "label": "projects",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 89,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 83,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 91,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 84,
+            "label": "Core metadata specifications",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 94,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 85,
+            "label": "name normalization specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 94,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 86,
+            "label": "version normalization specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 94,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 87,
+            "label": "Entry points specification",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 108,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 88,
+            "label": "Recording the Direct URL Origin of installed distributions",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 110,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 89,
+            "label": "Wheel distribution format",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 120,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 90,
+            "label": "Wheel",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 120,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 91,
+            "label": "PEP 376",
+            "displayed_host": "www.python.org",
+            "href": null,
+            "source_line": 122,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 92,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 123,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 93,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 128,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 94,
+            "label": "`hashlib.algorithms_guaranteed`",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 142,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 95,
+            "label": "`base64.urlsafe_b64encode(digest)`",
+            "displayed_host": "docs.python.org",
+            "href": null,
+            "source_line": 142,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 96,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 170,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 97,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 183,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 98,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 188,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 99,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 195,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 100,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 198,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 101,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 201,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 102,
+            "label": "Externally Managed Environments",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 211,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 103,
+            "label": "¶",
+            "displayed_host": null,
+            "href": null,
+            "source_line": 212,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 104,
+            "label": "PEP 376",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 214,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 105,
+            "label": "PEP 610",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 216,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 106,
+            "label": "PEP 627",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 217,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 107,
+            "label": "PEP 639",
+            "displayed_host": "peps.python.org",
+            "href": null,
+            "source_line": 219,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 108,
+            "label": "Sphinx",
+            "displayed_host": "www.sphinx-doc.org",
+            "href": null,
+            "source_line": 223,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 109,
+            "label": "@pradyunsg",
+            "displayed_host": "pradyunsg.me",
+            "href": null,
+            "source_line": 223,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          },
+          {
+            "link_id": 110,
+            "label": "Furo",
+            "displayed_host": "github.com",
+            "href": null,
+            "source_line": 223,
+            "href_limit": "Only visibly printed hrefs are supplied; use observed link IDs, never guess a deep URL."
+          }
+        ],
+        "summary_only": false,
+        "full_document_read": true,
+        "read_scope": "Only original text returned by this open call; unseen gaps are not claimed read.",
+        "provider_boundary_rule": "Use an actually observed link inside this exact provider/project; external links do not add a provider."
+      }
+    ],
+    "allowed_provider_ids": [
+      "PyPA/packaging.python.org"
+    ],
+    "allowed_url_prefixes": [
+      "https://packaging.python.org/en/latest/"
+    ],
+    "common_start_status": "completed",
+    "budgets": {
+      "navigation": 1,
+      "body_opens": 2,
+      "max_neutral_searches": 1,
+      "max_body_opens": 2,
+      "retries": 0,
+      "extra_find_or_click_calls": 0,
+      "failed_opens_count_in_budget": true
+    },
+    "instrumentation": {
+      "search_tool": "mcp__codex_apps__search_service_web_run",
+      "search_engine_argument": "system2_search_query",
+      "query_language": "English",
+      "domain_filter": null,
+      "recency_filter": null,
+      "response_length": "long",
+      "exact_query_once": true,
+      "original_response_and_hash_saved": true,
+      "no_extra_evidence_gathering": true,
+      "route_AB_results_read": false,
+      "other_study_records_read": false,
+      "worker_model": "Inherited GPT-6 Astra Pro session; no independent human reader",
+      "body_reading": "Original text returned by open only; no snippet promoted to body evidence.",
+      "duplicate_rule": "Skip exact fragment/highlight/tracking aliases and clearly identical same-edition raw/rendered mirrors; retain ambiguous main-versus-numbered/development editions and count likely mirrors conservatively as one original.",
+      "duplicate_rule_note": "No ambiguous duplicate selection needed."
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "navigation_rule": "Follow actually observed common-provider links: table of contents/reference index, then API/type with greatest overlap with distinctive frozen input/output terms, then official example. Ties on-page order then lexical URL. At most two navigation/index requests, each response used as evidence also debits body limit. No new provider or guessed deep URL."
+}

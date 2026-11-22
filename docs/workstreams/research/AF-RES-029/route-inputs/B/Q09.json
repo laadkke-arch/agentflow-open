@@ -1,0 +1,303 @@
+{
+  "question": {
+    "id": "Q09",
+    "question_id": "Q09",
+    "ledger": "numpy",
+    "canonical_id": "NEP-50",
+    "scope": "partial",
+    "whole_or_partial": "partial",
+    "title": "NEP 50 — Promotion rules for Python scalars",
+    "initial_url": "https://github.com/numpy/numpy/blob/ff5e9b79b1f94e0b438c459f630e505610382670/doc/neps/nep-0050-scalar-promotion.rst",
+    "initial_text_file": "docs/workstreams/research/AF-RES-029/streams/numpy/first_texts/NEP-50.rst",
+    "initial_text_sha256": "abd2381f09f8dc2e262d10125911eeb85cddc068ec60f068c001d202d77540c0",
+    "caller": {
+      "text": "NumPy binary-operator or ufunc dispatch code, including code handling user-defined DTypes.",
+      "source_positions": [
+        {
+          "section": "Motivation and Scope",
+          "line_start": 59,
+          "line_end": 69
+        },
+        {
+          "section": "Implementation",
+          "line_start": 309,
+          "line_end": 319
+        }
+      ]
+    },
+    "input": {
+      "text": "Python int, float or complex scalars together with typed NumPy scalars, 0-D arrays or N-D arrays; promotion consumes scalar kind and concrete array dtype, not scalar magnitude.",
+      "source_positions": [
+        {
+          "section": "Abstract",
+          "line_start": 18,
+          "line_end": 49
+        },
+        {
+          "section": "Proposed Weak Promotion",
+          "line_start": 277,
+          "line_end": 293
+        }
+      ]
+    },
+    "output": {
+      "text": "A concrete result dtype determined without value inspection; Python scalar kinds may resolve to the other operand dtype, while explicitly typed NumPy values retain their type strength.",
+      "source_positions": [
+        {
+          "section": "Impact on operators functions involving NumPy arrays or scalars",
+          "line_start": 105,
+          "line_end": 112
+        },
+        {
+          "section": "Proposed Weak Promotion",
+          "line_start": 277,
+          "line_end": 293
+        }
+      ]
+    },
+    "limits": [
+      {
+        "kind": "boundary",
+        "text": "Partial action resolves promotion; executing ufuncs, unsafe scalar conversion, warnings and can_cast integration remain outside the partial action.",
+        "source_positions": [
+          {
+            "section": "Implementation",
+            "line_start": 309,
+            "line_end": 338
+          }
+        ]
+      },
+      {
+        "kind": "unresolved_first_draft",
+        "text": "The draft proposes weak behavior for most ufuncs but contains an apparently inconsistent np.multiple(float32_arr, 2.) example and explicitly discusses operator-only alternatives. Do not silently correct the typo or infer a finalized rule.",
+        "source_positions": [
+          {
+            "section": "Impact on functions involving Python int, float, complex",
+            "line_start": 149,
+            "line_end": 160
+          },
+          {
+            "section": "Backward compatibility",
+            "line_start": 213,
+            "line_end": 219
+          },
+          {
+            "section": "Do not use weak scalar logic in functions",
+            "line_start": 365,
+            "line_end": 384
+          }
+        ]
+      },
+      {
+        "kind": "proposed_with_alternative",
+        "text": "Strict integer overflow rejection and warning-plus-infinity for floating overflow are proposed conversion branches. Their original drafted predicates are retained under branch_specific_predicates; they are not universal whole_must or partial_must gates.",
+        "source_positions": [
+          {
+            "section": "Impact on operators involving Python int, float, complex",
+            "line_start": 132,
+            "line_end": 143
+          },
+          {
+            "section": "Handling conversion of scalars when unsafe",
+            "line_start": 404,
+            "line_end": 413
+          }
+        ]
+      },
+      {
+        "kind": "preference",
+        "text": "An optional compatibility-warning mode is planned, and future defaults for user-defined DTypes are tentative; neither is needed to complete the selected partial resolver.",
+        "source_positions": [
+          {
+            "section": "Usage and Impact",
+            "line_start": 75,
+            "line_end": 80
+          },
+          {
+            "section": "Proposed Weak Promotion",
+            "line_start": 286,
+            "line_end": 290
+          }
+        ]
+      }
+    ],
+    "whole_must": [
+      {
+        "id": "Q09-W01",
+        "predicate": "Result-type promotion must never inspect operand values; changing only a Python scalar value cannot choose a wider dtype.",
+        "source_positions": [
+          {
+            "section": "Abstract; Proposed Weak Promotion",
+            "line_start": 43,
+            "line_end": 49
+          },
+          {
+            "section": "Proposed Weak Promotion",
+            "line_start": 277,
+            "line_end": 293
+          }
+        ],
+        "falsifying_input": "Resolve an int8-array/Python-int pair twice, with scalar values 1 and 255. Returning int8 once and int16 the other time falsifies value independence.",
+        "source_id": "Q09-FIRST"
+      },
+      {
+        "id": "Q09-W02",
+        "predicate": "Explicit NumPy scalars and 0-D arrays must promote like N-D arrays of the same dtype, rather than lose their declared dtype because of shape.",
+        "source_positions": [
+          {
+            "section": "Abstract; Impact on NumPy arrays or scalars",
+            "line_start": 43,
+            "line_end": 112
+          },
+          {
+            "section": "Impact on NumPy arrays or scalars",
+            "line_start": 105,
+            "line_end": 112
+          }
+        ],
+        "falsifying_input": "Add a uint8 array to np.int64(1), np.array(1,dtype=int64), and np.array([1],dtype=int64). Downcasting only either scalar-shaped input falsifies the rule.",
+        "source_id": "Q09-FIRST"
+      },
+      {
+        "id": "Q09-W03",
+        "predicate": "Python int, float and complex inputs must be weak scalar kinds; an appropriate concrete counterpart dtype may retain its precision instead of forcing a default int64/float64 result.",
+        "source_positions": [
+          {
+            "section": "Proposed Weak Promotion",
+            "line_start": 277,
+            "line_end": 293
+          }
+        ],
+        "falsifying_input": "Promote a UInt16 operand with a Python integer. Unconditionally returning the platform default integer rather than permitting UInt16 falsifies this operation.",
+        "source_id": "Q09-FIRST"
+      },
+      {
+        "id": "Q09-W06",
+        "predicate": "can_cast must stop consulting scalar values and must reject the formerly value-safe int64-to-uint8 scalar examples.",
+        "source_positions": [
+          {
+            "section": "Impact on can_cast",
+            "line_start": 83,
+            "line_end": 99
+          }
+        ],
+        "falsifying_input": "np.can_cast(np.int64(100), np.uint8) returning True solely because 100 fits falsifies the whole casting change.",
+        "source_id": "Q09-FIRST"
+      }
+    ],
+    "partial_must": [
+      {
+        "id": "Q09-P01",
+        "predicate": "Return a result dtype without inspecting scalar values.",
+        "source_positions": [
+          {
+            "section": "Proposed Weak Promotion",
+            "line_start": 277,
+            "line_end": 293
+          }
+        ],
+        "falsifying_input": "Hold operand types fixed while replacing Python int 1 with 255; a different resolved dtype falsifies the partial operation.",
+        "inherits": [
+          "Q09-W01"
+        ],
+        "source_id": "Q09-FIRST"
+      },
+      {
+        "id": "Q09-P02",
+        "predicate": "Preserve the type strength of explicitly typed NumPy scalar and 0-D inputs exactly as their N-D counterparts.",
+        "source_positions": [
+          {
+            "section": "Abstract; Impact on NumPy arrays or scalars",
+            "line_start": 43,
+            "line_end": 112
+          }
+        ],
+        "falsifying_input": "A resolver that treats int64(1) as weak but an int64 array as strong fails the partial action.",
+        "inherits": [
+          "Q09-W02"
+        ],
+        "source_id": "Q09-FIRST"
+      },
+      {
+        "id": "Q09-P03",
+        "predicate": "Represent Python int/float/complex as weak kinds and allow the concrete other dtype to determine their promotion, including UInt16 plus Integral producing UInt16.",
+        "source_positions": [
+          {
+            "section": "Proposed Weak Promotion",
+            "line_start": 277,
+            "line_end": 293
+          }
+        ],
+        "falsifying_input": "A system offering only strong Python int-to-int64 and float-to-float64 conversion cannot resolve UInt16 + Integral to UInt16.",
+        "inherits": [
+          "Q09-W03"
+        ],
+        "source_id": "Q09-FIRST"
+      }
+    ],
+    "independent_partial_purpose": "Resolve the concrete dtype for a mixed scalar/array operation before choosing a numerical loop or allocating its result. The resolved dtype is useful even if no arithmetic loop, overflow conversion policy or can_cast integration has yet been migrated.",
+    "remaining_adapter": "Map NumPy concrete DTypes and Python scalar kinds into the component and connect its result to ufunc dispatch. Integrate value-independent can_cast, scalar conversion errors/warnings and remaining operator behavior separately. If the adapter has to invent the weak-promotion algorithm or reconcile 0-D type strength itself, partial completion is not established.",
+    "same_name_wrong_actor_output_failure": "A scalar converter called result_type that inspects 255 to pick int16, or a Python-language numeric-tower description that returns a Python class without resolving NumPy array dtype, has the wrong operation/output. A JAX API that makes every explicitly created 0-D array weak would also need a demonstrated adapter preserving the frozen NumPy type-strength rule.",
+    "route_order": [
+      "A",
+      "B"
+    ]
+  },
+  "common_open_receipts": [
+    "common/Q09/open-1.json",
+    "common/Q09/open-2.json"
+  ],
+  "common_baseline_return": "common/Q09/baseline-return.json",
+  "common_provider_packet": {
+    "question_id": "Q09",
+    "opened": [
+      {
+        "provided_rank": 1,
+        "url": "https://numpy.org/doc/stable/reference/arrays.promotion.html",
+        "receipt": "common/Q09/open-1.json",
+        "source_id": "Q09-C-S1",
+        "body_open_number": 1,
+        "status": "readable_excerpt",
+        "read_sections": [
+          "Detailed behavior of Python scalars L71–107; numerical promotion L108–119; builtin classes L139–150; prior behavior L191"
+        ],
+        "version": "Tool title NumPy v2.5, stable alias",
+        "duplicate_group": "numpy-promotion",
+        "limitation": "No execution; dtype result and arithmetic overflow behavior must be scored separately."
+      },
+      {
+        "provided_rank": 3,
+        "url": "https://numpy.org/devdocs/reference/arrays.promotion.html",
+        "receipt": "common/Q09/open-2.json",
+        "source_id": "Q09-C-S2",
+        "body_open_number": 2,
+        "status": "readable_excerpt",
+        "read_sections": [
+          "Python scalars L71–107; cast safety L108–132; builtin classes L164–175; prior behavior L216"
+        ],
+        "version": "Tool title NumPy v2.6.dev0",
+        "duplicate_group": "numpy-promotion",
+        "limitation": "Same manual document family; development text is not evidence of historical availability."
+      }
+    ],
+    "allowed_providers": [
+      {
+        "id": "numpy",
+        "prefixes": [
+          "https://numpy.org/doc/",
+          "https://numpy.org/devdocs/",
+          "https://github.com/numpy/numpy/"
+        ]
+      }
+    ],
+    "budget": {
+      "navigation": 1,
+      "body_opens": 2,
+      "body_successes": 2,
+      "body_failures": 0
+    }
+  },
+  "input_commit": "3475576d56b4307bd75964b9a27dc2a60093efbf",
+  "isolation": "No search receipt, opposite route, later draft, 025 candidate list, supplementary source or current proposal body is authorized as route input.",
+  "navigation_rule": "Follow actually observed common-provider links: table of contents/reference index, then API/type with greatest overlap with distinctive frozen input/output terms, then official example. Ties on-page order then lexical URL. At most two navigation/index requests, each response used as evidence also debits body limit. No new provider or guessed deep URL."
+}
