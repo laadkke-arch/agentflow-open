@@ -82,6 +82,13 @@ for stream,name in [('pdftex','mechanisms.csv'),('lilypond','mechanisms.json'),(
             source_ids=';'.join(ids),source_urls=source_links(ids),
             interpretation_level=value(row,'interpretation_level',default='직접 코드/문헌 관측과 연구자 해석; verification_scope 참조'),raw_record=f'{rel}:{i}'))
 tables['mechanisms']=mechanisms
+for row in mechanisms:
+    if row['mechanism_id']=='ED-M02':
+        row['changed_values']='소스 오른쪽 extent w#:9/12→.8interline#; 왼쪽 extent b#:0→1.2stafflinethickness#; crook_fatness매개변수1/4→1/3interline; brush/penstroke→fill/unfill+serif'
+        row['difference']='전체 문자상자 폭이나 출력 잉크폭 계측이 아님. '+row['difference']
+        ids=sorted(set(row['source_ids'].split(';'))|{'B03-L031','B03-L032'})
+        row['source_ids']=';'.join(ids)
+        row['source_urls']=source_links(ids)
 
 existing=ROOT/'evidence/table-data.json'
 if existing.exists():

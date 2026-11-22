@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT/'streams/root/cache/recheck'
 CACHE.mkdir(parents=True, exist_ok=True)
 items = [
+    ('B01-P019','https://tug.org/TUGboat/tb36-2/tb113zapf-karow.pdf','karow2015.pdf'),
     ('B01-P001','https://www.tug.org/tugboat/tb21-4/tb69thanh.pdf','thanh2000.pdf'),
     ('B01-P004','https://tug.org/TUGboat/tb17-3/tb52sojk.pdf','sojka1996.pdf'),
     ('B01-P006','https://www.numdam.org/item/CG_1997___27_34_0.pdf','karow1997.pdf'),

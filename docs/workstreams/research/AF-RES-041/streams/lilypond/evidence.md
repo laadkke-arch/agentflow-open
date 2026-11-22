@@ -17,9 +17,11 @@
 | 기호 정체성 | `Flat`, `-1`, `flat` (L157) | 같은 이름·기호 값 (L191) | 같은 목적·대상 유지, **직접 관측** |
 | 도너 귀속 | Schubert/Bärenreiter의 flat (L4) | Müller/Hofmeister의 flat (L5) | 저자 소스 주석, 정확 판·쪽은 **미확인** |
 | 도형 생성 | `flat_meta_symbol`/`flat_symbol`, brush·penstroke (L119–152) | `draw_meta_flat`, serif·fill/unfill (L114–185) | 정적 코드 재작성 **직접 관측** |
-| 단일 flat 폭 | 9/12 interline (L158) | .8 interline 및 왼쪽 여유 (L192) | 변수 값 변경 **직접 관측**, 출력 계측 아님 |
-| 배 두께·줄기 | crook 1/4 interline, bottom stem 5/4·top stem 2 staff thickness (L146–149) | crook 1/3 interline, bottom 1.2·top 2 (L122–124,193) | 같은 기호의 비율 조정 **직접 관측** |
+| 단일 flat 상자의 명목 extent | 오른쪽 w#=9/12 interline#, 왼쪽 b#=0 (L158) | 오른쪽 w#=.8 interline#, 왼쪽 b#=1.2 stafflinethickness# (L192) | 변수 값 변경 **직접 관측**. 전체 잉크폭·출력 계측 아님 |
+| 배·줄기 두께 매개변수 | crook_fatness 1/4 interline, bottom stem 5/4·top stem 2 staff thickness (L146–149) | crook_fatness 1/3 interline, bottom 1.2·top 2 (L122–124,193) | 같은 기호의 매개변수 조정 **직접 관측**, 실제 획 두께의 출력 계측 아님 |
 | double flat | 하나를 복제·평행 이동 (L162–166) | 좌폭 .7·우폭 .8·겹침 .05의 두 호출 (L197–205) | 이웃 기호에도 반영되나 본보기의 double-flat 직접 모방은 **미확인** |
+
+재검토에서 폭 용어를 정밀화했다. 같은 두 배포의 `mf/autometric.mf`(0.1.22 L47–65,100–118;0.1.23 L46–64,99–117)는 b#와 w#를 분리 저장하고, proof 상자를 x=-b부터 w까지 그린다. 따라서 두 번째 인자의 9/12→.8만을 전체 문자 상자 또는 실제 잉크폭의 변화라고 부를 수 없다. pixel 좌표에는 hround도 적용된다. 이전 초안의 ‘단일 flat 폭’ 표현과 정정 이유는 `result-review.md`에 보존했다. [B03-L031,032]
 
 이는 동일 기호의 구체적인 전후다. 그러나 귀속 수정이 실제 독서 후 변경의 완전한 진술은 아니며, 정확한 원판 모양과 코드 형상을 대조하기 전 엄격 인과 양성으로 올리지 않는다. 특히 0.1.22는 이미 Schubert를 본보기로 적은 자작 flat이다. 이것을 ‘외부 인쇄물을 알기 전 최초 선택’으로 바꾸면 기준선이 이동한다.
 
