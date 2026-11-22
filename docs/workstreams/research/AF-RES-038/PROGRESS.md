@@ -7,6 +7,7 @@
 | ③a 채점 전 기대·가림 입력 봉인 | `a9589eb1ed899da83230e5c6a3ffa30123b7d5f2` | 루브릭12행, 예시12개/36셀, 익명 입력 해시4fbf39de… 고정 후 별도 문맥 판독 요청. 작성자 기존 N08 R2 이견도 봉인. |
 | ③b 최초 판독·이견·명료화 입력 | `cbf1c3b4a81799370e440b055b03001c4a2e66fe` | 전체12/12 일치, 요구셀35/36. N08 R2의 partial/fail/pass를 보존하고 명료화 입력 고정. 원판 재독·보수적33원문·상태12예시·전송 줄바꿈 정정 기록. |
 | ③c 대상 재독·결측 의미 검토 | `a0c1179453c3dd80bbb3ea75fb6b73d47a0a0734` | 같은 AI의 N08 3예시 재독, R2 한 셀만pass→fail. 별도 측정 문맥의 상태12개 판독과 규칙 출력 비교. 사람0·미실시 API 재현 명령 전달. |
+| ④a 준비도·자체점검·수용 | `acb9e8877e30913bdb632f768b0c227990773938` | RESULT와 acceptance를 고정 SHA에서 GitHub 재독, 로컬blob 일치2/2. 요청 session check --fetch 종료0/passed/remote_checked. 내용 수용23/24, 최초성A05 미충족 유지. |
 
 최초 배정 통합은 `de544231bc72fa6f2ddb3e91f9c0e8d16a0d1f62`다. 요청된 `python -B -m workbench.session start af-res-038 --allow docs/workstreams/research/AF-RES-038/ --output docs/workstreams/research/AF-RES-038/manifest.json --dependency work/research-af-res-021=29049a5f15b6ef7cd7431f59a059598db6f5d857 --dependency work/research-af-res-034=f6dc9b8873b049f1eb4f8977ce3408ed057df1f7 --fetch`는 종료0, freshness_at_start=remote_checked였다. 원격 읽기는 공개 Git으로 성공했지만 셸 push는 자격증명 부재로 종료128이었다. 인증된 GitHub 연결로 정상 tree·commit·조건부 ref 갱신을 사용했다. 권한·계정·브랜치 보호를 변경하지 않았다.
 
