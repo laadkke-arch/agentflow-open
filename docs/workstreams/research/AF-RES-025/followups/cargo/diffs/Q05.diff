@@ -1,0 +1,36 @@
+--- first-selected/Q05.md
++++ fixed-head/Q05.md
+@@ -1,6 +1,6 @@
+ - Feature Name: `path_bases`
+ - Start Date: 2021-02-08
+-- RFC PR: [rust-lang/rfcs#0000](https://github.com/rust-lang/rfcs/pull/0000)
++- RFC PR: [rust-lang/rfcs#3074](https://github.com/rust-lang/rfcs/pull/3074)
+ - Rust Issue: [rust-lang/rust#0000](https://github.com/rust-lang/rust/issues/0000)
+ 
+ # Summary
+@@ -146,6 +146,20 @@
+ little to what we have today both in terms of API surface and mechanism.
+ But, other approaches exist.
+ 
++Developers could have their `path` dependencies point to symlinks in the
++current directory, which other developers would then be told to set up
++to point to the appropriate place on their system. This approach has two
++main drawbacks: they are harder to use on Windows as they [require
++special privileges](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/create-symbolic-links),
++and they pollute the user's project directory.
++
++For the build-system case, the build system could place vendored
++dependencies directly into the source directory at well-known locations,
++though this would mean that if the source of those dependencies were to
++change, the user would have to re-run the build system (rather than just
++run `cargo`) to refresh the vendored dependency. And this approach too
++would end up polluting the user's source directory.
++
+ An earlier iteration of the design avoided adding a new field to
+ dependencies, and instead inlined the base name into the path using
+ `path = "base::relative/path"`. This has the advantage of not
+@@ -278,3 +292,4 @@
+ 
+ However, this may get complicated if someone specifies `git`, `path`,
+ _and_ `base`.
++

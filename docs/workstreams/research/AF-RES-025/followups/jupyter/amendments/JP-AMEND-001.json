@@ -1,0 +1,188 @@
+{
+  "amendment_id": "JP-AMEND-001",
+  "created_utc": "2026-11-22T06:16:01.875658+00:00",
+  "trigger": "Parent requested re-evaluation against sealed Q09-P1/P2 after independent primary review found a receiver-readiness boundary conflict.",
+  "candidate_id": "JP-K006",
+  "question_id": "Q09",
+  "previous_seal_sha256": "e36051b3acaee4e0dcce02fe0ffac600cdaddbdd91b1408c36454b34a7095754",
+  "previous_seal_snapshot": "amendments/seal-before-JP-AMEND-001.json",
+  "change": {
+    "historical_availability": {
+      "before": "supported",
+      "after": "unknown"
+    },
+    "partial_supported": true,
+    "overall_counts_before": {
+      "supported": 1,
+      "not_available": 1,
+      "unknown": 21
+    },
+    "overall_counts_after": {
+      "supported": 0,
+      "not_available": 1,
+      "unknown": 22
+    }
+  },
+  "error_explanation": "The prior historical judgment weakened the locked receiver/output-path observation to publisher matching state and supplied receiver readiness as an unverified external assumption. The declared adaptation cannot change the original mandatory boundary.",
+  "locked_predicates": {
+    "Q09-P1": "출력 수신을 담당하는 구독 경로가 준비됐다는 관측 가능한 신호를 클라이언트가 얻는다. TCP 연결이나 명령 응답만으로 대체하지 않는다.",
+    "Q09-P2": "클라이언트가 그 신호를 확인한 뒤 실행 요청을 시작하여 준비 이전의 최초 출력 유실을 피할 수 있다."
+  },
+  "source_ids": [
+    "JP-C006",
+    "JP-H008"
+  ],
+  "source_urls": [
+    "https://docs.ogc.org/is/13-131r1/13-131r1.html"
+  ],
+  "exact_sections": [
+    "§4.4/4.6 L171/L180: Subscriber and Receiver may differ",
+    "§8.3.1 L478–480: delivery attempt, matching-before-response, readiness precondition, matching/delivery separation",
+    "§1 L95: reliable delivery outside core"
+  ],
+  "countermodel": {
+    "actors": [
+      "Subscriber/client S",
+      "Publisher P",
+      "Receiver/output path R"
+    ],
+    "steps": [
+      "S sends Subscribe to P; R has not yet completed receive-path readiness.",
+      "P creates an active subscription and starts matching; P returns SubscribeResponse to S.",
+      "S issues execute after the response.",
+      "P matches the first resulting output and attempts delivery once; R is still unready and the output is lost."
+    ],
+    "source_compatibility": "The core permits Subscriber and Receiver to differ and demands matching-before-response plus a delivery attempt. Receiver readiness should already hold but is neither observed nor established by SubscribeResponse. Assuming it outside the candidate is the missing condition.",
+    "conclusion": "The response alone does not entail the sealed readiness and first-output predicates.",
+    "kind": "Researcher-constructed logical countermodel; not an executed trace."
+  },
+  "before_record": {
+    "question_id": "Q09",
+    "candidate_id": "JP-K006",
+    "target_name": "OGC PubSub SubscribeResponse barrier",
+    "initial_design_date": "2021-01-05T08:27:01Z",
+    "historical_availability": "supported",
+    "existence_by_initial_date": "supported",
+    "existence_scope": "Candidate/protocol existence only, separated from complete mandatory feature coverage",
+    "exact_returned_edition_available_by_initial_date": true,
+    "feature_evidence": [
+      {
+        "condition_id": "Q09-P1",
+        "status": "supported",
+        "reason": "2016 §8.3.1 requires matching before SubscribeResponse; this is subscription-state readiness, not reliable transport delivery.",
+        "source_ids": [
+          "JP-C006",
+          "JP-H008"
+        ]
+      },
+      {
+        "condition_id": "Q09-P2",
+        "status": "supported",
+        "reason": "Researcher translation retained from frozen use: first execution occurs only after successful response, receiver having been ready before request. The temporal relation is a design adaptation, not provider Jupyter code.",
+        "source_ids": [
+          "JP-C006",
+          "JP-H008"
+        ]
+      }
+    ],
+    "source_ids": [
+      "JP-C006",
+      "JP-H008"
+    ],
+    "reason": "The exact2016 OGC ordering rule predates the question. Under the frozen design-reference boundary, receiver readiness precedes subscribe, matching precedes SubscribeResponse, and execution is gated after that response. This supports the translated startup relation, not a shipped Jupyter/ZeroMQ implementation.",
+    "next_minimum_check": "For adoption, build a receiver-ready→subscribe→response→execute trace using the selected transport and test concurrent subscribers/lost delivery; historical existence of the design rule is already fixed.",
+    "inspected_scope": "JP-C006 mirrored2016 PDF plus JP-H008 official13-131r1 front matter, §1, §8.3.1/8.3.3.",
+    "original_use_boundary": "OGC형 구독 상태 응답을 출력 준비 barrier의 설계 선례로 사용; 수신기는 요청 전 준비하고 실행은 응답 후 허용",
+    "current_primary_judgment": "Frozen elsewhere; not recomputed or rescued by historical evidence",
+    "possible_followup_exposure_sensitivity": false,
+    "researcher_inference": "Historical availability concerns the declared use boundary. Adaptation/composition is explicit and is not a provider claim or proof of party awareness.",
+    "runtime_test_performed": false
+  },
+  "after_record": {
+    "question_id": "Q09",
+    "candidate_id": "JP-K006",
+    "target_name": "OGC PubSub SubscribeResponse barrier",
+    "initial_design_date": "2021-01-05T08:27:01Z",
+    "historical_availability": "unknown",
+    "existence_by_initial_date": "supported",
+    "existence_scope": "Candidate/protocol existence only, separated from complete mandatory feature coverage",
+    "exact_returned_edition_available_by_initial_date": true,
+    "feature_evidence": [
+      {
+        "condition_id": "Q09-P1",
+        "status": "unknown",
+        "reason": "SubscribeResponse establishes publisher-side matching state. Subscriber and Receiver may be different actors (§4.4/4.6); no inspected rule makes that response an observation of receiver/output-path readiness. Receiver readiness is a separate should-be-ready precondition, not a verified signal supplied to the client.",
+        "source_ids": [
+          "JP-C006",
+          "JP-H008"
+        ]
+      },
+      {
+        "condition_id": "Q09-P2",
+        "status": "unknown",
+        "reason": "Gating execute after SubscribeResponse does not by itself avoid first-output loss when the Receiver path is unready. §8.3.1 requires only one delivery attempt and separates matching from delivery. The former supported judgment assumed the missing readiness condition.",
+        "source_ids": [
+          "JP-C006",
+          "JP-H008"
+        ]
+      }
+    ],
+    "source_ids": [
+      "JP-C006",
+      "JP-H008"
+    ],
+    "reason": "The2016 matching-before-response rule existed, but it does not establish the locked full use boundary: an observable signal that the output-receiving path is ready and consequent avoidance of pre-readiness first-output loss. An unverified receiver-ready assumption cannot substitute for Q09-P1. Whole historical availability is unknown; only the narrower publisher matching rule is historically supported.",
+    "next_minimum_check": "Find a dated<=2021-01-05 binding/implementation that ties an observable acknowledgment to actual Receiver/output-path readiness, then traces execute and first output after that acknowledgment. Test distinct Subscriber/Receiver and delayed Receiver readiness. A successful SubscribeResponse or a generic delivery guarantee alone is insufficient.",
+    "inspected_scope": "Same sources and no new search: JP-C0062016 PDF and JP-H008 official13-131r1 §1 L95, §4.4/4.6 L171/L180, §8.3.1 L470–480, §8.3.3 L523–525. Local reassessment against sealed Q09-P1/P2.",
+    "original_use_boundary": "OGC형 구독 상태 응답을 출력 준비 barrier의 설계 선례로 사용; 수신기는 요청 전 준비하고 실행은 응답 후 허용",
+    "current_primary_judgment": "Frozen elsewhere; not recomputed or rescued by historical evidence",
+    "possible_followup_exposure_sensitivity": false,
+    "researcher_inference": "Historical availability concerns the declared use boundary. Adaptation/composition is explicit and is not a provider claim or proof of party awareness.",
+    "runtime_test_performed": false,
+    "partial_supported": true,
+    "historically_supported_partial_features": [
+      {
+        "feature": "Publisher begins matching new messages before returning SubscribeResponse",
+        "status": "supported",
+        "version": "OGC13-131r1,1.0,publication2016-08-22",
+        "source_ids": [
+          "JP-C006",
+          "JP-H008"
+        ],
+        "sections": [
+          "§8.3.1 L479"
+        ],
+        "does_not_entail": [
+          "Q09-P1",
+          "Q09-P2"
+        ]
+      }
+    ],
+    "amendment_id": "JP-AMEND-001",
+    "countermodel": {
+      "actors": [
+        "Subscriber/client S",
+        "Publisher P",
+        "Receiver/output path R"
+      ],
+      "steps": [
+        "S sends Subscribe to P; R has not yet completed receive-path readiness.",
+        "P creates an active subscription and starts matching; P returns SubscribeResponse to S.",
+        "S issues execute after the response.",
+        "P matches the first resulting output and attempts delivery once; R is still unready and the output is lost."
+      ],
+      "source_compatibility": "The core permits Subscriber and Receiver to differ and demands matching-before-response plus a delivery attempt. Receiver readiness should already hold but is neither observed nor established by SubscribeResponse. Assuming it outside the candidate is the missing condition.",
+      "conclusion": "The response alone does not entail the sealed readiness and first-output predicates.",
+      "kind": "Researcher-constructed logical countermodel; not an executed trace."
+    }
+  },
+  "new_external_requests": 0,
+  "source_count_change": 0,
+  "original_primary_records_modified": false,
+  "required_followthrough": [
+    "Update candidate-history/source interpretation/README/counts",
+    "Run validate.py",
+    "Write new seal including this amendment and prior seal snapshot"
+  ],
+  "limitation": "Historical bindings/implementations might add an observable receiver-ready mechanism; none was inspected, so unknown does not mean no possible implementation existed."
+}
