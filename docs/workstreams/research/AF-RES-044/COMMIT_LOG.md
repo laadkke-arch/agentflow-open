@@ -13,3 +13,7 @@
 ## ②b 원격 봉인 바이트·후기 브라우저 진단
 
 원격 `8c22675a2e90134c386f362cdd2aabe7d14d252e`, tree `9a658b1203d7aebc92e39a358cc1dd95a168e295`. CSV LF 바이트 해시 정정과 v1 보존, Pandoc DOM 복구의 원 HTML 한계, Requests의 별도 browser 성공1회를 기록했다. 원풀·순서·요구를 바꾸지 않았다.
+
+## ③ 후보 근거·36보기·실제 경로
+
+원격 `ed63f44ff0586265d6640bedb82fc6c5c286f9b1`, tree `bf8cc9dfd7dafda2255fe64c80dcc1ccdd713f25`. 변경134파일의 Git blob SHA와 로컬 SHA256을 fetch 후 전부 대조했다. 고정 HTTP 계획/관측1,924개, 별도 Requests browser1개, C2 동일 출발카드의 새 exact-response 시행2개를 보존했다. 같은 관측을 방식별로 복제하지 않았다. sources632행/고유84원문, 원풀·후보별 근거·최소완전조합·36보기와 실제 도착 원장. 범위/해시 목록은 `evidence/publication-bundle3.json`.
