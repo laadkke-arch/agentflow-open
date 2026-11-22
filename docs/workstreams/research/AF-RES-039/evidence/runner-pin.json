@@ -1,0 +1,29 @@
+{
+  "state": "pre-observation",
+  "scope_remote_commit": "52048b3d238966da17c9739639f4619ef2890bd7",
+  "checked_utc": "2026-11-22T18:37:08.761381+00:00",
+  "sha256": {
+    "replay.py": "9e9ee1ee5e51d171b3e7c2a65339f19348391abf2a01df5fb92d7a73a88974e2",
+    "batch.py": "8dfe87aa1d6093964e785f5a07884987fc6066e4bfbf54b6c24dab9e228dfc3d",
+    "inputs.jsonl": "4da065e1c76940b54b0844dda2d76db6ec3614a4ea7a0cbda4f60bcadd8ae2a1",
+    "evidence/packet-boundaries.jsonl": "5b83b9c407e0f958358c0a9463d808fe36d1d133730a6bc9ee991cbb3352b651"
+  },
+  "algorithm_version": "1.0",
+  "seed": 39036,
+  "runner_command": "python -I -B replay.py {current|restore}",
+  "boundary_command": "python -B batch.py boundary --capture-dir /tmp/af039-boundary-52048 --journal evidence/packet-boundaries.jsonl",
+  "tool_versions": {
+    "python": "3.12.14",
+    "curl": "curl 8.14.1 (x86_64-pc-linux-gnu) libcurl/8.14.1 OpenSSL/3.5.7 zlib/1.3.1 brotli/1.1.0 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.2 libssh2/1.11.1 nghttp2/1.64.0 nghttp3/1.8.0 librtmp/2.3 OpenLDAP/2.6.10",
+    "strace": "strace -- version 6.13"
+  },
+  "static_boundary_result": "exit 0; 4/4 packets; no network; 2/2 same-B; 0 unexpected workspace/scratch file opens",
+  "offline_checks": [
+    "compile three Python sources",
+    "CONNECT/302 parse fixture",
+    "public URL validation fixture"
+  ],
+  "audit_correction": "첫 경계 검사에서 작업 폴더 자신을 성공한 외부 open으로 합산했다. 고정 규칙은 폴더 자체를 제외한다. 동일 4개 패킷을 네트워크 없이 다시 검사해 4/4 일치. 본실행·판정 분모 영향 없음.",
+  "isolation_limit": "bwrap uid-map 실패, 별도 OS namespace 없음. 새 폴더/프로세스/환경과 strace 성공한 파일 열기 확인.",
+  "implementation_notes": "T현재도 C2 JSON 전체/H 해시를 확인한다. H 표시 읽기와 입력에서 검증한 H 바이트를 별도 기록한다. 물리값에 CONNECT를 더하지 않고 별도로 보존한다."
+}
