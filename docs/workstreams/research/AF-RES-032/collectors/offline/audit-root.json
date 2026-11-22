@@ -1,0 +1,573 @@
+{
+  "task": "AF-RES-032",
+  "reviewer": "offline_a",
+  "review_type": "separate internal agent reading, unblinded to prior conclusions",
+  "independent_external_human_review": false,
+  "original_collector_for_reviewed_material": false,
+  "review_completed_at_utc": "2026-11-22T07:50:37.814656+00:00",
+  "repository_head_when_recorded": "ffbce62e4c01459ebbfb006a5d6c67e425ed7c17",
+  "input_files_sha256": {
+    "python/followup/cases.json": "8065563da25d837ea7a74f2f4c3ef5e36908bed4a3811223be98017b43a4fd15",
+    "python/followup/intervals.json": "f32785ce7bf25ced331688c8615b21bea74f599452e6f08f91c1976577a5fa88",
+    "python/followup/archives.json": "dc303a9fbf0cba9c7d0e8dd01e161cec3f6dd8e470da3855ee083b59a5b440b1",
+    "python/followup/source-correction.json": "c656672ecc7947307f2e36f1c718eb2cae8f29772103bfdddf022ced31aa71ef",
+    "python/followup/version-list.json": "971f9617ba89d0f78f69beebb6a8165844e28ce42b4074b04ca9b02e5baf52ff",
+    "python/followup/sources.jsonl": "13379ceeb008246a56918d8f1378ceca022d3accf684a82ff4bccb17f7171dcb",
+    "b/root-cases.json": "f7cea6fc24d34676d81fe32705cac2e6e3f78777f2cc6957536e310e0cd66ae4",
+    "b/root-intervals.json": "fc261af84f704e9a8c426c1038d710a836832288d7fdb9764704596b1e18dc45",
+    "b/httr-followup.json": "abc693a96b7300e6eb2015ca94d2fbbdfd48ea0347d9dab3e5d72654900b997f",
+    "b/httr-source-0.json": "9a9a5c80e84ed9e10a12574259ae6ebba47c5921f9a8bd1a6dfffcb1256ce41c",
+    "b/httr-source-1.json": "4c80dfa2bd9a32854006eed2c7151e86344fa1f9a820b826234b6ff5f62f586e",
+    "b/httr-index-observation.json": "5280f1e542cb73b2145d2f81327099559ad8faa2306bd9b0e8930f07f9f5535f",
+    "b/root-sources.jsonl": "cf81ae2baf7f2ab85f03cbb6af91945b77d5a6654f42f16ecf9708d404d926b4"
+  },
+  "scope": "Python A-D01/A-D02 and root B02/httr raw archive/source/date review; B03 is metadata/logic review only, its .deb raw bytes not independently reopened in this audit",
+  "writes": "Only collectors/offline/audit-root.json and AUDIT_ROOT.md; source collector outputs not edited",
+  "hard_byte_hash_arithmetic_defects_found": 0,
+  "clarifications_recommended": 3,
+  "verified_claims": [
+    {
+      "id": "V01",
+      "result": "pass",
+      "claim": "All19 Python3.8.2–20 archives and38about/bugs members match stored hashes; no stable version gap in current official index."
+    },
+    {
+      "id": "V02",
+      "result": "pass",
+      "claim": "Selected Documentation bugs href is Roundup through3.8.14, GitHub docs query from3.8.15; only this lineage gets first-edition wording."
+    },
+    {
+      "id": "V03",
+      "result": "pass",
+      "claim": "Python about.html keeps Docutils raw href all19versions; current resolver changes do not establish past continuity."
+    },
+    {
+      "id": "V04",
+      "result": "pass",
+      "claim": "httr1.4.1/2 old domain;1.4.3–6 new domain with same rate-limit paragraph;1.4.7/8 replace the document with httr2 recommendation."
+    },
+    {
+      "id": "V05",
+      "result": "pass",
+      "claim": "httr1.4.2→3 and1.4.6→7 have zero intermediate versions in actual index;1.4.1 predates2020GitHub notice,1.4.2 postdates it and still retains old URI."
+    },
+    {
+      "id": "V06",
+      "result": "pass",
+      "claim": "httr1.4.7 and1.4.8 entire member bytes are identical; root sources count1.4.7 only. No counted duplicate group or identical content hash in the two examined source ledgers."
+    },
+    {
+      "id": "V07",
+      "result": "pass_with_precision_caveat",
+      "claim": "Python nominal13480547seconds and httr14044seconds arithmetic correct. No source/mtime/reader date substituted for strict archive-publication delay."
+    },
+    {
+      "id": "V08",
+      "result": "pass",
+      "claim": "2021httr UpdateURLs patch touches Wikipedia, not rate-limit href; selected2022commit is the matching rate-limit source change."
+    },
+    {
+      "id": "V09",
+      "result": "pass",
+      "claim": "Python official statuslog read-only onset, migration completion, issue mapping are distinct; source-correction and publication are separate. Current 200 is not proof of active tracker purpose."
+    },
+    {
+      "id": "V10",
+      "result": "pass_scope_limited",
+      "claim": "B03 sparse-retention and publication-unknown labels are logically appropriate; this audit did not independently verify the Debian members."
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "AUD-ROOT-01",
+      "severity": "medium",
+      "kind": "precision_assumption_needs_label",
+      "status": "recommend clarification; arithmetic is correct",
+      "location": "python/followup/intervals.json first row precision/lower_seconds/upper_seconds",
+      "claim_reviewed": "Event boundary lies within the stated18:15 minute, making a60second physical-event bound.",
+      "evidence": [
+        "https://discuss.python.org/t/github-issues-migration-status-update/14573",
+        "python/followup/cache/P-U04.raw post1"
+      ],
+      "observation": "The official edited status log states all timesUTC and reports read-only at18:15. It is not a server-event log and does not specify rounding/truncation or reporting delay.",
+      "impact": "Nominal13480547seconds is correct. The displayed13480487–13480547 bound needs an explicit minute-binning assumption and should not be called an independently measured implementation bound.",
+      "recommended_action": "Label reported-time→committer nominal difference and conditional minute-bin range; keep exact physical-onset interval unverified. Strict publication0 remains unchanged.",
+      "next_minimum_source": "Timestamped read-only configuration/deployment or server audit event"
+    },
+    {
+      "finding_id": "AUD-ROOT-02",
+      "severity": "low",
+      "kind": "clock_role_needs_label",
+      "status": "numerically correct",
+      "location": "b/root-cases.json B02 source_edit and b/root-intervals.json",
+      "claim_reviewed": "2022-05-03T20:25:58Z source edit→CRAN publication takes3h54m04.",
+      "evidence": [
+        "https://github.com/r-lib/httr/commit/b6c03b6f6611a4bbca4057268ffbc1096bc11e65",
+        "httr_1.4.3.tar.gz!httr/DESCRIPTION"
+      ],
+      "observation": "Fresh GitHub API reread: author20:23:19Z, committer20:25:58Z. Raw DESCRIPTION independently has Packaged20:41:18UTC and Date/Publication2022-05-04 00:20:02UTC.",
+      "impact": "14044seconds matches committer→Date/Publication, not author→publication. Packaged is a separate role, not proof of exact HTML build time.",
+      "recommended_action": "Name the source clock explicitly consumer_source_committer and retain author/packaging roles separately if exposed.",
+      "next_minimum_source": "Already verified public commit metadata; no additional lookup needed for this label correction"
+    },
+    {
+      "finding_id": "AUD-ROOT-03",
+      "severity": "low",
+      "kind": "reader_purpose_granularity_needs_label",
+      "status": "strict-chain exclusion already correct",
+      "location": "python/followup/cases.json A-D02 reader_report.same_purpose=true",
+      "claim_reviewed": "Reader report has the same purpose as sealed documentation-bugs query.",
+      "evidence": [
+        "https://discuss.python.org/t/status-of-documentation-bug-tracker/14957",
+        "python/followup/cache/P-U06.raw post1"
+      ],
+      "observation": "Reader asks about issue creation for a documentation improvement and links live/3/bugs.html#using-the-tracker; does not name the sealed documentation-query click or any offline3.8 edition.",
+      "impact": "Broad task goal overlaps; exact same-reference click purpose is unverified. The existing same_exposure_medium=false and exclusion from strict reader chain are correct.",
+      "recommended_action": "Clarify broad_goal_overlap=true / exact_reference_click_unverified, rather than allowing bare same_purpose=true to imply observed selected-link use.",
+      "next_minimum_source": "Reader statement identifying the selected query and exact offline edition/member"
+    }
+  ],
+  "python_edition_checks": [
+    {
+      "version": "3.8.2",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.2/python-3.8.2-docs-html.tar.bz2",
+      "archive_sha256": "e12135b29ef231fce0d20c5865cf7fb37cecea11f2304e389325b04e9281558a",
+      "member": "python-3.8.2-docs-html/bugs.html",
+      "member_sha256": "3b517ee6d1fd28e2cb283d5b0773aae88e566cef89b3d0e68cd79fdefc5a98ab",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.3",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.3/python-3.8.3-docs-html.tar.bz2",
+      "archive_sha256": "2d792badec2d2146397c53b8f67bc2b1a6f3047a4587f49f410839d30ad0d8c9",
+      "member": "python-3.8.3-docs-html/bugs.html",
+      "member_sha256": "180c61583342c44b24f148280213591261a484ac2b98197ec71ad7cae7822d8d",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.4",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.4/python-3.8.4-docs-html.tar.bz2",
+      "archive_sha256": "bc860a0e3d0742854a9b0de47aca13f036b602404628d30c4e7c9c505f4fc6e5",
+      "member": "python-3.8.4-docs-html/bugs.html",
+      "member_sha256": "2b87c09b8bbdcdc87959c7a11149bb09c49052ab887af2ca9a9d18211233003c",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.5",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.5/python-3.8.5-docs-html.tar.bz2",
+      "archive_sha256": "19a26e20e7192457e20ea46843d2847577cb5b54111fa2017044695d7bacc7a7",
+      "member": "python-3.8.5-docs-html/bugs.html",
+      "member_sha256": "bdcc97db1a422db4e2ee6df43a9fc27da33cdb2c78868bdb5d7c18e40107a17c",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.6",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.6/python-3.8.6-docs-html.tar.bz2",
+      "archive_sha256": "60b8e4c913e51367dcc661c3e3427a9a05a7dd69b3f032b93503acebb195e03f",
+      "member": "python-3.8.6-docs-html/bugs.html",
+      "member_sha256": "d4d667a38800d5cd9f75a7c593958daba66418322b6b2fcd98fee3750f37f5e9",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.7",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.7/python-3.8.7-docs-html.tar.bz2",
+      "archive_sha256": "b6cd1c6eab3725711998e37655cbe2a87486d940cd98b5522228439a857e80df",
+      "member": "python-3.8.7-docs-html/bugs.html",
+      "member_sha256": "9b4ad6c5f589af0729afb4b20d2fff51f685694f1f4bfdec5d2d3a08115500c6",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.8",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.8/python-3.8.8-docs-html.tar.bz2",
+      "archive_sha256": "4490001bc4ee47d3f6f7ab1439a386dd2b6e1774b13310e8216368410ddef3d8",
+      "member": "python-3.8.8-docs-html/bugs.html",
+      "member_sha256": "27eaaecfa90d2e8247a4228be2f998be500e9d2ab4b2c31e67bcc6d54a88e6a3",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.9",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.9/python-3.8.9-docs-html.tar.bz2",
+      "archive_sha256": "0bece0235bdbddea03bfb855ee192ae9889745585dc47bfcae2e29856d212c09",
+      "member": "python-3.8.9-docs-html/bugs.html",
+      "member_sha256": "a8e376ee7b6cf42b6c1fcb3d64ef29418880d36244295e7778b5ec06f57d90ff",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.10",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.10/python-3.8.10-docs-html.tar.bz2",
+      "archive_sha256": "5a24209934220c13e9ed531c50ae4ba80d7179fbbee383949873be785fe5b27d",
+      "member": "python-3.8.10-docs-html/bugs.html",
+      "member_sha256": "c1b9ee2e848c6df2596a1e75ad2d50ebda5aaa5b850062af0865c35e50b09aef",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.11",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.11/python-3.8.11-docs-html.tar.bz2",
+      "archive_sha256": "87b1f4ae673a7ae85e0cf5dd41044020ba57b9e0e5004e9c9350118982501685",
+      "member": "python-3.8.11-docs-html/bugs.html",
+      "member_sha256": "a50af1d3fcdb34ae835b22b53f8a53c49e24044435b33040621463893bef6d49",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.12",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.12/python-3.8.12-docs-html.tar.bz2",
+      "archive_sha256": "175f03235e0e6949a3054aad848f97e62994ee1783d1bcd063c4093ed608ecc3",
+      "member": "python-3.8.12-docs-html/bugs.html",
+      "member_sha256": "541e2779510408947f3aa01108de2ae4b6f6aabdb71e8ca09156ee1177cc6f41",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.13",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.13/python-3.8.13-docs-html.tar.bz2",
+      "archive_sha256": "7fcfb199805d109f089f02e0818d76b47594accc1886188eeaf56ff2602c0f40",
+      "member": "python-3.8.13-docs-html/bugs.html",
+      "member_sha256": "309f44b8e109c1c1e077ca3523cb4bb63217ad58d1c47114a3026fe38b097c15",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.14",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.14/python-3.8.14-docs-html.tar.bz2",
+      "archive_sha256": "93ad5784f488196067c8ea77f49cabdc7403839c93532ddb8e4b96c88cdba38c",
+      "member": "python-3.8.14-docs-html/bugs.html",
+      "member_sha256": "cfbe3df446d066657c6224c9720217c0e99ecd2fb84c1af88fea44f7aeeda70a",
+      "external_href": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report",
+      "boundary_anchor_independently_parsed": [
+        "https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity"
+      ]
+    },
+    {
+      "version": "3.8.15",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.15/python-3.8.15-docs-html.tar.bz2",
+      "archive_sha256": "ab8a202c748ffbe413a348d8fde24515951f46cdb35a17c95e399b614a56cfa5",
+      "member": "python-3.8.15-docs-html/bugs.html",
+      "member_sha256": "8826e64961665ccf661d3fc9db216e8fee553f2f04e52ced95b03d1c1ba762a0",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report",
+      "boundary_anchor_independently_parsed": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ]
+    },
+    {
+      "version": "3.8.16",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.16/python-3.8.16-docs-html.tar.bz2",
+      "archive_sha256": "cdd07f5c29401976fb899e02a1e133b448bc13c05de15db4ca260e0b933ce33b",
+      "member": "python-3.8.16-docs-html/bugs.html",
+      "member_sha256": "937b62dbe4924ee40d23e694e916688acbca3be05964fbccc93e83a3b1219c80",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.17",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.17/python-3.8.17-docs-html.tar.bz2",
+      "archive_sha256": "1b3a54ee845229cda18eaf816c32193034099920830bf2c33e0429b9f6271bbc",
+      "member": "python-3.8.17-docs-html/bugs.html",
+      "member_sha256": "5f2343d4899eccacd0662034d7bc678c1115c90dce6a02ba1f2f94f4bda94c17",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.18",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.18/python-3.8.18-docs-html.tar.bz2",
+      "archive_sha256": "c9d692efabb3c2b9d381168adc3d24e4fe302b414fb840a733bac488320df6a2",
+      "member": "python-3.8.18-docs-html/bugs.html",
+      "member_sha256": "f756194db2f18b16d1d34cc2ad80c595c1b9d032508df82c7be91d780aab7c0b",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.19",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.19/python-3.8.19-docs-html.tar.bz2",
+      "archive_sha256": "851354a91a095a60e40305d1eb186a723df16fe76697122a949e153689d7a4c0",
+      "member": "python-3.8.19-docs-html/bugs.html",
+      "member_sha256": "e0055114831eb1a61e6066ebea8d59e538cdc82a73a32c37c75a451592507a63",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    },
+    {
+      "version": "3.8.20",
+      "archive_url": "https://docs.python.org/ftp/python/doc/3.8.20/python-3.8.20-docs-html.tar.bz2",
+      "archive_sha256": "607e09f3ad7fd8638b4e32b5f92badefd0ec5620caf4e1cedf0c969349c30b81",
+      "member": "python-3.8.20-docs-html/bugs.html",
+      "member_sha256": "8731c86b3605d56c2016d71040187298005b05aa561fe6524e6714e6ba10e468",
+      "external_href": [
+        "https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs"
+      ],
+      "separate_review_actual_archive_and_both_member_hashes_pass": true,
+      "verification_receipt": "exec session57458 exit0; all19tar and38HTML separately read before this report"
+    }
+  ],
+  "httr_actual_archive_checks": [
+    {
+      "version": "1.4.1",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.1.tar.gz",
+      "archive_sha256": "675c7e07bbe82c48284ee1ab929bb14a6e653abae2860d854dc41a3c028de156",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "90fc97011e1b72d29286becccf71a05a1102e81f61a8a3654cc1fa756ee8b1bb",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "a8e08129b73746a34d40978d3a25f0903be0ae3bc43a387b90159c815822defe",
+      "date_publication": "2019-08-05 14:30:02 UTC",
+      "packaged": "2019-07-30 13:44:18 UTC; hadley",
+      "rate_limit_hrefs": [
+        "https://developer.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": "baseline checked against root-cases/root-archives separately"
+    },
+    {
+      "version": "1.4.2",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.2.tar.gz",
+      "archive_sha256": "462bed6ed0d92f811d5df4d294336025f1dbff357286999d9269bfd9c20b1ef9",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "a116df0338e4a0e55c79940d8e4874cb70957b3ccc5a5b2c67539356011eec64",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "b9af9f8eb81ef10ffffb9d600edc41015de47f07e472e36a3f5d20d852ed9c82",
+      "date_publication": "2020-07-20 23:40:04 UTC",
+      "packaged": "2020-07-20 14:19:08 UTC; hadley",
+      "rate_limit_hrefs": [
+        "https://developer.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": "baseline checked against root-cases/root-archives separately"
+    },
+    {
+      "version": "1.4.3",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.3.tar.gz",
+      "archive_sha256": "9a8613fa96173ac910c021391af1ced4d0609169049c802cf7cdfe1c40897c6a",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "7b37952c044b57ef7638dd9584f9d7809a6bb579a8db42865dffbc4bc0b276d2",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "5ecc7939002ca7d61c93943a8c563d431567234c994428c274a01f698b4fb1ad",
+      "date_publication": "2022-05-04 00:20:02 UTC",
+      "packaged": "2022-05-03 20:41:18 UTC; hadleywickham",
+      "rate_limit_hrefs": [
+        "https://docs.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": true
+    },
+    {
+      "version": "1.4.4",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.4.tar.gz",
+      "archive_sha256": "41d82523f3ee260d409a7b5ae4136190cbc5aecbc270b40ed7064f83e7f5435d",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "44d27e4c9e78c188491ac3728df86a1f28f3dfa701fb276315c2c67847efafe0",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "587a3dfda2b5d22b83ed2a07f7e7f6a6545fb3bddb43e440990f3dfc182cdcb6",
+      "date_publication": "2022-08-17 13:00:04 UTC",
+      "packaged": "2022-08-16 11:25:45 UTC; hadleywickham",
+      "rate_limit_hrefs": [
+        "https://docs.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": true
+    },
+    {
+      "version": "1.4.5",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.5.tar.gz",
+      "archive_sha256": "f93bac7f882b0df099abca47dd5aae3686fb3cd2d3e9926fcd639bcddff76f6c",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "e12a203473c18c35c49a0b9f574f49a78f6b109fda37f9184fba44bdf9cdf264",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "d7447380b22ca73d73e36f109732c985232aa747da74d599749ce48e9e0c970c",
+      "date_publication": "2023-02-24 08:42:39 UTC",
+      "packaged": "2023-02-23 17:08:46 UTC; hadleywickham",
+      "rate_limit_hrefs": [
+        "https://docs.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": true
+    },
+    {
+      "version": "1.4.6",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.6.tar.gz",
+      "archive_sha256": "8d6d86cbef23738d2b4390490f7486d8cf7674f0a59c19f515f61cad35ec37b2",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "c0a6e6ab21aeb346c6e7be2146551dce68dfc4d694bef339a4eb961e045aa2c3",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "7577b9f89c82914f94314ac959e093c45e5040c2cc0e0f768c02aaa42ac3445c",
+      "date_publication": "2023-05-08 14:30:21 UTC",
+      "packaged": "2023-05-04 19:23:27 UTC; hadleywickham",
+      "rate_limit_hrefs": [
+        "https://docs.github.com/v3/#rate-limiting"
+      ],
+      "httr2_hrefs": [],
+      "ledger_match": true
+    },
+    {
+      "version": "1.4.7",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.7.tar.gz",
+      "archive_sha256": "1555e6c2fb67bd38ff11b479f74aa287b2d93f4add487aec53b836ff07de3a3a",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "4521defa88b571c806b7e51cb8271a1c6b2d5a69d7ead59a6db1f3023e74a9b4",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "464b5e0a3cc5b2044637d2e2c58bf37511173c88d145cf98f9870662b451f048",
+      "date_publication": "2023-08-15 09:00:02 UTC",
+      "packaged": "2023-08-15 02:56:56 UTC; hadleywickham",
+      "rate_limit_hrefs": [],
+      "httr2_hrefs": [
+        "https://httr2.r-lib.org"
+      ],
+      "ledger_match": true
+    },
+    {
+      "version": "1.4.8",
+      "archive_url": "https://cran.r-project.org/src/contrib/Archive/httr/httr_1.4.8.tar.gz",
+      "archive_sha256": "62acf6759814f0a2923d18904971e16e01d6147419ceb816dac02113fc3e09f8",
+      "member": "httr/inst/doc/api-packages.html",
+      "member_sha256": "4521defa88b571c806b7e51cb8271a1c6b2d5a69d7ead59a6db1f3023e74a9b4",
+      "description_member": "httr/DESCRIPTION",
+      "description_sha256": "41b7458562102e05c06ba8b0a971bc74b414b5797a33d48c91ee3ccce3c809b9",
+      "date_publication": "2026-02-13 16:20:15 UTC",
+      "packaged": "2026-02-13 13:25:45 UTC; hadleywickham",
+      "rate_limit_hrefs": [],
+      "httr2_hrefs": [
+        "https://httr2.r-lib.org"
+      ],
+      "ledger_match": true
+    }
+  ],
+  "interval_checks": [
+    {
+      "reference_id": "A-D02",
+      "clock_pair": "official_upstream_status_report→consumer_source_committer",
+      "computed_seconds": 13480547.0,
+      "display": "156 days, 0:35:47",
+      "arithmetic_pass": true
+    },
+    {
+      "reference_id": "B02",
+      "clock_pair": "consumer_source_committer→consumer_publication",
+      "computed_seconds": 14044.0,
+      "display": "3:54:04",
+      "arithmetic_pass": true
+    }
+  ],
+  "public_commit_rechecks": [
+    {
+      "sha": "246a044641388dfd5023cb4b8dbe5519cb41d943",
+      "url": "https://github.com/python/cpython/commit/246a044641388dfd5023cb4b8dbe5519cb41d943",
+      "author_utc": "2022-09-11T18:50:47Z",
+      "committer_utc": "2022-09-11T18:50:47Z",
+      "exact_target_patch_checked": true
+    },
+    {
+      "sha": "b6c03b6f6611a4bbca4057268ffbc1096bc11e65",
+      "url": "https://github.com/r-lib/httr/commit/b6c03b6f6611a4bbca4057268ffbc1096bc11e65",
+      "author_utc": "2022-05-03T20:23:19Z",
+      "committer_utc": "2022-05-03T20:25:58Z",
+      "exact_target_patch_checked": true
+    }
+  ],
+  "duplicate_checks": {
+    "counted_groups_reviewed": 15,
+    "duplicate_group_collisions": {},
+    "identical_counted_hash_collisions": {},
+    "scope": "only python/followup and b/root source ledgers; does not certify global integration duplicates"
+  },
+  "counterexample_search": [
+    {
+      "path": "Every Python3.8.2–20 actual member",
+      "target": "earlier new query or later reversion",
+      "result": "none in checked series"
+    },
+    {
+      "path": "Everyhttr1.4.1–8 API vignette and DESCRIPTION",
+      "target": "same href repair vs removed recommendation",
+      "result": "domain repair1.4.3; different recommendation1.4.7 confirmed"
+    },
+    {
+      "path": "2021 and2022 source patches",
+      "target": "wrong edit selected by generic URL-fix title",
+      "result": "2021wrong-topic change excluded correctly"
+    },
+    {
+      "path": "Python reader original post and status/API timestamps",
+      "target": "same archive click or exact rollout event inferred incorrectly",
+      "result": "live web/broad goal only; strict reader exclusion correct; minute-bin caveat remains"
+    }
+  ],
+  "remaining_unknowns": [
+    "Exact Python archive first-public UTC and HTML build times",
+    "Per-URI GitHub rate-limiting fragment-loss/migration time",
+    "Actual reader click of the selected offline artifacts",
+    "Physical read-only activation timestamp beyond human statuslog precision",
+    "B03 raw.deb bytes not separately reopened in this audit"
+  ],
+  "executed_checks": {
+    "python_raw_archive_reread_session_id": 57458,
+    "python_raw_archive_reread_exit_code": 0,
+    "review_shell": "Pythonstdlib tarfile/html.parser/hashlib/datetime; no product execution",
+    "archive_count": 27,
+    "manual_html_members": 46,
+    "httr_description_members": 8,
+    "all_assertions_passed": true
+  },
+  "next_first_action": "Clarify three role/precision labels in integration without changing sealedA. Recheck updated output hashes against this audit snapshot."
+}
