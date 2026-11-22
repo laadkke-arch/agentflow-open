@@ -55,8 +55,8 @@ def compare(child, label, msg_id, expected_wire, expected_kwargs, received):
     assert received["wire_content_metadata"] == expected_wire[1], received
     assert received["cell_meta_supplied"] == expected_kwargs[0], received
     assert received["cell_meta"] == expected_kwargs[1], received
-    assert received["cell_id_supplied"] == expected_kwargs[0], received
-    assert received["cell_id"] == expected_kwargs[2], received
+    assert received["cell_id_supplied"] == expected_kwargs[2], received
+    assert received["cell_id"] == expected_kwargs[3], received
 
 
 def run(fixture, version):
@@ -113,8 +113,13 @@ def run(fixture, version):
                 assert reply["msg_type"] == "execute_reply" and reply["content"]["status"] == "ok", reply["content"]
                 received = json.loads(Path("received.jsonl").read_text().splitlines()[-1])
                 enabled = version == "6.27.0"
-                expected = (enabled, root if enabled else None, root.get("cellId") if enabled else None)
+                expected = (enabled, root if enabled else None, True, root.get("cellId"))
                 compare(child, code, msg_id, (root, content_metadata), expected, received)
+                print(
+                    json.dumps({"stage": "reply_joined", "label": label, "request_id": msg_id,
+                                "reply_parent_id": reply["parent_header"]["msg_id"], "status": "ok"}),
+                    file=sys.stderr, flush=True,
+                )
                 del received["request_id"]
                 print(json.dumps({"label": label, **received}, sort_keys=True), flush=True)
         finally:
