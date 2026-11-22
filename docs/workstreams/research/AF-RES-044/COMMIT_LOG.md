@@ -21,3 +21,9 @@
 ## ④ 짝 집계·반례·자체 점검·수용 기록
 
 원격 `c92cf9924ef4935fb77eb555d5bfedacc09ee9b3`, tree `35a6fe9aa8f92ee57e0938f934a855ebf2425684`. 변경13파일의 blob/내용 해시를 fetch 후 대조했다. RESULT 필수12행·36행, 이름/계약/보강층, 원풀과 추가 경로 구분, 분야 반례·W/U, SELF_CHECK,203/203 검산과 수용 미충족을 저장했다. 이 커밋에서 수용 원장 작성 시점의 묶음④ 미발행 표시는 다음 절차 확인 커밋에서 이 SHA로 확정한다. 실증 미충족6개는 바꾸지 않는다.
+
+## 고정 결과·수용 원장과 실제 session check
+
+절차 확인 커밋 `176e2eee3c00257d7dcc64665c74b12bf4399913`, tree `a4ba15109504b6157a069251f56d51612093b371`에서 묶음④ 발행을 확인해 수용 원장27/33을 확정했다. 실증 미충족6개는 불변. 이 SHA의 RESULT.md와 acceptance-evidence.json을 인증된 GitHub fetch_file로 다시 열어 원격 blob/내용 일치,12·36행과 약점3행을 확인했다(`evidence/fixed-result-reopen.json`).
+
+`python -B -m workbench.session check docs/workstreams/research/AF-RES-044/manifest.json --fetch`를21:30:51 UTC에 실제 완료했다. 종료코드0, `status=passed`, `freshness=remote_checked`, `outside_paths=[]`, `unmerged_paths=[]`, `errors=[]`. 배정시 통합SHA는333e83c, 점검시 통합HEAD는606bced963b6591e8c64122169056c688e0b310f이며 contract hash는동일하다. 실제 stdout은 `evidence/session-check.json`. 이 검증 뒤 최종 HANDOFF만 별도 마지막 커밋으로 저장한다.
