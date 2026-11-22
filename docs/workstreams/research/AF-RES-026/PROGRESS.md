@@ -6,8 +6,13 @@
 | ②C curl 8건·24메시지 | 682b77f015e63ce05d6b6c2fcdc6348052c6d472, frozen-responses 원격 확인 | C08 | 전체 봉인 대기 |
 | ②P PostgreSQL 8건·24메시지 | e6ab7fd35d163b6907c56800913945e79e8b0d11, frozen-responses 원격 확인 | P08 | 전체 봉인 대기 |
 | ②S SQLite 8건·24메시지 | 7c901b8e89bcbb43318d04a523d46d232a696f4f, frozen-responses 원격 확인 | S08 | 전체 봉인 대기 |
-| ② 전체 24건·72메시지 | 이 커밋의 evidence/t0-seal.json과 정본 initial/frozen-responses | S08/P08/C08 | 이 커밋을 원격에서 확인한 뒤에만 T1 열람 |
+| ② 전체 24건·72메시지 | 68fc97fadceb46f9945a71fcc53730e29f6c62bf, seal/72메시지 원격 재읽기 확인 | S08/P08/C08 | 후속 열람 허가 및 세 담당의 최초 열람 영수증 보존 |
 
 현재 원장 149행은 149개의 독립 질문을 뜻하지 않는다. 답장 metadata·상한 이후 미심사 항목을 분리 집계한다. S01 노출을 숨기지 않고 전체 24와 엄격 미열람 23을 나눈다. 계열별 판독자는 같은 사람이 T0/T1을 맡는 자기 점검이다.
 
 CLI start --fetch는 manifest-cli.json에 성공 영수증을 보존했다. 최종 check는 결과 통합 뒤 실행한다. 원격 SHA가 없는 파일은 최종 근거로 간주하지 않는다.
+
+## ③ 계열별 후속 대조
+
+- curl: 이 커밋에서 8건의 후속 48행·조건 판정 100행과 30/90일 구분을 고정. `streams/curl/validation-t1.json`의 T0 불변·출처 참조·길이 검산 통과. 다음 첫 행동은 PostgreSQL/SQLite의 최종 계열 파일을 검산하고 각각 커밋하기.
+- 제한된 설명/후보와 원 목표 전체 충족을 분리한 집계 정의는 `ANALYSIS_RULES.md`에 있다. 이 정의는 T1 시작 뒤 작성했으며 사전 등록 분석이라고 부르지 않는다.
