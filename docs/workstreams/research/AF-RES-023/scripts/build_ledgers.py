@@ -92,6 +92,8 @@ for c in citations:
     }
     if cid == 'SW-D03':
         row['limits'] = '분리 뒤 CLI 누락/판 불일치 보고. 분리 전에 저장한 링크의 불변판은 미확보. 실제 보고와 이번 재현을 구별.'
+    if cid == 'WD-C01':
+        row['required_function_version'] = '건물 Q314104의 topic main category(P910)를 찾는다. 정정판1048159950의 대상은 category Q55296215이다.'
     rows.append({k:string(v) for k,v in row.items()})
 with (ROOT/'citations.csv').open('w',newline='') as f:
     w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
