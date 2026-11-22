@@ -37,3 +37,10 @@
 - 커밋 `c5fb3e8d4e923a94b6f0cf79efc527d8cd2114d1`; 고정판 ROR 사건 원장을 GitHub에서 다시 읽고 fetch했다.
 - MusicBrainz MB01의 최초 merge151147443와 retained 지역정정152539607를 보강했다. source f0a68a45는 커버 이미지 파일명 계보에서 추론한 매핑이므로 확정 source href로 취급하지 않는다. MB03/04의 사라진 source MBID와 MB06의2022중간 target은 아직 미확인이다.
 - Agent Script issue33을 root가 직접 재열람했다. 옛 formula 이름을 추측하면 library가 설치된다는 사용자 진술은 있지만, 분리 전 저장한 실제 링크의 이력이 아니다. Q5의 엄격한 사전 인용 6건 분모에는 이 기록을 포함하지 않는다.
+
+## 묶음2d — MusicBrainz 원격 저장 및 보기 고정
+
+- 커밋 `64644506d75dad84de350d53d354320d65ae4786`; MusicBrainz events 고정판 GitHub 재열람과 fetch 완료. 원문 46행은 같은 사건 중복화면을 포함하므로 46사건 또는46독립근거로 세지 않는다.
+- 통합 본표본은18사건: MusicBrainz6, ROR6, Homebrew5, Wikidata1. 고유원문 최소수는 보수적으로38=사건18+정책12+소비자원장8. 소비자8중외부기관독립은7이며, 날짜가확인된후속체인은4(외부3+Wikidata내부1)다.
+- ROR 댓글 created_at을 추가로 확인했으며 PTSD 기각2024-11-05와 issue종료12-02를분리했다. 포크SW-F01와현실기관합병ROR-X1은본18사건에산입하지않고교차분야검증에쓴다.
+- 03:36:33 UTC에 보기1/2/3과답안키를분리고정했다. evidence/frozen-manifest.json에SHA256및순서를저장. root/수집자는정답노출. 다음독립문맥3개는한보기씩만읽고답하며,채점은root의자기점검이다.
