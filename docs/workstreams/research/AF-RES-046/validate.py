@@ -120,8 +120,8 @@ def main():
     same=[c for c in links if c["same_author_same_purpose_change"] is True]
     unknown=[c for c in links if c["same_author_same_purpose_change"] is None]
     anyauthor=[c for c in links if c["any_author_same_purpose_change"] is True]
-    check("main_link_actor_denominators",len(links)==4 and len(same)==1 and len(anyauthor)==3 and [c["slot_id"] for c in unknown]==["L-P2","L-S1"],{"links":4,"same_confirmed":[c["slot_id"] for c in same],"same_unknown":[c["slot_id"] for c in unknown],"any_confirmed":len(anyauthor)})
-    check("same_author_patch_public_bound_in_window",all(dt(c["first_link_at"])<=dt(c["same_author_change_public_by"])<=dt(c["window_end"]) for c in same),[c["same_author_change_public_by"] for c in same])
+    check("main_link_actor_denominators",len(links)==4 and len(same)==2 and len(anyauthor)==4 and [c["slot_id"] for c in unknown]==["L-S1"],{"links":4,"same_confirmed":[c["slot_id"] for c in same],"same_unknown":[c["slot_id"] for c in unknown],"any_confirmed":len(anyauthor)})
+    check("same_author_patch_public_bound_in_window",all(dt(c["first_link_at"])<=dt(c["same_author_change_public_by"])<=dt(c["window_end"]) for c in same) and dt(case_map["L-P2"]["first_link_at"])<dt(case_map["L-P2"]["integration_dependency_created_at"])<dt(case_map["L-P2"]["integration_public_by"]),[{"slot":c["slot_id"],"public_by":c["same_author_change_public_by"],"inferred_integration_lower":c.get("integration_dependency_created_at")} for c in same])
     check("no_implicit_human_time_or_savings",all(c["active_human_work_seconds"] is None and c["saved_human_seconds"] is None and not c["active_work_log_observed"] and not c["in_window_author_duration_selfreport_observed"] for c in cases),"Unknown values remain null, not zero seconds")
     check("strict_counts_not_inflated_by_later_link",sum(c["strict_first_link_chain_confirmed"] for c in cases)==0,"First Cython5230/HackMD event retained; later5243 not substituted")
     sens_errors=[]
@@ -138,7 +138,7 @@ def main():
             if dt(r["window_end"])!=end or truth(r["link_in_window"])!=bool(link) or truth(r["same_author_change_confirmed"])!=sm or truth(r["any_author_change_confirmed"])!=an:
                 sens_errors.append([days,r["slot_id"]])
     check("time_sensitivity_36_rows_recomputed",not sens_errors,sens_errors)
-    expected=[(4,1,3),(3,1,3),(2,1,2)]
+    expected=[(4,2,4),(3,1,3),(2,1,2)]
     observed=[(r["denominator_first_link_slots"],r["same_author_change_confirmed"],r["any_author_change_confirmed"]) for r in stats["actor_and_prework_sensitivity"]]
     check("actor_prework_sensitivity",observed==expected,{"observed":observed,"expected":expected})
     stale=[]

@@ -61,3 +61,8 @@ R02는원stream기록을덮어쓰지않는다. rootevents는원156개에ARCH-* o
 ## R03 공개 경계 정정
 
 `same_author_same_purpose_change`/`any_author_same_purpose_change`의L-P2는null(주창미확인)이다. 실제f95152e후속코드는확인되지만첫회수exactSHA리뷰20:36:41은원PR종결뒤다. PR개설17:37:25와SHA공개를합치지않는다. `post_closure_same_author_same_purpose_change_confirmed=true`를별도보존한다. 원2/4동일인·4/4타인포함집계는c9afe55에남고현재는1/4·3/4다. rootevents171=156+opening12+공개경계보완3이며,이추가사건은표본수를늘리지않는다. 변경원장L-P2-6의phase/publicanchor원값은*_before_publication_recheck열에보존한다.
+
+
+## R04 통합 변경과 신규 로직의 구별
+
+`cases.change_type=integration_of_previously_authored_same_purpose_logic`는 같은 작성자가 기존에 쓴 관련 로직을 링크 뒤 실제 후속 branch에 통합한 L-P2를 뜻한다. `integration_dependency_created_at`은 GitHub 생성 부모/PR병합에서 추론한 하한이며 정확 push 시각이 아니다. `integration_public_by`는 정확19e를 고정한 공개리뷰 상한이다. 기본 동일목적 변경2/4에 이 유형1건이 포함되고, 이를 양성에서 제외한 감도는1/4다. PR 자체를 제외하는 선행착수 감도1/3과 다르다. `same_author_change_after_R03=null`은보존된중간판정이며현재값은true다. f951의주창공개미확인은별도계속유지한다.

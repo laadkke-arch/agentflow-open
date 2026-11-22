@@ -113,7 +113,7 @@ def sources():
                     "raw_count_in_minimum": proposed, "raw_allocation": allocation,
                     "read_status": first(raw, "access_status", "read_status", "reading_method", default="stream semantic reading receipt"),
                     "query": raw.get("query"), "attempt_recorded_utc": raw.get("recorded_utc"),
-                    "later_interpretation_correction": "R03: PR52089 creation17:37:25 does not establish exact f95152e public head. First recovered SHA-specific review1349354160 at20:36:41 follows original closure17:38:10; primary-window code publication unknown; see RR-LP2-FIRST-PUBLIC." if sid in ("P-PR-52089", "P-C-f95152e78c8b") else None,
+                    "later_interpretation_correction": "R03: PR52089 creation17:37:25 does not establish exact f95152e public head. First recovered SHA-specific review1349354160 at20:36:41 follows original closure17:38:10; this patch's primary-window publication unknown. R04 confirms an independent19e integration; it does not restore this inference." if sid in ("P-PR-52089", "P-C-f95152e78c8b") else "R04: PR52053 creation16:00:14 does not establish exact fa750 opening head. Its ancestor presence is fixed by final19e review2023-03-20T17:17:26Z; the independent post-link19e integration is described in final-risk-review.json." if sid in ("P-PR-52053", "P-C-fa750f5fdaaf") else None,
                     "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number,
                 })
     (ROOT / "sources.jsonl").write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in output))
@@ -229,6 +229,12 @@ def events():
                 "source_ids": o["source_id"], "stream": "archive supplement", "stream_file": "initial-public-heads.csv", "stream_record": number,
             })
     for row in output:
+        if row["event_id"] == "followup-pr-52053":
+            row["sha_association_before_publication_recheck"] = row["sha"]
+            row["sha"] = ""
+            row["observed_before_publication_recheck"] = row["observed"]
+            row["observed"] = "후속 PR52053가 링크 전에 개설됨; 당시 exact fa750 head는 미복구. 원작성자의 후속 통합19e는 별도 리뷰/부모 근거로 링크 뒤·원PR종결 전을 고정"
+            row["public_time_limitation"] = "PR creation is distinct from exact patch publication; fa750 ancestor confirmed only by later19e review"
         if row["event_id"] == "followup-pr-52089":
             row["sha_association_before_publication_recheck"] = row["sha"]
             row["sha"] = ""
@@ -243,6 +249,13 @@ def events():
     for row in extra_events:
         row.update({"stream":"publication recheck","stream_file":"streams/root/sources-supplement-boundary.jsonl" if row["slot_id"]=="L-P2" else "streams/sklearn/successor-publication-recovery.json","stream_record":"specified source_id"})
         output.append(row)
+    integration = json.loads((ROOT/"streams/pandas/final-risk-review.json").read_text())
+    for row in [
+        {"event_id":"PUB-LP2-PARENT-1f7a","public_at":"2023-03-17T19:48:49Z","event_type":"upstream_merge_generates_parent_of_later_integration","actor":"phofl","actor_role":"merger of same-author prior logic; not the19e integration author","sha":integration["parent_provenance"]["sha"],"url":"https://github.com/pandas-dev/pandas/pull/52043","location":"merged_at/merge_commit_sha plus signed GitHub parent committer metadata","observed":"1f7a parent generated after firstlink; using its provenance to infer19e integration cannot precede this time. Logic itself had been authored before link.","source_ids":"P-FR-PARENT-1f7a7f20b1a3;P-FR-PR-52043-MERGE","public_time_limitation":"Inferred lower boundary for descendant integration, not its exact push time."},
+        {"event_id":"PUB-LP2-1349064316","public_at":"2023-03-20T17:17:26Z","review_submitted_at":"2023-03-20T17:17:26Z","review_id":"1349064316","event_type":"in_window_review_fixes_postlink_integration","actor":"mroeschke","actor_role":"reviewer of same-author successor52053","sha":"19e864062c0d253db1b10469876b553391dad0db","url":"https://github.com/pandas-dev/pandas/pull/52053#pullrequestreview-1349064316","location":"review.submitted_at/commit_id/state; exact19e first-parent diff","observed":"Review fixes actual two-file nullable result-mask integration before original closure. Same author's integration is confirmed; first-link causation is not.","source_ids":"P-SUCC-REVIEW-1349064316;P-FR-C-19e864062c0d;P-FR-COMPARE-3ce5-19e8","public_time_limitation":"Direct public upper bound for exact19e; actual push time unknown."},
+    ]:
+        row.update({"slot_id":"L-P2","pr_number":"51116","within_primary_window":"true","stream":"R04 integration recheck","stream_file":"streams/pandas/final-risk-review.json","stream_record":"time_boundaries/parent_provenance"})
+        output.append(row)
     write_csv("events.csv", output)
     return output
 
@@ -253,6 +266,13 @@ def optional_csv(name):
         if not path.exists():
             raise FileNotFoundError(path)
         for number, raw in enumerate(read_csv(path), 1):
+            if name == "changes.csv" and raw.get("change_id") == "L-P2-4":
+                raw["public_anchor_before_publication_recheck"] = raw["public_anchor_at"]
+                raw["causality_before_publication_recheck"] = raw["causality"]
+                raw["public_anchor_at"] = "2023-03-20T17:17:26Z"
+                raw["public_anchor_kind"] = "fa750 ancestor present by final19e review1349064316; exact opening head at PR creation unknown"
+                raw["causality"] = "PR creation and git dates predate firstlink; exact fa750 opening publication unknown. Later ancestor presence alone does not show postlink modification. R04 separate19e first-parent integration is the positive."
+                raw["source_ids"] = raw["source_id"] + ";P-SUCC-REVIEW-1349064316;P-FR-C-fa750f5fdaaf"
             if name == "changes.csv" and raw.get("change_id") == "L-P2-6":
                 raw["phase_before_publication_recheck"] = raw["phase"]
                 raw["public_anchor_before_publication_recheck"] = raw["public_anchor_at"]
@@ -267,14 +287,23 @@ def optional_csv(name):
                 raw["platform_public_bound"] = "2023-02-14T09:22:47Z exact opened head; REST PR creation09:22:46 is separate"
                 raw["source_ids"] += ";S-ARCH-SUCCESSOR-25605"
             if name == "labor.csv" and raw["slot_id"] == "L-P2":
-                raw["successor_patch_primary_window_publication"] = "미확인; PR opened45sec before closure but exact SHA first recovered in review after closure"
+                raw["successor_patch_primary_window_publication"] = "f95152e only: 미확인; PR opened45sec before closure but exact SHA first recovered after closure. Independent19e integration confirmed in window by R04."
                 raw["successor_patch_public_by"] = "2023-03-20T20:36:41Z; post_closure"
-                raw["source_ids"] += ";RR-LP2-FIRST-PUBLIC"
+                raw["integration19e_public_by"] = "2023-03-20T17:17:26Z; primary_window"
+                raw["integration19e_git_date"] = "2023-03-17T20:07:51Z; not active work duration or publication time"
+                raw["integration_labor"] = "미확인; same-author integration of previously authored logic, not measured design creation effort"
+                raw["source_ids"] += ";RR-LP2-FIRST-PUBLIC;P-FR-C-19e864062c0d;P-SUCC-REVIEW-1349064316"
             if name == "labor.csv" and raw["slot_id"] == "N-S4":
                 raw["source_ids"] += ";S-ARCH-COST-25261"
             if name == "labor.csv" and raw["slot_id"] == "L-S1":
                 raw["source_ids"] += ";S-ARCH-SUCCESSOR-25605"
             rows.append({**raw, "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number})
+    if name == "changes.csv":
+        d = json.loads((ROOT/"streams/pandas/final-risk-review.json").read_text())
+        raw = dict(d["recommended_changes_row"])
+        raw.update({"change_id":"L-P2-7","pre_sha":d["explicit_first_parent_comparison"]["base_sha"],"post_sha":raw["sha"],"change":d["same_purpose"]["actual_diff"],"hunks":";".join(f["filename"]+":"+" / ".join(f["hunks"]) for f in d["explicit_first_parent_comparison"]["files"]),"test_execution":"existing exact-tree tests read; not executed; no new tests in19e","within_primary_window":"true","integration_lower_bound_inferred":"2023-03-17T19:48:49Z","stream":"R04 integration recheck","stream_file":"streams/pandas/final-risk-review.json","stream_record":"recommended_changes_row/first-parent comparison/related_existing_tests","revert_status":"No new all-history revert search; existing sampled timeline scope remains"})
+        raw["source_ids"] = ";".join(raw["source_ids"])
+        rows.append(raw)
     write_csv(name, rows)
     return rows
 

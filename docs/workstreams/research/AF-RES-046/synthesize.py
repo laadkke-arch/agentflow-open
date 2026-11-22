@@ -95,7 +95,7 @@ def main():
     cases = []
     evidence = {
         "L-P1": {"same_public": None, "any_public": "2023-03-23T18:46:25Z", "any_sha": "540db96b8179c2ed83e427b9d501b04d68ee1804", "any_change_ref": "L-P1-3;L-P1-4", "same_prestarted": False, "any_prestarted": True},
-        "L-P2": {"same_public": None, "any_public": None, "any_sha": "f95152e78c8baa2b1f4e07ecebb31496b3956c65", "any_change_ref": "L-P2-6", "same_prestarted": True, "any_prestarted": True},
+        "L-P2": {"same_public": "2023-03-20T17:17:26Z", "any_public": "2023-03-20T17:17:26Z", "any_sha": "19e864062c0d253db1b10469876b553391dad0db", "any_change_ref": "L-P2-7", "same_prestarted": True, "any_prestarted": True},
         "L-S1": {"same_public": None, "any_public": "2023-02-14T09:22:47Z", "any_sha": "feaabb7e6f2ccecced7a6847a267ad54b026f8a3", "any_change_ref": "S-C08", "same_prestarted": False, "any_prestarted": False},
         "L-S2": {"same_public": "2023-02-06T07:57:51Z", "any_public": "2023-02-06T07:57:51Z", "any_sha": "eb6a658b0ada3464e0fa79da716f57af053141fe", "any_change_ref": "S-C09", "same_prestarted": False, "any_prestarted": False},
     }
@@ -194,16 +194,22 @@ def main():
                 c["strict_reason"] = "원 작성자 response patch와 첫 링크 변경 이유 연결 미확인; 타인 대안은 먼저 착수" if c["slot_id"] == "L-P1" else "같은 작성자 후속 patch는 있지만 같은 재설계가 첫 링크 전에 이미 공개; 첫 링크의 명시 기여 연결 없음"
         if c["slot_id"] == "L-P2":
             c["same_author_change_before_publication_recheck"] = c["same_author_same_purpose_change"]
-            c["same_author_same_purpose_change"] = None
-            c["same_author_change_status"] = "미확인: exact f95152e publication within primary window not established; successor PR creation precedes closure but first recovered SHA-specific review follows closure"
-            c["any_author_same_purpose_change"] = None
-            c["any_author_change_status"] = "미확인 in primary window for same publication-boundary reason"
+            c["same_author_change_after_R03"] = None
+            c["same_author_same_purpose_change"] = True
+            c["same_author_change_status"] = "confirmed R04: same-author post-link merge integration19e8640 changes relevant mask handling relative to first parent; logic had been authored before the link in52043"
+            c["any_author_same_purpose_change"] = True
+            c["any_author_change_status"] = "confirmed by19e8640 integration, not by unknown in-window f95152e publication"
+            c["change_type"] = "integration_of_previously_authored_same_purpose_logic"
+            c["integration_dependency_created_at"] = "2023-03-17T19:48:49Z"
+            c["integration_public_by"] = "2023-03-20T17:17:26Z"
+            c["integration_source"] = "streams/pandas/final-risk-review.json"
             c["post_closure_same_author_same_purpose_change_confirmed"] = True
             c["post_closure_patch_public_by"] = "2023-03-20T20:36:41Z"
             c["publication_recheck_source"] = "https://github.com/pandas-dev/pandas/pull/52089#pullrequestreview-1349354160"
             c["source_ids"].append("RR-LP2-FIRST-PUBLIC")
             c["missing"] = "정확 f95152e가 원PR종결17:38:10Z까지 공개됐다는 head/review 기록; 이후20:36:41Z리뷰에서는확인. 첫링크의기여와사람노동도미확인"
-            c["strict_reason"] = "선행재설계와첫링크기여미확인에더해,같은작성자후속patch의주창내정확공개SHA미확인. 종결뒤실제patch는확인"
+            c["strict_reason"] = "19e8640의 주창 내 실제 사후통합은 확인하나 로직은 링크 전에 이미 작성됨. 첫 링크가 이 변경의 이유였다는 연결은 미확인; 별도 f95152e의 주창 공개도 여전히 미확인"
+            c["source_ids"].extend(json.loads(line)["source_id"] for line in (ROOT/"streams/pandas/sources-supplement-final-risk.jsonl").read_text().splitlines() if line.strip())
         if c["slot_id"] == "N-S4":
             c["source_ids"].append("S-ARCH-COST-25261")
         if c["slot_id"] == "L-S1":
@@ -267,12 +273,14 @@ def main():
         "main_window": groups[-2:], "time_boundary_sensitivity": groups, "actor_and_prework_sensitivity": actor_sens,
         "explicit_reading_confirmed": 0, "specific_target_content_engagement_confirmed": 2,
         "first_review_acknowledgement_confirmed": 3, "explicit_first_discovery_confirmed": 0,
-        "specific_target_prior_authorship": 1, "same_author_change_unobserved": ["L-P1"], "same_author_change_unknown": ["L-P2", "L-S1"],
+        "specific_target_prior_authorship": 1, "same_author_change_unobserved": ["L-P1"], "same_author_change_unknown": ["L-S1"],
         "publication_boundary_correction": "R03: earlier same-author2/4 and any-author4/4 become1/4 and3/4; L-P2 exact patch first recovered public anchor20:36:41 is after17:38:10 closure, despite successor PR opening45 seconds before closure. Actual later change remains confirmed.",
+        "integration_recheck_R04": "Final same-author2/4 and any-author4/4 use independent19e8640 first-parent diff and post-link GitHub-created parent1f7a7f2 plus in-window review1349064316. R03 correction for f95152e remains valid. Pre-link authorship of imported logic prevents causal/discovery upgrade.",
+        "change_type_sensitivity": {"include_same_purpose_integration": {"same_author_confirmed":2,"denominator":4},"exclude_integration_of_previously_authored_logic": {"same_author_confirmed":1,"denominator":4,"excluded_positive":"L-P2; descriptive recoding, not PR exclusion"}},
         "human_time": {"active_logs": 0, "in_window_author_duration_selfreports": 0, "out_of_window_other_person_qualitative_selfreport": 1, "quality_matched_time_pairs": 0, "saved_seconds": None},
-        "interpretation": "Counts are observations within fixed small strata. Missing labor is not zero labor; conditional denominator zero means not applicable. Any-author sensitivity includes continuation of an already-started alternative in L-P1.",
+        "interpretation": "Counts are observations within fixed small strata. Missing labor is not zero labor; conditional denominator zero means not applicable. Any-author sensitivity includes continuation of an already-started alternative in L-P1. Same-author2 includes L-P2 integration of logic authored before the link; excluding that change type leaves1/4.",
         "change_denominator_notes": "All change counts in main_window and sensitivity mean after the first qualifying reviewer URL. Natural strata have zero such URLs: the conditional change ratio is not applicable, not a claim that no revision occurred. N-P1 is an observed no-link functional revision counterexample.",
-        "inputs_sha256": {f"streams/{s}/cases.json": hashlib.sha256((ROOT / "streams" / s / "cases.json").read_bytes()).hexdigest() for s in ("pandas", "sklearn")},
+        "inputs_sha256": {**{f"streams/{s}/cases.json": hashlib.sha256((ROOT / "streams" / s / "cases.json").read_bytes()).hexdigest() for s in ("pandas", "sklearn")}, "streams/pandas/final-risk-review.json":hashlib.sha256((ROOT/"streams/pandas/final-risk-review.json").read_bytes()).hexdigest()},
     })
     print(json.dumps({"cases": len(cases), "sensitivity_rows": len(sensitivity), "stratum_counts": groups[-2:], "actor_sensitivity": actor_sens}, ensure_ascii=False))
 

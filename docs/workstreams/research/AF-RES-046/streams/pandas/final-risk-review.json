@@ -1,0 +1,848 @@
+{
+  "task": "Resolve only L-P2 post-firstlink same-author same-purpose change risk in successor52053",
+  "checked_utc": "2026-11-22T23:13:29.270Z",
+  "sampled_pr": 51116,
+  "evidence_pr": 52053,
+  "scope": "No extra sampled PR; existing frozen stream ledgers untouched. All supplement sources minimum_count=false.",
+  "finding": {
+    "same_author_post_firstlink_same_purpose_change": true,
+    "kind": "integration_of_already_authored_same_purpose_code_into_successor_branch",
+    "positive_evidence_commit": "19e864062c0d253db1b10469876b553391dad0db",
+    "new_design_or_logic_created_because_of_link": "미확인",
+    "link_induced_causation": "미확인",
+    "first_discovery": false,
+    "strict_chain": false,
+    "labor": "미확인",
+    "actual_new_test_added": false,
+    "reason": "A postlink integration cannot be excluded merely because redesign started before the link. Commit19e changes the same any/all reduction behavior relative to its first parent; its second parent is generated/merged after the first link, and its own public review is before the original case closes."
+  },
+  "time_boundaries": {
+    "first_link": {
+      "at": "2023-03-17T18:45:21Z",
+      "url": "https://github.com/pandas-dev/pandas/pull/51116#issuecomment-1474263974",
+      "source_id": "P-PR-51116"
+    },
+    "original_close": {
+      "at": "2023-03-20T17:38:10Z",
+      "url": "https://github.com/pandas-dev/pandas/pull/51116#issuecomment-1476666345",
+      "source_id": "P-PR-51116"
+    },
+    "nineteen_e_integration_lower_bound": {
+      "at": "2023-03-17T19:48:49Z",
+      "kind": "inferred from GitHub-generated second-parent commit and PR merged_at",
+      "is_direct_19e_public_timestamp": false,
+      "reason": "19e references parent1f7a, whose GitHub committer time and matching PR merged_at are later than firstlink. Under the observed GitHub provenance this integration cannot precede that parent generation.",
+      "source_ids": [
+        "P-FR-C-19e864062c0d",
+        "P-FR-PARENT-1f7a7f20b1a3",
+        "P-FR-PR-52043-MERGE"
+      ]
+    },
+    "nineteen_e_git_dates": {
+      "author": "2023-03-17T20:07:51Z",
+      "committer": "2023-03-17T20:07:51Z",
+      "not_publication_time": true
+    },
+    "nineteen_e_public_upper_bound": {
+      "at": "2023-03-20T17:17:26Z",
+      "url": "https://github.com/pandas-dev/pandas/pull/52053#pullrequestreview-1349064316",
+      "review_id": 1349064316,
+      "reviewer": "mroeschke",
+      "state": "APPROVED",
+      "commit_id": "19e864062c0d253db1b10469876b553391dad0db",
+      "source_id": "P-SUCC-REVIEW-1349064316"
+    },
+    "exact_push_at": "미확인"
+  },
+  "four_commits": [
+    {
+      "sha": "fa750f5fdaafb39b84de4a57c08bd856da1c0b6b",
+      "url": "https://github.com/pandas-dev/pandas/commit/fa750f5fdaafb39b84de4a57c08bd856da1c0b6b",
+      "source_id": "P-FR-C-fa750f5fdaaf",
+      "author_login": "jbrockmendel",
+      "author_id": 8078968,
+      "committer_login": "jbrockmendel",
+      "committer_id": 8078968,
+      "git_author_date": "2023-03-17T15:57:41Z",
+      "git_committer_date": "2023-03-17T15:57:41Z",
+      "message": "REF: use WrappedCythonOp for GroupBy.std, sem",
+      "parents": [
+        "23c3dc2c379eb325fd4f33be78338730d3f35731"
+      ],
+      "file_count": 5,
+      "stats": {
+        "total": 151,
+        "additions": 64,
+        "deletions": 87
+      },
+      "files": [
+        {
+          "filename": "pandas/_libs/groupby.pyi",
+          "additions": 1,
+          "deletions": 0,
+          "hunks": [
+            "@@ -86,6 +86,7 @@ def group_var("
+          ]
+        },
+        {
+          "filename": "pandas/_libs/groupby.pyx",
+          "additions": 11,
+          "deletions": 1,
+          "hunks": [
+            "@@ -3,6 +3,7 @@ from cython cimport (",
+            "@@ -819,6 +820,7 @@ def group_var(",
+            "@@ -827,6 +829,8 @@ def group_var(",
+            "@@ -876,7 +880,13 @@ def group_var("
+          ]
+        },
+        {
+          "filename": "pandas/core/groupby/groupby.py",
+          "additions": 17,
+          "deletions": 78,
+          "hunks": [
+            "@@ -95,10 +95,8 @@ class providing the base-class of operations.",
+            "@@ -1933,32 +1931,12 @@ def std(",
+            "@@ -2185,18 +2163,12 @@ def sem(self, ddof: int = 1, numeric_only: bool = False):",
+            "@@ -3630,7 +3602,6 @@ def _get_cythonized_result(",
+            "@@ -3646,8 +3617,6 @@ def _get_cythonized_result(",
+            "@@ -3694,14 +3663,7 @@ def blk_func(values: ArrayLike) -> ArrayLike:",
+            "@@ -3710,46 +3672,23 @@ def blk_func(values: ArrayLike) -> ArrayLike:"
+          ]
+        },
+        {
+          "filename": "pandas/core/groupby/ops.py",
+          "additions": 19,
+          "deletions": 4,
+          "hunks": [
+            "@@ -131,6 +131,8 @@ def __init__(self, kind: str, how: str, has_dropped_na: bool) -> None:",
+            "@@ -158,7 +160,10 @@ def _get_cython_function(",
+            "@@ -168,6 +173,9 @@ def _get_cython_function(",
+            "@@ -196,7 +204,7 @@ def _get_cython_vals(self, values: np.ndarray) -> np.ndarray:",
+            "@@ -314,7 +322,7 @@ def _get_result_dtype(self, dtype: np.dtype) -> np.dtype:",
+            "@@ -413,6 +421,11 @@ def _reconstruct_ea_result(",
+            "@@ -556,7 +569,9 @@ def _call_cython_op("
+          ]
+        },
+        {
+          "filename": "pandas/tests/groupby/test_raises.py",
+          "additions": 16,
+          "deletions": 4,
+          "hunks": [
+            "@@ -399,14 +399,20 @@ def test_groupby_raises_category(",
+            "@@ -594,14 +600,20 @@ def test_groupby_raises_category_on_category("
+          ]
+        }
+      ],
+      "same_purpose": true,
+      "post_firstlink_change_proven": false,
+      "finding": "std/sem를 _cython_agg_general 및 WrappedCythonOp로 이동하고 categorical std/sem 오류 기대값을 바꾼 본질 패치. Git author/committer는 링크 전15:57:41. 최초 공개 head는 미복원이며 PR created16:00:14를 이 patch의 exact publication으로 쓰면 안 됨.",
+      "limitations": "최종 review가 ancestor의 존재를 고정하지만 이 패치의 최초 작성/공개가 링크 뒤라는 증거가 아니다."
+    },
+    {
+      "sha": "59ba0824c0eb3c6bde6bf45fa4cb6c7879c8a9d0",
+      "url": "https://github.com/pandas-dev/pandas/commit/59ba0824c0eb3c6bde6bf45fa4cb6c7879c8a9d0",
+      "source_id": "P-FR-C-59ba0824c0eb",
+      "author_login": "jbrockmendel",
+      "author_id": 8078968,
+      "committer_login": "jbrockmendel",
+      "committer_id": 8078968,
+      "git_author_date": "2023-03-17T17:15:37Z",
+      "git_committer_date": "2023-03-17T17:15:37Z",
+      "message": "mypy fixup",
+      "parents": [
+        "fa750f5fdaafb39b84de4a57c08bd856da1c0b6b"
+      ],
+      "file_count": 1,
+      "stats": {
+        "total": 4,
+        "additions": 3,
+        "deletions": 1
+      },
+      "files": [
+        {
+          "filename": "pandas/core/groupby/ops.py",
+          "additions": 3,
+          "deletions": 1,
+          "hunks": [
+            "@@ -122,7 +122,7 @@ def __init__(self, kind: str, how: str, has_dropped_na: bool) -> None:",
+            "@@ -422,6 +422,8 @@ def _reconstruct_ea_result("
+          ]
+        }
+      ],
+      "same_purpose": true,
+      "post_firstlink_change_proven": false,
+      "finding": "_CYTHON_FUNCTIONS 타입주석과 PeriodArray의 std/sem TypeError 분기를 추가. 제목은 mypy fixup이지만 실제 runtime 오류 처리도 있다. Git author/committer17:15:37로 링크 전.",
+      "limitations": "git date는 플랫폼 공개 시각이 아니다. first publication 미확인; 사후 공개 상한만으로 postlink modification 판정 불가."
+    },
+    {
+      "sha": "3ce5d85ca3c514673d6a4d86c56330b0fc643cc0",
+      "url": "https://github.com/pandas-dev/pandas/commit/3ce5d85ca3c514673d6a4d86c56330b0fc643cc0",
+      "source_id": "P-FR-C-3ce5d85ca3c5",
+      "author_login": "jbrockmendel",
+      "author_id": 8078968,
+      "committer_login": "jbrockmendel",
+      "committer_id": 8078968,
+      "git_author_date": "2023-03-17T19:52:59Z",
+      "git_committer_date": "2023-03-17T19:52:59Z",
+      "message": "Merge branch 'main' into ref-gb-std",
+      "parents": [
+        "59ba0824c0eb3c6bde6bf45fa4cb6c7879c8a9d0",
+        "fb282b64331e48741660fbebd2bf948213fb2741"
+      ],
+      "file_count": 69,
+      "stats": {
+        "total": 1560,
+        "additions": 752,
+        "deletions": 808
+      },
+      "files": [
+        {
+          "filename": ".pre-commit-config.yaml",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "ci/code_checks.sh",
+          "additions": 4,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/conf.py",
+          "additions": 6,
+          "deletions": 6,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/user_guide/10min.rst",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/user_guide/advanced.rst",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/user_guide/categorical.rst",
+          "additions": 5,
+          "deletions": 5,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/user_guide/groupby.rst",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v0.15.0.rst",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v0.19.0.rst",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v0.20.0.rst",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v0.22.0.rst",
+          "additions": 3,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v2.0.0.rst",
+          "additions": 12,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "doc/source/whatsnew/v2.1.0.rst",
+          "additions": 9,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/_config/config.py",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/_libs/internals.pyi",
+          "additions": 2,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/_libs/internals.pyx",
+          "additions": 5,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/algorithms.py",
+          "additions": 11,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/apply.py",
+          "additions": 24,
+          "deletions": 14,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/arrays/datetimelike.py",
+          "additions": 2,
+          "deletions": 13,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/base.py",
+          "additions": 6,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/frame.py",
+          "additions": 14,
+          "deletions": 236,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/generic.py",
+          "additions": 9,
+          "deletions": 4,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/groupby/generic.py",
+          "additions": 59,
+          "deletions": 13,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/groupby/groupby.py",
+          "additions": 139,
+          "deletions": 12,
+          "hunks": [
+            "@@ -68,6 +68,7 @@ class providing the base-class of operations.",
+            "@@ -903,7 +904,7 @@ def __init__(",
+            "@@ -920,7 +921,6 @@ def __init__(",
+            "@@ -930,10 +930,23 @@ def __init__(",
+            "@@ -949,12 +962,45 @@ def __getattr__(self, attr: str):",
+            "@@ -2103,6 +2149,8 @@ def _value_counts(",
+            "@@ -3421,7 +3469,7 @@ def rank(",
+            "@@ -3445,6 +3493,10 @@ def rank(",
+            "@@ -3488,6 +3540,12 @@ def rank(",
+            "@@ -3513,7 +3571,9 @@ def rank(",
+            "@@ -3522,6 +3582,12 @@ def cumprod(self, axis: Axis = 0, *args, **kwargs) -> NDFrameT:",
+            "@@ -3531,7 +3597,9 @@ def cumprod(self, axis: Axis = 0, *args, **kwargs) -> NDFrameT:",
+            "@@ -3540,6 +3608,12 @@ def cumsum(self, axis: Axis = 0, *args, **kwargs) -> NDFrameT:",
+            "@@ -3550,7 +3624,10 @@ def cumsum(self, axis: Axis = 0, *args, **kwargs) -> NDFrameT:",
+            "@@ -3560,6 +3637,12 @@ def cummin(",
+            "@@ -3575,7 +3658,10 @@ def cummin(",
+            "@@ -3585,6 +3671,12 @@ def cummax(",
+            "@@ -3702,7 +3794,13 @@ def blk_func(values: ArrayLike) -> ArrayLike:",
+            "@@ -3716,6 +3814,11 @@ def shift(self, periods: int = 1, freq=None, axis: Axis = 0, fill_value=None):",
+            "@@ -3728,6 +3831,12 @@ def shift(self, periods: int = 1, freq=None, axis: Axis = 0, fill_value=None):",
+            "@@ -3749,7 +3858,9 @@ def shift(self, periods: int = 1, freq=None, axis: Axis = 0, fill_value=None):",
+            "@@ -3763,16 +3874,26 @@ def diff(self, periods: int = 1, axis: AxisInt = 0) -> NDFrameT:",
+            "@@ -3796,7 +3917,7 @@ def pct_change(",
+            "@@ -3806,6 +3927,12 @@ def pct_change("
+          ]
+        },
+        {
+          "filename": "pandas/core/indexes/base.py",
+          "additions": 10,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/indexes/interval.py",
+          "additions": 2,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/indexes/multi.py",
+          "additions": 2,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/internals/managers.py",
+          "additions": 8,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/series.py",
+          "additions": 15,
+          "deletions": 269,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/core/shared_docs.py",
+          "additions": 5,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/io/parquet.py",
+          "additions": 0,
+          "deletions": 22,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/io/pytables.py",
+          "additions": 8,
+          "deletions": 8,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/plotting/_matplotlib/boxplot.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/apply/test_series_apply.py",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/copy_view/test_astype.py",
+          "additions": 3,
+          "deletions": 7,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/copy_view/test_constructors.py",
+          "additions": 67,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/copy_view/test_methods.py",
+          "additions": 15,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/copy_view/util.py",
+          "additions": 11,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/frame/methods/test_fillna.py",
+          "additions": 2,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/frame/methods/test_to_numpy.py",
+          "additions": 11,
+          "deletions": 4,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/frame/methods/test_transpose.py",
+          "additions": 5,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/frame/methods/test_values.py",
+          "additions": 12,
+          "deletions": 6,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/frame/test_constructors.py",
+          "additions": 9,
+          "deletions": 4,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/aggregate/test_aggregate.py",
+          "additions": 7,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_apply.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_categorical.py",
+          "additions": 22,
+          "deletions": 10,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_function.py",
+          "additions": 29,
+          "deletions": 9,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_groupby.py",
+          "additions": 2,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_groupby_dropna.py",
+          "additions": 3,
+          "deletions": 3,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_grouping.py",
+          "additions": 9,
+          "deletions": 11,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_min_max.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_rank.py",
+          "additions": 14,
+          "deletions": 6,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/test_size.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/groupby/transform/test_transform.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/indexes/datetimelike.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/indexes/test_base.py",
+          "additions": 3,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/indexes/timedeltas/test_timedelta.py",
+          "additions": 1,
+          "deletions": 1,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/indexing/test_indexing.py",
+          "additions": 4,
+          "deletions": 4,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/io/test_parquet.py",
+          "additions": 78,
+          "deletions": 37,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/series/indexing/test_setitem.py",
+          "additions": 13,
+          "deletions": 5,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/tests/series/test_constructors.py",
+          "additions": 8,
+          "deletions": 0,
+          "hunks": []
+        },
+        {
+          "filename": "pandas/util/version/__init__.py",
+          "additions": 5,
+          "deletions": 5,
+          "hunks": []
+        },
+        {
+          "filename": "pyproject.toml",
+          "additions": 5,
+          "deletions": 5,
+          "hunks": []
+        },
+        {
+          "filename": "scripts/no_bool_in_generic.py",
+          "additions": 7,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "scripts/validate_docstrings.py",
+          "additions": 11,
+          "deletions": 11,
+          "hunks": []
+        },
+        {
+          "filename": "scripts/validate_min_versions_in_sync.py",
+          "additions": 6,
+          "deletions": 11,
+          "hunks": []
+        },
+        {
+          "filename": "scripts/validate_rst_title_capitalization.py",
+          "additions": 4,
+          "deletions": 4,
+          "hunks": []
+        },
+        {
+          "filename": "setup.py",
+          "additions": 2,
+          "deletions": 2,
+          "hunks": []
+        },
+        {
+          "filename": "web/pandas_web.py",
+          "additions": 4,
+          "deletions": 4,
+          "hunks": []
+        }
+      ],
+      "same_purpose": false,
+      "post_firstlink_change_proven": false,
+      "finding": "main을 통합한69파일 변경. 관련 groupby.py diff는 observed=False와 axis deprecation이며 std/sem/any/all 공통 경로 재설계 자체를 바꾸지 않는다. Git author/committer19:52:59로 링크 후.",
+      "limitations": "69파일 전체를 새로운 독립 설계 변경으로 세지 않는다. 타깃6개 파일 중 변경된groupby.py의 모든 hunk를 의미 판독했고 나머지 파일명/변경량을 점검했다; 무관한 전체 patch를 의미 판독한 것으로 주장하지 않음."
+    },
+    {
+      "sha": "19e864062c0d253db1b10469876b553391dad0db",
+      "url": "https://github.com/pandas-dev/pandas/commit/19e864062c0d253db1b10469876b553391dad0db",
+      "source_id": "P-FR-C-19e864062c0d",
+      "author_login": "jbrockmendel",
+      "author_id": 8078968,
+      "committer_login": "jbrockmendel",
+      "committer_id": 8078968,
+      "git_author_date": "2023-03-17T20:07:51Z",
+      "git_committer_date": "2023-03-17T20:07:51Z",
+      "message": "Merge branch 'main' into ref-gb-std",
+      "parents": [
+        "3ce5d85ca3c514673d6a4d86c56330b0fc643cc0",
+        "1f7a7f20b1a3aeb66527df0d9a3682159e56917e"
+      ],
+      "file_count": 2,
+      "stats": {
+        "total": 35,
+        "additions": 22,
+        "deletions": 13
+      },
+      "files": [
+        {
+          "filename": "pandas/_libs/groupby.pyx",
+          "additions": 10,
+          "deletions": 7,
+          "hunks": [
+            "@@ -566,11 +566,11 @@ def group_any_all(",
+            "@@ -588,9 +588,9 @@ def group_any_all(",
+            "@@ -602,6 +602,7 @@ def group_any_all(",
+            "@@ -628,12 +629,12 @@ def group_any_all(",
+            "@@ -642,6 +643,8 @@ def group_any_all("
+          ]
+        },
+        {
+          "filename": "pandas/core/groupby/groupby.py",
+          "additions": 12,
+          "deletions": 6,
+          "hunks": [
+            "@@ -1702,10 +1702,10 @@ def objs_to_bool(vals: ArrayLike) -> tuple[np.ndarray, type]:",
+            "@@ -3769,18 +3769,24 @@ def blk_func(values: ArrayLike) -> ArrayLike:"
+          ]
+        }
+      ],
+      "same_purpose": true,
+      "post_firstlink_change_proven": true,
+      "finding": "첫 부모3ce5 대비2파일에서 any/all nullable 표지를 result_mask로 바꾸고 결과 마스크 생성·전파·해제를 반영. 동일 작성자의 이미 작성된52043 로직을 후속52053 branch에 실제 통합한 변경. Git author/committer20:07:51. 두 번째 부모1f7a의 GitHub 생성/병합19:48:49 이후와 review3/20 17:17:26 이전으로 관련 통합의 시점이 제한된다.",
+      "limitations": "이는 새 로직 발명이나 링크 유발 수정의 증거가 아니다. exact push 시각은 미확인이고 사후성의 하한은 GitHub 생성 부모/merged_at에서 한 추론이다."
+    }
+  ],
+  "same_author": {
+    "original_pr_author": "jbrockmendel",
+    "original_pr_author_id": 8078968,
+    "integration_commit_author": "jbrockmendel",
+    "integration_commit_author_id": 8078968,
+    "integration_commit_committer": "jbrockmendel",
+    "integration_commit_committer_id": 8078968,
+    "upstream_squash_author": "jbrockmendel",
+    "upstream_squash_committer": "web-flow",
+    "upstream_pr_merger": "phofl",
+    "interpretation": "본인 기존 로직의 통합 커밋 작성/committer를 original PR author와 같은 GitHub ID로 확인. upstream 병합 실행자phofl과 구분."
+  },
+  "same_purpose": {
+    "requirement": "EA/nullable values를 포함한 GroupBy any/all/std의 별도 구현을 공통 경로에 맞추고 결측값 동작을 유지",
+    "author_connection_url": "https://github.com/pandas-dev/pandas/pull/51116#issuecomment-1474292973",
+    "author_connection_finding": "작성자는52043을 any/all 공통 경로 재설계의 단계로,52053을 std 이동으로 설명했다. 이 발언은 시작이 링크 앞임을 알려주며 링크가 작업을 유발했다는 발언은 아니다.",
+    "actual_diff": "group_any_all의 nullable flag와 -1 sentinel 대신result_mask를 사용. groupby.py가mask를 생성·호출에전달·1D로정리·BooleanArray에반영. 확정truth값이면result_mask를해제.",
+    "scope_limit": "별도 EA 메서드 제거를 완성한 f951의 공개는 여전히 후기. 여기의 양성은 관련 nullable 처리 통합 변화이고 전체 최종설계 완료/새발견의 양성이 아니다."
+  },
+  "parent_provenance": {
+    "sha": "1f7a7f20b1a3aeb66527df0d9a3682159e56917e",
+    "url": "https://github.com/pandas-dev/pandas/commit/1f7a7f20b1a3aeb66527df0d9a3682159e56917e",
+    "source_id": "P-FR-PARENT-1f7a7f20b1a3",
+    "parents": [
+      "fb282b64331e48741660fbebd2bf948213fb2741"
+    ],
+    "git_author": "jbrockmendel",
+    "git_author_date": "2023-03-17T19:48:49Z",
+    "git_committer": "GitHub",
+    "git_committer_date": "2023-03-17T19:48:49Z",
+    "api_signature_verified": true,
+    "api_signature_reason": "valid",
+    "signature_independently_verified_by_investigator": false,
+    "PR52043_merged_at": "2023-03-17T19:48:49Z",
+    "PR52043_merge_commit_sha": "1f7a7f20b1a3aeb66527df0d9a3682159e56917e",
+    "PR52043_merged_by": "phofl"
+  },
+  "explicit_first_parent_comparison": {
+    "url": "https://api.github.com/repos/pandas-dev/pandas/compare/3ce5d85ca3c514673d6a4d86c56330b0fc643cc0...19e864062c0d253db1b10469876b553391dad0db",
+    "source_id": "P-FR-COMPARE-3ce5-19e8",
+    "base_sha": "3ce5d85ca3c514673d6a4d86c56330b0fc643cc0",
+    "merge_base_sha": "3ce5d85ca3c514673d6a4d86c56330b0fc643cc0",
+    "commits": [
+      "1f7a7f20b1a3aeb66527df0d9a3682159e56917e",
+      "19e864062c0d253db1b10469876b553391dad0db"
+    ],
+    "files": [
+      {
+        "filename": "pandas/_libs/groupby.pyx",
+        "blob_sha": "a95e92923cd00ecb455dcb28bfa716ec122a6adc",
+        "additions": 10,
+        "deletions": 7,
+        "hunks": [
+          "@@ -566,11 +566,11 @@ def group_any_all(",
+          "@@ -588,9 +588,9 @@ def group_any_all(",
+          "@@ -602,6 +602,7 @@ def group_any_all(",
+          "@@ -628,12 +629,12 @@ def group_any_all(",
+          "@@ -642,6 +643,8 @@ def group_any_all("
+        ],
+        "patch_matches_commit_endpoint": true
+      },
+      {
+        "filename": "pandas/core/groupby/groupby.py",
+        "blob_sha": "fb286bf9aca8a3e0711cc170314d404239bdaf50",
+        "additions": 12,
+        "deletions": 6,
+        "hunks": [
+          "@@ -1702,10 +1702,10 @@ def objs_to_bool(vals: ArrayLike) -> tuple[np.ndarray, type]:",
+          "@@ -3769,18 +3769,24 @@ def blk_func(values: ArrayLike) -> ArrayLike:"
+        ],
+        "patch_matches_commit_endpoint": true
+      }
+    ]
+  },
+  "related_existing_tests": {
+    "source_id": "P-FR-TEST-19e8-ANYALL",
+    "url": "https://raw.githubusercontent.com/pandas-dev/pandas/19e864062c0d253db1b10469876b553391dad0db/pandas/tests/groupby/test_any_all.py",
+    "execution_status": "not executed by investigator",
+    "added_by_19e": false,
+    "cases": [
+      {
+        "location": "L142-L154",
+        "input": "frame/Series [pd.NA,1], dtype Int64/Float64/boolean, grouped[1,1], any/all, skipna bool",
+        "expected": "skipna=False and all -> pd.NA; other combinations -> True; nullable Boolean result"
+      },
+      {
+        "location": "L75-L98",
+        "input": "boolean Series among all false/all true/all NA/mixed NA groups, any/all and skipna",
+        "expected": "matches Series reduction using Kleene logic; test compares resulting nullable boolean series"
+      },
+      {
+        "location": "L101-L139",
+        "input": "columns data[1.0,np.nan] with float/Float64/Int64/boolean dtype pair; group all skipna=False",
+        "expected": "ordinary float column True while nullable missing column pd.NA, as parametrized"
+      },
+      {
+        "location": "L174-L179",
+        "input": "object Series[pd.NA], groupby[1], any/all skipna=False",
+        "expected": "TypeError, boolean value of NA is ambiguous"
+      }
+    ]
+  },
+  "recommended_changes_row": {
+    "change_id": "L-P2-POSTLINK-INTEGRATION-19e",
+    "slot_id": "L-P2",
+    "sampled_pr": 51116,
+    "evidence_pr": 52053,
+    "phase": "postlink_same_purpose_integration_within_primary_window",
+    "sha": "19e864062c0d253db1b10469876b553391dad0db",
+    "actor": "jbrockmendel",
+    "actor_id": 8078968,
+    "identity_status": "same_author",
+    "author_date": "2023-03-17T20:07:51Z",
+    "committer_date": "2023-03-17T20:07:51Z",
+    "public_anchor_at": "2023-03-20T17:17:26Z",
+    "public_anchor_kind": "review1349064316 commits exact19e; lower boundary inferred from generated parent1f7a at2023-03-17T19:48:49Z",
+    "change_kind": "same_purpose_integration_of_previously_authored_logic",
+    "same_purpose": true,
+    "new_design": false,
+    "files": "pandas/_libs/groupby.pyx;pandas/core/groupby/groupby.py",
+    "tests_inputs_expected": "existing19e tests_any_all L142-L154 [pd.NA,1]: all(skipnaFalse)->NA, any->True",
+    "causality": "postlink integration confirmed; link-induced change unconfirmed; original logic/effort began prelink; prestarted-exclusion sensitivity drops this positive",
+    "url": "https://github.com/pandas-dev/pandas/commit/19e864062c0d253db1b10469876b553391dad0db",
+    "source_ids": [
+      "P-FR-C-19e864062c0d",
+      "P-FR-COMPARE-3ce5-19e8",
+      "P-FR-PARENT-1f7a7f20b1a3",
+      "P-FR-PR-52043-MERGE",
+      "P-SUCC-REVIEW-1349064316",
+      "P-FR-TEST-19e8-ANYALL"
+    ]
+  },
+  "separate_unresolved_corrections": {
+    "fa750f5f": "first public head at PR opening16:00:14 remains unknown. Final19e review anchors ancestor presence by3/20 17:17:26 only. Preserve earlier original_public_anchor_at and correct exact-publication claim separately.",
+    "f95152e": "actual patch's public anchor remains3/20 20:36:41, after original close. 45seconds remains PR creation→original close elapsed, not proof of actual code publication then.",
+    "prior_revision": "Previous recovery's aggregate downgrade remains audit history. New positive is19e integration, not restoration of the disproven f951 inference."
+  },
+  "source_count": {
+    "receipt_rows": 8,
+    "minimum_addition": 0,
+    "new_sample_cases": 0,
+    "why_eight": "Four requested commit reads plus parent commit and parent PR=6; explicit first-parent comparison and existing tests at exact19e add2 verification receipts. All counted false."
+  },
+  "source_ids": [
+    "P-FR-C-fa750f5fdaaf",
+    "P-FR-C-59ba0824c0eb",
+    "P-FR-C-3ce5d85ca3c5",
+    "P-FR-C-19e864062c0d",
+    "P-FR-PARENT-1f7a7f20b1a3",
+    "P-FR-PR-52043-MERGE",
+    "P-FR-COMPARE-3ce5-19e8",
+    "P-FR-TEST-19e8-ANYALL"
+  ],
+  "review_limit": "This is investigator AI self-review of one concrete remaining risk, not external independent human coding."
+}
