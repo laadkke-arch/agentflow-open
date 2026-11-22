@@ -1,0 +1,131 @@
+{
+  "reviewer": "arrow_agent_same_model",
+  "input_path": "docs/workstreams/research/AF-RES-025/relation-check/cargo-anonymous.json",
+  "input_sha256": "234c9943541951f6ad67bdbd73aaaf58e1c928db4e6440f81bea049999b765e6",
+  "input_commit_as_notified_by_root": "22a9e2cc14f74cc0ab5bf01634bc398db2cdea2c",
+  "source_origin_inferred": false,
+  "source_field_inferred": false,
+  "route_inferred": false,
+  "new_search_queries": 0,
+  "changes_original_search_hits": false,
+  "review_scope": "제공된 익명 관계 문장만으로 함의와 반례를 검토한 논리 판독. 실제 구현 실행 또는 원 출처 재판독이 아니다.",
+  "reviews": [
+    {
+      "key": "REL-01",
+      "question_id": "Q08",
+      "preserved_relations": [
+        {
+          "relation": "요소별 미처리 상태가 그 요소에 적용 가능한 규칙의 자격을 결정한다.",
+          "rationale": "unhandled set에 포함된 버전만 적격이라는 조건은 요청의 미처리 상태를 guard로 사용하는 관계에 대응한다.",
+          "qualification": "원 관계의 버전별 집합을 단순한 전역 처리 여부 한 비트로 축약하면 정보가 손실될 수 있다."
+        },
+        {
+          "relation": "한 변환의 상태 변경이 이후 규칙의 적격성 관측을 바꾼다.",
+          "rationale": "처리한 버전을 제거하고 matches를 갱신하므로 다음 규칙은 갱신된 상태를 기준으로 적용 여부를 판단한다.",
+          "qualification": "어느 버전들을 함께 처리된 것으로 표시할지는 별도 정책이다. 갱신 사실만으로 나중 버전의 우선권은 나오지 않는다."
+        }
+      ],
+      "unsupported_target_conditions": [
+        {
+          "condition": "Additions preserve the original feature set.",
+          "reason": "처리 상태 집합의 갱신 규칙은 결과 feature 집합에서 원래 요소를 유지하거나 삭제하는 일을 제한하지 않는다."
+        },
+        {
+          "condition": "Dependencies are interpreted at the requesting base version.",
+          "reason": "종속성을 해석할 기준 버전이 요청 당시인지 현재 변환 버전인지에 관한 관계가 없다."
+        },
+        {
+          "condition": "Later version blocks suppress overlapping earlier blocks.",
+          "reason": "처리한 버전을 제거한다는 사실만으로 같은 요청의 더 이른 버전까지 함께 억제하는 범위나 우선순위를 결정하지 못한다."
+        },
+        {
+          "condition": "New output features must not be fed back as input to this evaluator.",
+          "reason": "원 관계는 새 출력 요소에 새 unhandled set을 부여하여 평가 입력으로 넣는 일을 금지하지 않는다."
+        }
+      ],
+      "countermodel": {
+        "input": "원 요청 a의 unhandled set이 {1,2}다.",
+        "rules": ["버전 2 규칙: a에서 b를 만들고 2만 handled로 제거한다.", "버전 1 규칙: a에서 c를 만들고 1을 handled로 제거한다."],
+        "steps": ["버전 2를 적용하면 b가 생기고 unhandled는 {1}이 된다. matches를 즉시 갱신한다.", "버전 1은 여전히 적격이므로 c를 만들고 unhandled를 빈 집합으로 바꾼다."],
+        "source_relations_hold": "매번 unhandled에 있는 버전에만 적용했고 처리된 버전을 제거한 뒤 matches를 갱신했다.",
+        "target_violation": "같은 a에 대해 나중 버전이 적용됐는데도 겹치는 이른 버전이 적용되어 c가 추가된다. 나중 버전 우선 억제는 성립하지 않는다.",
+        "additional_permitted_extension": "새 b를 별도의 입력 요소로 등록하고 unhandled={1}을 부여하는 확장도 두 원 관계와 모순되지 않으므로 출력 재입력 금지 역시 따라오지 않는다."
+      },
+      "decision": "두 상태·적격성 관계의 조건부 대응은 성립하지만 네 가지 목표 정책을 충족하는 평가기 전체의 근거로는 불충분하다.",
+      "limits": "원 출처와 구현은 숨겨진 상태다. 처리 범위, 버전 우선순위, 입력 불변 snapshot 및 종속성 기준 버전을 추가로 명시하면 이 반례를 배제할 수 있으나 현재 문장에서 추론하지 않는다."
+    },
+    {
+      "key": "REL-02",
+      "question_id": "Q08",
+      "preserved_relations": [
+        {
+          "relation": "규칙 적용은 결과 요소를 만들고 어떤 원천·문맥·규칙으로 만들었는지 연결할 수 있다.",
+          "rationale": "target 추가와 source/context/rule/target trace의 관계는 migration 추가 및 처리 사건의 기록에 대응한다.",
+          "qualification": "사건을 기록했다는 사실과 그 기록을 억제 guard로 읽는다는 사실은 구별해야 한다."
+        },
+        {
+          "relation": "동일 규칙의 동일 match 반복에는 국소적인 일회성 제약이 있다.",
+          "rationale": "every rule applies to every match once라는 문장이 정확히 그 규칙·match 조합의 재적용을 제한한다.",
+          "qualification": "같은 요청에 다른 규칙이 적용되는 것과 새 문맥이 만드는 다른 match는 이 제약의 범위 밖이다. 요청 단위의 전역 억제로 승격할 수 없다."
+        }
+      ],
+      "unsupported_target_conditions": [
+        {
+          "condition": "Later version blocks suppress overlapping earlier blocks.",
+          "reason": "trace의 존재와 규칙별 일회 적용은 서로 다른 버전 규칙 사이의 우선순위·상호 억제를 정하지 않는다."
+        },
+        {
+          "condition": "New output features must not be fed back as input.",
+          "reason": "새 target을 나중 context로 사용할 수 있다는 허용은 적어도 그 값이 이후 규칙 적격성에 영향을 미치는 실행을 허용한다. 이를 입력 불변성으로 해석할 수 없다."
+        }
+      ],
+      "countermodel": {
+        "symbols": ["a", "b", "c"],
+        "input": "원 요청은 a 하나다.",
+        "rules": ["나중 버전 규칙 L: a에서 b를 추가한다.", "이른 버전 규칙 E: a에서 c를 추가한다.", "규칙 C: source a와 context b가 함께 있으면 c를 추가한다."],
+        "steps": ["L을 한 번 적용하고 (a,빈 문맥,L,b)를 기록한다.", "E는 L과 다른 규칙이므로 같은 a에 한 번 적용하고 (a,빈 문맥,E,c)를 기록한다.", "새 b를 context로 삼아 C를 한 번 적용하고 (a,b,C,c)를 기록한다."],
+        "source_relations_hold": "각 적용은 결과와 trace를 추가했고 각 규칙·match는 한 번만 적용됐다. 새 target의 후속 context 사용도 허용 범위다.",
+        "target_violations": ["L의 trace가 있어도 E는 같은 원 요청에 적용되어 버전별 억제 조건을 위반한다.", "원 출력 b가 C의 적격성 입력으로 들어가므로 출력 재입력 금지를 충족하지 않는다."]
+      },
+      "decision": "trace는 provenance와 국소적 반복 통제의 근거가 될 수 있으나 목표 실행 정책의 증명은 아니다. 제안된 요청 단위 억제 대응은 추가 guard 없이는 성립하지 않는다.",
+      "limits": "context와 원 요청 집합의 구별만으로 모든 피드백을 금지한다고 추론하지 않았다. 실제 시스템이 별도 전역 guard나 입력 snapshot을 제공할 가능성은 이 익명 문장으로 판정할 수 없다."
+    },
+    {
+      "key": "REL-03",
+      "question_id": "Q08",
+      "preserved_relations": [
+        {
+          "relation": "집합 합집합을 통한 추가는 원래 요청 요소를 보존한다.",
+          "rationale": "F ⊆ F∪A이므로 원 입력의 보존 관계가 직접 성립한다.",
+          "qualification": "평가기의 다른 단계가 삭제하지 않는다는 사용 경계에서의 관계다."
+        },
+        {
+          "relation": "동일 요소를 다시 추가해도 집합 원소 수를 중복해서 늘리지 않는다.",
+          "rationale": "F∪A∪A=F∪A라는 멱등성이 그대로 대응한다.",
+          "qualification": "합치기 순서의 독립성과 어느 규칙을 적용해야 하는지의 선택 정책은 별개다."
+        }
+      ],
+      "unsupported_target_conditions": [
+        {
+          "condition": "Later version blocks suppress overlapping earlier blocks.",
+          "reason": "합집합의 대수 법칙은 충돌하는 두 규칙 가운데 하나를 선택하거나 다른 것을 억제하는 우선순위를 주지 않는다."
+        },
+        {
+          "condition": "New output features must not be fed back as input.",
+          "reason": "집합의 추가 방식은 다음 평가의 입력을 원 집합으로 고정할지 커진 집합으로 바꿀지 결정하지 않는다."
+        }
+      ],
+      "countermodel": {
+        "symbols": ["a", "b", "c"],
+        "input": "F0={a}다.",
+        "rules": ["나중 버전 L: a가 있으면 b를 추가한다.", "이른 버전 E: a가 있으면 c를 추가한다.", "추가 규칙 C: b가 있으면 c를 추가한다."],
+        "steps": ["L 뒤 F1=F0∪{b}={a,b}다.", "새 F1을 입력으로 C를 적용해 F2=F1∪{c}={a,b,c}를 얻는다.", "E도 적용한다. 다시 c를 합쳐도 결과는 {a,b,c}로 같다."],
+        "algebraic_check": "모든 추가가 합집합이고 원 a를 보존한다. {b}와 {c}의 합치기 순서를 바꾸거나 c를 반복 삽입해도 최종 집합은 같다.",
+        "target_violations": ["L 이후에도 겹치는 E의 적용이 허용된다. 순수한 나중 버전 억제 정책이라면 E를 배제해야 한다.", "L이 만든 b를 C의 다음 평가 입력으로 사용했다."],
+        "observation": "중복 삽입이 결과 집합을 바꾸지 않는다는 사실은 불필요하거나 금지된 규칙의 실행 자체를 검출하지 못한다."
+      },
+      "decision": "두 대수적 대응은 성립하지만 목표 평가기의 규칙 우선순위와 입력 경계를 확립하지 못한다.",
+      "limits": "정확히 세 기호로 구성한 논리 반례다. 원 시스템의 분야·이름·검색 경로를 추정하지 않았으며, 실제 시스템이 별도 실행 정책을 갖는지는 미확인이다."
+    }
+  ]
+}

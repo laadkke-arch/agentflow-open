@@ -1,0 +1,90 @@
+{
+  "reviewer": "jupyter_agent_same_model",
+  "input_path": "docs/workstreams/research/AF-RES-025/relation-check/arrow-anonymous.json",
+  "input_sha256": "fdac02a393fbac0e9822fc488223cb2b9cf552c708ac43a88492fa2d7d28e157",
+  "input_remote_seal": "22a9e2cc14f74cc0ab5bf01634bc398db2cdea2c",
+  "checked_utc": "2026-11-22T05:44:38.679549+00:00",
+  "source_names_or_domains_inferred": false,
+  "route_or_rank_inferred": false,
+  "searches": 0,
+  "candidate_originals_opened_for_this_task": 0,
+  "changes_discovery_hits": false,
+  "checks": [
+    {
+      "key": "REL-04",
+      "question_id": "Q02",
+      "preserved_relations": [
+        {
+          "source_relation_index": 0,
+          "target_relation_index": 0,
+          "relation": "An opaque runtime value is mediated by an interface before operations on its concrete representation.",
+          "extent": "The abstraction/dispatch relation survives removal of names, but a category-specific sub-interface is weaker than one entry point spanning all array categories."
+        },
+        {
+          "source_relation_index": 1,
+          "target_relation_index": 1,
+          "relation": "An address-like selector is interpreted against a nested container to obtain a contained value.",
+          "extent": "The traversal/retrieval relation survives. A multi-step path is not yet the contract of one array index operation."
+        }
+      ],
+      "unsupported_target_conditions": [
+        {
+          "condition_index": 0,
+          "condition": "One common array entry point supports element access without repeated caller downcasts.",
+          "status": "unknown",
+          "missing_fact": "Whether category selection and adapter dispatch occur behind a single get(index) interface, rather than requiring each caller to select and convert to a category-specific interface."
+        },
+        {
+          "condition_index": 1,
+          "condition": "Primitive, text, and nested-list value categories have a usable return contract.",
+          "status": "unknown",
+          "missing_fact": "A concrete return contract covering all three categories, including how nested values and category identity are represented; the packet supplies only retrieval existence."
+        }
+      ],
+      "countermodel": {
+        "construction": "Each opaque container can expose either a numeric accessor or a text accessor after the caller selects its category. A separate path walker retrieves opaque child objects from nested containers. No shared get(index) result spans numeric, text, and nested values.",
+        "source_relations_satisfied": true,
+        "failed_target_conditions": [
+          0,
+          1
+        ],
+        "reason": "Both supplied source relationships hold, yet callers still branch by category and no common cross-category return representation is defined.",
+        "executed": false
+      },
+      "decision": "partial_relational_match_not_sufficient_for_the_target_contract",
+      "limits": "Two structural correspondences can be stated without source identity. The packet cannot prove implementation availability, array-index semantics, return types, or cost. A hidden adapter could close the gap, but its existence is not given."
+    },
+    {
+      "key": "REL-05",
+      "question_id": "Q01",
+      "preserved_relations": [],
+      "unsupported_target_conditions": [
+        {
+          "condition_index": 0,
+          "condition": "Variable-length offset width can exceed 32 bits.",
+          "status": "not_entailed",
+          "missing_fact": "Evidence about the width and semantics of positions into variable-length buffers; wide integer element values provide no such guarantee."
+        },
+        {
+          "condition_index": 1,
+          "condition": "The requested nested/variable-length buffers cross the required interface.",
+          "status": "conflict_with_stated_skip_boundary",
+          "missing_fact": "An actual retained nested/variable-length buffer representation and compatible interface transfer. The stated reader skips the nested values."
+        }
+      ],
+      "countermodel": {
+        "construction": "A reader exactly preserves every 64-bit integer value, but stores any variable-length positions in a 32-bit unsigned array and drops every nested value. It exports only the flat integer buffer.",
+        "source_relations_satisfied": true,
+        "failed_target_conditions": [
+          0,
+          1
+        ],
+        "reason": "The reader satisfies both source statements while being unable to address a variable-length buffer position above 2^32-1 and unable to export skipped nested buffers.",
+        "executed": false
+      },
+      "decision": "not_a_relational_match_for_the_required_boundary",
+      "limits": "The numeral describes different roles: payload precision versus buffer addressing. A later adapter or reread could introduce a new mechanism, but neither is supplied, and lost nested values cannot be recovered from the exported flat buffer alone."
+    }
+  ],
+  "independence_limit": "Logical review of a source-anonymized packet by a separate same-model agent, not a human study or provider implementation test."
+}
