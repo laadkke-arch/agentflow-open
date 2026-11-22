@@ -1,0 +1,119 @@
+{
+  "checked_utc": "2026-11-22T19:28:45.394825+00:00",
+  "scope": "Final artifacts content and internal consistency; no new sampling or research",
+  "status": "final_content_review_pass",
+  "files_sha256": {
+    "RESULT.md": "095dfb750a7867ea0f0aa3dc596af27ea9ce560836ad6f57ac6fb9b864afe0e3",
+    "cards.md": "43fa60508d2d4c123f392839b1dcc382dcd0b843c6777b567409a1551618a613",
+    "evidence/case-decisions.json": "f8720db172513215b36ac6cd44b278d7bdaaa5c5a7e764c65196ab56a4804f49",
+    "sources.jsonl": "0ff54e18b1a2625e4ceae23c61da0bd1fbc3549fed779b9155b4329eb0fc7115",
+    "frame.csv": "f9ae2030bfe597ff1ea6a352f5bca9bc9cf95f9a2a14ee68ac126f03e41452d9",
+    "chains.csv": "78ae1c29d6a4d838ca81092e1c8b3cd315acf7761b8d1135a67bd072810d3377",
+    "judgments.csv": "d2e2555115835b0b475dca38cb27dc8809e35c516941b2edf7bc81c38a4083c6",
+    "evidence/recount.json": "18ac15b9aa0f3d77dccc412913c15f2e95c110dbc78f82400c80ef006ebbe8d3",
+    "evidence/rebuild.py": "0f1f35580717ae9ffb9e4f7490927df9cdb789def47ae354e578f047ae2b92ca",
+    "SELF_CHECK.md": "5f8d39d4b5c594493490b7904d8fb833dd7026af6db1efd15ddad01e372e40e7",
+    "evidence/acceptance-evidence.json": "1e702a17abb069ffaaed74b7521bc1ce981bd4a19b6ba2e700668fa97ac78014"
+  },
+  "checks": {
+    "table1_exact_unique_cases": 12,
+    "table1_A": 8,
+    "table1_B": 4,
+    "table2_conditions": 5,
+    "strict_complete_A": 0,
+    "strict_complete_B": 0,
+    "B_sensitivity_numerator": 1,
+    "B_sensitivity_denominator": 4,
+    "sensitivity_extra_case_added": false,
+    "cards_unique_cases": 12,
+    "max_links_per_card": 2,
+    "last_weakness_rows": 3,
+    "source_rows": 168,
+    "unique_counted_primary_groups": 49,
+    "counted_group_duplicates": 0,
+    "missing_source_id_references": 0,
+    "frame_rows": 219,
+    "chains_rows": 12,
+    "judgments_rows": 25,
+    "B03_1998_evidence_in_result_cards_chains": true,
+    "B03_archive_mtime_not_claimed_publication": true,
+    "B03_optical_spacing_not_merged_with_font_choice": true,
+    "first_reading_not_inferred_from_2006_contributor": true,
+    "strict_and_code_baseline_sensitivity_separated": true,
+    "SELF_CHECK_available": true,
+    "acceptance_available": true,
+    "rebuild_readonly_check_exit_code": 0,
+    "B03_statement_vs_fixed_baseline_explicitly_separated": true,
+    "acceptance_criteria_count": 24,
+    "acceptance_unmet_ids": [
+      "AC03",
+      "AC05",
+      "AC06",
+      "AC18",
+      "AC19"
+    ],
+    "acceptance_all_met_false_correct": true,
+    "acceptance_source_reference_checks": 140,
+    "acceptance_source_reference_errors": 0,
+    "acceptance_file_marker_errors": 0,
+    "acceptance_artifact_hash_mismatches": 0,
+    "total_primary_does_not_override_case_original_gaps": true,
+    "postcommit_reopen_and_session_check_pending_explicit": true
+  },
+  "findings": [
+    {
+      "id": "FQA-01",
+      "severity": "medium",
+      "status": "resolved",
+      "title": "Authority mapping lost while generating judgments",
+      "locations": [
+        "evidence/rebuild.py:243",
+        "judgments.csv B02/B03/B04 decision_authority",
+        "chains.csv object_authority_json.authority"
+      ],
+      "evidence": "The three B records contain explicit authority mappings in chains but judgments renders 미확인. All A rows and B01 retain their differently named actor fields.",
+      "required_change": "Include authority fallback in generation and regenerate; retain genuine unknowns separately.",
+      "count_effect": "None; repairs Q4 evidence fidelity.",
+      "resolution": "authority fallback added; regenerated judgments preserve B02/B03/B04 authorities."
+    },
+    {
+      "id": "FQA-02",
+      "severity": "medium",
+      "status": "resolved",
+      "title": "Recount advertises derived chain counts while key values are constant",
+      "locations": [
+        "evidence/rebuild.py:237,287,321",
+        "RESULT.md:128"
+      ],
+      "evidence": "complete_chain is assigned False for every ordinary judgment; sensitivity denominator=4 and printed strict A/B=0 are literals. Current zeros are consistent with case decisions but flags do not determine these advertised outputs.",
+      "required_change": "Derive chain eligibility from code/required contact flags and stratum denominators from cases; derive displayed summary from recount; do not alter current judgments to obtain a different number.",
+      "count_effect": "Expected unchanged A0/8 B0/4 sensitivity1/4.",
+      "resolution": "complete flags derive from independent required contacts; sensitivity denominators and output summaries derive from actual rows; readonly --check passes."
+    },
+    {
+      "id": "FQA-03",
+      "severity": "medium",
+      "status": "resolved",
+      "title": "B03 explicit change statement must not imply verified frozen-proposal transition",
+      "locations": [
+        "RESULT.md:20-24",
+        "judgments.csv B03 strict_initial_proposal",
+        "evidence/case-decisions.json B03 explicit_change_strict"
+      ],
+      "evidence": "B03 early ANNOUNCEMENT directly reports dissatisfaction with previous font and Feta creation; the earlier0.1 baseline and first design proposal remain unknown. The source is an early report of a completed choice, whereas B02 is tested against a restored RFC proposal.",
+      "required_change": "Define the independent table2 explicit-change contact as author statement, and qualify B03 cell as 명시 변경 진술1; 고정 원안 전후 미확인. Alternatively keep it only in relaxed contact tally; strict chain remains0. Ensure reason/CSV terminology preserves this distinction.",
+      "count_effect": "Main complete-chain counts unchanged; explicit-change count meaning must be clarified.",
+      "resolution": "RESULT table2 says 1 진술 (B03; 고정 원안 전후 미확인); paragraph distinguishes statement from verified same-baseline transition, which is a separate field in judgments."
+    }
+  ],
+  "unreviewed": [],
+  "writes_limited_to": [
+    "streams/review-final/review.md",
+    "streams/review-final/findings.json"
+  ],
+  "git_actions": false,
+  "operational_pending": {
+    "root_validator_execution": "Validator file exists; validation.json receipt not yet observed at review snapshot. Root must execute before its completed-check wording is published.",
+    "postcommit_checks": "Fixed-SHA reopening, workbench.session check --fetch, HANDOFF-only final commit are explicitly pending by required ordering; reviewer does not mark them performed."
+  }
+}

@@ -1,0 +1,328 @@
+{
+  "work_id": "AF-RES-037",
+  "case_id": "A-G02",
+  "review_id": "Q6-countertype4-pytest-sugar",
+  "checked_utc": "2026-11-22T19:18:23Z",
+  "question": "처음에는CI적용의도가있었으나공급자buffering제약으로반영전에포기했는가?",
+  "verdict": "부분 확인: 조건부 CI 적용의 제외 경로가 병합 전에 확정되어 반영됨. 확정 채택 또는 실제 활성 CI를 제약 때문에 새로 철회한 사슬은 미확인.",
+  "strict_countertype4_met": false,
+  "strict_unmet_reason": "최초안은실패시CI제외를이미명시했고,보존CI도입commit도처음부터sugar를끄므로제약을만나기전CI활성선택/실행상태가직접복원되지않음.",
+  "narrow_constraint_example_met": true,
+  "narrow_label": "Travis buffering과맞지않는출력plugin의조건부CI적용을제외한범위제약",
+  "category_counts_effect": {
+    "new_case": 0,
+    "new_counted_work": 0,
+    "strict_abandonment_example_increment": 0,
+    "conditional_constraint_example": 1
+  },
+  "initial_v1": {
+    "date": "2018-12-03T14:00:57Z",
+    "locator": "PlanPhase1 L71",
+    "conditional_quote": "Make sure it works with travis output buffering or disable it in CI",
+    "interpretation": "사용을선호하면서CI에맞지않으면끄는대안을원안에포함한다. 무조건CI제외라고읽어도,확정CI채택이라고읽어도과장이다.",
+    "unconditional_ci_adoption": false,
+    "unconditional_ci_exclusion": false,
+    "ci_exclusion_fallback_already_present": true
+  },
+  "later_v11_v14": {
+    "earliest_confirmed_explicit_exclusion_version": "v11",
+    "earliest_confirmed_date": "2018-12-03T23:43:36Z",
+    "short_quote": "Disable it in CI",
+    "stated_reason": "Travis CI output buffering과잘동작하지않음",
+    "v14_same_scope": true,
+    "premerge_confirmed": true,
+    "merge_date": "2018-12-11T09:53:55Z",
+    "source_ids": [
+      "C4-RFC72-V11",
+      "C4-RFC72-V14",
+      "C4-CI-MERGE"
+    ]
+  },
+  "preserved_code_transition": {
+    "requirements_added_with_sugar": true,
+    "first_retained_ci_introduction_already_disables_sugar": true,
+    "earlier_enabled_ci_state": "미확인",
+    "switch_from_sugar_enabled_to_disabled": "미확인",
+    "current_retained_intro_commit": "75c0dc375faabbe7d27d9d9a0eb4a98bd41cf44f",
+    "intro_author_date": "2018-10-04T10:11:13Z",
+    "intro_committer_date": "2018-12-10T23:01:20Z",
+    "later_verbosity_keeps_disabled": true,
+    "merged_keeps_disabled": true,
+    "publication_date_caution": "보존코드의2018-10-04 author date는rebase뒤2018-12-10 committer date와다르며,10월공개상태의정확증거로쓰지않는다.",
+    "scope": "Travis 출력plugin활성화만제외. pytest자체와로컬pytest-sugar사용또는설치는유지."
+  },
+  "three_separate_claims": [
+    {
+      "claim": "v1부터CI제외가확정되어있었다",
+      "judgment": "아니오:조건부제외만명시",
+      "sources": [
+        "C4-RFC72-V1"
+      ]
+    },
+    {
+      "claim": "병합전에buffering을이유로CI제외가명시되고같이반영됐다",
+      "judgment": "직접 확인",
+      "sources": [
+        "C4-RFC72-V11",
+        "C4-CI-INTRO",
+        "C4-CI-MERGE"
+      ]
+    },
+    {
+      "claim": "이미확정/실행한CI활성선택을새공급자문제로되돌렸다",
+      "judgment": "미확인:보존첫CI코드는이미off",
+      "sources": [
+        "C4-CI-INTRO",
+        "C4-CI-VERBOSE"
+      ]
+    }
+  ],
+  "competing_explanations": [
+    "v1의조건부계획과v11의확정설명차이는기존구현범위를더정확히문서화한것일수있다.",
+    "원보존이력밖에서sugar를켠CI실험뒤끄기로결정했을수있지만그전상태·실패로그는직접확인하지못했다.",
+    "11월7일localpytest호환버그,12월11일병합후Travis최대로그길이는별도문제여서buffering때문에반영전포기한단일사슬로합칠수없다."
+  ],
+  "scope_exhausted": {
+    "looked_at": "RFC72v1/v11/v14, PR963의수집된댓글에서sugar/buffering/output 관련발언,보존48commitmetadata,CI도입·verbosity두diff,이미읽은고정합병CI명령",
+    "did_not_do": "새사례표집없음;옛CI모든로그/force-push전head복원및런타임실행없음",
+    "first_next_material": "PR963의2018-10초최초Travis run로그또는force-push전head의CI명령. 현재두commit의author날짜만으로대신하지않을것.",
+    "result_changes_if": "동일Travis대상에서sugar가활성화된이전선택과실제buffering실패,그때문에해제한작성자연결및병합전전환을고정원문으로연결하면엄격④로올릴수있음."
+  },
+  "recommended_result_sentence": "RFC72는Travis buffering과의부적합때문에pytest-sugar의CI적용을제외한조건부범위사례다. 최초안에실패시제외대안이이미있고보존CI도입코드도이미비활성화되어있어,확정된적용을반영전에새로포기한엄격한변경사례로는세지않는다.",
+  "new_sources": [
+    {
+      "source_id": "C4-RFC72-V1",
+      "original_url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest",
+      "pinned_url_or_version": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=1",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-12-03T14:00:57Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "Plan Phase1; cached complete text L71",
+      "source_kind": "initial_receiver_recheck",
+      "verified_fact": "일반적으로pytest-sugar를사용하되Travis buffering과맞도록하거나CI에서비활성화하는조건부계획. 처음부터무조건CI제외도,확정적CI채택도아님.",
+      "limitation": "앞선phase1에서직접받은고정v1HTML을재독. 이문장만으로실제sugar-enabled CI가존재했다고추정할수없음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-RFC-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-RFC72-V11",
+      "original_url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest",
+      "pinned_url_or_version": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=11",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-12-03T23:43:36Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "Plan Phase1; pytest-sugar bullet; timeline first from field",
+      "source_kind": "revised_receiver_recheck",
+      "verified_fact": "병합8일전의proposed판은Travis output buffering과잘맞지않아CI에서비활성화한다고명시한다. 본문상조건부대안에서구체적제외이유가확정됐다.",
+      "limitation": "200직접열람; SHA256 570acec65080685aa29613e2f4be9a83a99eeaf64e75e6d0633bee7c96212169. 이판의설명은적용범위와이유의기록이지버퍼링장애시험을직접관측한로그는아님.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-RFC-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-RFC72-V14",
+      "original_url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest",
+      "pinned_url_or_version": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=14",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-12-11T18:48:43Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "Plan Phase1; complete parsed text L76",
+      "source_kind": "revised_receiver_recheck",
+      "verified_fact": "implemented상태의v14에도CI에서sugar를끄는이유가그대로남는다. 일반pytest-sugar출력사용설명은남아있어프로젝트전체포기가아니다.",
+      "limitation": "v14는병합09:53:55Z뒤여서이판하나만으로반영전결정이라고할수없다. premerge증거는v11과보존CIcommit이맡는다.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-RFC-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-CI-INTRO",
+      "original_url": "https://github.com/OSGeo/gdal/commit/75c0dc375faabbe7d27d9d9a0eb4a98bd41cf44f",
+      "pinned_url_or_version": "75c0dc375faabbe7d27d9d9a0eb4a98bd41cf44f; parent0ad0018c36fa531f67320e8352508e65826c4e5f",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "author2018-10-04T10:11:13Z; committer2018-12-10T23:01:20Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "Use pytest in CI; autotest/requirements.txt; 8 Travis script.sh diff hunks",
+      "source_kind": "primary_code_change_recheck",
+      "verified_fact": "보존PR이력의CI도입커밋은requirements에pytest-sugar를추가하면서동시에8개Travis명령에-p no:sugar를넣는다. 설치/일반사용과CI활성화가별개이며,이보존도입단계에는sugar-on CI가없다.",
+      "limitation": "PR은rebase/squash되어author날짜와committer날짜가다름.10월4일에이정확내용이공개됐다고단정할수없다. 사라진옛head나그이전CI실험은미확인.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-merged-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-CI-VERBOSE",
+      "original_url": "https://github.com/OSGeo/gdal/commit/6c3d9aae2d57b5c3551012097b68a160b812f658",
+      "pinned_url_or_version": "6c3d9aae2d57b5c3551012097b68a160b812f658",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "author2018-11-30T02:55:44Z; committer2018-12-10T23:01:22Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "Travis script diffs; -v to -vv",
+      "source_kind": "primary_code_change_recheck",
+      "verified_fact": "뒤의CI상세출력커밋은-v를-vv로바꾸면서-p no:sugar를유지한다. sugar를켰다가끄는전환은아니다.",
+      "limitation": "assert표현잘림을줄이는별도선택이다. buffering때문에sugar를최초비활성화한변경으로잘못합치지않음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-merged-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-CI-MERGE",
+      "original_url": "https://github.com/OSGeo/gdal/blob/59d0840b1980d1a1a84701b6dae5fc5c78e999f5/gdal/ci/travis/gcc52_stdcpp14_sanitize/script.sh",
+      "pinned_url_or_version": "59d0840b1980d1a1a84701b6dae5fc5c78e999f5",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-12-11T09:53:55Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "L9; corresponding .travis.yml dispatch and other merged script commands",
+      "source_kind": "merged_code_recheck",
+      "verified_fact": "병합본에도pytest명령이sugarplugin을명시적으로끄는옵션을갖는다. premerge제외계획과같은CI범위가반영됨.",
+      "limitation": "정적코드확인;당시CI환경에서실행하지않음. 이최종상태만으로이전sugar-enabled상태를만들어낼수없음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-merged-72",
+      "counted": false
+    },
+    {
+      "source_id": "C4-PR-LOCALBUG",
+      "original_url": "https://github.com/OSGeo/gdal/pull/963#issuecomment-436459555",
+      "pinned_url_or_version": "comment436459555; created/updated2018-11-07T00:29:35Z",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-11-07T00:29:35Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "author response to local virtualenv exception",
+      "source_kind": "primary_discussion_recheck",
+      "verified_fact": "작성자는다른pytest호환버그의우회로가상환경에서pytest-sugar제거를제안한다. upstream이안고치면버전을고정하겠다고한다.",
+      "limitation": "이는Travis buffering문제가아니고로컬예외의대응이다. 서로다른문제를합쳐CIbuffering포기의시간사슬로쓰지않음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-PR-963",
+      "counted": false
+    },
+    {
+      "source_id": "C4-PR-OUTPUTAFTER",
+      "original_url": "https://github.com/OSGeo/gdal/pull/963#issuecomment-446245260",
+      "pinned_url_or_version": "comments446245260,446249564,446266996,446395777",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "2018-12-11T15:34:00Z..23:01:15Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "merged-day output limit discussion",
+      "source_kind": "primary_discussion_recheck",
+      "verified_fact": "병합후출력길이제한때문에-vv대신-ra를사용해해결했다는별도논의가있다.",
+      "limitation": "병합후이며sugar비활성화자체의사건이아니다. 반영전포기반례로소급하거나v11의buffering원인과합치지않음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-PR-963",
+      "counted": false
+    },
+    {
+      "source_id": "C4-PR-COMMITS",
+      "original_url": "https://api.github.com/repos/OSGeo/gdal/pulls/963/commits?per_page=100",
+      "pinned_url_or_version": "48 returned commits; PR merge59d0840b1980d1a1a84701b6dae5fc5c78e999f5",
+      "publisher": "GDAL / OSGeo official Trac or GitHub record",
+      "published_or_event_date": "current retained PR history observed2026-11-22T19:18:23Z",
+      "checked_utc": "2026-11-22T19:18:23Z",
+      "locator": "all48 retained commit metadata; selected two actual diffs",
+      "source_kind": "repository_history_metadata",
+      "verified_fact": "현재보존48개commit의제목·author/committer시각을읽고CI도입/상세출력두diff를직접대조했다. 독립적인sugar-off변경제목은없었다.",
+      "limitation": "commit제목부재만으로과거실험부재를증명하지않음. 모든48개diff를읽은것은아니며역사적force-push전head는복원하지않음.",
+      "question_ids": [
+        "Q4",
+        "Q5",
+        "Q6"
+      ],
+      "case_ids": [
+        "A-G02"
+      ],
+      "duplicate_group": "GDAL-PR-963",
+      "counted": false
+    }
+  ],
+  "read_receipts": {
+    "trac_v11": {
+      "url": "https://trac.osgeo.org/gdal/wiki/rfc72_pytest?version=11",
+      "checked_utc": "2026-11-22T19:15:25.893398+00:00",
+      "status": 200,
+      "sha256": "570acec65080685aa29613e2f4be9a83a99eeaf64e75e6d0633bee7c96212169",
+      "version_dates": [
+        [
+          "2018-12-03T15:43:36-08:00"
+        ],
+        [
+          "2018-12-03T15:07:16-08:00"
+        ]
+      ],
+      "matching_paragraphs_read": 2,
+      "stored_text_policy": "원문 전문/문단은복제하지않고위요약·짧은인용·고정URL·해시·위치만보존"
+    },
+    "ci_intro": {
+      "sha": "75c0dc375faabbe7d27d9d9a0eb4a98bd41cf44f",
+      "changed_file_count": 13
+    },
+    "verbosity": {
+      "sha": "6c3d9aae2d57b5c3551012097b68a160b812f658",
+      "changed_file_count": 10
+    },
+    "pr_commit_metadata_count": 48
+  },
+  "file_write_scope": "streams/review-counts/countertype4.json only",
+  "git_mutations": false,
+  "runtime_executed": false,
+  "validation": {
+    "required_source_keys": true,
+    "new_counted_works": 0,
+    "new_cases": 0,
+    "strict_abandonment_not_claimed": true
+  }
+}
