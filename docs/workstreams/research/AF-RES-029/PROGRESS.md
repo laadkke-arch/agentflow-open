@@ -21,3 +21,5 @@ Remote verification receipts and bundle commit IDs are appended after each commi
 - Common and route-input hashes: `evidence/common-seal.json`. A/B has not started. Ambiguous mirror policy correction is separately timestamped.
 
 - Common-start commit `5543465bd18542d3994280ebaab3487ae04a1e04` remotely reread; blob `7479dcfb9002f781de9779875795f86110b400b3`, 106 sealed files rehashed with zero mismatches. Separate fresh A and B contexts started after reread; odd A / even B first.
+
+- Reading rules were operationalized before the coordinator inspected route outcomes: remote commit `dd5dd2296fc5480c5d8e4b1fe7ba86b643e38430`, `ADJUDICATION.md` reread through GitHub. Rules preserve the frozen predicates and distinguish opened text from exact returned citations.
