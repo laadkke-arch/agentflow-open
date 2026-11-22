@@ -1,0 +1,25 @@
+CountSE &lt;- function(counts, ...) {
+    se &lt;- SummarizedExperiment(list(counts=counts), ...)
+    .CountSE(se)
+}</code></pre>
+</div>
+<div id="defining-a-validity-method" class="section level2">
+<h2><span class="header-section-number">2.3</span> Defining a validity method</h2>
+<p>We define a validity method that enforces the constraints that we
+described earlier. This is done by defining a validity function using
+<code>setValidity2</code> from the <a href="https://bioconductor.org/packages/S4Vectors">S4Vectors</a>
+package<label for="sidenote-2" class="sidenote-number">2</label><label for="sidenote-2" class="margin-toggle" onclick="toggle_visibility('sidenote-2')">2</label><span class="sidenote" id="sidenote-2"><span class="sidenote-number">2</span> This allows us to turn off the validity checks in internal functions where intermediate objects may not be valid within the scope of the function.</span>.
+Returning a string indicates that there is a problem and triggers an
+error in the R session.</p>
+<pre class="r"><code>setValidity2(&quot;CountSE&quot;, function(object) {
+    msg &lt;- NULL
+
+    if (assayNames(object)[1] != &quot;counts&quot;) {
+        msg &lt;- c(msg, &quot;'counts' must be first assay&quot;)
+    }
+
+    if (min(assay(object)) &lt; 0) {
+        msg &lt;- c(msg, &quot;negative values in 'counts'&quot;)
+    }
+
+    if (is.null(msg)) {
