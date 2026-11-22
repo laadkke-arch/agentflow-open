@@ -249,6 +249,16 @@ def derive():
     patch = [check_wire(RECEIPTS / "jupyter-6271" / phase, "ipyk271", "6.27.1", fixtures["jupyter"], "received.jsonl")
              for phase in ("first", "replay")]
     assert patch[0] == patch[1] == check_wire(replay, "ipyk27", "6.27.0", fixtures["jupyter"])
+    holder = RECEIPTS / "java-holder-control"
+    holder_expected = [
+        {"explicit_count": False, "producer_count": 0, "exported_length": 0,
+         "consumer_count": 0, "payload_0_hex": None},
+        {"explicit_count": True, "producer_count": 2, "exported_length": 2,
+         "consumer_count": 2, "payload_0_hex": "68656c6c6f20776f726c64"},
+    ]
+    for phase in ("first", "replay"):
+        assert read_json(holder / f"holder-{phase}.json")["exit_code"] == 0
+        assert read_lines(holder / f"holder-{phase}.stdout") == holder_expected
     assert rows.keys() == contracts.keys()
     ordered = [rows[cell] for cell in contracts]
     assertions = {"dut": dict(Counter(c["q"] for c in contracts.values())),
@@ -295,6 +305,7 @@ def main():
         "observations_sha256": sha256(result.encode()), "comparison_sha256": sha256(csv_out.getvalue().encode()),
         "cases": assertions, "source_total": len(sources), "counted_sources": len(minimum),
         "sources_by_group": counts, "additional_ipykernel_6271_cases_equal": 6,
+        "additional_java_holder_controls_equal": 2,
         "first_and_fresh_stage_summary": stages,
     }
     documents = {
