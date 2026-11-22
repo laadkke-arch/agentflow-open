@@ -57,6 +57,19 @@ def status(value):
     return 'hold'
 
 
+def decision_reference(qid, decisions, decision_paths):
+    """Keep the questioner's evidence distinct without copying its full audit."""
+    row = decisions.get(qid)
+    if row is None:
+        return {'status': '미확인', 'reason': 'followup record not yet added'}
+    return {'record': decision_paths[qid], 'question_id': qid,
+            'decision_status': row.get('decision_status', 'unknown'),
+            'actual_choice': row.get('actual_choice', 'unknown'),
+            'choice_scope': row.get('choice_scope', 'unknown'),
+            'source_ids': row.get('source_ids', []),
+            'source_urls': row.get('source_urls', [])}
+
+
 def main():
     qs = {r['id']: r for r in jl(BASE / 'questions.jsonl')}
     mapping = jl(BASE / 'evidence/blind-mapping.jsonl')
@@ -76,12 +89,14 @@ def main():
         raise ValueError(f'Review keys differ: missing={sorted(set(packets)-set(reviews))}, extra={sorted(set(reviews)-set(packets))}')
     history = {}
     decisions = {}
+    decision_paths = {}
     for path in sorted((BASE / 'followups').glob('*/candidate-history.jsonl')):
         for r in jl(path):
             history[(r['question_id'], r['candidate_id'])] = r
     for path in sorted((BASE / 'followups').glob('*/decisions.jsonl')):
         for r in jl(path):
             decisions[r['question_id']] = r
+            decision_paths[r['question_id']] = str(path.relative_to(BASE))
     exposure = json.loads((BASE / 'evidence/exposure-summary.json').read_text())
     blind_leak = set(json.loads((BASE / 'evidence/blinding-amendment.json').read_text())['leaked_keys'])
     source_map = json.loads((BASE / 'evidence/blind-source-map.json').read_text())
@@ -114,7 +129,7 @@ def main():
                     'reason': pr.get('reason', ''), 'counterexample': p.get('counterexample', review.get('notes', {})),
                     'reviewer': review['reviewer'], 'review_basis': pr.get('assessment_basis', 'see reviewer record'),
                     'fresh_audit_source_ids': pr.get('fresh_audit_source_ids', []),
-                    'questioner_followup_choice': decisions.get(qid, {'status': '미확인', 'reason': 'followup record not yet added'}),
+                    'questioner_followup_choice': decision_reference(qid, decisions, decision_paths),
                     'researcher_inference': review.get('proposed_boundary', packets[key]['proposed_uses']),
                     'novelty_category_cross_reader': review.get('novelty_category', 'unknown'),
                     'route_word_exposure_before_remask': key in blind_leak,
@@ -151,6 +166,7 @@ def main():
                 'use_boundary': r.get('use_boundary', r.get('proposed_use', '')) if cid else '',
                 'new_target': new_target, 'new_use_in_known_target': known_use,
                 'initial_named_target': bool(cid and r.get('initial_named_target')),
+                'initial_named_target_unit': 'frozen host/product-family unit; not a claim that the exact component string appears or that the author knew it',
                 'source_ids': r.get('source_ids', []) if cid else [], 'current_version': r.get('current_version', 'unknown'),
                 'provider_status_self': r.get('provider_status', 'unknown') if cid else 'empty',
                 'opened_complete_self': bool(cid and r.get('opened_complete')), 'cited_complete_self': bool(cid and r.get('cited_complete')),

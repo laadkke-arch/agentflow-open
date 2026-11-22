@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Mechanical audit only; run with python -B. Never edits frozen discovery."""
 import json
+import hashlib
+import copy
+import re
 from pathlib import Path
 from collections import Counter
 ROOT = Path(__file__).resolve().parent
@@ -46,6 +49,33 @@ for s in src:
 receipts=[json.loads(p.read_text()) for p in sorted((ROOT/"receipts").glob("*.json"))]
 check(len(receipts)==53,"53 actual external tool calls")
 check(all(r.get("request") and r.get("raw_response_sha256") and r.get("started_utc") and r.get("finished_utc") for r in receipts),"every receipt has request/hash/timing")
+amendment_path=ROOT/"amendments/JP-AMEND-002.json"
+if amendment_path.exists():
+    amendment=json.loads(amendment_path.read_text())
+    digest=lambda value:hashlib.sha256(value).hexdigest()
+    canonical=lambda value:digest(json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode())
+    changes=amendment["receipt_changes"]
+    check(len(changes)==32 and len({x["file"] for x in changes})==32,"32 distinct receipt selectors redacted")
+    check(digest((ROOT/amendment["previous_seal_snapshot"]).read_bytes())==amendment["previous_seal_sha256"],"previous seal preserved byte for byte before receipt redaction")
+    for item in changes:
+        receipt_path=ROOT/item["file"]
+        record=json.loads(receipt_path.read_text())
+        check(record["request"].get("link_id")=="[connection selector redacted]",item["file"]+":selector redacted")
+        check(digest(receipt_path.read_bytes())==item["after_sha256"],item["file"]+":redacted receipt hash")
+        invariant=copy.deepcopy(record)
+        invariant["request"].pop("link_id",None)
+        check(canonical(invariant)==item["all_other_fields_sha256"],item["file"]+":all non-selector fields unchanged")
+    def string_values(value):
+        if isinstance(value,str):
+            yield value
+        elif isinstance(value,dict):
+            for child in value.values():
+                yield from string_values(child)
+        elif isinstance(value,list):
+            for child in value:
+                yield from string_values(child)
+    check(not any(re.search(r"\blink_[A-Za-z0-9_-]+",value) for r in receipts for value in string_values(r.get("request",{}))),"no unredacted internal selector value remains in receipt requests")
+    check(all(digest((ROOT/name).read_bytes())==value for name,value in amendment["protected_evidence_sha256"].items()),"source observations and history evidence unchanged by receipt redaction")
 check(len(json.loads((ROOT/"diff-observations.json").read_text()))==4,"four fixed proposal diffs")
 check({s["related_questions"][-1] for s in src if s["role"]=="followup_decision" and s["count_in_minimum"]}=={"Q09","Q10","Q11","Q12"},"four distinct followup cases counted")
 out={"status":"PASS" if all(c["met"] for c in checks) else "FAIL","checks":len(checks),"failed":[c for c in checks if not c["met"]],"denominators":{"questions":len(dec),"original_slots":len(original),"unique_original_candidates":len(orig),"candidate_history_rows":len(hist),"sources":len(src),"counted_sources":sum(s["count_in_minimum"] for s in src),"receipts":len(receipts)},"historical_availability_counts":{state:sum(x["historical_availability"]==state for x in hist) for state in ["supported","not_available","unknown"]},"limitations":"Mechanical audit of own records only; not independent factual validation or runtime testing."}

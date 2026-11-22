@@ -40,12 +40,15 @@ def load_rows(path):
 
 
 def main():
-    paths = [BASE / 'evidence/initial-sources.json']
+    paths = [BASE / 'evidence/initial-sources.json', BASE / 'evidence/internal-sources.json']
     paths += [BASE / 'streams' / n / 'sources-candidates.json' for n in ('arrow', 'cargo', 'jupyter')]
     paths += sorted((BASE / 'reviews').glob('*/sources.json'))
     paths += sorted((BASE / 'followups').glob('*/sources.json'))
     paths += sorted((BASE / 'supplements').glob('sources.json'))
     manual = {}
+    overrides = {}
+    if (BASE / 'evidence/source-eligibility-overrides.json').exists():
+        overrides = {r['source_id']: r for r in load_rows(BASE / 'evidence/source-eligibility-overrides.json')}
     if (BASE / 'evidence/source-equivalences.json').exists():
         for group in json.loads((BASE / 'evidence/source-equivalences.json').read_text()):
             for sid in group['source_ids']:
@@ -75,7 +78,7 @@ def main():
             r['producer'] = r.get('producer', '미확인')
             r['related_questions'] = r.get('related_questions', r.get('question_ids', []))
             r['lineage_id'] = r.get('lineage_id', norm(r['source_url']))
-            role = r.get('source_role', r.get('source_category', r.get('kind', 'exploration')))
+            role = r.get('source_role', r.get('role', r.get('source_category', r.get('kind', 'exploration'))))
             if path.name == 'initial-sources.json' and r.get('count_in_minimum'):
                 role = 'initial_design'
             if role in ('candidate_provider', 'provider_original'):
@@ -83,13 +86,18 @@ def main():
             if '/reviews/' in str(path):
                 role = 'audit_provider'
             if '/followups/' in str(path):
-                role = r.get('source_role', 'followup_decision')
+                role = r.get('source_role', r.get('role', 'followup_decision'))
             if '/supplements/' in str(path):
                 role = r.get('source_role', 'supplemental_original')
             r['source_role'] = role
             r['observation_type'] = r.get('observation_type', 'provider_statement' if 'provider' in role else 'direct_document_read')
             r['minimum_eligible_before_deduplication'] = bool(r.get('count_in_minimum', False))
             r['minimum_eligibility_reason'] = r.get('count_reason', '미확인')
+            if sid in overrides:
+                override = overrides[sid]
+                r['minimum_eligible_before_deduplication'] = override['eligible']
+                r['minimum_eligibility_reason'] = override['reason']
+                r['eligibility_audit'] = override
             r['document_identity'] = manual.get(sid, r.get('original_document_id', norm(r['source_url'])))
             observations.append(r)
 
@@ -123,17 +131,23 @@ def main():
         representative = eligible[0] if eligible else members[0]
         did = 'DOC-' + hashlib.sha256(representative['document_identity'].encode()).hexdigest()[:12]
         for r in members:
-            r['original_document_id'] = did
+            r['original_document_id'] = 'DOC-' + hashlib.sha256(r['document_identity'].encode()).hexdigest()[:12]
+            r['minimum_count_group_id'] = did
             r['representative_source_id'] = representative['source_id']
             r['count_in_minimum'] = bool(eligible) and r is representative
+            same_document = r['document_identity'] == representative['document_identity'] or norm(r['source_url']) == norm(representative['source_url'])
+            r['count_group_relation_to_representative'] = 'same_document_or_version' if same_document else 'shared_lineage_conservative_exclusion'
             r['count_reason'] = (r['minimum_eligibility_reason'] if r['count_in_minimum']
-                else ('동일 원문의 중복 관측; 산입 대표 ' + representative['source_id'] if eligible else r['minimum_eligibility_reason']))
+                else (r['minimum_eligibility_reason'] if r['source_id'] in overrides
+                else (('동일 원문/다른 판의 중복 관측; 산입 대표 ' if same_document else '동일 계보/설계 사건의 별도 자료를 최소수에서 보수적으로 제외; 원문 복제라고 단정하지 않음. 산입 대표 ') + representative['source_id'] if eligible else r['minimum_eligibility_reason'])))
         if eligible:
             original_counts[representative['source_role']] += 1
     (BASE / 'sources.json').write_text(json.dumps(observations, ensure_ascii=False, indent=2) + '\n')
     summary = {
         'observation_rows': len(observations),
         'unique_document_groups_including_unread': len(groups),
+        'count_group_definition': 'Conservative minimum-count groups unite declared document identities/URL aliases and explicitly recorded source lineages. Separate documents in one lineage can be excluded; this is a lower-bound count, not an assertion that all grouped observations are copies of one text.',
+        'individual_document_identities_including_unread': len({r['original_document_id'] for r in observations}),
         'counted_unique_direct_originals': sum(r['count_in_minimum'] for r in observations),
         'counted_by_role': dict(original_counts),
         'counted_source_ids': [r['source_id'] for r in observations if r['count_in_minimum']],
