@@ -66,6 +66,7 @@ def sources():
         folder = ROOT / "streams" / stream
         files = [folder / "sources.jsonl"]
         files += sorted(folder.glob("sources-supplement*.jsonl"))
+        files += [folder / "additional-sources.jsonl", folder / "screening-attempts.jsonl", folder / "attempts.jsonl"]
         for path in files:
             if not path.exists():
                 continue
@@ -74,12 +75,20 @@ def sources():
                 if not line.strip():
                     continue
                 raw = json.loads(line)
-                sid = raw["source_id"]
+                sid = raw.get("source_id") or "ATT-" + raw["attempt_id"]
+                raw.setdefault("work_id", f"attempt:{stream}:{sid}")
+                if path.name == "attempts.jsonl":
+                    raw.setdefault("checked_utc", raw.get("first_query_utc") or raw.get("start_utc"))
+                    raw.setdefault("checked_utc_precision", raw.get("utc_precision", "recorded attempt; first retrieval time may be unavailable"))
+                    raw.setdefault("location", "search query or HTTP retrieval attempt; no independent authored work")
+                    raw.setdefault("finding", raw.get("result") or raw.get("error") or raw.get("status"))
+                    raw.setdefault("limitation", "Attempt or discovery record only; no additional minimum-count source")
                 if sid in source_ids:
                     raise ValueError("duplicate source_id " + sid)
                 source_ids.add(sid)
                 proposed = bool(first(raw, "count_in_minimum", "minimum_count", default=False))
                 work = canonical_work(raw)
+                is_git_object = work.startswith("git:")
                 allocation = first(raw, "allocation", "minimum_allocation", default="supplementary")
                 count = proposed and work not in used
                 duplicate = used.get(work) if proposed and not count else raw.get("duplicate_of")
@@ -89,16 +98,21 @@ def sources():
                     "source_id": sid, "work_id": work, "original_work_id": raw["work_id"],
                     "edition_id": raw.get("edition_id"), "url": first(raw, "url", "source_url"),
                     "final_url": raw.get("final_url"), "publisher": raw.get("publisher"),
-                    "kind": raw.get("kind"), "published_at": first(raw, "published_at", "publication_date", default=None),
-                    "modified_at": first(raw, "modified_at", "modified_date", default=None),
+                    "kind": raw.get("kind"),
+                    "published_at": None if is_git_object else first(raw, "published_at", "publication_date", default=None),
+                    "modified_at": None if is_git_object else first(raw, "modified_at", "modified_date", default=None),
+                    "git_author_date_from_stream": first(raw, "published_at", "publication_date", default=None) if is_git_object else None,
+                    "git_committer_date_from_stream": first(raw, "modified_at", "modified_date", default=None) if is_git_object else None,
+                    "date_semantics": "Git object date fields are not publication or work-time observations; see events for public anchors" if is_git_object else "platform/source metadata; editable body edition is separately qualified",
                     "checked_utc": raw.get("checked_utc"), "checked_utc_precision": raw.get("checked_utc_precision", "as recorded by stream"),
                     "location": raw.get("location"), "finding": raw.get("finding"),
                     "limitation": first(raw, "limitation", "limitations"),
-                    "questions": first(raw, "questions", "question_ids", default=[]), "case_ids": raw.get("case_ids", []),
+                    "questions": first(raw, "questions", "question_ids", default=["Q1"] if "screening" in path.name else []), "case_ids": raw.get("case_ids", []),
                     "duplicate_of": duplicate, "count_in_minimum": count,
                     "allocation": ALIASES.get(allocation, allocation),
                     "raw_count_in_minimum": proposed, "raw_allocation": allocation,
                     "read_status": first(raw, "access_status", "read_status", "reading_method", default="stream semantic reading receipt"),
+                    "query": raw.get("query"), "attempt_recorded_utc": raw.get("recorded_utc"),
                     "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number,
                 })
     (ROOT / "sources.jsonl").write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in output))
