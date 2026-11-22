@@ -7,7 +7,7 @@
 | ① | 첫 사례조회 전 SCOPE v1·계약 manifest·환경 | `a6cc61d4c2b6baf7cae47569c1454b371986ce47` |
 | ② | 원 소비 목적·판 이력·기준 key·32카드·원문/프레임 봉인 | `b3aa200fce66f0635e74aa39c4cb008cafd86eff` |
 | ③ | 동일 카드의 실제 열람·가림 판독·원관측 봉인 | `6c58c98d60351b9b125a8611887fec0972aeae1f` |
-| ④ | 원키 대조·짝 재집계·반례·자체점검·수용기록 | 묶음 작성·검산 완료; 이 커밋의 원격 SHA는 마지막 인계 커밋에서 기록 |
+| ④ | 원키 대조·짝 재집계·반례·자체점검·수용기록 | `69060e2d1c3cf7f4502abe508679386a95bfa34e` |
 
 실제 시작 통합 SHA: `333e83c9a46b0c005d22efcccbb5a055b27e904e`. AF-RES-043 브랜치가 없음을 원격 `ls-remote`에서 확인한 뒤 이 SHA로 로컬 브랜치를 만들었다. 지정된 session start --fetch가 exit0으로 manifest를 생성했다.
 
@@ -16,3 +16,5 @@
 ③ 봉인범위: 32카드·64판독, 발행요청73·로컬X동작32·같은문서동작4. 각 과업≤2회, 1개 click의 literal href는 미확인. 모든 실패와 순서 노출을 보존했으며 아직 정오를 채점하지 않았다. 별도 원문/방법 감사와 후속 재열람은 ④에 기록한다.
 
 ④ 검산범위: 원64판정의 기존 필드는 변경0, 사례 내 비교64짝과 두 감도의 집계48행을 별도 계산했다. C 근거 충족24/28, 본 H12/16, 자연 재구성 H4/12, 유효 X의 H 로컬 재표시14/14다. 두 번째 요청의 literal href 미확인은 ③의 단순 검사가 놓친 접두사값6개를 포함해 **7/9**로 정정했으며, 원수치와 이유는 evidence/amendments.md에 남겼다. 전체 출처119행, 고유 직접 1차 문서 하한28개이나 엄격 구성은23/24다. 수용40조건 중31충족·9미충족으로 완전 연구 수용은 false다. 결과 커밋 뒤 고정 RESULT/수용 파일 재독과 session check --fetch를 실제 실행한 다음 HANDOFF를 별도 마지막 커밋한다.
+
+④ 이후 실제 확인: 고정 결과 SHA의 RESULT.md와 evidence/acceptance-evidence.json을 GitHub에서 재독해 전체본문·Git blob·SHA-256 일치를 확인했다(2026-11-22T21:07:54Z). 해당 SHA에서 요청한 session check --fetch는 2026-11-22T21:08:11Z에 exit0/status passed/remote_checked를 반환했다. 점검 시 통합 SHA는 `8892cc093f7f23f6f7b029d5bc3dfa304c72f64e`이며 계약 해시는 시작과 같고 범위 밖 변경0·충돌0·오류0이다. 영수증은 evidence/postcommit-verification.json 및 session-check.json/log, 인계는 이 뒤 별도 마지막 커밋의 HANDOFF.md다. 연구 수용 미충족은 세션 계약 검사 통과와 별개다.
