@@ -14,3 +14,5 @@
 - ③a의 제외. GitHub API는 CONNECT 403이어서 blob 없는 Git 태그 fetch와 같은 커밋의 raw 문서를 썼다. 공개일을 확인할 때 현재의 페이지 제목·게시일만 관측 버전 고정에 썼다.
 - 정책 상한을 검사할 때 Git fetch 하나의 논리 단위와 내부 HTTP 시도를 나눠 쓰고, 내부 실제 요청 수도 D/S가 같은 분기 상한을 넘지 않도록 검사한다.
 - 다음 실행은 `python -B docs/workstreams/research/AF-RES-024/acquire.py --run cold --cache /tmp/af-res-024-data --out docs/workstreams/research/AF-RES-024 --quarters 2022Q4 2023Q1 2023Q2`다.
+
+- 묶음 ③ (2022Q4–2023Q2). 선행 원격 커밋 `7f63abee7f814c213b06c932af7963a65313fc93`. 관측 216행, 출발 경로 부재 0건, 수신 실패 0건이다. 이 묶음의 원장과 해시는 snapshots/와 evidence/receipts/cold/에 있다. 다음 미수집 분기부터 앞 명령으로 재개한다.
