@@ -1,0 +1,31 @@
+# Reader A execution notes
+
+- Identity: same-family fresh-context model reader; model document reading, not a human study.
+- Assignment: N-P-01 and N-P-02; key exposure none at start.
+- Protocol read from READER_PROTOCOL.md; no key, versions, components, sources, collection, other readers or reports accessed.
+- Earlier card exposure will be recorded without claiming erased memory.
+
+- 2026-11-22T20:30:47.443132+00:00: N-P-01-B/C completed independently with one publisher open. Evidence is the tool-returned document; no measured network-round-trip claim. No earlier card exposure.
+- 2026-11-22T20:31:06.846899+00:00: N-P-01-B/H ended after one publisher open: historical edition unverified. Prior same-card C exposure acknowledged, not reused as current-task evidence.
+- 2026-11-22T20:31:18.185787+00:00: N-P-01-BLX/C: local X displayed and recorded separately at budget 0; earlier N-P-01-B C/H exposure remains acknowledged.
+- 2026-11-22T20:31:32.163885+00:00: N-P-01-BLX/C completed with one publisher open plus separate local X display.
+- 2026-11-22T20:31:38.656127+00:00: N-P-01-BLX/H starts independently; prior N-P-01-B C/H and same-card C exposure acknowledged. X redisplay is not publisher evidence.
+- 2026-11-22T20:31:51.392547+00:00: N-P-01-BLX/H: historical URL web-open failure counts as one publisher open; no retry or tool switch. Only local redisplay established.
+- 2026-11-22T20:32:07.420439+00:00: N-P-01-BL/C completed with one publisher open; no X exists on this card.
+- 2026-11-22T20:32:16.147044+00:00: N-P-01-BL/H ended with one counted failed publisher open and no qualifying next href. Previous BLX excerpt exposure was not treated as evidence here.
+- 2026-11-22T20:32:22.000697+00:00: N-P-01-BX/C local X displayed at budget 0. Prior B, BLX, and BL exposure acknowledged.
+- 2026-11-22T20:32:30.683049+00:00: N-P-01-BX/C completed with one publisher open and separate local X.
+- 2026-11-22T20:32:36.514303+00:00: N-P-01-BX/H started independently with local X display. Historical URL seen on other cards is not available for first open on this card.
+- 2026-11-22T20:32:46.468947+00:00: N-P-01 complete: eight judgments appended. H distinguishes current page, local redisplay, and inaccessible added historical URL. No historical publisher edition was successfully opened. Key exposure remains none.
+- 2026-11-22T20:33:09.948828+00:00: N-P-02-BL/H: publisher v1.24 definition actually compared. The consumer's original edition is not established; false recorded separately from publisher_edition_match.
+- 2026-11-22T20:33:20.792501+00:00: N-P-02-BL/C completed independently from H with one current publisher open.
+- 2026-11-22T20:33:29.399535+00:00: N-P-02-BX/H local X recorded separately; prior N-P-02-BL v1.24 document exposure acknowledged and not imported as evidence.
+- 2026-11-22T20:33:46.587548+00:00: N-P-02-BX/H completed with one current publisher open and local redisplay only. The output snippet was selected from the first returned document; no extra network request or same-document find was made.
+- 2026-11-22T20:33:53.480816+00:00: N-P-02-BX/C starts independently; prior same-card H exposure acknowledged.
+- 2026-11-22T20:34:02.764289+00:00: N-P-02-BX/C completed with one publisher open. First-response snippet extraction uses the current card's numpy.ndarray term; no additional publisher request.
+- 2026-11-22T20:34:19.077949+00:00: N-P-02-B/H completed with one current publisher open; no X and no historical edition verified.
+- 2026-11-22T20:34:27.878188+00:00: N-P-02-B/C completed independently with one publisher open.
+- 2026-11-22T20:34:34.755154+00:00: N-P-02-BLX/H local X displayed at budget 0; prior assigned-card exposure recorded.
+- 2026-11-22T20:34:44.383728+00:00: N-P-02-BLX/H completed with actual v1.24 publisher-edition match and separate local X display; consumer_edition_confirmed remains false.
+- 2026-11-22T20:34:51.277164+00:00: N-P-02-BLX/C started independently after H, with same-card and earlier-card exposure acknowledged.
+- 2026-11-22T20:35:04.145555+00:00: N-P-02 complete and all 16 assigned judgments recorded. Identity: same-family fresh-context model reader, with acknowledged sequential prior-card exposure. Key exposure remained none. No web searches, second publisher requests, tool switches after failures, credential use, or git operations were performed. All writes stayed under reader_a. Publisher response titles are reported as observed; cached/tool-returned content is not a network-round-trip measurement.

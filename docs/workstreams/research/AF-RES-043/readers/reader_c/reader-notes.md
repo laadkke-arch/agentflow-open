@@ -1,0 +1,11 @@
+# Reader C notes
+
+Fresh context in the same model family; model document reading, not independent human evidence. Assigned N-S-02, T02, J02. Read cards one at a time in presentation order and tasks in their printed order. No key or grading materials opened; key_exposure=none. Earlier-card and earlier-task exposure is retained in judgments. Publisher request failures consume an open. Local X markers saying 미확인 are logged but are not excerpt redisplay successes.
+
+N-S-02 completed: 8 judgments in presentation/task order. Original ATS URL requests failed, with no onward href. Added OARC location was independently opened in each applicable task; no historical edition was identified. X is unavailable in both X cards. All failures counted; no repair requests or search.
+
+T02 completed: all 8 observations had a fresh recorded publisher open to the original edition URL. The title/date and relevant section were observed. Some initial tool outputs were displayed with irrelevant navigation/sections omitted; no second request or network timing inference was made. No cross-task cached result was substituted for a new request.
+
+J02 completed: 8 judgments. DOI-only starting requests failed via dx.plos.org; no guessed PLOS repair was made. BLX C used the first document's exposed correction DOI (link 55), which failed as the second open, and the resulting hold remains unchanged. BL C later used the newly opened first document's actual View correction link 56, which succeeded. Prior-card failure informed route selection and is disclosed; no memory erasure or independence is claimed. The click tool did not expose the raw underlying href/request URL, so those fields are 미확인; exact parent source/link ID and returned resolved URL are recorded. No third request was made to recover that missing field.
+
+All 24 observations completed, unscored. No key, versions, components, sources, collection, other reader, or results file was opened. No web search or diagnostic publisher request was made. Every task had its own publisher request; responses may be service-cached, and the records make no network latency or fresh-origin-round-trip claim. Only allowed reader_c files were written. No git operation was performed.
