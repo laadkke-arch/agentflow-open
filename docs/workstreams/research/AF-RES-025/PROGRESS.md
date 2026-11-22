@@ -10,3 +10,9 @@
 | ② 입력·질의 | 검색전봉인준비 | Q12 / 24경로 / 72질의 / frame425행 | 이묶음을원격커밋·재독후첫검색 | evidence/input-lock.json 및 input-check-preseal.json |
 
 이번묶음의최초판복구·잠정교체는SCOPE-AMENDMENTS와stream별복구영수증에있다. 원검색은아직실행하지않았다.
+
+| ② 원격확인 | 완료 | a4b4a028355dec8c507df304d6b1d9e0ae467d1d | Q01~Q12 고정검색 시작 | queries blob78a542a67032f768c8565a9c1f3cafcaba25e559 및 input-lock blob0040c94016eb3659b2a8881c79b2e1aee3561ee3 재독성공 |
+
+2026-11-22T05:04:41Z 원격봉인 확인 뒤각stream에고정검색을배정했다. 다른경로의질의문과최초입력은이후바꾸지않는다.
+
+| ② Q08 적격성 정정 | 원격저장대기 | Q08 RFC3146 · source CG-I05 | 공개정정커밋확인후Q08검색시작 | 다른11질문불변;Q08검색0;원질의는기존봉인커밋의이력파일에존재 |
