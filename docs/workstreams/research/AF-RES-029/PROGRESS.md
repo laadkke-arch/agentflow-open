@@ -19,3 +19,5 @@ Remote verification receipts and bundle commit IDs are appended after each commi
 - 12 neutral queries; all first-ten provided ranks retained. 22 body-open attempts, including failures and unusable excerpts. No replacement beyond the two-open cap.
 - 24 route-specific inputs exclude common search snippets and all opposite-route material. Exact originals and provider boundaries remain available.
 - Common and route-input hashes: `evidence/common-seal.json`. A/B has not started. Ambiguous mirror policy correction is separately timestamped.
+
+- Common-start commit `5543465bd18542d3994280ebaab3487ae04a1e04` remotely reread; blob `7479dcfb9002f781de9779875795f86110b400b3`, 106 sealed files rehashed with zero mismatches. Separate fresh A and B contexts started after reread; odd A / even B first.
