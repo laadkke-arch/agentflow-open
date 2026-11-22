@@ -17,3 +17,7 @@
 ## ③ 후보 근거·36보기·실제 경로
 
 원격 `ed63f44ff0586265d6640bedb82fc6c5c286f9b1`, tree `bf8cc9dfd7dafda2255fe64c80dcc1ccdd713f25`. 변경134파일의 Git blob SHA와 로컬 SHA256을 fetch 후 전부 대조했다. 고정 HTTP 계획/관측1,924개, 별도 Requests browser1개, C2 동일 출발카드의 새 exact-response 시행2개를 보존했다. 같은 관측을 방식별로 복제하지 않았다. sources632행/고유84원문, 원풀·후보별 근거·최소완전조합·36보기와 실제 도착 원장. 범위/해시 목록은 `evidence/publication-bundle3.json`.
+
+## ④ 짝 집계·반례·자체 점검·수용 기록
+
+원격 `c92cf9924ef4935fb77eb555d5bfedacc09ee9b3`, tree `35a6fe9aa8f92ee57e0938f934a855ebf2425684`. 변경13파일의 blob/내용 해시를 fetch 후 대조했다. RESULT 필수12행·36행, 이름/계약/보강층, 원풀과 추가 경로 구분, 분야 반례·W/U, SELF_CHECK,203/203 검산과 수용 미충족을 저장했다. 이 커밋에서 수용 원장 작성 시점의 묶음④ 미발행 표시는 다음 절차 확인 커밋에서 이 SHA로 확정한다. 실증 미충족6개는 바꾸지 않는다.
