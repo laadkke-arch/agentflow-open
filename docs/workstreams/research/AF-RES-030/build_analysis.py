@@ -216,6 +216,7 @@ def main():
         groups[sample+'_all']=aggregate(base)
         groups[sample+'_information_question']=aggregate([r for r in base if r['root30']['information_question']])
         groups[sample+'_direct_answer']=aggregate([r for r in base if r['root30']['same_variable_answer']])
+        groups[sample+'_same_goal_execution']=aggregate([r for r in base if r['root30']['new_execution_success'] or r['root30']['new_execution_failure']])
         groups[sample+'_same_goal_execution_success']=aggregate([r for r in base if r['root30']['new_execution_success']])
         groups[sample+'_unexposed']=aggregate([r for r in base if not r['exposure_effective']])
         groups[sample+'_nonmaintainer']=aggregate([r for r in base if not r['maintainer_requester']])

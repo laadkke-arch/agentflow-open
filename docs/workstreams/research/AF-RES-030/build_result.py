@@ -88,7 +88,7 @@ for r in rows:
  case_table.append([first,goal,' / '.join(qparts),' / '.join(apart),rec,' / '.join(actions)])
 
 den_rows=[]
-labels={'A_all':'A 전체; 제외 없음','A_information_question':'A root30 정보질문 있음; fit·새 설계·역방향 제외','A_direct_answer':'A 같은 변수 기존값 직접답','A_same_goal_execution_success':'A 새 동일목적 한정성공 보고','B_all':'선정 B 전체; A 대체/발생률 보강 금지','B_information_question':'B root30 정보질문 있음; XB06 late 제외','B_direct_answer':'B 같은 변수 기존값 직접답','B_same_goal_execution_success':'B 새 동일목적 한정성공 보고'}
+labels={'A_all':'A 전체; 제외 없음','A_information_question':'A root30 정보질문 있음; fit·새 설계·역방향 제외','A_direct_answer':'A 같은 변수 기존값 직접답','A_same_goal_execution':'A 같은 목적 후속 실행 보고; 성공·실패 모두 포함','A_same_goal_execution_success':'A 새 동일목적 한정성공 보고만','B_all':'선정 B 전체; A 대체/발생률 보강 금지','B_information_question':'B root30 정보질문 있음; XB06 late 제외','B_direct_answer':'B 같은 변수 기존값 직접답','B_same_goal_execution':'B 같은 목적 후속 실행 보고; 성공·실패 모두 포함','B_same_goal_execution_success':'B 새 동일목적 한정성공 보고만'}
 for key,label in labels.items():
  g=counts[key];sample=key[0]
  current=len(g['current_overlap_cases'])
@@ -130,6 +130,8 @@ text+='''## 판정의 의미와 핵심 결론
 **A24에서 root30 정보질문은8건, 같은 변수 기존값 직접답은3/8건이다. B8에서는 root30 질문7건 중6건이 직접답을 받았다. 그 직접답이 같은 지원자의 기존 구체 권고 변경과 새 동일목적 실행으로 이어졌음을 엄격하게 확인한 완전사슬은 A0/3, B0/6이다.** 공개 대화는 질문이 실제로 있었고 답에 정보가 들어 있다는 점을 보여 주지만, 이 표본에서는 질문한 변수 하나가 기존 권고를 바꿨다는 연결을 분리해 보여 주지 못했다. 이것을 질문의 가치가 없다는 결론으로 바꾸면 안 된다.
 
 관측된 진전은 여러 형태였다. [M01](https://github.com/matplotlib/matplotlib/issues/24865#issuecomment-1368556640)은 지원자의 재현 불가가 가능으로 바뀌었다. [D02](https://github.com/duckdb/duckdb/issues/5818#issuecomment-1374567686)는 답 묶음 안의 다중 query 논거가 기존 설명을 바꾸었고 첫 구체 설계가 나왔다. [XB13](https://github.com/pydata/xarray/issues/7754#issuecomment-1509585164)은 답 이후 진단 호출을 처음 제안했다. [XB14](https://github.com/pydata/xarray/issues/7758#issuecomment-1509899180)는 후보보다 질문에 쓴 용어의 설명이 달라졌다. 모두 실제 변화이지만, 앞선 구체 후보의 변경이라는 분자와는 다르다.
+
+같은 목적의 후속 실행 보고 전체는 성공과 실패를 합쳐 A5건(M03/M04/M08/X04/D08), B2건(MB09/XB13)이다. 이 실행 분모에서 성공은 A4/5·B1/2, 실패는 A1/5·B1/2이며, 성공만 남긴 별도 하위집합 A4/B1과 구별한다. 이 비율도 실행을 보고한 사례의 기술적 결과일 뿐 전략의 효과가 아니다.
 
 질문 없이도 새 실행 보고가 있었다. A의 한정성공4건 중 M04와 D08은 처음 안내를 실행했고, M03은 후보 적합성 질문 뒤 다른 지원자의 cache 설명을 사용했다. X04는 질문과 동시에 제공받은 호출을 실행한 뒤 설명을 더 받았다. B의 성공 MB09는 물은 기존 환경값에 답하지 않고 같은 첫 답에 들어 있던 새 환경 생성 행동을 수행했다. 따라서 **직접답 회수 여부를 진행의 유일한 문턱으로 삼는 규칙은 이 사례들과 맞지 않는다.** 성공 분자는 당사자의 구체 작업·결과 보고를 뜻하며, 이번 조사자가 요청자 기계에서 재현한 결과를 뜻하지 않는다.
 

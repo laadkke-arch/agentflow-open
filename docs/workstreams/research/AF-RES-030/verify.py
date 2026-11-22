@@ -91,6 +91,9 @@ for sample,ex in expect.items():
 ck('late XB06 kept out of primary/90-day counts',not cid['XB06']['root30']['information_question'] and not cid['XB06']['root90']['information_question'] and cid['XB06']['first_information_question'],'XB06 original and late event timestamps')
 ck('no retrospective late execution added to root90',g['A_all']['root90_same_metrics'] and g['B_all']['root90_same_metrics'],'root90 metric flags same; late_history retained separately')
 ck('future exposure6 and whole-original0 disclosed',sum(r['exposure_effective'] for r in chains)==6 and all(r['original_grade']!='O' for r in chains),{'exposed':[r['case_id'] for r in chains if r['exposure_effective']],'whole_original':0})
+for sample,ids in [('A',{'M03','M04','M08','X04','D08'}),('B',{'MB09','XB13'})]:
+ x=g[sample+'_same_goal_execution']
+ ck(sample+' same-goal execution denominator includes success and failure',set(x['case_ids'])==ids and x['n']==len(ids) and x['new_execution_success']+x['new_execution_failure']==len(ids),{'n':x['n'],'ids':x['case_ids'],'success':x['new_execution_success'],'failure':x['new_execution_failure']})
 
 sources=jl(P/'sources.jsonl');sc=json.loads((P/'evidence/source-counts.json').read_text())
 ck('source canonical keys unique',len(sources)==201 and len({r['canonical_key'] for r in sources})==201,len(sources))
