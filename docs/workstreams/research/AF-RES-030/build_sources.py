@@ -27,10 +27,10 @@ FRAME=[]
 def rel(path): return str(path.relative_to(P))
 def digest(b): return hashlib.sha256(b).hexdigest()
 def read_jsonl(path):
-    data=path.read_bytes();INPUTS[rel(path)]=digest(data)
+    data=path.read_bytes().replace(b'\r\n',b'\n');INPUTS[rel(path)]=digest(data)
     return [(j,json.loads(s))for j,s in enumerate(data.decode().splitlines(),1)if s.strip()]
 def read_csv(path):
-    data=path.read_bytes();INPUTS[rel(path)]=digest(data)
+    data=path.read_bytes().replace(b'\r\n',b'\n');INPUTS[rel(path)]=digest(data)
     return [(j,r)for j,r in enumerate(csv.DictReader(data.decode().splitlines()),2)]
 def as_list(x):
     if x is None:return []

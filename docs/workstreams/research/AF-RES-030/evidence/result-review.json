@@ -1,0 +1,167 @@
+{
+  "schema_version": "AF-RES-030-result-review-v1",
+  "reviewer": "/root/matplotlib",
+  "reviewed_utc": "2026-11-22T07:57:56.519529Z",
+  "review_type": "separate-reader manuscript review of RESULT.md against frozen definitions and completed ledgers",
+  "independence": {
+    "manuscript_author": "/root",
+    "reviewer_was_matplotlib_coder": true,
+    "reviewer_was_design_rules_author": true,
+    "reviewer_outcome_blind": false,
+    "independent_blinded_source_recoding": false,
+    "scope_note": "다른 작성자가 생성한 결과 원고의 별도 검토다. Matplotlib 원문을 직접 판독한 작업자가 전 계열 결과 원장과 필수 표를 읽었으며, 타 계열 전 원문을 새로 독립 재코딩한 것으로 주장하지 않는다."
+  },
+  "reviewed_snapshots": {
+    "RESULT.md": "7cf6fed26fba71afbf983fe394059af81d6c71665fb37c80b854427fecb07a98",
+    "build_result.py": "bbdafc1ae34147975ae516b20c4733fdccf133f381d7e5396b342eb090f5491c",
+    "sources.jsonl": "b4096edc2ce439ae81c568a881d5f968219aa4b065eb1dd3f89f1ec1275b8601",
+    "evidence/denominators.json": "b6d12a680ef46c31aa409da6212c28db22beeb852595f3fd4ac5bffd5cde0498",
+    "evidence/source-counts.json": "f414578b1d69fc24959c308daae2fb5f8fdff35c46c7d7881300ce7dcf717564"
+  },
+  "overall_status": "NO_CRITICAL_NUMERICAL_ERROR_FOUND_NONCRITICAL_CLARIFICATIONS_REQUESTED",
+  "critical_issue_count": 0,
+  "major_issue_count": 0,
+  "findings": [
+    {
+      "id": "RR01",
+      "severity": "medium",
+      "category": "question_phase_label",
+      "status_at_review": "reported_to_root_not_edited_by_reviewer",
+      "location": "RESULT.md first required table, M03 row; build_result.py line63 generic non-information-question label",
+      "finding": "M03-Q1이 '후발 설계·실행·역방향/fit 질문'으로 표시된다. 실제로는 최초 타인 실질 응답의 후보 적합성 질문이다. 본문에서는 first broad 8과 first information 7을 올바르게 분리하지만, 첫 필수 표의 '후발'이 그 구분을 흐린다.",
+      "evidence": [
+        "https://github.com/matplotlib/matplotlib/issues/24872#issuecomment-1369957180",
+        "ANALYSIS_RULES.md: 첫 응답의 두 질문 층",
+        "streams/matplotlib/chains.jsonl: M03.broad_first_question=true, strict_first_question=false"
+      ],
+      "requested_change": "M03에는 '첫 응답의 후보 적합성 질문(정보질문 분모 제외)'을 쓰거나 단계가 정해지지 않은 공통 라벨에서 '후발'을 제거한다.",
+      "numerical_impact": "없음. M03은 broad first 8에만 포함되고 root30 information 8에는 포함되지 않는 현재 집계가 맞다."
+    },
+    {
+      "id": "RR02",
+      "severity": "low",
+      "category": "roundtrip_denominator_label",
+      "status_at_review": "reported_to_root_not_edited_by_reviewer",
+      "location": "RESULT.md second required table, 왕복·대기 범위 column",
+      "finding": "'값없는 답 포함 6왕복/9왕복'은 정보질문 범위에서 엄격 기존값 직접 답이 아닌 작성자 반응을 포함한 수다. 새 실행·새 선호의 값이 있는 반응도 있으므로 '값없는'은 범주를 지나치게 줄이며, 대화 전체 왕복수로 읽으면 M03 후보평가 왕복 등이 누락된 것으로 보일 수 있다.",
+      "evidence": [
+        "evidence/denominators.json: A_all.any_author_reply_roundtrips=6",
+        "evidence/denominators.json: B_all.any_author_reply_roundtrips=9",
+        "ANALYSIS_RULES.md: first_question and same_variable_answer definitions",
+        "https://github.com/matplotlib/matplotlib/issues/24872#issuecomment-1370065191",
+        "https://github.com/matplotlib/matplotlib/issues/25612#issuecomment-1496211688"
+      ],
+      "requested_change": "'정보질문 관련 작성자 반응 6/9왕복(엄격 직접답 외 반응 포함)'처럼 정보질문 범위와 엄격 답 분모를 명시한다.",
+      "numerical_impact": "없음. 기존 숫자는 정보질문 정의 아래 원장과 일치한다."
+    },
+    {
+      "id": "RR03",
+      "severity": "low",
+      "category": "technical_scope_wording",
+      "status_at_review": "reported_to_root_not_edited_by_reviewer",
+      "location": "RESULT.md third required table, PAIR-M03 official-support cell",
+      "finding": "'addfont는 import마다 필요'는 판·경로·이미 검색되는 글꼴 여부를 생략한 표현이다. 3.6.2 addfont 구현의 메모리 목록 추가와 별도 캐시 저장 경로가 직접 지지하는 좁은 명제는 수동 등록의 세션 간 영속성을 보장하지 않는다는 것이다.",
+      "evidence": [
+        "https://matplotlib.org/3.6.2/api/font_manager_api.html",
+        "https://github.com/matplotlib/matplotlib/blob/v3.6.2/lib/matplotlib/font_manager.py#L1114-L1135",
+        "https://github.com/matplotlib/matplotlib/blob/v3.6.2/lib/matplotlib/font_manager.py#L1619-L1637",
+        "streams/matplotlib/providers.jsonl: M-P03 and M-P03-SOURCE limitations"
+      ],
+      "requested_change": "'수동 addfont 등록은 세션 간 영속을 보장하지 않음'으로 제한한다.",
+      "numerical_impact": "없음. M03 부분 성공과 전체 지속성 미확인 판정은 유지한다."
+    },
+    {
+      "id": "RR04",
+      "severity": "low",
+      "category": "source_type_translation",
+      "status_at_review": "reported_to_root_not_edited_by_reviewer",
+      "location": "RESULT.md other-fields section, C-L1 link label",
+      "finding": "'가상 참고상담 원대화 분석'의 가상은 virtual reference의 번역이지만, 본 과제에서 가상 코딩 예와 실제 원대화를 엄격히 구별하므로 독자가 허구 대화로 오독할 수 있다. 뒤 문장의 익명 실제 장면 설명은 정확하다.",
+      "evidence": [
+        "https://journals.ala.org/index.php/rusq/article/viewFile/3946/4432",
+        "cross/CROSS_DOMAIN.md: CL-John, CL-Ok, CL-EJ130, CL-driving"
+      ],
+      "requested_change": "링크 표시를 '온라인 참고상담 원대화 분석'으로 바꾼다.",
+      "numerical_impact": "없음. 실제 관측 자료 C-L1과 가상 코딩 예 C-S3의 분리는 이미 유지된다."
+    }
+  ],
+  "checks": [
+    {
+      "condition": "title immediately followed by the first required table; required three tables precede interpretation",
+      "met": true,
+      "evidence": "RESULT.md lines1–73 in reviewed snapshot",
+      "note": "첫 표, 분모·비용 표, 반례·대조 표 순서를 확인했다."
+    },
+    {
+      "condition": "complete primary sample and compatible case/root/comment links",
+      "met": true,
+      "evidence": "read-only parser: first required table32 unique rows, A24/B8; every root URL and comment permalink occurs in its corresponding chains.jsonl case",
+      "note": "잘못 연결된 사례 루트0, 원장에서 찾지 못한 댓글 permalink0, 내부 링크 누락0. 원장과의 대조이며 이번 검토에서 모든 외부 댓글을 새로 열어 검증한 것은 아니다."
+    },
+    {
+      "condition": "A primary denominators and outcomes match evidence ledgers",
+      "met": true,
+      "evidence": "evidence/denominators.json A_all and subgroup rows; RESULT.md required table2",
+      "note": "A24, root30 information8, same-variable direct3, linked change0, limited new success4, full-goal success2, new failure1과 일치. 직접답과 실행의 완전사슬0/3."
+    },
+    {
+      "condition": "B primary denominators and late first response remain separate",
+      "met": true,
+      "evidence": "evidence/denominators.json B_all; RESULT.md XB06 row and Q3–Q5 text",
+      "note": "B8, root30 information7, same-variable direct6, linked change0, limited/full new success1, new failure1과 일치. XB06의16개월 뒤 질문·실행은 root30/root90에 합산하지 않음."
+    },
+    {
+      "condition": "first broad question set and root30 information-question set are not conflated",
+      "met": true,
+      "evidence": "RESULT.md Q3–Q5 paragraph; ANALYSIS_RULES.md last section",
+      "note": "첫 broad8에는 M03, any root30 information8에는 X02가 포함되는 집합 차이를 본문이 명시. RR01은 표의 단계 라벨만 정정 요청."
+    },
+    {
+      "condition": "limited success, full-goal success, different-input success and provider implementation remain distinct",
+      "met": true,
+      "evidence": "RESULT.md M03/M04/X04/D08/MB09/XB13 rows and Q6 discussion",
+      "note": "M03·X04 부분 목표, M04·D08 전체 목표, MB09 기존값 미답인 실행, XB13 다른 파일·Python 성공 제외, 공급자 PR의 사용자 실행 대체 금지를 확인."
+    },
+    {
+      "condition": "original edition unknown and exposure sensitivity are not converted into historical certainty",
+      "met": true,
+      "evidence": "RESULT.md Q2 and sensitivity table; source stream correction ledgers",
+      "note": "전체 원판O0, 미래 노출A4/B2, current overlapA1/B2를 질문 전 확정값으로 대체하지 않음. 공집합의 비율을0%로 쓰지 않음."
+    },
+    {
+      "condition": "source-original minimum, all sources and cases are different units",
+      "met": true,
+      "evidence": "independent read-only count of sources.jsonl; evidence/source-counts.json; RESULT.md direct-reading table",
+      "note": "canonical201행과201 unique source_id/URL, 최소 산입46=A24+공식14+타 분야8. 공식40 전체와 필수 적격14를 구분. B8+비선정72, frame-only25, 주 사건32를 소스201과 혼동하지 않음. 후기 공급자 테스트는 초기판 적합/사용자 성공 증거로 쓰지 않는 설명을 확인."
+    },
+    {
+      "condition": "no A/B strategy-effect causal estimate or counterfactual labor claim",
+      "met": true,
+      "evidence": "RESULT.md Q7, sensitivity and identification-limit paragraphs",
+      "note": "0의 엄격 변경을 질문 효용0으로 바꾸지 않음. 대조 목적·난도·판 차이, 벽시계 대기와 실제 노동 차이, 비선정 MB07/MB21/XB25의 주 분모 불산입을 명시."
+    },
+    {
+      "condition": "exactly three data rows in the final weakness table and no content after it",
+      "met": true,
+      "evidence": "read-only final-table parser; reviewed RESULT.md lines192–196",
+      "note": "헤더·구분선을 제외한 데이터3행, 파일은 마지막 표 행으로 끝남."
+    }
+  ],
+  "verification": {
+    "method": "RESULT.md 전체를 분할 출력해 판독하고, 읽기 전용 Python으로 사례 수·원장 URL 대응·내부 링크·source count·마지막 표 행 수를 대조",
+    "exit_code": 0,
+    "generated_build_scripts_executed": false,
+    "new_external_originals_opened": 0,
+    "cached_primary_source_reread": "existing Matplotlib3.6.2 font_manager.py: addfont L1114–1135, FontManager initialization, _load_fontmanager L1619–1637",
+    "not_performed": [
+      "historical software runtime tests",
+      "new participant/user contact",
+      "independent blind recoding of all external sources",
+      "complete automated cross-file copyright-quotation word-budget audit",
+      "Git modifications or regeneration of RESULT.md"
+    ],
+    "citation_scope_note": "사례표에 새 긴 원문 인용은 보이지 않았다. 한국어 요약과 원문 permalink를 사용하며, 일부 영어 전략 요약은 담당자 작성 요약이다. 전체 저장소 누적 인용 단어수를 독립 재계수한 검토로 주장하지 않는다."
+  },
+  "write_scope": "evidence/result-review.json only; no stream, frozen file, result manuscript, builder or Git changes by reviewer",
+  "next_action": "통합자가 RR01–RR04의 표현을 검토해 build_result.py 또는 입력 요약에서 정정하고 원고를 재생성한 뒤, 새 RESULT.md hash를 재검 영수증에 연결한다. 숫자 변경은 요청하지 않는다."
+}
