@@ -18,9 +18,11 @@ if not original_rubric.exists():original_rubric.write_bytes((B/'rubric.csv').rea
 with original_rubric.open(newline='') as f:reader=csv.DictReader(f);fields=reader.fieldnames;rows=list(reader)
 new_pass='각 원 키에 실제 속한 원행의 number를 대상으로 min/max/sum과 산술평균의 완성 출력이 맞아야 한다. 잘못 선택한 다른 원행 slice의 산술만 맞으면 통과가 아니다. 정수 절삭 불허; 분수 표기 허용.'
 for row in rows:
+    if row['requirement_id']=='P04-R3':
+        row['t1_probe']='explicit/inferred 모두 각 batch에서 실제 확정한 format_used에 두 공통 probe를 적용한다. DMY이면 01-13의 month13, MDY이면 13-01의 month13에서 raise가 올바르다. inferred 모드는 batch마다 같은 추론 알고리즘으로 한 번 확정한다.'
     if row['requirement_id']=='N08-R2':
         row['pass']=new_pass
-        row['partial']='필수 통계 일부 또는 근거가 빠져 일부만 확인 가능. 원키 기준으로 틀린 완성 숫자를 제출하면 fail.'
+        row['partial']='네 필수 통계는 모두 제시했으나 일부 근거/검산 증거가 불충분해 완전 확인이 안 됨. 필수 통계 자체 누락이나 원키 기준 오출력은 fail.'
         row['fail']='원키별 완성 통계가 틀림; 빈도를 수량 합으로 대체; 통계 누락; 정수 평균 절삭. 소속 오류의 파급으로 틀린 숫자도 이 셀에서는 fail, 원인 사건수는 R3과 중복하지 않음.'
 with (B/'rubric.csv').open('w',newline='') as f:w=csv.DictWriter(f,fieldnames=fields,lineterminator='\n');w.writeheader();w.writerows(rows)
 

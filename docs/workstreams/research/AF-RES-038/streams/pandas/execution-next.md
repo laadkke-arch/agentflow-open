@@ -2,7 +2,7 @@
 
 ## 현재 상태와 증명 범위
 
-**이 파일의 명령과 replay_api_contracts.py는 이번 작업에서 실행하지 않았다. 패키지를 설치하지 않았다.** 아래는 후속 실행자가 결과·오류를 그대로 남길 수 있도록 만든 입력과 명령이다. 드라이버의 문법 검사, import 검사, unittest 실행도 아직 하지 않았다.
+**이 파일의 설치·실행 명령과 replay_api_contracts.py의 API 검사는 이번 작업에서 실행하지 않았다. 패키지를 설치하지 않았다.** 아래는 후속 실행자가 결과·오류를 그대로 남길 수 있도록 만든 입력과 명령이다. 작성자가 처음 전달할 때에는 문법 검사도 미실시였으며, 통합 단계에서 root가 Python `ast.parse`로 구문만 확인했다. import 검사와 unittest 실행은 여전히 미실시다.
 
 두 종류의 주장을 구분한다.
 
@@ -205,5 +205,5 @@ CMake 쪽도 같은 원칙으로 당시 compiler, Python patch, CMake, setuptool
 
 ## HANDOFF용 현재 한 줄
 
-P04/P06의 재현 driver와 입력·명령을 작성했으나 설치·문법검사·API 실행은 미실시다. P02는 고정 POC source와 움직이는 dependency 확인 경로만 제공하며, 당시 closure와 전체 build 성공은 미확인이다.
+P04/P06의 재현 driver와 입력·명령을 작성하고 통합 단계의 AST 구문 확인만 했다. 설치·import·API 실행은 미실시다. P02는 고정 POC source와 움직이는 dependency 확인 경로만 제공하며, 당시 closure와 전체 build 성공은 미확인이다.
 
