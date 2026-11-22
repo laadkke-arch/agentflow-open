@@ -52,6 +52,12 @@ def main():
                 row["wall_s"], row["bytes"], f"receipts/{name}")
     for row in blob("system-archives.json"):
         add("supplement_archive", row["url"], "ok", row["wall_s"], row["bytes"], "receipts/system-archives.json")
+    auxiliary = blob("python-aux-runtime.json")
+    add("supplement_index", auxiliary["debian_package_index_url"], "ok", "",
+        auxiliary["debian_package_index_bytes"], "receipts/python-aux-runtime.json")
+    for row in auxiliary["records"]:
+        add("aux_runtime_version", row["version"], f"rc:{row['rc']}", row["wall_s"], "",
+            "receipts/python-aux-runtime.json")
     for row in blob("tk-repair.json"):
         add("tk_repair", row["tag"], "ok" if row["rc"] == 0 else f"failed:{row['rc']}",
             row["wall_s"], "", "receipts/tk-repair.json")
@@ -63,6 +69,8 @@ def main():
     phases = ["node-first", "python-first", "first"]
     if args.with_replay:
         phases.append("clean-replay")
+        for row in releases:
+            add("cache_archive_reuse", row["archive_url"], "ok", "", 0, "receipts/clean-replay/summary.json")
     for phase in phases:
         filename = f"receipts/{phase}/raw.jsonl"
         for row in load(HERE / filename):
