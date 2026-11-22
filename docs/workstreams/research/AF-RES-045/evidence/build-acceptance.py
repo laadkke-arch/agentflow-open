@@ -46,5 +46,18 @@ result["denominator_policies"]={
  "complete_comparison_post_reveal":{"case_ids":[],"denominator":0,"unique_support":0,"both_rejected":0,"indeterminate":0,"ratio":"해당 없음"},
  "original_wording_lenient":{"case_ids":["M01"],"denominator":1,"unique_support":0,"both_rejected":0,"indeterminate":1,"qualification":"qualitative original-input A report admitted; B unknown and P2 already predicts failure"},
  "operator_only_sensitivity":{"case_ids":["M01","M03"],"denominator":2,"unique_support":0,"both_rejected":0,"indeterminate":2,"qualification":"input identity relaxed; M03 factor-specific output absent"}}
+# Preserve real, already-observed workflow receipts when regenerating this ledger.
+receipt_path=P/"evidence/result-verification.json"
+check_path=P/"evidence/session-check.json"
+if receipt_path.exists():
+ receipt=json.loads(receipt_path.read_text())
+ if receipt.get("status")=="passed" and len(receipt.get("files",[]))==2 and all(r.get("equal_to_committed_input") for r in receipt["files"]):
+  item=next(r for r in items if r["id"]=="A26")
+  item.update(status="충족",numerator=2,unmet_reason=None,qualification="Fixed batch4 files directly reopened aftercommit; final verification-commit reread is additionally recorded in HANDOFF.",minimum_next_check="추가 확인 없음; 고정판·재열람 영수증 보존",evidence=[ref("evidence/result-verification.json",receipt["fixed_result_commit"]+";files")])
+if check_path.exists():
+ session=json.loads(check_path.read_text())
+ if session.get("exit_code")==0 and json.loads(session["stdout"]).get("status")=="passed":
+  item=next(r for r in items if r["id"]=="A27")
+  item.update(status="충족",numerator=1,unmet_reason=None,qualification="Actualcheck --fetch passed; Git ownership/contract gate only, not product verification.",minimum_next_check="다음 재개 때 같은 명령 재실행",evidence=[ref("evidence/session-check.json",session["head_at_check"]+";stdout,started_utc,finished_utc")])
 (P/"evidence/acceptance-evidence.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
 print(json.dumps({"records":len(sources),"counted":len(counted),"items":len(items),"met":sum(i["status"]=="충족" for i in items),"unmet":sum(i["status"]=="미충족" for i in items)},ensure_ascii=False))
