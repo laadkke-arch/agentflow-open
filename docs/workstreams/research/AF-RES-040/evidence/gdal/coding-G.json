@@ -1,0 +1,1326 @@
+{
+  "schema": 1,
+  "scope": "G route; original requirements sealed before suppliers; views/groups computed by root",
+  "requirement_seal_sha256": "1b903826db971b731b4bb2281747c547eebbdd8c0ed5509371b469e9d35581e2",
+  "pool_seal_sha256": "3ea0ba21f1b24ea1bb93f178931c596632648ad9ccd9896d895f7eeeb1bf492b",
+  "coding_utc": "2026-11-22T18:51:15.522Z",
+  "document_access_rule": "대표 URL의 고정 원문 전체 접근 가능; fragment 밖의 동일 문서 절은 추가 클릭 없이 읽을 수 있음. document_group은 고정 URL에서 fragment를 제거한 값이다.",
+  "requirements": [
+    {
+      "case_id": "G1",
+      "purpose": "NoData 경계가 있는 HFA .img에 압축 내부 overview를 블록 크기 64 이외에서도 아티팩트 없이 생성",
+      "version": "GDAL 3.0.1; Python 3.7.2; Windows 10 64-bit",
+      "required_atoms": [
+        {
+          "atom_id": "G1.A1",
+          "label": "HFA 내부 overview 생성 호출/기능",
+          "role": "capability_and_invocation",
+          "version": "GDAL 3.0.1; Python 3.7.2; Windows 10 64-bit"
+        },
+        {
+          "atom_id": "G1.A2",
+          "label": "원본·overview 압축 설정",
+          "role": "configuration",
+          "version": "GDAL 3.0.1; Python 3.7.2; Windows 10 64-bit"
+        },
+        {
+          "atom_id": "G1.A3",
+          "label": "64 이외 block size 설정",
+          "role": "configuration",
+          "version": "GDAL 3.0.1; Python 3.7.2; Windows 10 64-bit"
+        },
+        {
+          "atom_id": "G1.A4",
+          "label": "3.0.1에서 NoData 경계를 유지해도 artefact 없음",
+          "role": "observed_success",
+          "version": "GDAL 3.0.1; Python 3.7.2; Windows 10 64-bit"
+        }
+      ],
+      "eligible_paths": [],
+      "eligible_paths_relaxed": [],
+      "partial_paths": [
+        {
+          "path_id": "G1.PARTIAL-HFA",
+          "implementation": "OSGeo/gdal",
+          "component": "HFA internal overview",
+          "required_candidate_sets": [
+            [
+              "G1-1"
+            ]
+          ],
+          "required_atoms": [
+            "G1.A1",
+            "G1.A2",
+            "G1.A3"
+          ],
+          "basis": "G-D01 L37–53, L67–83",
+          "limitations": "G1.A4가 충족되지 않아 적격 대안 분모에 넣지 않는다."
+        }
+      ],
+      "unknowns": [
+        "NoData 경계와 압축 및 64 이외 블록 크기를 동시에 유지한 GDAL 3.0.1 실행 성공은 미확인이다.",
+        "원문 zip과 입력 픽셀을 실행하지 않았으며 일반 기능 문서는 오류 수정 증거가 아니다."
+      ],
+      "eligibility_reason": "원 요구의 모든 필수 atom을 입증하는 후보 원문 조합 없음",
+      "version_relaxation": "판 조건만 제거해도 실제 성공/배포 포함 조건의 증거가 없어 적격 경로는 0으로 동일",
+      "source_url": "https://github.com/OSGeo/gdal/issues/2150"
+    },
+    {
+      "case_id": "G2",
+      "purpose": "GDAL Java Layer.GetNextFeature()로 MapInfo 전자지도 feature를 읽고 3.0.x 업그레이드 뒤의 잘못된 null을 피함",
+      "version": "주 요구 GDAL 3.0.1; 비교 2.4.0; 추가 실패 보고 3.0.0/3.0.2; Ubuntu 16.04 64-bit",
+      "required_atoms": [
+        {
+          "atom_id": "G2.A1",
+          "label": "MapInfo 형식 읽기",
+          "role": "capability",
+          "version": "주 요구 GDAL 3.0.1; 비교 2.4.0; 추가 실패 보고 3.0.0/3.0.2; Ubuntu 16.04 64-bit"
+        },
+        {
+          "atom_id": "G2.A2",
+          "label": "Java Layer.GetNextFeature 반복 호출 계약",
+          "role": "invocation_contract",
+          "version": "주 요구 GDAL 3.0.1; 비교 2.4.0; 추가 실패 보고 3.0.0/3.0.2; Ubuntu 16.04 64-bit"
+        },
+        {
+          "atom_id": "G2.A3",
+          "label": "GDAL 3.0.1에서 해당 입력이 잘못된 null 없이 읽힘",
+          "role": "observed_success",
+          "version": "주 요구 GDAL 3.0.1; 비교 2.4.0; 추가 실패 보고 3.0.0/3.0.2; Ubuntu 16.04 64-bit"
+        }
+      ],
+      "eligible_paths": [],
+      "eligible_paths_relaxed": [],
+      "partial_paths": [
+        {
+          "path_id": "G2.PARTIAL-MAPINFO-JAVA",
+          "implementation": "OSGeo/gdal",
+          "component": "MapInfo driver + Java Layer.GetNextFeature",
+          "required_candidate_sets": [
+            [
+              "G2-1",
+              "G2-3"
+            ],
+            [
+              "G2-2",
+              "G2-3"
+            ]
+          ],
+          "required_atoms": [
+            "G2.A1",
+            "G2.A2"
+          ],
+          "basis": "G-D03 읽기 지원; G-D10 L6863–6878",
+          "limitations": "상호보완 문서 쌍이며 G2.A3의 오류 해결은 입증하지 않는다."
+        }
+      ],
+      "unknowns": [
+        "해당 MapInfo 입력이 제공되지 않아 Java 3.0.1의 잘못된 null을 해결했는지 미확인이다.",
+        "2.4.0 성공은 보고자의 비교 관측이며 허용된 대체판이나 우리 실행 결과가 아니다."
+      ],
+      "eligibility_reason": "원 요구의 모든 필수 atom을 입증하는 후보 원문 조합 없음",
+      "version_relaxation": "판 조건만 제거해도 실제 성공/배포 포함 조건의 증거가 없어 적격 경로는 0으로 동일",
+      "source_url": "https://github.com/OSGeo/gdal/issues/2169"
+    },
+    {
+      "case_id": "G3",
+      "purpose": "소스 빌드 없이 osgeo/gdal alpine-small-latest 이미지에서 FlatGeoBuf를 시험할 수 있게 포맷 드라이버를 포함",
+      "version": "GDAL 3.1.0dev-6d5d00851c24c25b4d814305cc5d4122ce72b4bc; alpine-small-latest",
+      "required_atoms": [
+        {
+          "atom_id": "G3.A1",
+          "label": "FlatGeoBuf 지원 기능/포맷",
+          "role": "capability",
+          "version": "GDAL 3.1.0dev-6d5d00851c24c25b4d814305cc5d4122ce72b4bc; alpine-small-latest"
+        },
+        {
+          "atom_id": "G3.A2",
+          "label": "ogrinfo --formats로 드라이버 가용성을 확인하는 호출",
+          "role": "invocation_contract",
+          "version": "GDAL 3.1.0dev-6d5d00851c24c25b4d814305cc5d4122ce72b4bc; alpine-small-latest"
+        },
+        {
+          "atom_id": "G3.A3",
+          "label": "지정 dev SHA의 alpine-small 배포에 FlatGeoBuf 포함",
+          "role": "distribution_inclusion",
+          "version": "GDAL 3.1.0dev-6d5d00851c24c25b4d814305cc5d4122ce72b4bc; alpine-small-latest"
+        }
+      ],
+      "eligible_paths": [],
+      "eligible_paths_relaxed": [],
+      "partial_paths": [
+        {
+          "path_id": "G3.PARTIAL-INSPECTION",
+          "implementation": "OSGeo/gdal",
+          "component": "ogrinfo",
+          "required_candidate_sets": [
+            [
+              "G3-1"
+            ]
+          ],
+          "required_atoms": [
+            "G3.A2"
+          ],
+          "basis": "G-D05 --formats",
+          "limitations": "명령 계약만 확인한다. FlatGeoBuf 구현/특정 이미지 포함 증거가 아니다."
+        }
+      ],
+      "unknowns": [
+        "고정 dev 소스판의 문서 목차와 전체 트리 경로에 FlatGeoBuf 항목이 없었다. 이름 검색 부재만으로 전체 구현 부재를 단정하지 않는다.",
+        "이미지 digest와 실제 ogrinfo --formats 출력은 직접 실행하지 않았으므로 해당 배포의 포함 여부는 미확인이다.",
+        "Dockerfile의 기본 master는 빌드시각에 의존하며 고정 소스 파일 열람만으로 당시 배포 바이너리를 재현하지 못한다."
+      ],
+      "eligibility_reason": "원 요구의 모든 필수 atom을 입증하는 후보 원문 조합 없음",
+      "version_relaxation": "판 조건만 제거해도 실제 성공/배포 포함 조건의 증거가 없어 적격 경로는 0으로 동일",
+      "source_url": "https://github.com/OSGeo/gdal/issues/2172"
+    },
+    {
+      "case_id": "G4",
+      "purpose": "Windows GDAL 3.0.3에서 COSMO-SkyMED HDF5 파일을 인식하고 gdalinfo로 크기·메타데이터를 읽음",
+      "version": "GDAL 3.0.3; Windows 10 64-bit; HDF5 1.10.4; 비교 GDAL 3.0.1",
+      "required_atoms": [
+        {
+          "atom_id": "G4.A1",
+          "label": "HDF5/COSMO-SkyMED 인식 범위",
+          "role": "product_recognition",
+          "version": "GDAL 3.0.3; Windows 10 64-bit; HDF5 1.10.4; 비교 GDAL 3.0.1"
+        },
+        {
+          "atom_id": "G4.A2",
+          "label": "gdalinfo로 메타데이터·크기 읽는 호출",
+          "role": "invocation_contract",
+          "version": "GDAL 3.0.3; Windows 10 64-bit; HDF5 1.10.4; 비교 GDAL 3.0.1"
+        },
+        {
+          "atom_id": "G4.A3",
+          "label": "Windows 3.0.3/지정 HDF5 조합에서 해당 파일 정상 열기",
+          "role": "observed_success",
+          "version": "GDAL 3.0.3; Windows 10 64-bit; HDF5 1.10.4; 비교 GDAL 3.0.1"
+        }
+      ],
+      "eligible_paths": [],
+      "eligible_paths_relaxed": [],
+      "partial_paths": [
+        {
+          "path_id": "G4.PARTIAL-GDALINFO",
+          "implementation": "OSGeo/gdal",
+          "component": "gdalinfo",
+          "required_candidate_sets": [
+            [
+              "G4-1"
+            ],
+            [
+              "G4-2"
+            ]
+          ],
+          "required_atoms": [
+            "G4.A2"
+          ],
+          "basis": "G-D04 L21–44, L121–123; G-D11 L187–301 (일반 호출 atom에 한정)",
+          "limitations": "gdalinfo의 일반 출력 계약이며 COSMO 인식과 요청 환경 성공은 미확인이다."
+        }
+      ],
+      "unknowns": [
+        "HDF5 문서에는 COSMO-SkyMED 범위가 명시되지 않았고 Metadata 절은 미지원으로 적는다. 소스에는 CSK/KMPS 분기가 있어 문서와 구현 범위가 불일치한다.",
+        "Windows 3.0.3/HDF5 1.10.4에서 원 파일을 열어 해결했는지는 미확인이다.",
+        "3.0.1 성공 출력은 원 보고자의 관측이며 현재 고정판 성공으로 전이하지 않는다."
+      ],
+      "eligibility_reason": "원 요구의 모든 필수 atom을 입증하는 후보 원문 조합 없음",
+      "version_relaxation": "판 조건만 제거해도 실제 성공/배포 포함 조건의 증거가 없어 적격 경로는 0으로 동일",
+      "source_url": "https://github.com/OSGeo/gdal/issues/2193"
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "G1-1",
+      "case_id": "G1",
+      "rank": 1,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/frmts/hfa/frmt_hfa.html",
+      "source_id": "G-D01",
+      "title": "HFA 압축 overview 설정",
+      "description": "HFA의 압축·내부 overview·블록 크기 설정을 설명한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "HFA",
+      "purpose": "internal_compressed_overview",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "capability",
+        "invocation",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/frmts/hfa/frmt_hfa.html",
+      "atoms": [
+        "G1.A1",
+        "G1.A2",
+        "G1.A3"
+      ],
+      "version_relaxed_atoms": [
+        "G1.A1",
+        "G1.A2",
+        "G1.A3"
+      ],
+      "unknowns": [
+        "NoData 경계에서 아티팩트 없는 실행은 미확인"
+      ],
+      "discovery_ledger": "G-I02",
+      "discovery_locator": "formats_list.html L617–624; HFA/.img",
+      "discovered_href": "frmt_hfa.html",
+      "stage": "driver-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G1-2",
+      "case_id": "G1",
+      "rank": 2,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/apps/gdal_utilities.dox#L510-L668",
+      "source_id": "G-D02",
+      "title": "gdaladdo overview 생성",
+      "description": "overview 생성 호출과 압축 외부 overview 예제를 제공한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "gdaladdo",
+      "purpose": "build_overviews",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "invocation",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/apps/gdal_utilities.dox",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "일반 호출 계약이며 요청한 HFA 오류 해결은 미확인",
+        "원문의 내부 overview 예제는 GeoTIFF이며 HFA .img 예제는 외부 GeoTIFF여서 HFA 내부 생성 atom의 단독 근거로 세지 않음"
+      ],
+      "discovery_ledger": "G-I04",
+      "discovery_locator": "gdal_utilities.dox index L14; overviews",
+      "discovered_href": "gdaladdo.html",
+      "stage": "program-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G1-3",
+      "case_id": "G1",
+      "rank": 3,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/python/scripts/gdal_fillnodata.dox",
+      "source_id": "G-D06",
+      "title": "gdal_fillnodata 보간",
+      "description": "NoData 영역을 주변 픽셀로 보간한다. overview 생성과 다른 행동이다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "gdal_fillnodata",
+      "purpose": "interpolate_nodata",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "capability",
+        "invocation",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/python/scripts/gdal_fillnodata.dox",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "NoData 경계를 유지해야 하는 원 요구의 대체로 승인되지 않음"
+      ],
+      "discovery_ledger": "G-I04",
+      "discovery_locator": "gdal_utilities.dox index L32; nodata",
+      "discovered_href": "gdal_fillnodata.html",
+      "stage": "program-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G1-4",
+      "case_id": "G1",
+      "rank": 4,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/python/scripts/gdal_edit.dox",
+      "source_id": "G-D07",
+      "title": "gdal_edit 메타데이터 편집",
+      "description": "NoData 값 등 기존 래스터 정보를 수정한다. 생성 오류 해결은 미확인이다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "gdal_edit",
+      "purpose": "edit_nodata_metadata",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "capability",
+        "invocation",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/python/scripts/gdal_edit.dox",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "NoData 표기 변경이 원 요구를 충족한다는 근거 없음"
+      ],
+      "discovery_ledger": "G-I04",
+      "discovery_locator": "gdal_utilities.dox index L36; nodata",
+      "discovered_href": "gdal_edit.html",
+      "stage": "program-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G1-5",
+      "case_id": "G1",
+      "rank": 5,
+      "url": "https://pypi.org/project/GDAL/3.0.1/",
+      "source_id": "G-P01",
+      "title": "GDAL 3.0.1 Python 배포",
+      "description": "Python 바인딩 배포판과 libgdal 의존성을 확인한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "Python bindings",
+      "purpose": "distribution",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "distribution"
+      ],
+      "identity_verified": true,
+      "document_group": "https://pypi.org/project/GDAL/3.0.1/",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "특정 HFA 설정·버그 수정을 입증하지 않음"
+      ],
+      "discovery_ledger": "G-P01",
+      "discovery_locator": "Project description/Dependencies; original request Python bindings",
+      "discovered_href": "https://pypi.org/project/GDAL/3.0.1/",
+      "stage": "package-registry",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G1-6",
+      "case_id": "G1",
+      "rank": 6,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/doc/gdal_tutorial.dox",
+      "source_id": "G-D08",
+      "title": "Raster API tutorial",
+      "description": "Python의 overview 개수 읽기 예제를 제공한다. 생성 설정은 별도다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "RasterBand.GetOverviewCount",
+      "purpose": "inspect_overviews",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "invocation",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/doc/gdal_tutorial.dox",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "overview 읽기와 생성은 방향·행동이 다름"
+      ],
+      "discovery_ledger": "G-I01;G-P01",
+      "discovery_locator": "index.dox Tutorials L80; PyPI API tutorial; gdal_tutorial.dox L241–253",
+      "discovered_href": "gdal_tutorial.html",
+      "stage": "official-example",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G2-1",
+      "case_id": "G2",
+      "rank": 1,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogrsf_frmts/mitab/drv_mitab.html",
+      "source_id": "G-D03",
+      "title": "MapInfo TAB/MIF 드라이버",
+      "description": "MapInfo 형식의 읽기·쓰기와 TAB/MIF 업데이트 차이를 설명한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "MapInfo driver",
+      "purpose": "read_MapInfo",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "capability",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogrsf_frmts/mitab/drv_mitab.html",
+      "atoms": [
+        "G2.A1"
+      ],
+      "version_relaxed_atoms": [
+        "G2.A1"
+      ],
+      "unknowns": [
+        "Java null 문제의 해결은 미확인"
+      ],
+      "discovery_ledger": "G-I01",
+      "discovery_locator": "index.dox User documentation L48; MapInfo",
+      "discovered_href": "drv_mitab.html",
+      "stage": "manual-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G2-2",
+      "case_id": "G2",
+      "rank": 2,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogrsf_frmts/mitab/drv_mitab.html",
+      "source_id": "G-D03",
+      "title": "MapInfo TAB/MIF 드라이버",
+      "description": "MapInfo 형식의 읽기·쓰기와 TAB/MIF 업데이트 차이를 설명한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "MapInfo driver",
+      "purpose": "read_MapInfo",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "capability",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogrsf_frmts/mitab/drv_mitab.html",
+      "atoms": [
+        "G2.A1"
+      ],
+      "version_relaxed_atoms": [
+        "G2.A1"
+      ],
+      "unknowns": [
+        "같은 원 URL의 재발견; 독립 대안 아님"
+      ],
+      "discovery_ledger": "G-I03",
+      "discovery_locator": "ogr_formats.html L364–370; MapInfo",
+      "discovered_href": "drv_mitab.html",
+      "stage": "driver-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G2-3",
+      "case_id": "G2",
+      "rank": 3,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/java/javadoc.java#L6863-L6878",
+      "source_id": "G-D10",
+      "title": "Java Layer.GetNextFeature",
+      "description": "순차 feature 읽기, spatial filter, 끝에서 null을 반환하는 계약이다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "Java Layer.GetNextFeature",
+      "purpose": "iterate_features",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "invocation",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/swig/java/javadoc.java",
+      "atoms": [
+        "G2.A2"
+      ],
+      "version_relaxed_atoms": [
+        "G2.A2"
+      ],
+      "unknowns": [
+        "현재 Java 색인으로 멤버를 발견하고 고정 3.0.1 원문을 읽음; 실제 입력 미확인"
+      ],
+      "discovery_ledger": "G-I08;G-I09",
+      "discovery_locator": "Java org.gdal.ogr package-summary Layer → GetNextFeature; v3.0.1 source member",
+      "discovered_href": "org/gdal/ogr/Layer.html#GetNextFeature()",
+      "stage": "api-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G2-4",
+      "case_id": "G2",
+      "rank": 4,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogr_apitut.dox",
+      "source_id": "G-D09",
+      "title": "OGR feature 읽기 예제",
+      "description": "C/C++ 반복 읽기와 끝의 NULL을 보여 준다. Java 호출과 구별한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "OGRLayer.GetNextFeature",
+      "purpose": "iterate_features_C_CPP",
+      "version": "3.0.1",
+      "evidence_roles": [
+        "invocation",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.1/gdal/ogr/ogr_apitut.dox",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "C/C++ 예제가 Java 바인딩 오류 해결을 증명하지 않음"
+      ],
+      "discovery_ledger": "G-I01",
+      "discovery_locator": "index.dox Vector API tutorial; ogr_apitut.dox L108–129",
+      "discovered_href": "ogr_apitut.html",
+      "stage": "official-example",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G3-1",
+      "case_id": "G3",
+      "rank": 1,
+      "url": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/doc/source/programs/ogrinfo.rst",
+      "source_id": "G-D05",
+      "title": "ogrinfo 가용 드라이버 조회",
+      "description": "--formats로 해당 GDAL 빌드에 활성화된 포맷 드라이버를 나열한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "ogrinfo",
+      "purpose": "enumerate_enabled_drivers",
+      "version": "6d5d00851c24c25b4d814305cc5d4122ce72b4bc",
+      "evidence_roles": [
+        "invocation"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/doc/source/programs/ogrinfo.rst",
+      "atoms": [
+        "G3.A2"
+      ],
+      "version_relaxed_atoms": [
+        "G3.A2"
+      ],
+      "unknowns": [
+        "라이브러리 전체 지원과 특정 이미지 포함은 별개"
+      ],
+      "discovery_ledger": "G-I06",
+      "discovery_locator": "programs/index.rst L86/L93; ogrinfo",
+      "discovered_href": "ogrinfo",
+      "stage": "program-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G3-2",
+      "case_id": "G3",
+      "rank": 2,
+      "url": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/docker/README.md",
+      "source_id": "G-R01",
+      "title": "공식 Docker 이미지 구성",
+      "description": "alpine-small 등의 드라이버 범주와 이미지별 설정을 설명한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "Docker alpine-small distribution",
+      "purpose": "distribution_driver_inventory",
+      "version": "6d5d00851c24c25b4d814305cc5d4122ce72b4bc",
+      "evidence_roles": [
+        "distribution",
+        "constraint",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/docker/README.md",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "built-in이라는 범주만으로 미존재 FlatGeoBuf 포함을 추정할 수 없음"
+      ],
+      "discovery_ledger": "G-I10",
+      "discovery_locator": "official source docker/README.md Small; Usage example",
+      "discovered_href": "gdal/docker/README.md",
+      "stage": "official-integration",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G3-3",
+      "case_id": "G3",
+      "rank": 3,
+      "url": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/docker/alpine-small/Dockerfile",
+      "source_id": "G-R02",
+      "title": "alpine-small 빌드 설정",
+      "description": "고정 소스판의 이미지 빌드 설정을 확인한다. 실행 이미지는 미검사다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "Docker alpine-small build",
+      "purpose": "build_configuration",
+      "version": "6d5d00851c24c25b4d814305cc5d4122ce72b4bc",
+      "evidence_roles": [
+        "distribution",
+        "constraint"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/6d5d00851c24c25b4d814305cc5d4122ce72b4bc/gdal/docker/alpine-small/Dockerfile",
+      "atoms": [],
+      "version_relaxed_atoms": [],
+      "unknowns": [
+        "원격 태그 latest의 실제 이미지 digest/빌드 결과는 미확인"
+      ],
+      "discovery_ledger": "G-R01",
+      "discovery_locator": "README Small section See alpine-small/Dockerfile",
+      "discovered_href": "alpine-small/Dockerfile",
+      "stage": "official-integration",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G4-1",
+      "case_id": "G4",
+      "rank": 1,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.3/gdal/frmts/hdf5/frmt_hdf5.html",
+      "source_id": "G-D04",
+      "title": "HDF5 드라이버와 subdataset",
+      "description": "HDF5 입력과 subdataset 경로를 설명하지만 Metadata 절은 미지원으로 적는다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "HDF5 driver",
+      "purpose": "read_HDF5_subdatasets",
+      "version": "3.0.3",
+      "evidence_roles": [
+        "capability",
+        "invocation",
+        "constraint",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.3/gdal/frmts/hdf5/frmt_hdf5.html",
+      "atoms": [
+        "G4.A2"
+      ],
+      "version_relaxed_atoms": [
+        "G4.A2"
+      ],
+      "unknowns": [
+        "원 문서는 COSMO-SkyMED 미기재; Metadata 절과 실제 보고 출력 사이 차이",
+        "A2는 일반 gdalinfo 호출/크기/subdataset metadata 범위만 인정하며 COSMO 제품 메타데이터/성공은 포함하지 않음"
+      ],
+      "discovery_ledger": "G-I05",
+      "discovery_locator": "formats_list.html L599–606; HDF5",
+      "discovered_href": "frmt_hdf5.html",
+      "stage": "driver-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    },
+    {
+      "candidate_id": "G4-2",
+      "case_id": "G4",
+      "rank": 2,
+      "url": "https://github.com/OSGeo/gdal/blob/v3.0.3/gdal/apps/gdal_utilities.dox#L187-L301",
+      "source_id": "G-D11",
+      "title": "gdalinfo 정보 조회",
+      "description": "드라이버·크기·알려진 메타데이터를 출력하는 호출과 옵션을 설명한다.",
+      "upstream_key": "OSGeo/gdal",
+      "upstream_verified": true,
+      "implementation": "OSGeo/gdal",
+      "component": "gdalinfo",
+      "purpose": "inspect_raster_metadata",
+      "version": "3.0.3",
+      "evidence_roles": [
+        "invocation",
+        "example"
+      ],
+      "identity_verified": true,
+      "document_group": "https://github.com/OSGeo/gdal/blob/v3.0.3/gdal/apps/gdal_utilities.dox",
+      "atoms": [
+        "G4.A2"
+      ],
+      "version_relaxed_atoms": [
+        "G4.A2"
+      ],
+      "unknowns": [
+        "일반 호출 설명이며 해당 HDF5 파일의 실제 메타데이터 획득·오류 해결은 미확인"
+      ],
+      "discovery_ledger": "G-I07",
+      "discovery_locator": "index.dox Raster utility programs; gdalinfo",
+      "discovered_href": "gdalinfo.html",
+      "stage": "manual-index",
+      "read_status": "direct_read",
+      "frozen_utc": "2026-11-22T18:41:13.890Z"
+    }
+  ],
+  "pair_evidence": [
+    {
+      "case_id": "G1",
+      "candidate_a": "G1-1",
+      "candidate_b": "G1-2",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "HFA driver configuration versus gdaladdo command",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "부분: HFA overview 목적에서 gdaladdo 예제는 포함하지만 일반 gdaladdo 계약 전부를 대체하지 않음",
+      "b_to_a": "불가: 압축과 GDAL_HFA_OVR_BLOCKSIZE의 HFA 전용 제약을 입증하지 못함",
+      "evidence": "G-D01 L37–53,67–83; G-D02 L510–668",
+      "unknown": "실패 해결 여부 미확인"
+    },
+    {
+      "case_id": "G1",
+      "candidate_a": "G1-3",
+      "candidate_b": "G1-4",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "pixel interpolation versus metadata editing",
+      "verdict": "같은 프로젝트의 다른 기능",
+      "a_to_b": "불가",
+      "b_to_a": "불가",
+      "evidence": "G-D06 Description; G-D07 Description/-a_nodata/-unsetnodata",
+      "unknown": "NoData 경계 제거·값 변경을 소비자가 대안으로 허용했는지 미확인"
+    },
+    {
+      "case_id": "G1",
+      "candidate_a": "G1-1",
+      "candidate_b": "G1-6",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "overview creation/configuration versus overview count read",
+      "verdict": "같은 프로젝트의 다른 기능",
+      "a_to_b": "불가: 읽기 호출 계약 별도",
+      "b_to_a": "불가: 생성 설정 없음",
+      "evidence": "G-D01 Configuration Options; G-D08 L241–253",
+      "unknown": "없음(이 좁은 호출 차이 범위)"
+    },
+    {
+      "case_id": "G1",
+      "candidate_a": "G1-1",
+      "candidate_b": "G1-5",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream_confirmed_package_metadata",
+      "component_relation": "HFA driver versus Python binding distribution",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "불가: 패키지 설치/의존성 증명 아님",
+      "b_to_a": "불가: HFA 압축 overview 기능 계약 없음",
+      "evidence": "G-D01; G-P01 Project description/Dependencies",
+      "unknown": "해당 Windows 바이너리의 드라이버 설정 미확인"
+    },
+    {
+      "case_id": "G2",
+      "candidate_a": "G2-1",
+      "candidate_b": "G2-2",
+      "address_relation": "exact_same_url",
+      "project_relation": "same_upstream",
+      "component_relation": "same_MapInfo_driver",
+      "verdict": "같은 구현·용도",
+      "a_to_b": "가능: 동일 고정 원문",
+      "b_to_a": "가능: 동일 고정 원문",
+      "evidence": "G-D03 전체; 두 발견 원장 G-I01/G-I03",
+      "unknown": "원 MapInfo 입력의 Java 성공은 별도 미확인"
+    },
+    {
+      "case_id": "G2",
+      "candidate_a": "G2-1",
+      "candidate_b": "G2-3",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "format driver capability versus Java iteration contract",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "불가",
+      "b_to_a": "불가",
+      "evidence": "G-D03 opening paragraphs; G-D10 L6863–6878",
+      "unknown": "문서 쌍은 읽기 능력+호출만 입증; G2.A3 미확인"
+    },
+    {
+      "case_id": "G2",
+      "candidate_a": "G2-3",
+      "candidate_b": "G2-4",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "Java SWIG binding versus C/C++ OGR iteration example",
+      "verdict": "미확인",
+      "a_to_b": "미확인: wrapper와 버전별 실행 동등성 확인 전",
+      "b_to_a": "미확인: C/C++ 예제로 Java 직접 대체를 승인하지 않음",
+      "evidence": "G-D10 L6863–6878; G-D09 L108–129",
+      "unknown": "동일 하위 구현 공유가 언어별 버그 동등성을 보장하는지는 미확인"
+    },
+    {
+      "case_id": "G3",
+      "candidate_a": "G3-1",
+      "candidate_b": "G3-2",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "inspection command versus image feature inventory",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "불가",
+      "b_to_a": "불가",
+      "evidence": "G-D05 --formats; G-R01 L24–34",
+      "unknown": "FlatGeoBuf 실제 포함 미확인"
+    },
+    {
+      "case_id": "G3",
+      "candidate_a": "G3-2",
+      "candidate_b": "G3-3",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "image inventory prose versus build recipe",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "불가: 빌드 인자/시점은 별도",
+      "b_to_a": "불가: 실행 이미지 가용 기능은 빌드 성공/결과 확인 필요",
+      "evidence": "G-R01 L24–34; G-R02 L90–119",
+      "unknown": "동일 alpine-small 대상이나 근거 역할 다름; digest 미확인"
+    },
+    {
+      "case_id": "G4",
+      "candidate_a": "G4-1",
+      "candidate_b": "G4-2",
+      "address_relation": "different_url",
+      "project_relation": "same_upstream",
+      "component_relation": "HDF5 driver versus gdalinfo command",
+      "verdict": "상호 보완 증거",
+      "a_to_b": "부분: HDF5 subdataset용 gdalinfo 예제가 있으나 일반 정보 조회 계약 전체는 아님",
+      "b_to_a": "불가: 특정 HDF5 제품/빌드 지원을 증명하지 않음",
+      "evidence": "G-D04 Dataset/subdataset/Metadata; G-D11 L187–301",
+      "unknown": "COSMO-SkyMED 3.0.3 성공 미확인"
+    }
+  ],
+  "observed_user_utility": "미확인",
+  "independent_coding": "미확인; 단일 조사자",
+  "version_relaxation_changes": [],
+  "counterevidence": [
+    {
+      "source_id": "G-R03",
+      "case_id": "G4",
+      "finding": "HDF5 매뉴얼의 Metadata 미지원 문장과 달리 고정 소스에는 Mission_ID, Product_Type와 CSK/KMPS 처리 분기가 존재함.",
+      "scope": "문서 표기가 구현 기능 전부를 나타내지 않는 반례. 실제 파일 성공이나 버그 수정의 증거는 아님."
+    }
+  ],
+  "correction_log": [
+    {
+      "corrected_utc": "2026-11-22T18:51:15.522Z",
+      "candidate_id": "G1-2",
+      "field": "atoms / version_relaxed_atoms",
+      "original": [
+        "G1.A1"
+      ],
+      "corrected": [],
+      "reason": "D02 L574–588의 내부 예제는 GeoTIFF이고 L646–649의 HFA .img 예제는 외부 GeoTIFF. HFA 내부 overview 생성 atom을 일반 gdaladdo 지원으로 과대 해석한 것을 정정.",
+      "unchanged": "봉인 URL/발견 순서/표시 설명/원 요구 및 전체 적격 분모",
+      "denominator_before": 0,
+      "denominator_after": 0
+    },
+    {
+      "corrected_utc": "2026-11-22T18:51:15.522Z",
+      "candidate_id": "G4-1",
+      "field": "atoms / version_relaxed_atoms",
+      "original": [],
+      "corrected": [
+        "G4.A2"
+      ],
+      "reason": "D04 L21–38에서 gdalinfo와 SUBDATASET metadata 조회, L42–44 및 L121–123에서 크기 출력이 확인됨. 원문 전체 접근 규칙에 따라 일반 호출 atom을 보존한다.",
+      "unchanged": "G4.A1 COSMO 인식, G4.A3 원 환경 성공은 여전히 미확인; URL/순서 불변",
+      "denominator_before": 0,
+      "denominator_after": 0
+    }
+  ],
+  "pool_atom_fields_status": "pool-G.csv의 atoms는 풀 봉인 시점 잠정 코딩이며 수정하지 않았다. 최종 분석에는 이 파일의 candidates.atoms 및 correction_log를 사용한다.",
+  "relation_pairs": [
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-1",
+      "right_candidate_id": "G1-2",
+      "relation": "상호 보완 증거",
+      "left_to_right": "partial",
+      "right_to_left": "no",
+      "basis": "D01 L37–53/67–83는 HFA 설정과 제한을, D02 L510–668는 일반 gdaladdo 호출과 외부 overview 예제를 제공한다.",
+      "source_ids": [
+        "G-D01",
+        "G-D02"
+      ],
+      "limitations": "공통 overview 목적만으로 역할/제약을 동일화하지 않는다. 어느 쪽도 원 오류 수정 증거가 아니다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-1",
+      "right_candidate_id": "G1-3",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D01 HFA overview 생성과 D06 Description의 NoData 픽셀 보간은 출력 변화가 다르다.",
+      "source_ids": [
+        "G-D01",
+        "G-D06"
+      ],
+      "limitations": "NoData 경계를 보존하는 원 요구에서 보간으로 대체할 승인 없음.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-1",
+      "right_candidate_id": "G1-4",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D01 압축 overview 설정과 D07 -a_nodata/-unsetnodata 메타데이터 편집은 수행 행동이 다르다.",
+      "source_ids": [
+        "G-D01",
+        "G-D07"
+      ],
+      "limitations": "metadata 표기를 바꾸는 것이 overview 재계산/오류 수정을 대신한다고 확인하지 않았다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-1",
+      "right_candidate_id": "G1-5",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D01은 드라이버 기능/설정, P01 Dependencies는 Python 배포와 libgdal 의존성을 설명한다.",
+      "source_ids": [
+        "G-D01",
+        "G-P01"
+      ],
+      "limitations": "같은 상류라도 문서와 패키지 레코드의 입증 역할이 다르다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-1",
+      "right_candidate_id": "G1-6",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D01 overview 생성/설정; D08 L241–253 GetOverviewCount 읽기.",
+      "source_ids": [
+        "G-D01",
+        "G-D08"
+      ],
+      "limitations": "개수 읽기와 생성 계약은 양방향 교체 불가. 구현 내부 공유 여부를 주장하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-2",
+      "right_candidate_id": "G1-3",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D02 gdaladdo Description은 overview 생성; D06 Description은 NoData 픽셀 보간.",
+      "source_ids": [
+        "G-D02",
+        "G-D06"
+      ],
+      "limitations": "둘 다 raster를 다뤄도 원 목적과 출력이 다르다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-2",
+      "right_candidate_id": "G1-4",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D02 gdaladdo는 축소 영상 생성; D07은 기존 파일 메타데이터 편집.",
+      "source_ids": [
+        "G-D02",
+        "G-D07"
+      ],
+      "limitations": "같은 utilities 프로젝트라는 사실은 호출 대체를 입증하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-2",
+      "right_candidate_id": "G1-5",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D02는 CLI 호출 계약; P01은 Python SWIG 모듈 배포/의존성.",
+      "source_ids": [
+        "G-D02",
+        "G-P01"
+      ],
+      "limitations": "Python 패키지 레코드만으로 CLI 가용성이나 실행 결과를 확인하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-2",
+      "right_candidate_id": "G1-6",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D02 L527–528 overview 생성; D08 L241–253 overview 개수 조회.",
+      "source_ids": [
+        "G-D02",
+        "G-D08"
+      ],
+      "limitations": "관찰과 변환의 방향이 다르다. 일반 읽기 예제는 생성 입력/설정을 대신하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-3",
+      "right_candidate_id": "G1-4",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D06 Description은 보간으로 픽셀을 변경하고 D07 -a_nodata는 metadata NoData 값을 바꾼다.",
+      "source_ids": [
+        "G-D06",
+        "G-D07"
+      ],
+      "limitations": "비슷한 NoData 표기로 발견됐지만 동일 행동이 아니다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-3",
+      "right_candidate_id": "G1-5",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D06는 gdal_fillnodata 알고리즘/옵션; P01는 Python bindings distribution.",
+      "source_ids": [
+        "G-D06",
+        "G-P01"
+      ],
+      "limitations": "배포 레코드는 특정 보간 호출 계약과 결과를 입증하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-3",
+      "right_candidate_id": "G1-6",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D06 픽셀 보간; D08 L241–253 overview 조회.",
+      "source_ids": [
+        "G-D06",
+        "G-D08"
+      ],
+      "limitations": "둘 다 Python에서 실행 가능한지는 원 요구의 행동 대체와 별개다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-4",
+      "right_candidate_id": "G1-5",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D07은 metadata 편집 옵션; P01는 설치 의존성과 SWIG 모듈 목록.",
+      "source_ids": [
+        "G-D07",
+        "G-P01"
+      ],
+      "limitations": "배포와 호출의 증거 역할 차이만 판정했다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-4",
+      "right_candidate_id": "G1-6",
+      "relation": "같은 프로젝트의 다른 기능",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D07은 NoData metadata 편집; D08 해당 예제는 overview 개수 조회.",
+      "source_ids": [
+        "G-D07",
+        "G-D08"
+      ],
+      "limitations": "메타데이터를 다룬다는 넓은 유사성만으로 방향을 합치지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G1",
+      "left_candidate_id": "G1-5",
+      "right_candidate_id": "G1-6",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "P01는 Python 배포/의존성, D08는 RasterBand 예제 호출.",
+      "source_ids": [
+        "G-P01",
+        "G-D08"
+      ],
+      "limitations": "같은 Python 구현 맥락이지만 배포 입증과 실제 API 예제는 별도다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-1",
+      "right_candidate_id": "G2-2",
+      "relation": "같은 구현·용도",
+      "left_to_right": "yes",
+      "right_to_left": "yes",
+      "basis": "D03 동일 고정 URL·동일 원문·동일 발견 대상.",
+      "source_ids": [
+        "G-D03"
+      ],
+      "limitations": "이 yes는 같은 문서의 대체 가능성이다. Java 입력 버그 성공을 의미하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-1",
+      "right_candidate_id": "G2-3",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D03는 MapInfo 형식 읽기 지원; D10 L6863–6878는 Java 순회 호출 계약.",
+      "source_ids": [
+        "G-D03",
+        "G-D10"
+      ],
+      "limitations": "원 요구의 서로 다른 atom을 보완하며 완전 동작 성공은 입증하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-1",
+      "right_candidate_id": "G2-4",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D03는 특정 포맷의 능력/제약; D09는 일반 C/C++ OGR 순회 예제.",
+      "source_ids": [
+        "G-D03",
+        "G-D09"
+      ],
+      "limitations": "C/C++ 예제가 Java wrapper를 대체할지는 미확인이고 MapInfo 지원 근거 역할도 다르다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-2",
+      "right_candidate_id": "G2-3",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D03는 MapInfo 형식 읽기 지원; D10 L6863–6878는 Java 순회 호출 계약.",
+      "source_ids": [
+        "G-D03",
+        "G-D10"
+      ],
+      "limitations": "G2-1과 같은 원문이므로 같은 제한을 적용한다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-2",
+      "right_candidate_id": "G2-4",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D03는 특정 포맷 능력/제약; D09는 C/C++ 순회 예제.",
+      "source_ids": [
+        "G-D03",
+        "G-D09"
+      ],
+      "limitations": "G2-1과 같은 원문이며 언어 간 전체 호환성은 미확인.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G2",
+      "left_candidate_id": "G2-3",
+      "right_candidate_id": "G2-4",
+      "relation": "미확인",
+      "left_to_right": "unknown",
+      "right_to_left": "unknown",
+      "basis": "D10는 Java Feature/null·GC 계약, D09 L108–129는 C/C++ OGRFeature/NULL 순회 계약.",
+      "source_ids": [
+        "G-D10",
+        "G-D09"
+      ],
+      "limitations": "동일 하위 GDAL 구현을 활용해도 wrapper 계약·버전별 버그 동등성은 확인되지 않았다. 현재 Java 요구의 직접 대체로 승인하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G3",
+      "left_candidate_id": "G3-1",
+      "right_candidate_id": "G3-2",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D05 --formats는 드라이버 조회 계약; R01 L24–34는 배포 이미지의 기능 범주.",
+      "source_ids": [
+        "G-D05",
+        "G-R01"
+      ],
+      "limitations": "조회 방법과 포함 설명은 서로 다른 근거 역할이며 결과가 실제로 나왔는지는 미확인.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G3",
+      "left_candidate_id": "G3-1",
+      "right_candidate_id": "G3-3",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "D05 --formats 호출; R02 L90–119 빌드 소스 버전/구성.",
+      "source_ids": [
+        "G-D05",
+        "G-R02"
+      ],
+      "limitations": "빌드 레시피는 실행 출력이 아니며 명령 문서는 특정 이미지의 포함을 증명하지 않는다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G3",
+      "left_candidate_id": "G3-2",
+      "right_candidate_id": "G3-3",
+      "relation": "상호 보완 증거",
+      "left_to_right": "no",
+      "right_to_left": "no",
+      "basis": "R01 L24–34는 이미지 기능 설명, R02 L90–119는 빌드 시 master 해석과 소스 취득.",
+      "source_ids": [
+        "G-R01",
+        "G-R02"
+      ],
+      "limitations": "대상 배포 이름은 같지만 입증 역할이 달라 합쳐 한 원문만 남기면 다른 근거가 사라질 수 있다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    },
+    {
+      "case_id": "G4",
+      "left_candidate_id": "G4-1",
+      "right_candidate_id": "G4-2",
+      "relation": "상호 보완 증거",
+      "left_to_right": "partial",
+      "right_to_left": "no",
+      "basis": "D04 L21–44/121–123는 HDF5에서 gdalinfo 호출/크기/subdataset metadata, D11 L187–301는 일반 gdalinfo 계약.",
+      "source_ids": [
+        "G-D04",
+        "G-D11"
+      ],
+      "limitations": "일반 호출 atom G4.A2는 둘 다 지원한다. HDF5/COSMO 인식 및 원 환경 성공의 완전한 대체는 미확인이다.",
+      "direction_scope": "원 요구의 목적·판을 고정하고 해당 링크가 입증하는 행동/근거 역할을 보존하는 문서 대체 판정. 라이브러리·바이너리 전체 호환성 판정이 아님.",
+      "runtime_compatibility": "미확인"
+    }
+  ]
+}
