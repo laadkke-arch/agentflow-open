@@ -1,0 +1,752 @@
+{
+  "task": "AF-RES-046",
+  "repository": "scikit-learn/scikit-learn",
+  "checked_utc": "2026-11-22T22:40:23.288Z",
+  "existing_ledgers_unchanged": true,
+  "selection_freeze_sha": "994e21aaea7c5da0c4322db9d1ce2c4f52fa6a2f",
+  "recovered_count": 7,
+  "selected_recovered_count": 6,
+  "excluded_recovered_count": 1,
+  "minimum_count_increment": 0,
+  "method": "Officially documented public read-only ClickHouse Playground, explorer empty password; GitHub compare and fixed commit verification",
+  "official_endpoint_documentation": "https://clickhouse.com/docs/get-started/sample-datasets/playground#credentials",
+  "ingest_mapping_source": "https://github.com/ClickHouse/sql.clickhouse.com/blob/main/load_scripts/github_events/ingest.sh",
+  "field_mapping": {
+    "created_at": "GitHub event .created_at",
+    "updated_at": "payload.updated_at or comment/issue/pull_request.updated_at; for opened PR, PR payload updated_at",
+    "body": "payload.pull_request.body for PullRequestEvent",
+    "head_sha": "payload.pull_request.head.sha",
+    "base_sha": "payload.pull_request.base.sha",
+    "file_time": "archive hourly filename",
+    "raw_event_id": "not retained by this normalized schema",
+    "timezone": "Etc/UTC verified via SELECT timezone()"
+  },
+  "query": "SELECT file_time,event_type,repo_name,number,created_at,updated_at,action,actor_login,creator_user_login,head_ref,head_sha,base_ref,base_sha,title,body,changed_files,commits FROM github_events WHERE event_type='PullRequestEvent' AND repo_name='scikit-learn/scikit-learn' AND action='opened' AND number IN (25265,25268,25269,25274,25535,25540,25272) AND created_at>='2023-01-01 00:00:00' AND created_at<'2023-02-05 00:00:00' ORDER BY created_at,number LIMIT 20 FORMAT JSON",
+  "query_url": "https://play.clickhouse.com/?user=explorer&query=SELECT+file_time%2Cevent_type%2Crepo_name%2Cnumber%2Ccreated_at%2Cupdated_at%2Caction%2Cactor_login%2Ccreator_user_login%2Chead_ref%2Chead_sha%2Cbase_ref%2Cbase_sha%2Ctitle%2Cbody%2Cchanged_files%2Ccommits+FROM+github_events+WHERE+event_type%3D%27PullRequestEvent%27+AND+repo_name%3D%27scikit-learn%2Fscikit-learn%27+AND+action%3D%27opened%27+AND+number+IN+%2825265%2C25268%2C25269%2C25274%2C25535%2C25540%2C25272%29+AND+created_at%3E%3D%272023-01-01+00%3A00%3A00%27+AND+created_at%3C%272023-02-05+00%3A00%3A00%27+ORDER+BY+created_at%2Cnumber+LIMIT+20+FORMAT+JSON",
+  "query_final_url": "https://play.clickhouse.com/?user=explorer&query=SELECT+file_time%2Cevent_type%2Crepo_name%2Cnumber%2Ccreated_at%2Cupdated_at%2Caction%2Cactor_login%2Ccreator_user_login%2Chead_ref%2Chead_sha%2Cbase_ref%2Cbase_sha%2Ctitle%2Cbody%2Cchanged_files%2Ccommits+FROM+github_events+WHERE+event_type%3D%27PullRequestEvent%27+AND+repo_name%3D%27scikit-learn%2Fscikit-learn%27+AND+action%3D%27opened%27+AND+number+IN+%2825265%2C25268%2C25269%2C25274%2C25535%2C25540%2C25272%29+AND+created_at%3E%3D%272023-01-01+00%3A00%3A00%27+AND+created_at%3C%272023-02-05+00%3A00%3A00%27+ORDER+BY+created_at%2Cnumber+LIMIT+20+FORMAT+JSON",
+  "query_http_status": 200,
+  "query_checked_utc": "2026-11-22T22:37:20.893725+00:00",
+  "query_statistics": {
+    "elapsed": 0.025350925,
+    "rows_read": 80382,
+    "bytes_read": 12811318
+  },
+  "query_returned_rows": 7,
+  "query_rows_before_limit_at_least": 7,
+  "recovered": [
+    {
+      "source_id": "S-ARCH-OPEN-25265",
+      "slot_id": "N-S1",
+      "pr": 25265,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[0]; number=25265; action=opened; created_at=2023-01-01 13:18:54",
+      "opening_event_utc": "2023-01-01T13:18:54Z",
+      "archive_file_time_utc": "2023-01-01T13:00:00Z",
+      "pr_created_at_rest": "2023-01-01T13:18:54Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-01-01T13:18:54Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "a5d94d234de3bb73ad262ca707a43b4161b7fe3c",
+      "base_sha": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "head_ref": "<param-valid>",
+      "base_ref": "main",
+      "actor": "dlitsidis",
+      "creator": "dlitsidis",
+      "initial_title": "MAINT Parameters validation for sklearn.datasets.fetch_california_housing",
+      "initial_body": "Reference Issues/PRs\r\n\r\nTowards #24862 \r\n\r\nAdded the validate_params decorator for sklearn.datasets.fetch_california_housing",
+      "current_title_matches": true,
+      "current_body_matches": true,
+      "opening_changed_files": 3,
+      "opening_commits": 8,
+      "existing_baseline_sha": "a5d94d234de3bb73ad262ca707a43b4161b7fe3c",
+      "match_existing_baseline_head": true,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...a5d94d234de3bb73ad262ca707a43b4161b7fe3c",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...a5d94d234de3bb73ad262ca707a43b4161b7fe3c",
+      "compare_checked_utc": "2026-11-22T22:38:13.634Z",
+      "compare_status": "diverged",
+      "compare_merge_base": "2cce02414d4a7161f0d105450c196d94b1182220",
+      "compare_ahead_by": 8,
+      "compare_behind_by": 4,
+      "compare_files": [
+        {
+          "filename": "sklearn/datasets/_california_housing.py",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "blob_sha": "0befba91adb1c5e79e447ae64e7659227aa7b494"
+        },
+        {
+          "filename": "sklearn/metrics/_ranking.py",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 1,
+          "blob_sha": "ebe477a7e2de7ba6c88c10bb53c08025efab30d5"
+        },
+        {
+          "filename": "sklearn/tests/test_public_functions.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "blob_sha": "57452912cec78c772e2ff6b5d63b283219225ebe"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/datasets/_california_housing.py",
+          "patch": "@@ -37,10 +37,13 @@\n from ._base import RemoteFileMetadata\n from ._base import load_descr\n from ..utils import Bunch\n+from ..utils._param_validation import validate_params\n \n \n # The original data can be found at:\n # https://www.dcc.fc.up.pt/~ltorgo/Regression/cal_housing.tgz\n+\n+\n ARCHIVE = RemoteFileMetadata(\n     filename=\"cal_housing.tgz\",\n     url=\"https://ndownloader.figshare.com/files/5976036\",\n@@ -50,6 +53,14 @@\n logger = logging.getLogger(__name__)\n \n \n+@validate_params(\n+    {\n+        \"data_home\": [str, None],\n+        \"download_if_missing\": [\"boolean\"],\n+        \"return_X_y\": [\"boolean\"],\n+        \"as_frame\": [\"boolean\"],\n+    }\n+)\n def fetch_california_housing(\n     *, data_home=None, download_if_missing=True, return_X_y=False, as_frame=False\n ):"
+        },
+        {
+          "filename": "sklearn/metrics/_ranking.py",
+          "patch": "@@ -21,7 +21,7 @@\n \n import warnings\n from functools import partial\n-from numbers import Real\n+from numbers import Real, Integral\n \n import numpy as np\n from scipy.sparse import csr_matrix, issparse\n@@ -239,6 +239,14 @@ def _binary_uninterpolated_average_precision(\n     )\n \n \n+@validate_params(\n+    {\n+        \"y_true\": [\"array-like\"],\n+        \"y_score\": [\"array-like\"],\n+        \"pos_label\": [Integral, str, None],\n+        \"sample_weight\": [\"array-like\", None],\n+    }\n+)\n def det_curve(y_true, y_score, pos_label=None, sample_weight=None):\n     \"\"\"Compute error rates for different probability thresholds.\n "
+        },
+        {
+          "filename": "sklearn/tests/test_public_functions.py",
+          "patch": "@@ -99,6 +99,7 @@ def _check_function_param_validation(\n     \"sklearn.cluster.estimate_bandwidth\",\n     \"sklearn.cluster.kmeans_plusplus\",\n     \"sklearn.covariance.empirical_covariance\",\n+    \"sklearn.datasets.fetch_california_housing\",\n     \"sklearn.datasets.make_sparse_coded_signal\",\n     \"sklearn.decomposition.sparse_encode\",\n     \"sklearn.feature_extraction.grid_to_graph\",\n@@ -108,6 +109,7 @@ def _check_function_param_validation(\n     \"sklearn.metrics.auc\",\n     \"sklearn.metrics.cohen_kappa_score\",\n     \"sklearn.metrics.confusion_matrix\",\n+    \"sklearn.metrics.det_curve\",\n     \"sklearn.metrics.mean_absolute_error\",\n     \"sklearn.metrics.mean_tweedie_deviance\",\n     \"sklearn.metrics.multilabel_confusion_matrix\","
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "dlitsidis",
+        "committer_login": "dlitsidis",
+        "git_author_date": "2023-01-01T13:16:34Z",
+        "git_committer_date": "2023-01-01T13:16:34Z",
+        "parents": [
+          "6361a85524dd3a63fbc37850df216e6fc21e41ed"
+        ]
+      },
+      "finding": "Opening head matches a5d94d. Initial PR comparison also carries prior det_curve validation; fetch_california_housing decorator is present. PR base is96a0bc, distinct from feature commit's parent6361a8.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25268",
+      "slot_id": "N-S2",
+      "pr": 25268,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[1]; number=25268; action=opened; created_at=2023-01-01 21:22:27",
+      "opening_event_utc": "2023-01-01T21:22:27Z",
+      "archive_file_time_utc": "2023-01-01T21:00:00Z",
+      "pr_created_at_rest": "2023-01-01T21:22:26Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-01-01T21:22:26Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "d5a1cbaf23a471e0c87ddad123a22f85fd104932",
+      "base_sha": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "head_ref": "fix_get_feature_names_out_error_one_to_one_mixin",
+      "base_ref": "main",
+      "actor": "jpangas",
+      "creator": "jpangas",
+      "initial_title": "Fix error type in get_feature_names_out for estimators that use OnetoOneFeatureMixin",
+      "initial_body": "\r\n\r\n<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\nIn issue #24916, we want to make the error message uniform in estimators when we call `get_feature_names_out` before `fit`.  This PR works towards that issue and solves the inconsistencies in estimators that inherit from the `OnetoOneFeatureMixin` Class.\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\n\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThe following estimators that inherit from the `OnetoOneFeatureMixin` class will raise the agreed `NotFittedError` when `get_feature_names_out` is called before `fit`.\r\n\r\n- Binarizer\r\n- MaxAbsScaler\r\n- MinMaxScaler\r\n- Normalizer\r\n- OrdinalEncoder\r\n- PowerTransformer\r\n- QuantileTransformer\r\n- RobustScaler\r\n- StandardScaler\r\n- TfidfTransformer\r\n\r\n#### Any other comments?\r\nAll tests successfully passed after the above estimators were removed from the whitelist.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n",
+      "current_title_matches": false,
+      "current_body_matches": true,
+      "opening_changed_files": 2,
+      "opening_commits": 1,
+      "existing_baseline_sha": "d5a1cbaf23a471e0c87ddad123a22f85fd104932",
+      "match_existing_baseline_head": true,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...d5a1cbaf23a471e0c87ddad123a22f85fd104932",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...d5a1cbaf23a471e0c87ddad123a22f85fd104932",
+      "compare_checked_utc": "2026-11-22T22:38:13.461Z",
+      "compare_status": "ahead",
+      "compare_merge_base": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "compare_ahead_by": 1,
+      "compare_behind_by": 0,
+      "compare_files": [
+        {
+          "filename": "sklearn/base.py",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "blob_sha": "c9db867037f0c5c36a303afef2efc1cc96fcb58d"
+        },
+        {
+          "filename": "sklearn/tests/test_common.py",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 10,
+          "blob_sha": "99984bffda6e552074dffa322ed6f468bf4fa430"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/base.py",
+          "patch": "@@ -897,6 +897,7 @@ def get_feature_names_out(self, input_features=None):\n         feature_names_out : ndarray of str objects\n             Same as input features.\n         \"\"\"\n+        check_is_fitted(self, \"n_features_in_\")\n         return _check_feature_names_in(self, input_features)\n \n "
+        },
+        {
+          "filename": "sklearn/tests/test_common.py",
+          "patch": "@@ -464,24 +464,16 @@ def test_transformers_get_feature_names_out(transformer):\n \n WHITELISTED_FAILING_ESTIMATORS = [\n     \"AdditiveChi2Sampler\",\n-    \"Binarizer\",\n     \"DictVectorizer\",\n     \"GaussianRandomProjection\",\n     \"GenericUnivariateSelect\",\n     \"IterativeImputer\",\n     \"IsotonicRegression\",\n     \"KBinsDiscretizer\",\n     \"KNNImputer\",\n-    \"MaxAbsScaler\",\n-    \"MinMaxScaler\",\n     \"MissingIndicator\",\n-    \"Normalizer\",\n-    \"OrdinalEncoder\",\n-    \"PowerTransformer\",\n-    \"QuantileTransformer\",\n     \"RFE\",\n     \"RFECV\",\n-    \"RobustScaler\",\n     \"SelectFdr\",\n     \"SelectFpr\",\n     \"SelectFromModel\",\n@@ -494,8 +486,6 @@ def test_transformers_get_feature_names_out(transformer):\n     \"SplineTransformer\",\n     \"StackingClassifier\",\n     \"StackingRegressor\",\n-    \"StandardScaler\",\n-    \"TfidfTransformer\",\n     \"VarianceThreshold\",\n     \"VotingClassifier\",\n     \"VotingRegressor\","
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "jpangas",
+        "committer_login": "jpangas",
+        "git_author_date": "2023-01-01T20:50:23Z",
+        "git_committer_date": "2023-01-01T20:50:23Z",
+        "parents": [
+          "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff"
+        ]
+      },
+      "finding": "Opening head exactly matches old review-recovered d5a1cbaf. check_is_fitted and ten whitelist removals are now tied to opening public event. Current title changed but body matches.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25269",
+      "slot_id": "N-S3",
+      "pr": 25269,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[2]; number=25269; action=opened; created_at=2023-01-02 02:19:38",
+      "opening_event_utc": "2023-01-02T02:19:38Z",
+      "archive_file_time_utc": "2023-01-02T02:00:00Z",
+      "pr_created_at_rest": "2023-01-02T02:19:37Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-01-02T02:19:37Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "39e64ed77d3cb00987e32626353aed48aca8070e",
+      "base_sha": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "head_ref": "parameter_validation_shrunk_covariance",
+      "base_ref": "main",
+      "actor": "nnlnr",
+      "creator": "nnlnr",
+      "initial_title": "MAINT Parameters validation for sklearn.covariance.shrunk_covariance",
+      "initial_body": "<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n--> Towards #24862\r\n\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nParameter validation for `covariance.shrunk_covariance`\r\n\r\n#### Any other comments?\r\nThis is my first PR, so apologies in advance if I've missed the mark here on this.  I kept the existing` test_shrunk_covariance` method since I wasn't sure if was checking for more complex param validation.\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n",
+      "current_title_matches": true,
+      "current_body_matches": true,
+      "opening_changed_files": 2,
+      "opening_commits": 1,
+      "existing_baseline_sha": "39e64ed77d3cb00987e32626353aed48aca8070e",
+      "match_existing_baseline_head": true,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...39e64ed77d3cb00987e32626353aed48aca8070e",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...39e64ed77d3cb00987e32626353aed48aca8070e",
+      "compare_checked_utc": "2026-11-22T22:38:13.480Z",
+      "compare_status": "ahead",
+      "compare_merge_base": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "compare_ahead_by": 1,
+      "compare_behind_by": 0,
+      "compare_files": [
+        {
+          "filename": "sklearn/covariance/_shrunk_covariance.py",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0,
+          "blob_sha": "73a7ce233981b2590e3e4f77d1af8a769f67891b"
+        },
+        {
+          "filename": "sklearn/tests/test_public_functions.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "blob_sha": "e15388d9d9b27c0212c24d8b1a8f82a4c3b6cf49"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/covariance/_shrunk_covariance.py",
+          "patch": "@@ -73,6 +73,12 @@ def _oas(X, *, assume_centered=False):\n # ShrunkCovariance estimator\n \n \n+@validate_params(\n+    {\n+        \"emp_cov\": [\"array-like\"],\n+        \"shrinkage\": [Interval(Real, 0, 1, closed=\"both\")],\n+    }\n+)\n def shrunk_covariance(emp_cov, shrinkage=0.1):\n     \"\"\"Calculate a covariance matrix shrunk on the diagonal.\n "
+        },
+        {
+          "filename": "sklearn/tests/test_public_functions.py",
+          "patch": "@@ -99,6 +99,7 @@ def _check_function_param_validation(\n     \"sklearn.cluster.estimate_bandwidth\",\n     \"sklearn.cluster.kmeans_plusplus\",\n     \"sklearn.covariance.empirical_covariance\",\n+    \"sklearn.covariance.shrunk_covariance\",\n     \"sklearn.datasets.make_sparse_coded_signal\",\n     \"sklearn.decomposition.sparse_encode\",\n     \"sklearn.feature_extraction.grid_to_graph\",\n@@ -140,6 +141,7 @@ def test_function_param_validation(func_module):\n     (\"sklearn.cluster.affinity_propagation\", \"sklearn.cluster.AffinityPropagation\"),\n     (\"sklearn.covariance.ledoit_wolf\", \"sklearn.covariance.LedoitWolf\"),\n     (\"sklearn.covariance.oas\", \"sklearn.covariance.OAS\"),\n+    (\"sklearn.covariance.shrunk_covariance\", \"sklearn.covariance.ShrunkCovariance\"),\n     (\"sklearn.decomposition.dict_learning\", \"sklearn.decomposition.DictionaryLearning\"),\n     (\"sklearn.decomposition.fastica\", \"sklearn.decomposition.FastICA\"),\n     (\"sklearn.decomposition.non_negative_factorization\", \"sklearn.decomposition.NMF\"),"
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": null,
+        "committer_login": null,
+        "git_author_date": "2023-01-02T02:06:23Z",
+        "git_committer_date": "2023-01-02T02:06:23Z",
+        "parents": [
+          "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff"
+        ]
+      },
+      "finding": "Opening head matches39e64ed; input-validation decorator and two registry additions are initial.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25272",
+      "slot_id": "excluded-natural-rank7",
+      "pr": 25272,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[3]; number=25272; action=opened; created_at=2023-01-02 09:41:48",
+      "opening_event_utc": "2023-01-02T09:41:48Z",
+      "archive_file_time_utc": "2023-01-02T09:00:00Z",
+      "pr_created_at_rest": "2023-01-02T09:41:48Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-01-02T09:41:48Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "33ee1f59a66304eb16534be16f1a0287f13a95dc",
+      "base_sha": "96a0bc861ad2ba3c63db0326b42b41ddabeb2aff",
+      "head_ref": "test_elliptic_envelope_global_random_seed",
+      "base_ref": "main",
+      "actor": "irene000",
+      "creator": "irene000",
+      "initial_title": "TST use global_random_seed in sklearn/covariance/tests/test_elliptic_envelope.py",
+      "initial_body": "<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nhttps://github.com/scikit-learn/scikit-learn/issues/22827\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nUse global_random_seed in test_elliptic_envelope.py: test_elliptic_envelope\r\n\r\n#### Any other comments?\r\n\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n",
+      "current_title_matches": null,
+      "current_body_matches": null,
+      "opening_changed_files": 1,
+      "opening_commits": 1,
+      "existing_baseline_sha": "ab6e29f72364dcae2ede70d3adfac6974225d858",
+      "match_existing_baseline_head": false,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...33ee1f59a66304eb16534be16f1a0287f13a95dc",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/96a0bc861ad2ba3c63db0326b42b41ddabeb2aff...33ee1f59a66304eb16534be16f1a0287f13a95dc",
+      "compare_checked_utc": "2026-11-22T22:38:13.491Z",
+      "compare_status": "diverged",
+      "compare_merge_base": "5fd66bc55f03740f395971abf1189b11594252b1",
+      "compare_ahead_by": 1,
+      "compare_behind_by": 580,
+      "compare_files": [
+        {
+          "filename": "sklearn/covariance/tests/test_elliptic_envelope.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "blob_sha": "122d4c8bfb4cc21f7c34c7658bcc00ba0322d9f1"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/covariance/tests/test_elliptic_envelope.py",
+          "patch": "@@ -12,8 +12,8 @@\n from sklearn.exceptions import NotFittedError\n \n \n-def test_elliptic_envelope():\n-    rnd = np.random.RandomState(0)\n+def test_elliptic_envelope(global_random_seed):\n+    rnd = np.random.RandomState(global_random_seed)\n     X = rnd.randn(100, 10)\n     clf = EllipticEnvelope(contamination=0.1)\n     with pytest.raises(NotFittedError):"
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "irene000",
+        "committer_login": "irene000",
+        "git_author_date": "2023-01-02T09:37:24Z",
+        "git_committer_date": "2023-01-02T09:37:24Z",
+        "parents": [
+          "5fd66bc55f03740f395971abf1189b11594252b1"
+        ]
+      },
+      "finding": "Recovered initial33ee1f59 differs from rebased survivingab6e29f but actual diff is identical test seed fixture only; excluded rank7 confirmed.",
+      "selection_impact": "Confirms test-only exclusion without changing frozen rank/slots",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25274",
+      "slot_id": "N-S4",
+      "pr": 25274,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[4]; number=25274; action=opened; created_at=2023-01-02 16:48:00",
+      "opening_event_utc": "2023-01-02T16:48:00Z",
+      "archive_file_time_utc": "2023-01-02T16:00:00Z",
+      "pr_created_at_rest": "2023-01-02T16:47:59Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-01-02T16:47:59Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "1e55ead018c0230f6d1c10b471b6d73d47092bf6",
+      "base_sha": "bd555228f7919b5d19f7a99e760a2a7e16081c16",
+      "head_ref": "fix_inverse_transform_check",
+      "base_ref": "main",
+      "actor": "thomasjpfan",
+      "creator": "thomasjpfan",
+      "initial_title": "FIX Handles all numerical DataFrames with check_inverse=True in FunctionTransformer",
+      "initial_body": "<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nFixes #25261\r\nCloses #19905\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nThis PR explicitly handles dataframes  when validating the input when `check_inverse=True`.\r\n\r\n#### Any other comments?\r\nThis closes in #19905, because it explicity raises an error for DataFrames `FunctionTransformer` does not know how to validate. \r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n",
+      "current_title_matches": true,
+      "current_body_matches": true,
+      "opening_changed_files": 3,
+      "opening_commits": 1,
+      "existing_baseline_sha": "1e55ead018c0230f6d1c10b471b6d73d47092bf6",
+      "match_existing_baseline_head": true,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/bd555228f7919b5d19f7a99e760a2a7e16081c16...1e55ead018c0230f6d1c10b471b6d73d47092bf6",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/bd555228f7919b5d19f7a99e760a2a7e16081c16...1e55ead018c0230f6d1c10b471b6d73d47092bf6",
+      "compare_checked_utc": "2026-11-22T22:38:13.415Z",
+      "compare_status": "ahead",
+      "compare_merge_base": "bd555228f7919b5d19f7a99e760a2a7e16081c16",
+      "compare_ahead_by": 1,
+      "compare_behind_by": 0,
+      "compare_files": [
+        {
+          "filename": "doc/whats_new/v1.2.rst",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 0,
+          "blob_sha": "0248f06e07f52c4df71fe582f3c33d8a00f944a5"
+        },
+        {
+          "filename": "sklearn/preprocessing/_function_transformer.py",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1,
+          "blob_sha": "f3d98903f8571ce7dcbdf1afe821ff6b17668e8f"
+        },
+        {
+          "filename": "sklearn/preprocessing/tests/test_function_transformer.py",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 0,
+          "blob_sha": "557aac53def83a6e7761f9ac0154d41adb72c87b"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "doc/whats_new/v1.2.rst",
+          "patch": "@@ -27,6 +27,13 @@ Changelog\n   `verbose` parameter set to a value greater than 0.\n   :pr:`25250` by :user:`Jérémie Du Boisberranger <jeremiedbb>`.\n \n+:mod:`sklearn.preprocessing`\n+............................\n+\n+- |Fix| :meth:`preprocessing.FunctionTransformer.inverse_transform` correctly\n+  supports DataFrames that all all numerical when `check_inverse=True`.\n+  :pr:`xxxxx` by `Thomas Fan`_.\n+\n :mod:`sklearn.utils`\n ....................\n "
+        },
+        {
+          "filename": "sklearn/preprocessing/_function_transformer.py",
+          "patch": "@@ -174,7 +174,13 @@ def _check_inverse_transform(self, X):\n         idx_selected = slice(None, None, max(1, X.shape[0] // 100))\n         X_round_trip = self.inverse_transform(self.transform(X[idx_selected]))\n \n-        if not np.issubdtype(X.dtype, np.number):\n+        if hasattr(X, \"dtype\"):\n+            dtypes = [X.dtype]\n+        elif hasattr(X, \"dtypes\"):\n+            # Dataframes can have multiple dtypes\n+            dtypes = X.dtypes\n+\n+        if not all(np.issubdtype(d, np.number) for d in dtypes):\n             raise ValueError(\n                 \"'check_inverse' is only supported when all the elements in `X` is\"\n                 \" numerical.\""
+        },
+        {
+          "filename": "sklearn/preprocessing/tests/test_function_transformer.py",
+          "patch": "@@ -217,6 +217,36 @@ def inverse_func(X):\n         transformer.fit(data)\n \n \n+def test_function_transformer_support_all_nummerical_dataframes_check_inverse_True():\n+    \"\"\"Check support for dataframes with only numerical values.\"\"\"\n+    pd = pytest.importorskip(\"pandas\")\n+\n+    df = pd.DataFrame({\"a\": [1, 2, 3], \"b\": [4, 5, 6]})\n+    transformer = FunctionTransformer(\n+        func=lambda x: x + 2, inverse_func=lambda x: x - 2, check_inverse=True\n+    )\n+\n+    # Does not raise an error\n+    df_out = transformer.fit_transform(df)\n+    assert_allclose_dense_sparse(df_out, df + 2)\n+\n+\n+def test_function_transformer_with_dataframe_and_check_inverse_True():\n+    \"\"\"Raise error is raised when check_inverse=True.\n+\n+    Non-regresion test for gh-25261.\n+    \"\"\"\n+    pd = pytest.importorskip(\"pandas\")\n+    transformer = FunctionTransformer(\n+        func=lambda x: x, inverse_func=lambda x: x, check_inverse=True\n+    )\n+\n+    df_mixed = pd.DataFrame({\"a\": [1, 2, 3], \"b\": [\"a\", \"b\", \"c\"]})\n+    msg = \"'check_inverse' is only supported when all the elements in `X` is numerical.\"\n+    with pytest.raises(ValueError, match=msg):\n+        transformer.fit(df_mixed)\n+\n+\n @pytest.mark.parametrize(\n     \"X, feature_names_out, input_features, expected\",\n     ["
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "thomasjpfan",
+        "committer_login": "thomasjpfan",
+        "git_author_date": "2023-01-02T16:43:40Z",
+        "git_committer_date": "2023-01-02T16:43:40Z",
+        "parents": [
+          "bd555228f7919b5d19f7a99e760a2a7e16081c16"
+        ]
+      },
+      "finding": "Opening head matches1e55ead; numeric DataFrame support and mixed-type ValueError tests are initial; current body matches.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25535",
+      "slot_id": "L-S1",
+      "pr": 25535,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[5]; number=25535; action=opened; created_at=2023-02-03 14:18:48",
+      "opening_event_utc": "2023-02-03T14:18:48Z",
+      "archive_file_time_utc": "2023-02-03T14:00:00Z",
+      "pr_created_at_rest": "2023-02-03T14:18:47Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-02-03T14:18:47Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "39a39ad309414b4d8a1a93bc3105980d2222a589",
+      "base_sha": "d9cf5c9e98a9048e142f8a06a9eacde48aba2758",
+      "head_ref": "feature/engine-api",
+      "base_ref": "main",
+      "actor": "ogrisel",
+      "creator": "ogrisel",
+      "initial_title": "[DRAFT] Engine plugin API and engine entry point for Lloyd's KMeans",
+      "initial_body": "This is a draft pull-request to allow third-party packages such as https://github.com/soda-inria/sklearn-numba-dpex to contribute alternative implementations of core computational routines of CPU-intensive scikit-learn estimators.\r\n\r\nThis would be particularly useful to experiment with GPU-optimized alternatives to our CPU-optimized Cython code.\r\n\r\nThis Draft PR serves as a long running design experiment (feature branch) to tackle #22438.\r\n\r\nThis is a takeover of the old PR from the `ogrisel/scikit-learn:wip-engines` branch so as to make it easier to get the CI work when doing sub PRs targeting `scikit-learn/scikit-learn:feature/engine-api`.",
+      "current_title_matches": true,
+      "current_body_matches": false,
+      "opening_changed_files": 14,
+      "opening_commits": 79,
+      "existing_baseline_sha": "a897a34d7d989bf317de17f80948639c0fd5ecf1",
+      "match_existing_baseline_head": false,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/d9cf5c9e98a9048e142f8a06a9eacde48aba2758...39a39ad309414b4d8a1a93bc3105980d2222a589",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/d9cf5c9e98a9048e142f8a06a9eacde48aba2758...39a39ad309414b4d8a1a93bc3105980d2222a589",
+      "compare_checked_utc": "2026-11-22T22:38:13.597Z",
+      "compare_status": "diverged",
+      "compare_merge_base": "71a647f8bcc4c0ec8e4b8ce76f5f566f0513a222",
+      "compare_ahead_by": 79,
+      "compare_behind_by": 55,
+      "compare_files": [
+        {
+          "filename": "doc/computing.rst",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "blob_sha": "8b355f22ec641ca22130404b405826bdb88bd050"
+        },
+        {
+          "filename": "doc/computing/engine.rst",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0,
+          "blob_sha": "66c3302113324bac9641870d3ceafcef24754bda"
+        },
+        {
+          "filename": "doc/whats_new/v1.3.rst",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 0,
+          "blob_sha": "9286befe3d5797a35f499b44bee63481b54a1f6a"
+        },
+        {
+          "filename": "setup.py",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "blob_sha": "bf7438c497c6453b9307abafff7260d672627f11"
+        },
+        {
+          "filename": "sklearn/_config.py",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 0,
+          "blob_sha": "198d1b5a556202c5a0e89671d85f29f2d2f0af90"
+        },
+        {
+          "filename": "sklearn/_engine/__init__.py",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "blob_sha": "cd098571300f7379517a11bc550a9e0430d98acc"
+        },
+        {
+          "filename": "sklearn/_engine/base.py",
+          "status": "added",
+          "additions": 174,
+          "deletions": 0,
+          "blob_sha": "cb1454759872e041410374d2f3301403c6bdc427"
+        },
+        {
+          "filename": "sklearn/_engine/testing.py",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0,
+          "blob_sha": "8c553ee06d6554405cd4154297a531b2b03f3e9e"
+        },
+        {
+          "filename": "sklearn/_engine/tests/__init__.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "filename": "sklearn/_engine/tests/test_engines.py",
+          "status": "added",
+          "additions": 293,
+          "deletions": 0,
+          "blob_sha": "170172c6d93205968751ff24c129ebf33f3e56c4"
+        },
+        {
+          "filename": "sklearn/base.py",
+          "status": "modified",
+          "additions": 34,
+          "deletions": 0,
+          "blob_sha": "e2654b2468bdbac2cdf7b0e6bbebcc5066a354c1"
+        },
+        {
+          "filename": "sklearn/cluster/_kmeans.py",
+          "status": "modified",
+          "additions": 320,
+          "deletions": 64,
+          "blob_sha": "955cabc6af4078e07add284d28f19ed4327ebcf8"
+        },
+        {
+          "filename": "sklearn/exceptions.py",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 0,
+          "blob_sha": "8473d4218722966cd2714824063c7807701930ed"
+        },
+        {
+          "filename": "sklearn/tests/test_config.py",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0,
+          "blob_sha": "083d8d85ed94e8d61301a06888887f22e2aa4ad0"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/_engine/testing.py",
+          "patch": "@@ -0,0 +1,38 @@\n+from pytest import xfail, hookimpl\n+\n+from sklearn import config_context\n+\n+from sklearn.exceptions import NotSupportedByEngineError\n+\n+\n+# TODO: document this pytest plugin + write a tutorial on how to develop a new plugin\n+# and explain good practices regarding testing against sklearn test modules.\n+def pytest_addoption(parser):\n+    group = parser.getgroup(\"Sklearn plugin testing\")\n+    group.addoption(\n+        \"--sklearn-engine-provider\",\n+        action=\"store\",\n+        nargs=1,\n+        type=str,\n+        help=\"Name of the an engine provider for sklearn to activate for all tests.\",\n+    )\n+\n+\n+@hookimpl(hookwrapper=True)\n+def pytest_pyfunc_call(pyfuncitem):\n+    engine_provider = pyfuncitem.config.getoption(\"sklearn_engine_provider\")\n+    if engine_provider is None:\n+        yield\n+        return\n+\n+    with config_context(engine_provider=engine_provider):\n+        try:\n+            outcome = yield\n+            outcome.get_result()\n+        except NotSupportedByEngineError:\n+            xfail(\n+                reason=(\n+                    \"This test cover features that are not supported by the \"\n+                    f\"engine provided by {engine_provider}.\"\n+                )\n+            )"
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "betatim",
+        "committer_login": "web-flow",
+        "git_author_date": "2023-01-26T13:33:04Z",
+        "git_committer_date": "2023-01-26T13:33:04Z",
+        "parents": [
+          "56bf7b16d6fc531cd2f66f2f1fa8cac5749deb75",
+          "183068dd38a3014bb529fa0453c137194909d13f"
+        ]
+      },
+      "finding": "Opening head39a39ad is pre-existing shared branch merge authoredbetatim, not current survivinghead or pre-linka897. Initial testing helper already xfails unsupported-engine input; existing attribute conversion/test code predates first link.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Read entire initial testing helper plus head merge's attribute conversion and tests; initial comparison other file bodies not exhaustively read. Shared branch commit authorship differs from PR opener. Original author's post-link history still missing."
+    },
+    {
+      "source_id": "S-ARCH-OPEN-25540",
+      "slot_id": "L-S2",
+      "pr": 25540,
+      "repo": "scikit-learn/scikit-learn",
+      "row_locator": "response.data[6]; number=25540; action=opened; created_at=2023-02-04 14:23:12",
+      "opening_event_utc": "2023-02-04T14:23:12Z",
+      "archive_file_time_utc": "2023-02-04T14:00:00Z",
+      "pr_created_at_rest": "2023-02-04T14:23:12Z",
+      "pr_payload_updated_at_in_open_event_utc": "2023-02-04T14:23:12Z",
+      "pr_payload_created_at_in_archive": "not retained by normalized table; do not substitute updated_at",
+      "head_sha": "bf9e2641c811e177870880a28b8b3a1e0b19e6a9",
+      "base_sha": "f9637ee0ae118d73834d240c09d683f692918911",
+      "head_ref": "cython_tree_wcpp",
+      "base_ref": "main",
+      "actor": "OmarManzoor",
+      "creator": "OmarManzoor",
+      "initial_title": "MAINT Remove -Wcpp warnings when compiling sklearn.tree._tree",
+      "initial_body": "<!--\r\nThanks for contributing a pull request! Please ensure you have taken a look at\r\nthe contribution guidelines: https://github.com/scikit-learn/scikit-learn/blob/main/CONTRIBUTING.md\r\n-->\r\n\r\n#### Reference Issues/PRs\r\n<!--\r\nExample: Fixes #1234. See also #3456.\r\nPlease use keywords (e.g., Fixes) to create link to the issues or pull requests\r\nyou resolved, so that they will automatically be closed when your pull request\r\nis merged. See https://github.com/blog/1506-closing-issues-via-pull-requests\r\n-->\r\nTowards: #24875 \r\n\r\n#### What does this implement/fix? Explain your changes.\r\n- Replace cnp.ndarray with memory views in sklearn.tree._tree\r\n\r\n#### Any other comments?\r\n\r\n\r\n<!--\r\nPlease be aware that we are a loose team of volunteers so patience is\r\nnecessary; assistance handling other issues is very welcome. We value\r\nall user contributions, no matter how minor they are. If we are slow to\r\nreview, either the pull request needs some benchmarking, tinkering,\r\nconvincing, etc. or more likely the reviewers are simply busy. In either\r\ncase, we ask for your understanding during the review process.\r\nFor more information, see our FAQ on this topic:\r\nhttp://scikit-learn.org/dev/faq.html#why-is-my-pull-request-not-getting-any-attention.\r\n\r\nThanks for contributing!\r\n-->\r\n",
+      "current_title_matches": false,
+      "current_body_matches": false,
+      "opening_changed_files": 2,
+      "opening_commits": 1,
+      "existing_baseline_sha": "bf9e2641c811e177870880a28b8b3a1e0b19e6a9",
+      "match_existing_baseline_head": true,
+      "compare_url": "https://github.com/scikit-learn/scikit-learn/compare/f9637ee0ae118d73834d240c09d683f692918911...bf9e2641c811e177870880a28b8b3a1e0b19e6a9",
+      "compare_api_url": "https://api.github.com/repos/scikit-learn/scikit-learn/compare/f9637ee0ae118d73834d240c09d683f692918911...bf9e2641c811e177870880a28b8b3a1e0b19e6a9",
+      "compare_checked_utc": "2026-11-22T22:38:13.469Z",
+      "compare_status": "diverged",
+      "compare_merge_base": "681e8e2b002674cfa0247d9e802b4acf180d738f",
+      "compare_ahead_by": 1,
+      "compare_behind_by": 4,
+      "compare_files": [
+        {
+          "filename": "sklearn/tree/_tree.pxd",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4,
+          "blob_sha": "f6bb354ae0cc273b05707de5adbd9e9e8cbce088"
+        },
+        {
+          "filename": "sklearn/tree/_tree.pyx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 17,
+          "blob_sha": "f51f740b1a47a9795c27d7eeb037b0d2d14b7717"
+        }
+      ],
+      "initial_diff_file_count_matches_event": true,
+      "read_initial_diff_hunks": [
+        {
+          "filename": "sklearn/tree/_tree.pxd",
+          "patch": "@@ -12,7 +12,7 @@\n \n import numpy as np\n cimport numpy as cnp\n-\n+from cython cimport floating\n ctypedef cnp.npy_float32 DTYPE_t          # Type of X\n ctypedef cnp.npy_float64 DOUBLE_t         # Type of y, sample_weight\n ctypedef cnp.npy_intp SIZE_t              # Type for indices and counters\n@@ -99,6 +99,6 @@ cdef class TreeBuilder:\n     cdef SIZE_t max_depth               # Maximal tree depth\n     cdef double min_impurity_decrease   # Impurity threshold for early stopping\n \n-    cpdef build(self, Tree tree, object X, cnp.ndarray y,\n-                cnp.ndarray sample_weight=*)\n-    cdef _check_input(self, object X, cnp.ndarray y, cnp.ndarray sample_weight)\n+    cpdef build(self, Tree tree, object X, const floating[:] y,\n+                const floating[:] sample_weight=*)\n+    cdef _check_input(self, object X, const floating[:] y, const floating[:] sample_weight)"
+        },
+        {
+          "filename": "sklearn/tree/_tree.pyx",
+          "patch": "@@ -13,7 +13,7 @@\n # License: BSD 3 clause\n \n from cpython cimport Py_INCREF, PyObject, PyTypeObject\n-\n+from cython cimport floating\n from libc.stdlib cimport free\n from libc.string cimport memcpy\n from libc.string cimport memset\n@@ -86,13 +86,13 @@ NODE_DTYPE = np.asarray(<Node[:1]>(&dummy)).dtype\n cdef class TreeBuilder:\n     \"\"\"Interface for different tree building strategies.\"\"\"\n \n-    cpdef build(self, Tree tree, object X, cnp.ndarray y,\n-                cnp.ndarray sample_weight=None):\n+    cpdef build(self, Tree tree, object X, const floating[:] y,\n+                const floating[:] sample_weight=None):\n         \"\"\"Build a decision tree from the training set (X, y).\"\"\"\n         pass\n \n-    cdef inline _check_input(self, object X, cnp.ndarray y,\n-                             cnp.ndarray sample_weight):\n+    cdef inline _check_input(self, object X, const floating[:] y,\n+                             const floating[:] sample_weight):\n         \"\"\"Check input dtype, layout and format\"\"\"\n         if issparse(X):\n             X = X.tocsc()\n@@ -109,16 +109,16 @@ cdef class TreeBuilder:\n             # since we have to copy we will make it fortran for efficiency\n             X = np.asfortranarray(X, dtype=DTYPE)\n \n-        if y.dtype != DOUBLE or not y.flags.contiguous:\n+        if y.base.dtype != DOUBLE or not y.base.flags.contiguous:\n             y = np.ascontiguousarray(y, dtype=DOUBLE)\n \n         if (sample_weight is not None and\n-            (sample_weight.dtype != DOUBLE or\n-            not sample_weight.flags.contiguous)):\n+            (sample_weight.base.dtype != DOUBLE or\n+            not sample_weight.base.flags.contiguous)):\n                 sample_weight = np.asarray(sample_weight, dtype=DOUBLE,\n                                            order=\"C\")\n \n-        return X, y, sample_weight\n+        return X, y.base, sample_weight.base\n \n # Depth first builder ---------------------------------------------------------\n # A record on the stack for depth-first tree growing\n@@ -144,12 +144,12 @@ cdef class DepthFirstTreeBuilder(TreeBuilder):\n         self.max_depth = max_depth\n         self.min_impurity_decrease = min_impurity_decrease\n \n-    cpdef build(self, Tree tree, object X, cnp.ndarray y,\n-                cnp.ndarray sample_weight=None):\n+    cpdef build(self, Tree tree, object X, const floating[:] y,\n+                const floating[:] sample_weight=None):\n         \"\"\"Build a decision tree from the training set (X, y).\"\"\"\n \n         # check input\n-        X, y, sample_weight = self._check_input(X, y, sample_weight)\n+        X, _y, _sample_weight = self._check_input(X, y, sample_weight)\n \n         # Initial capacity\n         cdef int init_capacity\n@@ -170,7 +170,7 @@ cdef class DepthFirstTreeBuilder(TreeBuilder):\n         cdef double min_impurity_decrease = self.min_impurity_decrease\n \n         # Recursive partition (without actual recursion)\n-        splitter.init(X, y, sample_weight)\n+        splitter.init(X, _y, _sample_weight)\n \n         cdef SIZE_t start\n         cdef SIZE_t end\n@@ -335,19 +335,19 @@ cdef class BestFirstTreeBuilder(TreeBuilder):\n         self.max_leaf_nodes = max_leaf_nodes\n         self.min_impurity_decrease = min_impurity_decrease\n \n-    cpdef build(self, Tree tree, object X, cnp.ndarray y,\n-                cnp.ndarray sample_weight=None):\n+    cpdef build(self, Tree tree, object X, const floating[:] y,\n+                const floating[:] sample_weight=None):\n         \"\"\"Build a decision tree from the training set (X, y).\"\"\"\n \n         # check input\n-        X, y, sample_weight = self._check_input(X, y, sample_weight)\n+        X, _y, _sample_weight = self._check_input(X, y, sample_weight)\n \n         # Parameters\n         cdef Splitter splitter = self.splitter\n         cdef SIZE_t max_leaf_nodes = self.max_leaf_nodes\n \n         # Recursive partition (without actual recursion)\n-        splitter.init(X, y, sample_weight)\n+        splitter.init(X, _y, _sample_weight)\n \n         cdef vector[FrontierRecord] frontier\n         cdef FrontierRecord record"
+        }
+      ],
+      "head_commit_metadata": {
+        "author_login": "OmarManzoor",
+        "committer_login": "OmarManzoor",
+        "git_author_date": "2023-02-04T14:21:45Z",
+        "git_committer_date": "2023-02-04T14:21:45Z",
+        "parents": [
+          "681e8e2b002674cfa0247d9e802b4acf180d738f"
+        ]
+      },
+      "finding": "Opening head matchesbf9e264; initialbody mentions issue24875 only. Later25484 reference and removed-Wcpp statement were not in openingbody; do not infer initial awareness of25484.",
+      "selection_impact": "No slot replacement; opening snapshot gap narrowed after freeze",
+      "strict_result_impact": "No additional strict first-link chain or human-time observation",
+      "minimum_count_increment": 0,
+      "limitations": "Archive is normalized mirror; raw event ID/original compressed line unavailable because hourly endpoint403. GitHub exact SHA comparison checked independently."
+    }
+  ],
+  "failed_attempts": [
+    {
+      "url": "https://data.gharchive.org/2023-01-01-13.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-01-01-21.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-01-02-2.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-01-02-9.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-01-02-16.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-02-03-14.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-02-04-14.json.gz",
+      "method": "HEAD",
+      "status": 403,
+      "checked_interval_utc": "2026-11-22T22:35:00Z/2026-11-22T22:35:34Z",
+      "failure": "Forbidden; no archive downloaded"
+    },
+    {
+      "url": "https://data.gharchive.org/2023-01-01-13.json.gz",
+      "method": "GET Range bytes=0-511",
+      "status": 403,
+      "checked_utc": "2026-11-22T22:35:34Z",
+      "failure": "Cloudflare error code1010; response body17bytes; no circumvention attempted"
+    },
+    {
+      "url": "https://play.clickhouse.com/?user=explorer&max_execution_time=15&query=SELECT+file_time%2Cevent_type%2Crepo_name%2Cnumber%2Ccreated_at%2Cupdated_at%2Caction%2Cactor_login%2Ccreator_user_login%2Chead_ref%2Chead_sha%2Cbase_ref%2Cbase_sha%2Ctitle%2Cbody%2Cchanged_files%2Ccommits+FROM+github_events+WHERE+event_type%3D%27PullRequestEvent%27+AND+repo_name%3D%27scikit-learn%2Fscikit-learn%27+AND+action%3D%27opened%27+AND+number+IN+%2825265%2C25268%2C25269%2C25274%2C25535%2C25540%2C25272%29+AND+created_at%3E%3D%272023-01-01+00%3A00%3A00%27+AND+created_at%3C%272023-02-05+00%3A00%3A00%27+ORDER+BY+created_at%2Cnumber+LIMIT+20+FORMAT+JSON",
+      "status": 500,
+      "checked_utc": "2026-11-22T22:37:02.617702+00:00",
+      "failure": "Code: 164. DB::Exception: Cannot modify 'max_execution_time' setting in readonly mode. (READONLY) (version 26.10.3.7 (official build))\n",
+      "resolution": "Removed optional max_execution_time override; used service default read-only settings; successful query above"
+    },
+    {
+      "url": "https://gh.clickhouse.tech/explorer/",
+      "status": 502,
+      "failure": "Legacy official GH Archive link returned Bad Gateway; separate current official Playground documented public endpoint used"
+    }
+  ],
+  "next_minimum_action": "Root append this post-freeze recovery to REVISIONS/RESULT/acceptance: initial public head/body recovered for six; excluded25272 confirmed; remove unsupported initial-body25484-awareness claim. Do not erase original masking accidents or infer labor/first-link causality.",
+  "remaining_limits": [
+    "Raw GHA event ID and original json.gz line not recovered",
+    "ClickHouse is a normalized mirror, counted zero toward minimum",
+    "Original-author post-link code sequence inL-S1 still incomplete",
+    "Exact first-link influence, explicit target reading and human work-time comparison remain missing"
+  ],
+  "reproduction": {
+    "public_sql": "SELECT file_time,event_type,repo_name,number,created_at,updated_at,action,actor_login,creator_user_login,head_ref,head_sha,base_ref,base_sha,title,body,changed_files,commits FROM github_events WHERE event_type='PullRequestEvent' AND repo_name='scikit-learn/scikit-learn' AND action='opened' AND number IN (25265,25268,25269,25274,25535,25540,25272) AND created_at>='2023-01-01 00:00:00' AND created_at<'2023-02-05 00:00:00' ORDER BY created_at,number LIMIT 20 FORMAT JSON",
+    "public_http_url": "https://play.clickhouse.com/?user=explorer&query=SELECT+file_time%2Cevent_type%2Crepo_name%2Cnumber%2Ccreated_at%2Cupdated_at%2Caction%2Cactor_login%2Ccreator_user_login%2Chead_ref%2Chead_sha%2Cbase_ref%2Cbase_sha%2Ctitle%2Cbody%2Cchanged_files%2Ccommits+FROM+github_events+WHERE+event_type%3D%27PullRequestEvent%27+AND+repo_name%3D%27scikit-learn%2Fscikit-learn%27+AND+action%3D%27opened%27+AND+number+IN+%2825265%2C25268%2C25269%2C25274%2C25535%2C25540%2C25272%29+AND+created_at%3E%3D%272023-01-01+00%3A00%3A00%27+AND+created_at%3C%272023-02-05+00%3A00%3A00%27+ORDER+BY+created_at%2Cnumber+LIMIT+20+FORMAT+JSON",
+    "raw_archive_urls": [
+      "https://data.gharchive.org/2023-01-01-13.json.gz",
+      "https://data.gharchive.org/2023-01-01-21.json.gz",
+      "https://data.gharchive.org/2023-01-02-2.json.gz",
+      "https://data.gharchive.org/2023-01-02-9.json.gz",
+      "https://data.gharchive.org/2023-01-02-16.json.gz",
+      "https://data.gharchive.org/2023-02-03-14.json.gz",
+      "https://data.gharchive.org/2023-02-04-14.json.gz"
+    ],
+    "no_accounts_or_private_credentials_used": true
+  },
+  "local_validation": {
+    "checked_utc": "2026-11-22T22:42:30.262Z",
+    "result": "pass",
+    "unchanged_previous_ledger_hashes": 10,
+    "recovered_opened_events": 7,
+    "selected": 6,
+    "excluded": 1,
+    "fixed_compare_verified": 7,
+    "archive_receipts": 34,
+    "minimum_count_increment": 0,
+    "checks": "JSON parse,unique target/source IDs,event file-count vs exact GitHub compare,and prior verification.json SHA256 values all matched",
+    "scope": "No historic upstream tests or human work-time measurements run"
+  }
+}

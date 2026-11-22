@@ -34,11 +34,64 @@ def write_csv(name, rows):
         writer.writeheader()
         writer.writerows(rows)
 
+def opening_recoveries():
+    output = []
+    extra_path = ROOT / "evidence/opening-head-metadata.json"
+    extra = read_json(extra_path) if extra_path.exists() else {}
+    for stream in ("pandas", "sklearn"):
+        path = ROOT / "streams" / stream / "initial-public-head-recovery.json"
+        if not path.exists():
+            continue
+        data = read_json(path)
+        for r in data.get("recoveries", data.get("recovered", [])):
+            sid = r.get("slot_id", "")
+            if not sid.startswith(("N-", "L-")):
+                continue
+            isp = stream == "pandas"
+            meta = r.get("head_commit_metadata", {})
+            if sid in extra:
+                m = extra[sid]
+                meta = {"author_login": m["author"], "git_author_date": m["author_date"], "git_committer_date": m["committer_date"], "parents": [m["parent"]]}
+            output.append({
+                "slot_id": sid, "pr_number": r["pr"], "repository": data["repository"],
+                "opening_head_sha": r.get("opening_head_sha", r.get("head_sha")),
+                "opening_base_sha": r.get("opening_base_sha", r.get("base_sha")),
+                "opening_event_utc": r.get("opening_event_created_at_utc", r.get("opening_event_utc")),
+                "pr_created_utc": r.get("created_at_current_API", r.get("pr_created_at_rest")),
+                "payload_updated_utc": r.get("opening_payload_updated_at_utc", r.get("pr_payload_updated_at_in_open_event_utc")),
+                "opening_actor": r.get("opening_actor", r.get("actor")),
+                "opening_head_author": meta.get("author_login", "see original commit metadata"),
+                "opening_head_git_author_date": meta.get("git_author_date", ""),
+                "opening_head_git_committer_date": meta.get("git_committer_date", ""),
+                "head_parents": r.get("head_parent_sha") or ";".join(meta.get("parents", [])),
+                "pr_diff_merge_base": r.get("original_diff_merge_base_sha", r.get("compare_merge_base")),
+                "opening_title": r.get("opening_title", r.get("initial_title")),
+                "body_equals_current": r.get("opening_body_exact_equals_current", r.get("current_body_matches")),
+                "opening_changed_files": r["opening_changed_files"],
+                "opening_commits": r.get("opening_commit_count", r.get("opening_commits")),
+                "previous_candidate_sha": r.get("initial_candidate_sha_before_recovery", r.get("existing_baseline_sha")),
+                "diff_url": r.get("original_diff_source_url", r.get("compare_url")),
+                "diff_directly_read": r.get("original_diff_directly_read", r.get("initial_diff_file_count_matches_event", False)),
+                "source_query_url": r.get("mirror_query_url", data.get("query_url")),
+                "source_query_checked_utc": r.get("mirror_checked_utc", data.get("query_checked_utc")),
+                "source_id": r["source_id"],
+                "head_metadata_source_id": "RR-OPEN-P2" if sid in extra else "",
+                "finding": r.get("opening_body_summary", r.get("finding")),
+                "prior_knowledge_correction": r.get("prior_knowledge_correction", r.get("finding")),
+                "raw_event_independent_corroboration": False,
+                "verification_basis": "documented public normalized mirror of opened event plus exact GitHub SHA diff; raw compressed archive403 and original event ID unavailable",
+                "stream_file": str(path.relative_to(ROOT)),
+            })
+    output.sort(key=lambda r: (not r["slot_id"].startswith("N-"), r["slot_id"]))
+    write_csv("initial-public-heads.csv", output)
+    return {r["slot_id"]: r for r in output}
+
 def main():
     frame = read_csv(ROOT / "frame.csv")
     selected = {r["slot_id"]: r for r in frame if r.get("slot_id")}
     baseline = {r["slot_id"]: r for r in read_csv(ROOT / "baselines.csv")}
     pmeta = read_json(ROOT / "streams/pandas/observation-metadata.json")
+    openings = opening_recoveries()
     cases = []
     evidence = {
         "L-P1": {"same_public": None, "any_public": "2023-03-23T18:46:25Z", "any_sha": "540db96b8179c2ed83e427b9d501b04d68ee1804", "any_change_ref": "L-P1-3;L-P1-4", "same_prestarted": False, "any_prestarted": True},
@@ -105,6 +158,40 @@ def main():
                 "stream": stream, "stream_file": f"streams/{stream}/cases.json", "stream_record": number,
             })
     cases.sort(key=lambda c: (not c["slot_id"].startswith("N-"), c["slot_id"]))
+    for c in cases:
+        opening = openings.get(c["slot_id"])
+        if opening:
+            c["candidate_sha_before_opened_recovery"] = c["baseline_sha"]
+            c["baseline_sha"] = opening["opening_head_sha"]
+            c["opening_base_sha"] = opening["opening_base_sha"]
+            c["opening_event_utc"] = opening["opening_event_utc"]
+            c["exact_first_public_head_verified"] = True
+            c["first_public_head_verification_basis"] = opening["verification_basis"]
+            c["raw_event_independent_corroboration"] = False
+            c["opening_body_equals_current"] = opening["body_equals_current"]
+            c["opening_body_correction"] = opening["prior_knowledge_correction"]
+            c["first_public_head_limitation"] = "Opened snapshot recovered from documented normalized mirror and immutable GitHub diff; raw event ID/hourly archive not independently recovered; intermediate/later push histories remain incomplete."
+            c["source_ids"].append(opening["source_id"])
+            if opening["head_metadata_source_id"]:
+                c["source_ids"].append(opening["head_metadata_source_id"])
+            c["missing_before_opened_recovery"] = c["missing"]
+            c["missing"] = {
+                "N-P1": "실패 CI 원 job 로그, 실제 사람 작업 시작/중지; raw opened event 독립 확인은 공통 한계",
+                "N-P2": "PR/patch 계정의 동일인 증명, 실제 작업시간; raw opened event 독립 확인은 공통 한계",
+                "N-P3": "사람 검토/수정시간; raw opened event 독립 확인은 공통 한계",
+                "N-P4": "CoW 시험 보정의 명시 원인, 38일의 작업/대기 구분",
+                "N-S1": "표본 작성자의 실제 사람 시간과 동등 품질 반사실",
+                "N-S2": "원 PR 종결 전 후속 patch/push 순서 미복구, 사람 시간",
+                "N-S3": "원 commit 계정 귀속과 사람 작업시간",
+                "N-S4": "주창 표본 작성자 노동 및 동등 품질 시간쌍; 소비자 many hours는 주창 밖",
+                "L-P1": "정확한 링크 직전 public head, 사라진/사적 원작성자 patch, 실제 열람시각/최초인지/사람 시간",
+                "L-P2": "첫 링크의 기존 재설계에 대한 추가 기여, 실제 작업 시작/중지",
+                "L-S1": "원 작성자의 링크 뒤 branch/push 복구, 명시 자료 연결, 당시 시험 완료, 사람 시간",
+                "L-S2": "당시 HackMD 판, 첫 링크와 변경의 명시 연결, 대응 CI/시험 로그, 실제 사람 시간/동등 품질 비교",
+            }[c["slot_id"]]
+            if c["slot_id"] in ("L-P1", "L-P2"):
+                c["strict_reason_before_opened_recovery"] = c["strict_reason"]
+                c["strict_reason"] = "원 작성자 response patch와 첫 링크 변경 이유 연결 미확인; 타인 대안은 먼저 착수" if c["slot_id"] == "L-P1" else "같은 작성자 후속 patch는 있지만 같은 재설계가 첫 링크 전에 이미 공개; 첫 링크의 명시 기여 연결 없음"
     write_json("cases.json", cases)
     by_slot = {c["slot_id"]: c for c in cases}
     for r in frame:
@@ -122,9 +209,14 @@ def main():
             r["window_start"] = c["window_start"]
             r["window_end"] = c["window_end"]
             r["window_reason"] = c["window_end_rule"]
-            r["final_historical_implementation_status"] = "recovered; first public upload identity unverified"
+            r["final_historical_implementation_status"] = "opening head/base/body recovered from documented public mirror; exact GitHub diff read" if c["exact_first_public_head_verified"] else "recovered; first public upload identity unverified"
             r["postfreeze_recovery"] = c.get("selection_recovery") or "none"
             r["final_baseline_sha"] = c["baseline_sha"]
+            if r["slot_id"] in openings:
+                r["opening_source_id"] = openings[r["slot_id"]]["source_id"]
+                r["opening_event_utc"] = openings[r["slot_id"]]["opening_event_utc"]
+        elif r["repository"] == "scikit-learn/scikit-learn" and r["pr_number"] == "25272":
+            r["postfreeze_recovery"] = "S-ARCH-OPEN-25272/S-ARCH-COMPARE-25272: opening33ee1f59 exact diff confirms test-only exclusion; frozen uncertainty retained"
     write_csv("frame.csv", frame)
     sensitivity = []
     for days in (30, 60, 90):
@@ -154,7 +246,8 @@ def main():
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "frame_rows": len(frame), "frame_groups": dict(Counter(r["repository"] + "/" + r["stratum"] for r in frame)),
         "slots": len(cases), "strata": {s: sum(c["stratum"] == s for c in cases) for s in ("natural", "link_priority")},
-        "historical_implementations_recovered": 12, "exact_first_public_heads_verified": 0,
+        "historical_implementations_recovered": 12, "exact_first_public_heads_verified": len(openings),
+        "first_public_head_verification_basis": "documented public normalized opened-event mirror plus immutable GitHub exact diff; raw event independent corroborations0",
         "main_window": groups[-2:], "time_boundary_sensitivity": groups, "actor_and_prework_sensitivity": actor_sens,
         "explicit_reading_confirmed": 0, "specific_target_content_engagement_confirmed": 2,
         "first_review_acknowledgement_confirmed": 3, "explicit_first_discovery_confirmed": 0,

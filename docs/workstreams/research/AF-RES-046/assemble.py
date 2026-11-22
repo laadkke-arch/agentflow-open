@@ -152,6 +152,43 @@ def baselines():
                 "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number,
             })
     output.sort(key=lambda x: (0 if x["slot_id"].startswith("N-") else 1, x["slot_id"]))
+    opening_path = ROOT / "initial-public-heads.csv"
+    if opening_path.exists():
+        opening = {r["slot_id"]: r for r in read_csv(opening_path)}
+        for row in output:
+            o = opening.get(row["slot_id"])
+            if not o:
+                continue
+            row["initial_candidate_sha_before_archive"] = row["initial_candidate_sha"]
+            row["candidate_parent_before_archive"] = row["parent_sha"]
+            row["first_public_head_status_before_archive"] = row["first_public_head_verified"]
+            row["first_public_head_limitation_before_archive"] = row["first_public_head_limitation"]
+            row["initial_candidate_sha"] = o["opening_head_sha"]
+            row["opening_head_sha"] = o["opening_head_sha"]
+            row["opening_base_sha"] = o["opening_base_sha"]
+            row["opening_diff_merge_base"] = o["pr_diff_merge_base"]
+            row["opening_event_utc"] = o["opening_event_utc"]
+            row["opening_payload_updated_utc"] = o["payload_updated_utc"]
+            row["opening_diff_url"] = o["diff_url"]
+            row["opening_body_equals_current"] = o["body_equals_current"]
+            row["opening_body_finding"] = o["finding"]
+            row["opening_head_author"] = o["opening_head_author"]
+            row["first_public_head_verified"] = "true: documented opened-event mirror plus exact immutable GitHub diff"
+            row["first_public_head_limitation"] = o["verification_basis"]
+            if o["head_parents"]:
+                row["parent_sha"] = o["head_parents"]
+            elif row["initial_candidate_sha_before_archive"] != o["opening_head_sha"]:
+                row["parent_sha"] = "미확인: new opened head parent not supplied"
+            if o["opening_head_git_author_date"]:
+                row["git_author_date"] = o["opening_head_git_author_date"]
+                row["git_committer_date"] = o["opening_head_git_committer_date"]
+            row["known_alternatives_before_archive"] = row["known_alternatives"]
+            if row["slot_id"] in ("N-P1", "L-S1", "L-S2"):
+                row["known_alternatives"] = o["prior_knowledge_correction"]
+            row["source_ids"] += ";" + o["source_id"]
+            row["head_metadata_source_id"] = o.get("head_metadata_source_id", "")
+            if row["head_metadata_source_id"]:
+                row["source_ids"] += ";" + row["head_metadata_source_id"]
     write_csv("baselines.csv", output)
     return output
 
@@ -174,6 +211,21 @@ def events():
                 "public_time_limitation": first(row, "public_time_limit", "publication_note"),
                 "source_ids": first(row, "source_ids", "source_id"),
                 "stream": stream, "stream_file": str(path.relative_to(ROOT)), "stream_record": number,
+            })
+    opening_path = ROOT / "initial-public-heads.csv"
+    if opening_path.exists():
+        for number, o in enumerate(read_csv(opening_path), 1):
+            output.append({
+                "event_id": "ARCH-" + o["slot_id"], "slot_id": o["slot_id"], "pr_number": o["pr_number"],
+                "event_type": "opened_snapshot_recovered_after_freeze", "actor": o["opening_actor"],
+                "actor_role": "PR opener; not necessarily author of all shared branch code", "public_at": o["opening_event_utc"],
+                "comment_created_at": "", "review_submitted_at": "", "author_date": o["opening_head_git_author_date"],
+                "committer_date": o["opening_head_git_committer_date"], "sha": o["opening_head_sha"],
+                "original_commit_id": o["opening_head_sha"], "review_id": "", "url": o["source_query_url"],
+                "location": "PullRequestEvent/action=opened; repo+number+event.created_at; head/base/body", "observed": o["finding"],
+                "target_url": o["diff_url"], "link_class": "not a reviewer precedent", "within_primary_window": "true",
+                "public_time_limitation": "0–1 second after REST PR created_at; original event ID/raw archive not independently recovered",
+                "source_ids": o["source_id"], "stream": "archive supplement", "stream_file": "initial-public-heads.csv", "stream_record": number,
             })
     write_csv("events.csv", output)
     return output

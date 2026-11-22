@@ -20,3 +20,9 @@
 - 원 frame160행의 선정·최초 노출은 유지하고 결과 판독 UTC·관측창·N-S2 복구 상태를 추가했다. R01의 pandas51109 표시 누락은 current frame에 보완하며 원 봉인본은 그대로 보존한다.
 - 별도 AI 대조가 찾은 추가-source 누락, sklearn 종료창 pending, L-S1 exceptions 파일 경로를 수정했다. 사람 독립 코딩으로 표현하지 않는다.
 - 추가 공개 이벤트 아카이브 조사 진행: 정확한 첫 upload head 증거를 보완할 수 있으면 별도 receipt/보완 커밋으로 남긴다. 기존 판정을 소급 은폐하지 않는다.
+
+- 묶음3 원격 SHA: `57d749eeae66a1e62b5e75cce644c6ba82b5d47b`; 33파일, changes37/labor12/cases12/sensitivity36, source receipt447·고유 최소배당54. 원격 tree와 로컬 커밋 tree 일치 확인.
+
+## R02 공개 최초판 복원 보완
+
+2026-11-22 22:35~22:45UTC에12선정슬롯과제외25272의opened head/base/body를공식공개미러+GitHub정확diff로복원했다. R02에기존0/12와새12/12를함께보존. raweventID/원gzip독립확인은미확인. 선택교체0,엄격/노동분자변화0,최소저작추가0. 음악공식beta/test정상조회도개별원장을복구하지못해음악요건미충족유지.

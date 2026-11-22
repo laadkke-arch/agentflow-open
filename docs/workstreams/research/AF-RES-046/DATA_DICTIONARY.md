@@ -49,3 +49,10 @@ Git `author_date`/`committer_date`, 플랫폼 review `submitted_at`, 댓글 `cre
 Git object의 stream `published_at`/`modified_at`는 실제로 git author/committer 날짜일 수 있다. root는 이를 `git_author_date_from_stream`/`git_committer_date_from_stream`으로 분리하고 `published_at`를 null로 둔다. 실제 공개 관측은 events의 리뷰·PR·merge 시각으로 보며, 해당 시각까지 공개돼 있었다는 상한이다. 최초 push 시각이나 노동 시작 시각을 뜻하지 않는다.
 
 `sensitivity.csv`의36행은12슬롯×30/60/90일이다. `evidence/statistics.json`은 사례 분모·동일인/타인·선행착수 제외 집계를 재계산한다. `synthesize.py`→`assemble.py --stage all` 순서로 재생성한다. 원 선정은994e21a 커밋에 남고 current frame의 `frozen_*` 열에 당시 상태를 보존한다.
+
+
+## R02 최초 공개판 복원 열
+
+`initial-public-heads.csv`는12선정슬롯의opened head/base/body동일성/이벤트시각/PR생성/원문query/diff를연결한다. `opening_base_sha`, `head_parents`, `pr_diff_merge_base`는서로다른값이다. `head_metadata_source_id=RR-OPEN-P2`는새head87ade9fa의실제parent cfa3bfd를확인한독립GitHub재열람이다. 현재baselines의initial_candidate_sha는실제opened head이며기존후보/parent/미확인상태를별도*_before_archive열에보존한다. cases의first_public_head_verified는문서화된공개미러+불변GitHubdiff기준이며rawevent원본독립확인을뜻하지않는다. `raw_event_independent_corroboration=false`를함께읽는다.
+
+R02는원stream기록을덮어쓰지않는다. rootevents는원156개에ARCH-* opened복원12개를추가해168개다. PR 사례는여전히12개이며원문최소수도54개다. 복원과재방문은추가최소배당0이다. 후보SHA변경에따른git날짜/parent교체는실제새head의metadata와연결하고PRbase를parent로대입하지않는다.

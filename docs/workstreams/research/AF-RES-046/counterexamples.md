@@ -1,5 +1,9 @@
 # AF-RES-046 · 경쟁 설명과 분야 밖 대조
 
+## R02 보완의 적용 범위
+
+아래 stream 상세 대조는 묶음3 시점 기록을 바탕으로 한다. 이후12선정슬롯과자연탈락25272의최초opened head/base/body를공식공개미러+GitHub정확diff로복원했다. 당시미확인표시는이력으로남기며현재판정은initial-public-heads.csv와REVISIONS.md R02를우선한다. 모든중간push나후속증거PR의openinghead를이복원과동일시하지않는다. rawgzip403·원eventID미보존·raw독립대조0/12한계는유지한다.
+
 ## 첫 예상과 실제로 깨진 조건
 
 첫 예상은 선례 URL을 받은 작성자가 뒤에 같은 목적의 코드를 바꾸면 채택 사슬이 보일 수 있다는 것이었다. 이 기록에서는 (1) 무링크 실패 지적만으로도 코드가 바뀌고, (2) 링크 뒤 같은 작성자의 변화가 있어도 같은 재설계가 링크 전에 이미 공개되며, (3) 실제 수정자가 링크를 받는 사람이 아닌 경우가 있다. 원문 위치·SHA·시험 입력은 아래 상세 원장과 `changes.csv`에 남긴다.
@@ -93,7 +97,7 @@ L-P2:3/17 03:36 기존후속52043 공개 →16:00 기존후속52053 공개 →18
 
 ## scikit-learn 후속 판독과 반증
 
-선정 원격 봉인은 994e21aaea7c5da0c4322db9d1ce2c4f52fa6a2f이다. 이 파일은 봉인 뒤 읽은 결과이며 frame.csv·selection.json의 당시 판정을 덮어쓰지 않는다. 선정 당시 N-S2의 초기 코드 미확인 표시는 보존한다. 이후 review1233732288의 원래 head d5a1cbaf23a471e0c87ddad123a22f85fd104932를 복구하여 구체적 구현이 있었다는 점을 확인했다. 다만 최초 업로드 SHA를 별도 플랫폼 기록으로 고정하지는 못했다.
+선정 원격 봉인은 994e21aaea7c5da0c4322db9d1ce2c4f52fa6a2f이다. 이 파일은 봉인 뒤 읽은 결과이며 frame.csv·selection.json의 당시 판정을 덮어쓰지 않는다. 선정 당시 N-S2의 초기 코드 미확인 표시는 보존한다. 이후 review1233732288의 원래 head d5a1cbaf23a471e0c87ddad123a22f85fd104932를 복구하여 구체적 구현이 있었다는 점을 확인했다. 묶음3 시점에는 최초 업로드 SHA를 별도 플랫폼 기록으로 고정하지 못했으나, R02에서공개opened이벤트미러와정확GitHubdiff로첫판을보완했다. 원PR종결전후속push손실은여전히미확인이다.
 
 ### 첫 링크가 곧 설계 변경의 원인이 되는가
 
@@ -152,7 +156,7 @@ L-S2는 2023-02-09 병합 뒤 [25584](https://github.com/scikit-learn/scikit-lea
 
 ### 판독 오염·복구 제한과 재개 지점
 
-선정 전 L-S1의 URL 필터가 90일 뒤인 9월 reviewer의 branch/force-push 상태를 노출했다. 선택 전 완전한 결과 가림은 충족되지 않는다. 자연 rank9 #25275의 9월 surviving patch와 rank7 #25272의 개설 다음 날 committer 판도 초기판으로 고정할 수 없다. 후자는 시험 seed만 바꾼 패치이지만 최초 공개 diff를 직접 증명하는 제외 근거가 되지는 못한다. 이 행은 screening-attempts.jsonl에서 명시했고 원 슬롯을 교체하지 않았다. 재개 첫 자료는 #25272 개설 당시 GitHub push event/head archive 또는 당시 로컬 git reflog다. 기존 review1234637508의 head be3bdde4만으로 1월2일 최초 head는 복구되지 않았다.
+선정 전 L-S1의 URL 필터가 90일 뒤인 9월 reviewer의 branch/force-push 상태를 노출했다. 선택 전 완전한 결과 가림은 충족되지 않는다. 자연 rank9 #25275의 9월 surviving patch와 rank7 #25272의 개설 다음 날 committer 판도 초기판으로 고정할 수 없다. 당시에는후자의최초공개diff동일성을입증하지못했다. R02에서opened head33ee1f59a66304eb16534be16f1a0287f13a95dc의실제testseed두줄교체를확인하여제외타당성을보완했다. 이 행은 screening-attempts.jsonl에서 명시했고 원 슬롯을 교체하지 않았다. 추가독립대조의첫자료는 #25272 원형GHArchivegzip의opened eventID다. 기존 review1234637508의 head be3bdde4만으로 1월2일 최초 head는 복구되지 않았다.
 
 이 stream의 판독은 AI 연구자의 자체 판독이다. root의 L-S2 교차 재열람 역시 같은 실행 계열의 별도 AI 판독이며 외부 독립 인간 판독으로 표현하지 않는다. 별도 음악/지도 사례는 다른 담당 stream에서 결합된다.
 
