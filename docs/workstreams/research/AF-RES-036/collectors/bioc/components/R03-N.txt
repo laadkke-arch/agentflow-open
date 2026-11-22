@@ -1,0 +1,27 @@
+Observed UTC: 2026-11-22T15:57:23.219170+00:00
+Requested: https://bioconductor.org/packages/S4Vectors
+HTTP: 302 -> 200
+Arrival: https://bioconductor.org/packages/release/bioc/html/S4Vectors.html
+Edition: S4Vectors0.50.3 / Bioconductor3.23 (current landing)
+Followed source: https://bioconductor.org/packages/3.23/bioc/src/contrib/S4Vectors_0.50.3.tar.gz
+
+setValidity2 <- function(Class, method, where=topenv(parent.frame()))
+{
+    setValidity(Class,
+        function(object)
+        {
+            if (disableValidity())
+                return(TRUE)
+            if (debugValidity()) {
+                whoami <- paste("validity method for", Class, "object")
+                cat("[debugValidity] Entering ", whoami, "\n", sep="")
+                on.exit(cat("[debugValidity] Leaving ", whoami, "\n", sep=""))
+            }
+            desc_strings <- method(object)
+            if (isTRUE(desc_strings) || length(desc_strings) == 0L)
+                return(TRUE)
+            vapply(desc_strings, wmsg2, character(1), USE.NAMES=FALSE)
+        },
+        where=where
+    )
+}

@@ -1,0 +1,69 @@
+12.4 Two-Way Communications with Another Process ¶
+
+
+
+
+
+
+It is often useful to be able to
+send data to a separate program for
+processing and then read the result.  This can always be
+done with temporary files:
+
+
+
+
+
+# Write the data for processing
+tempfile = ("mydata." PROCINFO["pid"])
+while (not done with data)
+    print data | ("subprogram > " tempfile)
+close("subprogram > " tempfile)
+
+# Read the results, remove tempfile when done
+while ((getline newdata < tempfile) > 0)
+    process newdata appropriately
+close(tempfile)
+system("rm " tempfile)
+
+
+
+
+
+This works, but not elegantly.  Among other things, it requires that
+the program be run in a directory that cannot be shared among users;
+for example, /tmp will not do, as another user might happen
+to be using a temporary file with the same name.88 
+
+
+
+
+
+
+
+However, with gawk, it is possible to
+open a two-way pipe to another process.  The second process is
+termed a coprocess, as it runs in parallel with gawk.
+The two-way connection is created using the ‘|&’ operator
+(borrowed from the Korn shell, ksh):89
+
+
+
+
+
+do {
+    print data |& "subprogram"
+    "subprogram" |& getline results
+} while (data left to process)
+close("subprogram")
+
+
+
+
+
+The first time an I/O operation is executed using the ‘|&’
+operator, gawk creates a two-way pipeline to a child process
+that runs the other program.  Output created with print
+or printf is written to the program’s standard input, and
+output from the program’s standard output can be read by the gawk
+program using getline.

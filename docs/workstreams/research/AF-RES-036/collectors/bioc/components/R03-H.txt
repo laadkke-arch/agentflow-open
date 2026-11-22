@@ -1,0 +1,26 @@
+Archived publisher material
+Edition: S4Vectors0.26.0 / Bioconductor3.11
+Publisher date: Date/Publication2020-04-27
+Source: https://bioconductor.org/packages/3.11/bioc/src/contrib/Archive/S4Vectors/S4Vectors_0.26.0.tar.gz
+Member: S4Vectors/R/S4-utils.R
+
+setValidity2 <- function(Class, method, where=topenv(parent.frame()))
+{
+    setValidity(Class,
+        function(object)
+        {
+            if (disableValidity())
+                return(TRUE)
+            if (debugValidity()) {
+                whoami <- paste("validity method for", Class, "object")
+                cat("[debugValidity] Entering ", whoami, "\n", sep="")
+                on.exit(cat("[debugValidity] Leaving ", whoami, "\n", sep=""))
+            }
+            desc_strings <- method(object)
+            if (isTRUE(desc_strings) || length(desc_strings) == 0L)
+                return(TRUE)
+            vapply(desc_strings, wmsg2, character(1), USE.NAMES=FALSE)
+        },
+        where=where
+    )
+}
