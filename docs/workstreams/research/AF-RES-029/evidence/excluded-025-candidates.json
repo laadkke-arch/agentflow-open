@@ -1,0 +1,1264 @@
+{
+  "dependency_sha": "cf27e148b96bf3c5a3dc8a2a926db4abcf63f146",
+  "purpose": "overlap exclusion only; not sent to experiment route selectors",
+  "candidates": [
+    {
+      "candidate_id": "AR-K001",
+      "target_name": "Arrow PyArrow large-type read options + Java interoperability",
+      "canonical_target": "Arrow PyArrow large-type read options + Java interoperability",
+      "behavior": "serialized Arrow schema가 없거나목표large형과일치하는파일에서binary_type/list_type으로64bit출력을고르고Java의Arrowimport경계로넘기는구성.",
+      "citations": [
+        {
+          "section": "Reading binary and list columns, L1013–1032",
+          "source_id": "AR-C005",
+          "url": "https://arrow.apache.org/docs/dev/python/parquet/parquet_type_handling.html"
+        },
+        {
+          "section": "LargeBinary/LargeList, L194–205",
+          "source_id": "AR-C002",
+          "url": "https://arrow.apache.org/java/main/reference/org.apache.arrow.format/org/apache/arrow/flatbuf/package-summary.html"
+        },
+        {
+          "section": "Data Types L6–36; C Data Interface L162–169; Third-Party formats L183–199",
+          "source_id": "AR-C001",
+          "url": "https://arrow.apache.org/docs/status.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K002",
+      "target_name": "parquet-java SchemaConverter",
+      "canonical_target": "parquet-java SchemaConverter",
+      "behavior": "Parquet↔Arrow 스키마대응부품을reader대체로쓸수있는지검토.",
+      "citations": [
+        {
+          "section": "SchemaConverter purpose; fromParquet(MessageType), L2209–2217,L2731–2778",
+          "source_id": "AR-C003",
+          "url": "https://github.com/apache/parquet-java/blob/master/parquet-arrow/src/main/java/org/apache/parquet/arrow/schema/SchemaConverter.java"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K003",
+      "target_name": "Hardwood",
+      "canonical_target": "Hardwood",
+      "behavior": "Java의Parquet읽기대안으로검토하되Arrowbufferhandoff가필요한현재사용에는보류.",
+      "citations": [
+        {
+          "section": "Status and Limitations; Roadmap, L146–156",
+          "source_id": "AR-C004",
+          "url": "https://hardwood.dev/1.1.0.Beta3/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K004",
+      "target_name": "Arrow C++ stored-schema roundtrip",
+      "canonical_target": "Arrow C++ stored-schema roundtrip",
+      "behavior": "제작자가 Arrow schema를 저장한 파일에서 large 타입을 복원하는 reader 경로를 사용한다.",
+      "citations": [
+        {
+          "section": "Writing Arrow arrays L1255–1266; type mapping L1320–1339; Roundtripping Arrow types and schema L1366–1375",
+          "source_id": "AR-C006",
+          "url": "https://arrow.apache.org/docs/cpp/parquet.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K005",
+      "target_name": "Iceberg C++ Parquet large-list reader",
+      "canonical_target": "Iceberg C++ Parquet large-list reader",
+      "behavior": "read.arrow.use-large-list를 활성화해 중첩 목록의 64bit offset 출력을 구성한다.",
+      "citations": [
+        {
+          "section": "file_reader.h L43–48; parquet_reader.cc L231–262,L283–301; schema projection test L335–370",
+          "source_id": "AR-C007",
+          "url": "https://apache.googlesource.com/iceberg-cpp/+/ac6c0ba4d83abe80cfce9f6c1b3d6686b7811dcb%5E!/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K006",
+      "target_name": "qio Parquet R reader",
+      "canonical_target": "qio Parquet R reader",
+      "behavior": "R Parquet reader를 큰 변수길이/목록 출력 대안으로 검토한다.",
+      "citations": [
+        {
+          "section": "collect L202–230; qio-limitations L659–689; type table L712–740; read_parquet L765–807",
+          "source_id": "AR-C008",
+          "url": "https://cran.dcc.uchile.cl/web/packages/qio/qio.pdf"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K012",
+      "target_name": "Bevy reflection subtraits and dynamic proxies",
+      "canonical_target": "Bevy reflection subtraits and dynamic proxies",
+      "behavior": "공통 opaque 값과 분류별 접근 규약을 Arrow 스칼라 접근기 설계에 옮기는 원리 후보.",
+      "citations": [
+        {
+          "section": "Reflect/PartialReflect L45–76; subtraits L109–144; dynamic types L154–179; Path navigation L221–238",
+          "source_id": "AR-C017",
+          "url": "https://docs.rs/bevy/latest/bevy/reflect/index.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K011",
+      "target_name": "quiver TypedArray<L>",
+      "canonical_target": "quiver TypedArray<L>",
+      "behavior": "한 번 논리형을 검증하여 typed view로 만든 후 같은 value/get 이름을 사용.",
+      "citations": [
+        {
+          "section": "TypedArray<L>::try_new L184–205; get/value L219–246",
+          "source_id": "AR-C016",
+          "url": "https://docs.rs/quiver/latest/quiver/struct.TypedArray.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K009",
+      "target_name": "Arrow AsArray downcast helpers",
+      "canonical_target": "Arrow AsArray downcast helpers",
+      "behavior": "String/Boolean/List별 AsArray 접근으로 caller의 downcast 코드를 줄이는 방안을 검토.",
+      "citations": [
+        {
+          "section": "Type Erasure / Trait Objects L147–174",
+          "source_id": "AR-C011",
+          "url": "https://docs.rs/arrow/56.2.0/arrow/"
+        },
+        {
+          "section": "Downcasting an Array L164–185",
+          "source_id": "AR-C012",
+          "url": "https://docs.rs/arrow-array/59.0.0/arrow_array/"
+        },
+        {
+          "section": "Module description and helpers L23–68",
+          "source_id": "AR-C013",
+          "url": "https://arrow.apache.org/rust/arrow_array/cast/index.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K010",
+      "target_name": "Rust dyn-compatible common method design",
+      "canonical_target": "Rust dyn-compatible common method design",
+      "behavior": "공통 반환 표현을 먼저 정한 뒤 object-safe 메서드를 trait object에서 동적 호출하는 설계 원리로 사용.",
+      "citations": [
+        {
+          "section": "Dyn compatibility L88–130; non-dispatchable examples L158–197",
+          "source_id": "AR-C014",
+          "url": "https://doc.rust-lang.org/stable/reference/items/traits.html"
+        },
+        {
+          "section": "Trait objects L28–37; vtable dispatch and Printable example L63–88",
+          "source_id": "AR-C015",
+          "url": "https://doc.rust-lang.org/stable/reference/types/trait-object.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K015",
+      "target_name": "Arrow random GenerateBatch / BatchOf",
+      "canonical_target": "Arrow random GenerateBatch / BatchOf",
+      "behavior": "필드metadata로 null/길이를 지정해 batch를 만들고 Table 생성기의 부품으로 사용.",
+      "citations": [
+        {
+          "section": "BatchOf metadata options L1441–1494; GenerateBatch L1503–1508",
+          "source_id": "AR-C020",
+          "url": "https://sources.debian.org/src/apache-arrow/25.0.0-2/cpp/src/arrow/testing/random.h"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K016",
+      "target_name": "ORC C++ vectorized row batches",
+      "canonical_target": "ORC C++ vectorized row batches",
+      "behavior": "ORC 스키마와 직접 batch 채움 경계로 기대 결과 fixture를 수동 구성하는 재료로 검토.",
+      "citations": [
+        {
+          "section": "Vectorized Row Batch L238–270; Writing ORC Files L337–385",
+          "source_id": "AR-C023",
+          "url": "https://github.com/apache/orc/blob/main/site/_docs/core-cpp.md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K017",
+      "target_name": "Arrow JSON GenerateTestCase fixture",
+      "canonical_target": "Arrow JSON GenerateTestCase fixture",
+      "behavior": "다른 serializer 테스트의 입력과 expected batch를 만드는 구조를 옮기는 후보.",
+      "citations": [
+        {
+          "section": "GenerateTestCase L437–488",
+          "source_id": "AR-C024",
+          "url": "https://apache.googlesource.com/arrow/+/refs/tags/apache-arrow-20.0.0.dev/cpp/src/arrow/json/reader_test.cc"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K018",
+      "target_name": "FastLanes nested JSON-to-columnar representation",
+      "canonical_target": "FastLanes nested JSON-to-columnar representation",
+      "behavior": "중첩 schema/data를 nullmap과offset으로 분해하는 설계를 독립 입력/기대값 표현에 참고.",
+      "citations": [
+        {
+          "section": "Null handling 2.1.8 L234–242; Length & Presence L303–315; implementation paragraph L1103",
+          "source_id": "AR-C025",
+          "url": "https://homepages.cwi.nl/~boncz/msc/2024-ZiyaMukhtarov.pdf"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K020",
+      "target_name": "Blosc2 CTable Arrow import and null conversion",
+      "canonical_target": "Blosc2 CTable Arrow import and null conversion",
+      "behavior": "Arrow 입력과 null 표현 변환을 기대 데이터 구성에 재사용 가능한지 검토.",
+      "citations": [
+        {
+          "section": "from_arrow signature L1858; null semantics L2033–2037; convert_nulls L2069–2092; Null policy L2100–2160",
+          "source_id": "AR-C027",
+          "url": "https://blosc.org/python-blosc2/reference/ctable.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K023",
+      "target_name": "Current Arrow-rs typed buffers and constructors",
+      "canonical_target": "Current Arrow-rs typed buffers and constructors",
+      "behavior": "현재 ScalarBuffer/OffsetBuffer typed constructor와 dyn Array를 사용하여 기존 host의 안전 경계를 재검토.",
+      "citations": [
+        {
+          "section": "Columnar Format L43–77; Type Erasure L79–105; Safety L254–260",
+          "source_id": "AR-C011",
+          "url": "https://arrow.apache.org/rust/arrow/index.html"
+        },
+        {
+          "section": "Building an Array L30–48; Low-level API L65–90; type erasure L100–125; modules L174–182",
+          "source_id": "AR-C012",
+          "url": "https://docs.rs/arrow-array/60.1.0/arrow_array/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K025",
+      "target_name": "minarrow typed enum arrays",
+      "canonical_target": "minarrow typed enum arrays",
+      "behavior": "enum dispatch, typed arrays,64byte 정렬 및 Arrow C export를 전체 설계 대안으로 검토.",
+      "citations": [
+        {
+          "section": "Key Features L32–41; value-buffer macros L318–325",
+          "source_id": "AR-C035",
+          "url": "https://docs.rs/minarrow/0.19.0/minarrow/index.html"
+        },
+        {
+          "section": "Typed arrays L258–272; FFI/dispatch L344–371; Contributing L465–470; License L474–478",
+          "source_id": "AR-C036",
+          "url": "https://github.com/SpaceCell/minarrow"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K024",
+      "target_name": "narrow statically typed arrays",
+      "canonical_target": "narrow statically typed arrays",
+      "behavior": "정적 typed arrays/derive 기반 구현을 전체 crate 대안으로 검토.",
+      "citations": [
+        {
+          "section": "Why, Goals/non-goals L37–58; feature interop L119–141",
+          "source_id": "AR-C034",
+          "url": "https://docs.rs/narrow/0.16.0/narrow/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "AR-K022",
+      "target_name": "Rust typed generic containers and checked primitive arrays",
+      "canonical_target": "Rust typed generic containers and checked primitive arrays",
+      "behavior": "element type을 Rust 타입 매개변수에 두고 기본 배열/slice 검사를 활용하는 원리를 검토.",
+      "citations": [
+        {
+          "section": "Point<T> example L118–158; multiple parameters L160–175; generic methods L202–225",
+          "source_id": "AR-C029",
+          "url": "https://doc.rust-lang.org/book/ch10-01-syntax.html"
+        },
+        {
+          "section": "generic parameters L33–58; const parameters L64–83,L130–150",
+          "source_id": "AR-C030",
+          "url": "https://doc.rust-lang.org/reference/items/generics.html"
+        },
+        {
+          "section": "array contract L144–178; iteration-version distinction L222–245",
+          "source_id": "AR-C031",
+          "url": "https://doc.rust-lang.org/stable/core/primitive.array.html"
+        },
+        {
+          "section": "Array Type L189–224; element access L225–237; invalid indexing L238–272",
+          "source_id": "AR-C032",
+          "url": "https://doc.rust-lang.org/book/ch03-02-data-types.html"
+        },
+        {
+          "section": "lack of generic parameters L61–91; checking types of const arguments L134–162",
+          "source_id": "AR-C033",
+          "url": "https://rust.googlesource.com/rust/+/HEAD/src/doc/rustc-dev-guide/src/const-generics.md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K001",
+      "target_name": "Zig build options and local dependency override",
+      "canonical_target": "ziglang/zig",
+      "behavior": "user configured build option and local fork override",
+      "citations": [
+        {
+          "section": "User-Provided Options L137-158",
+          "source_id": "CG-C001",
+          "url": "https://ziglang.org/intro/build-system/"
+        },
+        {
+          "section": "Package Management Options L245-249",
+          "source_id": "CG-C001",
+          "url": "https://ziglang.org/intro/build-system/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K004",
+      "target_name": "SCons source search roots",
+      "canonical_target": "scons",
+      "behavior": "CPPPATH and Repository source root resolution",
+      "citations": [
+        {
+          "section": "How do I get SCons to find my include files? L115-129",
+          "source_id": "CG-C004",
+          "url": "https://www.scons.org/faq.html"
+        },
+        {
+          "section": "VPATH / Repository L195-197",
+          "source_id": "CG-C004",
+          "url": "https://www.scons.org/faq.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K005",
+      "target_name": "Bazel Bzlmod local_path_override",
+      "canonical_target": "bazel",
+      "behavior": "override named module with local mutable directory",
+      "citations": [
+        {
+          "section": "Introduce local repositories L315-339",
+          "source_id": "CG-C005",
+          "url": "https://bazel.googlesource.com/bazel.git/%2B/63c23630f0752772fa2e160bf39c74a2e8f36285/site/en/external/migration.md"
+        },
+        {
+          "section": "Module root distinction L12-19",
+          "source_id": "CG-C005",
+          "url": "https://bazel.googlesource.com/bazel.git/%2B/63c23630f0752772fa2e160bf39c74a2e8f36285/site/en/external/migration.md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K008",
+      "target_name": "Gradle project dependencies",
+      "canonical_target": "gradle",
+      "behavior": "named intra-build project dependency",
+      "citations": [
+        {
+          "section": "Project dependencies L119-141",
+          "source_id": "CG-C008",
+          "url": "https://docs.gradle.org/current/userguide/declaring_dependencies_basics.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K009",
+      "target_name": "Gradle composite-build substitution",
+      "canonical_target": "gradle",
+      "behavior": "included local build replaces module coordinates",
+      "citations": [
+        {
+          "section": "When to use composite builds L94-109",
+          "source_id": "CG-C009",
+          "url": "https://docs.gradle.org/current/userguide/composite_builds.html"
+        },
+        {
+          "section": "Defining via command line L231-234",
+          "source_id": "CG-C009",
+          "url": "https://docs.gradle.org/current/userguide/composite_builds.html"
+        },
+        {
+          "section": "Dependency substitution L488-534",
+          "source_id": "CG-C009",
+          "url": "https://docs.gradle.org/current/userguide/composite_builds.html"
+        },
+        {
+          "section": "When substitutions will not work L569-571",
+          "source_id": "CG-C009",
+          "url": "https://docs.gradle.org/current/userguide/composite_builds.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K003",
+      "target_name": "Bazel local_repository",
+      "canonical_target": "bazel",
+      "behavior": "named local repository import",
+      "citations": [
+        {
+          "section": "External dependencies L86-105",
+          "source_id": "CG-C010",
+          "url": "https://docs.bazel.build/versions/main/external.html?authuser=09"
+        },
+        {
+          "section": "Overriding repositories L201-208",
+          "source_id": "CG-C010",
+          "url": "https://docs.bazel.build/versions/main/external.html?authuser=09"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K011",
+      "target_name": "GCC file prefix maps",
+      "canonical_target": "gcc",
+      "behavior": "compiler filename prefix substitution",
+      "citations": [
+        {
+          "section": "add_prefix_map L40-65",
+          "source_id": "CG-C012",
+          "url": "https://gnu.googlesource.com/gcc/%2B/refs/heads/devel/modula-2/gcc/file-prefix-map.cc"
+        },
+        {
+          "section": "remap_filename L67-101",
+          "source_id": "CG-C012",
+          "url": "https://gnu.googlesource.com/gcc/%2B/refs/heads/devel/modula-2/gcc/file-prefix-map.cc"
+        },
+        {
+          "section": "file/macro/debug maps L106-155",
+          "source_id": "CG-C012",
+          "url": "https://gnu.googlesource.com/gcc/%2B/refs/heads/devel/modula-2/gcc/file-prefix-map.cc"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K012",
+      "target_name": "Clang source and debug path controls",
+      "canonical_target": "llvm/clang",
+      "behavior": "compiler source and debug path normalization",
+      "citations": [
+        {
+          "section": "Locally deterministic builds / checkout paths L78-90",
+          "source_id": "CG-C013",
+          "url": "https://blog.llvm.org/2019/11/deterministic-builds-with-clang-and-lld.html"
+        },
+        {
+          "section": "Debugger setup L94-119",
+          "source_id": "CG-C013",
+          "url": "https://blog.llvm.org/2019/11/deterministic-builds-with-clang-and-lld.html"
+        },
+        {
+          "section": "CGDebugInfo::createFile and remapDIPath L696-738",
+          "source_id": "CG-C014",
+          "url": "https://llvm.googlesource.com/llvm-project.git/%2B/refs/heads/main/clang/lib/CodeGen/CGDebugInfo.cpp"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K013",
+      "target_name": "cc::Build remap_source_path",
+      "canonical_target": "cc-rs/cc",
+      "behavior": "build adapter emits C/C++ source path mappings",
+      "citations": [
+        {
+          "section": "remap_source_path code lines1089-1137 / webL1096-1144",
+          "source_id": "CG-C015",
+          "url": "https://docs.rs/cc/latest/src/cc/lib.rs.html"
+        },
+        {
+          "section": "push_prefix_map_flags and add_source_path_remap_flags code3537-3594 / webL3544-3601",
+          "source_id": "CG-C015",
+          "url": "https://docs.rs/cc/latest/src/cc/lib.rs.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K014",
+      "target_name": "Reproducible Builds path-mapping workflow",
+      "canonical_target": "reproducible-builds",
+      "behavior": "coordinate debug and macro compiler flags",
+      "citations": [
+        {
+          "section": "Build-path flags and dpkg example L3-23",
+          "source_id": "CG-C016",
+          "url": "https://reproducible-builds.org/docs/build-path/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K015",
+      "target_name": "BUILD_PATH_PREFIX_MAP draft",
+      "canonical_target": "BUILD_PATH_PREFIX_MAP",
+      "behavior": "producer-consumer ordered prefix mapping protocol",
+      "citations": [
+        {
+          "section": "Revision history L5-8",
+          "source_id": "CG-C017",
+          "url": "https://reproducible-builds.org/specs/build-path-prefix-map/"
+        },
+        {
+          "section": "Motivation and producer/consumer model L40-57",
+          "source_id": "CG-C017",
+          "url": "https://reproducible-builds.org/specs/build-path-prefix-map/"
+        },
+        {
+          "section": "Encoding and errors L58-111",
+          "source_id": "CG-C017",
+          "url": "https://reproducible-builds.org/specs/build-path-prefix-map/"
+        },
+        {
+          "section": "Producer rules L112-120",
+          "source_id": "CG-C017",
+          "url": "https://reproducible-builds.org/specs/build-path-prefix-map/"
+        },
+        {
+          "section": "Consumer rules L121-138",
+          "source_id": "CG-C017",
+          "url": "https://reproducible-builds.org/specs/build-path-prefix-map/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K016",
+      "target_name": "Linux Kbuild path normalization",
+      "canonical_target": "linux/kbuild",
+      "behavior": "compiler and assembler path flag orchestration",
+      "citations": [
+        {
+          "section": "Absolute filenames L21-28",
+          "source_id": "CG-C018",
+          "url": "https://docs.kernel.org/next/kbuild/reproducible-builds.html"
+        },
+        {
+          "section": "Debug info conflicts L47-52",
+          "source_id": "CG-C018",
+          "url": "https://docs.kernel.org/next/kbuild/reproducible-builds.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K017",
+      "target_name": "Shipyard private Cargo registry",
+      "canonical_target": "shipyard.rs",
+      "behavior": "authenticated Cargo package delivery",
+      "citations": [
+        {
+          "section": "Rust1.74 and credential provider changes L57-100",
+          "source_id": "CG-C020",
+          "url": "https://docs.shipyard.rs/authentication/credential-process.html"
+        },
+        {
+          "section": "Authenticated downloads L58-76",
+          "source_id": "CG-C021",
+          "url": "https://docs.shipyard.rs/configuration/authenticated-downloads.html"
+        },
+        {
+          "section": "Older User-Agent workaround L74-90",
+          "source_id": "CG-C021",
+          "url": "https://docs.shipyard.rs/configuration/authenticated-downloads.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K018",
+      "target_name": "GitHub Packages npm authentication",
+      "canonical_target": "github/packages",
+      "behavior": "scoped npm registry credentials",
+      "citations": [
+        {
+          "section": "Authentication L31-42",
+          "source_id": "CG-C022",
+          "url": "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry"
+        },
+        {
+          "section": "Personal token config and login L54-71",
+          "source_id": "CG-C022",
+          "url": "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K019",
+      "target_name": "SwiftPM registry authentication",
+      "canonical_target": "swiftlang/swift-package-manager",
+      "behavior": "registry credentials keyed to configured server",
+      "citations": [
+        {
+          "section": "Scope resolution L232-237",
+          "source_id": "CG-C023",
+          "url": "https://github.com/swiftlang/swift-package-manager/blob/main/Documentation/PackageRegistry/PackageRegistryUsage.md"
+        },
+        {
+          "section": "Registry authentication L238-260",
+          "source_id": "CG-C023",
+          "url": "https://github.com/swiftlang/swift-package-manager/blob/main/Documentation/PackageRegistry/PackageRegistryUsage.md"
+        },
+        {
+          "section": "Environment credentials and precedence L261-310",
+          "source_id": "CG-C023",
+          "url": "https://github.com/swiftlang/swift-package-manager/blob/main/Documentation/PackageRegistry/PackageRegistryUsage.md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K021",
+      "target_name": "Bun registry fetch redirect boundary",
+      "canonical_target": "oven-sh/bun",
+      "behavior": "registry download redirect authentication",
+      "citations": [
+        {
+          "section": "Version and platform L161-167",
+          "source_id": "CG-C025",
+          "url": "https://github.com/oven-sh/bun/issues/15516"
+        },
+        {
+          "section": "Reproduction and expected/observed behavior L168-202",
+          "source_id": "CG-C025",
+          "url": "https://github.com/oven-sh/bun/issues/15516"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K022",
+      "target_name": "npm-registry-fetch redirect handling",
+      "canonical_target": "npm",
+      "behavior": "HTTP registry fetch confidential-header handling",
+      "citations": [
+        {
+          "section": "npm-registry-fetch finding L2020-2036",
+          "source_id": "CG-C026",
+          "url": "https://credda.io/findings"
+        },
+        {
+          "section": "Underlying make-fetch-happen L1085-1090",
+          "source_id": "CG-C026",
+          "url": "https://credda.io/findings"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K023",
+      "target_name": "npm scoped registry credential mapping",
+      "canonical_target": "npm",
+      "behavior": "registry URI scoped credential routing",
+      "citations": [
+        {
+          "section": "Background L113-126",
+          "source_id": "CG-C027",
+          "url": "https://github.com/npm/cli/wiki/No-auth-for-URI%2C-but-auth-present-for-scoped-registry"
+        },
+        {
+          "section": "Per-URI auth configuration L127-146",
+          "source_id": "CG-C027",
+          "url": "https://github.com/npm/cli/wiki/No-auth-for-URI%2C-but-auth-present-for-scoped-registry"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K024",
+      "target_name": "Multi-version TGG unhandled-set transformation",
+      "canonical_target": "doi:10.1007/s10270-024-01238-1",
+      "behavior": "version-indexed match eligibility and processed-state tracking",
+      "citations": [
+        {
+          "section": "Forward transformation adaptation L227-229",
+          "source_id": "CG-C029",
+          "url": "https://link.springer.com/article/10.1007/s10270-024-01238-1"
+        },
+        {
+          "section": "Section6.4 L609-627",
+          "source_id": "CG-C029",
+          "url": "https://link.springer.com/article/10.1007/s10270-024-01238-1"
+        },
+        {
+          "section": "Evaluation implementation L628-657",
+          "source_id": "CG-C029",
+          "url": "https://link.springer.com/article/10.1007/s10270-024-01238-1"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K027",
+      "target_name": "Semantic Versioning compatibility rules",
+      "canonical_target": "semver",
+      "behavior": "compatibility-labeled version ordering",
+      "citations": [
+        {
+          "section": "Introduction L54-61",
+          "source_id": "CG-C032",
+          "url": "https://semver.org/?trk=article-ssr-frontend-pulse_x-social-details_comments-action_comment-text"
+        },
+        {
+          "section": "Specification1-11 L62-101",
+          "source_id": "CG-C032",
+          "url": "https://semver.org/?trk=article-ssr-frontend-pulse_x-social-details_comments-action_comment-text"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K025",
+      "target_name": "Trace-based monotonic model transformation",
+      "canonical_target": "doi:10.1007/s10270-020-00791-9",
+      "behavior": "once-per-match additive target transformation with complete traces",
+      "citations": [
+        {
+          "section": "Section2.5.1 properties1-8 L400-450",
+          "source_id": "CG-C030",
+          "url": "https://link.springer.com/article/10.1007/s10270-020-00791-9"
+        },
+        {
+          "section": "Section4.1 L1229-1234",
+          "source_id": "CG-C030",
+          "url": "https://link.springer.com/article/10.1007/s10270-020-00791-9"
+        },
+        {
+          "section": "Sections4.2-4.3 counterexample L1235-1265",
+          "source_id": "CG-C030",
+          "url": "https://link.springer.com/article/10.1007/s10270-020-00791-9"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K029",
+      "target_name": "OpenSSF compatibility adapter guidance",
+      "canonical_target": "openssf/best-practices",
+      "behavior": "retain old interfaces through wrappers and defaults",
+      "citations": [
+        {
+          "section": "Component creators items3-12 L36-45",
+          "source_id": "CG-C034",
+          "url": "https://best.openssf.org/Simplifying-Software-Component-Updates"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K030",
+      "target_name": "IBM versioned API request contract",
+      "canonical_target": "ibm/api-handbook",
+      "behavior": "version-aware API change isolation",
+      "citations": [
+        {
+          "section": "Kinds of updates L10-26",
+          "source_id": "CG-C035",
+          "url": "https://cloud.ibm.com/docs/api-handbook?topic=api-handbook-change-compatibility"
+        },
+        {
+          "section": "Default-value and compatibility boundary L57-84",
+          "source_id": "CG-C035",
+          "url": "https://cloud.ibm.com/docs/api-handbook?topic=api-handbook-change-compatibility"
+        }
+      ]
+    },
+    {
+      "candidate_id": "CG-K031",
+      "target_name": "Go compatibility forwarding wrappers",
+      "canonical_target": "go",
+      "behavior": "old function delegates to new function with preserved defaults",
+      "citations": [
+        {
+          "section": "Header L5-12",
+          "source_id": "CG-C036",
+          "url": "https://go.googlesource.com/blog/%2B/8b806c840d8a6d724d75db0d72e7e706b2c8810f/content/module-compatibility.article"
+        },
+        {
+          "section": "Adding to a function L33-90",
+          "source_id": "CG-C036",
+          "url": "https://go.googlesource.com/blog/%2B/8b806c840d8a6d724d75db0d72e7e706b2c8810f/content/module-compatibility.article"
+        },
+        {
+          "section": "Configuration methods and struct defaults L193-204",
+          "source_id": "CG-C036",
+          "url": "https://go.googlesource.com/blog/%2B/8b806c840d8a6d724d75db0d72e7e706b2c8810f/content/module-compatibility.article"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K002",
+      "target_name": "HornetQ durable topic subscription",
+      "canonical_target": "HornetQ durable topic subscription",
+      "behavior": "출력 topic의 durable subscription으로 최초 출력 손실을 줄이는 후보",
+      "citations": [
+        {
+          "section": "3.2.2 lines386-394",
+          "source_id": "JP-C002",
+          "url": "https://docs.redhat.com/en/documentation/JBoss_Enterprise_Application_Platform/5/html/hornetq_user_guide/ch03s02s02"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K003",
+      "target_name": "Azure pub/sub + request-reply pattern",
+      "canonical_target": "Azure pub/sub + request-reply pattern",
+      "behavior": "Azure pub/sub에 별도 request-reply readiness barrier를 결합",
+      "citations": [
+        {
+          "section": "Solution L41–58",
+          "source_id": "JP-C003",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber"
+        },
+        {
+          "section": "Issues and considerations L78–99",
+          "source_id": "JP-C003",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber"
+        },
+        {
+          "section": "When not to use L121–126",
+          "source_id": "JP-C003",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K004",
+      "target_name": "Google Cloud Pub/Sub subscription creation",
+      "canonical_target": "Google Cloud Pub/Sub subscription creation",
+      "behavior": "실행 전에 결과 topic의 subscription을 생성하여 생성이후 출력을 받을 경계를 만드는 후보",
+      "citations": [
+        {
+          "section": "Subscription overview lines102-106",
+          "source_id": "JP-C004",
+          "url": "https://docs.cloud.google.com/pubsub/docs/subscription-overview"
+        },
+        {
+          "section": "Subscription workflow lines107-114",
+          "source_id": "JP-C004",
+          "url": "https://docs.cloud.google.com/pubsub/docs/subscription-overview"
+        },
+        {
+          "section": "Default subscription properties lines131-141",
+          "source_id": "JP-C004",
+          "url": "https://docs.cloud.google.com/pubsub/docs/subscription-overview"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K006",
+      "target_name": "OGC PubSub SubscribeResponse barrier",
+      "canonical_target": "OGC PubSub SubscribeResponse barrier",
+      "behavior": "OGC형 구독 상태 응답을 출력 준비 barrier의 설계 선례로 사용; 수신기는 요청 전 준비하고 실행은 응답 후 허용",
+      "citations": [
+        {
+          "section": "frontmatter L0–22",
+          "source_id": "JP-C006",
+          "url": "https://repository.oceanbestpractices.org/bitstream/handle/11329/1062/13-131r1_OGC_Publish_Subscribe_Interface_1.0_Core.pdf?isAllowed=y&sequence=1"
+        },
+        {
+          "section": "§8.3.1 p30–31 L1131–1175",
+          "source_id": "JP-C006",
+          "url": "https://repository.oceanbestpractices.org/bitstream/handle/11329/1062/13-131r1_OGC_Publish_Subscribe_Interface_1.0_Core.pdf?isAllowed=y&sequence=1"
+        },
+        {
+          "section": "§8.3.3 p34 L1311–1324",
+          "source_id": "JP-C006",
+          "url": "https://repository.oceanbestpractices.org/bitstream/handle/11329/1062/13-131r1_OGC_Publish_Subscribe_Interface_1.0_Core.pdf?isAllowed=y&sequence=1"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K007",
+      "target_name": "WebSub subscription verification",
+      "canonical_target": "WebSub subscription verification",
+      "behavior": "WebSub callback 검증을 구독 준비 확인 선례로 검토하되 202만으로 실행하지 않음",
+      "citations": [
+        {
+          "section": "§4.1.2 L116–120",
+          "source_id": "JP-C007",
+          "url": "https://www.w3.org/TR/2016/WD-websub-20161124/"
+        },
+        {
+          "section": "§4.3–4.3.1 L136–158",
+          "source_id": "JP-C007",
+          "url": "https://www.w3.org/TR/2016/WD-websub-20161124/"
+        },
+        {
+          "section": "§6 L162–167",
+          "source_id": "JP-C007",
+          "url": "https://www.w3.org/TR/2016/WD-websub-20161124/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K013",
+      "target_name": "3GPP dynamic-port discovery",
+      "canonical_target": "3GPP dynamic-port discovery",
+      "behavior": "3GPP dynamic-port discovery의 자원할당/발견 규칙을 kernel startup에 대응",
+      "citations": [
+        {
+          "section": "AnnexB.2–B.3 p29–30 L961–994",
+          "source_id": "JP-C015",
+          "url": "https://www.etsi.org/deliver/etsi_tr/129900_129999/129941/17.01.00_60/tr_129941v170100p.pdf"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K014",
+      "target_name": "RFC6056 port ownership constraints",
+      "canonical_target": "RFC6056 port ownership constraints",
+      "behavior": "RFC6056 port ownership constraints의 자원할당/발견 규칙을 kernel startup에 대응",
+      "citations": [
+        {
+          "section": "§3.1 p9–10 L463–529",
+          "source_id": "JP-C016",
+          "url": "https://datatracker.ietf.org/doc/html/rfc6056"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K015",
+      "target_name": "Winsock exclusive socket binding",
+      "canonical_target": "Winsock exclusive socket binding",
+      "behavior": "Winsock exclusive socket binding의 자원할당/발견 규칙을 kernel startup에 대응",
+      "citations": [
+        {
+          "section": "Using SO_REUSEADDR L49–52",
+          "source_id": "JP-C017",
+          "url": "https://learn.microsoft.com/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse"
+        },
+        {
+          "section": "Using SO_EXCLUSIVEADDRUSE L53–79",
+          "source_id": "JP-C017",
+          "url": "https://learn.microsoft.com/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse"
+        },
+        {
+          "section": "Enhanced socket security L81–115",
+          "source_id": "JP-C017",
+          "url": "https://learn.microsoft.com/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K009",
+      "target_name": "Node.js listen(0) + child IPC",
+      "canonical_target": "Node.js listen(0) + child IPC",
+      "behavior": "Node자식이 직접 열린 채널 주소를 보고하는 시작 handshake 부품; 다언어·manifest는 추가설계 필요",
+      "citations": [
+        {
+          "section": "Event listening L400–402",
+          "source_id": "JP-C010",
+          "url": "https://github.com/nodejs/node/blob/main/doc/api/net.md"
+        },
+        {
+          "section": "server.address L413–429",
+          "source_id": "JP-C010",
+          "url": "https://github.com/nodejs/node/blob/main/doc/api/net.md"
+        },
+        {
+          "section": "server.listen(port) L557–567",
+          "source_id": "JP-C010",
+          "url": "https://github.com/nodejs/node/blob/main/doc/api/net.md"
+        },
+        {
+          "section": "Event message L1026–1034",
+          "source_id": "JP-C011",
+          "url": "https://nodejs.org/download/release/v25.8.0/docs/api/child_process.html"
+        },
+        {
+          "section": "subprocess.send L1218–1271",
+          "source_id": "JP-C011",
+          "url": "https://nodejs.org/download/release/v25.8.0/docs/api/child_process.html"
+        },
+        {
+          "section": "Sending a server object L1273–1314",
+          "source_id": "JP-C011",
+          "url": "https://nodejs.org/download/release/v25.8.0/docs/api/child_process.html"
+        },
+        {
+          "section": "IPC restrictions L756–757",
+          "source_id": "JP-C011",
+          "url": "https://nodejs.org/download/release/v25.8.0/docs/api/child_process.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K010",
+      "target_name": "PCP bind-map-publish workflow",
+      "canonical_target": "PCP bind-map-publish workflow",
+      "behavior": "먼저 자원을 확보한 뒤 실제 주소를 공개하는 프로토콜 선례",
+      "citations": [
+        {
+          "section": "§10.1 p33–34 L1827–1896",
+          "source_id": "JP-C012",
+          "url": "https://www.rfc-editor.org/info/rfc6887/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K012",
+      "target_name": "TAPS Resolve and Rendezvous",
+      "canonical_target": "TAPS Resolve and Rendezvous",
+      "behavior": "연결 후보 탐색과 실제 준비 완료 이벤트를 나누는 시작 설계",
+      "citations": [
+        {
+          "section": "§7.2 L1637–1685",
+          "source_id": "JP-C014",
+          "url": "https://datatracker.ietf.org/doc/html/rfc9622"
+        },
+        {
+          "section": "§7.3 L1686–1727",
+          "source_id": "JP-C014",
+          "url": "https://datatracker.ietf.org/doc/html/rfc9622"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K019",
+      "target_name": "ipykernel execute_request cell_meta adapter",
+      "canonical_target": "ipykernel execute_request cell_meta adapter",
+      "behavior": "메시지 metadata에 셀별옵션을 넣는 클라이언트와 cell_meta를 받는 Kernel 하위클래스의 수신어댑터; 파일metadata 자동복제는 범위밖",
+      "citations": [
+        {
+          "section": "Kernel.execute_request rendered L3506–3578",
+          "source_id": "JP-C021",
+          "url": "https://github.com/ipython/ipykernel/blob/main/ipykernel/kernelbase.py"
+        },
+        {
+          "section": "Kernel.do_execute signature L3643–3665",
+          "source_id": "JP-C021",
+          "url": "https://github.com/ipython/ipykernel/blob/main/ipykernel/kernelbase.py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K020",
+      "target_name": "NBClient cell hooks",
+      "canonical_target": "NBClient cell hooks",
+      "behavior": "클라이언트 실행 hook에서 cell정보를 읽는 보조부품; 원격kernel 옵션전달 대체가능 여부는 보류",
+      "citations": [
+        {
+          "section": "Execution arguments L198–219",
+          "source_id": "JP-C022",
+          "url": "https://github.com/jupyter/nbclient/blob/main/docs/client.rst"
+        },
+        {
+          "section": "Hooks L220–244",
+          "source_id": "JP-C022",
+          "url": "https://github.com/jupyter/nbclient/blob/main/docs/client.rst"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K022",
+      "target_name": "Datalayer notebook/cell execution routing",
+      "canonical_target": "Datalayer notebook/cell execution routing",
+      "behavior": "셀정체성과 실행backend를 분리하는 MCP실행경계의 참고",
+      "citations": [
+        {
+          "section": "Document and execution identity L37–48",
+          "source_id": "JP-C024",
+          "url": "https://jupyter-mcp-server.datalayer.tech/architecture/"
+        },
+        {
+          "section": "Execution L87–96",
+          "source_id": "JP-C024",
+          "url": "https://jupyter-mcp-server.datalayer.tech/architecture/"
+        },
+        {
+          "section": "Extension hooks L125–140",
+          "source_id": "JP-C024",
+          "url": "https://jupyter-mcp-server.datalayer.tech/architecture/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K025",
+      "target_name": "Precinct extension sidecar request",
+      "canonical_target": "Precinct extension sidecar request",
+      "behavior": "작업요청과 보조필드를 sidecar에 분리전달하는 후보; 공식고정본문 재확보 전보류",
+      "citations": [
+        {
+          "section": "Tool-provided rewritten summary: ExtensionRequest/Response L2593–2652",
+          "source_id": "JP-C027",
+          "url": "https://pkg.go.dev/github.com/precinct-dev/precinct%40v0.0.0-20260409003421-a1fe87c117e0/internal/gateway/middleware"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K027",
+      "target_name": "MarkLogic REST extension params",
+      "canonical_target": "MarkLogic REST extension params",
+      "behavior": "셀코드 수신endpoint를 구현할 때 body와params를 분리하는 부품; 실제 code-execution adapter는 미검증",
+      "citations": [
+        {
+          "section": "JavaScript Resource Extension Interface L114–170",
+          "source_id": "JP-C029",
+          "url": "https://docs.progress.com/bundle/marklogic-server-develop-rest-api-12/page/topics/extensions.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K023",
+      "target_name": "Codex ToolCall trace metadata",
+      "canonical_target": "Codex ToolCall trace metadata",
+      "behavior": "호출별metadata 분리를 셀실행 입력으로 혼동하는 음성대조",
+      "citations": [
+        {
+          "section": "ToolCall struct rendered L1063–1152",
+          "source_id": "JP-C025",
+          "url": "https://github.com/openai/codex/blob/main/codex-rs/rollout-trace/src/model/runtime.rs"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K034",
+      "target_name": "jupyter_app_launcher YAML actions",
+      "canonical_target": "jupyter_app_launcher YAML actions",
+      "behavior": "YAML실행항목확장부품;동적parameter지원은추가원문이필요",
+      "citations": [
+        {
+          "section": "Purpose and capabilities L199–209",
+          "source_id": "JP-C038",
+          "url": "https://github.com/trungleduc/jupyter_app_launcher"
+        },
+        {
+          "section": "Installation L221–231",
+          "source_id": "JP-C038",
+          "url": "https://github.com/trungleduc/jupyter_app_launcher"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K035",
+      "target_name": "JupyterLab console:create preferences",
+      "canonical_target": "JupyterLab console:create preferences",
+      "behavior": "기존Jupyter명령인자에서kernel생성옵션의사용경계를확인",
+      "citations": [
+        {
+          "section": "console:create L821–856",
+          "source_id": "JP-C039",
+          "url": "https://jupyterlab.readthedocs.io/en/stable/user/commands.html"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K031",
+      "target_name": "NVIDIA BCM Kernel Creator",
+      "canonical_target": "NVIDIA BCM Kernel Creator",
+      "behavior": "HPC형kernel입력form과실행template의선례; 명세증식제약때문에그대로채택보류",
+      "citations": [
+        {
+          "section": "§16.5.1.1 L669–692",
+          "source_id": "JP-C035",
+          "url": "https://docs.nvidia.com/base-command-manager/product-manuals/admin/jupyter"
+        },
+        {
+          "section": "§16.6 L992–1009",
+          "source_id": "JP-C035",
+          "url": "https://docs.nvidia.com/base-command-manager/product-manuals/admin/jupyter"
+        },
+        {
+          "section": "§16.6.1.1–3 L1140–1212",
+          "source_id": "JP-C035",
+          "url": "https://docs.nvidia.com/base-command-manager/product-manuals/admin/jupyter"
+        },
+        {
+          "section": "Kernel provisioning L475–582",
+          "source_id": "JP-C035",
+          "url": "https://docs.nvidia.com/base-command-manager/product-manuals/admin/jupyter"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K029",
+      "target_name": "CTX parameterized custom tools",
+      "canonical_target": "CTX parameterized custom tools",
+      "behavior": "사용자매개변수입력기를추가하는전제로 schema→검증→명령치환부품 사용; form및enum확인전전체추천보류",
+      "citations": [
+        {
+          "section": "Run Tools L148–174",
+          "source_id": "JP-C032",
+          "url": "https://docs.ctxllm.com/mcp/custom-tools.html"
+        },
+        {
+          "section": "Schema Definition L438–476",
+          "source_id": "JP-C032",
+          "url": "https://docs.ctxllm.com/mcp/custom-tools.html"
+        },
+        {
+          "section": "Template Variables L479–497",
+          "source_id": "JP-C032",
+          "url": "https://docs.ctxllm.com/mcp/custom-tools.html"
+        },
+        {
+          "section": "Environment L509–527",
+          "source_id": "JP-C032",
+          "url": "https://docs.ctxllm.com/mcp/custom-tools.html"
+        },
+        {
+          "section": "Tools with Arguments L440–515",
+          "source_id": "JP-C033",
+          "url": "https://github.com/context-hub/generator/blob/main/docs/mcp/tools/tools_guide.md"
+        },
+        {
+          "section": "CommandExecutor L201–219",
+          "source_id": "JP-C033",
+          "url": "https://github.com/context-hub/generator/blob/main/docs/mcp/tools/tools_guide.md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K030",
+      "target_name": "Cosmo Tech Run Template Orchestrator",
+      "canonical_target": "Cosmo Tech Run Template Orchestrator",
+      "behavior": "실행template와instance를나누는전체설계선례; 사용자입력계층별도검증필요",
+      "citations": [
+        {
+          "section": "CommandTemplate schema L398–449",
+          "source_id": "JP-C034",
+          "url": "https://cosmo-tech.github.io/run-orchestrator/1.3.1/tutorial/getting_started/"
+        },
+        {
+          "section": "Step schema L451–517",
+          "source_id": "JP-C034",
+          "url": "https://cosmo-tech.github.io/run-orchestrator/1.3.1/tutorial/getting_started/"
+        },
+        {
+          "section": "EnvironmentVariable L528–549",
+          "source_id": "JP-C034",
+          "url": "https://cosmo-tech.github.io/run-orchestrator/1.3.1/tutorial/getting_started/"
+        },
+        {
+          "section": "Run simple step L554–617",
+          "source_id": "JP-C034",
+          "url": "https://cosmo-tech.github.io/run-orchestrator/1.3.1/tutorial/getting_started/"
+        }
+      ]
+    },
+    {
+      "candidate_id": "JP-K028",
+      "target_name": "JSON Schema validation and UI generation",
+      "canonical_target": "JSON Schema validation and UI generation",
+      "behavior": "처음안의 JSON Schema 입력부품을 전체실행기로 잘못세는 반례",
+      "citations": [
+        {
+          "section": "Model-driven UI constraints and UI generation L43–52",
+          "source_id": "JP-C030",
+          "url": "https://json-schema.org/overview/use-cases"
+        },
+        {
+          "section": "Introduction L47–76",
+          "source_id": "JP-C031",
+          "url": "https://json-schema.org/learn/getting-started-step-by-step"
+        },
+        {
+          "section": "Properties and required/ranges L79–133",
+          "source_id": "JP-C031",
+          "url": "https://json-schema.org/learn/getting-started-step-by-step"
+        },
+        {
+          "section": "Validate section L232–250",
+          "source_id": "JP-C031",
+          "url": "https://json-schema.org/learn/getting-started-step-by-step"
+        }
+      ]
+    }
+  ]
+}
