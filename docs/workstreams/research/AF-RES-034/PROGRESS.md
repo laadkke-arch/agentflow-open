@@ -22,3 +22,11 @@
 - 원장48행, 배정군74행, 효과53행, 시도203행, 검색·심사1066행/고유URL901. 후기검색2호출의 반환만 추가 보존했으며 질의·실행 UTC 누락은 유지한다.
 - 분야별 최종 재검에서 Codelets 선택적 추가과제·Blueprint 과제/품질 연결·Schwonke 표 위치·CSV 대표열/실험조인을 수정했다. 이전 관측판은 위 SHA와 REVISIONS.md로 추적한다.
 - 통합 검사91개·수치 재계산64개와 추가 비시간차/EO CI 확인 exit0. 실제 최종 receipt는 evidence/validation.json. 출판 후 session check와 고정 원격 RESULT/수용파일 재독을 수행한 뒤 HANDOFF를 작성한다.
+
+## 묶음④ 원격 재독과 최종 인계
+
+- ④ 최초 결과 `634a27a34e7445c19f8a880c0c35d328bb34b391`; 원격 재독에서 수용초안 잔여 문구와 CSV 줄바꿈/검증해시 경계를 정리했다.
+- 최종 결과 `0fe0ae4510e0052031919c748972dcf4bd4a7cbc`. RESULT의 연구내용은 그대로이며, 이 SHA의 RESULT/acceptance/validation을 GitHub에서 다시 읽고16검증입력의 커밋 SHA256을 확인했다.
+- `workbench.session check --fetch`:2026-11-22T16:36:51.903069+00:00,exit0,passed/remote_checked. 최신통합97bf71e483826692aa351559c3dda23f7a92ae70,허용경로밖변경0,충돌0.
+- ⑤ 이 PROGRESS 갱신과 HANDOFF·remote-reread/session-check/acceptance-finalization/final-validation을 함께 마지막 커밋에 둔다. 결과고정판의 수용파일은 바꾸지 않고 실제 출판단계 완료를 별도 영수증으로 연결한다.
+- 종료의 의미는 REVIEW_READY_WITH_GAPS: 내용검증과인계는 마쳤지만 네이티브검색·과거질의추적4조건과 엄격자료/제공판/시간raw3진단은 남는다. 양성연구수로 이 한계를 지우지 않는다.
