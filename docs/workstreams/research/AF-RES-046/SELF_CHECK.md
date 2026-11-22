@@ -30,9 +30,9 @@ R01은 추가층 조건의 오적용을 고쳤다. 원본 규칙과 중간 원�
 
 ## 검산과 고정 결과 재열람
 
-`python -B docs/workstreams/research/AF-RES-046/synthesize.py`, `assemble.py --stage all`, `validate.py`로 슬롯·원장 join·고유저작·날짜·감도·표행수를검산한다. 실제로그는 evidence/validation.json이다. 지시된 `python -B -m workbench.session check docs/workstreams/research/AF-RES-046/manifest.json --fetch`는 2026-11-22T23:07:21.471908+00:00~23:07:34.854842+00:00에 실제 실행했다. exit0/status=passed, outside_paths=[]/unmerged_paths=[]/errors=[]이며 원 stdout·stderr·UTC는 evidence/session-check.json에 보존했다. 검사 당시 최신 통합판89203e81a83d51e581ef81fb04c7573753f87234과 최초 시작판4492dd8e9978087b32897ec2685110d24f510473은 별도 기록하며, 검사 도구는 계약 일치를 확인했다.
+`python -B docs/workstreams/research/AF-RES-046/synthesize.py`, `assemble.py --stage all`, `validate.py`로 슬롯·원장 join·고유저작·날짜·감도·표행수를검산한다. 실제로그는 evidence/validation.json이다. 지시된 `python -B -m workbench.session check docs/workstreams/research/AF-RES-046/manifest.json --fetch`는 2026-11-22T23:07:21.471908+00:00~23:07:34.854842+00:00에 실제 실행했다. exit0/status=passed, outside_paths=[]/unmerged_paths=[]/errors=[]이며 원 stdout·stderr·UTC는 evidence/session-check-r03.json에 보존했다. 검사 당시 최신 통합판89203e81a83d51e581ef81fb04c7573753f87234과 최초 시작판4492dd8e9978087b32897ec2685110d24f510473은 별도 기록하며, 검사 도구는 계약 일치를 확인했다.
 
-RESULT와acceptance-evidence는원격결과커밋을먼저만든뒤그SHA로두파일을다시읽는다. 실제확인SHA·blob/내용검사·표행수는evidence/fixed-result-recheck.json에후속보존한다. 그다음HANDOFF만마지막단독커밋으로작성한다. 이파일의예정절차만으로재열람을완료했다고간주하지않는다.
+원격 결과 커밋 `38b8be304f7f271b2ae85ca2c47f2a55df0e4dd1`의 RESULT와acceptance-evidence 두 파일을 2026-11-22T23:20:40.860Z에 실제 다시 읽었다. 원격 content/git blob을 해당 로컬 git 객체와 대조해 일치했고, 첫 표12행·둘째 표2행·마지막약점3행·동일인2/4·타인포함4/4·source528을 검산했다. evidence/fixed-result-recheck.json에 각 blob/SHA256·URL·미충족항목을 보존했다. 이 확인 영수증을 넣은 다음 검증 커밋의 두 파일도 SHA로 재열람하고 그 실제 결과를 마지막 단독 HANDOFF에 기록한다.
 
 남은미충족은음악개별편집원장접근,완전한선정결과가림,첫링크의엄격연결·사람시간/반사실이다. acceptance-evidence의각항목에분자·분모·단위·원장행·이유·최소후속을분리한다. 근거가없어엄격분자가0인것과실제효과가0인것을끝까지구별한다.
 
@@ -47,3 +47,5 @@ pandas52089는원PR종결45초전개설됐지만정확f95152e를고정한첫회�
 R03 중간1/4·3/4는 원격416c6739ce24c7a2f77f4fd6911655363834652a에 보존했다. f951의 잘못된 공개 연결은 되살리지 않았다. 대신52053의4commit을 다시 열어19e8640의 첫 부모3ce5 대비 any/all result_mask 실제2파일 변경을 확인했다. [부모1f7a의GitHub생성/병합](https://github.com/pandas-dev/pandas/commit/1f7a7f20b1a3aeb66527df0d9a3682159e56917e)19:48:49에서 통합 하한을 추론하고, [review1349064316](https://github.com/pandas-dev/pandas/pull/52053#pullrequestreview-1349064316)3/20 17:17:26에서 공개 상한을 직접 확인했다. 작성자ID8078968·같은목적diff·정확tree시험은 final-risk-review.json과P-FR-8개영수증에 연결했다.
 
 최종 동일인2/4·타인포함4/4, 미확인동일인은L-S1만1이다. 이 가운데1건은 이미 작성한 로직을 뒤에 통합한 변화다. 그 유형을 양성에서 빼면1/슬롯4이며, 선행동일인착수PR을 빼는 감도는1/슬롯3이다. 둘은 분모가 다르다. 엄격사슬0·직접노동0관측·절감량미확인은 유지한다. 판정을 뒤집을 최소자료는19e첫부모diff/작성자/부모생성기록의 불일치, 또는 실제링크기여와작업시간을직접연결하는새기록이다. 이 추가감사도외부독립인간판독이아니다.
+
+결과 커밋 뒤 session check --fetch도 2026-11-22T23:20:58.968686+00:00~2026-11-22T23:21:11.338972+00:00에 재실행했다. exit0/status=passed, 최신통합판7658ae6c0f6eca65ea9991bcf167d131d86460e6, outside_paths/unmerged_paths/errors=[]다. 현재 evidence/session-check.json은 이 최종 실행이며 이전검사는session-check-r03.json에보존한다.
