@@ -1,0 +1,52 @@
+{
+  "stage": "post-route-seal supplementary falsification",
+  "started_utc": "2026-11-22T12:55:07.839073+00:00",
+  "ended_utc": "2026-11-22T12:55:08.030910+00:00",
+  "script_sha256": "f0e1f9c6de6bac12572922840112b8333da7da2cccff558c2469b4a0fc0b2e87",
+  "target_research_head": "a4894493dbacdc9d93357426f8bd63929074bf30",
+  "observations": [
+    {
+      "id": "NC01-NC04-JS",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "-e",
+        "\nconst [a = null,b = null,c = null] = [10];\nconst [x,y] = [10,20,30];\nconst memory = new WebAssembly.Memory({initial:1,maximum:2});\nconst view = new DataView(memory.buffer);\nview.setInt32(8,0x01020304,true);\nconst bytes = Array.from(new Uint8Array(memory.buffer,8,4));\nconst sameBuffer = view.buffer === memory.buffer;\nlet outOfBounds = null;\ntry {view.setInt32(memory.buffer.byteLength-2,1,true);}\ncatch(e) {outOfBounds=e.name;}\nmemory.grow(1);\nlet staleWrite = null;\ntry {view.setInt32(8,1,true);}catch(e) {staleWrite=e.name;}\nconsole.log(JSON.stringify({node:process.version,padding:[a,b,c],truncation:[x,y],bytes,sameBuffer,outOfBounds,oldBufferBytes:view.buffer.byteLength,staleWrite}));\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"node\":\"v24.22.3\",\"padding\":[10,null,null],\"truncation\":[10,20],\"bytes\":[4,3,2,1],\"sameBuffer\":true,\"outOfBounds\":\"RangeError\",\"oldBufferBytes\":0,\"staleWrite\":\"TypeError\"}",
+      "stderr": "",
+      "limits": [
+        "Tests JavaScript semantics only; no Go binding or ABI offset is supplied.",
+        "The same Wasm-memory buffer is observed; no Go-generated module is executed.",
+        "Growing non-shared memory invalidates the earlier view; caller must refresh it."
+      ]
+    },
+    {
+      "id": "Q07-SUPPLEMENTARY-DOC",
+      "package_version": "4.16.0",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "inputs": {
+        "firstname": "  first-name: keep spacing!\n",
+        "lastname": "Last name (exact)."
+      },
+      "extracted": {
+        "firstname": [
+          "  first-name: keep spacing!\n"
+        ],
+        "lastname": [
+          "Last name (exact)."
+        ]
+      },
+      "strings_unchanged": true,
+      "docstring": "Preserved function docstring.",
+      "constructor_sha256": "bfb8cd38fefb8ecc00a6daec0828739715549e2d2a763b6425f24a27e4c22fa2",
+      "limits": [
+        "The installed 4.16.0 behavior is separate from the directly read official 4.15.0 source.",
+        "This is a post-seal missed-component probe and cannot fill empty A/B returns.",
+        "No editor adoption or full original typing.doc standard-library integration is established."
+      ]
+    }
+  ],
+  "route_success_effect": "none",
+  "new_installations": false
+}

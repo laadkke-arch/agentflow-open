@@ -1,0 +1,18 @@
+# 봉인 뒤 반증과 분야명을 가린 관계 대조
+
+사전 목록은 `evidence/adversarial-plan.json`이다. 아래 판독과 실행은 이미 봉인된 반환을 보강하지 않는다. 새 모델 판독자는 이 파일과 실행 결과를 보지 않는다. 본문 열람 재검, 설치된 판의 실제 실행, 실행하지 않은 제안을 구분한다.
+
+| 가린 관계 / 질문 | 시험한 오답 또는 반대 설명 | 실제 확인·결과 | 원 비교에 미치는 한계·다음 최소 자료 |
+| --- | --- | --- | --- |
+| NC01: 순서 있는 이질 입력 → 고정 폭·null 패딩 / Q01 | 다른 언어의 같은 연산을 Go 호출자가 바로 쓸 수 있다고 보는 해석 | Node v24.22.3에서 명시적 null 기본값을 둔 추출은 `[10,null,null]`, 길이 둘 추출은 `[10,20]`였다. `additional-runtime-probes.json#NC01-NC04-JS`. | 의미 대응은 관측했지만 Go `[]interface{}`와의 실사용 브리지는 미확인이다. PHP 실행기는 설치돼 있지 않다. 다음은 호출자 경계를 포함한 Go 어댑터와 원 자료형 왕복 시험이며, 이를 제공했다고 말하지 않는다. |
+| NC03: 감지된 동시 쓰기 → 잡을 수 있는 신호 → 프로세스 지속 / Q03 | 일반 `recover`가 감지기의 fatal 경로도 잡는다는 이름 대응 | 실제 봉인된 Go runtime HACKING의 Error handling 구간은 panic/recover와 fatal을 구별한다. 감지기를 바꾸는 부품 자체가 반환되지 않았다. | 프로세스 종료 동작을 새로 실행하지 않았다. 검출기의 정확한 태그판 분기와 회복 경계 테스트가 다음 자료다. 일반 예외 도움말만으로 부분 완결을 주지 않는다. |
+| NC04: 정수 → 지정 버퍼 바이트 → 뒤 호출이 소비 / Q04 | 인코딩 함수 이름은 같으나 별도 버퍼를 쓰거나 엔디언을 생략 | 같은 WebAssembly.Memory.buffer에서 `setInt32(offset,0x01020304,true)`는 `04 03 02 01`을 만들었다. 범위 초과는 RangeError, memory.grow 뒤 낡은 view의 쓰기는 TypeError였다. | 이 시험은 Go 함수의 ABI·스택 위치·컴파일러 export 지원을 검증하지 않는다. 고정 부분의 버퍼 쓰기와 전체 export 프로토콜을 구별한다. |
+| NC06: 암묵적 UTF-8 읽기 + locale 보고 보존 / Q06 | 현재 UTF-8 모드가 최초안의 모든 locale 조건도 충족한다는 해석 | [locale 문서](https://docs.python.org/3/library/locale.html#locale.getpreferredencoding)와 Python 3.12.14 실행에서 모드에 따라 getpreferredencoding(False)는 ASCII에서 UTF-8로 바뀌었고 getencoding()은 ASCII였다. `runtime-probes.json#Q06-LOCALE-0/1`. | 다른 함수인 getencoding으로 요구를 바꾸어 성공 처리하지 않는다. 현재 계약과 첫안의 차이가 직접 반증이다. 플랫폼 전수 검증은 하지 않았다. |
+| NC07: 기호별 문자열 → 런타임 메타데이터 → 정확 문자열 회수 / Q07 | B 호스트 밖에는 사용할 부품이 없다는 해석 | [typing_extensions 4.15.0 Doc](https://github.com/python/typing_extensions/blob/4.15.0/src/typing_extensions.py#L3847-L3875)를 사후 직접 읽었다. 설치된 4.16.0에서 두 Annotated 인수의 공백·줄바꿈을 보존해 회수했고 함수 docstring도 유지됐다. | A/B 원 반환은 빈 상태로 유지한다. 서로 다른 판의 문서와 실행을 합쳐 동일판 검증이라고 하지 않는다. 최초안의 표준 라이브러리 통합·편집기 도입까지 해결했다는 증거도 아니다. 현재 웹에서 양쪽 실패가 부품 부재를 뜻하지 않는 보조 반례다. |
+| NC08: 경로쌍 그래프 → 포함·존재·비순환 판정 → 설치 전 중단 / Q08 | normalize/resolve라는 이름만으로 그래프 검증 전체를 대신 | 봉인 A의 Goomba/Bazel 및 B의 wheel/RECORD는 각각의 경계에서 판독한다. 경로 정규화가 누락 대상·사이클·깊이 한계를 함께 검사한다는 결론은 허용하지 않는다. | 서로 다른 도구의 일부 술어를 합쳐 가상 구성으로 만들지 않는다. 고정 LINKS 방향의 첫안 모호성도 유지한다. 다음은 해당 그래프 입력을 받는 하나의 구현·공식 테스트다. |
+| NC09: 같은 타입·다른 값 → 같은 결과 dtype / Q09 | 같은 result_type 이름이면 구판도 같은 기능이라는 해석 | NumPy 2.3.5에서 uint16 배열 + Python int 1/255/65536은 모두 uint16, int64 스칼라/0-D/1-D + int8 배열은 모두 int64였다. `runtime-probes.json#Q09-PROBE`. | 결과 dtype과 실제 산술 변환/overflow를 구별한다. 당시판이나 모든 연산의 동작은 이 실행으로 확인하지 않았다. |
+| NC10: CPU 배열 생산자 → 공유 저장소 ndarray → 생산자/소비자 양방향 / Q10 | 표준의 설계 설명만으로 NumPy 구현까지 해결됐다고 판단 | 설치된 NumPy 2.3.5의 intra-NumPy DLPack 왕복에서 ndarray, 공유 메모리, 원본 수정 99 관측, CPU device와 export 메서드를 확인했다. | 라이브러리 간·GPU 교환은 실제 실행하지 않았다. 사후 실행을 반환의 부족한 절 대신 쓰지 않는다. NumPy 2.5 재열람 문서는 copy=False 실패 보장과 copy=None 조건부 복사를 구별한다. |
+| NC11: 길이 다른 문자열 + 비문자 하나 → N-D ndarray/문자열 스칼라 또는 엄격 거절 / Q11 | 같은 StringDType 이름이나 외부 1-D column이면 충분하다는 해석 | NumPy 2.3.5의 2×2 StringDType(coerce=False) 배열은 Python str 스칼라를 주었고 `["ok",42]`는 ValueError였다. `runtime-probes.json#Q11-PROBE`. | 이 직접 실행은 원 반환의 N-D·스칼라 인용 누락을 메우지 않는다. allocator·직렬화·모든 sentinel 조합은 시험하지 않았다. |
+| NC12: 새 헤더 → 이전 API 표적 → 이전 런타임 로드 / Q12 | 매크로가 보이면 ABI 호환도 실행 검증됐다고 판단 | [공급자 문서](https://numpy.org/doc/stable/dev/depending_on_numpy.html#build-time-dependency)의 표적 설정과 판 경계를 재독했다. | 서로 다른 NumPy 런타임을 설치하거나 확장을 빌드하지 않았다. `pending-checks.md`에 동일 소스를 표적 헤더로 빌드한 뒤 이전 런타임에서 로드하는 명령과 입력을 남긴다. |
+
+관계 대응 판단은 조정 담당자의 공개 판독이며 사람의 독립 블라인드 실험이 아니다. 현재 설치 환경의 양성/음성 관측만 보존하고, 당대 이용 가능성·당사자의 미인지·노동 절감은 모두 미확인으로 남긴다.

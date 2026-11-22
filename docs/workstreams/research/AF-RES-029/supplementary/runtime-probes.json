@@ -1,0 +1,120 @@
+{
+  "checked_utc": "2026-11-22T12:53:10.781985+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "stage": "post-route-seal supplementary falsification",
+  "observations": [
+    {
+      "id": "Q09-PROBE",
+      "input": "uint16 ndarray with Python ints1,255,65536; int64 scalar/0D/1D with int8 array",
+      "code": "np.result_type(array, value)",
+      "result": {
+        "changing_values": {
+          "1": "uint16",
+          "255": "uint16",
+          "65536": "uint16"
+        },
+        "typed_strength": {
+          "scalar": "int64",
+          "zero_dim": "int64",
+          "one_dim": "int64"
+        }
+      },
+      "meaning": "Records actual dtype resolution; does not test every arithmetic conversion or cast rule."
+    },
+    {
+      "id": "Q10-PROBE",
+      "input": "NumPy int32 CPU ndarray exported then consumed through DLPack",
+      "code": "y=np.from_dlpack(x); x[0]=99",
+      "result": {
+        "is_ndarray": true,
+        "shares_memory": true,
+        "visible_mutation": 99,
+        "device": [
+          1,
+          0
+        ],
+        "has_export": true
+      },
+      "meaning": "Intra-NumPy producer/consumer path only; no interlibrary or GPU claim."
+    },
+    {
+      "id": "Q11-PROBE",
+      "input": "2x2 unequal UTF8 strings and [ok,42] with coerce=False",
+      "code": "np.array(data,dtype=StringDType(coerce=False))",
+      "result": {
+        "shape": [
+          2,
+          2
+        ],
+        "dtype": "StringDType(coerce=False)",
+        "values": [
+          [
+            "a",
+            "é"
+          ],
+          [
+            "a much longer string",
+            "z"
+          ]
+        ],
+        "scalar_type": "str",
+        "strict_nonstring": {
+          "rejected": true,
+          "exception_type": "ValueError",
+          "message": "StringDType only allows string data when string coercion is disabled."
+        }
+      },
+      "meaning": "Construction, shape/scalar and strict rejection only; serialization, arena/thread safety and all missing sentinels are not tested."
+    },
+    {
+      "id": "Q06-LOCALE-0",
+      "input": {
+        "LC_ALL": "C",
+        "LANG": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "utf8": 0
+      },
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-X",
+        "utf8=0",
+        "-c",
+        "import json,locale,sys;print(json.dumps({'utf8_mode':sys.flags.utf8_mode,'getpreferredencoding_false':locale.getpreferredencoding(False),'getencoding':locale.getencoding() if hasattr(locale,'getencoding') else None}))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"utf8_mode\": 0, \"getpreferredencoding_false\": \"ANSI_X3.4-1968\", \"getencoding\": \"ANSI_X3.4-1968\"}",
+      "stderr": "",
+      "meaning": "Distinguishes locale reporting from UTF8 mode in this installed Python; different from a claim about every supported interpreter version."
+    },
+    {
+      "id": "Q06-LOCALE-1",
+      "input": {
+        "LC_ALL": "C",
+        "LANG": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "utf8": 1
+      },
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-X",
+        "utf8=1",
+        "-c",
+        "import json,locale,sys;print(json.dumps({'utf8_mode':sys.flags.utf8_mode,'getpreferredencoding_false':locale.getpreferredencoding(False),'getencoding':locale.getencoding() if hasattr(locale,'getencoding') else None}))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"utf8_mode\": 1, \"getpreferredencoding_false\": \"utf-8\", \"getencoding\": \"ANSI_X3.4-1968\"}",
+      "stderr": "",
+      "meaning": "Distinguishes locale reporting from UTF8 mode in this installed Python; different from a claim about every supported interpreter version."
+    }
+  ],
+  "limits": [
+    "Only installed versions are executed.",
+    "No original return, candidate rank, citation or success count may be changed by these probes.",
+    "No extension is compiled against a second NumPy runtime; ABI compatibility remains a separate unexecuted test."
+  ],
+  "numpy_version": "2.3.5"
+}

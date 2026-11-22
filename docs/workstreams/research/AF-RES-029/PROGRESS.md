@@ -34,3 +34,11 @@ Remote verification receipts and bundle commit IDs are appended after each commi
 - A24 searches/28 body debits; B18 navigation/29 body debits. Captured responses, errors and original ranks retained. Different find-as-navigation interpretation remains a separate sensitivity.
 - Offline assembly:12 initial design groups and32 distinct actually A/B-returned supplier document groups; cross-field phase has not started.
 - Masked36 packets and80 delivered-response bodies are frozen separately from the route/rank key. Readers pre-read only initial designs before packet access.
+
+## Attempt 2 resume and masked reading
+
+- Resumed the existing remote branch at `a4894493dbacdc9d93357426f8bd63929074bf30`; did not reset the branch or repeat completed sampling/search bundles. Latest observed foundation was `8a0d14dd4158efdbbe036b44a51bc7b82f9bb1f4`. The original manifest remains pinned; actual shell `workbench.session check ... --fetch` exited 0 (`evidence/session-check-resume.json`).
+- Rehashed the four original seals: 24 input, 106 common, 242 route and 121 masked files; zero mismatches. Actual execution environment/resume provenance is in `evidence/resume-029-2.json`.
+- Bundle 4 reading is complete: three fresh same-model contexts read 36 masked packets, 44 returned candidate uses and 381 predicates on opened/returned surfaces. Their nine immutable output files are sealed by `evidence/reader-initial-seal.json`; these are not independent human judgments.
+- Added 5 directly read cross-field originals (Met operating documentation/object record; Hammond catalog/item/drawing), and 8 separately marked software rereads/counterexamples. First 121 source rows are preserved byte-for-byte; supplementary sources cannot improve the sealed A/B returns. Failed Thorlabs attempts were retained and replaced with same-scope manufacturer originals.
+- Executed bounded Python/NumPy/Node probes are recorded in `supplementary/runtime-probes.json` and `supplementary/additional-runtime-probes.json`. Unexecuted cross-version ABI and caller-boundary work has exact input/commands or the missing component boundary in `supplementary/pending-checks.md`. Next bundle: exposed crosschecks, source/budget recounts, full result tables and acceptance evidence.
