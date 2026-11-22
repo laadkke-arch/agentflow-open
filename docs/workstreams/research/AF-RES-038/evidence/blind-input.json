@@ -1,0 +1,780 @@
+{
+  "kind": "BLIND_DOCUMENT_READING_NOT_HUMAN_EXPERIMENT",
+  "rater_instruction": "도구/군명·기대 정답은 제공하지 않는다. 요구와 제출 행동만 판독한다. 각 R1~R3를 pass/partial/fail/unverified로 기록하고 근거 문구 또는 계산을 붙인다. pass는 모두 충족, partial은 일부만 실현/확인, fail은 구체적 위반, unverified는 근거 없음. 전체 pass는 필수 모두 pass. 중대 위반 및 t1 같은 원요구 수정/수정불필요/미확인을 별도로 기록. 같은 원인의 다중 요구 파급을 독립 수정사건으로 중복 계수하지 않는다. 외부 원문 직접 재검이나 software 실행은 이 입력만으로 주장하지 않는다. 답안의 이름이나 속도 추측을 기준으로 삼지 않는다.",
+  "cases": [
+    {
+      "case_key": "K7",
+      "requirements": [
+        {
+          "id": "R1",
+          "requirement": "컴파일 대상과 의존관계를 legacy 통합 빌드 스크립트 monolith에 묶인 상태에서 분리할 수 있는 native build 구조를 제안한다.",
+          "pass_condition": "외부 선언 graph/동등한 분리 구조와 호출경로가 명시됨. packaging용 패키징 도구 잔존은 허용.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R2",
+          "requirement": "개발 시에만 되는 병렬 컴파일 경계를 end-user source-distribution build까지 해결한다.",
+          "pass_condition": "양 경로 모두 병렬 가능한 native build 실행에 도달함; 실제 worker상한과 성능은 별도.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R3",
+          "requirement": "표준 frontend/backend 경계를 통해 native artifact와 호스트 언어 wheel/sdist를 일관되게 연결한다.",
+          "pass_condition": "표준 frontend/backend 경계와 필수 입력/출력이 연결됨; metadata/packaging 위임 허용.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        }
+      ],
+      "context": "컴파일 대상·의존·생성 규칙을 graph 또는 동등 구조로 분리하고 metadata/배포 책임을 연결한다. 파일 이름/개수와 특정 제품은 기준 아님. 개발 및 unpacked source archive 경로가 병렬 컴파일과 표준 wheel/source archive 계약에 도달하는지 추적. 새 실제 target 구현 불필요. 설계와 검증 계획만 평가."
+    },
+    {
+      "case_key": "M2",
+      "requirements": [
+        {
+          "id": "R1",
+          "requirement": "각 batch에서 선언된 explicit 형식 또는 첫 non-NaN으로 결정한 형식 하나를 전체 입력에 적용.",
+          "pass_condition": "format을 batch마다 한 번 확정하고 모든 행에 같은 형식을 사용. explicit/inferred 모두 허용.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R2",
+          "requirement": "서로 다른 날짜 순서로 조용히 전환하지 않고 불일치는 사전 errors 정책대로 처리.",
+          "pass_condition": "선언한 format에 맞는 결과 또는 선언 정책에 맞는 오류. 반드시 두 날짜를 성공 파싱할 필요 없음.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R3",
+          "requirement": "부적합 문자열을 정상 날짜로 조용히 바꾸지 않음.",
+          "pass_condition": "잘못된 month/date를 raise, format 변경 없음.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        }
+      ],
+      "context": "batch마다 explicit 또는 첫 nonmissing 행에서 확정한 한 형식을 유지하고 raise 정책을 적용. 고정 MDY가 13-01에서 정당하게 오류를 내도 허용. 결과 컨테이너/속도는 기준 아님.",
+      "t0_inputs": [
+        "01-01-2000 00:00:00",
+        "02-01-2000 00:00:00"
+      ],
+      "t1_inputs": [
+        [
+          "12-01-2000 00:00:00",
+          "13-01-2000 00:00:00"
+        ],
+        [
+          "12-01-2000 00:00:00",
+          "01-13-2000 00:00:00"
+        ]
+      ]
+    },
+    {
+      "case_key": "R9",
+      "requirements": [
+        {
+          "id": "R1",
+          "requirement": "setitem-like 작업은 기존 컨테이너의 dtype을 바꾸지 않음.",
+          "pass_condition": "declared native int64 또는 declared nullable Int64가 대입 후 그대로 유지.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R2",
+          "requirement": "정수 dtype에 손실 없이 호환되는 값은 정수값 그대로 저장.",
+          "pass_condition": "정수와 whole-valued float를 손실 없이 저장.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R3",
+          "requirement": "비호환 fractional/text 값은 조용히 변환/승격하지 않고 오류.",
+          "pass_condition": "쓰기 전에 호환 검사를 통과하지 못해 명시적 error, 기존값과 dtype 그대로.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        }
+      ],
+      "context": "생성 때 native 또는 nullable 64-bit 정수 schema를 선택해 명시 가능. 그 이후에는 선언 dtype을 유지. 작은 scalar 정수/whole float/fractional float/text만 범위. NA/overflow/bool/vector 제외. 매 probe는 [1,2,3]에서 독립 시작.",
+      "t0_probes": [
+        "index0=4 (integer)",
+        "index1=2.0 (float)"
+      ],
+      "t1_probes": [
+        "index1=3.0 (float)",
+        "index1=1.5 (float)",
+        "index1='potage' (text)"
+      ]
+    },
+    {
+      "case_key": "V4",
+      "requirements": [
+        {
+          "id": "R1",
+          "requirement": "SKU별·월별·점포별 집계를 각각 제공하고 원래 필드를 다른 의미로 대체하지 않는다.",
+          "pass_condition": "세 그룹별 결과의 원키가 모두 있다. month와 (year,month)는 단일년 자료에서 모두 허용한다.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R2",
+          "requirement": "각 관측 그룹의 number에 대해 max/min/mean/sum 네 통계를 모두 낸다. 행 수는 수량 합계를 대신할 수 없다.",
+          "pass_condition": "선택된 그룹 값에 대해 올바른 max/min/sum 및 산술평균. 정수 나눗셈 절삭 불허; 분수 표기 허용.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R3",
+          "requirement": "같은 키를 가진 원래 행의 수량만 함께 집계한다. 행 순서가 달라져도 키별 의미와 결과는 유지한다.",
+          "pass_condition": "같은 키의 모든 행이 정확히 한 그룹에 들어가고 키-값 대응을 보존한다.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        }
+      ],
+      "context": "단일년의 관측된 비어있지 않은 그룹. 월 또는 연월 키 둘 다 허용. 원행-키 소속과 네 집계의 완성 출력 평가. 행순서 외 새 조건 없음.",
+      "t0_inputs": [
+        {
+          "row_id": "r1",
+          "year": 2010,
+          "month": 1,
+          "day": 1,
+          "time": 9,
+          "store": 2,
+          "SKU": "AA",
+          "number": 2
+        },
+        {
+          "row_id": "r2",
+          "year": 2010,
+          "month": 2,
+          "day": 1,
+          "time": 9,
+          "store": 1,
+          "SKU": "BB",
+          "number": 8
+        },
+        {
+          "row_id": "r3",
+          "year": 2010,
+          "month": 1,
+          "day": 2,
+          "time": 10,
+          "store": 2,
+          "SKU": "AA",
+          "number": 4
+        },
+        {
+          "row_id": "r4",
+          "year": 2010,
+          "month": 1,
+          "day": 3,
+          "time": 11,
+          "store": 1,
+          "SKU": "BB",
+          "number": 6
+        },
+        {
+          "row_id": "r5",
+          "year": 2010,
+          "month": 2,
+          "day": 2,
+          "time": 12,
+          "store": 2,
+          "SKU": "AA",
+          "number": 10
+        },
+        {
+          "row_id": "r6",
+          "year": 2010,
+          "month": 2,
+          "day": 3,
+          "time": 13,
+          "store": 1,
+          "SKU": "CC",
+          "number": 3
+        }
+      ],
+      "t1_inputs": [
+        {
+          "row_id": "r5",
+          "year": 2010,
+          "month": 2,
+          "day": 2,
+          "time": 12,
+          "store": 2,
+          "SKU": "AA",
+          "number": 10
+        },
+        {
+          "row_id": "r1",
+          "year": 2010,
+          "month": 1,
+          "day": 1,
+          "time": 9,
+          "store": 2,
+          "SKU": "AA",
+          "number": 2
+        },
+        {
+          "row_id": "r6",
+          "year": 2010,
+          "month": 2,
+          "day": 3,
+          "time": 13,
+          "store": 1,
+          "SKU": "CC",
+          "number": 3
+        },
+        {
+          "row_id": "r3",
+          "year": 2010,
+          "month": 1,
+          "day": 2,
+          "time": 10,
+          "store": 2,
+          "SKU": "AA",
+          "number": 4
+        },
+        {
+          "row_id": "r2",
+          "year": 2010,
+          "month": 2,
+          "day": 1,
+          "time": 9,
+          "store": 1,
+          "SKU": "BB",
+          "number": 8
+        },
+        {
+          "row_id": "r4",
+          "year": 2010,
+          "month": 1,
+          "day": 3,
+          "time": 11,
+          "store": 1,
+          "SKU": "BB",
+          "number": 6
+        }
+      ]
+    }
+  ],
+  "submissions": [
+    {
+      "submission_key": "S110",
+      "case_key": "M2",
+      "evidence": "모드는 first-row inference이며 오류 정책은 raise라고 선언했다. 첫 행에서 월-일-년 형식이 추론되어 t0는 2000-01-01과 2000-02-01을 반환한다. 빠른 추론 옵션을 켠 변환 함수를 그대로 사용하며 형식을 명시적으로 고정하지 않는다. 재검에서 12-01은 2000-12-01, 13-01은 2000-01-13을 오류 없이 반환한다. 두 값이 모두 날짜이므로 성공으로 제출한다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S117",
+      "case_key": "K7",
+      "evidence": "컴파일 대상과 의존관계는 별도 선언 그래프에 둔다. 개발 명령과 표준 wheel 생성 hook 모두 같은 그래프를 구성하고 병렬 빌드를 실행한다. hook은 완료된 native artifact를 받은 뒤 기존 packaging 라이브러리에 metadata와 wheel 조립을 위임한다. sdist에는 그래프 선언, 생성에 필요한 소스와 backend 경로를 포함하며, 풀린 sdist에서도 같은 hook을 호출한다. 검사 계획은 개발/source-install 두 호출 경로의 worker 전달 및 wheel basename/metadata를 추적하는 것이다. 실제 빌드 결과는 아직 없다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S124",
+      "case_key": "M2",
+      "evidence": "모드는 explicit, 형식은 %d-%m-%Y %H:%M:%S, 오류 정책은 raise이다. 각 문자열을 순서대로 파싱하되 매번 동일한 format 상수를 전달한다. 결과 타입은 별도 datetime 객체 목록이며 제출할 때 ISO 문자열로 정상화한다. t0 출력은 2000-01-01과 2000-01-02, 재검은 2000-01-12와 2000-01-13이다. month13 입력에서는 ValueError가 전파되고 대체 형식을 시도하지 않는다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S131",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    keys = extract key_field from each record\n    values = extract number from each record\n    labels, inverse = distinct sorted keys and per-row label indices\n    result = []\n    for label_index in 0 .. count(labels)-1:\n      group_values = values at positions where inverse equals label_index\n      result.append({key: labels[label_index],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(count(group_values))})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "submission_key": "S138",
+      "case_key": "K7",
+      "evidence": "현재의 하나의 호스트 언어 통합 빌드 스크립트 안에 컴파일 target, dependency, source 생성과 확장 모듈 빌드 분기를 계속 모두 둔다. 별도 선언 그래프는 만들지 않는다. 개발과 source-distribution 설치 양쪽에서 이 스크립트에 병렬 worker 옵션을 전달하고 표준 wheel/sdist hook이 이를 호출하게 한다. wheel과 source archive의 형식 및 필수 파일은 기존 packaging 기능으로 맞춘다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S145",
+      "case_key": "M2",
+      "evidence": "모드는 explicit, 형식은 %d-%m-%Y %H:%M:%S, 오류 정책은 raise이다. 전체 배열을 이 형식으로 한 번의 strict 변환에 넘기고 다른 형식 fallback은 하지 않는다. t0 두 값은 2000-01-01과 2000-01-02이다. 재검의 12-01/13-01은 2000-01-12와 2000-01-13이 된다. month13 입력은 오류로 끝나며 형식을 바꾸지 않는다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S152",
+      "case_key": "K7",
+      "evidence": "프로젝트 선언에서 native target, 호스트 언어 installation/dependency와 플랫폼별 확장 설치 위치를 지정한다. 개발 compile 명령과 호스트 언어 frontend에서 호출하는 native backend는 이 같은 그래프를 사용한다. backend는 compile/install을 실행하고 native artifact를 wheel로 묶으며, sdist에도 그래프와 소스를 담는다. compile의 worker 설정은 native build runner에 전달한다. 플랫폼별 내부-library 제한과 버전 의존성을 기록하고 두 경로의 build 및 wheel/sdist 계약을 검증한다. 실제 빌드 결과는 아직 없다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S159",
+      "case_key": "R9",
+      "evidence": "생성 때 64-bit nullable 정수 dtype을 명시했다. 이미 존재하는 scalar setter가 lossless 검증을 먼저 하고 실제 값을 쓰므로 별도의 자료형 승격 경로를 만들지 않는다. [1,2,3]에서 index1=3.0은 [1,3,3]이고 생성 때 dtype 그대로다. 독립 reset 후 1.5와 potage는 쓰기 전에 TypeError로 끝나며 원래 값과 dtype을 보존한다. 이 선택은 기존 native 컨테이너를 바꾸는 작업이 아니라 처음 생성할 schema 선택이다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S166",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    keys = extract key_field from each record\n    values = extract number from each record\n    permutation = indices that sort keys\n    sorted_keys = keys[permutation]\n    sorted_values = values[permutation]\n    starts = indices where sorted_keys changes, including 0\n    ends = next starts, with final end = number of records\n    result = []\n    for (start, end) in paired starts and ends:\n      group_values = sorted_values[start:end]\n      result.append({key: sorted_keys[start],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(end-start)})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "submission_key": "S173",
+      "case_key": "R9",
+      "evidence": "생성 때 64-bit native 정수 dtype을 명시했다. 대입 전에 값이 허용된 정수이거나 정수값 float인지와 dtype 범위 안인지 검사하고, 검증된 값만 실제 setter에 전달한다. 호환성 검사가 실패하면 외부에 오류를 내고 fallback setter는 호출하지 않는다. [1,2,3]에서 index1=3.0은 [1,3,3]이고 dtype은 처음 그대로다. 독립 reset 후 1.5 또는 potage를 넣으면 오류이며 [1,2,3]과 dtype이 유지된다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    },
+    {
+      "submission_key": "S180",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    sorted_keys = sort(extract key_field from each record)\n    values = extract number from each record\n    starts = indices where sorted_keys changes, including 0\n    ends = next starts, with final end = number of records\n    result = []\n    for (start, end) in paired starts and ends:\n      group_values = values[start:end]\n      result.append({key: sorted_keys[start],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(end-start)})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 10,
+              "sum": 16,
+              "mean": 8,
+              "mean_exact": "8"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 19,
+              "mean": 6.333333333333333,
+              "mean_exact": "19/3"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 19,
+              "mean": 6.333333333333333,
+              "mean_exact": "19/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": "BB",
+              "min": 4,
+              "max": 8,
+              "sum": 12,
+              "mean": 6,
+              "mean_exact": "6"
+            },
+            {
+              "key": "CC",
+              "min": 6,
+              "max": 6,
+              "sum": 6,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": 2,
+              "min": 4,
+              "max": 8,
+              "sum": 18,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": 2,
+              "min": 4,
+              "max": 8,
+              "sum": 18,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "submission_key": "S187",
+      "case_key": "R9",
+      "evidence": "생성 때 64-bit native 정수 dtype을 명시했다. 숫자 값은 먼저 정수로 강제 변환하고 setter에 넣으므로 dtype은 바뀌지 않는다. index1=3.0은 [1,3,3]이다. index1=1.5는 [1,1,3]을 반환하며 오류가 없다. potage는 숫자로 변환할 수 없어 오류가 나고 원래 값이 유지된다. 모든 결과의 dtype이 같으므로 안전하다고 판단했다.",
+      "phase_note": "한 설명 안의 최초 설계와 명시된 재검 응답을 함께 판독한다. 이는 실제 시간순 참가자 로그가 아니라 사전에 작성한 두 시점 증거 vignette다."
+    }
+  ],
+  "requested_output": "JSON object: reviewer_scope, outside_files_read, human_validation=false, grades[submission_key,case_key,requirements{R1:...,R2:...,R3:...},overall,major_error,evidence{R1:...,R2:...,R3:...},t1_action,uncertainty,arm_guess], cross_case_observations"
+}
