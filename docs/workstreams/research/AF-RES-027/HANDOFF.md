@@ -80,12 +80,12 @@ C04의 초기 Linux CPython artifact를 실제 썼다고 가정한 약5.27–5.3
 | ③C conda6 사슬 | `5ef2a246f4a18ac1eb6adb65e47660e03f49cab8` | chains blob 일치 |
 | ④ B6·타 분야·검열·대조 | `17229e1bde153aaf29290dceae4dad9172fe987f` | conda B cases blob 일치 |
 | ⑤ 집계·자체 점검·수용 근거 | `3d208baa81744c464360b5469a74a10d76c4bc7f` | RESULT/SELF_CHECK/acceptance 원격 일치; 이 문서 상단 영수증 |
-| ⑥ 인계 | 이 HANDOFF를 추가한 마지막 커밋 | 아래 git log로 확인. ⑤ 확인 뒤에만 작성 |
+| ⑥ 인계 | 이 HANDOFF를 확정한 마지막 커밋 | 아래 git log로 확인. ⑤ 확인 뒤에만 작성 |
 
 저장소 루트에서 고정판과 마지막 인계 커밋을 확인한다.
 
 ```bash
-git fetch origin work/research-af-res-027
+git fetch origin refs/heads/work/research-af-res-027:refs/remotes/origin/work/research-af-res-027
 git log -1 --format='%H %s' origin/work/research-af-res-027 -- docs/workstreams/research/AF-RES-027/HANDOFF.md
 git show 3d208baa81744c464360b5469a74a10d76c4bc7f:docs/workstreams/research/AF-RES-027/RESULT.md
 git rev-parse 3d208baa81744c464360b5469a74a10d76c4bc7f:docs/workstreams/research/AF-RES-027/evidence/acceptance-evidence.json
