@@ -31,3 +31,9 @@
 - ROR core6은 ROR01/02/05/06/07/08, 보충03/04. 같은 ID의 대상 오염 정정과 literal merge를 분리한다. release-candidate 고정 JSON과 배포댓글을 구분하며 전체 release dump를 읽은 것으로 쓰지 않는다.
 - root가 ROR rc-v1.38/rc-v1.60의041xzk838 고정JSON을 직접 재열람: 이탈리아 이름·도메인·부모로 정정한 파일에도 Spain/Leioa 위치가 남는다. 현재서비스전체오류가 아니라 이 고정파일의 불일치다.
 - root가 Homebrew readline rollback 및 tree-sitter split 고정diff, AcoustIDissue114 본문을 재열람했다. 편집자실패설명과 이번실행검증을 분리한다.
+
+## 묶음2c — ROR 원격 저장
+
+- 커밋 `c5fb3e8d4e923a94b6f0cf79efc527d8cd2114d1`; 고정판 ROR 사건 원장을 GitHub에서 다시 읽고 fetch했다.
+- MusicBrainz MB01의 최초 merge151147443와 retained 지역정정152539607를 보강했다. source f0a68a45는 커버 이미지 파일명 계보에서 추론한 매핑이므로 확정 source href로 취급하지 않는다. MB03/04의 사라진 source MBID와 MB06의2022중간 target은 아직 미확인이다.
+- Agent Script issue33을 root가 직접 재열람했다. 옛 formula 이름을 추측하면 library가 설치된다는 사용자 진술은 있지만, 분리 전 저장한 실제 링크의 이력이 아니다. Q5의 엄격한 사전 인용 6건 분모에는 이 기록을 포함하지 않는다.
