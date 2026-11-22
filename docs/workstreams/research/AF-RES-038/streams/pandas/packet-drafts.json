@@ -1,0 +1,119 @@
+{
+  "status": "drafts_for_root_integration",
+  "not_for_direct_participant_distribution": "root must merge common run-config and remove this JSON's grader metadata; actual packet files contain only t0,assigned arm,t1",
+  "cases": {
+    "P02": {
+      "t0": "# P02 · 빌드 구조 선택 · t0\n\n공개 인터넷 검색, 실행 도구, 도움 요청 규칙, 교육과 작업 예산은 모든 보기에서 같습니다. 실제 실행의 예산과 t0→t1 간격은 운영자가 별도 공통 run-config로 제공합니다. 첫 채택을 선언할 때 결정 ID와 제출판을 고정하세요. 찾은 자료와 사전 인지를 기록하고, 실행하지 않은 결과는 미확인으로 적으세요.\n\n## 상황과 최초 요구\n\nnative extension을 포함한 Python 패키지의 빌드 구조를 선택합니다. 현재 컴파일 대상·의존·생성 로직이 하나의 setup 스크립트에 모여 있으며 개발 중의 병렬화가 source-distribution 설치에는 제대로 이어지지 않습니다. 계획 기준 시점은 2022-08-06입니다. 새로운 공개 자료를 발견했다면 노출 기록에 남기세요.\n\n- P02-R1: 컴파일 graph의 관리와 Python metadata/배포 산출 책임을 구분하는 구조를 제안하세요.\n- P02-R2: 개발 build와 source-distribution을 푼 뒤 설치하는 build 양쪽에 병렬 가능한 컴파일 경로가 있어야 합니다.\n- P02-R3: 표준 Python frontend/backend 경계에서 native artifact와 wheel/sdist 입력·출력을 연결하세요.\n\npackaging과 metadata를 기존 라이브러리에 위임하는 구조도 가능합니다. 특정 도구 이름, 문법 선호, 이후 널리 채택되었는지는 합격 조건이 아닙니다.\n\n## 제출\n\n채택할 구조와 대안 하나, 컴파일 graph/개발 명령/표준 backend/wheel·sdist의 연결, worker 설정 전달, 필요한 source archive 입력, 근거 절과 적용 한계를 적으세요. 실제 빌드를 하지 않았다면 검증 계획과 미확인을 구별하세요. 완성 pandas 전체를 구현하는 과제가 아닙니다.\n\n결정 ID: D-P02-GRAPH / D-P02-BUILD-PATH / D-P02-PACKAGING. 첫 채택 선언, 제출판 ID, 근거 URL·절, 사전 인지, 사용한 자료·도구를 함께 기록하세요.\n",
+      "t1": "# P02 · 동일 요구 재검 · t1\n\n새 요구를 추가하지 않고 t0 제출의 P02-R1~R3을 다시 확인합니다. 첫 제출판을 보존하고 수정이 있으면 새 판을 만드세요.\n\n1. 선언 graph에 native target과 dependency가 하나 더 생긴다고 할 때 어느 책임 영역을 바꾸나요? 컴파일 로직을 단일 setup 스크립트에 계속 쌓는 구조인지 확인하세요.\n2. source-distribution을 clean directory에 푼 뒤 표준 frontend가 backend를 호출할 때, 개발 때 쓰던 native graph에 도달하고 병렬 worker 설정을 사용할 수 있나요? 두 호출 경로를 적으세요.\n3. source archive에 필요한 graph·source·backend 입력이 포함되며 wheel/sdist의 산출 계약을 지키나요? 성공 실행이 없으면 통과한 실행으로 쓰지 말고 확인할 명령과 입력을 적으세요.\n\n각 요구에 유지 / 수정 필요 / 미확인과 근거를 적으세요. 수정한다면 되돌린 결정 ID, 원래 요구 ID, 변경판, 수정 활동을 연결하세요. 기존 metadata/packaging 위임은 그 자체로 위반이 아닙니다. import 때 자동 재빌드 같은 새로운 편의는 별도 제안란에 남기며 이번 재작업으로 가산하지 마세요.\n",
+      "cards": [
+        {
+          "title": "CMake 3.23.3 — command-line manual",
+          "url": "https://github.com/Kitware/CMake/blob/d566bd962df5b1bf0ec5d16e9e7affe592b8b3eb/Help/manual/cmake.1.rst",
+          "explain": "P02-R1·R2 → Introduction to CMake Buildsystems(L62–94), --parallel(L473–481).",
+          "limit": "native build tool의 지원 범위가 있으며 이 문서만으로 Python wheel이나 pandas 빌드 성공을 확인할 수 없습니다."
+        },
+        {
+          "title": "Meson 0.63.0 — Python module",
+          "url": "https://github.com/mesonbuild/meson/blob/9c6dab2cfd310ef2d840a2a7a479ce6b9e563b1d/docs/markdown/Python-module.md",
+          "explain": "P02-R1·R3 → find_installation, extension_module, dependency, install_sources.",
+          "limit": "native extension 선언 기능과 Python 배포 backend 연결은 별도 확인이 필요합니다."
+        },
+        {
+          "title": "meson-python 0.7.0 — README",
+          "url": "https://github.com/mesonbuild/meson-python/blob/2f9acf25e23de95b0ceead72770cad4acf19a449/README.md",
+          "explain": "P02-R3 → PEP517 backend 소개, Status, Platform Support.",
+          "limit": "당대 플랫폼별 내부 library 지원 차이가 있고 이 릴리스 자료는 pandas POC의 실제 실행 성공 증거가 아닙니다."
+        }
+      ],
+      "arm_A": "# 보기 A · 자유 검색\n\n공개 인터넷에서 자유롭게 검색하세요. 추가 선별 링크는 제공되지 않습니다. 공통 과제, 검색·도구 권한, 교육과 작업 예산은 다른 보기와 같습니다.\n",
+      "arm_B": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [CMake 3.23.3 — command-line manual](https://github.com/Kitware/CMake/blob/d566bd962df5b1bf0ec5d16e9e7affe592b8b3eb/Help/manual/cmake.1.rst)\n\n2. [Meson 0.63.0 — Python module](https://github.com/mesonbuild/meson/blob/9c6dab2cfd310ef2d840a2a7a479ce6b9e563b1d/docs/markdown/Python-module.md)\n\n3. [meson-python 0.7.0 — README](https://github.com/mesonbuild/meson-python/blob/2f9acf25e23de95b0ceead72770cad4acf19a449/README.md)\n",
+      "arm_C": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [CMake 3.23.3 — command-line manual](https://github.com/Kitware/CMake/blob/d566bd962df5b1bf0ec5d16e9e7affe592b8b3eb/Help/manual/cmake.1.rst)\n\n   P02-R1·R2 → Introduction to CMake Buildsystems(L62–94), --parallel(L473–481).\n\n   적용 한계: native build tool의 지원 범위가 있으며 이 문서만으로 Python wheel이나 pandas 빌드 성공을 확인할 수 없습니다.\n\n2. [Meson 0.63.0 — Python module](https://github.com/mesonbuild/meson/blob/9c6dab2cfd310ef2d840a2a7a479ce6b9e563b1d/docs/markdown/Python-module.md)\n\n   P02-R1·R3 → find_installation, extension_module, dependency, install_sources.\n\n   적용 한계: native extension 선언 기능과 Python 배포 backend 연결은 별도 확인이 필요합니다.\n\n3. [meson-python 0.7.0 — README](https://github.com/mesonbuild/meson-python/blob/2f9acf25e23de95b0ceead72770cad4acf19a449/README.md)\n\n   P02-R3 → PEP517 backend 소개, Status, Platform Support.\n\n   적용 한계: 당대 플랫폼별 내부 library 지원 차이가 있고 이 릴리스 자료는 pandas POC의 실제 실행 성공 증거가 아닙니다.\n",
+      "bc_identity": {
+        "urls": [
+          "https://github.com/Kitware/CMake/blob/d566bd962df5b1bf0ec5d16e9e7affe592b8b3eb/Help/manual/cmake.1.rst",
+          "https://github.com/mesonbuild/meson/blob/9c6dab2cfd310ef2d840a2a7a479ce6b9e563b1d/docs/markdown/Python-module.md",
+          "https://github.com/mesonbuild/meson-python/blob/2f9acf25e23de95b0ceead72770cad4acf19a449/README.md"
+        ],
+        "count": 3,
+        "order_same": true,
+        "versions_same": true,
+        "b_characters": 485,
+        "c_characters": 949,
+        "word_count_not_reported": "Korean whitespace-token count is not comparable reading burden"
+      }
+    },
+    "P04": {
+      "t0": "# P04 · 일관된 날짜 파싱 · t0\n\n공개 인터넷 검색, 실행 도구, 도움 요청 규칙, 교육과 작업 예산은 모든 보기에서 같습니다. 실제 실행의 예산과 t0→t1 간격은 운영자가 별도 공통 run-config로 제공합니다. 첫 채택을 선언할 때 결정 ID와 제출판을 고정하세요. 찾은 자료와 사전 인지를 기록하고, 실행하지 않은 결과는 미확인으로 적으세요.\n\n## 상황과 최초 요구\n\n날짜 문자열 batch를 처리하는 파싱 방식을 선택합니다. 계획 기준 시점은 2022-09-18입니다. 공개된 입력 해석 문제가 동기이며 특정 반환 컨테이너나 가장 빠른 구현을 요구하지 않습니다.\n\n- P04-R1: format을 명시하거나 첫 non-NaN 입력에서 정한 뒤, batch 안의 모든 행에 같은 format을 사용하세요.\n- P04-R2: 불일치를 만나면 미리 선언한 errors 정책을 적용하고 다른 날짜 순서로 조용히 전환하지 마세요. 이번 과제의 공통 errors 정책은 raise입니다.\n- P04-R3: 선언된 형식에서 불가능한 문자열을 다른 형식으로 바꿔 정상 날짜로 반환하지 마세요.\n\n첫 입력은 ['01-01-2000 00:00:00', '02-01-2000 00:00:00']입니다. DMY와 MDY 중 하나를 암묵적인 정답으로 강요하지 않습니다. 선택한 모드와 format에 맞는 출력 또는 정당한 오류를 평가합니다. 고정된 literal 범위는 year2000의 naive datetime이며 timezone·locale·NA 표현·광범위한 추론 알고리즘은 별도입니다.\n\n## 제출\n\n선택한 방식과 대안 하나, declared_mode(explicit 또는 first-non-NaN inference), declared_format 또는 inference rule, format_used, errors='raise', 첫 입력의 결과와 이유를 적으세요. output 문자열은 ISO 형식으로 정상화해도 됩니다. 근거 절과 실행 여부를 구분하고 결정 ID D-P04-FORMAT을 고정하세요.\n",
+      "t1": "# P04 · 동일 요구 재검 · t1\n\nt0 알고리즘과 errors='raise' 선언을 그대로 사용하여 P04-R1~R3을 재검합니다. 두 batch는 독립 입력입니다.\n\n입력 1: ['12-01-2000 00:00:00', '13-01-2000 00:00:00'].\n\n입력 2: ['12-01-2000 00:00:00', '01-13-2000 00:00:00'].\n\n각 batch에서 format을 언제 확정했는지, 각 행에 적용한 format, 출력 또는 오류를 적으세요. 성공한 날짜 수 자체가 합격 기준은 아닙니다. 선언한 모드가 batch 전체에서 일관된지가 기준입니다.\n\n요구별 유지 / 수정 필요 / 미확인과 근거를 적으세요. 수정 시 D-P04-FORMAT과 같은 원래 요구를 연결하고, 기존 제출판을 덮어쓰지 마세요. 새 API에서 추가된 mixed-format 지원은 이번 요구에 추가하지 않습니다.\n",
+      "cards": [
+        {
+          "title": "pandas 1.4.4 — to_datetime documentation and implementation",
+          "url": "https://github.com/pandas-dev/pandas/blob/ca60aab7340d9989d9428e11a51467658190bb6b/pandas/core/tools/datetimes.py",
+          "explain": "P04-R1·R2·R3 → errors(L703–706), dayfirst warning(L714–717), format/exact(L751–762), inference(L769–773).",
+          "limit": "날짜 순서 선호나 추론 옵션과 명시 format의 보증은 같지 않으며 이 과제는 모든 입력·시간대의 호환성을 검증하지 않습니다."
+        },
+        {
+          "title": "CPython 3.10.6 — datetime documentation",
+          "url": "https://github.com/python/cpython/blob/9c7b4bd1646f2170247f88cf59936740d9c4c004/Doc/library/datetime.rst",
+          "explain": "P04-R1·R2·R3 → datetime.strptime(L1035–1047), strftime/strptime directives.",
+          "limit": "행별 API의 출력 타입과 지원 범위는 배열 API와 다르며 시간과 성능은 이 자료만으로 비교할 수 없습니다."
+        }
+      ],
+      "arm_A": "# 보기 A · 자유 검색\n\n공개 인터넷에서 자유롭게 검색하세요. 추가 선별 링크는 제공되지 않습니다. 공통 과제, 검색·도구 권한, 교육과 작업 예산은 다른 보기와 같습니다.\n",
+      "arm_B": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [pandas 1.4.4 — to_datetime documentation and implementation](https://github.com/pandas-dev/pandas/blob/ca60aab7340d9989d9428e11a51467658190bb6b/pandas/core/tools/datetimes.py)\n\n2. [CPython 3.10.6 — datetime documentation](https://github.com/python/cpython/blob/9c7b4bd1646f2170247f88cf59936740d9c4c004/Doc/library/datetime.rst)\n",
+      "arm_C": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [pandas 1.4.4 — to_datetime documentation and implementation](https://github.com/pandas-dev/pandas/blob/ca60aab7340d9989d9428e11a51467658190bb6b/pandas/core/tools/datetimes.py)\n\n   P04-R1·R2·R3 → errors(L703–706), dayfirst warning(L714–717), format/exact(L751–762), inference(L769–773).\n\n   적용 한계: 날짜 순서 선호나 추론 옵션과 명시 format의 보증은 같지 않으며 이 과제는 모든 입력·시간대의 호환성을 검증하지 않습니다.\n\n2. [CPython 3.10.6 — datetime documentation](https://github.com/python/cpython/blob/9c7b4bd1646f2170247f88cf59936740d9c4c004/Doc/library/datetime.rst)\n\n   P04-R1·R2·R3 → datetime.strptime(L1035–1047), strftime/strptime directives.\n\n   적용 한계: 행별 API의 출력 타입과 지원 범위는 배열 API와 다르며 시간과 성능은 이 자료만으로 비교할 수 없습니다.\n",
+      "bc_identity": {
+        "urls": [
+          "https://github.com/pandas-dev/pandas/blob/ca60aab7340d9989d9428e11a51467658190bb6b/pandas/core/tools/datetimes.py",
+          "https://github.com/python/cpython/blob/9c7b4bd1646f2170247f88cf59936740d9c4c004/Doc/library/datetime.rst"
+        ],
+        "count": 2,
+        "order_same": true,
+        "versions_same": true,
+        "b_characters": 390,
+        "c_characters": 736,
+        "word_count_not_reported": "Korean whitespace-token count is not comparable reading burden"
+      }
+    },
+    "P06": {
+      "t0": "# P06 · 정수 편집기의 dtype 계약 · t0\n\n공개 인터넷 검색, 실행 도구, 도움 요청 규칙, 교육과 작업 예산은 모든 보기에서 같습니다. 실제 실행의 예산과 t0→t1 간격은 운영자가 별도 공통 run-config로 제공합니다. 첫 채택을 선언할 때 결정 ID와 제출판을 고정하세요. 찾은 자료와 사전 인지를 기록하고, 실행하지 않은 결과는 미확인으로 적으세요.\n\n## 상황과 최초 요구\n\n새로 만드는 작은 정수 편집 컴포넌트의 대입 방식을 선택합니다. 계획 기준은 2022-12-23의 formal proposal입니다. 생성 때 native int64 또는 nullable Int64 schema를 명시할 수 있으며, 생성 뒤에는 그 dtype 자체가 계약입니다. 이미 존재하는 native 컨테이너를 다른 dtype으로 바꾸는 작업이 아닙니다.\n\n- P06-R1: setitem 뒤에도 생성 때 정한 dtype을 보존하세요.\n- P06-R2: 호환되는 정수와 정수값 float는 손실 없이 저장하세요.\n- P06-R3: 비호환 fractional/text 값은 조용히 자르거나 dtype을 승격하지 말고 오류를 내세요. 오류 뒤에는 원래 값과 dtype이 유지되어야 합니다.\n\n초깃값은 [1,2,3]입니다. t0에서 index0=4와 index1=2.0을 처리하는 경로를 설명하세요. 이 literal 집합 밖의 NA/NaN, overflow, bool, vector/slice 대입과 전체 API는 별도 범위입니다.\n\n## 제출\n\n생성 schema, 호환성 판단 위치, 검증과 실제 쓰기의 순서, 실패 시 동작, 대안 하나와 근거 절을 적으세요. 독자적으로 조합한 guard라면 공식 완성 recipe와 구별하고 실제 실행 여부를 적으세요. 결정 ID D-P06-SCHEMA와 D-P06-COMPATIBILITY, 첫 채택 선언과 제출판을 고정하세요.\n",
+      "t1": "# P06 · 동일 요구 재검 · t1\n\n모든 검사는 t0에서 선언한 dtype으로 [1,2,3]을 새로 생성한 독립 상태에서 시작합니다. 첫 채택의 같은 schema/대입 경계를 사용하세요.\n\n1. index1=3.0\n2. index1=1.5\n3. index1='potage'\n\n각 검사에서 허용/오류, 값 변경 전후, dtype 변경 전후, 검증과 실제 쓰기의 순서를 적으세요. P06-R1~R3별 유지 / 수정 필요 / 미확인과 근거를 연결하세요. 숫자가 같은 dtype으로 남았다는 사실만으로 손실 없는 대입이라고 판단하지 마세요.\n\n수정이 필요하면 D-P06-COMPATIBILITY 또는 D-P06-SCHEMA 중 되돌린 결정을 적고 같은 원래 요구 ID를 연결하세요. NA를 새로 지원하는 변경은 별도 새 요구이며 이번 예방 가능 재작업에 넣지 않습니다.\n",
+      "cards": [
+        {
+          "title": "pandas 1.5.2 — dtype cast implementation",
+          "url": "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/dtypes/cast.py",
+          "explain": "P06-R1·R2·R3 → np_can_hold_element(L1931–2009), integer/whole-float guard(L1953–1966).",
+          "limit": "내부 helper이며 안정된 public API가 아닙니다. 소비자 편집기에 조합한 설계의 실행 여부는 따로 확인해야 합니다."
+        },
+        {
+          "title": "pandas 1.5.2 — masked array implementation",
+          "url": "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/arrays/masked.py",
+          "explain": "P06-R1·R2·R3 → _validate_setitem_value 및 __setitem__(L198–235).",
+          "limit": "nullable scalar 경로이며 NA·overflow·vector 입력에까지 이 범위의 근거를 확장하지 마세요."
+        },
+        {
+          "title": "pandas 1.5.2 — nullable integer user guide",
+          "url": "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/doc/source/user_guide/integer_na.rst",
+          "explain": "P06-R1 → Construction의 명시 dtype과 추론 차이.",
+          "limit": "생성 설명만으로 모든 setitem의 거부 동작을 확인할 수 없으며 기존 컨테이너의 dtype을 바꾸는 허용을 뜻하지 않습니다."
+        }
+      ],
+      "arm_A": "# 보기 A · 자유 검색\n\n공개 인터넷에서 자유롭게 검색하세요. 추가 선별 링크는 제공되지 않습니다. 공통 과제, 검색·도구 권한, 교육과 작업 예산은 다른 보기와 같습니다.\n",
+      "arm_B": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [pandas 1.5.2 — dtype cast implementation](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/dtypes/cast.py)\n\n2. [pandas 1.5.2 — masked array implementation](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/arrays/masked.py)\n\n3. [pandas 1.5.2 — nullable integer user guide](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/doc/source/user_guide/integer_na.rst)\n",
+      "arm_C": "# 선별 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n1. [pandas 1.5.2 — dtype cast implementation](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/dtypes/cast.py)\n\n   P06-R1·R2·R3 → np_can_hold_element(L1931–2009), integer/whole-float guard(L1953–1966).\n\n   적용 한계: 내부 helper이며 안정된 public API가 아닙니다. 소비자 편집기에 조합한 설계의 실행 여부는 따로 확인해야 합니다.\n\n2. [pandas 1.5.2 — masked array implementation](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/arrays/masked.py)\n\n   P06-R1·R2·R3 → _validate_setitem_value 및 __setitem__(L198–235).\n\n   적용 한계: nullable scalar 경로이며 NA·overflow·vector 입력에까지 이 범위의 근거를 확장하지 마세요.\n\n3. [pandas 1.5.2 — nullable integer user guide](https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/doc/source/user_guide/integer_na.rst)\n\n   P06-R1 → Construction의 명시 dtype과 추론 차이.\n\n   적용 한계: 생성 설명만으로 모든 setitem의 거부 동작을 확인할 수 없으며 기존 컨테이너의 dtype을 바꾸는 허용을 뜻하지 않습니다.\n",
+      "bc_identity": {
+        "urls": [
+          "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/dtypes/cast.py",
+          "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/pandas/core/arrays/masked.py",
+          "https://github.com/pandas-dev/pandas/blob/8dab54d6573f7186ff0c3b6364d5e4dd635ff3e7/doc/source/user_guide/integer_na.rst"
+        ],
+        "count": 3,
+        "order_same": true,
+        "versions_same": true,
+        "b_characters": 547,
+        "c_characters": 992,
+        "word_count_not_reported": "Korean whitespace-token count is not comparable reading burden"
+      }
+    }
+  }
+}
