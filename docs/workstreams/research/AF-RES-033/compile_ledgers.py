@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import unicodedata
+from hashlib import sha256
 from collections import Counter
 from pathlib import Path
 
@@ -79,10 +80,48 @@ def sources():
             r['title']=t['title_from_original']
             r['kind']='initial_recipient_proposal'
             r['version']='PR opening snapshot at '+t['original_source']['snapshot_commit_sha']
+            if r['recipient_id'] not in r['aliases']:
+                r['aliases'].append(r['recipient_id'])
         if r.get('read_status')=='restored_not_read':
             r['supports']=['Q1-provenance-only']
             r['observed']='Original bytes restored and hashed; no substantive body reading or semantic claim.'
             r['read_location']='No substantive section read; restoration metadata only.'
+    # Follow-up editions belong to the same recipient work and never enlarge
+    # the eight-original-proposal denominator.
+    outcome_path=ROOT/'recipient/outcome-observations.jsonl'
+    if outcome_path.exists():
+        for outcome in rows(outcome_path):
+            r=by_id[outcome['initial_source_id']]
+            r['followup_observation']={k:outcome[k] for k in [
+                'fetched_at_utc','html_url','state','merged','merged_at','closed_at',
+                'followup_pages','followup_record_count','nonempty_bodies',
+                'machine_exact_provider_domain_hits','citation_absence_limit',
+                'outcome_seal_commit','followup_observation',
+                'actual_adoption_of_retrieved_principle']}
+            r.setdefault('linked_version_records',[]).append({
+                'collection_record':'recipient/outcome-observations.jsonl',
+                'recipient_id':outcome['recipient_id'],
+                'read_status':'Public metadata and selected decision bodies read; all returned comment bodies domain-screened.',
+                'counted_minimum':False})
+    for name in ['recipient/outcome-doc-sources.jsonl','recipient/outcome-linked-sources.jsonl']:
+        file=ROOT/name
+        if file.exists():
+            for i,d in enumerate(rows(file),1):
+                r=normalize_source(d,'recipient',f'{name}:{i}')
+                assert r['source_id'] not in by_id
+                r['counted_minimum']=False;r['minimum_category']=None
+                by_id[r['source_id']]=r
+    # Pair joins are generated only once complete, rather than treating absent
+    # still-in-progress judgments as negative evidence.
+    judgment_paths=[ROOT/'judgments'/f'{field}.jsonl' for field in ['library','transport','statistics']]
+    if all(path.exists() for path in judgment_paths):
+        judgments=[d for path in judgment_paths for d in rows(path)]
+        if len(judgments)==144:
+            recipient_sources={r['recipient_id']:r['initial_source_id'] for r in rows(ROOT/'inputs.jsonl')}
+            for d in judgments:
+                for source_id in [d.get('source_id',d['candidate_id']),recipient_sources[d['recipient_id']]]:
+                    assert source_id in by_id,source_id
+                    by_id[source_id].setdefault('supports_pairs',[]).append(d['pair_id'])
     data = sorted(by_id.values(), key=lambda r:r['source_id'])
     assert len({r['duplicate_group'] for r in data if r['counted_minimum']}) == sum(r['counted_minimum'] for r in data)
     jl(ROOT/'sources.jsonl',data)
@@ -100,6 +139,15 @@ def attempts():
         ('evidence/archive-recovery-attempts.jsonl','AR1'),
         ('evidence/prefix-archive-attempts.jsonl','AR2'),
         ('recipient/outcome_attempts.jsonl','OUT'),
+        ('evidence/resume-donor-attempts.jsonl','RDA'),
+        ('field/resume-field-attempts.jsonl','RFA'),
+        ('field/supplemental_attempts.jsonl','FS'),
+        ('judgments/library-attempts.jsonl','JL'),
+        ('judgments/transport-attempts.jsonl','JT'),
+        ('judgments/statistics-attempts.jsonl','JS'),
+        ('judgments/critical-review-attempts.jsonl','CR'),
+        ('analysis/field-followup-attempts.jsonl','AF'),
+        ('evidence/resume-attempts.jsonl','RES'),
     ]
     result=[]
     for name,prefix in files:
