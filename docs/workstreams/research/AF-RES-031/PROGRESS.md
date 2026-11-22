@@ -9,4 +9,5 @@
 | ④ 재실행·반증 및 다른 분야 | 3f3132022ec5c522d9c9850b600e47e659ee0f93 | receipts/replay·domain, 40개 산입 sources, artifacts·locks, observations·comparison·verify | 필수 세 표와 Q1–Q8 재독, 수용 판정 |
 | ④b Java 원 시험 반증 | 65f0e5dec833881511470a1542f0b9c677692fb8 | JavaHolderControl과 holder 원·재실행, JAV-BIN-SCOPE-01 | 범위를 명시한 결과표와 자체 점검 |
 | ⑤ 결과표·자체 점검·수용 | e8b12f3b0d7640df3458de2fef58b70abed0e6b6 | RESULT, SELF_CHECK, acceptance-evidence, verify | 원격 고정 SHA 직접 확인 후 최종 HANDOFF |
-| ⑤b 직접 원문 재독 | 다음 묶음에서 이 커밋의 SHA를 기록 | evidence/source-reread.json과 재독 창 정정 | 이 최종 결과 SHA의 원격 재독 후 HANDOFF |
+| ⑤b 직접 원문 재독 | 5b06d0158868a3cc790da55546504ddf5a46eecc | evidence/source-reread.json과 재독 창 정정 | 이 최종 결과 SHA의 원격 재독 후 HANDOFF |
+| ⑥ 원격 재독 뒤 인계 | 작업 브랜치의 마지막 HANDOFF 커밋. git log -1 -- HANDOFF.md | 고정 결과 5b06d0158868a3cc790da55546504ddf5a46eecc, evidence/handoff-checks, HANDOFF.md | 진행 담당이 조건별 수용과 색인 반영 판단 |
