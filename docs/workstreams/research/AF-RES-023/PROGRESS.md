@@ -83,3 +83,10 @@
 - 음악비교 원격commit `b2879a0e669268ca4a7fdfada63bb7d3ed8570c6`; B01.json고정판재열람/fetch확인.
 - ROR01/02/05/06/07/08의18행추가,누적12사건36행. ROR06②의SELECT는당시v1.66판재현에제한되어있으므로현재정답이라고단정한오류로과장하지않았다. 이값을정정후SLP ID로재사용하면부적합이라는경계를기록했다.
 - ROR05②의SELECT는EQAR역사평가기록만가리킨다. 현재문의처까지선택한것으로합산하지않는다. ③도목적이없어후계하나를고르지못한다. ROR07스페인정답ID는③에도미확인이다.
+
+## 비교 묶음3c — 소프트웨어5+Wikidata1
+
+- ROR비교 원격commit `db9d7fe9bace6cd45ee6c76fbd9aa0ddeda945c9`; B02.json고정판재열람/fetch확인.
+- 마지막6사건18행을추가해최종18×3=54행이다. 목적지SELECT/HOLD/CONDITIONAL은판독자코드를그대로보존하고,역사기록만선택한행과현재/정정목적선택을분리했다.
+- SW01②는같은배포물URL이라는고정정보만으로좁은목적후보를선택했다. SW02③은정상alias,SW06③은기능후계와판조건을구별한다. WD01은본체undo와P910복구를따로복원한다.
+- 다음:필수표4개/교차분야보고서,원장정합검사와session check,SELF_CHECK/acceptance선행commit,그뒤HANDOFF단독commit.
