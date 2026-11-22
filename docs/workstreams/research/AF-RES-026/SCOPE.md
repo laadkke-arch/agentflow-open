@@ -59,3 +59,9 @@ Q의 값은 직접 답 또는 작성자의 명시 기존 사실로만 채운다.
 
 계열별 T0/T1은 같은 작성자의 순차 자기 점검이다. 병렬 담당은 서로 다른 계열을 맡지만 독립 중복 코더가 아니다. 후속을 가린 시간순 통제를 커밋으로 입증하며 사전 지식까지 제거했다고 주장하지 않는다. 세 전략은 배정된 사용자 실험이 아니고 실제 인과효과·시간 절감은 미확인이다. 최종 결과의 불리한 무결과도 보존한다.
 
+
+## 실행 보강 — 전체 T0 봉인 전 기록
+
+초기 Git 전송은 지연되어 connector 수동 manifest로 출발했다. 이후 공개 저장소의 Git fetch와 작업 트리 복원이 완료되었다. 2026-11-22T05:02:56Z에 `python -m workbench.session start af-res-026 --allow docs/workstreams/research/AF-RES-026/ --output docs/workstreams/research/AF-RES-026/manifest-cli.json --dependency work/research-af-res-021=29049a5f15b6ef7cd7431f59a059598db6f5d857 --dependency work/research-af-res-022=df80ec2406042a73c2114e316894173f66309cda --fetch`를 실제 실행했다. 결과는 remote_checked이며 계약 해시는 수동 manifest와 동일하다. 이 보강은 표집·판정 규칙 변경이 아니다. 최종 check는 CLI manifest를 사용한다. 초기 수동 핀과 당시 실행 한계는 이력으로 보존한다.
+
+T0 계열 커밋은 curl 682b77f, PostgreSQL e6ab7fd, SQLite 7c901b8이다. SQLite S01은 검색 답변 한 문장 노출 때문에 엄격한 미열람 비교에서 분리한다. S06은 후속을 읽기 전에 C/Q가 같은 소스 형태 변수를 가르도록 수정했다. curl C01은 원 글만 본 root가 이미 브라우저 요청이라는 목적이 명시됐다고 이견을 남겼다. 이를 사후 성공에 맞춰 봉인 문구를 바꾸는 근거로 쓰지 않는다. 모든 수정·노출은 별도 영수증으로 추적한다.
