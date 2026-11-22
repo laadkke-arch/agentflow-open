@@ -3,6 +3,30 @@
 | 순서 | 고정 커밋/기록 | 범위 | 다음 단계와 제한 |
 | --- | --- | --- | --- |
 | 1 | bdc4135b0f9f67e08060a4ba5c78d30e276d927d | SCOPE·manifest·prior exclusion·사전 방법 검토·측정 fetch 도구 | 두 경로의 원배포만 수집. 현재 href/H/기준판정 아직 열람하지 않음 |
+| 2 | f5be64952dbd7fdc38e44db938bd863a487f82cb | 네 새 문맥의 Latin-square 배정 봉인 | 실제 판독은 뒤에 수행 |
+| 3 | bd3c17ef2f989b3d9e0566405d82357fc17f47bb | B12·원배포12출판·표집58행 봉인 | G06/R04 수집 사전노출을 숨기지 않음 |
+| 4 | 129d87ca98a46d68e37bffc86c8d085503d9f77f | 지리·서지 보조 원문·반례 | 소프트웨어 분모와 별개 |
+| 5 | f26232bb567f26ea86ece55215097be1185f75cb | 채점·제외·조건부 비용 계산 사전 계약 | 판독/기준 전 |
+| 6 | 442292b34237fa7aa2d68493e2a96802f52ed728 | 동일 N/H 카드·48보기·판독 입력 봉인 | 원문/metadata 길이 구별은 ERRATA E02 |
+| 7 | 550cc0632aa31723ce943892f937d4f75a781cbc | 수집 관측·중복제거 원문·실측 비용 | 후속 기준판정 원장 누락은 ERRATA E01로 정정 |
+| 8 | 5fbde38a04613fbd6f057fd562bd173b7193f2c9 | 네 새 문맥의 48결정 봉인 | 이후 기준판정; 답안은 변경하지 않음 |
+| 9 | 5d6acbc87068c2c1f0cfa7ae95846c409c1f7ad1 | 실제 보관 표현·Q7 추가 정정 원문 | C1/C2 2회차는 모의 |
+| 10 | f403243dbf5f097536a1fd9fda55dfce4382329a | 별도 문맥 기준판정·짝지은 민감도 | 요청 #2의 재개 시작판; RESULT/SELF_CHECK/수용/HANDOFF 미완료였음 |
+
+## #2 재개 범위
+
+최신 작업판 f403243과 integration `8dd88b74735eb512c133f1a30890ac82fbf61ecf`를 GitHub ref·git ls-remote·새 clone에서 확인했다. 기존 manifest의 최초 시작판 `9668632e915d508e93ddfdc5e8fe4b88bcbfec56`와 모든 봉인 입력·판독·기준판정을 보존했다. 새 배포물 표집이나 48판독을 반복하지 않았다. 실제 환경과 미관측 모델UI는 `evidence/resume-context.json`에 있다.
+
+세 내부 감사는 정량/소프트웨어원문/보조분야·비용으로 분리했다. 기준판정64source와64attempt의 canonical 누락을 고쳤고 적격 최소원문50은 그대로다. 재개 감사10GET와24웹도구동작·1로컬실패는 별도 phase이며 두 번째 C1/C2 실행이 아니다. 원장 정정과 보고 문구 정정은 `ERRATA.md`, 의미 검토는 `review/resume-*/`에 남긴다.
+
+완료된 감사의 당시 실행 영수증은 정량69/69, 비용57/57, 재개 원장까지 통합한 정량81/81이다. 이 수를 이후 문서까지 검증한 값으로 소급하지 않는다. 인계 전 최종 문서·수용 근거·hash 조인·소유경로 검사를 다시 수행하고 고정 결과를 원격에서 읽은 뒤 HANDOFF를 작성한다. 작업 중 상태의 검사 대상은 HEAD와 working-tree 입력hash를 함께 기록한다.
+
+## 다음 단계
+
+1. 원장·감사 정정 묶음을 원격 커밋하고 SHA를 실제 조회한다.
+2. RESULT·SELF_CHECK·조건별 수용 근거와 최종 검산을 별도 결과 커밋으로 고정한다.
+3. 고정 SHA의 RESULT/SELF_CHECK/수용파일을 원격에서 재독하고 `python -B -m workbench.session check docs/workstreams/research/AF-RES-036/manifest.json --fetch`를 실제 실행한다.
+4. 실제 결과 SHA·미충족·다음 첫 자료·검사영수증을 HANDOFF에 적고 마지막 커밋을 확인한다.
 
 셸 push는 인증 없음(exit128)으로 실패했다. 계정/credential을 변경하지 않고 기존 GitHub connector의 지정 계정으로 tree/commit/ref를 만들었다. 원격 branch는 시작 integration의 자손이다. 이후 묶음도 원격 커밋 후 fetch/read로 확인한다. 내부 local-only 39277b4는 원격 완료 SHA가 아니다.
 
