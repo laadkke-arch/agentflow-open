@@ -96,8 +96,17 @@ for pred in preds:
         r["author_donor_adoption"]=c["author_donor_adoption"]
         if cid!="AUD03":r["revision_history"]=c["revision_history"]
         r["minimum_next_evidence"]=c["minimum_next_evidence"]
+    r['comparison_rule_version']='post-reveal complete-comparison requirement; see amendments; not identical to prespecified wording'
+    r['original_wording_lenient_case_member']=str(cid=='M01').lower()
+    r['operator_only_case_member']=str(cid in ['M01','M03']).lower()
+    r['lenient_unique_support']='false'
+    r['lenient_case_disposition']='판정불가' if cid=='M01' else '분모외'
+    r['operator_only_disposition']='판정불가' if cid in ['M01','M03'] else '분모외'
+    r['boundary_qualitative_match']=str(pid=='M01-P1').lower()
+    r['boundary_qualitative_judgment']='조건부 지지_R_report; exact normal/B outputs absent' if pid=='M01-P1' else '미확인'
+    r['operator_acceptance_match']=str(pid in ['M01-P1','M02-P1','M02-P2','M03-P1']).lower()
     rows.append(r)
 with (P/"outcomes.csv").open("w",newline="") as f:
-    w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+    w=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator="\n");w.writeheader();w.writerows(rows)
 counted=[r for r in sources if r["minimum_count"]]
 print(json.dumps({"sources_records":len(sources),"unique_counted":len(counted),"allocation":dict(collections.Counter(r["allocation"] for r in counted)),"outcome_rows":len(rows),"judgments":dict(collections.Counter(r["judgment"] for r in rows))},ensure_ascii=False))

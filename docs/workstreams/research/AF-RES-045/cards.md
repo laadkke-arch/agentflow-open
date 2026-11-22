@@ -1,6 +1,6 @@
 # AF-RES-045 반환 카드
 
-이 카드는 봉인 `0d998cb3503e8a7f0faf2bf2f8e62dd046a662b1`의 예측을 바꾸지 않고 후속 근거의 적용 범위를 붙인다. 완전한 **원리→조작→두 판별 입력→동일 입력의 후속 시험** 연결은 0/6이다. 아래의 조건부 링크는 원리의 역사적 채택, 최초안 변경 인과, 검색 회수율을 뜻하지 않는다. 행별 판정은 [outcomes.csv](outcomes.csv), 모든 판·열람·한계는 [sources.jsonl](sources.jsonl)에 있다.
+이 카드는 봉인 `0d998cb3503e8a7f0faf2bf2f8e62dd046a662b1`의 예측을 바꾸지 않고 후속 근거의 적용 범위를 붙인다. 완전한 **원리→조작→두 판별 입력→동일 입력의 후속 시험** 연결은 0/6이다. 아래의 조건부 링크는 원리의 역사적 채택, 최초안 변경 인과, 검색 회수율을 뜻하지 않는다. 완결 비교를 요구하지 않는 원래 문구의 관대한 집계는 M01분모1·유일지지0·판정불가1, 입력동일성까지 완화한 조작 수락 감도는 M01/M03분모2·유일지지0·판정불가2다. 이 차이는 사후 기준 명시로 기록하며 효과 없음이나 실패율로 쓰지 않는다. 행별 판정은 [outcomes.csv](outcomes.csv), 모든 판·열람·한계는 [sources.jsonl](sources.jsonl)에 있다.
 
 ## M01 — 첫 Cartopy 저장 전에 기하를 준비할 것인가
 
@@ -42,7 +42,7 @@
 
 **추천 수준:** 좌표 단위를 확인하는 조건부 진단 링크. 중앙이라는 불변조건은 이미 최초 요구에 있고 transAxes도 당시 API였다. 새 원리가 선택을 발견했다거나 저자가 InDesign을 읽어 채택했다고 말할 수 없다.
 
-**적용 불가·뒤집힘:** 목표를 실제 데이터 값 .5에 주석 달기로 바꾸면 B가 적합하다. [2.2.2 colorbar mesh L843–861](https://github.com/matplotlib/matplotlib/blob/b471ee21cbe0d0fdd9cf5142d0a4be01517f4e68/lib/matplotlib/colorbar.py#L843-L861)는 정규화 좌표여서 B도 중앙일 수 있다. [3.0.2 L510–518,984–1014](https://github.com/matplotlib/matplotlib/blob/8858a0d1bdd149a0897789e8503ac586be14676d/lib/matplotlib/colorbar.py)는 조건에 따라 실제 단위로 환산한다. 버전이나 norm이 바뀌면 추천의 근거도 다시 검사해야 한다.
+**적용 불가·뒤집힘:** 목표를 실제 y값 .5에 주석 달기로 바꾸면 B의 y-data 고정 논리가 적합할 수 있다. 기본 (.5,.5)는 x도 data 좌표여서 가로 중앙을 유지하려면 혼합 transform 등 별도 처리가 필요하다. B 전체를 무조건 권하지 않는다. [2.2.2 colorbar mesh L843–861](https://github.com/matplotlib/matplotlib/blob/b471ee21cbe0d0fdd9cf5142d0a4be01517f4e68/lib/matplotlib/colorbar.py#L843-L861)는 정규화 좌표여서 B도 중앙일 수 있다. [3.0.2 L510–518,984–1014](https://github.com/matplotlib/matplotlib/blob/8858a0d1bdd149a0897789e8503ac586be14676d/lib/matplotlib/colorbar.py)는 조건에 따라 실제 단위로 환산한다. 버전이나 norm이 바뀌면 추천의 근거도 다시 검사해야 한다.
 
 ## AUD01 — 선택 구간 조회의 단위와 API 전달은 별도 문제
 

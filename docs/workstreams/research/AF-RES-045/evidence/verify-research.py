@@ -386,7 +386,7 @@ def main():
                 "feasibility_limit": "Post-reveal parent correction reports local #undef of spectral editing in NoiseReduction.cpp. No model result establishes an enabled receiver API."},
             "M03": {"assumptions": "linear non-inverted limits [0,max(arr)], exact data coordinate0.5; actual colorbar limits must be checked separately",
                 "data_y_fraction": {key: {"exact": str(value), "decimal": float(value)} for key, value in m03.items()},
-                "axes_center_y": 0.5, "purpose_flip": "If exact datum0.5 rather than container center is the requirement, B can become appropriate."},
+                "axes_center_y": 0.5, "purpose_flip": "If y-datum0.5 rather than vertical container center is the requirement, data anchoring for y can become appropriate; full default(.5,.5) also uses x data units, so horizontal centering needs a separate/blended transform."},
             "AUD01": {"one_frame_at25fps_seconds": float(Fraction(1, 25)), "one_sample_at48000_seconds": float(Fraction(1, 48000)),
                 "frame_to_sample_ratio": 1920, "point_getter_bounds": [1.25, 1.25],
                 "exception": "W3C temporal fragment a>=b is invalid-and-ignore; do not map it to a valid editor point-selection getter."},
@@ -399,6 +399,24 @@ def main():
             "M02/AUD01 same predictions and AUD02 underdetermined must not become discriminating successes automatically.",
             "Run after root integration is complete; multiple files are read once each, not as a filesystem-atomic snapshot.",
         ])
+        if (OWNED / "outcomes.csv").exists():
+            policy_rows = list(csv.DictReader((OWNED / "outcomes.csv").open()))
+            policies = {}
+            for label, field, disp in [
+                ("complete_comparison_post_reveal", "strict_pair_denominator_member", "pair_disposition"),
+                ("original_wording_lenient", "original_wording_lenient_case_member", "lenient_case_disposition"),
+                ("operator_only_sensitivity", "operator_only_case_member", "operator_only_disposition")]:
+                policy_cases = sorted({r["request_id"] for r in policy_rows if r.get(field) == "true"})
+                policies[label] = {"explicit_flag_field": field, "case_ids": policy_cases,
+                    "denominator": len(policy_cases), "unique_support": len({r["request_id"] for r in policy_rows if r.get(field)=="true" and r.get("unique_support" if label=="complete_comparison_post_reveal" else "lenient_unique_support")=="true"}), "both_rejected": len({r["request_id"] for r in policy_rows if r.get(field)=="true" and r.get("both_rejected")=="true"}),
+                    "indeterminate_cases": sorted({r["request_id"] for r in policy_rows if r.get(field)=="true" and r.get(disp)=="판정불가"}),
+                    "numerator_source": "explicit unique_support/lenient_unique_support false flags; no prose inference",
+                    "rate_interpretation": "해당 없음" if not policy_cases else "No unique support established; not an effect-absence or failure-rate estimate"}
+                for cid in sorted({r["request_id"] for r in policy_rows}):
+                    vals={r.get(field) for r in policy_rows if r["request_id"]==cid}
+                    check("policy_consistency:"+label+":"+cid, len(vals)==1, sorted(str(v) for v in vals), "one explicit value per case")
+            result["denominator_policies"] = policies
+            result["eligibility_policy_limit"] = "Complete comparison is a post-reveal strengthening of the original same-input wording. Original-wording lenient M01 and operator-only M01/M03 sensitivities are preserved separately."
     except (OSError, ValueError, KeyError, TypeError, csv.Error, json.JSONDecodeError) as exc:
         check("input_exception", False, {"type": type(exc).__name__, "message": str(exc)})
 
