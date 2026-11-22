@@ -31,12 +31,13 @@ def normalize(q, stream):
     q['question_id'] = q['id']
     q['ledger'] = stream
     q['scope'] = q['whole_or_partial']
-    q['initial_date'] = q.get('initial_date', q.get('initial_timestamp'))
+    q['initial_date'] = q.get('initial_date', q.get('initial_timestamp', q.get('first_public_date')))
+    q['initial_url'] = q.get('initial_url', q.get('first_url'))
     q['whole_must'] = [norm_predicate(p) for p in q['whole_must']]
     q['partial_must'] = [norm_predicate(p) for p in q['partial_must']]
     first = q.get('first_text', {})
-    q['initial_text_file'] = q.get('initial_text_file', first.get('path'))
-    q['initial_text_sha256'] = q.get('initial_text_sha256', first.get('sha256'))
+    q['initial_text_file'] = q.get('initial_text_file', first.get('path', q.get('original_text_path')))
+    q['initial_text_sha256'] = q.get('initial_text_sha256', first.get('sha256', q.get('original_sha256')))
     if not q['initial_text_file']:
         raise ValueError(f"{q['id']}: missing first text path")
     path = REPO / q['initial_text_file']
@@ -54,6 +55,10 @@ def normalize(q, stream):
     if not q['neutral_query'] or len(q['a_queries']) != 2:
         raise ValueError(f"{q['id']}: need one common and two A queries")
     q['route_order'] = ['A', 'B'] if int(q['id'][1:]) % 2 else ['B', 'A']
+    partial = q.get('partial_next_action', {})
+    q['independent_partial_purpose'] = q.get('independent_partial_purpose', partial.get('action'))
+    q['remaining_adapter'] = q.get('remaining_adapter', q.get('remaining_integration', partial.get('adapter_limit')))
+    q['same_name_wrong_actor_output_failure'] = q.get('same_name_wrong_actor_output_failure', q.get('false_same_name_criterion', q.get('same_name_wrong_subject')))
     q['stream_original_record'] = f"streams/{stream}/questions.jsonl#{q['id']}"
     return q
 
@@ -94,7 +99,8 @@ def main():
     write_lines(ROOT / 'questions.jsonl', questions)
     write_lines(ROOT / 'sources-initial.jsonl', sources)
     columns = ['ledger', 'canonical_id', 'title', 'period', 'selected_question_id',
-               'first_public_date', 'period_order', 'sha256_order_key', 'details']
+               'first_public_date', 'period_order', 'sha256_order_key',
+               'sampling_decision', 'reason', 'full_record_at']
     selected = {(q['ledger'], q['canonical_id']): q['id'] for q in questions}
     with (ROOT / 'frame.csv').open('w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=columns)
@@ -103,12 +109,14 @@ def main():
             cid = row.get('canonical_id', row.get('id', ''))
             writer.writerow({
                 'ledger': row['ledger'], 'canonical_id': cid,
-                'title': row.get('title', ''), 'period': row.get('period', ''),
+                'title': row.get('title', row.get('title_metadata', '')), 'period': row.get('period', ''),
                 'selected_question_id': selected.get((row['ledger'], cid), ''),
-                'first_public_date': row.get('first_public_date', row.get('initial_date', row.get('created', ''))),
-                'period_order': row.get('period_order', row.get('order', row.get('rank', ''))),
-                'sha256_order_key': row.get('sha256_order_key', row.get('sampling_hash', row.get('hash', ''))),
-                'details': json.dumps(row, ensure_ascii=False, separators=(',', ':')),
+                'first_public_date': row.get('first_public_date', row.get('initial_public_date_evidence', row.get('initial_date', row.get('created', '')))),
+                'period_order': row.get('period_order', row.get('period_traversal_order', row.get('traversal_order', row.get('order', row.get('rank', ''))))),
+                'sha256_order_key': row.get('sha256_order_key', row.get('order_sha256', row.get('sha256', row.get('sampling_hash', row.get('hash', ''))))),
+                'sampling_decision': row.get('sampling_decision', row.get('selection', row.get('decision', 'untraversed'))),
+                'reason': row.get('exclusion_reason', row.get('reason', row.get('eligibility', 'See original stream frame and traversal'))),
+                'full_record_at': f"streams/{row['ledger']}/" + ('frame.csv' if row['ledger'] == 'go' else 'metadata-frame.jsonl' if row['ledger'] == 'python' else 'frame.jsonl') + '#' + cid,
             })
     summary = {
         'created_utc': datetime.now(timezone.utc).isoformat(),

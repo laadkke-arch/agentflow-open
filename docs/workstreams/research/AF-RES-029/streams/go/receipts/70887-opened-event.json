@@ -1,0 +1,100 @@
+{
+  "id": "44884695587",
+  "type": "IssuesEvent",
+  "actor": {
+    "id": 94646303,
+    "login": "nicholas-eden-pp",
+    "display_login": "nicholas-eden-pp",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/nicholas-eden-pp",
+    "avatar_url": "https://avatars.githubusercontent.com/u/94646303?"
+  },
+  "repo": {
+    "id": 23096959,
+    "name": "golang/go",
+    "url": "https://api.github.com/repos/golang/go"
+  },
+  "payload": {
+    "action": "opened",
+    "issue": {
+      "url": "https://api.github.com/repos/golang/go/issues/70887",
+      "repository_url": "https://api.github.com/repos/golang/go",
+      "labels_url": "https://api.github.com/repos/golang/go/issues/70887/labels{/name}",
+      "comments_url": "https://api.github.com/repos/golang/go/issues/70887/comments",
+      "events_url": "https://api.github.com/repos/golang/go/issues/70887/events",
+      "html_url": "https://github.com/golang/go/issues/70887",
+      "id": 2746126112,
+      "node_id": "I_kwDOAWBuf86jro8g",
+      "number": 70887,
+      "title": "proposal: Change concurrent map writes from fatal to panic",
+      "user": {
+        "login": "nicholas-eden-pp",
+        "id": 94646303,
+        "node_id": "U_kgDOBaQwHw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/94646303?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/nicholas-eden-pp",
+        "html_url": "https://github.com/nicholas-eden-pp",
+        "followers_url": "https://api.github.com/users/nicholas-eden-pp/followers",
+        "following_url": "https://api.github.com/users/nicholas-eden-pp/following{/other_user}",
+        "gists_url": "https://api.github.com/users/nicholas-eden-pp/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/nicholas-eden-pp/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/nicholas-eden-pp/subscriptions",
+        "organizations_url": "https://api.github.com/users/nicholas-eden-pp/orgs",
+        "repos_url": "https://api.github.com/users/nicholas-eden-pp/repos",
+        "events_url": "https://api.github.com/users/nicholas-eden-pp/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/nicholas-eden-pp/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "labels": [
+        {
+          "id": 236419512,
+          "node_id": "MDU6TGFiZWwyMzY0MTk1MTI=",
+          "url": "https://api.github.com/repos/golang/go/labels/Proposal",
+          "name": "Proposal",
+          "color": "ededed",
+          "default": false,
+          "description": null
+        }
+      ],
+      "state": "open",
+      "locked": false,
+      "assignee": null,
+      "assignees": [],
+      "milestone": null,
+      "comments": 0,
+      "created_at": "2024-12-17T21:31:18Z",
+      "updated_at": "2024-12-17T21:31:18Z",
+      "closed_at": null,
+      "author_association": "NONE",
+      "active_lock_reason": null,
+      "body": "### Proposal Details\n\nConcurrent map writes are a fairly common problem that people run into.  It tends to get into production environments without being detected by testing.  When it occurs it triggers a fatal error, although it doesn't seem to be as severe of a problem to warrant being fatal.  I propose that it be changed to a panic.\r\n\r\n```\r\nfunc mapassign_fast64(t *maptype, h *hmap, key uint64) unsafe.Pointer {\r\n\tif h == nil {\r\n\t\tpanic(plainError(\"assignment to entry in nil map\"))\r\n\t}\r\n\tif raceenabled {\r\n\t\tcallerpc := getcallerpc()\r\n\t\tracewritepc(unsafe.Pointer(h), callerpc, abi.FuncPCABIInternal(mapassign_fast64))\r\n\t}\r\n\tif h.flags&hashWriting != 0 {\r\n-\t\tfatal(\"concurrent map writes\")\r\n+\t\tpanic(plainError(\"concurrent map writes\"))\r\n\t}\r\n```\r\n\r\nObviously the map access should be wrapped in a mutex, but it is an easy mistake to make (especially with large teams).  The call to `fatal` makes the blast radius of the bug rather large for what is likely a recoverable error.   An API request should be able to return a 500 status code rather for this issue.\r\n\r\nI understand it could be considered a breaking change, thus you might be wary of such a change.  There's no difference for code that lacks a recover.  Code with a recover will start getting a new kind of panic where the service was previously crashing, that is preferable in 90% of cases.\r\n\r\nIs there any reason this was originally set to call `fatal` instead of `panic`?",
+      "reactions": {
+        "url": "https://api.github.com/repos/golang/go/issues/70887/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "timeline_url": "https://api.github.com/repos/golang/go/issues/70887/timeline",
+      "performed_via_github_app": null,
+      "state_reason": null
+    }
+  },
+  "public": true,
+  "created_at": "2024-12-17T21:31:20Z",
+  "org": {
+    "id": 4314092,
+    "login": "golang",
+    "gravatar_id": "",
+    "url": "https://api.github.com/orgs/golang",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4314092?"
+  }
+}

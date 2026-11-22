@@ -1,0 +1,99 @@
+{
+  "id": "27172305960",
+  "type": "IssuesEvent",
+  "actor": {
+    "id": 9203548,
+    "login": "x1unix",
+    "display_login": "x1unix",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/x1unix",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9203548?"
+  },
+  "repo": {
+    "id": 23096959,
+    "name": "golang/go",
+    "url": "https://api.github.com/repos/golang/go"
+  },
+  "payload": {
+    "action": "opened",
+    "issue": {
+      "url": "https://api.github.com/repos/golang/go/issues/58584",
+      "repository_url": "https://api.github.com/repos/golang/go",
+      "labels_url": "https://api.github.com/repos/golang/go/issues/58584/labels{/name}",
+      "comments_url": "https://api.github.com/repos/golang/go/issues/58584/comments",
+      "events_url": "https://api.github.com/repos/golang/go/issues/58584/events",
+      "html_url": "https://github.com/golang/go/issues/58584",
+      "id": 1589933539,
+      "node_id": "I_kwDOAWBuf85exHXj",
+      "number": 58584,
+      "title": "proposal: cmd/compile: ability to export functions as WASM exports",
+      "user": {
+        "login": "x1unix",
+        "id": 9203548,
+        "node_id": "MDQ6VXNlcjkyMDM1NDg=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/9203548?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/x1unix",
+        "html_url": "https://github.com/x1unix",
+        "followers_url": "https://api.github.com/users/x1unix/followers",
+        "following_url": "https://api.github.com/users/x1unix/following{/other_user}",
+        "gists_url": "https://api.github.com/users/x1unix/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/x1unix/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/x1unix/subscriptions",
+        "organizations_url": "https://api.github.com/users/x1unix/orgs",
+        "repos_url": "https://api.github.com/users/x1unix/repos",
+        "events_url": "https://api.github.com/users/x1unix/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/x1unix/received_events",
+        "type": "User",
+        "site_admin": false
+      },
+      "labels": [
+        {
+          "id": 236419512,
+          "node_id": "MDU6TGFiZWwyMzY0MTk1MTI=",
+          "url": "https://api.github.com/repos/golang/go/labels/Proposal",
+          "name": "Proposal",
+          "color": "ededed",
+          "default": false,
+          "description": null
+        }
+      ],
+      "state": "open",
+      "locked": false,
+      "assignee": null,
+      "assignees": [],
+      "milestone": null,
+      "comments": 0,
+      "created_at": "2023-02-17T20:39:25Z",
+      "updated_at": "2023-02-17T20:39:25Z",
+      "closed_at": null,
+      "author_association": "NONE",
+      "active_lock_reason": null,
+      "body": "## Background\r\n\r\nAt the moment, Go programs compiled as `GOOS=js GOARCH=wasm` cannot directly [export functions](https://docs.wasmer.io/integrations/examples/imports-and-exports) or other symbols directly as WASM exports. \r\n\r\nThe only way to export a value is to wrap it and assign as a global JS namespace object (aka `window/globalThis`).\r\n\r\nBy default, each WASM module produced by Go compiler exports a few functions used internally by `wasm_exec.js` bridge and list of those symbols are hardcoded into a linker, like `wasm_export_resume`.\r\n\r\n## Current State\r\n\r\nCurrent FFI allows wrapping Go functions as callbacks and assign them to JS global namespace object. \r\nGo callback can only accept and return `js.Value` values.\r\n\r\nThis approach might be okay for simple tasks but might introduce some drawbacks for complex cases.\r\n\r\n* We depend on `globalThis` to attach Go callbacks.\r\n* Wrapping JS value references and calling Go's JS callback is an expensive process.\r\n* Unable to pass low-level Go native values. Only `js.Value` references can be passed.\r\n\r\n## Proposal\r\n\r\nI propose to add some kind of mechanism to mark Go function to be exported in WASM module. It can be a compiler directive like `//go:wasmexport` or a special instruction similar to `CallImport` for exports.\r\n\r\nExported function should appear in exported WebAssembly instance symbols alongside built-in exports.\r\n\r\n### Calling Exports\r\n\r\nThe export implementation can be low-level as existing import mechanism used internally by `wasm_exec.js`.\r\n\r\nValues should be manually prepared and pushed into Go stack before calling an export.\r\nAccess to Go's memory allocator might be required for complex values like strings or slices.\r\n\r\n**Abstract example:**\r\n\r\n```go\r\npackage foo\r\n\r\n//go:wasmexport\r\nfunc Bar(id int) {\r\n   fmt.Println(\"Foobar:\", id)\r\n}\r\n```\r\n\r\n\r\n```js\r\nconst callBar = (id) => {\r\n  // Obtain exported function\r\n  const foobarFunc = go._inst.exports[\"foo\u00b7Bar\"];\r\n  const { getsp, mem}  = go._inst.exports();\r\n\r\n  // Put values on stack\r\n  const view = new DataView(mem);\r\n  const sp = getsp();\r\n  view.setInt32(sp + 8, id, true);\r\n\r\n  // Call exported Go function\r\n  foobarFunc();\r\n}\r\n```\r\n",
+      "reactions": {
+        "url": "https://api.github.com/repos/golang/go/issues/58584/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "timeline_url": "https://api.github.com/repos/golang/go/issues/58584/timeline",
+      "performed_via_github_app": null,
+      "state_reason": null
+    }
+  },
+  "public": true,
+  "created_at": "2023-02-17T20:39:26Z",
+  "org": {
+    "id": 4314092,
+    "login": "golang",
+    "gravatar_id": "",
+    "url": "https://api.github.com/orgs/golang",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4314092?"
+  }
+}

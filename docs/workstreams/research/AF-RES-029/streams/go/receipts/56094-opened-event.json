@@ -1,0 +1,89 @@
+{
+  "id": "24459672617",
+  "type": "IssuesEvent",
+  "actor": {
+    "id": 32386756,
+    "login": "eaglebush",
+    "display_login": "eaglebush",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/eaglebush",
+    "avatar_url": "https://avatars.githubusercontent.com/u/32386756?"
+  },
+  "repo": {
+    "id": 23096959,
+    "name": "golang/go",
+    "url": "https://api.github.com/repos/golang/go"
+  },
+  "payload": {
+    "action": "opened",
+    "issue": {
+      "url": "https://api.github.com/repos/golang/go/issues/56094",
+      "repository_url": "https://api.github.com/repos/golang/go",
+      "labels_url": "https://api.github.com/repos/golang/go/issues/56094/labels{/name}",
+      "comments_url": "https://api.github.com/repos/golang/go/issues/56094/comments",
+      "events_url": "https://api.github.com/repos/golang/go/issues/56094/events",
+      "html_url": "https://github.com/golang/go/issues/56094",
+      "id": 1400924059,
+      "node_id": "I_kwDOAWBuf85TgGeb",
+      "number": 56094,
+      "title": "proposal: Go 2: Array or variadic destructuring to discrete variables",
+      "user": {
+        "login": "eaglebush",
+        "id": 32386756,
+        "node_id": "MDQ6VXNlcjMyMzg2NzU2",
+        "avatar_url": "https://avatars.githubusercontent.com/u/32386756?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/eaglebush",
+        "html_url": "https://github.com/eaglebush",
+        "followers_url": "https://api.github.com/users/eaglebush/followers",
+        "following_url": "https://api.github.com/users/eaglebush/following{/other_user}",
+        "gists_url": "https://api.github.com/users/eaglebush/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/eaglebush/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/eaglebush/subscriptions",
+        "organizations_url": "https://api.github.com/users/eaglebush/orgs",
+        "repos_url": "https://api.github.com/users/eaglebush/repos",
+        "events_url": "https://api.github.com/users/eaglebush/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/eaglebush/received_events",
+        "type": "User",
+        "site_admin": false
+      },
+      "labels": [],
+      "state": "open",
+      "locked": false,
+      "assignee": null,
+      "assignees": [],
+      "milestone": null,
+      "comments": 0,
+      "created_at": "2022-10-07T09:57:34Z",
+      "updated_at": "2022-10-07T09:57:34Z",
+      "closed_at": null,
+      "author_association": "NONE",
+      "active_lock_reason": null,
+      "body": "<!--\r\nOur process for evaluating language changes can be found here:\r\nhttps://go.googlesource.com/proposal/+/refs/heads/master#language-changes\r\n-->\r\n\r\n### Author background\r\n\r\n\r\n- **Would you consider yourself a novice, intermediate, or experienced Go programmer?**\r\nI consider myself as novice to intermediate Go programmer.  I have no extensive experience of looking at established Go code under the hood. \r\n- **What other languages do you have experience with?**\r\nI have VB, C# and PHP experience before becoming interested in Go.\r\n\r\n### Related proposals\r\n\r\n- **Has this idea, or one like it, been proposed before?** \r\n\r\n  I'm not sure. I searched the proposals and I can't find a proposal that discussed the same.\r\n \r\n- **Does this affect error handling?**. I'm not sure.\r\n\r\n- **Is this about generics?** No.\r\n\r\n### Proposal\r\n\r\n- **What is the proposed change?**\r\n\r\nI would like to suggest a language change that can execute dynamic assignments to a list of discrete variables.\r\nI have the following code:\r\n\r\n```go\r\n // Process options\r\nif len(opts) == 1 {\r\n  switch t := opts[0].(type) {\r\n  case string:\r\n\t  if size64, err := strconv.ParseInt(t, 10, 32); err == nil {\r\n\t\t  size = int(size64)\r\n\t  }\r\n  case int:\r\n\t  size = t\r\n  default:\r\n\t  size = -1\r\n  }\r\n}\r\n\r\nif len(opts) == 2 {\r\n  switch t := opts[1].(type) {\r\n  case string:\r\n\t  if size64, err := strconv.ParseInt(t, 10, 32); err == nil {\r\n\t\t  scale = uint8(size64)\r\n\t  }\r\n  case int:\r\n\t  scale = uint8(t)\r\n  case uint8:\r\n\t  scale = t\r\n  default:\r\n\t  scale = 0\r\n  }\r\n}\r\n\r\nif len(opts) == 3 {\r\n  switch t := opts[2].(type) {\r\n  case string:\r\n\t  if size64, err := strconv.ParseInt(t, 10, 32); err == nil {\r\n\t\t  prec = uint8(size64)\r\n\t  }\r\n  case int:\r\n\t  prec = uint8(t)\r\n  case uint8:\r\n\t  prec = t\r\n  default:\r\n\t  scale = 0\r\n  }\r\n}\r\n```\r\n\r\nThe ```opts``` variable is a variadic parameter in a function: \r\n\r\n```go\r\nfunc NewExtParam(value interface{}, opts ...interface{}) ExtParam {\r\n}\r\n```\r\nIn order to check if one or more of the values have been set, I need to check the length of the ```opts``` variable in order to enter and process the value further. As you have noticed, there is no null checking yet.\r\n\r\nIt would be nice if we can destructure an array or a variadic variable like the one below:\r\n\r\n```go\r\nsz, sc, pr := opts...\r\n```\r\n\r\nAnd then we can write the following check if the value is null or not.\r\n\r\n```go\r\nif sz != nil {\r\n  // process further\r\n}\r\nif sc!= nil {\r\n  // process further\r\n}\r\nif pr != nil {\r\n  // process further\r\n}\r\n```\r\n\r\n- **Who does this proposal help, and why?** \r\n\r\n It can help developers to simplify their code \r\n\r\n- **Please describe as precisely as possible the change to the language.**\r\n- **What would change in the language spec?**\r\n- **Please also describe the change informally, as in a class teaching Go.**\r\n\r\n  The mechanics can be as follows:\r\n   - It will only set the values specified in left-to-right order. Meaning, if there is no third (3) variable in the set, the assignment would not be prompted. A similar feature of this is the assertion operator or the map's second result.\r\n  - A null value would be read if the destination is more than the length of the variadic or array input\r\n \r\n- **Is this change backward compatible?**\r\n  - Breaking the Go 1 compatibility guarantee is a large cost and requires a large benefit.\r\n    Show example code before and after the change.\r\n  - **Before**\r\n  - **After**\r\n- **Orthogonality: how does this change interact or overlap with existing features?**\r\n- **Is the goal of this change a performance improvement?**\r\n  - **If so, what quantifiable improvement should we expect?**\r\n  - **How would we measure it?**\r\n\r\n### Costs\r\n\r\n- **Would this change make Go easier or harder to learn, and why?**\r\n\r\nI think it will contribute to a more idiomatic Go concept. Instead of manually checking the length and indexing an array like the code I gave above, a quick and easy assignment like this would lessen the clutter. \r\n\r\nPHP has the ```list``` function. It made the values retrieval easy to code and understand.\r\n\r\n- **What is the cost of this proposal? (Every language change has a cost).**\r\n- **How many tools (such as vet, gopls, gofmt, goimports, etc.) would be affected?**\r\n- **What is the compile time cost?**\r\n- **What is the run time cost?**\r\n- **Can you describe a possible implementation?**\r\n- **Do you have a prototype? (This is not required.)**\r\n",
+      "reactions": {
+        "url": "https://api.github.com/repos/golang/go/issues/56094/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "timeline_url": "https://api.github.com/repos/golang/go/issues/56094/timeline",
+      "performed_via_github_app": null,
+      "state_reason": null
+    }
+  },
+  "public": true,
+  "created_at": "2022-10-07T09:57:34Z",
+  "org": {
+    "id": 4314092,
+    "login": "golang",
+    "gravatar_id": "",
+    "url": "https://api.github.com/orgs/golang",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4314092?"
+  }
+}

@@ -1,0 +1,107 @@
+--- first-PR
++++ first-main-copy
+@@ -42,7 +42,7 @@
+ and it requires duplication of information (the parameter name) the information about
+ a parameter is easily in a place in the code quite far away from the declaration of
+ the actual parameter. This means it's easy to refactor a function, remove a parameter,
+-and forget to remove its docs. The same happens when adding a new parameter, it's easy
++and forget to remove its docs. The same happens when adding a new parameter: it's easy
+ to forget to add the docstring for it.
+ 
+ Editors can't check or ensure the consistency of the parameters and their docs.
+@@ -51,8 +51,10 @@
+ documentation consistency for the parameters across several similar functions, at
+ least not without implementing a custom syntax parser.
+ 
+-Some of these formats tried to account for the lack of type annotations in older
+-Python versions, but now that information doesn't need to be there.
++Some of these previous formats tried to account for the lack of type annotations
++in older Python versions by including typing information in the docstrings,
++but now that information doesn't need to be in docstrings as there is now an official
++syntax for type annotations.
+ 
+ 
+ Rationale
+@@ -139,7 +141,7 @@
+ 
+ 
+ The return of the ``doc()`` function is an instance of a class that can be checked
+-and used at runtime, defined as:
++and used at runtime, defined similar to:
+ 
+ .. code-block::
+ 
+@@ -326,7 +328,7 @@
+ 
+ .. code-block::
+ 
+-    from types import Annotated
++    from typing import Annotated
+ 
+     from typing_extensions import doc
+ 
+@@ -354,54 +356,17 @@
+ Extra Metadata and Decorator
+ ----------------------------
+ 
+-An earlier version of this proposal included several parameters for additional
+-metadata, including a way to deprecate parameters. To allow also deprecating
+-functions and classes, it was also expected that ``doc()`` could be used as a
+-decorator. But this functionality is covered by ``typing.deprecated()``
+-in :pep:`702`, so it was dropped from this proposal.
+-
+-The previously proposed parameters were:
+-
+-* ``description: str``: in a parameter, this would be the description of the
+-  parameter. In a class, function, or method, it would replace the docstring.
+-    
+-  - This could probably contain markup, like Markdown or reST. As that could be
+-    highly debated, that decision is left for a future proposal, to focus here
+-    on the main functionality.
+-
+-* ``deprecated: bool``: this would mark a parameter, class, function, or method
+-  as deprecated. Editors could display it with a strike-through or other
+-  appropriate formatting.
+-
+-* ``discouraged: bool``: this would mark a parameter, class, function, or method
+-  as discouraged. Editors could display them similar to ``deprecated``.
+-  The reason why having a ``discouraged`` apart from ``deprecated`` is that there
+-  are cases where something is not gonna be removed for backward compatibility,
+-  but it shouldn't be used in new code. An example of this is ``datetime.utcnow()``.
+-
+-* ``raises: Mapping[Type[BaseException], str | None]``: in a class, function,
+-  or method, this indicates the types of exceptions that could be raised by
+-  calling it in they keys of the dictionary. Each value would be the description
+-  for each exception, possibly being ``None`` when the exception has no description.
+-  Editors and tooling could show a warning (e.g. a colored underline) if the call
+-  is not wrapped in a ``try`` block or the parent caller doesn't include the
+-  same exceptions in its ``raises`` parameter.
+-
+-* ``extra: dict``: a dictionary containing any additional metadata that could
+-  be useful for developers or library authors.
+-
+-  - An ``extra`` parameter instead of ``**kwargs`` is proposed to allow adding
+-    future standard parameters.
+-
+-* ``**kwargs: Any``: allows arbitrary additional keyword args. This gives type
+-  checkers the freedom to support experimental parameters without needing to wait
+-  for changes in ``typing``. Type checkers should report errors for any
+-  unrecognized parameters. This follows the same pattern designed in
+-  :pep:`681`.
+-
+-A way to declare some of these parameters could still be useful in the future,
++An earlier version of this proposal included several parameters to indicate whether
++an object is discouraged from use, what exceptions it may raise, etc.
++To allow also deprecating functions and classes, it was also expected
++that ``doc()`` could be used as a decorator. But this functionality is covered
++by ``typing.deprecated()`` in :pep:`702`, so it was dropped from this proposal.
++
++A way to declare additional information could still be useful in the future,
+ but taking early feedback on this document, all that was postponed to future
+-proposals. This also shifts the focus from an all-encompasing function ``doc()``
++proposals.
++
++This also shifts the focus from an all-encompasing function ``doc()``
+ with multiple parameters to multiple composable functions, having ``doc()``
+ handle one single use case: additional documentation in ``Annotated``.
+ 

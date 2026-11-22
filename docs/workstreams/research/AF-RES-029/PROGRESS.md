@@ -7,3 +7,7 @@
 Remote verification receipts and bundle commit IDs are appended after each commit has been observed remotely. Current uncommitted work is not a completed result.
 
 | 1a. Prospective method and contract | committed + remotely read | `132a0d71f9e82c223378e8df104e646e109c4b39`; evidence/method-remote.json | Metadata traversal and initial-original recovery in three streams |
+
+| 1b. Method corrections and original-return gate | committed + remotely read | `2018c4347e345e194e74ca5c929ee5f529bde595`; protocol.py | Finish and seal twelve first-original inputs before search |
+
+| 1c. Twelve first texts, predicates and literal queries | local seal before search | evidence/input-seal.json; 2,976 frame rows; 12 events (6 whole/6 partial); 68 whole and 33 partial predicates | Publish and reread the input commit, then run common starts |
