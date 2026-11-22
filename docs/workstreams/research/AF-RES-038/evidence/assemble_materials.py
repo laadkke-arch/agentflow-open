@@ -15,6 +15,10 @@ for stream in ('pandas', 'numpy', 'methods'):
         if line.strip():
             row = json.loads(line)
             row['reading_stream'] = stream
+            if row['source_id'] == 'P-S14':
+                row['stream_original_counted'] = row['counted']
+                row['counted'] = False
+                row['count_exclusion'] = '보수적 통합: 같은 PDEP 및 날짜 테스트 개정이 포함된 merge를 별도 고유 원문 최소수에 다시 넣지 않는다. 후속 결정의 내용 근거는 보존한다.'
             all_sources.append(row)
 for line in (BASE / 'evidence/root-rereads.jsonl').read_text().splitlines():
     old = json.loads(line)
@@ -40,15 +44,29 @@ for stream in ('pandas', 'numpy'):
             if field not in fieldnames:
                 fieldnames.append(field)
         frame_rows.extend(list(reader))
+for field in ('stream_eligibility','root_disposition','strict_readiness_limit'):
+    fieldnames.append(field)
+for row in frame_rows:
+    cid = row['frame_id']
+    if cid in ('P02','P04','P06','N08'):
+        row['stream_eligibility'] = row['eligibility']
+        row['case_id'] = cid
+        row['eligibility'] = 'selected_document_task_conditional'
+        row['root_disposition'] = '최초 복구 요구·당대 기전 근거 둘로 내용 과제 선정. 실행·사람 검증 미실시.'
+        limits = {'P02':'POC 실제 build와 transitive @main 의존 closure 미확인',
+                  'P04':'역사적 API 실행 미실시; infer-once strict도 허용',
+                  'P06':'native guard는 공식 내부기전 기반 구성 설계; 공식 완성 소비자 recipe 아님',
+                  'N08':'formal 본문 절대 최초 공개시각 미확인. 작은 집계흐름으로만 전체 분류'}
+        row['strict_readiness_limit'] = limits[cid]
 with (BASE / 'frame.csv').open('w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator='\n')
     writer.writeheader()
     writer.writerows(frame_rows)
 
 pandas = json.loads((BASE / 'streams/pandas/cases.json').read_text())
 drafts = json.loads((BASE / 'streams/pandas/packet-drafts.json').read_text())['cases']
 numpy = json.loads((BASE / 'streams/numpy/cases.json').read_text())
-write_json(BASE / 'casebook.json', {'audience': 'RESEARCHER_AND_RATER_KEY_ONLY', 'pandas': pandas, 'numpy': numpy})
+write_json(BASE / 'casebook.json', {'audience': 'RESEARCHER_ONLY_RAW_STREAM_DESIGNS', 'snapshot_note':'stream 최초 설계와 예상 판독을 보존한다. 조정 뒤 권위 있는 요구 판정은 rubric.csv 및 examples.jsonl의 original/observed/adjudication을 함께 읽는다.', 'pandas': pandas, 'numpy': numpy})
 
 common = '''공개 인터넷 검색, 실행 도구, 도움 요청 규칙, 교육과 작업 예산은 모든 보기에서 같습니다. 진행자가 사전에 공통 공지한 예산·재검 간격·도구 정책을 적용하세요. 첫 채택을 선언할 때 결정 ID와 제출판을 고정하세요. 찾은 자료와 사전 인지를 기록하고, 실행하지 않은 결과는 미확인으로 적으세요. 후대 자료를 발견했다면 URL·판·첫 노출을 기록하세요. 이 과제는 문서·의사코드의 요구 합치성을 판독하며, 실행하지 않은 성공을 요구하지 않습니다.'''
 arm_intro = '# 자료\n\n이 파일은 배정된 보기의 추가 자료입니다. 공통 과제와 환경은 t0 문서를 따릅니다.\n\n'

@@ -1,0 +1,631 @@
+{
+  "kind": "TARGETED_CLARIFICATION_REREAD_NOT_FRESH_BLIND_REPLICATION",
+  "instruction": "한 요구의 통과 문구를 원키별 완성 출력으로 명확히 했다. 기대 판정과 원 사례명은 제공하지 않는다. 같은 세 제출을 새 기준으로 다시 판독하고 이전과 달라진 셀/이유를 보존하라. 이전 입력을 이미 보았으므로 새 독립검사라고 부르지 않는다. 실제 수정 수행은 여전히 미확인이다.",
+  "cases": [
+    {
+      "case_key": "V4",
+      "requirements": [
+        {
+          "id": "R1",
+          "requirement": "SKU별·월별·점포별 집계를 각각 제공하고 원래 필드를 다른 의미로 대체하지 않는다.",
+          "pass_condition": "세 그룹별 결과의 원키가 모두 있다. month와 (year,month)는 단일년 자료에서 모두 허용한다.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R2",
+          "requirement": "각 관측 그룹의 number에 대해 max/min/mean/sum 네 통계를 모두 낸다. 행 수는 수량 합계를 대신할 수 없다.",
+          "pass_condition": "각 원 키에 실제 속한 원행의 number를 대상으로 min/max/sum과 산술평균의 완성 출력이 맞아야 한다. 잘못 선택한 다른 원행 slice의 산술만 맞으면 통과가 아니다. 정수 절삭 불허; 분수 표기 허용.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        },
+        {
+          "id": "R3",
+          "requirement": "같은 키를 가진 원래 행의 수량만 함께 집계한다. 행 순서가 달라져도 키별 의미와 결과는 유지한다.",
+          "pass_condition": "같은 키의 모든 행이 정확히 한 그룹에 들어가고 키-값 대응을 보존한다.",
+          "scope": "원 요구의 설계/행동 합치성을 판독. 실행하지 않은 성공을 가정하지 않되 이 문서 과제의 pass를 실제 실행 성공 증명과 동일시하지 않음."
+        }
+      ],
+      "context": "단일년의 관측된 비어있지 않은 그룹. 월 또는 연월 키 둘 다 허용. 원행-키 소속과 네 집계의 완성 출력 평가. 행순서 외 새 조건 없음.",
+      "t0_inputs": [
+        {
+          "row_id": "r1",
+          "year": 2010,
+          "month": 1,
+          "day": 1,
+          "time": 9,
+          "store": 2,
+          "SKU": "AA",
+          "number": 2
+        },
+        {
+          "row_id": "r2",
+          "year": 2010,
+          "month": 2,
+          "day": 1,
+          "time": 9,
+          "store": 1,
+          "SKU": "BB",
+          "number": 8
+        },
+        {
+          "row_id": "r3",
+          "year": 2010,
+          "month": 1,
+          "day": 2,
+          "time": 10,
+          "store": 2,
+          "SKU": "AA",
+          "number": 4
+        },
+        {
+          "row_id": "r4",
+          "year": 2010,
+          "month": 1,
+          "day": 3,
+          "time": 11,
+          "store": 1,
+          "SKU": "BB",
+          "number": 6
+        },
+        {
+          "row_id": "r5",
+          "year": 2010,
+          "month": 2,
+          "day": 2,
+          "time": 12,
+          "store": 2,
+          "SKU": "AA",
+          "number": 10
+        },
+        {
+          "row_id": "r6",
+          "year": 2010,
+          "month": 2,
+          "day": 3,
+          "time": 13,
+          "store": 1,
+          "SKU": "CC",
+          "number": 3
+        }
+      ],
+      "t1_inputs": [
+        {
+          "row_id": "r5",
+          "year": 2010,
+          "month": 2,
+          "day": 2,
+          "time": 12,
+          "store": 2,
+          "SKU": "AA",
+          "number": 10
+        },
+        {
+          "row_id": "r1",
+          "year": 2010,
+          "month": 1,
+          "day": 1,
+          "time": 9,
+          "store": 2,
+          "SKU": "AA",
+          "number": 2
+        },
+        {
+          "row_id": "r6",
+          "year": 2010,
+          "month": 2,
+          "day": 3,
+          "time": 13,
+          "store": 1,
+          "SKU": "CC",
+          "number": 3
+        },
+        {
+          "row_id": "r3",
+          "year": 2010,
+          "month": 1,
+          "day": 2,
+          "time": 10,
+          "store": 2,
+          "SKU": "AA",
+          "number": 4
+        },
+        {
+          "row_id": "r2",
+          "year": 2010,
+          "month": 2,
+          "day": 1,
+          "time": 9,
+          "store": 1,
+          "SKU": "BB",
+          "number": 8
+        },
+        {
+          "row_id": "r4",
+          "year": 2010,
+          "month": 1,
+          "day": 3,
+          "time": 11,
+          "store": 1,
+          "SKU": "BB",
+          "number": 6
+        }
+      ]
+    }
+  ],
+  "submissions": [
+    {
+      "submission_key": "S131",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    keys = extract key_field from each record\n    values = extract number from each record\n    labels, inverse = distinct sorted keys and per-row label indices\n    result = []\n    for label_index in 0 .. count(labels)-1:\n      group_values = values at positions where inverse equals label_index\n      result.append({key: labels[label_index],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(count(group_values))})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "submission_key": "S166",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    keys = extract key_field from each record\n    values = extract number from each record\n    permutation = indices that sort keys\n    sorted_keys = keys[permutation]\n    sorted_values = values[permutation]\n    starts = indices where sorted_keys changes, including 0\n    ends = next starts, with final end = number of records\n    result = []\n    for (start, end) in paired starts and ends:\n      group_values = sorted_values[start:end]\n      result.append({key: sorted_keys[start],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(end-start)})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 8,
+              "sum": 14,
+              "mean": 7,
+              "mean_exact": "7"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 6,
+              "sum": 12,
+              "mean": 4,
+              "mean_exact": "4"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 21,
+              "mean": 7,
+              "mean_exact": "7"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 3,
+              "max": 8,
+              "sum": 17,
+              "mean": 5.666666666666667,
+              "mean_exact": "17/3"
+            },
+            {
+              "key": 2,
+              "min": 2,
+              "max": 10,
+              "sum": 16,
+              "mean": 5.333333333333333,
+              "mean_exact": "16/3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "submission_key": "S180",
+      "case_key": "V4",
+      "evidence": "function summarize(records):\n  output = {}\n  for key_field in [SKU, month, store]:\n    sorted_keys = sort(extract key_field from each record)\n    values = extract number from each record\n    starts = indices where sorted_keys changes, including 0\n    ends = next starts, with final end = number of records\n    result = []\n    for (start, end) in paired starts and ends:\n      group_values = values[start:end]\n      result.append({key: sorted_keys[start],\n        sum: sum(group_values), min: min(group_values),\n        max: max(group_values), mean: sum(group_values) / real(end-start)})\n    output[key_field] = result\n  return output",
+      "phase_note": "같은 고정 의사코드의 t0/t1 출력; 입력행만 재배열. 원판의 구매 데이터나 실제 참가자 제출이 아니라 작성자 산술 예시.",
+      "t0_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": "BB",
+              "min": 6,
+              "max": 10,
+              "sum": 16,
+              "mean": 8,
+              "mean_exact": "8"
+            },
+            {
+              "key": "CC",
+              "min": 3,
+              "max": 3,
+              "sum": 3,
+              "mean": 3,
+              "mean_exact": "3"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 19,
+              "mean": 6.333333333333333,
+              "mean_exact": "19/3"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 8,
+              "sum": 14,
+              "mean": 4.666666666666667,
+              "mean_exact": "14/3"
+            },
+            {
+              "key": 2,
+              "min": 3,
+              "max": 10,
+              "sum": 19,
+              "mean": 6.333333333333333,
+              "mean_exact": "19/3"
+            }
+          ]
+        }
+      ],
+      "t1_submitted_outputs": [
+        {
+          "grouping": "product",
+          "key_field": "SKU",
+          "groups": [
+            {
+              "key": "AA",
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": "BB",
+              "min": 4,
+              "max": 8,
+              "sum": 12,
+              "mean": 6,
+              "mean_exact": "6"
+            },
+            {
+              "key": "CC",
+              "min": 6,
+              "max": 6,
+              "sum": 6,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        },
+        {
+          "grouping": "month",
+          "key_field": "month",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": 2,
+              "min": 4,
+              "max": 8,
+              "sum": 18,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        },
+        {
+          "grouping": "store",
+          "key_field": "store",
+          "groups": [
+            {
+              "key": 1,
+              "min": 2,
+              "max": 10,
+              "sum": 15,
+              "mean": 5,
+              "mean_exact": "5"
+            },
+            {
+              "key": 2,
+              "min": 4,
+              "max": 8,
+              "sum": 18,
+              "mean": 6,
+              "mean_exact": "6"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "requested_output": "JSON with scope, input_sha256, grades[submission_key,requirements,overall,major_error,evidence,t1_action], changed_interpretation, human_validation=false"
+}

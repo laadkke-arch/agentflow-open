@@ -1,0 +1,518 @@
+{
+  "reviewer_scope": {
+    "kind": "SEPARATE_CONTEXT_AI_BLIND_DOCUMENT_READING",
+    "permitted_input": "/workspace/scratch/4bb4177c60a7/agentflow-open/docs/workstreams/research/AF-RES-038/evidence/blind-input.json",
+    "input_sha256": "4fbf39dee9703af069aa3490e59c838683a93ae50042f7369c2c08a58dc9a4f0",
+    "sealed_commit_supplied_by_requester": "a9589eb1ed899da83230e5c6a3ffa30123b7d5f2",
+    "sealed_commit_independently_verified": false,
+    "work_performed": "blind-input.json의 익명 요구 4건과 제출 12건을 직접 판독했다. 제공된 V4 원행과 제출 수치의 산술만 Python 표준 자료형/유리수로 재계산했다. 요구 판정과 수정 필요성을 기록했으며 실제 수정 수행·노동을 추정하지 않았다.",
+    "file_access_during_this_blind_stage": [
+      "/workspace/scratch/4bb4177c60a7/agentflow-open/docs/workstreams/research/AF-RES-038/evidence/blind-input.json"
+    ],
+    "prior_context": "동일 별도 AI 문맥에서 이전 protocol v1 준비도 검토를 수행했으며 아래 두 파일의 내용을 이미 알고 있었다. 이번 가림 판독에서는 다시 열지 않았다.",
+    "prohibited_material_accessed": false,
+    "external_source_or_historical_software_execution": false,
+    "git_commands_or_remote_operations": false,
+    "actual_ui_model_identity": "unverified",
+    "grading_rules": "각 요구의 명시된 pass_condition과 제출 행동을 적용했다. 문서상 구체적 위반은 fail, 모든 필수 요구 pass이고 중대오류가 없을 때 전체 pass다. 설계 과제의 pass를 실제 실행 성공으로 보지 않는다. 별도 severity 척도는 없으므로 핵심 구조 요구의 명시적 거부 또는 조용한 값/키 의미 손상을 중대오류로 표시하고 근거를 남겼다.",
+    "blinding": "제품·정책·배정군이나 예상 정답 개수/분포를 추정하지 않았다. 모든 arm_guess는 null이다.",
+    "result_limit": "사전에 작성된 두 시점 vignette의 문서 판독이다. 사람 참가자, 사람 판정 합의, 역사적 소프트웨어 실행, 재작업 발생률, 노동 절감 또는 제품 효과의 검증이 아니다."
+  },
+  "outside_files_read": [
+    {
+      "path": "/workspace/scratch/4bb4177c60a7/agentflow-open/docs/workstreams/research/AF-RES-038/measurement.md",
+      "stage": "이전 protocol v1 준비도 검토",
+      "reopened_during_blind_stage": false
+    },
+    {
+      "path": "/workspace/scratch/4bb4177c60a7/agentflow-open/docs/workstreams/research/AF-RES-038/forms/run-config.json",
+      "stage": "이전 protocol v1 준비도 검토",
+      "reopened_during_blind_stage": false
+    }
+  ],
+  "human_validation": false,
+  "grades": [
+    {
+      "submission_key": "S110",
+      "case_key": "M2",
+      "requirements": {
+        "R1": "fail",
+        "R2": "fail",
+        "R3": "fail"
+      },
+      "overall": "fail",
+      "major_error": true,
+      "evidence": {
+        "R1": "blind-input.json:253. '첫 행에서 월-일-년 형식'을 추론하지만 '형식을 명시적으로 고정하지 않는다'. 같은 재검 batch에서 12-01→2000-12-01(MDY), 13-01→2000-01-13(DMY)로 형식이 달라졌다.",
+        "R2": "blind-input.json:253. 오류 정책을 raise로 선언했으나 MDY에 맞지 않는 13-01을 오류 없이 다른 순서로 파싱한다. 두 결과가 날짜라는 사실은 한 형식 유지·선언 오류 정책을 충족하지 않는다.",
+        "R3": "blind-input.json:253. 이 batch에서 첫 행이 확정한 MDY를 적용하면 13-01의 month=13은 부적합하다. 이를 1월 13일로 조용히 바꾸어 반환한 것이 구체적인 위반이다."
+      },
+      "t1_action": {
+        "judgment": "원요구 수정 필요",
+        "affected_requirements": [
+          "R1",
+          "R2",
+          "R3"
+        ],
+        "reason": "batch에서 한 번 확정한 형식을 모든 행에 유지하고 불일치는 raise로 처리해야 한다.",
+        "observed_vignette_state": "재검의 조용한 형식 전환을 성공으로 제출하므로 문서상 결함이 유지된다.",
+        "performed_repair_evidence": "수정 수행 미확인; 필요성과 수행을 동일시하지 않음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "판정은 서술된 입출력에 근거한다. 두 번째 재검 batch의 개별 응답은 없지만 첫 번째 batch만으로 세 위반을 확인할 수 있다. 실제 변환 함수 실행·수정·노동은 확인하지 않았다. 세 요구 위반의 공통 원인은 batch 형식 미고정이다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S117",
+      "case_key": "K7",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:259. '컴파일 대상과 의존관계는 별도 선언 그래프'에 두고 개발 명령과 wheel hook이 같은 그래프를 구성한다. 컴파일 구조 분리와 두 호출경로가 명시되어 있다.",
+        "R2": "blind-input.json:259. 개발 명령과 wheel 생성 hook이 병렬 빌드를 실행하며, '풀린 sdist에서도 같은 hook을 호출'한다. sdist에 그래프·필수 소스·backend 경로를 포함하고 두 경로의 worker 전달을 검사할 계획이다.",
+        "R3": "blind-input.json:259. 표준 wheel hook→native artifact→metadata와 wheel 조립의 연결 및 sdist 필수 입력이 명시되어 있다. packaging 라이브러리에 metadata/조립을 위임하는 것은 요구의 허용 범위다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "제시된 설계가 개발/source-install 및 배포 계약의 원요구를 만족한다. 원요구 수정이 필요한 결함은 문서에서 발견하지 못했다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "별도 t1 변경 로그는 없다. 문서 과제의 설계와 검증 계획에 대한 pass이며, 실제 빌드·worker 수·성능·플랫폼 성공은 미확인이다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S124",
+      "case_key": "M2",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:265. explicit '%d-%m-%Y %H:%M:%S' 상수를 매 문자열에 동일하게 전달한다. 문자열별 순차 호출이어도 batch 전체에 같은 형식을 쓰므로 충족한다.",
+        "R2": "blind-input.json:265. DMY에서 02-01→2000-01-02, 12-01→2000-01-12, 13-01→2000-01-13이 일관되며 대체 형식을 시도하지 않는다.",
+        "R3": "blind-input.json:265. month13 입력에서 ValueError가 전파된다. DMY의 01-13은 month=13이므로 오류가 올바른 결과이며 정상 날짜로 바뀌지 않는다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "같은 explicit 형식과 raise 정책이 t0 및 재검에 유지된다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "실제 라이브러리 실행은 확인하지 않았다. 결과를 datetime 객체 목록으로 담거나 ISO 문자열로 정상화하는 방식은 주어진 요구의 위반 근거가 아니다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S131",
+      "case_key": "V4",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:271, 273-424. SKU, month, store를 각각 순회하고 원키 SKU={AA,BB,CC}, month={1,2}, store={1,2}를 모두 반환한다.",
+        "R2": "blind-input.json:271, 273-424. 네 통계를 모두 계산하고 분모를 real(count(...))로 처리한다. 원행 재계산 결과 SKU AA: min2/max10/sum16/mean16/3, BB:6/8/14/7, CC:3/3/3/3; month1:2/6/12/4, month2:3/10/21/7; store1:3/8/17/17/3, store2:2/10/16/16/3. 두 시점의 제출값이 모두 일치한다.",
+        "R3": "blind-input.json:271. per-row inverse label이 같은 원행의 number를 선택하므로 키와 값의 대응을 보존한다. 예를 들어 AA는 t0 r1/r3/r5, t1 r5/r1/r3이며 값의 집합은 {2,4,10}으로 같다. 제출된 t0/t1 키별 결과도 동일하다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "동일 의사코드가 행 재배열 뒤에도 원행 소속과 통계를 보존하며 두 시점의 출력이 일치한다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "제공된 유한 입력의 산술과 의사코드 의미를 검토했다. 실제 코드·원 구매자료·참가자 실행을 검증한 것은 아니다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S138",
+      "case_key": "K7",
+      "requirements": {
+        "R1": "fail",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "fail",
+      "major_error": true,
+      "evidence": {
+        "R1": "blind-input.json:429. target, dependency, source 생성과 확장 모듈 빌드 분기를 '하나의 호스트 언어 통합 빌드 스크립트 안'에 계속 모두 두고 '별도 선언 그래프는 만들지 않는다'. 동등한 분리 구조도 제시하지 않아 핵심 분리 요구에 정면으로 어긋난다.",
+        "R2": "blind-input.json:429. 개발과 source-distribution 설치 양쪽에서 컴파일/확장 모듈 빌드 스크립트로 병렬 worker 옵션을 전달하는 호출경로를 제시한다. 문서상 병렬 경로는 양쪽에 있으며 R1의 구조 분리 실패와 구별한다.",
+        "R3": "blind-input.json:429. 표준 wheel/sdist hook이 빌드 스크립트를 호출하고 기존 packaging 기능으로 wheel/source archive 형식과 필수 파일을 맞추는 설계를 제시한다. packaging 위임 자체는 허용된다."
+      },
+      "t1_action": {
+        "judgment": "원요구 수정 필요",
+        "affected_requirements": [
+          "R1"
+        ],
+        "reason": "native target·의존·생성 규칙을 monolith에서 분리한 선언 graph 또는 동등 구조와 호출경로로 바꾸어야 한다.",
+        "observed_vignette_state": "제출은 monolith 유지를 명시한다. 별도 t1 설계 변경 증거는 없다.",
+        "performed_repair_evidence": "수정 수행 미확인; 필요성과 수행을 동일시하지 않음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "R2/R3의 pass는 제시된 연결 설계에 한정되며 실제 병렬 실행·artifact 완결성은 미확인이다. R1은 과제의 핵심 구조 요구를 명시적으로 거부하므로 중대 위반으로 판단했으나, 입력에는 별도 severity 척도가 없다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S145",
+      "case_key": "M2",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:435. 전체 배열을 explicit '%d-%m-%Y %H:%M:%S'의 한 strict 변환에 넘기고 fallback을 하지 않는다.",
+        "R2": "blind-input.json:435. 02-01→1월2일, 12-01→1월12일, 13-01→1월13일로 DMY를 일관되게 적용한다. 불일치는 선언한 raise 정책으로 처리한다.",
+        "R3": "blind-input.json:435. month13 입력은 오류로 끝나고 형식을 바꾸지 않는다. 부적합 문자열을 다른 순서의 정상 날짜로 대체하지 않는다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "고정 explicit 형식과 오류 정책이 재검에서도 유지되어 원요구 수정 근거가 없다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "strict 변환의 실제 소프트웨어 실행은 확인하지 않았다. 제공된 설계와 응답의 합치성을 판독했다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S152",
+      "case_key": "K7",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:441. 프로젝트 선언에 native target·호스트 installation/dependency·플랫폼 설치 위치를 두고 개발 compile과 frontend가 호출하는 backend가 같은 graph를 사용한다.",
+        "R2": "blind-input.json:441. 두 호출경로가 같은 graph와 backend의 compile/install에 도달하고 compile worker 설정은 native runner에 전달된다. sdist에 graph와 소스를 담고 두 경로를 검증하는 계획을 제시한다.",
+        "R3": "blind-input.json:441. 호스트 frontend→native backend→compile/install→native artifact의 wheel 포장 연결과 sdist의 graph/소스 계약을 제시한다. 플랫폼 제한과 버전 의존성도 검증 대상으로 남긴다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "제시된 설계 범위에서 분리 구조, 두 빌드 경로, wheel/sdist 연결이 원요구를 충족한다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "별도 t1 변경 로그와 실제 빌드 결과는 없다. worker 수·성능·특정 버전의 실행 성공을 인정한 판정이 아니다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S159",
+      "case_key": "R9",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:447. 처음 생성할 때 nullable 64-bit 정수 dtype을 선언하고 대입 뒤에도 같은 dtype을 유지한다. 기존 native 컨테이너를 바꾼 것이 아니므로 생성 시 schema 선택 허용 조건에 맞는다.",
+        "R2": "blind-input.json:447. setter가 lossless 검증 뒤 값을 저장하는 설계이며, 독립 [1,2,3]의 index1=3.0이 [1,3,3]으로 손실 없이 저장된다. 선언된 lossless 정수 저장 규칙은 범위 내 정수·whole float에 합치한다.",
+        "R3": "blind-input.json:447. 1.5와 potage는 쓰기 전에 TypeError로 끝나며 원래 값과 dtype이 보존된다. 검사 실패 뒤 승격 경로도 만들지 않는다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "재검의 whole float 저장과 fractional/text 거부가 원요구를 만족한다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "t0의 각 probe 출력이 별도로 열거되지는 않았으나 일반 lossless 저장 규칙과 t1 응답이 명시되어 있어 설계/행동 합치성으로 pass를 부여했다. setter의 실제 구현·특정 버전 실행은 미확인이다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S166",
+      "case_key": "V4",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:453, 455-606. SKU, month, store를 각각 처리하고 SKU={AA,BB,CC}, month={1,2}, store={1,2}의 원키를 반환한다.",
+        "R2": "blind-input.json:453, 455-606. min/max/sum과 실수 나눗셈 mean을 모두 계산한다. 원행 계산으로 AA=[2,4,10]→(min2,max10,sum16,mean16/3), BB=[8,6]→(6,8,14,7), CC=[3]→(3,3,3,3), month1=[2,4,6]→(2,6,12,4), month2=[8,10,3]→(3,10,21,7), store1=[8,6,3]→(3,8,17,17/3), store2=[2,4,10]→(2,10,16,16/3). t0/t1 제출값이 모두 일치한다.",
+        "R3": "blind-input.json:453. 동일 permutation을 keys와 values 양쪽에 적용한 후 같은 키의 연속 구간을 나누므로 원행 대응이 유지된다. 행순서 변경 뒤에도 두 시점의 결과가 동일하다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "같은 정렬 permutation을 키와 값에 함께 적용하므로 재배열 뒤 원키별 결과가 유지된다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "유한 입력의 산술 및 의사코드 검토이며 실제 제품/역사적 라이브러리 실행을 한 것은 아니다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S173",
+      "case_key": "R9",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "pass"
+      },
+      "overall": "pass",
+      "major_error": false,
+      "evidence": {
+        "R1": "blind-input.json:611. native 64-bit 정수 dtype을 처음 선언하고 호환 값만 setter에 전달한다. 3.0 저장 뒤와 비호환 오류 뒤 모두 초기 dtype을 유지한다.",
+        "R2": "blind-input.json:611. 허용된 정수 또는 범위 내 정수값 float인지 먼저 검사한다. index1=3.0→[1,3,3]이므로 whole float를 손실 없이 저장하며 정수도 허용하는 설계다.",
+        "R3": "blind-input.json:611. 검사 실패 시 외부 오류를 내고 fallback setter를 호출하지 않는다. 1.5 또는 potage를 넣는 독립 probe에서 [1,2,3]과 dtype이 보존된다."
+      },
+      "t1_action": {
+        "judgment": "수정불필요",
+        "scope": "제공된 문서의 원요구 합치성",
+        "reason": "호환성 검사를 쓰기 전에 수행하고 실패 시 원값·dtype을 유지하므로 재검 원요구를 충족한다.",
+        "performed_repair_evidence": "수정 수행의 별도 증거 없음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "일반 규칙과 주어진 응답으로 설계/행동 합치성을 평가했다. 실제 setter 실행이나 범위 밖 NA/overflow/bool/vector 행동은 검증하지 않았다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S180",
+      "case_key": "V4",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "fail"
+      },
+      "overall": "fail",
+      "major_error": true,
+      "evidence": {
+        "R1": "blind-input.json:617, 619-770. SKU, month, store를 각각 출력하며 원키 SKU={AA,BB,CC}, month={1,2}, store={1,2}가 모두 있다. 키 존재·필드 선택과 키에 속한 값의 정확성은 구분해 판독한다.",
+        "R2": "blind-input.json:617, 619-770. pass_condition의 '선택된 그룹 값에 대해'를 산술 기준으로 읽었다. 실제 선택된 잘못된 slice들에 대한 네 산술은 정확하다. 예: t0 첫 slice [2,8,4]→min2/max8/sum14/mean14/3; t1 첫 slice [10,2,3]→min2/max10/sum15/mean5. BB의 t0 [6,10]→6/10/16/8, t1 [4,8]→4/8/12/6도 맞고, 모든 제출 slice의 네 통계를 재계산해 일치했다. 이 pass는 원래 키별 통계가 맞다는 뜻이 아니다.",
+        "R3": "blind-input.json:617. keys만 정렬하고 values에는 같은 permutation을 적용하지 않아 키-값 대응을 파괴한다. AA의 원행은 r1/r3/r5, 값은 [2,4,10], sum16/mean16/3이어야 한다. 제출 AA는 t0 [2,8,4]의 sum14/mean14/3, t1 [10,2,3]의 sum15/mean5이다. CC도 원행 r6의 값3 대신 t1 마지막 원행 r4의 값6을 받는다. 입력행 순서만 바꾸어도 결과가 달라지는 구체적 위반이다."
+      },
+      "t1_action": {
+        "judgment": "원요구 수정 필요",
+        "affected_requirements": [
+          "R3"
+        ],
+        "reason": "keys와 values에 같은 행 permutation을 적용하거나 원행 inverse index로 그룹을 골라야 한다.",
+        "observed_vignette_state": "phase_note가 같은 고정 의사코드라고 명시하며 t1 출력에도 잘못된 대응이 유지된다.",
+        "performed_repair_evidence": "수정 수행 미확인; 필요성과 수행을 동일시하지 않음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "R2의 본문 '각 관측 그룹'을 원래 키별 완성 통계까지 포함한다고 읽으면 R2도 fail이 될 수 있다. 여기서는 더 구체적인 pass_condition '선택된 그룹 값에 대해'를 따라 산술을 R2, 원행 소속을 R3으로 분리했다. 이 해석 차이는 기준 명료화 또는 독립 조정 대상이며 전체 fail·중대 키 의미 손상 판정은 바뀌지 않는다. 키만 정렬한 단일 원인을 다수 수정사건으로 세지 않는다.",
+      "arm_guess": null
+    },
+    {
+      "submission_key": "S187",
+      "case_key": "R9",
+      "requirements": {
+        "R1": "pass",
+        "R2": "pass",
+        "R3": "fail"
+      },
+      "overall": "fail",
+      "major_error": true,
+      "evidence": {
+        "R1": "blind-input.json:775. native 64-bit 정수 dtype을 선언하고 숫자를 정수로 변환해 저장하므로 제시된 대입 결과의 dtype은 초기 dtype과 같다. 값의 손실 여부는 별도 요구다.",
+        "R2": "blind-input.json:775. 범위에 포함된 작은 정수와 whole float의 정수 강제 변환은 값을 유지한다. 명시된 3.0→[1,3,3]도 손실 없는 호환 저장이다.",
+        "R3": "blind-input.json:775. index1=1.5가 오류 없이 [1,1,3]을 반환한다. 비호환 fractional 값을 1로 절삭하고 기존 값2를 바꾸므로 쓰기 전 오류·원값 보존을 모두 위반한다. potage에서 오류가 난다는 사실은 fractional 위반을 상쇄하지 않는다."
+      },
+      "t1_action": {
+        "judgment": "원요구 수정 필요",
+        "affected_requirements": [
+          "R3"
+        ],
+        "reason": "강제 정수 변환 전에 lossless 호환성을 검사하고 fractional/text는 쓰기 없이 오류로 종료해야 한다.",
+        "observed_vignette_state": "dtype이 같으므로 안전하다고 판단하며 fractional 절삭을 유지한다.",
+        "performed_repair_evidence": "수정 수행 미확인; 필요성과 수행을 동일시하지 않음",
+        "actual_human_repair_event_count": null
+      },
+      "uncertainty": "제시된 입력 범위의 설계와 응답에 한정한 판정이다. 실제 실행을 확인하지 않았고 NA/overflow/bool/vector는 평가하지 않았다. dtype 보존은 값 보존의 증거가 아니다.",
+      "arm_guess": null
+    }
+  ],
+  "cross_case_observations": [
+    {
+      "topic": "판정 분모와 사건",
+      "observation": "요구 여러 개의 실패는 여러 독립 수정사건을 뜻하지 않는다. S110은 batch 형식 미고정이라는 하나의 원인이 R1/R2/R3에 파급된다. S180은 키만 정렬한 하나의 원인이 여러 키별 결과를 손상한다. 모든 수정 필요 판정은 실제 수정 수행 증거와 구분했다."
+    },
+    {
+      "topic": "허용된 대안",
+      "observation": "K7의 packaging 위임, M2의 문자열별 같은 format 호출, R9의 생성 시 nullable 정수 schema, V4의 inverse index와 양쪽 동시 정렬은 각각 주어진 요구가 허용하는 설계로 판독했다. 특정 이름·컨테이너·속도 또는 문서의 익숙함으로 점수를 매기지 않았다."
+    },
+    {
+      "topic": "문서 합치성과 실행 증거",
+      "observation": "제출의 설계·명시된 응답이 요구를 만족하는지 평가했다. 실제 빌드 결과나 참가자 로그가 없다는 점은 별도로 미확인으로 남겼으며, 문서 과제에서 명시적으로 허용한 설계 판정을 일괄 unverified로 낮추지는 않았다."
+    },
+    {
+      "topic": "V4 산술 재계산",
+      "statistic_order": [
+        "min",
+        "max",
+        "sum",
+        "mean_exact"
+      ],
+      "t0_t1_original_group_results_identical": true,
+      "values_derived_only_from_blind_input": [
+        {
+          "key_field": "SKU",
+          "key": "AA",
+          "row_ids": [
+            "r1",
+            "r3",
+            "r5"
+          ],
+          "numbers": [
+            2,
+            4,
+            10
+          ],
+          "statistics": [
+            2,
+            10,
+            16,
+            "16/3"
+          ]
+        },
+        {
+          "key_field": "SKU",
+          "key": "BB",
+          "row_ids": [
+            "r2",
+            "r4"
+          ],
+          "numbers": [
+            8,
+            6
+          ],
+          "statistics": [
+            6,
+            8,
+            14,
+            "7"
+          ]
+        },
+        {
+          "key_field": "SKU",
+          "key": "CC",
+          "row_ids": [
+            "r6"
+          ],
+          "numbers": [
+            3
+          ],
+          "statistics": [
+            3,
+            3,
+            3,
+            "3"
+          ]
+        },
+        {
+          "key_field": "month",
+          "key": 1,
+          "row_ids": [
+            "r1",
+            "r3",
+            "r4"
+          ],
+          "numbers": [
+            2,
+            4,
+            6
+          ],
+          "statistics": [
+            2,
+            6,
+            12,
+            "4"
+          ]
+        },
+        {
+          "key_field": "month",
+          "key": 2,
+          "row_ids": [
+            "r2",
+            "r5",
+            "r6"
+          ],
+          "numbers": [
+            8,
+            10,
+            3
+          ],
+          "statistics": [
+            3,
+            10,
+            21,
+            "7"
+          ]
+        },
+        {
+          "key_field": "store",
+          "key": 1,
+          "row_ids": [
+            "r2",
+            "r4",
+            "r6"
+          ],
+          "numbers": [
+            8,
+            6,
+            3
+          ],
+          "statistics": [
+            3,
+            8,
+            17,
+            "17/3"
+          ]
+        },
+        {
+          "key_field": "store",
+          "key": 2,
+          "row_ids": [
+            "r1",
+            "r3",
+            "r5"
+          ],
+          "numbers": [
+            2,
+            4,
+            10
+          ],
+          "statistics": [
+            2,
+            10,
+            16,
+            "16/3"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "요구 경계의 명료화",
+      "observation": "V4 R2의 '각 관측 그룹'과 pass_condition의 '선택된 그룹 값'은 잘못된 그룹 선택에서 산술만 맞는 S180에 대해 서로 다른 판정을 유도할 수 있다. 본 판독은 R2 산술 pass/R3 소속 fail로 분리했다. 원키 기준 완성 수치까지 R2에 포함하려면 그 범위를 명시해야 한다. 이 모호성은 전체 fail이나 단일 원인이라는 결론을 바꾸지 않는다."
+    },
+    {
+      "topic": "군·효과 추론 제한",
+      "observation": "제출 이름의 규칙, 군별 결과 분포, 준비된 기대값을 추정하거나 이용하지 않았다. 관측된 문서 판정으로 제품 효과, 비용 절감, 사람 성과, 외부 사람 검증을 주장하지 않는다."
+    }
+  ]
+}

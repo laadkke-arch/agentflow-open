@@ -78,7 +78,7 @@ for e in nc['examples']:
       'separate_context_observed':None,'adjudication':None,'external_human_validated':False})
 
 with (B/'rubric.csv').open('w',newline='') as f:
-    w=csv.DictWriter(f,fieldnames=list(rubric[0]));w.writeheader();w.writerows(rubric)
+    w=csv.DictWriter(f,fieldnames=list(rubric[0]),lineterminator='\n');w.writeheader();w.writerows(rubric)
 (B/'examples.jsonl').write_text(''.join(json.dumps(e,ensure_ascii=False)+'\n' for e in examples))
 
 case_alias={'P02':'K7','P04':'M2','P06':'R9','N08':'V4'}

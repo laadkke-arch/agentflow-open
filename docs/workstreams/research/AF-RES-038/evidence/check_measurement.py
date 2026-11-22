@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parent
 
 def classify(row):
     if not row['t0_adopted']:
+        if row['t1_observed']:
+            return 'initial_work_continuation'
         return 'pre_adoption_abandonment'
     if not row['t1_observed']:
         return 'followup_missing'
@@ -19,6 +21,8 @@ def classify(row):
     if row['changed_decision'] and row['trigger'] == 'original':
         return 'card_error_repair' if row['card_error'] else 'original_requirement_repair'
     if not row['changed_decision']:
+        if row['final_quality'] is None or row['final_quality'] == 'unverified':
+            return 'retained_unverified'
         return 'retained_correct' if row['final_quality'] == 'pass' else 'retained_incorrect'
     return 'unverified'
 
