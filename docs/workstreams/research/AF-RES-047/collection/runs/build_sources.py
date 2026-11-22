@@ -81,6 +81,14 @@ for x in S:
   x['minimum_count']=True; x['quota_category']='author_provenance'; x['duplicate_of']=None
   x['locator']='ro-crate-metadata.json actual workflow Run outputs/_1693481083 inputs OVEMB150205_12.raw/_14.raw + output stand_prot_quant_mergedcompomics.csv; explicit CSV header/firstrow preserved in auxiliary-evidence.json'
   x['observed']='Actual archived proteomics workflow action/input/result graph and first protein-quantification CSV were directly read. Output SHA256157b3691be3720823c9f55626b7554881336ef73f649141c4a23d931a6b4136c. This later auxiliary run is outside core8 and natural6 denominators.'
+
+# Approved complete-input follow-up: same works, new direct-read scope, count0.
+extra=P/'full-fastq-sources.jsonl'
+if extra.exists():
+ existing={x['source_id'] for x in S}
+ for line in extra.read_text().splitlines():
+  item=json.loads(line)
+  if item['source_id'] not in existing:S.append(item);existing.add(item['source_id'])
 with (P/'sources.jsonl').open('w') as f:
  for x in S:f.write(json.dumps(x,ensure_ascii=False)+'\n')
 counts={}

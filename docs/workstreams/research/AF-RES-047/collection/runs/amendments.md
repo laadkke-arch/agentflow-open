@@ -12,3 +12,22 @@
 | R-A06 날짜 동률의 식별자 순 | 메타데이터 날짜에 시각이 붙은 행을 시각까지 정렬했던 원본을 `*-before-day-tie.csv`로 남기고 발행 **일** + 공개 identifier로 재정렬했다. 원본 timestamp 열은 삭제하지 않았다. `frame-day-tie-amendment.json` 참조. | 프레임7–8위,19–24위 | 첫30의 구성, RUN01=5위, RUN02=18위 불변. P2, U_local2, U_external1, R_local2, R_publisher0, V0 모두 불변. |
 
 판과 사용을 확인하지 못한 결과를 성과가 좋은 다른 사례로 교체한 변경은 없다. 최초 배정의 목적·값 선택 규칙은 별도 `RUN01-selection-freeze.json`, `RUN02-selection-freeze.json`에 있으며 후속 값 대조가 성공했는지와 분리된다.
+
+
+## R-A07 / root A10 — 전체 FASTQ 비교가 바꾼 입력 연결
+
+최초 prefix 검사는 두 gzip의 첫20 records만 확인했다. 부모가 전체 비교를 요청하여 `python -B docs/workstreams/research/AF-RES-047/collection/runs/verify_full_fastq.py --perform`를2026-11-22T23:00:16Z–23:09:38Z에 실행했다. 약0.9GB 입력을 스트리밍했고 전체 파일 복사본을 저장하지 않았다. 실행 당시 원본과 SHA `a94b06e7c85b4c3aa69e010edde97f7a3f7ce88e5026d18b415c4d5c8ba6bb3a`를 별도 snapshot/receipt에 보존했다.
+
+전체 archive R1 SHA256은 같은 archive File 선언과 같았다. 실측 archived gzip MD5 `52f3ed344d88278c703faa1280818ce1`은 독립 NIST `HG001-part2.md5` **388행**의 정확 full flow-cell/R1 경로와 일치했다. 현재 served gzip MD5 `24ba6bb88db052d4bf64ac98131d6005`는 목록과 다르지만 두 객체의 완전 decoded1409966879bytes/SHA256은 같다. 목록의 전체 SHA는 최초 열람과 동일했고, 동명 다른 flow-cell의116/254행은 다른 MD5였다.
+
+따라서 현재 publisher gzip의 byte mismatch만으로 원 실행의 외부 입력 연결을 보류한 초기 판단을 수정했다. user/SCOPE는 당대 runID+input 명세/당사자 구체 기록을 허용하므로 별도 machine-I/O 영수증을 필수로 추가하지 않는다. 같은 Zenodo archive의 action `#bdfcc6a4-3bf4-4fd7-9e8c-cc6b0deaa43d`만 R_external=1로 올렸다. GitHub의 다른 UUID는0을 유지한다. raw FASTQ에 없는 CHROM output의 독립 재계산은 없으므로 V=0이다.
+
+| 항목 | 원래 | 수정 후 | 보존/근거 |
+|---|---|---|---|
+| 보강 R_external |0/2|1/2 (RUN02 selected Zenodo action)|cases/readings/runs/summary before-full-fastq snapshots; full comparison+publisher manifest+same archive graph|
+| 보강 V 및 V 조건부 R |0/2; 해당 없음(분모0)|0/2;0/1|선정 CHROM을 다른 필드로 바꾸지 않음|
+| P / U_external / R_local |2/2 /1/2 /2/2|동일|사용 선언/지역 연결을 별도로 유지|
+| 객체 표현 |current gzip bytes mismatch; prefix20 같음|current gzip bytes mismatch 유지; publisher-declared representation match=true; full decoded content match=true|wetlab-full-fastq-interpretation.json|
+| source 기록/최소수 |87행/8저작|90행/8저작|새 직접 열람3행 모두 count0; 원 publisher/consumer 같은 저작|
+
+`cases-before-full-fastq.json`, 각 CSV·summary·sources·findings의 같은 접미사 snapshot과 기존 prefix evidence를 보존했다. `publisher-focused-fields.json`의 초기 suffix filter는 BSD MD5(path)=digest 형식에서 빈 목록을 만들었지만 이전 원 source receipt는 세 matching line을 보존하고 있었다. 재독 후116/254/388행을 정확히 연결했으며 이 수정도 숨기지 않는다. 표본·선정 순서·고정 CHROM 필드는 바꾸지 않았다.

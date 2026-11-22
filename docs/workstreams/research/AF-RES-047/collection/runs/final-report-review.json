@@ -1,0 +1,234 @@
+{
+  "review_id": "AF-RES-047-RUN-FINAL-REVIEW",
+  "reviewed_utc": "2026-11-22T22:58:11.919643+00:00",
+  "reviewer": "/root/runcrates; same model in a separate review turn/context, also original execution-stratum investigator",
+  "review_type": "internal rereading; not external independent review, not blinded",
+  "requested_scope": [
+    "RESULT.md",
+    "contradictions.md",
+    "readings.csv"
+  ],
+  "initial_artifact_sha256": {
+    "RESULT.md": "400742d38b4084c2acaa95df9e388eddab6b62d9da605f339517273b98a293e1",
+    "contradictions.md": "f1d094b83ae07bf752f3693441148d81a1568b265286330cba2863fcd8c4d8ea",
+    "readings.csv": "0e4ab10762ca0a7a2194a0742675c984157e51d28493951e4bed6975cc808ad1"
+  },
+  "root_files_modified": false,
+  "method": "Read root target sections and all six RUN A/B/C rows; compare retained direct-read metadata, logs, decoded field inspections and byte-comparison receipts. No new external source counts or workflow execution.",
+  "checks": [
+    {
+      "id": "C01",
+      "status": "pass",
+      "claim": "RUN01 coord_x63488, y4096, first logical column; not is_cancer physical block",
+      "evidence": "cpm-logical-column-order.json; cpm-small-predictions.inspection.json"
+    },
+    {
+      "id": "C02",
+      "status": "pass",
+      "claim": "RUN02 CHROM1, POS1, END63267, DP0; selected output is not a raw FASTQ field",
+      "evidence": "wetlab-vcf-inspection.json first_record/first_fields"
+    },
+    {
+      "id": "C03",
+      "status": "pass",
+      "claim": "CPM v1/v1.1 test ID is same; preprocess IDs9bdc1af0... / ff67ce65... and dates differ",
+      "evidence": "cpm-v1-ro-crate-metadata.json; cpm-ro-crate-metadata.json; prov_test/preprocess logs"
+    },
+    {
+      "id": "C04",
+      "status": "pass",
+      "claim": "Wetlab archive actionbdfcc6a4... / collectiondcc0e6bb... are not combined with GitHub action2f5723c2...",
+      "evidence": "wetlab-small-ro-crate-metadata.json; wetlab-metadata.json"
+    },
+    {
+      "id": "C05",
+      "status": "pass",
+      "claim": "Output VCF computed SHA25679c41a5e... matches archive graph; SHA1297b1dcd... matches stdout, same lineage only",
+      "evidence": "wetlab-vcf-inspection.json; wetlab-output-meta__outputs___1693335046__stdout.txt line6"
+    },
+    {
+      "id": "C06",
+      "status": "pass",
+      "claim": "Publisher R1 gzip413005346 vs archive487611787 bytes; only first20 decoded records equal, no full equality/correction assertion",
+      "evidence": "wetlab-fastq-prefix-comparison.json; publisher-files-receipts.json"
+    },
+    {
+      "id": "C07",
+      "status": "pass",
+      "claim": "CPM outputs/logs same bytes while input HDF5 and preprocess differ;33 inspected arrays equal does not establish metadata-only complete change",
+      "evidence": "cpm-edition-comparison.json; cpm-input-edition-comparison.json"
+    },
+    {
+      "id": "C08",
+      "status": "pass",
+      "claim": "Core execution-stratum P2/U_external1/R_local2/R_external0/V0; natural denominator separate",
+      "evidence": "root readings C rows; root RESULT summary; collection/runs/summary-counts.json"
+    },
+    {
+      "id": "C09",
+      "status": "pass",
+      "claim": "A/B visible_values do not expose63488 or CHROM1; audit_only fields are explicitly outside packets",
+      "evidence": "readings.csv RUN01/02 A/B visible_values and packet_boundary; subject to issueRUN-REVIEW-01 purpose overlap"
+    },
+    {
+      "id": "C10",
+      "status": "pass",
+      "claim": "Same URL/bytes but original run did not read object is explicitly unmet; CPM time inversion is not treated as a negative read trace",
+      "evidence": "contradictions.md section3; RESULT Q6/last weakness table"
+    },
+    {
+      "id": "C11",
+      "status": "pass",
+      "claim": "CPM consumer archive edition pair is not a CAMELYON publisher next-edition pair; Wetlab compression representations are not asserted publisher successive releases",
+      "evidence": "contradictions.md section4; RESULT Q5"
+    },
+    {
+      "id": "C12",
+      "status": "pass",
+      "claim": "LivePublication/WOMBAT auxiliary provenance does not enter8 core/2 execution/6 natural denominator or strict V count",
+      "evidence": "RESULT source-count paragraph; source-count-summary.json; auxiliary-evidence.json"
+    }
+  ],
+  "issues": [
+    {
+      "id": "RUN-REVIEW-01",
+      "severity": "medium",
+      "location": "readings.csv RUN02 A/B, purpose; RESULT table2 RUN02 A/B packet interpretation",
+      "initial_observation": "The visible purpose says chromosome1 gVCF although C newly reveals selected CHROM=1. Actual output content is hidden, but the matching target parameter is already visible.",
+      "initial_text": "NIST GIAB NA12878 paired FASTQ와 hs37d5 reference/known variant resources로 chromosome1 gVCF를 생성한다.",
+      "risk": "A/B packet boundary and C−B information gain can be overstated; does not change strict V=0.",
+      "evidence": [
+        "collection/runs/RUN02-selection-freeze.json target_time includes chromosome1 parameter",
+        "collection/runs/paper-catalogue-metadata.json ZEN-12622362.description does not name chromosome1",
+        "collection/runs/wetlab-vcf-inspection.json first_fields.#CHROM=1"
+      ],
+      "recommendation": "Use only public variant-calling purpose in visible RUN02 A/B purpose; retain full purpose in audit_only_full_purpose. If target parameter is intentionally visible, explicitly distinguish its prior exposure from output rereading.",
+      "parent_reported_resolution": "Root reported scripts/consolidate.py packet_purpose update; regeneration pending at this snapshot.",
+      "status": "resolved_verified_in_regenerated_readings",
+      "resolved_checked_utc": "2026-11-22T23:00:40.757272+00:00",
+      "final_path": "readings.csv case_id=RUN02 configuration=A/B",
+      "resolution": "Full purpose moved to audit_only_full_purpose; visible purpose limited to public variant-calling aim."
+    },
+    {
+      "id": "RUN-REVIEW-02",
+      "severity": "medium",
+      "location": "readings.csv RUN01 A/B target_time",
+      "initial_observation": "v1.1 release2023-06-29 labels the API created date as release. Both edition records retain publication_date2023-02-25.",
+      "initial_text": "v1 publication2023-02-25, v1.1 release2023-06-29",
+      "risk": "The investigation specifically distinguishes publication, creation/export, modification and run time; this wording collapses two axes. No P/U/R/V count changes.",
+      "evidence": [
+        "collection/runs/catalogue-metadata.json ZEN-7676923 publication_date/created/modified",
+        "collection/runs/cpm-edition-list.json versions7676924/8095888"
+      ],
+      "recommendation": "Say both metadata publication_date=2023-02-25; v1.1 record created=2023-06-29, modified=2023-06-30. Do not imply independently verified first-public release day.",
+      "parent_reported_resolution": "Root reported scripts/consolidate.py target_time update; regeneration pending at this snapshot.",
+      "status": "resolved_verified_in_regenerated_readings",
+      "resolved_checked_utc": "2026-11-22T23:00:40.757272+00:00",
+      "final_path": "readings.csv case_id=RUN01 configuration=A/B",
+      "resolution": "Both metadata publication dates distinguished from v1.1 record creation date."
+    },
+    {
+      "id": "RUN-REVIEW-03",
+      "severity": "low",
+      "location": "readings.csv RUN01 C/RUN02 C C_slot_status",
+      "initial_observation": "C_slot_status says see evidence: absent run is not inferred from available code, although both C records are actually present and directly inspected.",
+      "risk": "A generic warning can be mistaken for an absent C slot; flags/local_run_link remain correct.",
+      "recommendation": "Set present: archive graph/log/output directly inspected; external publisher-object/field linkage remains unconfirmed.",
+      "status": "resolved_verified_in_regenerated_readings",
+      "resolved_checked_utc": "2026-11-22T23:00:57.272391+00:00",
+      "resolution": "Both C_slot_status cells explicitly say local execution records present and identify unresolved external linkage."
+    },
+    {
+      "id": "RUN-REVIEW-04",
+      "severity": "low",
+      "location": "RESULT.md RUN01 table1 / Q3-Q4 / Q5; contradictions.md X04",
+      "initial_observation": "Several explanatory cells abbreviate the member as test.log; the exact ZIP member is prov_test.log. Other source-locator cells already use the correct full name.",
+      "risk": "Minor restart/path ambiguity; no factual equality or run-ID error.",
+      "evidence": [
+        "collection/runs/cpm-small.listing.json name=prov_test.log",
+        "collection/runs/cpm-edition-comparison.json member_byte_checks"
+      ],
+      "recommendation": "Use prov_test.log consistently where presenting a source member name, or label test log as ordinary prose rather than a file path.",
+      "status": "clarity_recommendation",
+      "remaining_exact_locations": [
+        {
+          "file": "RESULT.md",
+          "line": 19
+        }
+      ]
+    }
+  ],
+  "axis_values_from_C": {
+    "cases": 2,
+    "publisher_specific": 2,
+    "external_usage": 1,
+    "local_usage": 2,
+    "external_run_link": 0,
+    "local_run_link": 2,
+    "strict_value_checked": 0,
+    "record_reread": 2
+  },
+  "verdict": "Core RUN numeric/run-ID/denominator checks pass. Both medium packet/date findings and the low C-slot clarity finding resolved. Only minor test.log/prov_test.log abbreviation consistency remains if listed; no strict V or R_external upgrade.",
+  "final_recheck": {
+    "checked_utc": "2026-11-22T23:00:40.757272+00:00",
+    "checks": {
+      "RUN-REVIEW-01": true,
+      "RUN-REVIEW-02": true
+    },
+    "artifact_sha256": {
+      "RESULT.md": "a07b58ed9153f961b3dc7d1c4bb5bdb715552ca5d1141a0fa305d917c48b82e4",
+      "contradictions.md": "f1d094b83ae07bf752f3693441148d81a1568b265286330cba2863fcd8c4d8ea",
+      "readings.csv": "f8111fee9432cb46b660c25f52cb29b405ba62e58d241dca32db644a046c1211"
+    },
+    "observed_AB": [
+      {
+        "case_id": "RUN01",
+        "configuration": "A",
+        "purpose": "원 기술문은 prostate carcinoma 검출 학습/평가를 표방하지만 실제 입력은 Camelyon16이다. 작은 공개 fragment를 사용한 응용 실행이며 임상 효능 주장으로 확장하지 않는다.",
+        "target_time": "공개 CPM 실행 보고; 두 판의 metadata publication_date=2023-02-25, v1.1 record created=2023-06-29; 상세 실행 시각은 C 미포함",
+        "audit_only_full_purpose": "원 기술문은 prostate carcinoma 검출 학습/평가를 표방하지만 실제 입력은 Camelyon16이다. 작은 공개 fragment를 사용한 응용 실행이며 임상 효능 주장으로 확장하지 않는다."
+      },
+      {
+        "case_id": "RUN01",
+        "configuration": "B",
+        "purpose": "원 기술문은 prostate carcinoma 검출 학습/평가를 표방하지만 실제 입력은 Camelyon16이다. 작은 공개 fragment를 사용한 응용 실행이며 임상 효능 주장으로 확장하지 않는다.",
+        "target_time": "공개 CPM 실행 보고; 두 판의 metadata publication_date=2023-02-25, v1.1 record created=2023-06-29; 상세 실행 시각은 C 미포함",
+        "audit_only_full_purpose": "원 기술문은 prostate carcinoma 검출 학습/평가를 표방하지만 실제 입력은 Camelyon16이다. 작은 공개 fragment를 사용한 응용 실행이며 임상 효능 주장으로 확장하지 않는다."
+      },
+      {
+        "case_id": "RUN02",
+        "configuration": "A",
+        "purpose": "공개된 NA12878 variant-calling 분석. 구체 염색체 설정·input graph·출력의 값은 C 미포함.",
+        "target_time": "공개 NA12878 variant-calling 실행 보고; 상세 실행 timestamp와 로컬 파일 시각은 C 미포함",
+        "audit_only_full_purpose": "NIST GIAB NA12878 paired FASTQ와 hs37d5 reference/known variant resources로 chromosome1 gVCF를 생성한다. 표본 생산자는 NIST, 재사용 실행 기록 작성자는 José M. Fernández이다."
+      },
+      {
+        "case_id": "RUN02",
+        "configuration": "B",
+        "purpose": "공개된 NA12878 variant-calling 분석. 구체 염색체 설정·input graph·출력의 값은 C 미포함.",
+        "target_time": "공개 NA12878 variant-calling 실행 보고; 상세 실행 timestamp와 로컬 파일 시각은 C 미포함",
+        "audit_only_full_purpose": "NIST GIAB NA12878 paired FASTQ와 hs37d5 reference/known variant resources로 chromosome1 gVCF를 생성한다. 표본 생산자는 NIST, 재사용 실행 기록 작성자는 José M. Fernández이다."
+      }
+    ],
+    "independent_external_review": false,
+    "C_slot_status": {
+      "RUN01": "local execution records present in two distinct artifact editions; external source and cross-stage identity unresolved",
+      "RUN02": "same-archive local execution graph/log/output present; publisher-to-local representation unresolved"
+    },
+    "test_log_abbreviations_remaining": [
+      {
+        "file": "RESULT.md",
+        "line": 19
+      }
+    ]
+  },
+  "post_review_new_evidence": {
+    "checked_utc": "2026-11-22T23:20:29.793920+00:00",
+    "amendment": "A10",
+    "evidence": "wetlab-full-fastq-interpretation.json",
+    "R_external_changed_from": 0,
+    "R_external_changed_to": 1,
+    "V_unchanged": 0,
+    "explanation": "Earlier review correctly described the then-available prefix evidence. Subsequent complete-input measurement plus exact publisher manifest now supplies the external run-input link; not a numeric/run-ID typo in the reviewed snapshot."
+  }
+}

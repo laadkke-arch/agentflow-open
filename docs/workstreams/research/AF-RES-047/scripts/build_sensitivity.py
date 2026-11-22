@@ -60,10 +60,10 @@ SPEC = {
  ]),
  'RUN02': ('유지', [
   ('present','보류','2023 원실행,2014 source 객체,2026 감사fetch를 한 시점으로 오인할 수 있다.','같은archive action start/end와publishertimestamp'),
-  ('present','보류','같은basename의다른flowcell을 가를수없다. fullpath사용선언U1→0.','fullflowcell/project/sample/R1path와localhash'),
-  ('present_local','보류','publisher객체가있어도archive action→Collection→R1이 사라져사용선언과R_local을 잃는다.','Zenodo동일archive의bdfcc6a4 action/object'),
+  ('present','보류','같은basename의다른flowcell을 가를수없다. fullpath사용선언U1→0,발행자fingerprint와원실행의외부입력연결R1→0.','fullflowcell/project/sample/R1path와localhash·publisher MD5388행'),
+  ('present_external_run','보류','publisher객체가있어도archive action→Collection→R1이 사라져사용선언과R_local 및외부입력연결R1→0.','Zenodo동일archive의bdfcc6a4 action/object'),
   ('present_record','보류','CHROM1/POS1/DP0를잃어동일출력 재독의범위를 말할수없다.','첫gVCF비header행과output hash'),
-  ('present_representation_difference','유지','공식정정은미확인이라는원판정은유지. 압축크기차이/decodedprefix일치 검사를빼면수치정정과재압축을 구분할제약을잃는다.','원/현재gzip전체decodeddigest 또는입수변환영수증'),
+  ('present_representation_difference','유지','공식정정사유는미확인이나 전체decoded내용동일성은확인했다. 현재gzip과목록MD5의차이를빼면목록이지목하는압축표현을구별할제약을잃는다.','전체decoded SHA256·archive SHA256·publisher MD5목록388행대조기록'),
  ]),
 }
 
@@ -79,8 +79,10 @@ def main():
             if index == 1:
                 after_axes['publisher_exists'] = False
                 after_axes['specific_usage'] = False
+                after_axes['run_link'] = False
             elif index == 2:
                 after_axes['specific_usage'] = False
+                after_axes['run_link'] = False
             missing = state.startswith('missing')
             rows.append({
                 'case_id': case['case_id'], 'removed_item': FIELDS[index], 'original_evidence_state': state,
@@ -89,7 +91,8 @@ def main():
                 'scope': '원래 목적에 한정한 가장 강한 기록문장 유지/정정/보류; 진본 사용판 판정은 별도',
                 'baseline_allowed_claim': case['strongest_claim'], 'lost_claim_or_limit': reason,
                 'new_information_loss': not missing,
-                'actual_used_edition_before': '보류', 'actual_used_edition_after': '보류',
+                'actual_used_edition_before': '기록상 외부 객체 연결 확인; 선정 필드 V는 보류' if before_axes['run_link'] else '보류',
+                'actual_used_edition_after': '기록상 외부 객체 연결 확인; 선정 필드 V는 보류' if after_axes['run_link'] else '보류',
                 'strict_positive_before': False, 'strict_positive_after': False,
                 'axes_before': json.dumps(before_axes, ensure_ascii=False),
                 'axes_after': json.dumps(after_axes, ensure_ascii=False),
@@ -104,6 +107,9 @@ def main():
     summary = {'rows': len(rows), 'unit': 'case × one of five removed evidence items',
                'decision_changes': sum(row['decision_changed'] for row in rows),
                'strict_actual_use_changes': 0,
+               'strict_actual_use_changes_definition': 'Legacy key: joint authentic-used-object plus selected-field-value positivity (V), not input-only R. See external_run_link_changes separately.',
+               'strict_value_positive_changes': 0,
+               'external_run_link_changes': sum(json.loads(row['axes_before'])['run_link'] != json.loads(row['axes_after'])['run_link'] for row in rows),
                'already_missing_no_new_information_loss': sum(not row['new_information_loss'] for row in rows),
                'by_removed_item': {item: {'rows': 8, 'decision_changes': sum(row['decision_changed'] for row in rows if row['removed_item'] == item)} for item in FIELDS},
                'limitation': 'Deterministic evidence-removal reasoning, not observed users or blinded classification trials. Same strong claim may weaken while an already-held decision stays held.'}

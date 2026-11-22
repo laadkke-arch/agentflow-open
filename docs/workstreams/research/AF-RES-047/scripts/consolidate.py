@@ -13,6 +13,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIMARY = ['RJ01', 'RJ02', 'RJ03', 'N-E00', 'N-E01', 'N-E02', 'RUN01', 'RUN02']
+C_SLOTS = {
+    'RJ01': 'author code present; research_data.xlsx and original run absent',
+    'RJ02': 'contemporary input manifest and derived feature record present; original run receipt absent',
+    'RJ03': 'author recipe present; saved Iris Rmonad object/session/run absent',
+    'N-E00': 'contemporary author output present; WoRMS snapshot/query/run absent',
+    'N-E01': 'missing contemporary BCO input manifest/run slot; no replacement by own RAAVEN output',
+    'N-E02': 'contemporary author code present; actual RUC export/training run absent',
+    'RUN01': 'local execution records present in two distinct artifact editions; external source and cross-stage identity unresolved',
+    'RUN02': 'same-archive execution graph/log/output present; selected R1 publisher linkage confirmed by full bytes and exact-path publisher MD5; selected CHROM V unresolved',
+}
 ORIGINAL_NATURAL = ['RJ01', 'RJ02', 'RJ03', 'N-E01', 'N-E02', 'N-E03']
 CATEGORIES = {
     'consumer': 'consumer_original', 'consumer_original': 'consumer_original',
@@ -74,6 +84,8 @@ def source_rows():
     files.append(ROOT / 'collection/root-reviews.jsonl')
     if (ROOT / 'collection/root-followups.jsonl').exists():
         files.append(ROOT / 'collection/root-followups.jsonl')
+    if (ROOT / 'collection/review-reopens.jsonl').exists():
+        files.append(ROOT / 'collection/review-reopens.jsonl')
     seen_admitted = {}
     for path in files:
         for number, line in enumerate(path.read_text().splitlines(), 1):
@@ -235,16 +247,17 @@ def consolidate():
             usage = truth(pick(cfg, 'publisher_usage_specific', 'usage_specific', 'specific_usage', 'consumer_usage_specific', default=False))
             if case['case_id'] == 'RUN01':
                 usage = False
-            packet_field, packet_time = case['field'], case['target_time']
+            packet_field, packet_time, packet_purpose = case['field'], case['target_time'], case['purpose']
             if configuration in ('A', 'B') and case['case_id'] == 'RUN01':
                 packet_field = 'predictions.h5의 첫 논리적 데이터 열 coord_x; 행의 값·보조좌표는 C 미포함'
-                packet_time = '공개 CPM 실행 보고; v1 publication2023-02-25, v1.1 release2023-06-29; 상세 실행 시각은 C 미포함'
+                packet_time = '공개 CPM 실행 보고; 두 판의 metadata publication_date=2023-02-25, v1.1 record created=2023-06-29; 상세 실행 시각은 C 미포함'
             elif configuration in ('A', 'B') and case['case_id'] == 'RUN02':
                 packet_field = 'output gVCF 첫 비header 행의 CHROM; 값·POS·END·DP는 C 미포함'
                 packet_time = '공개 NA12878 variant-calling 실행 보고; 상세 실행 timestamp와 로컬 파일 시각은 C 미포함'
+                packet_purpose = '공개된 NA12878 variant-calling 분석. 구체 염색체 설정·input graph·출력의 값은 C 미포함.'
             readings.append({
                 'case_id': case['case_id'], 'stratum': case['stratum'], 'configuration': configuration,
-                'purpose': case['purpose'], 'target_time': packet_time, 'field': packet_field,
+                'purpose': packet_purpose, 'target_time': packet_time, 'field': packet_field,
                 'visible_urls': cumulative_urls,
                 'visible_values': values,
                 'exact_locations': cfg.get('evidence', '미확인'),
@@ -258,8 +271,9 @@ def consolidate():
                 'record_reread': truth(cfg.get('record_reread', False)) or (configuration == 'C' and case['case_id'] in ['N-E00', 'RUN01', 'RUN02']),
                 'judgment': cfg.get('judgment', '미확인'), 'new_fact': cfg.get('new_fact', '미확인'),
                 'missing_reason': cfg.get('missing_reason', cfg.get('judgment', '미확인')),
-                'C_slot_status': cfg.get('slot_status', 'see evidence: absent run is not inferred from available code') if configuration == 'C' else 'not applicable',
+                'C_slot_status': C_SLOTS[case['case_id']] if configuration == 'C' else 'not applicable',
                 'audit_only_full_field': case['field'],
+                'audit_only_full_purpose': case['purpose'],
                 'audit_only_full_target_time': case['target_time'],
                 'audit_only_full_missing_reason': case['missing_reason'],
                 'packet_boundary': 'audit_only_* columns are excluded from A/B/C visible packet; not a blinded experiment',

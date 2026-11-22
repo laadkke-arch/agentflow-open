@@ -97,3 +97,8 @@ for cid,rid,url,aid,t,inp,hashes,scope in run_specs:
 with (P/'runs.csv').open('w',newline='') as f:w=csv.DictWriter(f,fieldnames=list(runrows[0]));w.writeheader();w.writerows(runrows)
 (P/'summary-counts.json').write_text(json.dumps({'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'case_denominator':2,'natural_denominator_inclusion':False,'P':2,'U_concrete_local_input_declaration':2,'U_external_publisher_file_declaration':1,'R_record_local':2,'R_independent_publisher_object':0,'V_authentic_used_edition_selected_field':0,'strict_positive':0,'C_record_reread':2,'independent_selected_field_comparison_success':0,'conditional_V_given_canonical_R':'해당 없음 (분모0)','rows_A_B_C':len(rows),'not_a_blinded_experiment':'A/B/C are preserved material views built by the same analyst, not independent-reader accuracy trials'},ensure_ascii=False,indent=2)+'\n')
 print('cases',len(cases),'readings',len(rows),'editions',len(ed),'runs',len(runrows))
+
+# Apply later complete-byte evidence while preserving the original snapshots.
+if (P/'wetlab-full-fastq-interpretation.json').exists():
+ import runpy
+ runpy.run_path(str(P/'apply_full_fastq_followup.py'),run_name='__main__')

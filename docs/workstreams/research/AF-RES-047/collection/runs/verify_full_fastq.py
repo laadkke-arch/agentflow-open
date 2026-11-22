@@ -1,7 +1,9 @@
 """Optional follow-up: stream both complete RUN02 R1 objects without storing them.
 
-Not run during AF-RES-047. Requires about 0.9 GB transfer, decompression and
-network time. It checks present bytes/decoded content, not historical use.
+Originally prepared as an unexecuted follow-up; executed on 2026-11-22.
+The executed source snapshot and execution receipt preserve its original hash.
+A run requires about 0.9 GB transfer and decompression. It checks present
+bytes/decoded content; the historical run linkage is evaluated separately.
 The --perform flag prevents accidental bulk transfer when inspecting the script.
 """
 import argparse

@@ -47,3 +47,17 @@ CPM predictions.h5의 처음 읽은 HDF5 block에서 is_cancer=false를 첫 필�
 ## A08 — 실행 프레임의 같은 날 식별자 순서
 
 run 수집 초안은 발행 timestamp 전체로 정렬했다. 사용자 규칙의 날짜·문서 식별자 순서에 맞춰 날짜 부분을 먼저, 같은 날은 공개 identifier를 정렬했다. 옛 frame-expanded-all/first30은 before-day-tie 파일로 보존했다. 순위7–8 및19–24의 같은 날 항목 순서가 바뀌지만 첫30의 구성과 RUN01 5위/RUN02 18위는 그대로다. 날짜가 최초공개일이 아닌 embedded export date일 수 있다는 별도 한계는 남는다.
+
+## A09 — 최종 별도문맥 검토의 재현 위치·패킷 보정
+
+실행층 재검토에서 RUN02 A/B purpose의 chromosome1이 C의 CHROM값과 겹친다는 추가 누출을 발견했다. A/B에는 공개 variant-calling 목적만 보이고 구체 염색체 설정은 audit_only_full_purpose에 두었다. RUN01 A/B의2023-06-29도 release일이라고 부르지 않고 record created로 고쳤다. 두 crate의 metadata publication_date는2023-02-25다. ESSD 검토의 첫 추출본에서는 IOW release2의 Related가 비어 보였다. 재현을 쉽게 하려고 실제 두 DOI/ZIP을 직접 병기했다. 이어 raw HTML 재열람에서 IsNewVersionOf/IsPreviousVersionOf 관계가 모두 확인되어 링크 부재라는 검토 가설을 철회했다. 추출 누락을 사이트의 실제 관계 부재로 승격하지 않는다. JSON의존재하지않는 keyed_rows 위치도 sheet_comparisons[].same_numeric_cell_different_taxon_examples / taxon_keyed_changes로 고쳤다. 앞선관측·수치는변경하지않으며세검토자모두같은모델의별도문맥이다.
+
+## A10 — 전체 R1 검사와 발행자 fingerprint가 원 실행의 외부 입력 연결을 확인
+
+- 이전 관측·판정: RUN02의 archive gzip과 현재 publisher gzip은 크기·해시가 다르고 최초20 decoded records만 같았다. local R=1, external R=0, V=0이었다. bundle3 `0e9735ec2e488139b83c8aa40c946c5c097a5975`의 cases/readings와 `evidence/pre-full-fastq/`, `collection/runs/*-before-full-fastq.*`에 원 판단과 집계를 보존했다.
+- 추가 실행: `python -B docs/workstreams/research/AF-RES-047/collection/runs/verify_full_fastq.py --perform`을2026-11-22T23:00:16.442063Z부터23:09:38.308193Z까지 실제 수행했다. exit0, 전체 압축 파일2개와 해제 내용의 digest,archive Range응답63개와publisher전체GET1개, 입력URL과실행당시scriptSHA를 `wetlab-full-fastq-execution-receipt.json` 및 `wetlab-full-fastq-comparison.json`에 남겼다. 실행 원본은 `verify_full_fastq-executed-snapshot.py`다. 대형 payload 전체를 저장하지 않고 스트리밍 hash/해제를 수행했다.
+- 새 사실: archive gzip487,611,787bytes의 SHA256은 crate 선언과 일치한다. MD5 `52f3ed344d88278c703faa1280818ce1`은 [독립 발행자 HG001-part2.md5](https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/NA12878/NIST_NA12878_HG001_HiSeq_300x/HG001-part2.md5) **388행의 정확한 전체 경로**와 일치한다.116/254행의 다른 flowcell 동명 파일을 조인하지 않았다. 현재 gzip413,005,346bytes의 MD5는 해당 목록과 다르지만, 두 gzip의 전체 decoded1,409,966,879bytes/SHA256 `98be27b898b6ae3c12821a30b48adc1bfec9d98903219f0175240ebac66fccf3`은 같다.
+- 판정: 같은 Zenodo archive의 action `#bdfcc6a4-3bf4-4fd7-9e8c-cc6b0deaa43d`→Collection `#dcc0e6bb-4888-4bee-bc06-e995b5d18538`→R1 선언과 stderr85/105–114가 발행자 fingerprint와 만났다. SCOPE의 구체적인 원 실행 기록 기준을 충족해 **RUN02 external R0→1**로 바꾼다. 기준을 완화하거나 독립 syscall 관측을 새로 했다는 뜻은 아니다. GitHub export의 다른 UUID는 같은 성공으로 합치지 않는다.
+- 영향: 자연층 P4/U1/R0/V0(분모6)는 그대로다. 실행 보강층 P2/U1/R1/V0(분모2), local R2/2다. 조건부 V는 자연층 해당 없음, 보강층0/1이다. A/B R0, C R1이며 전체8 기술 집계 R1/8이다. 자료 식별자 또는 실제 사용 근거를 제거한 RUN02 감도2행에서 R1→0으로 바뀐다. CHROM=1은 여전히 저자 출력 재독이므로 V 및 엄격 사용판+값 양성0은 그대로다.
+- 제한: 선택 R1 하나의 기록상 연결만 확인했다. 현재 gzip의 bytes 불일치, 정확한 취득/재압축 시각·행위자·정정사유 미확인, 공식 다음 발행판과 고정 CHROM값 비교 미실시를 남긴다. `publisher_bytes_match=false`, `publisher_declared_representation_match=true`, `publisher_decoded_content_match=true`를 별도로 보존한다.
+- 검토: `collection/rjournal/review-adjudication.md/json`의 동일모델 별도문맥 재판독이 위 범위와 판정을 확인했다. 외부 독립 검토나 원 과학 실행 재현으로 세지 않는다. 새 source3행은 기존 저작의 추가범위/재방문이므로 최소 원문수에0을 더한다.
