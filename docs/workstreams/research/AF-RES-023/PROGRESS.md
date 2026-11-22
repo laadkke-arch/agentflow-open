@@ -90,3 +90,11 @@
 - 마지막6사건18행을추가해최종18×3=54행이다. 목적지SELECT/HOLD/CONDITIONAL은판독자코드를그대로보존하고,역사기록만선택한행과현재/정정목적선택을분리했다.
 - SW01②는같은배포물URL이라는고정정보만으로좁은목적후보를선택했다. SW02③은정상alias,SW06③은기능후계와판조건을구별한다. WD01은본체undo와P910복구를따로복원한다.
 - 다음:필수표4개/교차분야보고서,원장정합검사와session check,SELF_CHECK/acceptance선행commit,그뒤HANDOFF단독commit.
+
+## 묶음4 — 교차 분야·마지막 자기 점검
+
+- 마지막비교commit `d05b7269a0eeff7a0958de5c58dba9744e4a2a5a`; B03.json고정판재열람/fetch확인.
+- RESULT의필수4표와끝약점3행,독립식별열18/복원필드90,교차분야2쌍·네관점을작성했다. 내부감사자는최종54행의원답안/보기동일성과숫자·판정범위를대조했고추가실질오류를찾지못했다.
+- 정합검사41항목exit0. 초기CSV boolean대소문자검사기오류1건은수정후재실행했고실제데이터숫자는바뀌지않았다. session check --fetch도04:07:39 UTC에exit0/remote_checked.
+- Q1–Q7핵심원문7개를마지막재열람했다. RORv1.60의위치잔존과WDP910별도undo,MBmerge상태,AcoustID후속문제,libxml3.2.4고정본문,포크기본값차이를다시확인했다.
+- SELF_CHECK/acceptance를이묶음에서먼저커밋한다. 그뒤에만HANDOFF를작성해단독최종커밋하며,상태는REVIEW_READY_WITH_GAPS다.

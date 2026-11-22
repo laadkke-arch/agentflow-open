@@ -51,3 +51,10 @@ Q1 실제 사건, Q2 동일시한 층위, Q3 ID/HTTP/역사 판의 시간순 관
 각 묶음 직후 root가 커밋하고 원격 고정판을 다시 읽는다. 순서: (1) 범위/추출/복원 규칙 (2) 시스템별 사건 (3) 소비자·세방식 비교 6사건씩 (4) 교차 분야·자기 점검 (5) HANDOFF 단독 최종 커밋. 출처 본문 전문이나 사용자명/프로필을 저장하지 않고 URL·고정ID·짧은 자기말 요약만 남긴다. 원 출처당 직접 인용은 25단어 이내다.
 
 필수 산출물: events.jsonl, citations.csv, reconstruction.csv(최소18×3행), alternatives.md, RESULT.md(표1~4 먼저, 끝에 정확히3개 약점 행), sources.json, PROGRESS.md, SELF_CHECK.md, evidence/acceptance-evidence.json, HANDOFF.md. 수용 조건은 met=false를 허용하며 부족한 조건은 가능한 보강 뒤 REVIEW_READY_WITH_GAPS 또는 BLOCKED로 인계한다.
+
+## 실제 실행의 추가 관측과 편차
+
+- 조사 원문 관측 창은2026-11-22 03:09–04:09 UTC. 사용자시간대Asia/Seoul로는같은날12:09–13:09이다. 파일생성·검사·커밋은그뒤종료까지이어진다. 각source의UTC정밀도는별도기록했으며일단위값을초단위로꾸미지않았다.
+- 본표본18의실제구성은5허용/9정정·분리·되돌림/4기타로초기약6/6/6목표에미달. literalmerge정정은3이다.
+- Q6의v1입력오류를보존하고v3를새문맥으로판독했다. 원문에는있는MB05/SW03두필드의보기누락을고친v4두사건재판독6행과v3동일16사건48행을결합했다. key는처음부터불변. 상세protocol-errata/manifest/answer-freeze/exposure-log참조. root채점은자기점검이다.
+- session check --fetch는04:07:39 UTC에최신integration2f3593a43f77f6023d0d176bcc0f21905883af45를확인하고통과했다. 배정시base7f66165ad68610278df18855e1196a6cf52b035a와고정입력020SHA는바꾸지않았다.
