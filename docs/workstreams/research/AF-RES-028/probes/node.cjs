@@ -199,9 +199,12 @@ function histogram() {
   for (const value of [1, 2, 2]) h.record(value);
   const map = h.percentiles;
   const positive = { map: map instanceof Map, min: map.get(0), max: map.get(100) };
+  const mapBrand = require("util").types.isMap(map);
+  const viaMapGet = Map.prototype.get.call(map, 100);
   h.reset();
   h.record(5);
-  return { positive, boundary: [h.percentiles.get(0), h.percentiles.get(100)] };
+  return { positive, boundary: [h.percentiles.get(0), h.percentiles.get(100)],
+           diagnostic: { mapBrand, viaMapGet } };
 }
 
 async function crypto() {

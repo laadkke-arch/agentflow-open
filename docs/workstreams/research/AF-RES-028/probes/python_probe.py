@@ -27,11 +27,11 @@ def imap():
     import threading
 
     fixtures = Path(os.environ["AF028_FIXTURES"])
-    key = fixtures / "agent1-key.pem"
-    cert = fixtures / "agent1-cert.pem"
+    key = fixtures / "ssl_key.pem"
+    cert = fixtures / "ssl_cert.pem"
     server = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     server.load_cert_chain(cert, key)
-    server.load_verify_locations(fixtures / "ca1-cert.pem")
+    server.load_verify_locations(cert)
     server.verify_mode = ssl.CERT_REQUIRED
 
     def exchange(use_context=False, missing=False):
@@ -120,9 +120,13 @@ def netrc():
     insecure = check_call(netrc)
     path.chmod(0o600)
     user, _, value = netrc().authenticators("fixture.invalid")
+    path.write_text("machine fixture.invalid login anonymous password synthetic-marker\n")
+    path.chmod(0o644)
+    anonymous = check_call(netrc)
     return type(insecure).__name__ if not isinstance(insecure, str) else insecure, [user, value], {
         "euid_is_owner": path.stat().st_uid == os.geteuid(),
         "permission_comparison": ["0644", "0600"],
+        "anonymous_fixture": "NetrcParseError" if anonymous == "NetrcParseError" else "parsed",
     }
 
 
