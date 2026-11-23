@@ -1,0 +1,136 @@
+[
+  {
+    "case_id": "PAN-C1",
+    "stratum": "constructed_control",
+    "kind": "positive",
+    "version": "2.11.3.2",
+    "commit": "dcbd8d326cce4960e0d736e25e7d00f9057a1fc2",
+    "initial_url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/parse-raw.md",
+    "initial_version_status": "official pinned test fixture; constructed packet",
+    "goal": "알 수 없는 LaTeX 매크로를 raw로 보존할지 생략할지 선택한다.",
+    "known_values": [
+      "same fixture bytes",
+      "same target writer",
+      "same Pandoc source version"
+    ],
+    "field": "raw_tex enabled",
+    "field_category": "environment",
+    "question": "LaTeX 원문에서 알 수 없는 TeX 조각을 raw로 보존해야 하나요?",
+    "values": [
+      "enabled",
+      "disabled"
+    ],
+    "known_field_value": null,
+    "candidate1": {
+      "id": "C1",
+      "url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/parse-raw.md",
+      "section": "first command block",
+      "action": "raw_tex extension enabled",
+      "command": "pandoc -f latex+raw_tex -t markdown"
+    },
+    "candidate2": {
+      "id": "C2",
+      "url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/parse-raw.md",
+      "section": "second command block",
+      "action": "default latex reader",
+      "command": "pandoc -f latex -t markdown"
+    },
+    "input_variants": [
+      {
+        "command": "pandoc -f latex+raw_tex -t markdown",
+        "input": "\\emph{Hi \\foo{there}}",
+        "input_sha256": "681375e2e3c54e26ef3cb9f5ee60e20c6a5592b5d458898e5a410776857cba38",
+        "input_lines_start": 3,
+        "expected_output_sha256": "84ad47989d7e3c0d07f7cf9df707347e19b3d59fd90296acad97f0e0d2487ed0",
+        "expected_output_inspected_in_model": true
+      },
+      {
+        "command": "pandoc -f latex -t markdown",
+        "input": "\\emph{Hi \\foo{there}}",
+        "input_sha256": "681375e2e3c54e26ef3cb9f5ee60e20c6a5592b5d458898e5a410776857cba38",
+        "input_lines_start": 10,
+        "expected_output_sha256": "347027c39b4aea6bc9f882eb4216569ae6131d0c09be14c90bea2615e1836e09",
+        "expected_output_inspected_in_model": true
+      }
+    ],
+    "A": "보존 목적 미확인으로 보류하고 두 출력의 차이를 확인할 위치를 준다.",
+    "B": "raw 보존이 필요하면 C1; 생략해도 되면 C2; 입력 안 unknown macro가 있는지 문서에서 확인한다.",
+    "C_value1": "C1을 준다.",
+    "C_value2": "C2를 준다.",
+    "C_none": "B의 명시적 조건부 안내를 남기고 목적이 정해질 때 선택한다.",
+    "pre_frozen_utc": "2026-11-23T10:11:40.563011+00:00",
+    "actual_exposure": "positive expected output accidentally exposed by wrong parser delimiter; negative selected by equality scan of official command corpus before explicit reading; both outcome-informed technical controls, NOT preregistered effects",
+    "strict_budget_compliant": false,
+    "budget_design": "same pinned regression section(s) shared by A/B/C; corpus scan and manual reads expansion",
+    "same_version": true,
+    "possible_confounders": "same file/commands expected tests; historical test execution receipt not yet obtained; no binary run performed",
+    "initial_quote": null
+  },
+  {
+    "case_id": "PAN-C2",
+    "stratum": "constructed_control",
+    "kind": "negative",
+    "version": "2.11.3.2",
+    "commit": "dcbd8d326cce4960e0d736e25e7d00f9057a1fc2",
+    "initial_url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/sloppypar.md",
+    "initial_version_status": "official pinned test fixture; constructed packet",
+    "goal": "sloppypar 환경 안 문단 내용을 native AST로 읽는다.",
+    "known_values": [
+      "same fixture bytes",
+      "same target writer",
+      "same Pandoc source version"
+    ],
+    "field": "raw_tex enabled",
+    "field_category": "environment",
+    "question": "현재 LaTeX reader에서 raw_tex를 켰나요?",
+    "values": [
+      "enabled",
+      "disabled"
+    ],
+    "known_field_value": null,
+    "candidate1": {
+      "id": "C1",
+      "url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/sloppypar.md",
+      "section": "first command block",
+      "action": "raw_tex extension enabled",
+      "command": "pandoc -f latex+raw_tex -t native"
+    },
+    "candidate2": {
+      "id": "C2",
+      "url": "https://github.com/jgm/pandoc/blob/dcbd8d326cce4960e0d736e25e7d00f9057a1fc2/test/command/sloppypar.md",
+      "section": "second command block",
+      "action": "default latex reader",
+      "command": "pandoc -f latex -t native"
+    },
+    "input_variants": [
+      {
+        "command": "pandoc -f latex+raw_tex -t native",
+        "input": "\\begin{sloppypar}\nSequi id qui facere et incidunt ut. Et fuga ut voluptate enim qui. Odit unde magni ipsam dicta modi. Modi soluta velit est aut aut possimus.\n\nQui et temporibus explicabo. Esse ab ut quidem. Vel qui perspiciatis quae odio consectetur alias non sed. Quo consectetur libero omnis quos eius ad vel.\n\\end{sloppypar}",
+        "input_sha256": "49897419737520ae3ef61e0f6da9b03e09ee60a9fab8fdbd5f54d67b17bf54b5",
+        "input_lines_start": 3,
+        "expected_output_sha256": "f80891c6d9bfdd39328a2e1fda370ec8d6033b7b0304f33555bd87b5e998bb60",
+        "expected_output_inspected_in_model": false
+      },
+      {
+        "command": "pandoc -f latex -t native",
+        "input": "\\begin{sloppypar}\nSequi id qui facere et incidunt ut. Et fuga ut voluptate enim qui. Odit unde magni ipsam dicta modi. Modi soluta velit est aut aut possimus.\n\nQui et temporibus explicabo. Esse ab ut quidem. Vel qui perspiciatis quae odio consectetur alias non sed. Quo consectetur libero omnis quos eius ad vel.\n\\end{sloppypar}",
+        "input_sha256": "49897419737520ae3ef61e0f6da9b03e09ee60a9fab8fdbd5f54d67b17bf54b5",
+        "input_lines_start": 15,
+        "expected_output_sha256": "f80891c6d9bfdd39328a2e1fda370ec8d6033b7b0304f33555bd87b5e998bb60",
+        "expected_output_inspected_in_model": false
+      }
+    ],
+    "A": "C2 default latex reader를 안내한다; 이 fixture의 최종 AST는 raw_tex on/off에 같을 것으로 검토한다.",
+    "B": "enabled/disabled 둘 다 이 fixture의 같은 AST를 준다. C2의 기본 reader를 써도 목적을 충족한다.",
+    "C_value1": "C2로도 같은 AST를 얻으므로 옵션을 바꿀 필요가 없다고 답한다.",
+    "C_value2": "C2를 준다.",
+    "C_none": "C2를 바로 사용하게 한다.",
+    "pre_frozen_utc": "2026-11-23T10:11:40.563188+00:00",
+    "actual_exposure": "positive expected output accidentally exposed by wrong parser delimiter; negative selected by equality scan of official command corpus before explicit reading; both outcome-informed technical controls, NOT preregistered effects",
+    "strict_budget_compliant": false,
+    "budget_design": "same pinned regression section(s) shared by A/B/C; corpus scan and manual reads expansion",
+    "same_version": true,
+    "possible_confounders": "same file/commands expected tests; historical test execution receipt not yet obtained; no binary run performed",
+    "initial_quote": null
+  }
+]

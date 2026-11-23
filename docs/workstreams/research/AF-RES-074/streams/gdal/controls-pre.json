@@ -1,0 +1,117 @@
+[
+  {
+    "case_id": "GDAL-C1",
+    "stratum": "constructed",
+    "positive_negative": "positive_target",
+    "goal": "공식 byte.tif에서 만든 동일 GCP 입력을40×40으로 확대하되 재표본화 방식 요구를 따른다.",
+    "known_values": {
+      "version": "v3.2.1",
+      "source": "autotest/gcore/data/byte.tif; test_gdalwarp_5 creates testgdalwarp_gcp.tif",
+      "output_size": "40x40",
+      "other_flags": "all identical except -rn/-rb"
+    },
+    "field": "resampling_method",
+    "question": "확대 시 최근접값을 복사하나요, 쌍선형 보간을 하나요?",
+    "values": [
+      "nearest",
+      "bilinear"
+    ],
+    "candidate1": {
+      "candidate_id": "GDAL-C1-K1",
+      "url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/gdal/doc/source/programs/gdalwarp.rst#L166-L196",
+      "version": "258d73a17b1f7e93c9cf9b60a2411545d51879de",
+      "section": "-r resampling method",
+      "action": "최근접 방식(-rn, -r near)으로 확대",
+      "command": "gdalwarp -ts 40 40 -rn tmp/testgdalwarp_gcp.tif tmp/out.tif",
+      "documents": 1,
+      "sections": 1
+    },
+    "candidate2": {
+      "candidate_id": "GDAL-C1-K2",
+      "url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/gdal/doc/source/programs/gdalwarp.rst#L166-L196",
+      "version": "258d73a17b1f7e93c9cf9b60a2411545d51879de",
+      "section": "-r resampling method",
+      "action": "쌍선형(-rb, -r bilinear)으로 확대",
+      "command": "gdalwarp -ts 40 40 -rb tmp/testgdalwarp_gcp.tif tmp/out.tif",
+      "documents": 1,
+      "sections": 1
+    },
+    "test_source_url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/autotest/utilities/test_gdalwarp.py",
+    "test_ids": [
+      "test_gdalwarp_5",
+      "test_gdalwarp_10",
+      "test_gdalwarp_11"
+    ],
+    "A": "K1의 기본 최근접을 제공한다. 선택필드가 가려진 상태의 기본값 가정임을 밝힌다.",
+    "B": "nearest가 요구면 K1 -rn; bilinear가 요구면 K2 -rb. 둘 다 같은 입력·40x40.",
+    "C_value1": "K1 -rn.",
+    "C_value2": "K2 -rb.",
+    "C_none": "원방법 불명: 두 방법의 의미를 제공하고 선택 보류.",
+    "selection_path": "v3.2.1 autotest/utilities directory listing→test_gdalwarp.py AST 함수명·실행명령만 추출→동일GCP파일/같은-ts40x40의 최초 rn/rb쌍 선택",
+    "expected_outputs_preread": false,
+    "same_version": true,
+    "pre_freeze_utc": "2026-11-23T10:11:10.222921+00:00",
+    "actual_exposure": "only names/call arguments from AST and indicated manual sections; assertions and expected outputs withheld until root seal",
+    "reader_can_identify_condition": "yes by requested method or size representation; not observed human behavior",
+    "strict_initial_cohort": false,
+    "constructed_not_natural_frequency": true,
+    "candidate_budget_note": "both candidates share one official manual section; expected-test file is later independent criterion layer."
+  },
+  {
+    "case_id": "GDAL-C2",
+    "stratum": "constructed",
+    "positive_negative": "negative_target",
+    "goal": "20×20 byte.tif를40×40으로 확대한다.",
+    "known_values": {
+      "version": "v3.2.1",
+      "source": "autotest/gcore/data/byte.tif",
+      "target_grid": "40x40",
+      "resampling": "default nearest"
+    },
+    "field": "outsize_representation",
+    "question": "크기를40×40픽셀로 쓰나요, 원본200%×200%로 쓰나요?",
+    "values": [
+      "40_40_pixels",
+      "200_200_percent"
+    ],
+    "candidate1": {
+      "candidate_id": "GDAL-C2-K1",
+      "url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/gdal/doc/source/programs/gdal_translate.rst#L85-L90",
+      "version": "258d73a17b1f7e93c9cf9b60a2411545d51879de",
+      "section": "-outsize",
+      "action": "정규화된40×40 픽셀로 확대",
+      "command": "gdal_translate -outsize 40 40 ../gcore/data/byte.tif tmp/out.tif",
+      "documents": 1,
+      "sections": 1
+    },
+    "candidate2": {
+      "candidate_id": "GDAL-C2-K2",
+      "url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/gdal/doc/source/programs/gdal_translate.rst#L85-L90",
+      "version": "258d73a17b1f7e93c9cf9b60a2411545d51879de",
+      "section": "-outsize",
+      "action": "같은20×20 원본에서는200%가40×40이므로 같은 정규화 행동",
+      "command": "gdal_translate -outsize 200% 200% ../gcore/data/byte.tif tmp/out.tif",
+      "documents": 1,
+      "sections": 1
+    },
+    "test_source_url": "https://github.com/OSGeo/gdal/blob/258d73a17b1f7e93c9cf9b60a2411545d51879de/autotest/utilities/test_gdal_translate.py",
+    "test_ids": [
+      "test_gdal_translate_6",
+      "test_gdal_translate_7"
+    ],
+    "A": "K1의 -outsize 40 40 한 행동으로 답한다.",
+    "B": "픽셀이면 K1 40 40; 비율이면 K2 200% 200%. 두 값 모두 이20×20 입력에서는 같은40×40이라 K1로 정규화할 수 있다.",
+    "C_value1": "K1 -outsize40 40.",
+    "C_value2": "K1 -outsize40 40(또는 동치K2); 새 선택 불필요.",
+    "C_none": "K1 -outsize40 40을 제공한다.",
+    "selection_path": "v3.2.1 autotest/utilities directory listing→test_gdal_translate.py AST 명령 추출→같은byte.tif의 연속test6/7 outsize표현쌍 선택",
+    "expected_outputs_preread": false,
+    "same_version": true,
+    "pre_freeze_utc": "2026-11-23T10:11:10.222921+00:00",
+    "actual_exposure": "only names/call arguments from AST and indicated manual sections; assertions and expected outputs withheld until root seal",
+    "reader_can_identify_condition": "yes by requested method or size representation; not observed human behavior",
+    "strict_initial_cohort": false,
+    "constructed_not_natural_frequency": true,
+    "candidate_budget_note": "both candidates share one official manual section; expected-test file is later independent criterion layer."
+  }
+]
