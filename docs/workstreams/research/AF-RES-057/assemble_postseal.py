@@ -38,6 +38,30 @@ def normalize_and_count_sources():
         if r['work_id'] in aliases:
             r['work_id'] = aliases[r['work_id']]
             r['genealogy_adjustment'] = 'Conservative post-seal counting only; no predictions or selected cases changed. See evidence/final-counts.json.'
+        if not r['contrary_source_ids']:
+            r['contrary_search_status'] = 'No distinct counter-source assigned to this acquisition; this is not evidence of no contradiction. See question-level searches and falsifiers in SELF_CHECK.md.'
+    for stream, case, sid, work, sha, test in [
+        ('yjs', 'YT1', 'Y-L-UPSTREAM', 'yjs-test-infinite-capture', '0a09ff854b2ecd942b3c0f0e741253a214cee1bf', 'testInfiniteCaptureTimeout'),
+        ('prosemirror', 'PT1', 'P-L-UPSTREAM', 'P-W-HISTORY-TEST-SUITE', '554d6eedb76704d1db62d85768611ce4b611abd2', 'history enables undo')
+    ]:
+        file = P/'streams'/stream/'upstream-verification/verification.json'
+        if not file.exists():
+            continue
+        v = json.loads(file.read_text())
+        upstream_url = 'https://github.com/yjs/yjs/blob/'+sha+'/tests/undo-redo.tests.js#L49-L57' if stream == 'yjs' else 'https://github.com/ProseMirror/prosemirror-history/blob/'+sha+'/test/test-history.ts#L31-L38'
+        sources.append({'source_id':sid, 'work_id':work, 'acquisition_work_id':work,
+                        'kind_lineage':'researcher execution of original selected upstream test; same test genealogy',
+                        'questions_cases':['Q6',case], 'original_url':upstream_url, 'fixed_url':upstream_url,
+                        'version_date_hash':{'source_sha':sha, 'execution_receipt':str(file.relative_to(P))},
+                        'opened_UTC':v.get('recorded_UTC',v.get('ended_UTC',datetime.now(timezone.utc).isoformat())),
+                        'time_precision':'Execution start/end in original receipt; this is a later post-outcome verification.',
+                        'location':test, 'findings':v,
+                        'limits':'Local original-source runner; not historical author execution, public CI, a new prediction or an original opB/redo output. Test/dependency limitations are in the companion.',
+                        'evidence_type':'observed researcher execution', 'contrary_source_ids':['Y-R-YT1-OLD'] if stream=='yjs' else ['P-E150-GROUP'],
+                        'access_status':'direct_read_local_receipt', 'external_minimum_eligible':False,
+                        'source_group':'self_execution', 'selected_request':False,
+                        'reader':'same-model '+stream+' researcher; root reviewed companion',
+                        'raw_record_path':str(file.relative_to(P))})
     (P / 'sources.jsonl').write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in sources))
     smap = {r['source_id']: r for r in sources}
     allocation = {
@@ -49,6 +73,13 @@ def normalize_and_count_sources():
     }
     quota = []
     allocated = []
+    category_limits = {
+        'request_originals': 'Four selected request bodies were read; earliest authored revisions and complete original runtimes were not recovered. Issue/fix/author followups remain one episode.',
+        'product_API_example_design': 'Versions of one API are one work; allocation uses README, a separate author drawing example, history API and inputrules API, without splitting implementation files.',
+        'distinct_test_or_fix': 'Six distinct correction episodes for disjoint allocation; #892 is a seventh observed episode but already occupies a request slot. A patch need not contain a final-text assertion.',
+        'map_accounting_direct_cases': 'Two map and two accounting cases. D14 is an authored failure report without numeric ledger; only three of four cases have numeric/object-state verification.',
+        'original_undo_research': 'Two separately authored original research papers; policies and prototypes are not evidence of the two recipient products\' exact runtime behavior.'
+    }
     for category, ids in allocation.items():
         works = [smap[i]['work_id'] for i in ids]
         assert all(smap[i]['external_minimum_eligible'] for i in ids)
@@ -56,7 +87,7 @@ def normalize_and_count_sources():
         allocated += works
         quota.append({'category': category, 'planned': len(ids), 'actual': len(works), 'unit': 'unique_primary_work',
                       'source_ids': ids, 'work_ids': works,
-                      'limits': 'D14 is an authored failure report without numeric ledger; original issue revisions not fully recovered. A fix record need not contain an exact final-state test assertion.' if category in ['map_accounting_direct_cases', 'distinct_test_or_fix', 'request_originals'] else 'Different versions of the same API are one work.'})
+                      'limits': category_limits[category]})
     assert len(allocated) == len(set(allocated)) == 20
     eligible = [r for r in sources if r['external_minimum_eligible']]
     works = sorted({r['work_id'] for r in eligible})
@@ -74,7 +105,9 @@ def normalize_and_count_sources():
                                  'author_report_without_numeric_ledger': 1, 'map_cases': 2, 'accounting_cases': 2},
         'source_ids_unique': len(smap) == len(sources),
         'reading_actor': 'same-model research team; root reread selected sources and ledgers, not an independent human panel',
-        'study_verification_separate': '>=20 sources is not evidence that all six original output pairs have been verified.'
+        'study_verification_separate': '>=20 sources is not evidence that all six original output pairs have been verified.',
+        'later_local_verification_rows': [r['source_id'] for r in sources if r['source_id'] in ['Y-L-UPSTREAM','P-L-UPSTREAM']],
+        'independent_source_audit_scope': 'The donor audit counted130 original acquisition rows; two later original-test local executions, if present, are excluded from external works. Eligible112/unique66 is unchanged.'
     }
     (P / 'evidence/final-counts.json').write_text(json.dumps(counts, ensure_ascii=False, indent=2) + '\n')
     return counts
@@ -119,7 +152,8 @@ def build_observations():
             ids += [r['source_id'] for r in [raw.get('public_test', {}), raw.get('author_execution', {})] if 'source_id' in r]
             outcomes[case] = {
                 'normal': normal, 'boundary': boundary, 'public_test': raw.get('public_test'),
-                'author_run': raw.get('author_execution'), 'CI': raw['public_CI'],
+                'author_run': raw.get('author_execution'),
+                'CI': {**raw['public_CI'], 'probe_scope': 'Diagnostic13.6.28 and fix commits7395229/a22b3cd/abf3fab; not direct probes of YN1 alpha or YN2 13.0.8 historical SHA. Exact endpoint list: streams/yjs/ci-probes.json.'},
                 'version': raw.get('research_version', raw.get('surrogate_version')),
                 'version_match': raw['version_verification'], 'raw_file': 'streams/yjs/observations.json',
                 'run_file': raw['researcher_replay']['file'], 'source_ids': ids,
@@ -150,7 +184,14 @@ def build_observations():
     for prediction in predictions:
         case, view = prediction['case_id'], prediction['view']
         o = outcomes[case]
-        urls = [source_map[i]['fixed_url'] or source_map[i]['original_url'] for i in o['source_ids']]
+        extra_sid = 'Y-L-UPSTREAM' if case == 'YT1' else 'P-L-UPSTREAM' if case == 'PT1' else None
+        ids = o['source_ids'] + ([extra_sid] if extra_sid in source_map else [])
+        urls = [source_map[i]['fixed_url'] or source_map[i]['original_url'] for i in ids]
+        local_upstream = 'not applicable to this natural case'
+        if case in ['YT1','PT1']:
+            stream = 'yjs' if case == 'YT1' else 'prosemirror'
+            companion = P/'streams'/stream/'upstream-verification/verification.json'
+            local_upstream = {'file':str(companion.relative_to(P)), 'summary':json.loads(companion.read_text())} if companion.exists() else 'pending companion'
         output.append({
             'observation_id': case + '-' + view + '-OBS', 'prediction_id': prediction['prediction_id'],
             'case_id': case, 'view': view, 'layer': prediction['layer'], 'seal_commit': SEAL,
@@ -158,10 +199,12 @@ def build_observations():
             'research_version': o['version'], 'version_match': dump(o['version_match']),
             'sealed_choice': prediction['choice'], 'sealed_normal': prediction['normal_prediction'],
             'sealed_boundary': prediction['boundary_prediction'], 'exposure_status': prediction['exposure_status'],
+            'exposure_reference_time': 'Verbatim state at prediction seal, not a statement that assertions remain unopened now.',
             'normal_opA_observed': dump(o['normal']['A']), 'normal_opB_observed': dump(o['normal']['B']),
             'boundary_observed': dump(o['boundary']), 'public_test_declared': dump(o['public_test']),
             'public_CI': dump(o['CI']), 'author_execution_statement': dump(o['author_run']),
-            'source_ids': ';'.join(o['source_ids']), 'source_urls': dump(urls),
+            'later_local_upstream_verification': dump(local_upstream),
+            'source_ids': ';'.join(ids), 'source_urls': dump(urls),
             'raw_observation_file': o['raw_file'], 'research_run_file': o['run_file'], 'run_UTC': o['run_UTC'],
             'original_same_input_version_opA_opB_redo_public_pair': '미확인',
             'new_D_hit': '해당 없음: E/D same; original complete pairs unconfirmed',
@@ -190,7 +233,7 @@ def build_observations():
                            'opA_unexposed_declared_match': 1, 'semantically_preexposed': 1}},
         'original_complete_public_pairs': {'numerator': 0, 'denominator': 6, 'unit': 'case', 'status': 'evidence_unconfirmed_not_accuracy'},
         'original_diagnostic_opA_expectations_read': {'numerator': 2, 'denominator': 2, 'unit': 'diagnostic_case'},
-        'original_public_runner_executed': {'numerator': 0, 'unit': 'run', 'status': 'not_performed'},
+        'original_public_runner_executed': {'numerator': 0, 'unit': 'run', 'status': 'see_later_companions', 'scope':'local run of original public source, not remote public CI'},
         'researcher_main_variants': {'numerator': sum(o['main_variants'] for o in outcomes.values()), 'denominator': 26,
                                     'unit': 'scenario_operation', 'status': 'completed', 'accuracy_claim': False},
         'posthoc_variants': {'numerator': 8, 'unit': 'scenario_version', 'old_version_expected_exception_records': 3,
@@ -199,6 +242,19 @@ def build_observations():
                       'note': 'Empty endpoint result is not a failed run or proof no run ever happened.'},
         'case_comparisons': [{'case_id': c, 'comparison': statuses[c], 'main_variant_count': outcomes[c]['main_variants']} for c in CASES]
     }
+    upstream = {}
+    for stream in ['yjs','prosemirror']:
+        file = P/'streams'/stream/'upstream-verification/verification.json'
+        if file.exists():
+            v = json.loads(file.read_text())
+            upstream[stream] = {'file':str(file.relative_to(P)), 'status':v['status'],
+                                'tests_selected':v['tests_selected'], 'tests_passed':v['tests_passed'],
+                                'source_sha':v['source_sha'], 'execution_kind':v['execution_kind'], 'public_CI':False}
+    comparison['original_public_runner_executed'] = {
+        'numerator':sum(v['tests_passed'] for v in upstream.values()), 'denominator':2, 'unit':'selected_original_test_local_run',
+        'status':'completed' if len(upstream)==2 and all(v['status']=='passed' for v in upstream.values()) else 'partial',
+        'scope':'Later local execution of original public-source selected tests; no public CI or new prediction credit.',
+        'not_in_main26_or_posthoc8':True, 'details':upstream}
     (P / 'evidence/comparison-counts.json').write_text(json.dumps(comparison, ensure_ascii=False, indent=2) + '\n')
     return len(output)
 

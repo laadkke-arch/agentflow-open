@@ -4,6 +4,7 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent
@@ -55,12 +56,34 @@ def main():
     if args.phase == 'final':
         observed = rows('observations.csv')
         check('observation_case_coverage', {r['case_id'] for r in observed} == set(CASES), len(observed))
+        check('observations_18_unique_views', len(observed)==18 and {(r['case_id'],r['view']) for r in observed}==expected, len(observed))
+        check('observations_preserve_sealed_predictions', all(
+            r['sealed_choice']==pred_map[(r['case_id'],r['view'])]['choice'] and
+            r['sealed_normal']==pred_map[(r['case_id'],r['view'])]['normal_prediction'] and
+            r['sealed_boundary']==pred_map[(r['case_id'],r['view'])]['boundary_prediction'] for r in observed),
+            'Choice and normal/boundary JSON remain exact sealed strings; exposure reference time is separately labeled.')
         sources = [json.loads(line) for line in (ROOT / 'sources.jsonl').read_text().splitlines() if line.strip()]
         identifiers = [r['source_id'] for r in sources]
         check('source_ids_unique', len(identifiers) == len(set(identifiers)), len(identifiers))
+        source_ids=set(identifiers)
+        required=['source_id','work_id','kind_lineage','questions_cases','original_url','fixed_url','version_date_hash','opened_UTC','location','findings','limits','evidence_type','contrary_source_ids','access_status','external_minimum_eligible']
+        missing_fields=[{'source_id':r['source_id'],'fields':[k for k in required if k not in r]} for r in sources if any(k not in r for k in required)]
+        check('source_schema', not missing_fields, missing_fields)
+        referred=set(r['source_id'] for r in cards)
+        for r in observed:
+            referred.update(r['source_ids'].split(';'))
+        for r in sources:
+            referred.update(r['contrary_source_ids'])
+        check('source_references_resolve', referred <= source_ids, sorted(referred-source_ids))
         eligible = [r for r in sources if r.get('external_minimum_eligible') is True]
         works = sorted({r['work_id'] for r in eligible})
         output['source_counts'] = {'records': len(sources), 'eligible_records': len(eligible), 'unique_primary_works': len(works), 'work_ids': works}
+        final_counts=json.loads((ROOT/'evidence/final-counts.json').read_text())
+        check('source_counts_recomputed',len(sources)==final_counts['source_records'] and len(eligible)==final_counts['eligible_acquisition_rows'] and works==final_counts['work_ids'],output['source_counts'])
+        allocation=[work for group in final_counts['disjoint_minimum_allocation'] for work in group['work_ids']]
+        check('twenty_disjoint_role_allocation',len(allocation)==20 and len(set(allocation))==20 and set(allocation)<=set(works),allocation)
+        check('actual_card_word_counts',all(len(r['display_window'].split())==int(r['word_count']) for r in cards),
+              [{'card_id':r['card_id'],'recorded':int(r['word_count']),'actual':len(r['display_window'].split())} for r in cards])
         frozen = json.loads((ROOT / 'evidence' / 'prediction-freeze.json').read_text())
         for path, digest in frozen['file_sha256'].items():
             actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
@@ -81,6 +104,20 @@ def main():
         self_check = (ROOT / 'SELF_CHECK.md').read_text()
         for q in range(1, 8):
             check('Q' + str(q) + '_result_and_selfcheck', 'Q' + str(q) in text and 'Q' + str(q) in self_check, 'presence only, semantic review separate')
+        broken=[]
+        for filename in ['RESULT.md','SELF_CHECK.md','return-cards.md']:
+            for target in re.findall(r'\]\(([^)]+)\)',(ROOT/filename).read_text()):
+                if '://' in target or target.startswith('#'):
+                    continue
+                local=target.split('#',1)[0]
+                if not (ROOT/local).exists():
+                    broken.append({'file':filename,'target':target})
+        check('report_local_links',not broken,broken)
+        local_tests=[]
+        for stream in ['yjs','prosemirror']:
+            v=json.loads((ROOT/'streams'/stream/'upstream-verification/verification.json').read_text())
+            local_tests.append({'stream':stream,'selected':v['tests_selected'],'passed':v['tests_passed'],'status':v['status'],'public_CI':v['public_CI']})
+        check('two_original_tests_local_only',all(v['selected']==1 and v['passed']==1 and v['status']=='passed' and v['public_CI'] is False for v in local_tests),local_tests)
     output['checks'] = checks
     output['structural_pass'] = all(r['passed'] for r in checks)
     output['research_fully_satisfied'] = 'See acceptance-evidence.json; never inferred from structural_pass.'
