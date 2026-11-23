@@ -1,5 +1,6 @@
 """Public, unauthenticated source retrieval; cache bytes are excluded from git."""
 import argparse, hashlib, json, urllib.request
+from urllib.parse import urlsplit, urlunsplit
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -12,7 +13,15 @@ def retrieve(key, url):
     try:
         with urllib.request.urlopen(url, timeout=30) as r:
             b = r.read()
-            row.update(status=r.status, final_url=r.url, content_type=r.headers.get('Content-Type'), bytes=len(b), sha256=hashlib.sha256(b).hexdigest())
+            final = urlsplit(r.url)
+            # OSF public downloads may redirect through short-lived signed URLs.
+            # The public source URL plus content hash is the durable receipt.
+            if any(s in final.query.lower() for s in ('signature=', 'x-amz-', 'awsaccesskeyid=')):
+                final_url = urlunsplit((final.scheme, final.netloc, final.path, '', ''))
+                row['redirect_query_note'] = 'temporary public-download signature omitted'
+            else:
+                final_url = r.url
+            row.update(status=r.status, final_url=final_url, content_type=r.headers.get('Content-Type'), bytes=len(b), sha256=hashlib.sha256(b).hexdigest())
         out.write_bytes(b)
     except Exception as e:
         row.update(status='failed', error=type(e).__name__+': '+str(e))

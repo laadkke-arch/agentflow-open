@@ -15,7 +15,7 @@
 | 10만 년 전보다 인간 뇌가 작아졌는가: 연구 정답은 작아졌다 | [DeSilva et al. 2021](https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2021.742639/full), Methods, Results Tables1–2/Fig1B, Discussion | **저자의 지지 주장**: 최근 감소 추정. | 2021 출판 원저 직접 독해. 같은 자료를 둘러싼 후속 비판/응답도 아래 보존. | 참값 자체가 표본·시간창·측정에 민감하다. 해당 연구의 정답키를 독립적인 확정 사실과 등치할 수 없다. |
 | 같은 뇌 문항의 오권고는 더 커졌다 | [ScienceDaily/UNLV 2022-08-07](https://www.sciencedaily.com/releases/2022/08/220807102043.htm), Full Story와 Journal Reference → [Villmoare & Grabowski 2022](https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2022.963568/full), Figs1–3/Discussion | **연구 정답에 대한 이견**을 전달하지만 오권고 ‘더 커졌다’는 직접 지지하지 않는다. 감소 미검출은 증가 증명이 아니다. | 실제 자극의 링크는 보도자료, 그 안의 DOI로 원 비판을 직접 열었다. | 양자택일 문항이 ‘변화 없음/불확실’을 표현하지 못한다. 정답키 반대 자료와 잘못된 권고 지지를 혼동하면 안 된다. |
 | 같은 뇌 문항의 오권고에 붙은 Smithsonian | [Human Origins / Brains](https://humanorigins.si.edu/human-characteristics/brains), 6–2 million, 2 million–800000, 800000–200000 years 구획 | **직접 검증에 무관한 시간창**: 더 오래된 뇌 확대를 다룬다. | 현재 공식 페이지 직접 확인. 당시 보관판 미확인. | 주제 관련성만으로 마지막 10만 년 비교의 근거가 되지 않는다. |
-| 달 보행자보다 마리아나 해구 방문자가 많다: 오권고에 붙은 NASA | [원 URL](https://science.nasa.gov/moon/moonwalkers/)은 현재 404. [발견한 대체 페이지](https://science.nasa.gov/moon/moon-walkers/), 12 Moon Walkers 목록 | **일부만 지지**: 달 보행자 12명이라는 한쪽 수량. 해구 방문자와의 비교는 미확인. | 대체 페이지는 2026-05-27 수정판. 원 URL의 리다이렉트로 간주하지 않음. | 대체 페이지를 실험 당시 원문으로 가장하지 않는다. 한쪽 분모 확인으로 비교 전체를 검증할 수 없다. |
+| 달 표면 방문자가 마리아나 해구 방문자보다 많다는 **오권고**에 붙은 NASA | [정확한 자극 URL](https://science.nasa.gov/moon/moon-walkers/), 12 Moon Walkers 목록. 최초 감사의 하이픈 누락 URL/404 해석은 정정함 | **일부만 지지**: 달 보행자 12명이라는 한쪽 수량. 해구 방문자와의 비교는 미확인. | 현재2026-05-27판과 [2024-08-01 보관판](https://web.archive.org/web/20240801102414id_/https://science.nasa.gov/moon/moon-walkers/)을 각각 직접 읽어12명 부분 확인. | 실험 전 보관판에도12명으로 쓰였으나 해구 인원과 비교 전체·실제 독해는 미확인. |
 | 고릴라의 털 밀도가 인간의 두 배인가: 정권고 ‘아니다’에 붙은 동물원 | [Louisville Zoo Gorilla Facts](https://louisvillezoo.org/gorilla-forest/gorilla-facts/), 체모/형태 설명 | **무관/불충분**: 비교 밀도 또는 두 배의 수치를 확인하지 못함. | 현재 페이지의 본문을 직접 읽음. 당시판 미확인. | 동물 설명문이라는 관련성은 숫자 비교의 함의를 보장하지 않는다. |
 | 해파리와 바퀴벌레 중 먼저 우주에 간 동물: 해파리 권고에 붙은 RMG | [실험 URL](https://www.rmg.co.uk/stories/topics/what-was-first-animal-space) → [현재 페이지](https://www.rmg.co.uk/stories/space-astronomy/what-was-first-animal-space), 동물 목록·first facts | **비교 전체 미확인**: 해파리를 목록에 넣고 바퀴벌레의 2007 우주 수태 사례를 설명하나 첫 발사 날짜 비교를 제공하지 않음. | 현재 리다이렉트 도착 본문 직접 확인. | 최초 수태와 최초 우주 발사는 다른 사건이다. 링크의 일부 문구를 답의 전체 지지로 늘리지 않는다. |
 
@@ -32,3 +32,9 @@ AAO 눈 해부학/눈물 페이지는 접근 거부, NCBI PMC6850423 및 NBK5721
 ## 제품 문장으로 옮길 수 있는 범위
 
 ‘원문을 열 수 있었다’는 인터페이스 기능 설명이다. ‘원문이 이 주장을 지지한다’는 정확한 절과 주장 범위가 맞는 경우에만 가능하다. ‘오류를 걸러냈다’는 같은 시행에서 원문 노출, 권고 정오, 사람의 최종 판단이 연결되어야 한다. 여기서 확인한 원문 불일치는 오류를 **검증할 기회**의 내용이며 실제 참가자가 오류를 발견한 비율이 아니다. 소프트웨어 부품 선택이나 재작업 감소로 일반화할 직접 시행은 이 원문 대조에 없다.
+
+## URL 교차검토 정정
+
+초기 고정판 `037df9b9ee49a41271813f5577ad00cda29a3b5a`의 NASA 감사는 root가 URL의 `moon-walkers`를 `moonwalkers`로 잘못 옮겨 404를 실제 자극 링크 실패로 해석했다. AppendixF의 실제 PDF annotation72개 목록과 HTML을 대조하여 정정했다. 정확한 자극 URL은 현재 열린다. 따라서 **이 사례의 링크가 깨졌다는 결론은 철회**한다. 현재판만으로 해구 방문자 비교 전체나2024실제 노출이 확인되지 않는다는 범위 제한은 유지한다. 실패 요청 영수증은 사실대로 남기되 정확한 자극 URL의 접근 실패로 세지 않는다. AAO 눈물 URL도 실제 annotation의 `facts-about-tears`로 재확인하여403을 기록했다.
+
+정정 후 정확한 URL의 CDX검색으로2024년 월별5개 보관판을 발견했고,2024-08-01 10:24:14판 본문의12명 및 달방문24명 구분을 직접 읽었다(`nasa-archive-body-verification.json`). 따라서 역사판의 **달 보행자 수**는 확인으로 올리되 해구와의 전체 비교 및 참가자 실제 노출은 여전히 미확인이다. 이 역사판만 NASA저작의 최소량1회로 산입하고 현재판/오타URL을 추가 저작으로 세지 않는다.
