@@ -40,7 +40,7 @@
 |J2|범위·열람수·판정 동일|[답 78265948](https://stackoverflow.com/a/78265948) · 현재 채택; tasks[]로 선택하고 project="app2"로 갱신. 새 값 app2는 답변자가 택한 예시.|[채택만 확인; 질문자 실행·출력·정확판 미확인](https://stackoverflow.com/questions/78265746#comment137980464_78265746); 사용판 미확인; 질문자 완비 출력 없음|유지: 읽기/갱신 연산은 제공하되 완전 입력·새 값·대상 선택은 질문한다.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
 |J3|범위·열람수·판정 동일|[답 78304820](https://stackoverflow.com/a/78304820) · 현재 채택; 동적 인덱스 .[$key]와 갱신 연산. 최초 답은 *=10 보조 예와 1998 출력이 불일치했고 약5분 뒤 *=999로 수정.|[답변자 예시 출력 + 채택; 질문자 실행 미확인](https://stackoverflow.com/revisions/08368F0F-FFEE-4CB1-A656-5D2F3C9C83B2/view-source); 사용판 미확인; 질문자 완비 출력 없음; 1998은 답변자 곱셈 예, 원 요구42와 다름|유지: .[$key] += 40으로 원 기대값42를 보존한다. 답의 숫자999를 복사하지 않는다.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
 |P1|B는 R wrapper/fontspec/template를 읽으며 본문+1; 양쪽 부분|[답 78275798](https://stackoverflow.com/a/78275798) · 미채택; LuaLaTeX로 엔진을 바꾸고 luaotfload fallback에 NotoColorEmoji를 넣는 답. 현재 채택 표지 없음.|[답변자 설정 예만; 질문자 실행·채택 미확인](https://stackoverflow.com/a/78275798); 사용판 미확인; 질문자 완비 출력 없음|보완: fallback/엔진 교체 후보를 사후 카드에 추가하되 HTML 요구와 설치·글리프 커버리지 때문에 부분 유지.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
-|P2|B는 Quarto include 형식을 추가 확인; 성공본문 동일·접근+1, 비교 제한|[답 78314393](https://stackoverflow.com/a/78314393) · 현재 채택; toprule/bottomrule 재정의. 공개답은 각 매크로 [2]{}로 뒤의 두 토큰을 소비하며 header-includes 또는 본문 앞에 삽입.|[채택만; 원 구현 연결·실제 실행 미확인](https://stackoverflow.com/a/78314393); 사용판 미확인; 질문자 완비 출력 없음|정정: 사전 완결은 고정 Pandoc 조건부 판단으로 보존. 원 Quarto 전체사슬은 부분으로 보수 판정; 검색 실패와5접근시도로 엄격 비교불가.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
+|P2|B는 Quarto include 형식을 추가 확인; 성공본문 동일·접근+1, 비교 제한|[답 78314393](https://stackoverflow.com/a/78314393) · 현재 채택; toprule/bottomrule 재정의. 공개답은 각 매크로 [2]{}로 두 필수 인수(고정 writer에서는 noalign 명령과 빈 그룹)를 소비하며 header-includes 또는 본문 앞에 삽입.|[채택만; 원 구현 연결·실제 실행 미확인](https://stackoverflow.com/a/78314393); 사용판 미확인; 질문자 완비 출력 없음|정정: 사전 완결은 고정 Pandoc 조건부 판단으로 보존. 원 Quarto 전체사슬은 부분으로 보수 판정; 검색 실패와5접근시도로 엄격 비교불가.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
 |P3|B는 BBT/CSL 문서를 읽으며 본문+2; 양쪽 부분, reader 확장 모두 놓침|[답 78364883](https://stackoverflow.com/a/78364883) · 현재 채택; Markdown reader의 example_lists 확장과 citation 표기의 충돌. --from=markdown-example_lists로 끄는 주 도구 내부 해법.|[질문자 해결 보고 있음; 정확판과 출력 동반 재현은 미확인](https://stackoverflow.com/questions/78358965#comment138159258_78358965); 사용판 미확인; 질문자 완비 출력 없음; 질문자가 해법 적용으로 해결됐다고 보고|변경: BBT/CSL 결손 중심의 두 링크 대신 example_lists 비활성화 문서와 공개 후속을 반환. 사전 A/B 부분 판정은 그대로 보존.|정확 사용판·완전 입력과 명령·실제 후속 출력. 현재 채택 표지로 과거 채택시각 또는 실행 성공을 추정하지 않음.|
 
 ## 모집·실행·비교 분모와 결원
@@ -49,7 +49,7 @@
 - 사전 봉인: A만 완결0, B만 완결0, 양쪽3(J1/J3/P2), 어느 쪽도 완결 아님3(J2/P1/P3). P2는 주 분모에 남기되 엄격 동등비교에서 비교불가1로 분리한다. 따라서 유효5쌍의 분류는 A만0/B만0/양쪽2/어느 쪽도 아님3이다. P2 원 Quarto 연결을 보수적으로 해석하면 전체6쌍의 양쪽 완결은2, 어느 쪽도 완결 아님4다.
 - B의 추가 완결은 유효5쌍 중0건이다. 다만 jq3건은 정당한 인접 도구가 없어 애초 B=A다. 실제 허용 집합이 다른 신규3쌍 중 정상 비교가 남는 것은 P1/P3 두 쌍이고 여기에서도 추가 완결0/2다. A만/B만 완결인 불일치쌍 자체가0이므로 **불일치쌍 중 B 승률은 산출 불가(분모0)**다. 동률을 B의 성공으로 세지 않는다.
 - 검색24회, 결과 노출23회(그중 booktabs 코퍼스가 없는 부분검색1), 전면 실패1. 본문 열람33/48회, 실패 접근1을 포함한 별도 자료 접근34회. A는15본문, B는18본문+실패1. 경로명 탐색9회는 검색결과 노출과 분리 기록했다. B의 인접 저장소 검색 노출은0행이고 인접 원문6개는 경로명 탐색으로 직접 골랐다.
-- 최소량 산입 원자료40건: 신규R0 6 + 판 고정 매뉴얼/코드14 + 상류 동작자료8(기대출력 시험6·공개 회귀보고2) + 오디오6 + 전자책6. 같은 시험·문서 계보를 보수적으로 합친 저작/사건 그룹은29, lineage는33. 이는29개의 독립 실험이 아니다. 총 원장104행에는 실패·미러·상속·답/댓글·교정도 포함한다. 검색 요약·메타데이터·자체 검산은40에 넣지 않았다.
+- 최소량 산입 원자료40건: 신규R0 6 + 판 고정 매뉴얼/코드14 + 상류 동작자료8(기대출력 시험6·공개 회귀보고2) + 오디오6 + 전자책6. 같은 시험·문서 계보를 보수적으로 합친 저작/사건 그룹은29, lineage는33. 이는29개의 독립 실험이 아니다. 총 원장123행에는 실패·미러·상속·답/댓글·교정도 포함한다. 검색 요약·메타데이터·자체 검산은40에 넣지 않았다. 재개 감사의 성공 재열람17회·접근 실패2회는 원장에만 추가했고 최소량·독립 사건·경로 예산에 기여0이다.
 - 경로 안의 고유 본문은16개(12경로의 반복 방문33회와 구별). 그 밖의 산입자료는 R0 6건, Q7 병렬 원자료12건, 봉인 후 상류6건이다. Q7는 별도 대조로 병렬 독해했고 신규 질문 답을 봉인 전에 전달하지 않았다. 단계③은 사후 자료의 편집/커밋 묶음이며 모든 Q7 열람이 봉인 뒤였다는 뜻이 아니다.
 - 공개 답7개·댓글7개는 모두30일 이내다. 현재 채택5질문, 미채택1(P1). 이후 공개 답/댓글0은 삭제·비공개 활동 부재의 증명이 아니다. P3의 해결 자기보고1건, J1의 보조예 실행 실패 자기보고1건을 따로 유지한다. 정확판·입력·명령·출력을 함께 확인한 원 질문자 실행은0/6이며, 그 완비 실행을 분모로 하는 성공률은 **산출 불가(분모0)**다.
 - C2는 J2/P2 두 건에서 공석이다. 모든 원 질문자의 실제 사용판은 미확인이다. P2 이미지와 J1 jqplay는 직접 검증에 실패했다. booktabs 본문/바이트, 원 Quarto 연결, P1 실제 Unicode·폰트 파일, P3 전체 명령/bib/CSL도 공석이다. 교정 JN2/PN1/PE1 세 건과 타 분야 대조는 신규6쌍/승률에 기여0이다.
@@ -95,7 +95,7 @@ J1/J3는 기존 도구의 전체 매뉴얼에서 구체 경로를 얻은 자리�
 - JQ 인수: [UP-01](https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/tests/shtest)에서 `--arg`는 문자열, `--argjson`은 숫자 JSON을 기대한다. 같은 파일을 rawfile/slurpfile로 읽는 결과도 문자열/배열로 갈린다. “둘 다 입력이다”라는 이름만으로 조합하지 않는다.
 - 글꼴: [UP-02](https://github.com/jgm/pandoc/blob/c3038dcd54152c4e18e49db31676b79ee7cc29b2/test/command/emoji.md)의 emoji fixture는 문자/별칭 변환을 시험한다. 그 값이 PDF에서 보이는지는 [DOC-FONTSPEC](https://github.com/latex3/fontspec/blob/a4be8a1359997e72612532882acaa64bb86e0566/fontspec-doc-fontsel.tex)의 선택 경로와 실제 font glyph·엔진 조건이 필요하다. P1의 두 출력 요구를 PDF 설정 하나로 지웠다고 간주하지 않는다.
 - 표: [UP-04](https://github.com/jgm/pandoc/blob/c3038dcd54152c4e18e49db31676b79ee7cc29b2/test/pipe-tables.native)는 빈 헤더 입력과 행 없는 TableHead를 연결하지만 [CODE-PD-TABLE](https://github.com/jgm/pandoc/blob/c3038dcd54152c4e18e49db31676b79ee7cc29b2/src/Text/Pandoc/Writers/LaTeX/Table.hs)는 headerless에서도 rule을 생성한다. “TableHead를 비우면 선이 사라진다”는 추론은 반박된다. [UP-05](https://github.com/jgm/pandoc/issues/7343)의2.11.3→2.11.4 PDF 회귀와 [UP-06](https://github.com/jgm/pandoc/issues/7369)의2.13→2.14 DOCX 보고는 writer·소비자·판에 따라 같은 AST 변형의 결과가 달라짐을 보여준다.
-- 서지: [DOC-BBT-PANDOC](https://github.com/retorquere/zotero-better-bibtex/blob/0fcbd1ba96b8ec61fb4704ca7e2a32d89d5cc390/site/content/exporting/pandoc.md)가 권하는 CSL 서지 데이터와 [DOC-CSL-SPEC](https://github.com/citation-style-language/documentation/blob/ea75983cc9f409a88ede93878d9525a734dbeb63/specification.rst)의 XML 스타일은 역할이 다르다. 데이터 파일을 --csl 스타일 자리에 연결하면 형식 경계가 맞지 않는다. 반대로 P3에서는 reader가 이미 다른 구조로 해석했으므로 서지·스타일만 바꾸는 링크가 실제 원인에 닿지 않았다.
+- 서지: [DOC-BBT-PANDOC](https://github.com/retorquere/zotero-better-bibtex/blob/0fcbd1ba96b8ec61fb4704ca7e2a32d89d5cc390/site/content/exporting/pandoc.md)가 권하는 CSL 서지 데이터와 [DOC-CSL-SPEC](https://github.com/citation-style-language/documentation/blob/ea75983cc9f409a88ede93878d9525a734dbeb63/specification.rst)의 XML 스타일은 역할이 다르다. 데이터 파일을 --csl 스타일 자리에 연결하면 형식 경계가 맞지 않는다. P3의 공개 답·해결 보고와 고정 reader 코드는 example_lists 충돌을 지지하지만, 원 입력의 실제 AST는 미확인이다. 사전 두 경로는 주 도구 내부의 이 reader 후보를 반환하지 않았다.
 
 ### 넓혀도 손해가 나는 자리
 
@@ -136,6 +136,10 @@ P1 B는3개 인접 원문을 읽고 총4회를 소모했으나 실제 문자·fo
 ## 산출물·검산·다음 실행
 
 읽는 순서는 이 결과의세표 → [cards.md](cards.md) → [SELF_CHECK.md](SELF_CHECK.md) → [sources.jsonl](sources.jsonl)이다. 재현 자료는 frame/search_plan/searches/candidates/outcomes/pairs/metrics와 evidence/에 있다. [audit.py](audit.py)는6질문/12경로/예산/최초봉인 불변/원자료 최소량/사후 분모를 검산하며 별도 원자료로 세지 않는다. [NEXT_ACTIONS.md](NEXT_ACTIONS.md)는 아직 못한 원환경·정확판 관측의 명령과 입력을 담는다. 검사한 결과 SHA·종료코드·원격 readback은 최종 HANDOFF의 기록을 따른다.
+
+## 재개 감사에서 바뀐 범위
+
+재개 시 원격 최신판은 사용자 체크포인트91cd24b의 후속인 `b40b4dfeb8b7079f6568e511105117b02f477d14`였다. 완료한 네 묶음은 반복하지 않았다. [분모 감사](evidence/review/resume-denominator-audit.md)에서 원 로그의 실패·열람·후보를 별도 계산해 6질문/12경로/유효5쌍과40자료를 확인했고, [기술 감사](evidence/review/resume-claims-audit.md)와 [타 분야 감사](evidence/review/resume-crossdomain-audit.md)에서 고정 1차 자료를 다시 읽었다. P3의 원 AST를 직접 확인한 것처럼 읽힐 수 있는 한 문장을 조건부 추론으로 바로잡고 P2의 두 인수 표현을 정확히 했다. 봉인 frame/search_plan/candidates/searches와 판정은 보존했다. `audit.py`의 일부 헤드라인은 현재 실험에 맞춘 리터럴이므로 그 PASS를 임의의 새 자료에 대한 일반 검증으로 확장하지 않는다. 원자료17회 재열람·2회 접근 실패는 기존 계보의 감사 기록이며 외부 원자료 최소량을 늘리지 않는다. 최종 원격 SHA와 검사 결과는 HANDOFF에서 확인한다.
 
 ## 가장 중요한 불일치 또는 약점3건
 
