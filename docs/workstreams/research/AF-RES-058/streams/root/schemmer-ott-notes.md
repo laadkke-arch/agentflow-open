@@ -8,7 +8,8 @@ root는 prior-knowledge seed로 이 논문을 찾았으며 primary B 방법선�
 - §5, PDF10–13: 호텔리뷰 진위 이진분류, 사람간 무작위2조건. AI권고와 LIME단어강조 유무. 200모집, 설명군1명 제외, 분석100대99.16과제,32리뷰집에서TP/FP/TN/FN각4를 선택하고각cell긍정2/부정2; 학습모델86%와 시행집50%는 다른 수치. 사람의 처음답→권고/강조→수정답. 훈련2개 feedback있음, 본과제 feedback없음. 동일개별항목의 조건별배정표/스크립트는 확보하지 못함(E2 또는EU, 같은모델만으로E1 아님).
 - Fig5(PDF11) 실제 화면 시각확인: 왼쪽첫답 plain review, 오른쪽 feature condition에 색/강도별단어강조와AI권고, 아래 confidence평정. 저자는 예시참값fake라고명시. 이는 step1/2 쌍이지 동일항목의 control/feature 실제 렌더쌍을 직접 확보했다는 뜻은 아니다. 원문링크열람 조작 아님.
 - Table2(PDF13) 및Table3/Fig6(PDF14) 시각확인: 분석N100/99. RAIR29.59%/38.87%, RSR71.87%/69.45%, AI-assisted53.94%/56.30%, initial55.50%/53.85%. 전원정오층수락의 원개수 없음. 숫자에서정수역산금지. 저자 단위가 participant rate이므로 pooled trial수락률로 바꾸지 않음.
-- §6.3/§7: retained199의결측없음 진술은 제외1명을취소하지 않음. 구pretest[63]의RSR감소가larger study에서는유의하지않았다고명시; 같은연구팀/관련코호트가능성을확인해야독립복제로셀수있음. sequential설계자체가anchoring/인지참여를바꿀수있음을저자가한계로명시.
+- §6.3/§7: 'no missing data'는 SEM 전처리 맥락의 저자 진술이며 원배정·최종응답 전체의 결측0을 검증한 것이 아니다. 제외1명도 취소하지 않는다. 구pretest[63]의RSR감소가larger study에서는유의하지않았다고명시; 같은연구팀/관련코호트가능성을확인해야독립복제로셀수있음. sequential설계자체가anchoring/인지참여를바꿀수있음을저자가한계로명시.
+- 후속 동료 검토(2026-11-23): Table3 confidence change Control0.19/Feature0.06과 §6.1 설명조건 증가라는 서술의 방향이 일치하지 않는다. 정정된 VoR 전문 미확인 상태에서 자신감 증가를 결과 주장에 쓰지 않는다. adjacent의 별도 원문/표 시각 판독은 streams/adjacent/self-review.md에 기록한다.
 
 ## 정답 원천: Ott2011와Ott2013
 

@@ -55,6 +55,15 @@ for stream in ("software", "adjacent"):
             "metadata_freeze_commit": "02dbcaa1cd8dad27b113e9a225ab1fc95b913a9a",
             "selection_freeze_commit": "1ff924dc53dee8ff4b07fa1f1c25e7f601d72d95",
         })
+senspath = BASE / "streams/software/methods-sensitivity.json"
+if senspath.exists():
+    sensitivity = read_json(senspath)
+    recoveries = {r["frame_id"]: r for r in sensitivity.get("recoveries", [])}
+    clarifications = {r["frame_id"]: r for r in sensitivity.get("access_scope_clarifications", [])}
+    for row in frames:
+        row["postfreeze_method_audit"] = recoveries.get(row["frame_id"], clarifications.get(row["frame_id"]))
+        if row["frame_id"] in clarifications:
+            row["method_access_limit"] = True
 write_csv("frame.csv", frames)
 selected_dois = {r["doi"].lower(): r["slot"] for r in frames if r["slot"]}
 source_slot = {r["source_id"]: r["slot"] for r in frames if r["slot"]}
@@ -117,7 +126,7 @@ for stream, row in raw_sources:
     paper_doi = wid.removeprefix("doi:")
     category = "screened_method_source"
     if eligible:
-        if sid.startswith(("AD-BIOS-P", "AD-MIMIC-P")) and not sid.endswith("PKG"):
+        if sid == "SW-S34" or (sid.startswith(("AD-BIOS-P", "AD-MIMIC-P")) and not sid.endswith("PKG")):
             category = "ground_truth_support"
         elif sid in ("AD-DRXAI-PKG", "AD-BIOS-PKG", "AD-MIMIC-PKG"):
             category = "source_or_model_tool_support"
@@ -153,7 +162,8 @@ for stream, row in raw_sources:
         "counterevidence_ids": row.get("contrary_source_ids", row.get("counterevidence_ids", row.get("opposing_source_ids", []))),
         "read_status": status,
         "external_primary_eligible": bool(eligible), "counts_for_deep_20": counts_for_20,
-        "category": category, "formal_paper_read": row.get("formal_paper_read", kind != "author_poster"),
+        "category": category,
+        "formal_paper_read": row.get("formal_paper_read", bool(eligible and ("paper" in kind or kind == "independent_human_study") and "correction" not in kind and "search_only" not in kind and "access" not in kind and kind != "author_poster")),
         "reader": row.get("reader", "/root/" + stream),
         "stream_record": f"streams/{stream}/sources.jsonl",
     }
