@@ -1,0 +1,117 @@
+{
+  "case_id": "J1",
+  "route": "A",
+  "researcher": "jq_recruit",
+  "read_completed_utc": "2026-11-23T18:07:22.490708+00:00",
+  "judgment": "완결",
+  "returned_sources": [
+    {
+      "file_id": "JQ-0001",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/docs/content/manual/v1.7/manual.yml",
+      "sections": [
+        {
+          "start": 143,
+          "end": 148,
+          "claim": "-r는 문자열을 따옴표 없이 출력한다."
+        },
+        {
+          "start": 520,
+          "end": 548,
+          "claim": "배열 반복은 각 원소를 별도 결과로 만든다."
+        },
+        {
+          "start": 587,
+          "end": 610,
+          "claim": "각 pipeline 단계의 입력과 반복의 곱을 설명한다."
+        },
+        {
+          "start": 2045,
+          "end": 2055,
+          "claim": "한 자식 입력에서 세 표현식을 하나의 문자열에 보간한다."
+        },
+        {
+          "start": 2797,
+          "end": 2831,
+          "claim": "부모 값을 lexical binding에 유지한 채 자식 반복으로 이동할 수 있다."
+        }
+      ]
+    },
+    {
+      "file_id": "JQ-0080",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/tests/jq.test",
+      "sections": [
+        {
+          "start": 424,
+          "end": 440,
+          "claim": "상류 fixture는 변수의 반복·scope 유지에 대한 기대 출력을 기록한다."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "143-148",
+        "520-548",
+        "2045-2055",
+        "2797-2831"
+      ],
+      "interface": "JSON outer data item→startTime bound as $t→inner data item→one interpolated raw line",
+      "contradictory_or_missing": "원 JSON 닫는 구분자는 생략되어 있다. 구조를 지지하는 문서적 적합을 판정하며 원 사용자 실행은 미확인."
+    },
+    {
+      "condition_id": "C2",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001",
+        "JQ-0080"
+      ],
+      "section_ranges": [
+        "JQ-0001:587-610",
+        "JQ-0001:2797-2831",
+        "JQ-0080:424-440"
+      ],
+      "interface": "한 inner 객체를 현재 입력으로 유지하므로 one과 two를 별도 generator로 전개하지 않는다. 부모마다 자식 수만큼 결과.",
+      "contradictory_or_missing": "서로 독립적인 .data[].one/.data[].two를 보간하면 곱을 만들 수 있다는 반대조건을 확인했다."
+    }
+  ],
+  "used_file_ids": [
+    "JQ-0001",
+    "JQ-0080"
+  ],
+  "examined_but_not_used": [
+    {
+      "file_id": "JQ-0016",
+      "reason": "decimal arithmetic module; 요구의 parent/child scope에 직접 근거 없음",
+      "read_sections": [
+        "1-65"
+      ]
+    },
+    {
+      "file_id": "JQ-0072",
+      "reason": "보간과 EACH 컴파일을 corroborate하나 두 반환 링크에 추가로 필요하지 않아 판정 근거에서 제외",
+      "read_sections": [
+        "3217-3233",
+        "3434-3449"
+      ]
+    }
+  ],
+  "memory_exposure": "첫 jq 실험 경로. 일반 jq 지식은 있으나 신규 질문의 답/채택/댓글을 열지 않았다. 사전 corpus 본문도 ①봉인 전 노출되지 않았다.",
+  "stop_reason": "사전정책대로4개 노출파일을 slot순서대로 모두 열고 반대조건을 확인; 예산소진 후 중단.",
+  "limitations": [
+    "문서 적합 판정이며 실제 jq1.7.1 변환을 실행하지 않았다.",
+    "원 사용자 jq판과 생략된 입력 미확인.",
+    "두 원 시도 명령이 같으면서 제시 출력은 다르므로 그 실제 명령 로그까지 복원하지 않는다.",
+    "소수점3자리 formatting은 별도 요구로 추가하지 않았다."
+  ],
+  "proposed_solution": ".data[] | .startTime as $t | .data[] | \"\\($t), \\(.one), \\(.two)\"",
+  "proposed_cli_flags": [
+    "-r"
+  ],
+  "solution_attribution": "연구자가 반환 문서의 binding/iterator/interpolation 규칙을 조합한 미실행 해법; 원 질문의 공개 답에서 가져오지 않음."
+}

@@ -1,0 +1,180 @@
+{
+  "case_id": "J4",
+  "route": "B",
+  "researcher": "jq_recruit",
+  "read_completed_utc": "2026-11-23T18:13:48.847087+00:00",
+  "judgment": "완결",
+  "returned_sources": [
+    {
+      "file_id": "JQ-0001",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/docs/content/manual/v1.7/manual.yml",
+      "sections": [
+        {
+          "start": 124,
+          "end": 148,
+          "claim": "로그줄→문자열 및 문자열 raw 출력"
+        },
+        {
+          "start": 491,
+          "end": 518,
+          "claim": "match 시작점으로 문자열 suffix slicing"
+        },
+        {
+          "start": 790,
+          "end": 810,
+          "claim": "누적 문자열 연결"
+        },
+        {
+          "start": 1213,
+          "end": 1226,
+          "claim": "불완결 중간상태는 empty로 출력하지 않음"
+        },
+        {
+          "start": 1778,
+          "end": 1797,
+          "claim": "문자열을 Unicode 문자단위로 순회"
+        },
+        {
+          "start": 2317,
+          "end": 2339,
+          "claim": "괄호별 조건분기"
+        },
+        {
+          "start": 2368,
+          "end": 2389,
+          "claim": "완결 조건의 conjunction"
+        },
+        {
+          "start": 2531,
+          "end": 2563,
+          "claim": "regex escaping 및 global flag"
+        },
+        {
+          "start": 2590,
+          "end": 2624,
+          "claim": "match별 codepoint offset"
+        },
+        {
+          "start": 2802,
+          "end": 2805,
+          "claim": "원문 문자열과 시작offset binding"
+        },
+        {
+          "start": 2900,
+          "end": 2917,
+          "claim": "조합 filter를 named function으로 정의"
+        },
+        {
+          "start": 2993,
+          "end": 3001,
+          "claim": "첫 완결값만 반환"
+        },
+        {
+          "start": 3062,
+          "end": 3099,
+          "claim": "foreach의 상태갱신과 중간 추출"
+        },
+        {
+          "start": 3438,
+          "end": 3464,
+          "claim": "깊이 증가/감소 및 seen상태 갱신"
+        }
+      ]
+    },
+    {
+      "file_id": "GR-0001",
+      "url": "https://git.savannah.gnu.org/cgit/grep.git/tree/doc/grep.in.1?h=v3.11",
+      "sections": [
+        {
+          "start": 166,
+          "end": 186,
+          "claim": "원 grep은 줄을 선택해 출력하며 JSON 변환기가 아님."
+        },
+        {
+          "start": 363,
+          "end": 366,
+          "claim": "-o는 매치 조각을 출력하지만 균형괄호 규칙을 자동 제공하지 않음."
+        },
+        {
+          "start": 755,
+          "end": 776,
+          "claim": "PCRE는 별도 지원이 필요하며 이 원문의 ERE 설명으로 재귀PCRE 구문까지 확인하지 않음."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "supported_by_documented_composition",
+      "evidence_file_ids": [
+        "JQ-0001",
+        "GR-0001"
+      ],
+      "section_ranges": [
+        "JQ-0001:124-148",
+        "JQ-0001:491-518",
+        "JQ-0001:2590-2624",
+        "JQ-0001:2993-3001",
+        "JQ-0001:3062-3099",
+        "GR-0001:166-186"
+      ],
+      "interface": "grep이 출력한 한 로그줄→jq -R의 문자열→specificword=[ 시작점마다 suffix→depth가 첫0으로 돌아온 접두문자열→-r 출력. 뒤 status 필드는 limit(1) 때문에 포함하지 않음.",
+      "contradictory_or_missing": "단순 greedy .* 또는 첫 ]까지만 찾는 패턴은 각각 이웃필드/중첩에 실패한다. 이 경로는 그런 패턴을 해법으로 반환하지 않고 실제 상태형 filter를 제안한다."
+    },
+    {
+      "condition_id": "C2",
+      "status": "supported_by_documented_composition",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "2531-2563",
+        "2590-2624",
+        "1778-1797",
+        "2993-3001",
+        "3062-3099",
+        "3438-3464"
+      ],
+      "interface": "모든 literal [에 깊이+1, ]에 -1; 중첩의 내부 ]에서는 깊이>0으로 계속 누적. []는 즉시1→0이 되어 보존. match g는 marker별 결과를 만든다. 괄호외 문자와 ()는 그대로 누적.",
+      "contradictory_or_missing": "원문에 escaping/quoted bracket 규칙이나 여러줄 괄호 구조는 없다. 그 경우 문법을 먼저 확인해야 하며 현재 완결 범위는 제시된 한 줄 balanced literal brackets이다."
+    }
+  ],
+  "used_file_ids": [
+    "JQ-0001",
+    "GR-0001"
+  ],
+  "examined_but_not_used": [
+    {
+      "file_id": "JQ-0117",
+      "reason": "원 raw-input fixture의 줄/전체stream 기대출력을 확인; 정확한 bracket filter의 상류시험은 아님.",
+      "read_sections": [
+        "20-39"
+      ]
+    },
+    {
+      "file_id": "GR-0005",
+      "reason": "기본 grep의 prline 전체줄 쓰기 코드를 확인; 반환 두 링크외 판정 근거로 사용하지 않음.",
+      "read_sections": [
+        "1297-1344"
+      ]
+    }
+  ],
+  "memory_exposure": "기존 J1–J3에서 jq manual 일부를 읽은 기억. J4 B를 먼저 수행하며 match/foreach/문자열 함수 절을 이 경로에서 직접 읽었다. grep 원문은 이 노출에서 처음 읽음. 공개 답/댓글 미열람.",
+  "stop_reason": "4개 노출파일을 모두 열고 문서/코드의 반대조건까지 확인 후 예산소진.",
+  "limitations": [
+    "완결은 명시 범위에 대한 문서기반 합성 판정이며, proposed_filter.jq의 컴파일·실행은 아직 하지 않았다.",
+    "반환문서가 이 질문의 정확한 bracket filter를 그대로 제공하는 것은 아니다. 상태불변식으로 구성한 연구자 해법이며 상류 동일입력 시험과 구별한다.",
+    "원 사용자 jq/grep판과 regex옵션, quote/escape 규칙 미확인.",
+    "GNU grep 비교판 문서는 입력 경계를 설명하지만 bracket 추출을 추가로 완결시킨 것은 아님; jq manual만으로 같은 처리 조합을 구성할 수 있음."
+  ],
+  "proposed_solution_file": "evidence/routes/J4-B/proposed_filter.jq",
+  "proposed_solution": "def bracketed:\n  limit(1;\n    foreach (explode[] | [.] | implode) as $c\n      ({depth: 0, seen: false, text: \"\"};\n       .text += $c\n       | if $c == \"[\" then .depth += 1 | .seen = true\n         elif $c == \"]\" then .depth -= 1\n         else . end;\n       if .seen and .depth == 0 then .text else empty end));\n. as $s\n| match(\"specificword=\\\\[\"; \"g\")\n| .offset as $i\n| $s[$i:]\n| bracketed\n",
+  "proposed_cli_flags": [
+    "-R",
+    "-r"
+  ],
+  "solution_attribution": "연구자가 직접 읽은 단일 jq manual의 연산계약을 조합한 구체 미실행 filter. 공개 답 또는 외부regex문서 참조 없음.",
+  "proof_scope": "각 marker 뒤 첫 [부터 균형깊이가0이 되는 첫 ]까지 문자 그대로 보존하는 불변식; 완전입력의 실제 실행 증거는 별도.",
+  "independent_exact_input_test": "미실시"
+}

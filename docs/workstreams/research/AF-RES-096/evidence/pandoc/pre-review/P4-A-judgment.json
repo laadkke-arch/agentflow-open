@@ -1,0 +1,83 @@
+{
+  "case_id": "P4",
+  "route": "A",
+  "researcher": "/root/pandoc_recruit",
+  "read_completed_utc": "2026-11-23T18:15:02.787821+00:00",
+  "judgment": "부분",
+  "returned_sources": [
+    {
+      "file_id": "PD-0012",
+      "url": "https://github.com/jgm/pandoc/blob/8a72b8449ddccd84fcdffc1a09ae18c4baaca32a/doc/lua-filters.md",
+      "sections": [
+        {
+          "start": 777,
+          "end": 801,
+          "claim": "Published raw TikZ-to-image example works at a RawBlock boundary and defines a fresh minimal preamble."
+        },
+        {
+          "start": 803,
+          "end": 824,
+          "claim": "Compiler pipeline renders PDF then SVG for HTML."
+        },
+        {
+          "start": 841,
+          "end": 873,
+          "claim": "Handler turns a raw tikzpicture block into a Pandoc Image."
+        }
+      ]
+    },
+    {
+      "file_id": "PD-0001",
+      "url": "https://github.com/jgm/pandoc/blob/8a72b8449ddccd84fcdffc1a09ae18c4baaca32a/MANUAL.txt",
+      "sections": [
+        {
+          "start": 3596,
+          "end": 3605,
+          "claim": "raw_tex can be explicitly enabled for the LaTeX reader."
+        },
+        {
+          "start": 632,
+          "end": 654,
+          "claim": "Lua filters operate between parsing and writing and run in declared order."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "partial",
+      "evidence_file_ids": [
+        "PD-0012",
+        "PD-0001"
+      ],
+      "section_ranges": [
+        "PD-0012:777-801",
+        "PD-0012:803-824",
+        "PD-0012:841-873",
+        "PD-0001:3596-3605",
+        "PD-0001:632-654"
+      ],
+      "interface": "LaTeX +raw_tex→RawBlock starting with tikzpicture→official example filter compiles isolated TeX→SVG image→HTML is documented.",
+      "contradictory_or_missing": "The actual example.tex also needs automata/positioning/arrows libraries and a global tikzset outside tikzpicture. Published filter template has neither nor a preamble extraction mechanism. Simply returning its unmodified code does not support the whole original input. A modified template and actual raw AST boundaries remain unverified, so no complete answer is claimed."
+    }
+  ],
+  "used_file_ids": [
+    "PD-0012",
+    "PD-0001"
+  ],
+  "opened_file_ids": [
+    "PD-0012",
+    "PD-0001",
+    "PD-0007",
+    "PD-0008"
+  ],
+  "memory_exposure": "P4-B read first by same researcher; both common files reopened and relevant sections reread. Known B-only diagram implementation/README are not used to justify A. No public outcomes read.",
+  "stop_reason": "All four exposed slots opened in sequence; no source here carries the complete original preamble into the isolated TikZ compile. Four-attempt cap reached.",
+  "limitations": [
+    "Pinned3.6 documentary analysis, not original LaTeX/Pandoc/compiler execution.",
+    "The criterion is preservation of explicitly provided libraries/settings as necessary input dependencies, not an invented extra aesthetic constraint.",
+    "Named diagram.lua internals are out of A scope even though researcher has crossover memory.",
+    "P4-A partial versus P4-B refuted is diagnostic detail; neither is strict complete."
+  ]
+}

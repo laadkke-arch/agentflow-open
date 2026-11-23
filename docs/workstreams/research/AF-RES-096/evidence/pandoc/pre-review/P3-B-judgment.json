@@ -1,0 +1,89 @@
+{
+  "case_id": "P3",
+  "route": "B",
+  "researcher": "/root/pandoc_recruit",
+  "read_completed_utc": "2026-11-23T18:11:50.691987+00:00",
+  "judgment": "부분",
+  "returned_sources": [
+    {
+      "file_id": "RM-0007",
+      "url": "https://github.com/rstudio/rmarkdown/blob/204879ff62c00df6b0910c4ed6a1f8e143c551e8/R/html_document.R",
+      "sections": [
+        {
+          "start": 121,
+          "end": 143,
+          "claim": "html_document accepts custom template and additional Pandoc command-line options; keep_md can reveal the missing handoff."
+        },
+        {
+          "start": 651,
+          "end": 674,
+          "claim": "HTML output connects to custom template and forwards pandoc_args to the base format."
+        }
+      ]
+    },
+    {
+      "file_id": "PD-0001",
+      "url": "https://github.com/jgm/pandoc/blob/8a72b8449ddccd84fcdffc1a09ae18c4baaca32a/MANUAL.txt",
+      "sections": [
+        {
+          "start": 656,
+          "end": 667,
+          "claim": "Metadata values and literal template variables differ in escaping."
+        },
+        {
+          "start": 773,
+          "end": 779,
+          "claim": "-V assigns a string template variable."
+        },
+        {
+          "start": 2262,
+          "end": 2269,
+          "claim": "Explicit variable takes priority over metadata fallback."
+        },
+        {
+          "start": 4904,
+          "end": 4953,
+          "claim": "YAML string metadata is parsed as Markdown and then rendered into template variables."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "partial",
+      "evidence_file_ids": [
+        "RM-0007",
+        "PD-0001"
+      ],
+      "section_ranges": [
+        "RM-0007:121-143",
+        "RM-0007:651-674",
+        "PD-0001:656-667",
+        "PD-0001:773-779",
+        "PD-0001:2262-2269",
+        "PD-0001:4904-4953"
+      ],
+      "interface": "R Markdown html_document pandoc_args→Pandoc --variable signature=literal HTML→template variable, bypassing the YAML Markdown-rendered value, is a source-supported candidate.",
+      "contradictory_or_missing": "The original SIGNATURE originates inside an evaluated R code chunk. No opened file establishes how to obtain that runtime value and bind it to options at the right time, or confirms the actual knitted metadata bytes. Copying the static illustrative HTML into options would change the producer route and is a proposal, not verified preservation of the supplied Rmd producer. Missing old/new Pandoc behavior also prevents asserting the observed cause. PDF source handles different latex header-includes and cannot validate HTML signature."
+    }
+  ],
+  "used_file_ids": [
+    "RM-0007",
+    "PD-0001"
+  ],
+  "opened_file_ids": [
+    "PD-0001",
+    "PD-0012",
+    "RM-0007",
+    "RM-0029"
+  ],
+  "memory_exposure": "P3-A read first by same researcher. Shared manual/Lua docs explicitly reopened and route sections logged. A-only CommandLineOptions code and MediaWiki fixture not used in B evidence. No public outcomes seen.",
+  "stop_reason": "All four exposed slots opened in sequence; actionable producer option found but original runtime-value/knitted-input connection remains unverified; no further file allowed.",
+  "limitations": [
+    "Adjacent material exposed/opened/returned and improves the proposed diagnostic step but not strict completeness.",
+    "Two-link candidate is documented for an explicitly supplied literal HTML variable; its integration with the given runtime R SIGNATURE is not established.",
+    "Pinned Pandoc3.6/rmarkdown2024-11 source, not observed user2.11.2→3.1.11 execution.",
+    "No new explicit condition was added; the missing piece is preservation of the original input-producing step."
+  ]
+}

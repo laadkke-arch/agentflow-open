@@ -1,0 +1,138 @@
+{
+  "case_id": "J2",
+  "route": "B",
+  "researcher": "jq_recruit",
+  "read_completed_utc": "2026-11-23T18:08:45.890069+00:00",
+  "judgment": "부분",
+  "returned_sources": [
+    {
+      "file_id": "JQ-0001",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/docs/content/manual/v1.7/manual.yml",
+      "sections": [
+        {
+          "start": 75,
+          "end": 91,
+          "claim": "JSON stream 입출력"
+        },
+        {
+          "start": 408,
+          "end": 435,
+          "claim": "없는 필드 조회는 null"
+        },
+        {
+          "start": 647,
+          "end": 719,
+          "claim": "배열 결과 수집과 같은 입력으로 객체 값 구성"
+        },
+        {
+          "start": 1182,
+          "end": 1198,
+          "claim": "id별 select"
+        },
+        {
+          "start": 2045,
+          "end": 2055,
+          "claim": "title 문자열 보간"
+        },
+        {
+          "start": 2797,
+          "end": 2831,
+          "claim": "원 modules.data를 변수로 보존"
+        }
+      ]
+    },
+    {
+      "file_id": "CU-0001",
+      "url": "https://git.savannah.gnu.org/cgit/coreutils.git/tree/doc/coreutils.texi?h=v9.5",
+      "sections": [
+        {
+          "start": 1640,
+          "end": 1652,
+          "claim": "cat은 파일 내용을 stdout으로 복사한다."
+        },
+        {
+          "start": 1721,
+          "end": 1738,
+          "claim": "플랫폼·형식옵션에 따른 text/binary 예외를 구별한다."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001",
+        "CU-0001"
+      ],
+      "section_ranges": [
+        "JQ-0001:75-91",
+        "JQ-0001:647-719",
+        "JQ-0001:1182-1198",
+        "JQ-0001:2045-2055",
+        "JQ-0001:2797-2831",
+        "CU-0001:1640-1652"
+      ],
+      "interface": "cat sample.json의 JSON bytes→jq 원 modules.data를 $d로 보존→id별 title와 tracks를 같은 출력 객체의 독립 필드에 구성.",
+      "contradictory_or_missing": "실제 cat 구현 미확인. GNU 비교판 no-option은 전달자이며 JSON scope를 변경하지 않는다."
+    },
+    {
+      "condition_id": "C2",
+      "status": "partially_supported",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "647-719",
+        "1182-1198",
+        "2797-2831"
+      ],
+      "interface": "각 track에서 titles와 uris를 선택하고 한 배열로 수집할 수 있다.",
+      "contradictory_or_missing": "기대 문자열의 here 생략 및 원 시도의 primary/secondary 역전이 정리되지 않았으므로 정확한 원 출력 일치까지 보장하지 않는다."
+    },
+    {
+      "condition_id": "C3",
+      "status": "missing_input",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "408-435"
+      ],
+      "interface": "제시 입력에는 offset이 없어 .offset.start/.offset.end로 원하는 숫자3645/3820을 얻는 연결이 없다.",
+      "contradictory_or_missing": "없는 키는 null이라는 직접 문서. cat은 누락값을 생성하지 않는다. 생략된 원 offset 제공이 최소 추가 관측이다."
+    }
+  ],
+  "used_file_ids": [
+    "JQ-0001",
+    "CU-0001"
+  ],
+  "examined_but_not_used": [
+    {
+      "file_id": "JQ-0117",
+      "reason": "파일을 JSON/문자열로 읽는 상류 fixture의 기대출력을 확인; 이 질문의 offset 출처를 제공하지 않는다.",
+      "read_sections": [
+        "276-308"
+      ]
+    },
+    {
+      "file_id": "CU-0002",
+      "reason": "plain cat 복사 구현을 corroborate했지만 반환 두 링크 외 근거로 사용하지 않는다.",
+      "read_sections": [
+        "151-182",
+        "715-744"
+      ]
+    }
+  ],
+  "memory_exposure": "J1 양경로에서 jq manual 일부를 읽은 기억이 있다. J2 첫 경로는 B이며 필요한 manual 절을 B에서 직접 다시 열람했다. 새 cat 원문도 B의 노출에 따라 열었다. 공개 답은 미열람.",
+  "stop_reason": "노출4파일을 순서대로 읽어 예산소진; 필수 입력 누락 때문에 완결 불가.",
+  "limitations": [
+    "문서 적합만 평가; 실제 변환과 사용자판 실행은 하지 않음.",
+    "현재 입력에 없는 offset 숫자를 하드코딩·추정하지 않음.",
+    "인접원문이 노출·열람·반환되었으나 완결로 바꾸지 못함."
+  ],
+  "proposed_solution": ".modules.data as $d | {title: ($d[] | select(.id == \"aod_play_area\") | .data[0].titles | \"\\(.primary) - \\(.secondary)\"), tracks: [$d[] | select(.id == \"aod_tracks\") | .data[] | {title: .titles.secondary, artist: .titles.primary, start: .offset.start, end: .offset.end, apple: (.uris[] | select(.id == \"commercial-music-service-apple\") | .uri), spotify: (.uris[] | select(.id == \"commercial-music-service-spotify\") | .uri)}]}",
+  "solution_attribution": "연구자 미실행 구조 해법. 기대 문자열과 offset이 해결되지 않아 완결 명령으로 제시하지 않음.",
+  "ask_one_condition": "생략된 offset을 포함한 원 tracks 입력과 원하는 title/artist 매핑을 제공할 수 있는가?"
+}

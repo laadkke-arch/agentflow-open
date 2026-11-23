@@ -1,0 +1,86 @@
+{
+  "case_id": "P4",
+  "route": "B",
+  "researcher": "/root/pandoc_recruit",
+  "read_completed_utc": "2026-11-23T18:14:10.688182+00:00",
+  "judgment": "반박",
+  "returned_sources": [
+    {
+      "file_id": "DG-0002",
+      "url": "https://github.com/pandoc-ext/diagram/blob/023b31752cb5b63cd8bab828b268fa60ebd16d0c/_extensions/diagram/diagram.lua",
+      "sections": [
+        {
+          "start": 522,
+          "end": 535,
+          "claim": "The named filter requires a CodeBlock whose first class names a diagram engine."
+        },
+        {
+          "start": 609,
+          "end": 615,
+          "claim": "Only CodeBlock is registered; raw LaTeX environments are not handled."
+        },
+        {
+          "start": 174,
+          "end": 224,
+          "claim": "TikZ compiler receives a fresh standalone document; source preamble must be explicitly supplied."
+        }
+      ]
+    },
+    {
+      "file_id": "PD-0012",
+      "url": "https://github.com/jgm/pandoc/blob/8a72b8449ddccd84fcdffc1a09ae18c4baaca32a/doc/lua-filters.md",
+      "sections": [
+        {
+          "start": 777,
+          "end": 801,
+          "claim": "Official alternate example converts raw TikZ to an image but uses its own minimal preamble."
+        },
+        {
+          "start": 841,
+          "end": 873,
+          "claim": "RawBlock handler provides an alternative boundary, not the named CodeBlock-only filter."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "refuted_for_named_filter_interface; alternate_repair_partial",
+      "evidence_file_ids": [
+        "DG-0002",
+        "PD-0012",
+        "DG-0001"
+      ],
+      "section_ranges": [
+        "DG-0002:522-535",
+        "DG-0002:609-615",
+        "PD-0012:777-801",
+        "PD-0012:841-873",
+        "DG-0001:19-24",
+        "DG-0001:207-232"
+      ],
+      "interface": "LaTeX tikzpicture raw environment→named diagram filter is broken because it dispatches only CodeBlock with first class tikz. An alternate RawBlock filter exists, but reconstruction must carry original automata/positioning/arrows libraries and global tikzset into its standalone TeX preamble.",
+      "contradictory_or_missing": "Original command lacks an adapter that turns RawBlock into classed CodeBlock and lacks image extraction/embedding when using diagram mediabag. The alternative raw filter’s preamble lacks user libraries/global settings. No verified complete adapter+full preamble+output path is returned within two sources. Actual original AST and installed pdflatex/Inkscape/pdf2svg are unobserved."
+    }
+  ],
+  "used_file_ids": [
+    "DG-0002",
+    "PD-0012",
+    "DG-0001"
+  ],
+  "opened_file_ids": [
+    "PD-0012",
+    "PD-0001",
+    "DG-0001",
+    "DG-0002"
+  ],
+  "memory_exposure": "First P4 route (B). Shared main docs known from P1-P3 but reopened; P4 TikZ sections newly read. No P4-A extra files, no public answers/comments read.",
+  "stop_reason": "Four exposed files read in order; actual named filter registration and output resource boundary inspected; cap reached.",
+  "limitations": [
+    "반박은 원 diagram.lua 호출 연결에 한정; TikZ→HTML 자체 불가능을 뜻하지 않음.",
+    "A proposed adapter/preamble change is a researcher design, not a fully evidenced original-input solution.",
+    "Pinned diagram version1.2.0 in source requires Pandoc>=3.0; original main-linked filter SHA and Pandoc version unknown.",
+    "Adjacent source exposed/opened/returned; strict completeness stays false."
+  ]
+}

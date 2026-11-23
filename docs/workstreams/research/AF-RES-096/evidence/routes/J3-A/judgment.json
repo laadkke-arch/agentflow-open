@@ -1,0 +1,127 @@
+{
+  "case_id": "J3",
+  "route": "A",
+  "researcher": "jq_recruit",
+  "read_completed_utc": "2026-11-23T18:10:16.576031+00:00",
+  "judgment": "완결",
+  "returned_sources": [
+    {
+      "file_id": "JQ-0001",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/docs/content/manual/v1.7/manual.yml",
+      "sections": [
+        {
+          "start": 468,
+          "end": 489,
+          "claim": "0부터 배열 인덱싱; 범위밖 null"
+        },
+        {
+          "start": 647,
+          "end": 666,
+          "claim": "각 쌍 결과를 배열로 수집"
+        },
+        {
+          "start": 790,
+          "end": 810,
+          "claim": "문자열 연결·객체 병합 및 충돌키 오른쪽 우선"
+        },
+        {
+          "start": 891,
+          "end": 914,
+          "claim": "배열 length"
+        },
+        {
+          "start": 1392,
+          "end": 1427,
+          "claim": "증분2 range로 짝의 시작 인덱스 생성"
+        },
+        {
+          "start": 2802,
+          "end": 2831,
+          "claim": "인덱스 바인딩 뒤에도 원 입력 배열 유지"
+        }
+      ]
+    },
+    {
+      "file_id": "JQ-0080",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/tests/jq.test",
+      "sections": [
+        {
+          "start": 251,
+          "end": 277,
+          "claim": "원 range와 범위밖 인덱스 fixture 기대출력"
+        },
+        {
+          "start": 519,
+          "end": 525,
+          "claim": "원 객체병합·문자열연결 fixture 기대출력"
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001",
+        "JQ-0080"
+      ],
+      "section_ranges": [
+        "JQ-0001:468-489",
+        "JQ-0001:647-666",
+        "JQ-0001:790-810",
+        "JQ-0001:891-914",
+        "JQ-0001:1392-1427",
+        "JQ-0001:2802-2831",
+        "JQ-0080:251-277",
+        "JQ-0080:519-525"
+      ],
+      "interface": "기존 elements 배열→0,2,4… 인덱스→각 i와 i+1의 +→합친 모든 쌍의 배열. 단순문자열 예와 객체 입력 모두 +의 타입별 의미로 연결.",
+      "contradictory_or_missing": "중복키가 있으면 오른쪽이 덮음; 원 요구는 공유키 없는 객체. 홀수 마지막 원소의 요구는 지정되지 않았으므로 완결 범위를 명시된 쌍 입력으로 한정."
+    },
+    {
+      "condition_id": "C2",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "790-810",
+        "1392-1427",
+        "2802-2831"
+      ],
+      "interface": "모든 변환은 하나의 jq filter 내부. 외부 루프/생산자 변경/중간 JSON 재구축 불필요.",
+      "contradictory_or_missing": "OverpassQL 원 질의·사용판을 확인한 것은 아니며 생산단계 자체의 재현 성공으로 확장하지 않는다."
+    }
+  ],
+  "used_file_ids": [
+    "JQ-0001",
+    "JQ-0080"
+  ],
+  "examined_but_not_used": [
+    {
+      "file_id": "JQ-0004",
+      "reason": "range/3의 내부 증가 조건을 확인했으나 반환2원문 외 판정증거로 사용하지 않음.",
+      "read_sections": [
+        "147-165"
+      ]
+    },
+    {
+      "file_id": "JQ-0002",
+      "reason": "plus가 string/array/object 타입별 dispatch하는 구현을 확인했으나 추가 반환 근거로 쓰지 않음.",
+      "read_sections": [
+        "92-114"
+      ]
+    }
+  ],
+  "memory_exposure": "J1/J2에서 manual과 test 일부를 읽었다. J3 관련 range/merge 절은 J3-A에서 직접 읽었다. 신규 공개 답 미열람.",
+  "stop_reason": "노출4파일 모두 열고 타입·경계 반대조건 확인;4회 소진.",
+  "limitations": [
+    "문서와 상류 기대출력의 적합 판정; 이 연구자가 실제 고정판 입력을 실행하지 않음.",
+    "원 Overpass 전체 JSON·사용판·홀수 입력 요구는 미확인.",
+    "문자열 예시와 객체 병합은 타입별 + 의미가 다름을 명시."
+  ],
+  "proposed_solution": ".elements | [range(0; length; 2) as $i | .[$i] + .[$i+1]]",
+  "simplified_array_solution": "[range(0; length; 2) as $i | .[$i] + .[$i+1]]",
+  "solution_attribution": "반환 문서의 범위·바인딩·+·배열수집 규칙을 연구자가 조합한 미실행 해법."
+}

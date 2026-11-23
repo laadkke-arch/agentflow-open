@@ -1,0 +1,68 @@
+{
+  "case_id": "P1",
+  "route": "B",
+  "researcher": "/root/pandoc_recruit",
+  "read_completed_utc": "2026-11-23T18:07:44.448495+00:00",
+  "judgment": "반박",
+  "returned_sources": [
+    {
+      "file_id": "AD-0152",
+      "url": "https://github.com/asciidoctor/asciidoctor/blob/0908d45fef9350dbdc68d312ae2b4e8d63bda091/test/blocks_test.rb",
+      "sections": [
+        {
+          "start": 1737,
+          "end": 1759,
+          "claim": "Upstream original regression fixtures assert that an AsciiDoc block role reaches DocBook para/simpara role unchanged."
+        }
+      ]
+    },
+    {
+      "file_id": "PD-0081",
+      "url": "https://github.com/jgm/pandoc/blob/8a72b8449ddccd84fcdffc1a09ae18c4baaca32a/src/Text/Pandoc/Readers/DocBook.hs",
+      "sections": [
+        {
+          "start": 858,
+          "end": 869,
+          "claim": "Downstream Pandoc reader consumes simpara content without its role attribute, locating the broken boundary."
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "refuted_for_supplied_unmodified_pipeline; repair_unverified",
+      "evidence_file_ids": [
+        "AD-0152",
+        "PD-0081",
+        "PD-0001"
+      ],
+      "section_ranges": [
+        "AD-0152:1737-1759",
+        "PD-0081:858-869",
+        "PD-0001:7349-7376"
+      ],
+      "interface": "upstream [.container]→simpara role=container is asserted by original test; downstream parseMixed para(elContent) drops that attribute. Two returned sources join at actual simpara/role boundary but diagnose loss rather than implement preservation.",
+      "contradictory_or_missing": "No route-opened source supplies a complete role→custom-style adapter or matches CustomStyle/custom names in the user reference. The manual requires Div/Span custom-style, absent from this reader output."
+    }
+  ],
+  "used_file_ids": [
+    "AD-0152",
+    "PD-0081",
+    "PD-0001"
+  ],
+  "opened_file_ids": [
+    "PD-0001",
+    "PD-0081",
+    "AD-0152",
+    "AD-0154"
+  ],
+  "memory_exposure": "P1-A same researcher already saw PD-0001/PD-0081; both explicitly reopened and sections reread in this route. No A-only source used, no public outcome seen.",
+  "stop_reason": "All four exposed slots opened in order; four-attempt cap reached; upstream corroboration and downstream contradiction inspected.",
+  "limitations": [
+    "Upstream fixture uses container role rather than custom; structural equivalence is researcher inference, not execution of asker input.",
+    "Exact docker-asciidoctor1.67 core and pandoc/core latest unknown; pinned-source documentary diagnosis only.",
+    "Adjacent source is exposed/opened/returned but does not change completeness.",
+    "반박은 주어진 자동 보존 접합부만 가리킴; 가능한 수동 변환/다른 소프트웨어 전체의 불가능을 주장하지 않음."
+  ]
+}

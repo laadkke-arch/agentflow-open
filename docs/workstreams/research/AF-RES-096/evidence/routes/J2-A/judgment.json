@@ -1,0 +1,137 @@
+{
+  "case_id": "J2",
+  "route": "A",
+  "researcher": "jq_recruit",
+  "read_completed_utc": "2026-11-23T18:09:26.486507+00:00",
+  "judgment": "부분",
+  "returned_sources": [
+    {
+      "file_id": "JQ-0001",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/docs/content/manual/v1.7/manual.yml",
+      "sections": [
+        {
+          "start": 75,
+          "end": 91,
+          "claim": "JSON stream 입출력"
+        },
+        {
+          "start": 408,
+          "end": 435,
+          "claim": "없는 필드 조회는 null"
+        },
+        {
+          "start": 647,
+          "end": 719,
+          "claim": "배열 결과 수집과 같은 입력으로 객체 값 구성"
+        },
+        {
+          "start": 1182,
+          "end": 1198,
+          "claim": "id별 select"
+        },
+        {
+          "start": 2045,
+          "end": 2055,
+          "claim": "title 문자열 보간"
+        },
+        {
+          "start": 2797,
+          "end": 2831,
+          "claim": "원 modules.data를 변수로 보존"
+        }
+      ]
+    },
+    {
+      "file_id": "JQ-0080",
+      "url": "https://github.com/jqlang/jq/blob/71c2ab509a8628dbbad4bc7b3f98a64aa90d3297/tests/jq.test",
+      "sections": [
+        {
+          "start": 125,
+          "end": 162,
+          "claim": "상류 fixture의 field access/없는 값/null 기대출력"
+        },
+        {
+          "start": 424,
+          "end": 446,
+          "claim": "변수 바인딩과 누락원소 null 기대출력"
+        }
+      ]
+    }
+  ],
+  "condition_evidence": [
+    {
+      "condition_id": "C1",
+      "status": "supported",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "JQ-0001:75-91",
+        "JQ-0001:647-719",
+        "JQ-0001:1182-1198",
+        "JQ-0001:2045-2055",
+        "JQ-0001:2797-2831"
+      ],
+      "interface": "제시된 JSON input stream→원 modules.data를 $d로 보존→두 id의 데이터를 같은 객체에 구성. cat 내부의 근거는 A에서 열지 않았다.",
+      "contradictory_or_missing": "실제 사용자 입력·판 미확인; 인접 cat 문서를 A의 증거로 가져오지 않는다."
+    },
+    {
+      "condition_id": "C2",
+      "status": "partially_supported",
+      "evidence_file_ids": [
+        "JQ-0001"
+      ],
+      "section_ranges": [
+        "647-719",
+        "1182-1198",
+        "2797-2831"
+      ],
+      "interface": "각 track에서 titles와 uris를 선택하고 한 배열로 수집할 수 있다.",
+      "contradictory_or_missing": "기대 문자열의 here 생략 및 원 시도의 primary/secondary 역전이 정리되지 않았으므로 정확한 원 출력 일치까지 보장하지 않는다."
+    },
+    {
+      "condition_id": "C3",
+      "status": "missing_input",
+      "evidence_file_ids": [
+        "JQ-0001",
+        "JQ-0080"
+      ],
+      "section_ranges": [
+        "JQ-0001:408-435",
+        "JQ-0080:125-162"
+      ],
+      "interface": "제시 입력에는 offset이 없어 .offset.start/.offset.end로 원하는 숫자3645/3820을 얻는 연결이 없다.",
+      "contradictory_or_missing": "없는 키는 null이라는 직접 문서와 상류 fixture. 생략된 원 offset 제공이 최소 추가 관측이다."
+    }
+  ],
+  "used_file_ids": [
+    "JQ-0001",
+    "JQ-0080"
+  ],
+  "examined_but_not_used": [
+    {
+      "file_id": "JQ-0117",
+      "reason": "CLI input types fixture만 확인; 누락 offset 출처를 제공하지 않음.",
+      "read_sections": [
+        "278-308"
+      ]
+    },
+    {
+      "file_id": "JQ-0072",
+      "reason": "객체 pair 문법 컴파일을 확인; 반환 두 링크외 추가근거로 쓰지 않음.",
+      "read_sections": [
+        "3971-4002"
+      ]
+    }
+  ],
+  "memory_exposure": "같은 연구자가 직전 J2-B를 보았다. A에서 노출된 네 파일을 별도 open했고 사용 절을 다시 열람했다. B에서만 열린 cat 매뉴얼/구현은 A 판정 근거에서 제외했다. 공개 답 미열람.",
+  "stop_reason": "노출4파일을 순서대로 읽어 예산소진; 필수 입력 누락 때문에 완결 불가.",
+  "limitations": [
+    "문서 적합만 평가; 실제 변환과 사용자판 실행은 하지 않음.",
+    "현재 입력에 없는 offset 숫자를 하드코딩·추정하지 않음.",
+    "A 전용 slot3/4의 fixture/parser가 누락 입력을 메우지 못함."
+  ],
+  "proposed_solution": ".modules.data as $d | {title: ($d[] | select(.id == \"aod_play_area\") | .data[0].titles | \"\\(.primary) - \\(.secondary)\"), tracks: [$d[] | select(.id == \"aod_tracks\") | .data[] | {title: .titles.secondary, artist: .titles.primary, start: .offset.start, end: .offset.end, apple: (.uris[] | select(.id == \"commercial-music-service-apple\") | .uri), spotify: (.uris[] | select(.id == \"commercial-music-service-spotify\") | .uri)}]}",
+  "solution_attribution": "연구자 미실행 구조 해법. 기대 문자열과 offset이 해결되지 않아 완결 명령으로 제시하지 않음.",
+  "ask_one_condition": "생략된 offset을 포함한 원 tracks 입력과 원하는 title/artist 매핑을 제공할 수 있는가?"
+}
