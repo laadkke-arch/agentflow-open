@@ -1,0 +1,365 @@
+{
+  "id": "SIGIL-SOURCES",
+  "created_at": "2026-11-23T11:28:20.148Z",
+  "source_entries": [
+    {
+      "id": "SIGIL-CODE-01",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/AnchorUpdates.h",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "3e119e37a2c06765afc374703359986545dee8da",
+      "read_sections": [
+        [
+          34,
+          78
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 34,
+          "end_line": 78,
+          "text": "    static void UpdateAllAnchorsWithIDs(const QList<HTMLResource *> &html_resources);\n\n    /**\n     * Updates the anchors in html_resources that point to ids that were originally located in originating_filename\n     * but are now distributed over the files referenced by new_files.\n     *\n     * @param html_resources A list of xhtml files that need to be scanned for references to originating_filename.\n     * @param originating_filename The name of the original file for which references need to be reconciled.\n     * @param new_files A list of the new files created by splitting the originating_filename.\n     */\n    static void UpdateExternalAnchors(const QList<HTMLResource *> &html_resources, const QString &originating_filename, const QList<HTMLResource *> new_files);\n\n    /**\n     * Updates the anchors in html_resources that point to ids that were originally located in originating_filenames\n     * but are now merged into the file referenced by new_file. Updates both hrefs with and without fragment ids.\n     *\n     * @param html_resources A list of xhtml files that need to be scanned for references to originating_filenames.\n     * @param originating_filenames The names of the original files for which references need to be reconciled.\n     * @param new_file The new file created by merging the original files.\n     */\n    static void UpdateAllAnchors(const QList<HTMLResource *> &html_resources, const QStringList &originating_filenames, HTMLResource *new_file);\n\n    /**\n     * Updates the src attributes of the content tags in the toc.ncx file that point to\n     * ids that were originally located in originating_filename\n     * but are now distributed over the files referenced by new_files.\n     *\n     * @param ncx_resource The TOC file\n     * @param originating_filename The name of the original file for which references need to be reconciled.\n     * @param new_files A list of the new files created by splitting the originating_filename.\n     */\n    static void UpdateTOCEntries(NCXResource *ncx_resource, const QString &originating_filename, const QList<HTMLResource *> new_files);\n\nprivate:\n\n    static QHash<QString, QString> GetIDLocations(const QList<HTMLResource *> &html_resources);\n\n    static std::tuple<QString, QList<QString>> GetOneFileIDs(HTMLResource *html_resource);\n\n    static void UpdateAnchorsInOneFile(HTMLResource *html_resource,\n                                       const QHash<QString, QString> ID_locations);\n\n    static void UpdateExternalAnchorsInOneFile(HTMLResource *html_resource, const QString &originating_filename, const QHash<QString, QString> ID_locations);\n\n    static void UpdateAllAnchorsInOneFile(HTMLResource *html_resource, const QList<QString> &originating_filename_links, const QHash<QString, QString> ID_locations, const QString &new_filename);"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-02",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/AnchorUpdates.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "ca3b4ec688b1846814d2af92b63cfe0cb503ae5f",
+      "read_sections": [
+        [
+          40,
+          97
+        ],
+        [
+          100,
+          184
+        ],
+        [
+          238,
+          276
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 40,
+          "end_line": 97,
+          "text": "void AnchorUpdates::UpdateAllAnchorsWithIDs(const QList<HTMLResource *> &html_resources)\n{\n    const QHash<QString, QString> &ID_locations = GetIDLocations(html_resources);\n    QtConcurrent::blockingMap(html_resources, std::bind(UpdateAnchorsInOneFile, std::placeholders::_1, ID_locations));\n}\n\n\nvoid AnchorUpdates::UpdateExternalAnchors(const QList<HTMLResource *> &html_resources, const QString &originating_filename, const QList<HTMLResource *> new_files)\n{\n    const QHash<QString, QString> &ID_locations = GetIDLocations(new_files);\n    QtConcurrent::blockingMap(html_resources, std::bind(UpdateExternalAnchorsInOneFile, std::placeholders::_1, originating_filename, ID_locations));\n}\n\n\nvoid AnchorUpdates::UpdateAllAnchors(const QList<HTMLResource *> &html_resources, const QStringList &originating_filenames, HTMLResource *new_file)\n{\n    QList<HTMLResource *> new_files;\n    new_files.append(new_file);\n    const QHash<QString, QString> &ID_locations = GetIDLocations(new_files);\n    QList<QString> originating_filename_links;\n    foreach(QString originating_filename, originating_filenames) {\n        originating_filename_links.append(\"../\" % TEXT_FOLDER_NAME % \"/\" % originating_filename);\n    }\n    const QString &new_filename_with_relative_path = \"../\" % TEXT_FOLDER_NAME % \"/\" % Utility::URLEncodePath(new_file->Filename());\n    QtConcurrent::blockingMap(html_resources, std::bind(UpdateAllAnchorsInOneFile, std::placeholders::_1, originating_filename_links, ID_locations, new_filename_with_relative_path));\n}\n\n\nQHash<QString, QString> AnchorUpdates::GetIDLocations(const QList<HTMLResource *> &html_resources)\n{\n    const QList<std::tuple<QString, QList<QString>>> &IDs_in_files = QtConcurrent::blockingMapped(html_resources, GetOneFileIDs);\n    QHash<QString, QString> ID_locations;\n\n    for (int i = 0; i < IDs_in_files.count(); ++i) {\n        QList<QString> file_element_IDs;\n        QString resource_filename;\n        std::tie(resource_filename, file_element_IDs) = IDs_in_files.at(i);\n\n        for (int j = 0; j < file_element_IDs.count(); ++j) {\n            ID_locations[ file_element_IDs.at(j) ] = resource_filename;\n        }\n    }\n\n    return ID_locations;\n}\n\n\nstd::tuple<QString, QList<QString>> AnchorUpdates::GetOneFileIDs(HTMLResource *html_resource)\n{\n    Q_ASSERT(html_resource);\n    QReadLocker locker(&html_resource->GetLock());\n    QString newsource = html_resource->GetText();\n    QString version = html_resource->GetEpubVersion();\n    GumboInterface gi = GumboInterface(newsource, version);\n    gi.parse();\n    QList<QString> ids = gi.get_all_values_for_attribute(QString(\"id\"));\n    return std::make_tuple(html_resource->Filename(), ids);\n}"
+        },
+        {
+          "start_line": 100,
+          "end_line": 184,
+          "text": "void AnchorUpdates::UpdateAnchorsInOneFile(HTMLResource *html_resource,\n        const QHash<QString, QString> ID_locations)\n{\n    Q_ASSERT(html_resource);\n    QWriteLocker locker(&html_resource->GetLock());\n    QString version = html_resource->GetEpubVersion();\n    GumboInterface gi = GumboInterface(html_resource->GetText(), version);\n    gi.parse();\n    const QList<GumboNode*> anchor_nodes = gi.get_all_nodes_with_tag(GUMBO_TAG_A);\n    const QString &resource_filename = html_resource->Filename();\n    bool is_changed = false;\n\n    for (int i = 0; i < anchor_nodes.length(); ++i) {\n        GumboNode* node = anchor_nodes.at(i);\n        GumboAttribute* attr = gumbo_get_attribute(&node->v.element.attributes, \"href\");\n        if (attr && QUrl(QString::fromUtf8(attr->value)).isRelative()) {\n            QString href = QString::fromUtf8(attr->value);\n            QStringList parts = href.split(QChar('#'), QString::KeepEmptyParts);\n\n            if (parts.length() > 1) {\n                QString fragment_id = href.right(href.size() - (parts.at(0).length() + 1));\n                QString file_id = ID_locations.value(fragment_id);\n\n                // If the ID is in a different file, update the link\n                if (file_id != resource_filename && !file_id.isEmpty()) {\n                    QString attribute_value = QString(\"../\")\n                                              .append(TEXT_FOLDER_NAME)\n                                              .append(\"/\")\n                                              .append(Utility::URLEncodePath(file_id))\n                                              .append(\"#\")\n                                              .append(fragment_id);\n                    gumbo_attribute_set_value(attr, attribute_value.toUtf8().constData());\n                    is_changed = true;\n                }\n            }\n        }\n    }\n\n    if (is_changed) {\n        html_resource->SetText(CleanSource::CharToEntity(gi.getxhtml(), version));\n    }\n}\n\n\nvoid AnchorUpdates::UpdateExternalAnchorsInOneFile(HTMLResource *html_resource, const QString &originating_filename, const QHash<QString, QString> ID_locations)\n{\n    Q_ASSERT(html_resource);\n    QWriteLocker locker(&html_resource->GetLock());\n    QString version = html_resource->GetEpubVersion();\n    GumboInterface gi = GumboInterface(html_resource->GetText(), version);\n    gi.parse();\n    const QList<GumboNode*> anchor_nodes = gi.get_all_nodes_with_tag(GUMBO_TAG_A);\n    QString original_filename_with_relative_path = \"../\" % TEXT_FOLDER_NAME % \"/\" % originating_filename;\n    bool is_changed = false;\n\n    for (int i = 0; i < anchor_nodes.length(); ++i) {\n        GumboNode* node = anchor_nodes.at(i);\n        GumboAttribute* attr = gumbo_get_attribute(&node->v.element.attributes, \"href\");\n\n        // We're only interested in hrefs of the form \"originating_filename#fragment_id\".\n        // But must be wary of hrefs that are \"originating_filename\", \"originating_filename#\" or \"#fragment_id\"\n        // First, we find the hrefs that are relative and contain a fragment id.\n        if (attr && QUrl(QString::fromUtf8(attr->value)).isRelative()) {\n            QString href = QString::fromUtf8(attr->value);\n            QStringList parts = href.split(QChar('#'), QString::KeepEmptyParts);\n\n            // If the href pointed to the original file then update the file_id.\n            if (parts.length() > 1 && parts.at(0) == original_filename_with_relative_path && !parts.at(1).isEmpty()) {\n                QString fragment_id = href.right(href.size() - (parts.at(0).length() + 1));\n                QString attribute_value = QString(\"../\")\n                                          .append(TEXT_FOLDER_NAME)\n                                          .append(\"/\")\n                                          .append(Utility::URLEncodePath(ID_locations.value(fragment_id)))\n                                          .append(\"#\")\n                                          .append(fragment_id);\n                gumbo_attribute_set_value(attr, attribute_value.toUtf8().constData());\n                is_changed = true;\n            }\n        }\n    }\n\n    if (is_changed) {\n        html_resource->SetText(CleanSource::CharToEntity(gi.getxhtml(), version));\n    }\n}"
+        },
+        {
+          "start_line": 238,
+          "end_line": 276,
+          "text": "void AnchorUpdates::UpdateTOCEntries(NCXResource *ncx_resource, const QString &originating_filename, const QList<HTMLResource *> new_files)\n{\n    \n    // this routine should only be run on epub2\n    Q_ASSERT(ncx_resource);\n    const QHash<QString, QString> &ID_locations = GetIDLocations(new_files);\n    // serialize the hash for passing to python\n    QStringList dictkeys = ID_locations.keys();\n    QStringList dictvals;\n    foreach(QString key, dictkeys) {\n      dictvals.append(ID_locations.value(key));\n    }\n    QWriteLocker locker(&ncx_resource->GetLock());\n    QString source = ncx_resource->GetText();\n\n    int rv = 0;\n    QString error_traceback;\n\n    QList<QVariant> args;\n    args.append(QVariant(source));\n    args.append(QVariant(originating_filename));\n    args.append(QVariant(dictkeys));\n    args.append(QVariant(dictvals));\n\n    EmbeddedPython * epython  = EmbeddedPython::instance();\n\n    QVariant res = epython->runInPython( QString(\"xmlprocessor\"),\n                                         QString(\"anchorNCXUpdates\"),\n                                         args,\n                                         &rv,\n                                         error_traceback);    \n    if (rv != 0) {\n      Utility::DisplayStdWarningDialog(QString(\"error in xmlprocessor anchorNCXUpdates: \") + QString::number(rv), \n                                       error_traceback);\n      // an error happened - make no changes\n      return;\n    }\n    ncx_resource->SetText(res.toString());\n}"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-03",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/Book.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "43f955c2b4b1dd1d919c8d1b8ecc6586a5210278",
+      "read_sections": [
+        [
+          510,
+          641
+        ],
+        [
+          1236,
+          1271
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 510,
+          "end_line": 641,
+          "text": "HTMLResource *Book::CreateSectionBreakOriginalResource(const QString &content, HTMLResource *originating_resource)\n{\n    if (originating_resource == NULL)\n        return NULL;\n\n    const QString originating_filename = originating_resource->Filename();\n    int reading_order = GetOPF()->GetReadingOrder(originating_resource);\n    Q_ASSERT(reading_order >= 0);\n    QList<HTMLResource *> html_resources = m_Mainfolder->GetResourceTypeList<HTMLResource>(true);\n    QString old_extension = originating_filename.right(originating_filename.length() - originating_filename.lastIndexOf(\".\"));\n    originating_resource->RenameTo(GetFirstUniqueSectionName(old_extension));\n    HTMLResource *new_resource = CreateNewHTMLFile();\n    QString version = GetOPF()->GetEpubVersion();\n    new_resource->RenameTo(originating_filename);\n    new_resource->SetText(CleanSource::Mend(content, version));\n    m_Mainfolder->SuspendWatchingResources();\n    new_resource->SaveToDisk();\n    m_Mainfolder->ResumeWatchingResources();\n    html_resources.insert(reading_order, new_resource);\n    GetOPF()->UpdateSpineOrder(html_resources);\n    // Update references between the two new files. Since they used to be one single file we can\n    // assume that each id is unique (if they aren't then the references were broken anyway).\n    QList<HTMLResource *> new_files;\n    new_files.append(originating_resource);\n    new_files.append(new_resource);\n    AnchorUpdates::UpdateAllAnchorsWithIDs(new_files);\n    // Remove the original and new files from the list of html resources as we want to scan all\n    // the other files for external references to the original file.\n    html_resources.removeOne(originating_resource);\n    html_resources.removeOne(new_resource);\n    // Now, update references to the original file that are made in other files.\n    // We can't assume that ids are unique in this case, and so need to use a different mechanism.\n    AnchorUpdates::UpdateExternalAnchors(html_resources, Utility::URLEncodePath(originating_filename), new_files);\n    // Update TOC entries as well if an NCX exists:\n    NCXResource * ncx_resource = GetNCX();\n    if (ncx_resource) {\n        AnchorUpdates::UpdateTOCEntries(ncx_resource, Utility::URLEncodePath(originating_filename), new_files);\n    }\n    SetModified(true);\n    return new_resource;\n}\n\n\nvoid Book::CreateNewSections(const QStringList &new_sections, HTMLResource *original_resource)\n{\n    int original_position = GetOPF()->GetReadingOrder(original_resource);\n    Q_ASSERT(original_position >= 0);\n    QString new_file_prefix = QFileInfo(original_resource->Filename()).baseName();\n    QString file_extension = \".\" + QFileInfo(original_resource->Filename()).suffix();\n\n    if (new_sections.isEmpty()) {\n        return;\n    }\n\n    TempFolder tempfolder;\n    QFutureSynchronizer<NewSectionResult> sync;\n    QList<HTMLResource *> html_resources = m_Mainfolder->GetResourceTypeList<HTMLResource>(true);\n    // A list of all the files that have not been involved in the split.\n    // This will be used later when anchors are updated.\n    QList<HTMLResource *> other_files = html_resources;\n    other_files.removeOne(original_resource);\n    int next_reading_order;\n\n    if (original_position == -1) {\n        next_reading_order = m_Mainfolder->GetHighestReadingOrder() + 1;\n    } else {\n        next_reading_order = original_position + 1;\n    }\n\n    for (int i = 0; i < new_sections.count(); ++i) {\n        int reading_order = next_reading_order + i;\n        NewSection sectionInfo;\n        sectionInfo.source = new_sections.at(i);\n        sectionInfo.reading_order = reading_order;\n        sectionInfo.temp_folder_path = tempfolder.GetPath();\n        sectionInfo.new_file_prefix = new_file_prefix;\n        sectionInfo.file_suffix = i;\n        sectionInfo.file_extension = file_extension;\n        sync.addFuture(\n            QtConcurrent::run(\n                this,\n                &Book::CreateOneNewSection,\n                sectionInfo));\n    }\n\n    sync.waitForFinished();\n    QList<HTMLResource *> new_files;\n    new_files.append(original_resource);\n    QList<QFuture<NewSectionResult>> futures = sync.futures();\n\n    if (original_position == -1) {\n        // Add new sections to the end of the book\n        for (int i = 0; i < futures.count(); ++i) {\n            html_resources.append(futures.at(i).result().created_section);\n            new_files.append(futures.at(i).result().created_section);\n        }\n    } else {\n        // Insert the new files at the correct positions in the list\n        // The new files need to be inserted in order from first to last\n        for (int i = 0; i < new_sections.count(); ++i) {\n            int reading_order = next_reading_order + i;\n\n            if (futures.at(i).result().reading_order == reading_order) {\n                html_resources.insert(reading_order , futures.at(i).result().created_section);\n                new_files.append(futures.at(i).result().created_section);\n            } else {\n                // This is security code to protect against any mangling of the futures list by Qt\n                for (int j = 0 ; j < futures.count() ; ++j) {\n                    if (futures.at(j).result().reading_order == reading_order) {\n                        html_resources.insert(reading_order , futures.at(j).result().created_section);\n                        new_files.append(futures.at(j).result().created_section);\n                        break;\n                    }\n                }\n            }\n        }\n    }\n\n    // Update anchor references between fragment ids in the new files. Since these all came from one single\n    // file it's safe to assume that the fragment ids are all unique (since otherwise the references would be broken).\n    AnchorUpdates::UpdateAllAnchorsWithIDs(new_files);\n    // Now, update references to the original file that are made in other files.\n    // We can't assume that ids are unique in this case, and so need to use a different mechanism.\n    AnchorUpdates::UpdateExternalAnchors(other_files, Utility::URLEncodePath(original_resource->Filename()), new_files);\n    // Update TOC entries as well if an NCX exists, they are optional on epub3\n    NCXResource * ncx_resource = GetNCX();\n    if (ncx_resource) {\n        AnchorUpdates::UpdateTOCEntries(ncx_resource, Utility::URLEncodePath(original_resource->Filename()), new_files);\n    }\n    GetOPF()->UpdateSpineOrder(html_resources);\n    SetModified(true);\n}"
+        },
+        {
+          "start_line": 1236,
+          "end_line": 1271,
+          "text": "void Book::SaveOneResourceToDisk(Resource *resource)\n{\n    resource->SaveToDisk(true);\n}\n\n\nBook::NewSectionResult Book::CreateOneNewSection(NewSection section_info)\n{\n    return CreateOneNewSection(section_info, QHash<QString, QString>());\n}\n\n\nBook::NewSectionResult Book::CreateOneNewSection(NewSection section_info,\n        const QHash<QString, QString> &html_updates)\n{\n    QString filename = section_info.new_file_prefix % \"_\" % QString(\"%1\").arg(section_info.file_suffix + 1, 4, 10, QChar('0')) + section_info.file_extension;\n    QString fullfilepath = section_info.temp_folder_path + \"/\" + filename;\n    Utility::WriteUnicodeTextFile(\"PLACEHOLDER\", fullfilepath);\n    HTMLResource *html_resource = qobject_cast<HTMLResource *>(m_Mainfolder->AddContentFileToFolder(fullfilepath));\n    Q_ASSERT(html_resource);\n    QString version = html_resource->GetEpubVersion();\n\n    if (html_updates.isEmpty()) {\n        html_resource->SetText(CleanSource::Mend(section_info.source, version));\n    } else {\n        QString currentpath = html_resource->GetCurrentBookRelPath();\n        html_resource->SetText(PerformHTMLUpdates(CleanSource::Mend(section_info.source, version),\n                                             html_updates, QHash<QString, QString>(), \n                                             currentpath, version)() );\n        html_resource->SetCurrentBookRelPath(\"\");\n    }\n\n    NewSectionResult section;\n    section.created_section = html_resource;\n    section.reading_order = section_info.reading_order;\n    return section;"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-04",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/Book.h",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "782692fae28d5195b7c2658478aeffca13a07df3",
+      "read_sections": [
+        [
+          180,
+          205
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 180,
+          "end_line": 205,
+          "text": "    /**\n     * Creates an \"old\" resource from a section breaking operation.\n     * The section break operation actually creates a new resource\n     * from the section content up to the section break point.\n     *\n     * @param content The content of the \"old\" tab/resource.\n     * @param originating_resource  The original resource from which the content\n     *                              was extracted to create the \"old\" tab/resource.\n     * @return A reference to the newly created \"old\" tab/resource.\n     * @see FlowTab::SplitSection, FlowTab::OldTabRequest,\n     *      BookViewEditor::SplitSection, MainWindow::CreateSectionBreakOldTab\n     */\n    HTMLResource *CreateSectionBreakOriginalResource(const QString &content,\n            HTMLResource *originating_resource);\n\n    /**\n     * Creates new sections/XHTML documents.\n     * The only reason why we have an overload instead of just one function\n     * with a default argument is because then Apple GCC 4.2 flakes out here.\n     *\n     * @param new_sections The contents of the new sections.\n     * @param originating_resource The original HTML section that sections\n     * will be created after.\n     */\n    void CreateNewSections(const QStringList &new_sections,\n                           HTMLResource *originalResource);"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-05",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/HTMLResource.h",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "a458d2d8fddafd238ca4fe7c3876e76128143ffc",
+      "read_sections": [
+        [
+          42,
+          71
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 42,
+          "end_line": 71,
+          "text": "class HTMLResource : public XMLResource\n{\n    Q_OBJECT\n\npublic:\n\n    /**\n     * Constructor.\n     *\n     * @param fullfilepath The full path to the file that this\n     *                     resource is representing.\n     * @param resources The hash of Resources present in the FolderKeeper.\n     * @param parent The object's parent.\n     */\n    HTMLResource(const QString &mainfolder, const QString &fullfilepath,\n                 const QHash<QString, Resource *> &resources,\n                 QObject *parent = NULL);\n\n    QString GetTOCCache();\n    void    SetTOCCache(const QString & text);\n    \n\n    // inherited\n    virtual ResourceType Type() const;\n\n    virtual void SetText(const QString &text);\n\n    virtual bool LoadFromDisk();\n\n    void SaveToDisk(bool book_wide_save = false);"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-06",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/HTMLResource.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "caa77cac458e3ab6709b5cd056defd97f8c8b4c7",
+      "read_sections": [
+        [
+          72,
+          100
+        ],
+        [
+          128,
+          132
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 72,
+          "end_line": 100,
+          "text": "void HTMLResource::SetText(const QString &text)\n{\n    emit TextChanging();\n\n    XMLResource::SetText(text);\n\n    // Track resources whose change will necessitate an update of the BV and PV.\n    // At present this only applies to css files and images.\n    TrackNewResources(GetPathsToLinkedResources());\n}\n\nQString HTMLResource::GetTOCCache()\n{\n    if (m_TOCCache.isEmpty()) {\n        m_TOCCache = TextResource::GetText();\n    }\n    return m_TOCCache;\n}\n\nvoid HTMLResource::SetTOCCache(const QString & text)\n{\n    m_TOCCache = text;\n}\n\nvoid HTMLResource::SaveToDisk(bool book_wide_save)\n{\n    SetText(GetText());\n    XMLResource::SaveToDisk(book_wide_save);\n}"
+        },
+        {
+          "start_line": 128,
+          "end_line": 132,
+          "text": "QStringList HTMLResource::SplitOnSGFSectionMarkers()\n{\n    QStringList sections = XhtmlDoc::GetSGFSectionSplits(GetText());\n    SetText(CleanSource::Mend(sections.takeFirst(),GetEpubVersion()));\n    return sections;"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-07",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/TextResource.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "b169176a08010d970f70f4f457adff16137baf4c",
+      "read_sections": [
+        [
+          46,
+          121
+        ],
+        [
+          182,
+          203
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 46,
+          "end_line": 121,
+          "text": "QString TextResource::GetText() const\n{\n    QMutexLocker locker(&m_CacheAccessMutex);\n\n    if (m_CacheInUse) {\n        return m_Cache;\n    }\n\n    return m_TextDocument->toText();\n}\n\n\nvoid TextResource::SetText(const QString &text)\n{\n    //   We need to delay updating the QTextDocument if SetText has\n    // been called from something other than the main GUI thread. Why?\n    // Because a CodeView is probably connected to the text document,\n    // and if we update it from a non-GUI thread, it will notify the\n    // CodeView base class to update as well and that will crash us since\n    // the base class derives from QWidget (and those can only be updated\n    // in the GUI thread).\n    //   So we cache the text update into m_Cache and update the QTextDocument\n    // when we return to the GUI thread. The single-shot timer makes sure\n    // of that.\n    if (QThread::currentThread() == QApplication::instance()->thread()) {\n        SetTextInternal(text);\n    } else {\n        QMutexLocker locker(&m_CacheAccessMutex);\n        m_Cache = text;\n\n        // We want to make sure we schedule only one delayed update\n        if (!m_CacheInUse) {\n            m_CacheInUse = true;\n            QTimer::singleShot(0, this, SLOT(DelayedUpdateToTextDocument()));\n        }\n    }\n}\n\n\nTextDocument& TextResource::GetTextDocumentForWriting()\n{\n    Q_ASSERT(m_TextDocument);\n    return *m_TextDocument;\n}\n\n\nvoid TextResource::SaveToDisk(bool book_wide_save)\n{\n    {\n        QWriteLocker locker(&GetLock());\n\n        if (!m_CacheInUse && !m_IsLoaded) {\n            return;\n        }\n\n        // We can't perform the document modified check\n        // here because that causes problems with epub export\n        // when the user has not changed the text file.\n        // (some text files have placeholder text on disk)\n\n        // But we always want to save the most up to date version\n\n        if (m_CacheInUse) {\n            Utility::WriteUnicodeTextFile(m_Cache, GetFullPath());\n        } else {\n            Utility::WriteUnicodeTextFile(GetText(), GetFullPath());\n        }\n    }\n\n    if (!book_wide_save) {\n        emit ResourceUpdatedOnDisk();\n    }\n\n    m_TextDocument->setModified(false);\n    Resource::SaveToDisk(book_wide_save);\n}"
+        },
+        {
+          "start_line": 182,
+          "end_line": 203,
+          "text": "void TextResource::DelayedUpdateToTextDocument()\n{\n    QMutexLocker locker(&m_CacheAccessMutex);\n\n    if (!m_CacheInUse) {\n        return;\n    }\n\n    SetTextInternal(m_Cache);\n}\n\n\nvoid TextResource::SetTextInternal(const QString &text)\n{\n    m_TextDocument->setPlainText(text);\n    m_TextDocument->setModified(false);\n    // Our resource has now been loaded with some text\n    m_IsLoaded = true;\n    m_CacheInUse = false;\n    // Clear anything left in the cache\n    // m_Cache = \"\";\n}"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-08",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors; multiple files are one independent lineage",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/Tabs/FlowTab.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "584a1e326028e13b5a0df51ff4c3dd3216fad426",
+      "read_sections": [
+        [
+          218,
+          229
+        ],
+        [
+          671,
+          697
+        ]
+      ],
+      "verified": [
+        "Retrieved from immutable commit URL",
+        "Source body read in bounded symbol sections"
+      ],
+      "limits": [
+        "Static source inspection only; no compiled or runtime reproduction",
+        "No tests or post-request changes read",
+        "Code commentary is source-author context, not a new project requirement"
+      ],
+      "excerpts": [
+        {
+          "start_line": 218,
+          "end_line": 229,
+          "text": "void FlowTab::LoadTabContent()\n{\n    // In CV, this call has nothing to do, as the resource is connected to QTextDocument.\n    //        The only exception is initial load when control is created, done elsewhere.\n}\n\nvoid FlowTab::SaveTabContent()\n{\n    // In CV, the connection between QPlainTextEdit and the underlying QTextDocument\n    //        means the resource already is \"saved\". We just need to reset modified state.\n    m_HTMLResource->GetTextDocumentForWriting().setModified(false);\n}"
+        },
+        {
+          "start_line": 671,
+          "end_line": 697,
+          "text": "void FlowTab::SplitSection()\n{\n    if (!IsDataWellFormed()) {\n        return;\n    }\n\n    QWidget *mainWindow_w = Utility::GetMainWindow();\n    MainWindow *mainWindow = dynamic_cast<MainWindow *>(mainWindow_w);\n    if (!mainWindow) {\n        Utility::DisplayStdErrorDialog(\"Could not determine main window.\");\n        return;\n    }\n    HTMLResource * nav_resource = mainWindow->GetCurrentBook()->GetConstOPF()->GetNavResource();\n    if (nav_resource && (nav_resource == m_HTMLResource)) {\n        Utility::DisplayStdErrorDialog(\"The Nav file can not be split\");\n        return;\n    }\n\n    // Handle warning the user about undefined url fragments.\n    if (!mainWindow->ProceedWithUndefinedUrlFragments()) {\n        return;\n    }\n\n    if (m_wCodeView) {\n        emit OldTabRequest(m_wCodeView->SplitSection(), m_HTMLResource);\n    }\n}"
+        }
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    },
+    {
+      "id": "SIGIL-CODE-09",
+      "lineage": "sigil-codebase-single-lineage",
+      "author_lineage": "Sigil codebase authors",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/XMLResource.h",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "1fd23577b9a223ed105d78f03315ddd3e1b1d45f",
+      "section_symbol": "class XMLResource : public TextResource",
+      "verified": [
+        "Header directly read; SetText and SaveToDisk inherited"
+      ],
+      "limits": [
+        "Full receipt not duplicated in local evidence; tool output and immutable URL remain the evidence"
+      ],
+      "evidence_recorded_utc": "2026-11-23T11:28:20.148Z",
+      "retrieval_time_limit": "Record timestamp follows retrieval on the same UTC date; per-request start/end times were not separately instrumented."
+    }
+  ],
+  "external_request_lineage": "gennaios / Sigil issue #450 and the author's early comments are one lineage",
+  "code_lineage_count": 1,
+  "disclosure": {
+    "donor_source_read": false,
+    "selected_patch_read": false,
+    "downstream_tests_read": false,
+    "later_resolution_read": false,
+    "request_body_revision": "current only; initial revision not established",
+    "incidental_exposure": [
+      "Search API included current issue bodies and closed state metadata.",
+      "First six comments included four early maintainer clarification messages; these were not treated as requirements.",
+      "Release collection bodies were transported but filtered out before display/read; only metadata retained."
+    ]
+  },
+  "cost": {
+    "github_read_requests": 33,
+    "github_failed_requests": 2,
+    "paid_api_calls": 0,
+    "external_mutations": 0,
+    "code_or_tests_executed": 0,
+    "wall_time": "Not instrumented separately; retrieval timestamps identify work window.",
+    "implementation_cost": "No implementation requested or performed."
+  }
+}

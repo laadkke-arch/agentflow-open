@@ -1,0 +1,125 @@
+{
+  "task": "AF-RES-077",
+  "project": "mltframework/shotcut",
+  "prepared_at_utc": "2026-11-23T11:30:48.761026Z",
+  "primary": null,
+  "primary_vacancy_reason": "No candidate among prescribed raw REST query union first 10 has author goal + visible behavior + version evidence specifically about restoring original/proxy relationship.",
+  "auxiliary": {
+    "number": 910,
+    "url": "https://github.com/mltframework/shotcut/issues/910#issue-709276970",
+    "author": "johnnydepup",
+    "created_at": "2020-09-25T20:54:23Z",
+    "updated_at": "2020-09-26T17:53:44Z",
+    "version": "20.09.13",
+    "tag": "v20.09.13",
+    "commit_sha": "0898bdf3fc0f9f3fbf78336bad21d5506e19c118",
+    "commit_time_utc": "2020-09-13T22:26:56Z",
+    "goal": "Recover normal timeline playback for a previously working clip after resizing it externally and reusing its filename. This goal is an inference from the author asking for cause/suggestions.",
+    "visible_behavior": "The modified clip shows black in the timeline while other clips work and the same clip plays in Source; restart and removing proxies reportedly did not help.",
+    "exclusion_boundary": "No distinct directories, moved originals, wrong-media replacement, or explicit original/proxy restoration are stated. No promotion to a primary case.",
+    "initial_body_text_verified": false,
+    "body_location": "Current issue opening body, paragraphs 1-4. Exact paragraph 1 names Windows 10/version and same-name external resize; paragraphs 2-3 describe failed workaround and Source-vs-timeline behavior."
+  },
+  "source_supported_invariants": [
+    {
+      "id": "SC-I1",
+      "kind": "observed_pre_change_code_contract",
+      "statement": "A proxied producer keeps an original resource separately from its active proxy resource. Normal non-proxy XML filtering restores that original into resource (and warp_resource for timewarp), and removes proxy/original-resource markers from emitted properties.",
+      "sources": [
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/shotcut_mlt_properties.h#L46-L57",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L70-L78",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L593-L636",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L233-L290",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltcontroller.cpp#L448-L486"
+      ],
+      "limitation": "This describes existing code intent/behavior statically, not a maintainer demand and not a tested guarantee under corruption or an external replacement."
+    },
+    {
+      "id": "SC-I2",
+      "kind": "observed_pre_change_code_contract",
+      "statement": "Proxy filenames and lookup use shotcut:hash plus a media extension. getHash reuses an existing stored hash; otherwise it hashes the original resource when proxied and writes the hash property. On explicit relink, the selected replacement path/hash are carried to rewritten resource/hash/caption and stream indices are updated when both hashes are nonempty and differ.",
+      "sources": [
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/util.cpp#L383-L421",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L378-L407",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L448-L487",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L263-L291"
+      ],
+      "limitation": "Hash is MD5 over all bytes for files <=2,000,000 bytes and first/last 1,000,000 bytes for larger files. It is neither a full-content identity proof nor revalidated when a nonempty cached hash exists. util.cpp explicitly attributes the hashing routine to Kdenlive."
+    }
+  ],
+  "pre_change_interfaces": [
+    {
+      "symbol": "ProxyManager::resource(Mlt::Service&)",
+      "purpose": "Resolve original media when proxy marker and original resource are present; otherwise ordinary/timewarp resource.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L70-L78",
+      "writes": []
+    },
+    {
+      "symbol": "ProxyManager::generateVideoProxy / generateImageProxy",
+      "purpose": "Build hash-derived pending media path in selected proxy directory and queue generation.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L81-L226",
+      "writes": [
+        "Create/truncate <hash>.pending.mp4 or <hash>.pending.jpg in proxy directory; enqueue media-writing job."
+      ]
+    },
+    {
+      "symbol": "ProxyReplacePostJobAction::doAction / ProxyFinalizePostJobAction::doAction",
+      "purpose": "Finalize pending filename; replacement action creates proxied producer, retains original resource, invokes MAIN.replaceAllByHash.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/jobs/postjobaction.cpp#L88-L119",
+      "writes": [
+        "Rename generated pending file to final media filename.",
+        "Set shotcut:proxy and shotcut:resource in producer; delegate replaceAllByHash.",
+        "Delete pending path on rename failure."
+      ],
+      "not_traced": "MAIN.replaceAllByHash implementation was not fetched; no assertion of its detailed fan-out semantics."
+    },
+    {
+      "symbol": "MltXmlChecker::check / checkForProxy / fixUnlinkedFile / fixStreamIndex",
+      "purpose": "Rewrite XML on load, substitute available proxy, apply replacement model and adjust hash/caption/stream metadata.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L71-L139",
+      "additional_urls": [
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L219-L294",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L448-L487",
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp#L593-L675"
+      ],
+      "writes": [
+        "Temporary shotcut-XXXXXX.mlt beside input project.",
+        "In-memory replacement model, resource/hash/caption and stream properties.",
+        "utime calls touch proxy file timestamps."
+      ]
+    },
+    {
+      "symbol": "UnlinkedFilesDialog::on_tableView_doubleClicked / lookInDir",
+      "purpose": "Manual replacement and directory discovery populate MissingColumn/ReplacementColumn and ShotcutHashRole.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/dialogs/unlinkedfilesdialog.cpp#L49-L141",
+      "writes": [
+        "Replacement path/hash and status icon in Qt model; Settings.setOpenPath for chosen directory."
+      ],
+      "important_boundary": "lookInDir accepts hash match OR matching filename, marking differing-hash filename matches with warning icon. This is observed pre-change code, not evidence that auxiliary issue 910 used relinking."
+    },
+    {
+      "symbol": "ProxyManager::filterXML and file-local processProperties; Mlt::Controller::saveXML",
+      "purpose": "Emit original-backed project XML; save through temporary file and backup/rename handling.",
+      "url": "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp#L233-L375",
+      "additional_urls": [
+        "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltcontroller.cpp#L448-L550"
+      ],
+      "writes": [
+        "Filtered temporary XML file with restored original resource and no proxy markers.",
+        "Target project XML via MLT xml consumer; optional initial temp, copy of existing target to backup, target removal and rename of validated temp, removal of backup on success."
+      ]
+    }
+  ],
+  "outcome_exposure": {
+    "post_request_comments_read": false,
+    "timeline_read": false,
+    "pr_patch_read": false,
+    "test_results_read": false,
+    "unavoidable_current_body_exposure": "Issue 910 body says restarting project and removing proxies did not help and Source plays. This is reported initial problem/workaround evidence, not independent downstream confirmation. Edit history was not checked.",
+    "raw_status_metadata": "Raw REST receipts retain status/closure fields and PR links mechanically. They were not used to infer outcome; no comments, reviews, diffs, closing commits or release-note fixes were opened.",
+    "extra_connector_candidate": "Connector omitted PR 873 and returned issue 1038 as the tenth result instead. Its body was incidentally visible in initial connector response. It is not in the canonical bounded sample or selection."
+  },
+  "lineage": "All pinned target-code files form one source-code lineage (Shotcut). Util::getFileHash explicitly says it was copied from Kdenlive. No Kdenlive or other donor repository was read.",
+  "tested_runtime": false,
+  "source_pin_relationship": "The named release tag predates the auxiliary issue. No claim is made that it equals the exact binaries installed by the author."
+}
