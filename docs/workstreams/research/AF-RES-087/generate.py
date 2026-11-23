@@ -177,7 +177,7 @@ def parquet_record(payload):
         "schema_metadata_sha256": {
             k.decode(): digest(v) for k, v in file_metadata.items()
         },
-        "pandas_metadata": json.loads(file_metadata[b"pandas"]),
+        "pandas_metadata": json.loads(file_metadata[b"pandas"]) if b"pandas" in file_metadata else None,
         "arrow_fields": [normalized_arrow_field(field) for field in pf.schema_arrow],
         "parquet_columns": [
             {
