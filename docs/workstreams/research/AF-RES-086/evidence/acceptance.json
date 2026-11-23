@@ -1,0 +1,93 @@
+{
+  "task_id": "AF-RES-086",
+  "research_verdict": "PARTIAL",
+  "fixed_result_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+  "created_utc": "2026-11-23T15:39:06.351617+00:00",
+  "quantity_gate": {
+    "countable_records_before_byte_dedup": 126,
+    "minimum_materials_after_byte_dedup": 123,
+    "lineages": 25,
+    "non_policy_lineages": 21
+  },
+  "checks": [
+    {
+      "name": "local cached raw data and final docs",
+      "command": "python -B docs/workstreams/research/AF-RES-086/tools/validate_research.py --require-final-docs",
+      "target_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+      "exit_code": 0,
+      "checks_passed": 14,
+      "receipt": "evidence/fixed-result-validation.json"
+    },
+    {
+      "name": "canonical committed files in isolated fixed checkout",
+      "command": "python -B docs/workstreams/research/AF-RES-086/tools/validate_research.py --require-final-docs",
+      "target_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+      "exit_code": 0,
+      "checks_passed": 14,
+      "receipt": "evidence/committed-checkout-validation.json"
+    },
+    {
+      "name": "workbench contract and scope with remote fetch",
+      "command": "python -B -m workbench.session check docs/workstreams/research/AF-RES-086/manifest.json --fetch",
+      "target_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+      "exit_code": 0,
+      "freshness": "remote_checked",
+      "integration_observed": "4eaab7a4ba954026026d2fce59982114f61acbf9",
+      "outside_paths": [],
+      "errors": [],
+      "receipt": "evidence/session-check-result.json"
+    },
+    {
+      "name": "unchanged repository common checker",
+      "command": "python -B scripts/check.py --require-git",
+      "target_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+      "exit_code": 0,
+      "unit_tests": 55,
+      "acceptance": "passed; two lab test/demo/export plus Git bundle restore",
+      "receipt": "evidence/common-check-final.json",
+      "earlier_attempts": [
+        {
+          "receipt": "evidence/common-check.json",
+          "exit_code": 1,
+          "reason": "shared clone lacked220 historical Git objects"
+        },
+        {
+          "receipt": "evidence/common-check-retry.json",
+          "exit_code": 1,
+          "reason": "TMPDIR inside isolated checkout violated export outside-workspace guard"
+        }
+      ],
+      "resolution": "Full public object refetch; TMPDIR sibling outside isolated checkout but still inside owned_path. No checker code changed."
+    },
+    {
+      "name": "fixed remote files reread",
+      "target_sha": "6b7cb06061742f9ecd42efac3788b4ce6ac6cc7b",
+      "full_text_and_blob_matches": 9,
+      "files_requested": 9,
+      "receipt": "evidence/remote-reread.json"
+    },
+    {
+      "name": "git diff --check",
+      "exit_code": 0,
+      "scope": "working changes before acceptance-record commit"
+    }
+  ],
+  "ownership": {
+    "start_sha": "9dcae48a47b05d7ba2a1320444be28f5d0fcd739",
+    "changed_files_at_result": 490,
+    "outside_paths": []
+  },
+  "not_executed": [
+    "new service builds or deployments",
+    "private admin API calls",
+    "browser JS and complete asset behavior",
+    "product A/B effect measurement",
+    "fresh AI session handoff test"
+  ],
+  "research_blockers": [
+    "P3 main-window simultaneous serving or intersecting content-identified publication intervals",
+    "R1 prior status sequence and contemporaneous root/leaf response"
+  ],
+  "completion_rule": "This records checks of the fixed result SHA, not the subsequent evidence-only commit or HANDOFF. Before HANDOFF, check its parent manifest with --fetch and reread the evidence commit. HANDOFF is then a final standalone commit.",
+  "log_storage_note": "Initial staged diff-check flagged trailing blank lines in verbatim stdout text files. Logs were losslessly serialized as JSON strings with original UTF-8 SHA256; checker output was not trimmed or altered."
+}
