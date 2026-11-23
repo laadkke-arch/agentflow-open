@@ -1,0 +1,218 @@
+{
+  "task": "AF-RES-071#1",
+  "status": "REVIEW_READY",
+  "plan_integration_commit": "320424d87f99e70c42eeb8cb7211467de27f2c2e",
+  "assignment_integration_commit": "17b9cd4090a924f30ad7a2c8fc24e86b08a0e785",
+  "dependency": {
+    "branch": "work/research-af-res-067",
+    "commit": "b55c9248fa56a67b99ec3430734e7c41e16196c9"
+  },
+  "actor": "Codex Cloud shell with GitHub origin and public web sources, self-check",
+  "execution_commit": "1f3499d47eac6f4cfa7b76b0e8fe5cacadbb4575",
+  "measurement_ledger_commit": "abfa72b4c9482955ce8af049ff80831284d6eab8",
+  "input_and_ledger_sha256": {
+    "pairs.csv": "dc9453c5d187401c4305bcf152b8ab383030def8abb53395218d6a6b78ad01a5",
+    "judgments.csv": "02f99ea1b5005368cbd36df4c10b67d4fa9815613a278fe2962d53e3a9be33e8",
+    "costs.csv": "c5d891a195a409d493b637092f6a740f03b3539a7e68a56f6c080d5203b6f380",
+    "runs.jsonl": "6ec955744c6b853708357b3c47df346d7798cc98d17d1823e80b23e0a24ba949",
+    "sources.jsonl": "eb0c6c84aa8fdc22f77a04f419c84b18e03309a1c3d61a1531cd97308a04de62",
+    "inputs/objects.json": "76d80815f4990c89ccadba06e9dd5852ccdabe24d8e9aa7282d3114653876c23",
+    "inputs/sha256.json": "ccda405b3a7e6a13e1f5e969b0f0757e633c8a03dcd40f50dd19bdb40026e45e"
+  },
+  "table_rows_and_columns": [
+    [
+      26,
+      6
+    ],
+    [
+      3,
+      8
+    ],
+    [
+      3,
+      6
+    ],
+    [
+      3,
+      7
+    ],
+    [
+      4,
+      4
+    ]
+  ],
+  "ledger_checks": {
+    "frame": {
+      "rows": 19,
+      "columns": 14
+    },
+    "pairs": {
+      "rows": 26,
+      "columns": 27
+    },
+    "judgments": {
+      "rows": 4680,
+      "columns": 13
+    },
+    "scores": {
+      "rows": 1800,
+      "columns": 15
+    },
+    "costs": {
+      "rows": 288,
+      "columns": 25
+    },
+    "cost-summary": {
+      "rows": 1944,
+      "columns": 10
+    },
+    "runs": 249,
+    "sources": 30,
+    "counted": 28,
+    "direct_web_open_count": 24,
+    "publisher_body_indexed_count": 4,
+    "primary_judgments": 3960,
+    "transaction_trials": 14,
+    "unique_pair_object_cells_and_denominators": "passed"
+  },
+  "observed_changes_in_22_primary_pairs": {
+    "link": 14,
+    "answer": 8,
+    "load_order": 2,
+    "reason": 3
+  },
+  "failure_checks": {
+    "duplicate_rows": 0,
+    "old_answers_modified": 0,
+    "residual_rows_after_rollback": 0
+  },
+  "conditions": [
+    {
+      "name": "독립 1차 원문 open",
+      "actual": 24,
+      "target": 20,
+      "status": "pass",
+      "evidence": "sources.jsonl",
+      "boundary": "4개 색인 본문과 별개 open 기준"
+    },
+    {
+      "name": "원 객체",
+      "actual": {
+        "A": 4,
+        "B": 4
+      },
+      "target": {
+        "A": 4,
+        "B": 4
+      },
+      "status": "pass",
+      "evidence": "frame.csv; inputs/*.txt",
+      "boundary": "B의 정확한 발행 필드는 색인 본문으로 판독, 라이브 바이트 미확보"
+    },
+    {
+      "name": "주 변경쌍",
+      "actual": 22,
+      "target": 20,
+      "status": "pass",
+      "evidence": "pairs.csv; runs.jsonl",
+      "boundary": "보조 전진 4 별도, 유형별 최소 2객체"
+    },
+    {
+      "name": "판정기에 대한 처음 평가",
+      "actual": 2,
+      "target": 2,
+      "status": "pass",
+      "evidence": "evidence/run-environment.json",
+      "boundary": "A4 B4는 평가 코드 커밋 뒤 실행"
+    },
+    {
+      "name": "별도 판독과 실제 독출 대조",
+      "actual": 26,
+      "target": 26,
+      "status": "pass",
+      "evidence": "runs.jsonl; experiment/oracle.py",
+      "boundary": "주 22+보조 4"
+    },
+    {
+      "name": "독립 투영의 보기 실행",
+      "actual": 156,
+      "target": 156,
+      "status": "pass",
+      "evidence": "runs.jsonl; judgments.csv; scores.csv",
+      "boundary": "26쌍×3보기×2조건"
+    },
+    {
+      "name": "내구성 검사",
+      "actual": 14,
+      "target": 14,
+      "status": "pass",
+      "evidence": "evidence/transactions.json",
+      "boundary": "동일키 중복 0, 옛 답 변조 0, 롤백 잔존 0"
+    },
+    {
+      "name": "캐시별 실측 비용",
+      "actual": 288,
+      "target": 288,
+      "status": "pass",
+      "evidence": "costs.csv; cost-summary.csv",
+      "boundary": "각 설정 3회, 앱 캐시만 비움"
+    },
+    {
+      "name": "고정 요청의 추천 이유 역전",
+      "actual": 8,
+      "target": 8,
+      "status": "pass",
+      "evidence": "evidence/design-decisions.jsonl",
+      "boundary": "별도 합성 설정"
+    },
+    {
+      "name": "세부 질문과 취약점",
+      "actual": 7,
+      "target": 7,
+      "status": "pass",
+      "evidence": "RESULT.md; SELF_CHECK.md",
+      "boundary": "표1 26×6 / 표2 3×8 / 약점 3개"
+    }
+  ],
+  "command_checks": {
+    "session_start": {
+      "command": "python -B -m workbench.session start af-res-071 --allow docs/workstreams/research/AF-RES-071/ --dependency work/research-af-res-067=b55c9248fa56a67b99ec3430734e7c41e16196c9 --output docs/workstreams/research/AF-RES-071/manifest.json --fetch",
+      "exit": 0,
+      "checked_commit": "17b9cd4090a924f30ad7a2c8fc24e86b08a0e785",
+      "remote_integration": "17b9cd4090a924f30ad7a2c8fc24e86b08a0e785",
+      "artifact": "manifest.json"
+    },
+    "session_precheck": {
+      "command": "python -B -m workbench.session check docs/workstreams/research/AF-RES-071/manifest.json --fetch",
+      "exit": 0,
+      "checked_commit": "17b9cd4090a924f30ad7a2c8fc24e86b08a0e785",
+      "remote_integration": "76b8c1d15812fbf91b879f8444fd188ae7445802",
+      "artifact": "evidence/session-precheck.json"
+    },
+    "measured_run": {
+      "command": "python -B docs/workstreams/research/AF-RES-071/experiment/run.py --out <fresh temporary directory>",
+      "exit": 0,
+      "checked_commit": "1f3499d47eac6f4cfa7b76b0e8fe5cacadbb4575",
+      "artifact": "evidence/run.stdout; evidence/run-environment.json"
+    },
+    "reproduction": {
+      "command": "prepare, run, audit, decisions and byte compares as in reproduce.md",
+      "exit": 0,
+      "checked_commit": "abfa72b4c9482955ce8af049ff80831284d6eab8",
+      "artifact": "evidence/ledger-audit.json; judgments.csv; scores.csv"
+    },
+    "cloud_check": {
+      "exit": 0,
+      "checked_commit": "abfa72b4c9482955ce8af049ff80831284d6eab8",
+      "artifact": "evidence/cloud-check.json"
+    }
+  },
+  "fixed_result_and_final_contract_check": "Final HANDOFF.md records the GitHub reads and final command results.",
+  "unmeasured": [
+    "source HTTP body digests",
+    "external archive bytes",
+    "OS cold cache",
+    "operational concurrent writes",
+    "separate human or model review"
+  ]
+}
