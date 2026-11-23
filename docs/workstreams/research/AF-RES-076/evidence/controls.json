@@ -1,0 +1,305 @@
+{
+  "environment": {
+    "python": "3.12.14",
+    "platform": "linux",
+    "arch": "x86_64",
+    "pillow": "12.0.0",
+    "duckdb": "1.4.3",
+    "jpeg2000": true
+  },
+  "results": [
+    {
+      "id": "T-01",
+      "request": "CP01",
+      "candidate": "P01",
+      "kind": "positive",
+      "source_url": "https://github.com/python-pillow/Pillow/blob/693df7b42c666f88c719f9973be0ad71607328e0/Tests/test_image_thumbnail.py#L24-L47",
+      "fixture": "Upstream test_aspect subcase L 256x128, thumbnail bound 100x100.",
+      "expected": [
+        100,
+        50
+      ],
+      "observed": [
+        100,
+        50
+      ],
+      "c1": true,
+      "c2": true
+    },
+    {
+      "id": "T-02",
+      "request": "CP02",
+      "candidate": "P04",
+      "kind": "positive",
+      "source_url": "https://github.com/python-pillow/Pillow/blob/693df7b42c666f88c719f9973be0ad71607328e0/Tests/test_imagecolor.py#L8-L29",
+      "fixture": [
+        "#f00",
+        "#ff0000cc"
+      ],
+      "expected": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0,
+          204
+        ]
+      ],
+      "observed": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          0,
+          0,
+          204
+        ]
+      ],
+      "c1": true,
+      "c2": true
+    },
+    {
+      "id": "T-03",
+      "request": "CP03",
+      "candidate": "P01",
+      "kind": "scope_counterexample",
+      "source_url": "https://github.com/python-pillow/Pillow/blob/693df7b42c666f88c719f9973be0ad71607328e0/Tests/test_image_crop.py#L10-L31",
+      "fixture": "Standing RGB raster 4x2 with sentinel at (3,1), crop a 2x2 corner and serialize only it.",
+      "expected": {
+        "saved_extent": [
+          2,
+          2
+        ],
+        "sentinel_in_saved": false,
+        "source_extent": [
+          4,
+          2
+        ]
+      },
+      "observed": {
+        "saved_extent": [
+          2,
+          2
+        ],
+        "sentinel_in_saved": false,
+        "source_extent": [
+          4,
+          2
+        ]
+      },
+      "c1": true,
+      "c2": false
+    },
+    {
+      "id": "T-04",
+      "request": "CD01",
+      "candidate": "D03",
+      "kind": "positive",
+      "source_url": "https://github.com/duckdb/duckdb/blob/d1dc88f950d456d72493df452dabdcd13aa413dd/test/sql/copy/csv/rejects/csv_rejects_read.test#L9-L21",
+      "fixture": "Three lines: name,age / ok,7 / bad,notnum. The explicit age type is INTEGER.",
+      "expected": {
+        "rows": [
+          [
+            "ok",
+            7
+          ]
+        ],
+        "rejects": [
+          [
+            "CAST",
+            "bad,notnum"
+          ]
+        ],
+        "temporary": true
+      },
+      "observed": {
+        "rows": [
+          [
+            "ok",
+            7
+          ]
+        ],
+        "rejects": [
+          [
+            "CAST",
+            "bad,notnum"
+          ]
+        ],
+        "temporary": true
+      },
+      "c1": true,
+      "c2": true
+    },
+    {
+      "id": "T-05",
+      "request": "CD02",
+      "candidate": "D05",
+      "kind": "positive",
+      "source_url": "https://github.com/duckdb/duckdb/blob/d1dc88f950d456d72493df452dabdcd13aa413dd/test/sql/projection/select_star_exclude.test#L8-L27",
+      "fixture": "Use upstream table integers(i,j,k), row (1,2,3) and exclude i; then read the base table.",
+      "expected": {
+        "columns": [
+          "j",
+          "k"
+        ],
+        "rows": [
+          [
+            2,
+            3
+          ]
+        ],
+        "base_columns": [
+          "i",
+          "j",
+          "k"
+        ],
+        "base_rows": [
+          [
+            1,
+            2,
+            3
+          ]
+        ]
+      },
+      "observed": {
+        "columns": [
+          "j",
+          "k"
+        ],
+        "rows": [
+          [
+            2,
+            3
+          ]
+        ],
+        "base_columns": [
+          "i",
+          "j",
+          "k"
+        ],
+        "base_rows": [
+          [
+            1,
+            2,
+            3
+          ]
+        ]
+      },
+      "c1": true,
+      "c2": true
+    },
+    {
+      "id": "T-06",
+      "request": "CD03",
+      "candidate": "D07",
+      "kind": "scope_counterexample",
+      "source_url": "https://github.com/duckdb/duckdb/blob/d1dc88f950d456d72493df452dabdcd13aa413dd/test/sql/delete/test_delete.test#L8-L34",
+      "fixture": "Persist rows 1,2. Use WHERE to display row 1, reopen, then run DELETE comparator and reopen.",
+      "expected": {
+        "view": [
+          [
+            1
+          ]
+        ],
+        "after_reopen": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "after_delete_reopen": [
+          [
+            1
+          ]
+        ]
+      },
+      "observed": {
+        "view": [
+          [
+            1
+          ]
+        ],
+        "after_reopen": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "after_delete_reopen": [
+          [
+            1
+          ]
+        ]
+      },
+      "c1": true,
+      "c2": false
+    },
+    {
+      "id": "T-07",
+      "request": "NP02",
+      "candidate": "P01",
+      "kind": "context_only",
+      "source_url": "https://github.com/python-pillow/Pillow/blob/693df7b42c666f88c719f9973be0ad71607328e0/src/PIL/PdfImagePlugin.py#L118-L154",
+      "fixture": "Synthetic 2x2 RGBA generated raster, local Linux wheel JPEG 2000 encoder; no original JP2.",
+      "expected": {
+        "pdf": true,
+        "jpx": true,
+        "alpha_in_stream": true
+      },
+      "observed": {
+        "pdf": true,
+        "jpx": true,
+        "alpha_in_stream": true
+      },
+      "c1": true,
+      "c2": true
+    },
+    {
+      "id": "T-08",
+      "request": "ND02",
+      "candidate": "D06",
+      "kind": "context_only",
+      "source_url": "https://github.com/duckdb/duckdb/blob/d1dc88f950d456d72493df452dabdcd13aa413dd/test/sql/function/list/lambdas/table_functions.test#L66-L76",
+      "fixture": "Use computed filename in two local table functions, based on the published non-httpfs test.",
+      "expected": {
+        "standalone": "a=1,b=2,c=3",
+        "local_csv": [
+          [
+            9
+          ]
+        ],
+        "local_parquet": [
+          [
+            9
+          ]
+        ]
+      },
+      "observed": {
+        "standalone": "a=1,b=2,c=3",
+        "local_csv": [
+          [
+            9
+          ]
+        ],
+        "local_parquet": [
+          [
+            9
+          ]
+        ]
+      },
+      "c1": true,
+      "c2": true
+    }
+  ]
+}
