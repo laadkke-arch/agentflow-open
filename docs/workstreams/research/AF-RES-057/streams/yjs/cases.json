@@ -1,0 +1,403 @@
+{
+  "metadata": {
+    "recorded_UTC": "2026-11-23T03:27:20.739620+00:00",
+    "predictions_pre_outcome": true,
+    "outcomes_not_opened": [
+      "selected test assertion line56",
+      "issue157/204 comments",
+      "linked fixes/CI"
+    ],
+    "initial_metadata_commit": "80896a0b27323b6b077b21d0686b4b72917da7b9",
+    "do_not_treat_as_original": "Normal/boundary code includes researcher additions; no author-run inference from code alone."
+  },
+  "cases": [
+    {
+      "case_id": "YN1",
+      "layer": "natural",
+      "issue_url": "https://github.com/yjs/yjs/issues/157",
+      "source_id": "Y-I157",
+      "goal": "start/stop 경계 사이 삽입한 정확 문구 this text can not be undone을 undo 대상에서 제외한다. 연구 대조에서는 다른 일반 편집을 undo하고 이 문구는 남긴다.",
+      "preserved_variables": [
+        "protected literal survives undo",
+        "ordinary null-origin edit remains undoable",
+        "redo restores same visible text without losing protected content",
+        "origin membership is not verified human identity"
+      ],
+      "product_version": "author version 미확인; regular fallback12.3.3; era-compatible supplementary13.0.0-94",
+      "product_sha": "dd2b8bc6c79d98e2fb8d773339d9de7532114eba",
+      "version_limit": "2019-06-25 이미 공개된 alpha의 API를 확인했다. 사용자가 실제 이 판을 썼다는 근거 없음. 마지막 정식12.3.3에는 이 동일 API를 확인하지 못해 자연 원판 결과 미확인. modern options-object signature를 당시판에 역투영하지 않는다.",
+      "initial_state": "원문 미명시. 연구 정규화 empty Y.Text, 원문 보호 문자열 그대로 사용.",
+      "events": [
+        {
+          "event_id": "YN1-e1",
+          "actor": "ordinary editor M (researcher)",
+          "origin": "null",
+          "call": "text.insert(0, 'mine ')",
+          "changed_property": "ordinary local text"
+        },
+        {
+          "event_id": "YN1-e2",
+          "actor": "protected editor/service S (researcher actor label)",
+          "origin": "SKIP string",
+          "call": "doc.transact(() => text.applyDelta([{insert:'this text can not be undone'}]), SKIP)",
+          "changed_property": "protected insertion at position0, original literal"
+        },
+        {
+          "event_id": "YN1-e3",
+          "actor": "M",
+          "call": "um.undo()",
+          "changed_property": "tracked stack effect"
+        },
+        {
+          "event_id": "YN1-e4",
+          "actor": "M",
+          "call": "um.redo()",
+          "changed_property": "researcher redo extension"
+        }
+      ],
+      "opA": "new Y.UndoManager(text, new Set([null]), {captureTimeout:0}); protected insertion uses origin SKIP; um.undo(); um.redo()",
+      "opB": "new Y.UndoManager(text, new Set([null, SKIP]), {captureTimeout:0}); same events; um.undo(); um.redo()",
+      "changed_factor": "trackedTransactionOrigins membership only; old positional signature. All inputs and captureTimeout identical.",
+      "input_type": "Y.Text + old UndoManager origin Set; protected applyDelta insertion",
+      "output_type": "text.toString(): string; undo()/redo(): StackItem or null",
+      "original_vs_researcher": "原文 보호 literal·start/stop 제안은 original. 원문에는 초기text·ordinary event·SKIP origin·actor2·undo/redo 횟수가 없다. 코드 전체는 그 목표의 연구 정규화이며 original exact-match 평가와 분리.",
+      "normal_input": {
+        "label": "researcher ordinary M then protected S",
+        "text_before_undo": "this text can not be undonemine ",
+        "code": "const SKIP = 'SKIP'; const doc=new Y.Doc(); const text=doc.get('text',Y.Text); const um=new Y.UndoManager(text, ORIGINS, {captureTimeout:0}); text.insert(0,'mine '); doc.transact(()=>text.applyDelta([{insert:'this text can not be undone'}]),SKIP); um.undo(); const afterUndo=text.toString(); um.redo(); const afterRedo=text.toString();"
+      },
+      "boundary_input": {
+        "label": "researcher S first then M; same-author consecutive control and one-event original-literal normalization",
+        "reverse_order": "insert protected literal at0 underSKIP; then append mine undernull; firstundo removesmine in both; secondundo distinguishes persistent protection",
+        "single_author": "both literal and mine have null origin: bothop track them, so no author-based protection is guaranteed by originSet",
+        "original_literal_only": "empty initial assumed; one protected insertion withSKIP; opAundo no tracked item, opBundo removesliteral"
+      },
+      "prior_exposure": "Current issue body and proposed goal read; no comments. Full contemporary UndoManager source and README.v13 Undo section read outside abbreviated card. Default origin/operation mechanics known; no selected source execution output.",
+      "api_card": {
+        "source_id": "Y-API-ALPHA",
+        "url": "https://github.com/yjs/yjs/blob/dd2b8bc6c79d98e2fb8d773339d9de7532114eba/src/utils/UndoManager.js",
+        "location": "constructor L101-109, filtering L127-130",
+        "text": "constructor (typeScope, trackedTransactionOrigins = new Set([null]), { captureTimeout = 500 } = {})",
+        "outside_window": "Full filtering conditional at129 and doc methods read; common card constructor alone would not establish exact copied/interleaved behavior."
+      },
+      "example_card": {
+        "source_id": "Y-DOC-ALPHA",
+        "url": "https://github.com/yjs/yjs/blob/dd2b8bc6c79d98e2fb8d773339d9de7532114eba/README.v13.md",
+        "location": "Example: Stop Capturing L707-712; start after comment delimiter, end closing parenthesis",
+        "text": "with stopCapturing\nytext.insert(0, 'a')\num.stopCapturing()\nytext.insert(0, 'b')\num.undo()\nytext.toString() // => 'a' (note that only 'b' was removed)",
+        "word_count": 18,
+        "code_lines": 6,
+        "figures": 0,
+        "selection": "first named author worked example after UndoManager API; origin example later not substituted based on outcome",
+        "outside_window": "Entire Stop Capturing and tracked origins examples L695-753 read; origin41 example has contradictory empty output despite not-tracked comment; record afterseal counterevidence."
+      },
+      "draft_predictions": {
+        "A": {
+          "choice": "A만",
+          "opA_undo": "this text can not be undone",
+          "opB_undo": "mine ",
+          "opA_redo": "this text can not be undonemine ",
+          "opB_redo": "this text can not be undonemine ",
+          "scope": "era-alpha researcher normal; original historical exact outcome 미확인",
+          "basis": "origin membership excludes SKIP; current source full filtering conditional is outside abbreviated window."
+        },
+        "E": {
+          "choice": "A만",
+          "opA_undo": "this text can not be undone",
+          "opB_undo": "mine ",
+          "opA_redo": "this text can not be undonemine ",
+          "opB_redo": "this text can not be undonemine ",
+          "scope": "same conditional researcher normal",
+          "basis": "example distinguishes capture grouping from selecting which origin to track; does not prove author historical runtime."
+        }
+      },
+      "variant_predictions": {
+        "reverse_first_undo": {
+          "opA": "this text can not be undone",
+          "opB": "this text can not be undone",
+          "meaning": "visible first-undo tie does not show protected text permanently outside stack"
+        },
+        "reverse_second_undo": {
+          "opA": "this text can not be undone",
+          "opB": ""
+        },
+        "single_author": "둘 다 보호정책 실패: same null-origin cannot separate actor from protected label without extra origin assignment",
+        "one_protected_insert": {
+          "opA": "this text can not be undone",
+          "opB": ""
+        }
+      }
+    },
+    {
+      "case_id": "YN2",
+      "layer": "natural",
+      "issue_url": "https://github.com/yjs/yjs/issues/204",
+      "source_id": "Y-I204",
+      "goal": "문서 복사 뒤 옮긴 undoStack으로 원래 삭제를 취소하되 새 문서에 추가한123을 남긴다.",
+      "preserved_variables": [
+        "new client literal123",
+        "restored original Hello content",
+        "untouched World suffix",
+        "old item identity through serialized update",
+        "redo scope/order"
+      ],
+      "product_version": "13.0.8",
+      "product_sha": "772bb87d5cfcc4d9e87ba970731c6aa58f6809bf",
+      "version_limit": "본문이13.0.8명시; tag SHA대응확인. 실제 author runtime execution을 이번에 관측하지 않음.",
+      "initial_state": "source text exactly Hello World. Body expected comment exactly: // expect ~\"Hello 123 World\". Approximate space placement is not normalized.",
+      "events": [
+        {
+          "event_id": "YN2-e1",
+          "actor": "original document client A",
+          "origin": "null",
+          "call": "text.insert(0, 'Hello World'); const um=new Y.UndoManager(text)",
+          "changed_property": "initial content before history registration"
+        },
+        {
+          "event_id": "YN2-e2",
+          "actor": "A",
+          "origin": "null",
+          "call": "text.delete(0,5)",
+          "changed_property": "delete Hello; suffix space World survives"
+        },
+        {
+          "event_id": "YN2-e3",
+          "actor": "new document client B",
+          "origin": "default update origin",
+          "call": "Y.applyUpdate(newDoc,Y.encodeStateAsUpdate(doc))",
+          "changed_property": "copy CRDT update, newDoc client identity remains its own"
+        },
+        {
+          "event_id": "YN2-e4",
+          "actor": "B",
+          "origin": "null",
+          "call": "newText.insert(0,'123')",
+          "changed_property": "new untracked addition"
+        },
+        {
+          "event_id": "YN2-e5",
+          "actor": "B",
+          "call": "const newUm=new Y.UndoManager(newText); newUm.undoStack=um.undoStack; while(newUm.undoStack.length)newUm.undo()",
+          "changed_property": "private stack migration and original deletion inversion"
+        },
+        {
+          "event_id": "YN2-e6",
+          "actor": "B",
+          "call": "while(newUm.redoStack.length)newUm.redo()",
+          "changed_property": "researcher redo extension"
+        }
+      ],
+      "opA": "Shared docGC=true for both new Y.Doc({gc:docGC}); all original body steps unchanged; copied newUm.undoStack=um.undoStack.",
+      "opB": "Shared docGC=false for both new Y.Doc({gc:docGC}); otherwise identical.",
+      "changed_factor": "one shared garbage-collection boolean applied to both source/copy doc constructions; no stack serialization redesign.",
+      "input_type": "two Y.Doc, encoded update Uint8Array, manually reassigned StackItem[]",
+      "output_type": "newText.toString():string; stack counts; undo()/redo():StackItem|null",
+      "original_vs_researcher": "Original source/copy/delete/123/stack assignment/undo loop frombody. opA explicittrue is constructor default. opB gcfalse and redo loop are research variants. Expected text already read before prediction; cannot be counted as new exact-text hit.",
+      "normal_input": {
+        "label": "original deletion sequence with common GCfactor",
+        "code": "const doc=new Y.Doc({gc:docGC}); const text=doc.getText('quill'); text.insert(0,'Hello World'); const um=new Y.UndoManager(text); text.delete(0,5); const newDoc=new Y.Doc({gc:docGC}); Y.applyUpdate(newDoc,Y.encodeStateAsUpdate(doc)); const newText=newDoc.getText('quill'); newText.insert(0,'123'); const newUm=new Y.UndoManager(newText); newUm.undoStack=um.undoStack; while(newUm.undoStack.length)newUm.undo(); const afterUndo=newText.toString(); while(newUm.redoStack.length)newUm.redo(); const afterRedo=newText.toString();"
+      },
+      "boundary_input": {
+        "label": "body supplied insertion control; researcher redo/ownership check separate",
+        "insertion_control": "Move original um creation before text.insert Hello World, omit delete; copy, add123, transferstack andundo exactly asbody secondblock. Body expected123 already exposed.",
+        "actor_order_swap": "Not well-defined without changing which document owns original history; mark not applied to this original. Actor-order swap is separately defined forYN1."
+      },
+      "prior_exposure": "Body explicitly labels deletion malfunction and insertion success; approximate expected ~Hello123World and exact123 read. README13.0.8 old-content gc passage and full UndoManager implementation read. No comments/CI read.",
+      "api_card": {
+        "source_id": "Y-DOC-1308",
+        "url": "https://github.com/yjs/yjs/blob/772bb87d5cfcc4d9e87ba970731c6aa58f6809bf/README.md",
+        "location": "Y.Doc.gc L466-470; constructor implementation Doc.jsL28-35 also read",
+        "text": "Whether garbage collection is enabled on this doc instance. Set `doc.gc = false` in order to disable gc and be able to restore old content.",
+        "outside_window": "This promises retention possibility, not supported UndoManager state migration or exact whitespace/order."
+      },
+      "example_card": {
+        "source_id": "Y-DOC-1308",
+        "url": "https://github.com/yjs/yjs/blob/772bb87d5cfcc4d9e87ba970731c6aa58f6809bf/README.md",
+        "location": "Example: Stop Capturing L692-694; complete first explanatory paragraph",
+        "text": "UndoManager merges Undo-StackItems if they are created within time-gap smaller than `options.captureTimeout`. Call `um.stopCapturing()` so that the next StackItem won't be merged.",
+        "word_count": 22,
+        "code_lines": 0,
+        "figures": 0,
+        "selection": "first named undo usage example; no donor-dependent replacement with favorable clone example",
+        "outside_window": "Full origin examples read, including inconsistent41-origin empty output. Example grouping does not solve cross-document private stack migration."
+      },
+      "draft_predictions": {
+        "A": {
+          "choice": "판별 불가",
+          "opA_undo": "미확인; known author deletion failure not new observation",
+          "opB_undo": "미확인; gcfalse may preserve deletion payload but copiedstack support and ordering unspecified",
+          "opA_redo": "미확인",
+          "opB_redo": "미확인",
+          "basis": "gcAPI alone insufficient for copied private stack exactstate"
+        },
+        "E": {
+          "choice": "판별 불가",
+          "opA_undo": "미확인",
+          "opB_undo": "미확인",
+          "opA_redo": "미확인",
+          "opB_redo": "미확인",
+          "basis": "group boundary example adds no migration guarantee"
+        }
+      },
+      "auxiliary_hypothesis": "If copying retained deleted content is the only obstruction, opB may restoreHello while retaining123 and opA may not. This conditional mechanism hypothesis is not a frozen winning choice or exactstring prediction."
+    },
+    {
+      "case_id": "YT1",
+      "layer": "test",
+      "issue_url": "https://github.com/yjs/yjs/blob/0a09ff854b2ecd942b3c0f0e741253a214cee1bf/tests/undo-redo.tests.js#L49-L57",
+      "source_id": "Y-T-DIAG",
+      "goal": "단독 작성자의 첫push[1,2,3]은 남기고 두 번째push[4,5,6]만 한undo로 취소한다.",
+      "preserved_variables": [
+        "array0 first three primitive values and order",
+        "only latest edit event reversed",
+        "redo restores [1,2,3,4,5,6]",
+        "remaining undo stack differs despite same redo visiblearray"
+      ],
+      "product_version": "v13.6.28",
+      "product_sha": "0a09ff854b2ecd942b3c0f0e741253a214cee1bf",
+      "version_limit": "UTC2025-12-31이전 마지막 정식 release. 원시험은oneundo만; opB와redo는researcher extension. actor2원격사건없음.",
+      "initial_state": "init(tc,{users:3}) supplies empty array0; three users fixture does not mean allthree edit. Only array0 local actor edits original.",
+      "events": [
+        {
+          "event_id": "YT1-e1",
+          "actor": "array0 local client",
+          "origin": "null",
+          "call": "array0.push([1,2,3])",
+          "changed_property": "first three entries"
+        },
+        {
+          "event_id": "YT1-e2",
+          "actor": "same local client",
+          "call": "um.stopCapturing() [opA only]",
+          "changed_property": "capture group boundary"
+        },
+        {
+          "event_id": "YT1-e3",
+          "actor": "same local client",
+          "origin": "null",
+          "call": "array0.push([4,5,6])",
+          "changed_property": "last three entries"
+        },
+        {
+          "event_id": "YT1-e4",
+          "actor": "same local client",
+          "call": "um.undo()",
+          "changed_property": "original final operation"
+        },
+        {
+          "event_id": "YT1-e5",
+          "actor": "same local client",
+          "call": "um.redo()",
+          "changed_property": "researcher extension, absent original test"
+        }
+      ],
+      "opA": "const um=new Y.UndoManager(array0,{captureTimeout:Number.MAX_VALUE}); array0.push([1,2,3]); um.stopCapturing(); array0.push([4,5,6]); um.undo()",
+      "opB": "Same code with only um.stopCapturing() omitted.",
+      "changed_factor": "one explicit capture boundary call; captureTimeout identical MAX_VALUE",
+      "input_type": "Y.Array<number>; scalar MAX_VALUE captureTimeout",
+      "output_type": "array0.toArray():number[]; stack counts; undo/redo returnsStackItem|null",
+      "original_vs_researcher": "opA throughundo matchesmasked original group; initialhelper semantics tobeverified withoutassertion. opB omission andredo appended are researcher contrasts, not original fixed test coverage.",
+      "normal_input": {
+        "label": "original oneactor consecutivepush withexplicitboundary",
+        "code": "const doc=new Y.Doc();const array0=doc.getArray('array');const um=new Y.UndoManager(array0,{captureTimeout:Number.MAX_VALUE});array0.push([1,2,3]);if(USE_BOUNDARY)um.stopCapturing();array0.push([4,5,6]);um.undo();const afterUndo=array0.toArray();um.redo();const afterRedo=array0.toArray();"
+      },
+      "boundary_input": {
+        "label": "sameauthor no-boundary opB; repeatedundo/redo researcher identity check",
+        "repeated_undo": "after redo, call undo once then undo again; expect original itemgroups differ betweenAandB; no public original assertion forsequence",
+        "remote_local_variant": "No remote edit inserted into original diagnostic. UseYN1 separate origin/actororder variants and postsealtestUndoText ascountercase."
+      },
+      "prior_exposure": "No assertion line56 orresultcomments read. Fullmasked earlier heuristic testUndoText input read; corrected beforeoutcomes because pushwasomitted byeditregex. Fullofficial API andStopCapturing examples read outsidecard, so this isnotblind-to-mechanism humanexperiment.",
+      "api_card": {
+        "source_id": "Y-API-DIAG",
+        "url": "https://github.com/yjs/yjs/blob/0a09ff854b2ecd942b3c0f0e741253a214cee1bf/src/utils/UndoManager.js",
+        "location": "stopCapturing API comment L321-324 andmethodL341-343",
+        "text": "UndoManager merges Undo-StackItem if they are created within time-gap smaller than `options.captureTimeout`. Call `um.stopCapturing()` so that the next StackItem won't be merged.",
+        "outside_window": "publicAPI already statesgroupboundary rule. MAX_VALUE edgecanstillbeimplementationbug; originalassertionheldback."
+      },
+      "example_card": {
+        "source_id": "Y-DOC-DIAG",
+        "url": "https://github.com/yjs/yjs/blob/0a09ff854b2ecd942b3c0f0e741253a214cee1bf/README.md",
+        "location": "Example: Stop Capturing L1231-1233, complete paragraph",
+        "text": "UndoManager merges Undo-StackItems if they are created within time-gap smaller than `options.captureTimeout`. Call `um.stopCapturing()` so that the next StackItem won't be merged.",
+        "word_count": 22,
+        "code_lines": 0,
+        "figures": 0,
+        "selection": "first named worked usageexample afterAPI; prosewindow precedesactual a/bcode, fullcodeoutsidewindowread",
+        "outside_window": "Fulla/bcode includes expectedsingleactoroutcome; this is allowed E evidence but precludes attributing all understanding to22-word window."
+      },
+      "draft_predictions": {
+        "A": {
+          "choice": "A만",
+          "opA_undo": [
+            1,
+            2,
+            3
+          ],
+          "opB_undo": [],
+          "opA_redo": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "opB_redo": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "basis": "publicAPI stopCapturing groupboundary; trust intendedcontract atMAX_VALUE, laterassertion canfalsify"
+        },
+        "E": {
+          "choice": "A만",
+          "opA_undo": [
+            1,
+            2,
+            3
+          ],
+          "opB_undo": [],
+          "opA_redo": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "opB_redo": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "basis": "same-domaina/bexample supplies samegroupdistinction; no newstate beyondA"
+        }
+      },
+      "variant_predictions": {
+        "after_redo_then_first_undo": {
+          "opA": [
+            1,
+            2,
+            3
+          ],
+          "opB": []
+        },
+        "after_redo_then_second_undo": {
+          "opA": [],
+          "opB": []
+        },
+        "undo_depth_before_first_undo": {
+          "opA": 2,
+          "opB": 1
+        },
+        "original_test_expected_state_not_seen": true
+      }
+    }
+  ]
+}

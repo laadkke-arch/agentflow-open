@@ -1,0 +1,150 @@
+0001: import {eq, schema, doc, p} from "prosemirror-test-builder"
+0002: import {Slice, Fragment, Node} from "prosemirror-model"
+0003: import {EditorState, Plugin, TextSelection, Command} from "prosemirror-state"
+0004: import {ReplaceStep} from "prosemirror-transform"
+0005: import ist from "ist"
+0006: import {history, closeHistory, undo, redo, undoDepth, redoDepth} from "prosemirror-history"
+0007: 
+0008: let plugin = history()
+0009: 
+0010: function mkState(doc?: Node, config?: any) {
+0011:   let plugins = [config ? history(config) : plugin]
+0012:   if (config && config.preserveItems) plugins.push(new Plugin({historyPreserveItems: true} as any))
+0013:   return EditorState.create({schema, plugins: plugins.concat(config && config.plugins || []), doc})
+0014: }
+0015: 
+0016: function type(state: EditorState, text: string) {
+0017:   return state.apply(state.tr.insertText(text))
+0018: }
+0019: function command(state: EditorState, command: Command) {
+0020:   command(state, tr => state = state.apply(tr))
+0021:   return state
+0022: }
+0023: 
+0024: function compress(state: EditorState) {
+0025:                                                                      
+0026:                                   
+0027:   plugin.getState(state).done = plugin.getState(state).done.compress()
+0028: }
+0029: 
+0030: describe("history", () => {
+0031:   it("enables undo", () => {
+0032:     let state = mkState()
+0033:     state = type(state, "a")
+0034:     state = type(state, "b")
+0035:                                     
+0036:     state = command(state, undo)
+0037:                                 
+0038:   })
+0039: 
+0040:   it("enables redo", () => {
+0041:     let state = mkState()
+0042:     state = type(state, "a")
+0043:     state = type(state, "b")
+0044:     state = command(state, undo)
+0045:                                 
+0046:     state = command(state, redo)
+0047:                                     
+0048:   })
+0049: 
+0050:   it("tracks multiple levels of history", () => {
+0051:     let state = mkState()
+0052:     state = type(state, "a")
+0053:     state = type(state, "b")
+0054:     state = state.apply(state.tr.insertText("c", 1))
+0055:                                      
+0056:     state = command(state, undo)
+0057:                                     
+0058:     state = command(state, undo)
+0059:                                 
+0060:     state = command(state, redo)
+0061:                                     
+0062:     state = command(state, redo)
+0063:                                      
+0064:     state = command(state, undo)
+0065:                                     
+0066:   })
+0067: 
+0068:   it("starts a new event when newGroupDelay elapses", () => {
+0069:     let state = mkState(undefined, {newGroupDelay: 1000})
+0070:     state = state.apply(state.tr.insertText("a").setTime(1000))
+0071:     state = state.apply(state.tr.insertText("b").setTime(1600))
+0072:                             
+0073:     state = state.apply(state.tr.insertText("c").setTime(2700))
+0074:                             
+0075:     state = command(state, undo)
+0076:     state = state.apply(state.tr.insertText("d").setTime(2800))
+0077:                             
+0078:   })
+0079: 
+0080:   it("starts a new event for non-adjacent changes", () => {
+0081:     let state = mkState(doc(p("abc")), {newGroupDelay: 1000})
+0082:     state = state.apply(state.tr.insertText("x", 1))
+0083:     state = state.apply(state.tr.insertText("y", 5))
+0084:                             
+0085:   })
+0086: 
+0087:   it("doesn't get confused by non-replacement steps when checking adjacency", () => {
+0088:     let state = mkState(doc(p()), {newGroupDelay: 1000})
+0089:     state = state.apply(state.tr.insertText("x", 1).addMark(1, 2, schema.marks.em.create()))
+0090:     state = state.apply(state.tr.insertText("y", 2).addMark(2, 3, schema.marks.em.create()))
+0091:                             
+0092:   })
+0093: 
+0094:   it("allows changes that aren't part of the history", () => {
+0095:     let state = mkState()
+0096:     state = type(state, "hello")
+0097:     state = state.apply(state.tr.insertText("oops", 1).setMeta("addToHistory", false))
+0098:     state = state.apply(state.tr.insertText("!", 10).setMeta("addToHistory", false))
+0099:     state = command(state, undo)
+0100:                                        
+0101:   })
+0102: 
+0103:   it("doesn't get confused by an undo not adding any redo item", () => {
+0104:     let state = mkState()
+0105:     state = state.apply(state.tr.insertText("foo"))
+0106:     state = state.apply(state.tr.replaceWith(1, 4, schema.text("bar")).setMeta("addToHistory", false))
+0107:     state = command(state, undo)
+0108:     state = command(state, redo)
+0109:                                      
+0110:   })
+0111: 
+0112:   function unsyncedComplex(state: EditorState, doCompress: boolean) {
+0113:     state = type(state, "hello")
+0114:     state = state.apply(closeHistory(state.tr))
+0115:     state = type(state, "!")
+0116:     state = state.apply(state.tr.insertText("....", 1).setMeta("addToHistory", false))
+0117:     state = state.apply(state.tr.split(3))
+0118:                                                    
+0119:     state = state.apply(state.tr.split(2).setMeta("addToHistory", false))
+0120:     if (doCompress) compress(state)
+0121:     state = command(state, undo)
+0122:     state = command(state, undo)
+0123:                                                   
+0124:     state = command(state, undo)
+0125:                                              
+0126:   }
+0127: 
+0128:   it("can handle complex editing sequences", () => {
+0129:     unsyncedComplex(mkState(), false)
+0130:   })
+0131: 
+0132:   it("can handle complex editing sequences with compression", () => {
+0133:     unsyncedComplex(mkState(), true)
+0134:   })
+0135: 
+0136:   it("supports overlapping edits", () => {
+0137:     let state = mkState()
+0138:     state = type(state, "hello")
+0139:     state = state.apply(closeHistory(state.tr))
+0140:     state = state.apply(state.tr.delete(1, 6))
+0141:                                 
+0142:     state = command(state, undo)
+0143:                                        
+0144:     state = command(state, undo)
+0145:                                 
+0146:   })
+0147: 
+0148:   it("supports overlapping edits that aren't collapsed", () => {
+0149:     let state = mkState()
+0150:     state = state.apply(state.tr.insertText("h", 1).setMeta("addToHistory", false))
