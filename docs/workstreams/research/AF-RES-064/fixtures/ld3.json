@@ -1,0 +1,68 @@
+{
+  "original": "https://stackoverflow.com/revisions/65917156/1",
+  "document": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3c-ccg.github.io/ldp-bbs2020/context/v1",
+      "https://mycontext.com/credentials/v1"
+    ],
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer",
+    "issuanceDate": "2020-01-01T00:00:00Z",
+    "expirationDate": "2029-12-31T23:59:59Z",
+    "credentialSubject": {
+      "id": "did:example:subject",
+      "type": ["ExampleCredential"],
+      "values": [{"a": 1, "b": 2, "c": 3}, {"a": 4, "b": 5, "c": 6}]
+    }
+  },
+  "author_context": {
+    "@context": {
+      "@version": 1.1, "@protected": true, "schema": "https://schema.org/",
+      "ExampleCredential": {
+        "@id": "https://mycontext.com/credentials#ExampleCredential",
+        "@context": {
+          "@version": 1.1, "@protected": true, "type": "@type", "values": "@nest",
+          "a": {"@id": "https://mycontext.com/credentials#a", "@type": "schema:example_a", "@nest": "values"},
+          "b": {"@id": "https://mycontext.com/credentials#b", "@type": "schema:example_b", "@nest": "values"},
+          "c": {"@id": "https://mycontext.com/credentials#c", "@type": "schema:example_c", "@nest": "values"}
+        }
+      }
+    }
+  },
+  "frame": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3c-ccg.github.io/ldp-bbs2020/context/v1",
+      "https://mycontext.com/credentials/v1"
+    ],
+    "@explicit": true,
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer",
+    "issuanceDate": {},
+    "expirationDate": {},
+    "credentialSubject": {
+      "id": "did:example:subject", "@explicit": true, "type": ["ExampleCredential"],
+      "values": [{"a": 1, "b": {}, "c": {}}]
+    }
+  },
+  "diagnostic_context": {
+    "@version": 1.1, "@vocab": "https://example.org/af064#",
+    "type": "@type", "id": "@id",
+    "issuer": {"@type": "@id"},
+    "values": {"@container": "@set"}
+  },
+  "diagnostic_frame": {
+    "@explicit": false, "type": "VerifiableCredential",
+    "credentialSubject": {
+      "type": "ExampleCredential",
+      "values": [{"a": 1, "@requireAll": true, "@omitDefault": true}]
+    }
+  },
+  "groups": [
+    {"id": "LD-3-P1", "values": [{"a": 1, "b": 2, "c": 3}, {"a": 4, "b": 5, "c": 6}], "expected_values": [{"a": 1, "b": 2, "c": 3}]},
+    {"id": "LD-3-P2", "values": [{"a": 4, "b": 5, "c": 6}, {"a": 1, "b": 7, "c": 8}], "expected_values": [{"a": 1, "b": 7, "c": 8}]},
+    {"id": "LD-3-N1", "values": [{"a": 4, "b": 5, "c": 6}, {"a": 2, "b": 7, "c": 8}], "expected_values": []},
+    {"id": "LD-3-G1", "values": [{"a": 1, "b": 112, "c": 113}, {"a": 4, "b": 205, "c": 206}], "expirationDate": "2030-02-01T00:00:00Z", "expected_values": [{"a": 1, "b": 112, "c": 113}]}
+  ]
+}

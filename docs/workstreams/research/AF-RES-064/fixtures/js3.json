@@ -1,0 +1,43 @@
+{
+  "original": "https://stackoverflow.com/revisions/65726164/1",
+  "dialect": "http://json-schema.org/draft-04/schema#",
+  "diagnostic_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "types": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "http://a.site.org/schemas/types.json",
+    "type": "object",
+    "definitions": {"gender": {"enum": ["male", "female"]}},
+    "properties": {"gender": {"$ref": "#/definitions/gender"}}
+  },
+  "definitions": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "http://a.site.org/schemas/definitions.json",
+    "definitions": {
+      "person": {
+        "type": "object",
+        "properties": {
+          "username": {"type": "string"},
+          "password": {"type": "string"},
+          "name": {"type": "string"},
+          "surname": {"type": "string"},
+          "sex": {"$ref": "types.json#/properties/gender"},
+          "email": {"type": "string", "format": "email"}
+        },
+        "required": ["name", "surname", "sex", "email"]
+      }
+    },
+    "type": "object",
+    "properties": {"person": {"$ref": "#/definitions/person"}}
+  },
+  "groups": [
+    {"id": "JS-3-P1", "person": {"name": "Riccardo", "surname": "Example", "sex": "male", "email": "person@example.org"}, "expected_valid": true},
+    {"id": "JS-3-P2", "person": {"name": "Ada", "surname": "Example", "sex": "female", "email": "ada@example.org"}, "expected_valid": true},
+    {"id": "JS-3-N1", "person": {"name": "Ada", "surname": "Example", "sex": "other", "email": "ada@example.org"}, "expected_valid": false},
+    {"id": "JS-3-G1", "person": {"name": "Ada", "surname": "Example", "sex": "female", "email": "ada@example.org"}, "drop_each": ["name", "surname", "sex", "email"], "expected_valid": false}
+  ],
+  "arms": {
+    "literal_extracted": "Evaluate definitions.definitions.person against bare Person; register the author's types.properties subobject without injecting its lost metadata.",
+    "literal_whole": "Try the two whole declared draft-04/$id schemas with wrapped Person, without transforming declarations.",
+    "reconstructed_2020_12": "Explicit change to 2020-12, replace definitions paths with $defs, retain IDs and relative refs, register both schemas locally, evaluate wrapped Person."
+  }
+}
