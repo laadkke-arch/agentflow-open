@@ -1,0 +1,109 @@
+{
+  "reviewed_at_utc": "2026-11-23T00:40:48.365023+00:00",
+  "reviewers": [
+    "ncq_exoadocs",
+    "blueprint_codemend",
+    "unakite_strata",
+    "root"
+  ],
+  "scope": "Normalization and denominator review before bundle3; no pre-analysis sampling or estimand rule changed",
+  "findings": [
+    {
+      "id": "RV01",
+      "issue": "Known caps, allocation designs and denominators became unknown in normalized summary fields",
+      "resolution": "Map eXoa40min; Blueprint600/900s; NCQ same10people; independent Schwonke25/25 and15/15; distinguish planned CodeMend opportunities from observed timing rows",
+      "files": [
+        "build_ledgers.py",
+        "joins.csv",
+        "outcomes.csv"
+      ]
+    },
+    {
+      "id": "RV02",
+      "issue": "Exact row duplication was conflated with repeated participant×task keys",
+      "resolution": "NCQ exact duplicates0; uniqueP×T20 each; normal1:N excess122/136; count of duplicate-key groups unknown",
+      "files": [
+        "joins.csv"
+      ]
+    },
+    {
+      "id": "RV03",
+      "issue": "Blueprint two task quality endpoints combined",
+      "resolution": "Split BC-O04A/B; retain parent/source mapping; exploratory rank sums94/116 restored",
+      "files": [
+        "outcomes.csv"
+      ]
+    },
+    {
+      "id": "RV04",
+      "issue": "Bounded timestamps and failed-request locators omitted by normalization",
+      "resolution": "Preserve utc_interval and timestamp_basis; failure locator explicitly request/response, no original material; map minimum_next_material",
+      "files": [
+        "build_ledgers.py",
+        "sources.jsonl"
+      ]
+    },
+    {
+      "id": "RV05",
+      "issue": "Candidate search count can be mistaken for distinct studies",
+      "resolution": "34 returned records explicitly nonunique; no supplemental families selected; correct EMSE2018 exclusion and avoid guessed MDPI year",
+      "files": [
+        "evidence/supplement-search-frame.json"
+      ]
+    },
+    {
+      "id": "RV06",
+      "issue": "eXoa author Task1 interval missing in summary",
+      "resolution": "Preserve arm-marginal90%CIs; do not present as difference or paired CI; nonpass9/12 and11/12 distinct from timing denominator",
+      "files": [
+        "streams/ncq-exoa/REVISIONS.md",
+        "outcomes.csv"
+      ]
+    },
+    {
+      "id": "RV07",
+      "issue": "Blueprint source path in stream study metadata named CodeMend failures",
+      "resolution": "Agent corrected raw search source ID to BC-F06; substantive absence classification unchanged",
+      "files": [
+        "streams/blueprint-codemend/REVIEW_CORRECTION.md"
+      ]
+    }
+  ],
+  "execution": [
+    {
+      "command": "python -B docs/workstreams/research/AF-RES-050/verify_ledgers.py",
+      "attempt": "before metadata normalization fix",
+      "exit_code": 1,
+      "failed_checks": 19,
+      "reason": "Missing timestamp windows or failed-request locators; no scientific count discrepancy"
+    },
+    {
+      "command": "python -B docs/workstreams/research/AF-RES-050/build_ledgers.py",
+      "attempt": "after fix",
+      "exit_code": 0
+    },
+    {
+      "command": "python -B docs/workstreams/research/AF-RES-050/verify_ledgers.py",
+      "attempt": "after fix",
+      "exit_code": 0,
+      "checks": 356,
+      "receipt": "evidence/validation-ledgers.json"
+    }
+  ],
+  "web_rechecks": [
+    {
+      "url": "https://cond.org/codemend.pdf",
+      "status": "root later web adapter open failed; earlier direct HTTPS read preserved BC-02; not a new primary work",
+      "tool_refs": [
+        "turn773622684view3"
+      ]
+    },
+    {
+      "url": "https://from.so/assets/markdown/rong-codemend-uist2016.md",
+      "status": "root later web adapter open failed; earlier author rendition read preserved BC-20",
+      "tool_refs": [
+        "turn765641988view0"
+      ]
+    }
+  ]
+}

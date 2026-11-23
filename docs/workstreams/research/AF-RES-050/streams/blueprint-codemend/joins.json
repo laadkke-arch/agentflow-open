@@ -1,0 +1,155 @@
+[
+  {
+    "join_id": "BC-J01",
+    "study_id": "S03",
+    "relation": "assignment 1 person → 1 directed time record → 1 directed quality record",
+    "design": "independent_groups",
+    "desired_keys": [
+      "study_id",
+      "participant_id",
+      "task_id"
+    ],
+    "expected_cardinality": "20 assignments:20 directed outcomes; arm size10/10",
+    "target_people": 20,
+    "target_directed_trials": 20,
+    "target_scored_tasks": 40,
+    "actual_raw_left_rows": null,
+    "actual_raw_right_rows": null,
+    "actual_joined_rows": null,
+    "unmatched_rows": null,
+    "duplicate_key_groups": null,
+    "execution": "not_executed_missing_raw_ledger",
+    "missing_keys": [
+      "stable participant_id",
+      "task_id shared across time and grade"
+    ],
+    "observed_partial_link": "Figure4 contains 20 first-paste and total-time/status plotting positions, but no matching quality key.",
+    "sources": [
+      "BC-01",
+      "BC-16",
+      "BC-17"
+    ],
+    "locations": [
+      "https://hci.stanford.edu/publications/2010/blueprint/brandt_chi10_blueprint.pdf#page=7",
+      "https://hci.stanford.edu/publications/2010/brandt-dissertation/brandt-dissertation.pdf#page=81"
+    ],
+    "allowed_comparison": "independent arm author aggregates; no artificial cross-arm participant pairs",
+    "disallowed": "do not positional-join separately sorted thesis Figure5.4 quality/time dots",
+    "minimum_file": "participant×task condition time completion/censoring quality ledger"
+  },
+  {
+    "join_id": "BC-J02",
+    "study_id": "S03",
+    "relation": "Figure4 graphical position → first paste presence + completion status",
+    "design": "independent_groups",
+    "target_graph_positions": 20,
+    "observed_graph_positions": 20,
+    "observed_first_paste_marks": 20,
+    "observed_noncompletion_marks": 3,
+    "observed_linked_paste_noncompletion_marks": 3,
+    "exact_time_rows_digitized": 0,
+    "quality_keys_observed": 0,
+    "raw_join_execution": "not_applicable_graphical_observation",
+    "examples_file": "figure-observations.json",
+    "sources": [
+      "BC-16"
+    ],
+    "locations": [
+      "https://hci.stanford.edu/publications/2010/blueprint/brandt_chi10_blueprint.pdf#page=7"
+    ],
+    "meaning": "observed 20 graphical position links; not 20 acquired raw rows; 0 digitized is a performed-work count, not missing time=0",
+    "minimum_file": "exact numeric time/condition file plus stable quality join key"
+  },
+  {
+    "join_id": "BC-J03",
+    "study_id": "S04",
+    "relation": "participant 1→2 ordered tasks 1→3 successive subtasks; assignment joins events and assessor rows",
+    "design": "within_person_crossover",
+    "desired_keys": [
+      "study_id",
+      "participant_id",
+      "period",
+      "task_id",
+      "subtask_id",
+      "condition"
+    ],
+    "target_people": 20,
+    "target_person_task_trials": 40,
+    "target_subtask_opportunities": 120,
+    "target_subtask_opportunities_per_condition": 60,
+    "expected_cardinality": "assignment task-row 1:many events; events must be collapsed by prespecified endpoint to 1 subtask-row before joining one assessor record",
+    "actual_raw_left_rows": null,
+    "actual_raw_right_rows": null,
+    "actual_joined_rows": null,
+    "unmatched_rows": null,
+    "duplicate_key_groups": null,
+    "execution": "not_executed_missing_lab_ledger",
+    "missing_keys": [
+      "participant_id",
+      "period/sequence",
+      "condition assignment",
+      "event time",
+      "subtask assessor record"
+    ],
+    "sources": [
+      "BC-02",
+      "BC-06",
+      "BC-09",
+      "BC-10",
+      "BC-11",
+      "BC-12",
+      "BC-22"
+    ],
+    "locations": [
+      "https://cond.org/codemend.pdf#page=9",
+      "https://github.com/ronxin/codemend/blob/445d5d822174aa7cdfd7ceb16ce5db18f4e2b69d/codemend/demo/start_server.py",
+      "https://github.com/ronxin/codemend/blob/445d5d822174aa7cdfd7ceb16ce5db18f4e2b69d/codemend/demo/js/codemine.js"
+    ],
+    "allowed_comparison": "preserve person pairing and task/period; no same-subtask fake pairing because bar and pie are different tasks",
+    "minimum_file": "actual lab assignment+events+scores and task/version codebook"
+  },
+  {
+    "join_id": "BC-J04",
+    "study_id": "S04",
+    "relation": "IR query ledger structural audit, explicitly not human-lab join",
+    "design": "different_population_and_unit",
+    "source_url": "https://github.com/ronxin/codemend/blob/445d5d822174aa7cdfd7ceb16ce5db18f4e2b69d/codemend/models/eval-gt-2.csv",
+    "file_rows": "header1; data2–362; exact duplicate163–164",
+    "input_records": 361,
+    "unique_full_row_keys": 360,
+    "duplicate_full_row_groups": 1,
+    "null_key_rows": 0,
+    "case_keys": 5,
+    "query_source_categories": 3,
+    "case_query_source_keys": 15,
+    "joined_human_rows": null,
+    "execution": "structural_audit_executed; human join not performed",
+    "fields": [
+      "case_study_no",
+      "answer",
+      "query",
+      "query_source"
+    ],
+    "absent_fields": [
+      "participant_id",
+      "condition",
+      "period",
+      "elapsed",
+      "score",
+      "completion"
+    ],
+    "example": {
+      "own_id": "S04-IR-row001",
+      "source_location": "eval-gt-2.csv row2",
+      "unit": "IR query record, not laboratory participant",
+      "participant_value_reproduced": false
+    },
+    "sources": [
+      "BC-07",
+      "BC-23"
+    ],
+    "audit_file": "artifact-inspection.json",
+    "forbidden_join": "case_study_no or query_source are not participant identifiers; treating them as person keys creates many-to-many ambiguity",
+    "minimum_file": "a separate laboratory participant/task ledger"
+  }
+]
