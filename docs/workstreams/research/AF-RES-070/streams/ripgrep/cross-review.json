@@ -1,0 +1,166 @@
+{
+  "review_id": "AF-RES-070-CROSS-RG-01",
+  "reviewer": "/root/ripgrep",
+  "reviewed_utc": "2026-11-23T08:52:18Z",
+  "review_type": "data_reuse_peer_review_after_unmasking",
+  "review_blindness": "봉인 A와 공개 후 판정을 함께 읽은 별도 분석자 검토. 결과를 가린 독립 평정으로 주장하지 않음.",
+  "a_seal_sha": "a6e2f47e6cfa52e249f4d648016cf9d324eccae9",
+  "new_source_count": 0,
+  "count_toward_minimum": false,
+  "scope": "기존 원자료 캐시와 원장을 재판독. 다른 stream 및 봉인 A는 수정하지 않음. 제안 판정을 ROOT가 통합해야 함.",
+  "reviews": [
+    {
+      "review_id": "CR-RCL4911",
+      "issue_id": "RCL-4911",
+      "review_question": "A에 high_memory_observed_after_all_transfers_finished 값이 이미 있다고 확정하여 진단 오탐 1/1로 집계할 수 있는가?",
+      "selected_field": "high_memory_observed_after_all_transfers_finished",
+      "sealed_question": "높은 메모리를 관측한 순간에 모든 전송이 이미 끝난 상태였나요?",
+      "pre_record": {
+        "path": "streams/rclone/pre.json",
+        "sha256_at_review": "c2cca98faac4eec64e9e0a6fbd2b0dab682a0d55e5f3284397fd4731155a4b87",
+        "field_in_A": false,
+        "question_decision": "ask",
+        "analysis_layer": "main_chronological_budget_deviation"
+      },
+      "post_record_reviewed": {
+        "path": "streams/rclone/post.json",
+        "sha256_at_review": "a4db945d34565c472b4f0e0792353d66604e4ffce46016273c02def2ffe12cfe",
+        "claimed_B_status": "redundant_value_not_new",
+        "claimed_false_positive": true,
+        "claimed_diagnostic_false_positive_denominator": true
+      },
+      "evidence": [
+        {
+          "source_id": "RCL-I4911",
+          "lineage_id": "github:rclone/rclone:issue:4911",
+          "original_url": "https://github.com/rclone/rclone/issues/4911#issue-781393226",
+          "archive_url": "https://data.gharchive.org/2021-01-07-15.json.gz",
+          "archive_event_id": "14744515320",
+          "archive_line": 56752,
+          "author": "brxie",
+          "author_id": 10535420,
+          "body_sha256": "673bc73b1661cd11d5efb1f1e603f60b6a7d4ceb36bc4b6efbe3a43e4fb81ee5",
+          "read_positions": "복구 opening body L2-L13, L16, L30",
+          "supports": "자동 전송의 진행 중에 높은 메모리와 할당 오류를 경험했다는 맥락은 최초 글에 있다. 메모리 그래프의 존재와 관측 최대치도 제시한다.",
+          "does_not_determine": "질문에서 말하는 단일 높은 메모리 관측 시점이 어느 점인지, 모든 작업 완료 뒤에도 높았는지, 완료한 버퍼와 진행 중 작업이 공존했는지는 지정하지 않는다. 이미지 내부는 이번 교차검토에서 판독하지 않았으므로 그래프 내용으로 빈칸을 채우지 않는다.",
+          "count_toward_minimum": false
+        },
+        {
+          "source_id": "RCL-D1",
+          "lineage_id": "github:rclone/rclone:file:docs/content/docs.md",
+          "fixed_url": "https://github.com/rclone/rclone/blob/55bd60019e12a65430867a4c334f2d0ab49bdc3e/docs/content/docs.md#L1467-L1480",
+          "version": "v1.53.3@55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+          "content_sha256": "f4893835a15092c26b13be99c340d4e7bf9366f50e21d121afe7709476a34334",
+          "read_positions": "--use-mmap L1467-L1480",
+          "supports": "사용이 끝난 전송 버퍼의 OS 반환 방식 및 Go 할당자의 덜 적극적인 반환을 설명한다.",
+          "does_not_determine": "모든 전송이 완료되어야 사용 종료 버퍼가 생긴다는 조건은 없다. 활성 작업의 RSS 증가 원인, 사용 종료 버퍼의 비중, 보고한 설치판의 버그를 판정하지 못한다.",
+          "count_toward_minimum": false
+        },
+        {
+          "source_id": "RCL-I4911",
+          "event_id": "RCL-4911-C756886973",
+          "original_url": "https://github.com/rclone/rclone/issues/4911#issuecomment-756886973",
+          "read_positions": "현재 댓글 L54-L58",
+          "created_utc": "2021-01-08T17:12:25Z",
+          "updated_utc": "2021-01-08T17:15:27Z",
+          "supports": "후속 실행의 시각표는 전송 진행 중 메모리 증가와 중단 후 잔류를 각각 보고한다. 이는 전송 진행과 높은 메모리의 동시 관측을 더 구체화한다.",
+          "does_not_determine": "이 후속 실행의 구간을 최초 그래프의 특정 시점과 같은 관측이라고 볼 수 없다. 수정 전 댓글 원문도 복구하지 않았으므로 문장 존재 시각을 생성 시각으로 확정하지 않는다.",
+          "count_toward_minimum": false
+        }
+      ],
+      "counterexample_search": {
+        "path": "최초 글의 전송 수 10 및 지정 문서의 버퍼 수명 조건을 대조하고, 후속 시각표 L57-L58의 진행/중단 두 구간을 읽음.",
+        "researcher_counterfactual": "어떤 전송은 이미 끝나 버퍼가 사용 종료되었지만 다른 전송은 여전히 실행 중인 경우. 모든 전송 완료=no여도 C1의 반환 지연 가설은 배제되지 않는다.",
+        "observed_pair": false,
+        "why_it_matters": "all-transfers-finished는 버퍼 수명의 필요조건이 아니다. yes/no만으로 두 후보를 상호배타적으로 갈랐다고 해석하면 문서의 범위를 넘는다.",
+        "added_counterfactual_to_primary_totals": false
+      },
+      "judgment": {
+        "A_has_some_active_phase_information": true,
+        "A_exact_selected_field_value": "indeterminate_without_fixed_observation_time",
+        "false_positive": null,
+        "diagnostic_false_positive_denominator": false,
+        "strict_false_positive_denominator": false,
+        "recommendation": "기존 진단 오탐 1/1에서 이 행의 분자와 분모를 모두 제외하고 판정불가로 둔다. 'A에 진행 중 맥락은 있었음'은 남기되 정확한 봉인 필드가 이미 답해졌다는 단정을 낮춘다.",
+        "B_new_information_status": "진행 구간의 구체화는 관측되지만 정확한 최초 관측 필드에 대해 새 값인지 중복인지 미확인",
+        "same_advice_false_positive_route": "지정 절은 두 후보가 공존할 수 있음을 보여주지만 두 설정에서 실제로 동일 권고가 충분함을 완결적으로 확정하지 않는다. 이 대체 논리로 오탐을 다시 확정하지 않음.",
+        "accuracy_change": "unobservable",
+        "would_change_judgment": "봉인 질문이 최초 글의 전송 진행 구간을 명시적으로 가리켰다는 관측 기준, 또는 원 그래프의 시각과 모든 작업 상태를 연결한 원 로그가 확보되면 A 이미 답함 여부를 재판정할 수 있다. 사용 종료 버퍼 비중을 직접 계측하면 C1/C2 판별력도 달라질 수 있다."
+      }
+    },
+    {
+      "review_id": "CR-JQ2349",
+      "issue_id": "jq-2349",
+      "review_question": "A의 기대 출력이 병합키 없는 원소 보존 필드를 이미 답하므로 질문 생략을 지지하는가?",
+      "selected_field": "병합키 anidb_id가 없는 원소의 보존",
+      "sealed_value_in_A": "anidb_id 없는 mal_id 34777 원소도 독립 항목으로 남겨야 함",
+      "pre_record": {
+        "path": "streams/jq/pre.json",
+        "sha256_at_review": "e581e1cee44289ad09876f333a04dcccd080feebd27e4413c754aca2176fa7c8",
+        "field_in_A": true,
+        "question_decision": "skip"
+      },
+      "post_record_reviewed": {
+        "path": "streams/jq/post.json",
+        "sha256_at_review": "7e7d59c51e5b235eba45696e0d7b941efe077d5cb790aa669a3f6504868c0e75",
+        "claimed_B_status": "redundant_value",
+        "claimed_recommendation_change": "same"
+      },
+      "evidence": [
+        {
+          "source_id": "SRC-JQ-I2349",
+          "lineage_id": "github-issue-5101141-2349",
+          "historical_repo": "stedolan/jq",
+          "original_url": "https://github.com/jqlang/jq/issues/2349#issue-996198370",
+          "archive_url": "https://data.gharchive.org/2021-09-14-16.json.gz",
+          "archive_event_id": "17982701434",
+          "archive_line": 40531,
+          "author": "Fribb",
+          "author_id": 10223913,
+          "body_sha256": "d537695247cb998f76e5408e68af468793334725be4b97f52684b4ebdee0d2cd",
+          "read_positions": "복구 opening body 전체; 판정 핵심 L49-L73",
+          "supports": "축소 입력에 대한 출력이 원하는 결과라고 작성자가 직접 평가하며, 출력은 키 없는 mal_id 34777 항목을 별도 원소로 보존한다. 봉인 값의 구체적 사례는 후속 댓글을 보지 않아도 확인된다.",
+          "does_not_determine": "축소 입력에는 키 없는 원소가 하나뿐이다. 여러 키 없는 원소 사이의 동등성, 중복 제거, 명시 null과 누락의 차이, 보조 키 충돌 처리까지 모두 정의하지 않는다.",
+          "count_toward_minimum": false
+        },
+        {
+          "source_id": "SRC-JQ-MANUAL16",
+          "fixed_url": "https://github.com/jqlang/jq/blob/2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e/docs/content/3.manual/manual.yml#L1306-L1321",
+          "content_sha256": "0e841129accfb487d15ec36715e8b7d35e69850375ba1e5dbcdb0786a1a2ba6f",
+          "read_positions": "group_by L1306-L1321",
+          "supports": "같은 선택값의 원소를 같은 그룹에 넣는 동작을 확인한다.",
+          "does_not_determine": "작성자가 어떤 서로 다른 무키 원소를 병합하고 싶은지는 설명서로 결정할 수 없다.",
+          "count_toward_minimum": false
+        },
+        {
+          "source_id": "SRC-JQ-AUX16",
+          "fixed_url": "https://github.com/jqlang/jq/blob/2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e/src/jv_aux.c",
+          "content_sha256": "78dca4835cbad884d6a2aff35f93cf57da2c07257a52930e982abac0d8ed6cd0",
+          "read_positions": "jv_get L54-L62; jv_group L617-L644",
+          "supports": "객체에서 없는 키를 조회하면 null로 바꾸고 같은 그룹 키를 한 그룹으로 합치는 구현이다.",
+          "does_not_determine": "이 구현은 사용자의 보존 목적이나 실제 전체 파이프 출력의 성공을 증명하지 않는다. 복수 절 재판독은 사후 교차검토이며 A/B의 읽기 예산에 새 자료로 보태지 않는다.",
+          "count_toward_minimum": false
+        }
+      ],
+      "counterexample_search": {
+        "path": "축소 입력의 무키 원소 수와 기대 출력의 동일 원소 보존 여부를 대조하고, 지정 코드의 null 변환 및 동일키 그룹화를 확인함.",
+        "researcher_counterfactual": "무키 원소가 하나이면 기존 C1과 분리 보존 C2가 모두 그 원소를 남길 수 있다. 무키 원소를 둘 이상 넣거나 명시 null을 넣으면 추가 정책 차이가 드러날 수 있다.",
+        "observed_pair": false,
+        "why_it_matters": "기대 출력은 보존 목적을 명확히 하지만, 그 축소 사례만으로 두 알고리즘의 결과가 달랐다는 관측을 주장할 수 없다.",
+        "added_counterfactual_to_primary_totals": false
+      },
+      "judgment": {
+        "A_exact_sealed_value_present": true,
+        "question_decision": "skip",
+        "recommendation": "구체적인 mal_id 34777 항목을 보존할지 재질문할 필요가 없다는 판정은 유지한다. '무키 원소를 보존한다'는 방향과 '모든 무키 원소를 어떤 조건에서도 개별 보존한다'는 일반 정책을 분리하여 기술한다.",
+        "C2_generalized_algorithm": "조건부 권고로만 유지. 단일 무키 원소의 기대 출력만으로 C1/C2 실제 결과 차이가 관측됐다고 쓰지 않는다.",
+        "B_redundant_at_sealed_value": true,
+        "accuracy_change": "same_direction_conditionally_supported; strict improvement not estimated",
+        "false_positive": null,
+        "false_positive_denominator": false,
+        "false_positive_reason": "실제 봉인 결정은 질문 생략이었다. 무조건 질문 정책에 대한 가상 오탐으로 실제 질문 분모를 늘리지 않는다.",
+        "would_change_judgment": "여러 무키 원소 또는 명시 null을 포함한 작성자의 별도 기대 출력에서 서로 병합하거나 버리기를 원한다고 밝히면 광범위한 개별 보존 권고는 바뀐다. 그러나 현재 봉인된 34777 보존 값은 최초 기대 출력에 직접 명시되어 있다."
+      }
+    }
+  ]
+}
