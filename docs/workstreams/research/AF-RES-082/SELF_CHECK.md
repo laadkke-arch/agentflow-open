@@ -61,7 +61,7 @@ python -B docs/workstreams/research/AF-RES-082/tools/validate_research.py --fina
 
 현재 집계본의 최종 검산은 **exit0, 27개 검사 모두pass, pending0**이다. FRAME222·고정6·요구12/confirmed7·C2한자리, paths12·예산24/고유6/HTTP6/reuse18, source ID201개유일성, source참조208회/91종의미해결0, 독립29, 사건7, 외부분야8을 확인했다. 사전prelinks bytes와 paths사전32열을 지정원격commit객체와대조했다. 정확한입력파일지문·실행UTC·당시HEAD는 evidence/validation.json에있다. 이 검사는 연구원장의일관성을검사하며 배포실행의성공을만들어내지않는다.
 
-인계전 고정 결과commit에서 실행할 범위검사는 다음과 같다. 실제 대상SHA·종료값·출력은 실행후별도evidence와HANDOFF에기록한다. 이문단만으로 실행완료를주장하지않는다.
+인계전 고정 결과commit `2e4ab7bc4ad4cf0ff35dc1d13fe97013670f430c`에서 아래 범위검사를 실제 실행했다. **종료0, status=passed, freshness=remote_checked**, 범위 밖 경로·충돌·오류는 모두 빈 배열이다. 검사시각2026-11-23T14:05:44Z, 확인한 통합 SHA는 `fe18482050b7b911e17267fa7dcaaa5b5fb46eb2`이고 계약 해시는 시작시와 같았다. 전체 출력은 evidence/workbench-check.json, 요약과 GitHub 고정판 파일 재열람은 evidence/acceptance.json에 있다. 이것은 소유 범위·계약 검사이며 소비 사이트의 배포 검증을 대신하지 않는다.
 
 ```bash
 python -B -m workbench.session check docs/workstreams/research/AF-RES-082/manifest.json --fetch

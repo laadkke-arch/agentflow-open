@@ -12,7 +12,8 @@
 | ③d R 배포 계보 | `ae6fb65bc612120ca38337bd2b7f193b9c3664c1` | 선택 tag→생성 git HTML→현재 응답·지문·Pages 최종상태 공석 |
 | ③e Python 배포 계보 | `97629ee228a59043162361674d5eeec77c5c8e21` | RTD exact-SHA 성공·실패 로그, named/alias 판별, native generator 계약 |
 | ③f 현재 지원·정확한 딥링크 | `986d60e5bcbd9f327f142e2024bbd289f04778fe` | 현재 공식 서비스 범위/제한, P3 stable anchor·고정 README 위치 재확인 |
+| ④ 표·카드·분모·자기검산 | `2e4ab7bc4ad4cf0ff35dc1d13fe97013670f430c` | RESULT표1–3, 6카드,201행/29계보, 검산27pass, PARTIAL·다음 조사 |
 
-④ RESULT·cards·분모·SELF_CHECK의 확정 SHA와 인계전 검사·원격 재열람은 다음 수용 기록 및 HANDOFF에서 명시한다. ⑤ HANDOFF는 그 검사 뒤 마지막 단독 커밋이다. 자기 파일 안에 자기 커밋 SHA를 만들어 넣지 않고 외부 커밋 이력과 최종 응답에서 식별한다.
+④의 수용 증거는 evidence/workbench-check.json·acceptance.json 및 bundle-4-readback.json이다. `2e4ab7bc…`의 전체 원격 tree를 비교했고 RESULT.md의 원격 blob도 재열람했다. 수용 증거 추가 커밋은 HANDOFF에서 식별한다. ⑤ HANDOFF는 그 검사 뒤 마지막 단독 커밋이다. 자기 파일 안에 자기 커밋 SHA를 만들어 넣지 않고 외부 커밋 이력과 최종 응답에서 식별한다.
 
 이 기록은 중앙 `dot-control.json`이나 STATE를 변경하지 않는다. 배정자가 결과와 PARTIAL의 재개 입력을 검토해 색인/상태를 반영한다.
