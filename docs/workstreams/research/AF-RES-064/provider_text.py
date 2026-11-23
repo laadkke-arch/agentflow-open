@@ -183,7 +183,9 @@ def rst_blocks(source):
     for image in list(tree.findall(nodes.image)):
         image.parent.remove(image)
     visited = []
-    kinds = (nodes.title, nodes.subtitle, nodes.paragraph, nodes.literal_block, nodes.term)
+    code_types = (nodes.literal_block, nodes.doctest_block)
+    kinds = (nodes.title, nodes.subtitle, nodes.paragraph, nodes.term, *code_types)
+    lines = source.splitlines()
     for node in tree.findall():
         if not isinstance(node, kinds) or isinstance(node.parent, (nodes.system_message, nodes.footnote)):
             continue
@@ -206,20 +208,21 @@ def rst_blocks(source):
         line = node.line or next((parent.line for parent in parents if parent.line), 1)
         heading = isinstance(node, (nodes.title, nodes.subtitle))
         level = 1 + sum(isinstance(parent, nodes.section) for parent in parents) if heading else 0
-        kind = "heading" if heading else "code" if isinstance(node, nodes.literal_block) else "text"
+        kind = "heading" if heading else "code" if isinstance(node, code_types) else "text"
         if heading:
-            lines = source.splitlines()
             for candidate in range(max(0, line - 3), min(len(lines), line + 2)):
                 if lines[candidate].strip() == text.strip():
                     line = candidate + 1
                     break
         if kind == "code":
-            lines = source.splitlines()
-            first = text.splitlines()[0].strip()
-            for candidate in range(max(0, line - 4), min(len(lines), line + 3)):
-                if lines[candidate].strip() == first:
-                    line = candidate + 1
-                    break
+            code_lines = text.splitlines()
+            first = code_lines[0].strip()
+            candidates = [index for index, raw in enumerate(lines, 1) if raw.strip() == first]
+            if candidates:
+                line = min(candidates, key=lambda index: min(abs(index - line), abs(index + len(code_lines) - line)))
+            for offset, content in enumerate(code_lines):
+                visited.append(Block(content, line + offset, line + offset, kind))
+            continue
         ids = node.parent.get("ids", [])
         visited.append(Block(text, line, line + text.count("\n"), kind, level,
                              ids[0] if level and ids else "", reference_links))
