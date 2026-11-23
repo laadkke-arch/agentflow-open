@@ -89,6 +89,20 @@ def main():
     for source in sources:
         assert all(key in source for key in required), source["source_id"]
         assert source.get("independent_work_event_group"), source["source_id"]
+    # Concrete reconciliation gate: these rereads add neither route evidence nor sources.
+    source_by_id = {source["source_id"]: source for source in sources}
+    for source in sources:
+        if not source["source_id"].startswith("RESUME-"):
+            continue
+        assert source["reopens_source_id"] in source_by_id, source["source_id"]
+        for flag in ("count_minimum", "counted_direct", "counted_minimum", "counted_unique_source"):
+            assert not source.get(flag, False), (source["source_id"], flag)
+        if "directly_opened" in source:
+            assert source["directly_opened"] == source["direct_read"], source["source_id"]
+        if source["direct_read"]:
+            assert source.get("evidence_kind") != "failed_access", source["source_id"]
+            original = source_by_id[source["reopens_source_id"]]
+            assert source["lineage_id"] == original["lineage_id"], source["source_id"]
     counted = [source for source in sources if source.get("count_minimum")]
     category = Counter(source["category"] for source in counted)
     audio = sum(count for name, count in category.items() if name.startswith("audio_"))
