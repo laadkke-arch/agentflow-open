@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import errno
 from collections import Counter
 import os
 from pathlib import Path
@@ -276,7 +277,7 @@ def convert_argv(source, stage, names, flat, direction="normalize", mtime=165000
             *names, "--direction", direction, "--mtime", str(mtime)]
 
 
-def run_image(record, fixture, registry, stop=False, direction="normalize", repair=None, mtime=1650000000):
+def run_image(record, fixture, registry, stop=False, direction="normalize", repair=None, mtime=1650000000, legacy_names=False):
     root = record.root
     source, stage, target, temp = (root / p for p in ("source", "stage", "artifact.zip", "zip-temp"))
     temp.mkdir(exist_ok=True)
@@ -306,6 +307,10 @@ def run_image(record, fixture, registry, stop=False, direction="normalize", repa
     given = member_bytes([r["name"] for r in stage_data])
     output = root / "new.zip" if repair == "fresh" else target
     args = zip_args(output, temp, junk)
+    if repair == "sync":
+        args.insert(1, "-FS")
+    if legacy_names:
+        args.insert(1, "-UN=n")
     if code != 0:
         disposition = "front_failed"
     elif stop:
@@ -330,7 +335,7 @@ def run_image(record, fixture, registry, stop=False, direction="normalize", repa
     record.data["originals_unchanged"] = all(pre[key]["sha256"] == post[key]["sha256"] for key in keys)
     record.data["bytes"] = {"original": sum(pre[k]["bytes"] for k in keys),
                             "middle": sum(r["bytes"] for r in stage_data), "final": None if out is None else len(out)}
-    record.data["transport"] = {"flat": flat, "junk": junk, "direction": direction, "adapter": repair, "mtime": mtime}
+    record.data["transport"] = {"flat": flat, "junk": junk, "direction": direction, "adapter": repair, "mtime": mtime, "legacy_names": legacy_names}
     return record.finish(expected, middle, decoded, disposition)
 
 
@@ -413,6 +418,73 @@ def experiment(artifacts, registry, phase):
                     yield handler(resumed, fixture, registry)
 
 
+def native_write_stop(artifacts, fixture, signal_number):
+    """Supplement: interrupt the actual archive writer during a named-pipe payload."""
+    with TemporaryDirectory(prefix="af078-native-write-") as tmp:
+        root = Path(tmp)
+        stage, temp, target = root / "members", root / "zip-temp", root / "artifact.zip"
+        temp.mkdir()
+        write_originals(stage, fixture)
+        args = zip_args(target, temp, False)
+        record = Run(artifacts, root, "I00", "native_write_" + signal_number.name.lower(), 1, fixture)
+        old_member = "old/previous.png"
+        status, _ = record.run("prior", args, stage, member_bytes([old_member]))
+        if status != 0:
+            raise RuntimeError("A successful old native archive is required")
+        fifo = stage / "hold.bin"
+        os.mkfifo(fifo)
+        before = record.snapshot("before_front")
+        args = zip_args(target, temp, False, listed=False)
+        args[1:1] = ["-FI", "-0"]
+        args.append(fifo.name)
+
+        def acquire_writer():
+            try:
+                return os.open(fifo, os.O_WRONLY | os.O_NONBLOCK)
+            except OSError as err:
+                if err.errno == errno.ENXIO:
+                    return None
+                raise
+
+        content = b"controlled-fifo!" * 4096
+        start = utc()
+        with subprocess.Popen(args, cwd=stage, env=ROOT_ENV, stdin=subprocess.DEVNULL,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+            descriptor = None
+            try:
+                descriptor = until(acquire_writer)
+                with os.fdopen(descriptor, "wb", buffering=0) as writer:
+                    descriptor = None
+                    os.set_blocking(writer.fileno(), True)
+                    writer.write(content)
+                    wchan = until(lambda: pipe_wait(process))
+                    at = record.snapshot("at_downstream_checkpoint")
+                    visible_temp = [path for path, keys in at.items()
+                                    if path.startswith("zip-temp/") and keys.get("bytes", 0) > 0]
+                    if not visible_temp:
+                        raise RuntimeError("ZIP had no nonempty temporary archive at the payload checkpoint")
+                    process.send_signal(signal_number)
+                    stdout, stderr = process.communicate(timeout=5)
+            finally:
+                if descriptor is not None:
+                    os.close(descriptor)
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+        record.event("back", args, stage, start, process.returncode, stdout, stderr, None,
+                     {"kind": "actual " + signal_number.name, "point": "native ZIP FIFO payload after writing temp",
+                      "pid": process.pid, "wchan": wchan, "pipe_payload": artifacts.add(content),
+                      "temporary_before_signal": visible_temp})
+        after = record.snapshot("after_back")
+        old_kept = before["artifact.zip"]["sha256"] == after["artifact.zip"]["sha256"]
+        residue = [path for path in after if path.startswith("zip-temp/")]
+        record.data.update(expected={"prior": [old_member]}, middle={"conditions": {}},
+                           final={"conditions": {"old_kept": old_kept, "temporary_removed": not residue},
+                                  "remaining_temp": residue, "prior_archive": zip_members(target.read_bytes())},
+                           adoption=None, end_utc=utc(), phase_status="native writer interrupted", first_loss={})
+        return record.data
+
+
 def diagnose(artifacts, registry):
     t_normal, i_normal = (registry[key] for key in ("t-normal", "i-normal"))
     cases = [
@@ -424,21 +496,25 @@ def diagnose(artifacts, registry):
         ("I00", "raw_orientation_tag", i_normal, {"direction": "raw"}),
         ("I00", "stale_orientation_tag", i_normal, {"direction": "stale"}),
         ("I00", "same_meaning_different_dates", i_normal, {"mtime": 1720000000}),
-        ("I00", "utf8_reader_adapter", registry["i-edge"], {"repair": "utf8"}),
+        ("I00", "legacy_zip_name", registry["i-edge"], {"legacy_names": True}),
+        ("I00", "utf8_reader_adapter", registry["i-edge"], {"legacy_names": True, "repair": "utf8"}),
     ]
     for cell, scenario, fixture, options in cases:
         with TemporaryDirectory(prefix=f"af078-diag-{scenario}-") as tmp:
             record = Run(artifacts, Path(tmp), cell, scenario, 1, fixture)
             handler = run_table if fixture["domain"] == "T" else run_image
             yield handler(record, fixture, registry, **options)
-    with TemporaryDirectory(prefix="af078-diag-fresh-") as tmp:
-        root = Path(tmp)
-        stop = Run(artifacts, root, "I00", "retry", "stop", i_normal)
-        baseline = run_image(stop, i_normal, registry, stop=True)
-        baseline.update(run="I00.fresh_adapter.stop", scenario="fresh_adapter")
-        yield baseline
-        record = Run(artifacts, root, "I00", "fresh_adapter", "resume", i_normal)
-        yield run_image(record, i_normal, registry, repair="fresh")
+    for repair in ("fresh", "sync"):
+        with TemporaryDirectory(prefix=f"af078-diag-{repair}-") as tmp:
+            root = Path(tmp)
+            stop = Run(artifacts, root, "I00", "retry", "stop", i_normal)
+            baseline = run_image(stop, i_normal, registry, stop=True)
+            baseline.update(run=f"I00.{repair}_adapter.stop", scenario=repair + "_adapter")
+            yield baseline
+            record = Run(artifacts, root, "I00", repair + "_adapter", "resume", i_normal)
+            yield run_image(record, i_normal, registry, repair=repair)
+    for signal_number in (signal.SIGTERM, signal.SIGKILL):
+        yield native_write_stop(artifacts, registry["i-old"], signal_number)
     with TemporaryDirectory(prefix="af078-diag-python312-") as tmp:
         root = Path(tmp)
         source, target = root / "hand.csv", root / "final.jsonl"
