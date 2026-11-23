@@ -19,3 +19,6 @@
 - ③ 원격: `f7c9b344aa2f5e8f2755828ba3e0849739d542b2`, 2026-11-23T04:03:50Z. 응답·교차 집계·반증·재현92파일을 고정했다. 후속 동료검토의 해석/원위치 정정은 ④에 포함한다.
 
 - ④ 고정 준비: 2026-11-23T04:20:27.902883+00:00. 세 stream의 최종표 검토와 root 정정을 반영했다. A02 유일 정답 미확인, B01 절댓값/해당없음, B04 분할 기준·BH 혼합집단/위치, D04 원조건명·인과 한계, LSAT 소수표시/최종정답 차 및 출처/검토자 표시를 교정했다. 최종 통합에는 A03/A04 미실시·Human 무제공의 열람 해당없음도 명시했다. 원개수는 바꾸지 않았고 고정된 모집/선정은 유지했다. 필수불변식228개 PASS; 연구 전체상태 PARTIAL.
+
+- ④ 결과 원격 고정: `4265e446b0e1a22022d68a6f989ebc1d504f3e84`, 2026-11-23T04:21:31Z. RESULT와 acceptance-evidence를 같은 SHA의 GitHub API에서 다시 열고 신규 fetch한 git blob·workspace와 전체 바이트 일치를 확인했다(2026-11-23T04:23:06Z).
+- 실제 최종 계약 검사: `python -B -m workbench.session check docs/workstreams/research/AF-RES-058/manifest.json --fetch`, 2026-11-23T04:23:06.847508Z–04:23:15.681702Z, exit0/passed, remote_checked. 검사판4265e44, 최신 통합c0d55315c19dba047937969fdf9bc404d21cc33a, 계약해시 유지, outside_paths/unmerged_paths/errors 모두 빈 목록. 전체 stdout/stderr는 evidence/final-verification.json. 연구 상태 PARTIAL은 유지하며 이 검사 뒤에만 HANDOFF를 작성한다.
