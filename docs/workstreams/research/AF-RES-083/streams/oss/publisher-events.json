@@ -1,0 +1,226 @@
+[
+  {
+    "publisher_diff_id": "PUBLISHER-SM-MIGRATION",
+    "lineage_id": "O-W-SM-MIGRATION",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/statsmodels/statsmodels/commit/410bf74b3edd169e83d3a816dc9ab8a8c65fe301",
+    "commit": "410bf74b3edd169e83d3a816dc9ab8a8c65fe301",
+    "parent_commits": [
+      "fdd13b464c50988c27587a145b32a77d531a84c6"
+    ],
+    "commit_date": "2023-06-29T13:39:15Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.962Z",
+    "message": "MAINT: Make changes for deprecations\n\nUse iloc for clarity with Series\nUse setup_method",
+    "pr_url": "https://github.com/statsmodels/statsmodels/pull/8940",
+    "confirmed": "신규 simpson/trapezoid import와 구 simps/trapz ImportError fallback 도입. GAM 문서 자체를 바꾼 diff가 아님.",
+    "files": [
+      {
+        "path": "statsmodels/gam/smooth_basis.py",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 2,
+        "patch_excerpt": "@@ -246,14 +246,18 @@ def get_covder2(smoother, k_points=4, integration_points=None,\n     integral of the smoother derivative cross-product at knots plus k_points\n     in between knots.\n     \"\"\"\n-    from scipy.integrate import simps\n+    try:\n+        from scipy.integrate import simpson\n+    except ImportError:\n+        # Remove after SciPy 1.7 is the minimum version\n+        from scipy.integrate import simps as simpson\n     knots = smoother.knots\n     x = _get_integration_points(knots, k_points=3)\n     if integration_points is None:\n         d2 = smoother.transform(x, deriv=deriv, skip_ctransf=skip_ctransf)\n     else:\n         x = integration_points\n-    covd2 = simps(d2[:, :, None] * d2[:, None, :], x, axis=0)\n+    covd2 = simpson(d2[:, :, None] * d2[:, None, :], x, axis=0)\n     return covd2\n \n "
+      },
+      {
+        "path": "statsmodels/genmod/generalized_estimating_equations.py",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 2,
+        "patch_excerpt": "@@ -1748,8 +1748,12 @@ def qic(self, params, scale, cov_params, n_step=1000):\n             qv[i] = -np.sum(du**2 * (g + 1) / vu)\n         qv /= (4 * scale)\n \n-        from scipy.integrate import trapz\n-        ql = trapz(qv, dx=xv[1] - xv[0])\n+        try:\n+            from scipy.integrate import trapezoid\n+        except ImportError:\n+            # Remove after minimum is SciPy 1.7\n+            from scipy.integrate import trapz as trapezoid\n+        ql = trapezoid(qv, dx=xv[1] - xv[0])\n \n         qicu = -2 * ql + 2 * self.exog.shape[1]\n         qic = -2 * ql + 2 * np.trace(np.dot(omega, cov_params))"
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-SM-KWARG",
+    "lineage_id": "O-W-SM-MIGRATION",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/statsmodels/statsmodels/commit/defa30ace744de5c9248975643b3e3667c30cf4b",
+    "commit": "defa30ace744de5c9248975643b3e3667c30cf4b",
+    "parent_commits": [
+      "185cbe3b83458338e78bd08f026387a80af7b624"
+    ],
+    "commit_date": "2023-10-28T14:41:26Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.963Z",
+    "message": "MAINT: Future proofing",
+    "pr_url": "https://github.com/statsmodels/statsmodels/pull/9046",
+    "confirmed": "simpson의 x를 위치 인자에서 x=x로 수정. 철자 치환과 인자 계약 수선이 별도임.",
+    "files": [
+      {
+        "path": "statsmodels/gam/smooth_basis.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "patch_excerpt": "@@ -257,7 +257,7 @@ def get_covder2(smoother, k_points=3, integration_points=None,\n     else:\n         x = integration_points\n     d2 = smoother.transform(x, deriv=deriv, skip_ctransf=skip_ctransf)\n-    covd2 = simpson(d2[:, :, None] * d2[:, None, :], x, axis=0)\n+    covd2 = simpson(d2[:, :, None] * d2[:, None, :], x=x, axis=0)\n     return covd2\n \n "
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-SM-FLOOR",
+    "lineage_id": "O-W-SM-MIGRATION",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/statsmodels/statsmodels/commit/ab01f9664bb3b7b425443625a015bfd853f05765",
+    "commit": "ab01f9664bb3b7b425443625a015bfd853f05765",
+    "parent_commits": [
+      "126e63e34e1b242d03610435e0822840d6467e39"
+    ],
+    "commit_date": "2026-08-01T13:46:17Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.963Z",
+    "message": "MAINT: Remove scipy<1.7 simps fallback in gam.smooth_basis\n\nscipy.integrate.simpson has been available since scipy 1.6, below\nthe 1.8 floor; drop the simps import fallback.",
+    "pr_url": "https://github.com/statsmodels/statsmodels/pull/10015",
+    "confirmed": "유지관리자가 SciPy 최소판1.8이 도입판1.6을 넘으므로 fallback 불필요하다고 설명하고 제거.",
+    "files": [
+      {
+        "path": "statsmodels/gam/smooth_basis.py",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 5,
+        "patch_excerpt": "@@ -390,11 +390,8 @@ def get_covder2(smoother, k_points=3, integration_points=None,\n         Approximation to the integral of the cross product of the\n         `deriv`-th derivative of the smoother basis functions.\n     \"\"\"\n-    try:\n-        from scipy.integrate import simpson\n-    except ImportError:\n-        # Remove after SciPy 1.7 is the minimum version\n-        from scipy.integrate import simps as simpson\n+    from scipy.integrate import simpson\n+\n     knots = smoother.knots\n     if integration_points is None:\n         x = _get_integration_points(knots, k_points=k_points)"
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-SM-GUIDE-RNG",
+    "lineage_id": "O-W-SM-GUIDE-RNG",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/statsmodels/statsmodels/commit/bd11a8744e02951692b5450561267997dbee26a7",
+    "commit": "bd11a8744e02951692b5450561267997dbee26a7",
+    "parent_commits": [
+      "14f595dfcda687764954e6e40cc5d6145fc0b3c9"
+    ],
+    "commit_date": "2026-07-09T07:02:56Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.963Z",
+    "message": "DOC: Fix failure in docs due to warning",
+    "pr_url": null,
+    "confirmed": "가이드에서 kfold 호출에 seed가 지정된rng를 넣어재현성 보강. commit은경고로인한문서실패수정을명시하며SciPy적분명변경이라고쓰지않음.",
+    "files": [
+      {
+        "path": "docs/source/gam.rst",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 1,
+        "patch_excerpt": "@@ -54,9 +54,11 @@ We can load a dataframe with selected columns from the unit test module.\n     # Optimal penalization weights alpha can be obtained through generalized\n     # cross-validation or k-fold cross-validation.\n     # The alpha above are from the unit tests against the R mgcv package.\n+    # The rng provided ensures reproducibility of the k-fold cross-validation results.\n \n     gam_bs.select_penweight()[0]\n-    gam_bs.select_penweight_kfold()[0]\n+    rng = np.random.default_rng(20260709)\n+    gam_bs.select_penweight_kfold(rng=rng)[0]\n \n \n References"
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-AST-REMOVE",
+    "lineage_id": "O-W-AST-BLACKBODY-REMOVAL",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/astropy/astropy/commit/d5abb1fd5742fe87cd9710b7cd438fe3027c1076",
+    "commit": "d5abb1fd5742fe87cd9710b7cd438fe3027c1076",
+    "parent_commits": [
+      "f26f6badad27e2ddd38d754e8ec64876a028e563"
+    ],
+    "commit_date": "2020-10-30T20:49:10Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.963Z",
+    "message": "MNT: Remove deprecated blackbody module",
+    "pr_url": "https://github.com/astropy/astropy/pull/10972",
+    "confirmed": "deprecated blackbody module 및 test 삭제. PR10972는4.0deprecated를이유로명시하며2020-11-02merge,4.3 milestone. SciPy1.6발행보다이른결정.",
+    "files": [
+      {
+        "path": "astropy/modeling/blackbody.py",
+        "status": "removed",
+        "additions": 0,
+        "deletions": 281,
+        "patch_excerpt": null
+      },
+      {
+        "path": "astropy/modeling/tests/test_blackbody.py",
+        "status": "removed",
+        "additions": 0,
+        "deletions": 154,
+        "patch_excerpt": "@@ -1,154 +0,0 @@\n-    wave = np.logspace(0, 8, 100000) * u.AA\n-    temp = 100. * u.K\n-    intflux = integrate.trapz(flux.value, x=lum.value)\n-    ans = const.sigma_sb * temp ** 4 / np.pi\n-    np.testing.assert_allclose(intflux, ans.value, rtol=0.01)  # 1% accuracy\n-    wave = [0, 1000.0, 100000.0, 1e55]  # Angstrom\n-    temp = 10000.0  # Kelvin"
+      },
+      {
+        "path": "docs/modeling/blackbody_deprecated.rst",
+        "status": "removed",
+        "additions": 0,
+        "deletions": 146,
+        "patch_excerpt": null
+      },
+      {
+        "path": "docs/modeling/physical_models.rst",
+        "status": "modified",
+        "additions": 0,
+        "deletions": 9,
+        "patch_excerpt": "@@ -77,15 +77,6 @@ give the wavelength and frequency of the maximum for :math:`B_\\lambda`\n and :math:`B_\\nu`, respectively, calculated using `Wein's Law\n <https://en.wikipedia.org/wiki/Wien%27s_displacement_law>`_.\n \n-.. note::\n-\n-    Prior to v4.0, the ``BlackBody1D`` and the functions ``blackbody_nu`` and ``blackbody_lambda``\n-    were provided.  ``BlackBody1D`` was a more limited blackbody model that was\n-    specific to integrated fluxes from sources.  The capabilities of all three\n-    can be obtained with :class:`~astropy.modeling.physical_models.BlackBody`.\n-    See :doc:`blackbody_deprecated`\n-    and `astropy issue #9066 <https://github.com/astropy/astropy/issues/9066>`_ for details.\n-\n Drude1D\n =======\n "
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-SK-MIGRATE",
+    "lineage_id": "O-W-SKL-INTEGRATION-MIGRATION",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/scikit-learn/scikit-learn/commit/cb15a82e6439feda50b0605d70ce6d06c2eac7fd",
+    "commit": "cb15a82e6439feda50b0605d70ce6d06c2eac7fd",
+    "parent_commits": [
+      "95778fbc6575a75904268e9836c34ecc35bacfec"
+    ],
+    "commit_date": "2023-09-06T15:06:31Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.964Z",
+    "message": "MAINT: Remove np.in1d and np.trapz usages (#27140)",
+    "pr_url": "https://github.com/scikit-learn/scikit-learn/pull/27140",
+    "confirmed": "np.trapz를utils.fixes.trapezoid로교체하고SciPy신이름우선/구이름fallback추가. PR본문의scipy.interpolate오타는실제diff의integrate와불일치.",
+    "files": [
+      {
+        "path": "sklearn/metrics/_ranking.py",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 2,
+        "patch_excerpt": "@@ -38,6 +38,7 @@\n from ..utils._encode import _encode, _unique\n from ..utils._param_validation import Interval, StrOptions, validate_params\n from ..utils.extmath import stable_cumsum\n+from ..utils.fixes import trapezoid\n from ..utils.multiclass import type_of_target\n from ..utils.sparsefuncs import count_nonzero\n from ..utils.validation import _check_pos_label_consistency, _check_sample_weight\n@@ -104,9 +105,9 @@ def auc(x, y):\n         else:\n             raise ValueError(\"x is neither increasing nor decreasing : {}.\".format(x))\n \n-    area = direction * np.trapz(y, x)\n+    area = direction * trapezoid(y, x)\n     if isinstance(area, np.memmap):\n-        # Reductions such as .sum used internally in np.trapz do not return a\n+        # Reductions such as .sum used internally in trapezoid do not return a\n         # scalar by default for numpy.memmap instances contrary to\n         # regular numpy.ndarray instances.\n         area = area.dtype.type(area)"
+      },
+      {
+        "path": "sklearn/utils/fixes.py",
+        "status": "modified",
+        "additions": 7,
+        "deletions": 0,
+        "patch_excerpt": "@@ -200,3 +200,10 @@ def _contents(data_module):\n     from numpy.exceptions import ComplexWarning, VisibleDeprecationWarning\n else:\n     from numpy import ComplexWarning, VisibleDeprecationWarning  # type: ignore  # noqa\n+\n+\n+# TODO: Remove when Scipy 1.6 is the minimum supported version\n+try:\n+    from scipy.integrate import trapezoid  # type: ignore  # noqa\n+except ImportError:\n+    from scipy.integrate import trapz as trapezoid  # type: ignore  # noqa"
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  },
+  {
+    "publisher_diff_id": "PUBLISHER-SK-FLOOR",
+    "lineage_id": "O-W-SKL-INTEGRATION-MIGRATION",
+    "source_kind": "publisher_commit_and_pr",
+    "url": "https://github.com/scikit-learn/scikit-learn/commit/b0f86e797190d1fd62331eac8b88a5b0dfa522b9",
+    "commit": "b0f86e797190d1fd62331eac8b88a5b0dfa522b9",
+    "parent_commits": [
+      "e7af1955724167a382df8fbab6112a84b3fa4d5a"
+    ],
+    "commit_date": "2024-07-12T08:44:26Z",
+    "directly_opened_utc": "2026-11-23T13:38:59.964Z",
+    "message": "MAINT Remove scipy<1.6 specific code (#29461)",
+    "pr_url": "https://github.com/scikit-learn/scikit-learn/pull/29461",
+    "confirmed": "SciPy1.6미만지원코드제거와함께직접scipy.integrate.trapezoid import로전환. 동일가이드문장의정정과별개.",
+    "files": [
+      {
+        "path": "sklearn/metrics/_ranking.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "patch_excerpt": "@@ -16,6 +16,7 @@\n from numbers import Integral, Real\n \n import numpy as np\n+from scipy.integrate import trapezoid\n from scipy.sparse import csr_matrix, issparse\n from scipy.stats import rankdata\n \n@@ -30,7 +31,6 @@\n from ..utils._encode import _encode, _unique\n from ..utils._param_validation import Hidden, Interval, StrOptions, validate_params\n from ..utils.extmath import stable_cumsum\n-from ..utils.fixes import trapezoid\n from ..utils.multiclass import type_of_target\n from ..utils.sparsefuncs import count_nonzero\n from ..utils.validation import _check_pos_label_consistency, _check_sample_weight"
+      },
+      {
+        "path": "sklearn/utils/fixes.py",
+        "status": "modified",
+        "additions": 0,
+        "deletions": 7,
+        "patch_excerpt": "@@ -221,13 +221,6 @@ def _sparse_nan_min_max(X, axis):\n     from numpy import ComplexWarning, VisibleDeprecationWarning  # type: ignore  # noqa\n \n \n-# TODO: Remove when Scipy 1.6 is the minimum supported version\n-try:\n-    from scipy.integrate import trapezoid  # type: ignore  # noqa\n-except ImportError:\n-    from scipy.integrate import trapz as trapezoid  # type: ignore  # noqa\n-\n-\n # TODO: Adapt when Pandas > 2.2 is the minimum supported version\n def pd_fillna(pd, frame):\n     pd_version = parse_version(pd.__version__).base_version"
+      }
+    ],
+    "limits_unknowns": "관측한 publisher source diff이며 실행수용이나 원안내 core 모집 성공이 아니다. commit author/committer 날짜와 PR merge/release 날짜를 구별한다.",
+    "counts_as_independent_work": true
+  }
+]
