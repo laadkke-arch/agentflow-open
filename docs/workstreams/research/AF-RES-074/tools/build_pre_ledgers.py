@@ -16,7 +16,7 @@ SEALS = {
 def dump_csv(name, rows):
     cols = list(dict.fromkeys(k for row in rows for k in row))
     with (ROOT / name).open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
         w.writeheader()
         for row in rows:
             w.writerow({k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v for k, v in row.items()})
@@ -24,10 +24,14 @@ def dump_csv(name, rows):
 
 frames = []
 packets = []
+initial_review = {r['case_id']:r for r in csv.DictReader((ROOT/'initial-version-review.csv').open())} if (ROOT/'initial-version-review.csv').exists() else {}
 for stream, repo in [("pandoc", "jgm/pandoc"), ("gdal", "OSGeo/gdal")]:
     metadata_path = ROOT / "streams" / stream / ("current-metadata.json" if stream == "pandoc" else "metadata.json")
     metadata = json.loads(metadata_path.read_text())
-    for f in json.loads((ROOT / "streams" / stream / "frame.json").read_text()):
+    original_frames=json.loads((ROOT / "streams" / stream / "frame.json").read_text())
+    extension_path=ROOT/'streams'/stream/'frame-extension.json'
+    extension_frames=json.loads(extension_path.read_text()) if extension_path.exists() else []
+    for f in original_frames + extension_frames:
         number = f.get("number", f.get("issue_number"))
         meta = next((m for m in metadata if m.get("number", m.get("n")) == number), {})
         frames.append({
@@ -45,8 +49,10 @@ for stream, repo in [("pandoc", "jgm/pandoc"), ("gdal", "OSGeo/gdal")]:
             "exclusion_reason": f.get("exclusion_reason", f.get("reason")),
             "initial_status": f.get("initial_status", f.get("initial_version_status")),
             "body_sha256": f.get("body_sha256", f.get("current_body_sha256")),
-            "source_ledger": f"streams/{stream}/frame.json",
+            "source_ledger": f"streams/{stream}/frame-extension.json" if f in extension_frames else f"streams/{stream}/frame.json",
         })
+        if frames[-1]['case_id'] in initial_review:
+            frames[-1]['initial_status']='opened_event_verified_after_policy_seal; exact provenance in initial-version-review.csv; prior403 preserved'
     for fn in ["packets-pre.json", "controls-pre.json"]:
         path = ROOT / "streams" / stream / fn
         for p in json.loads(path.read_text()):
