@@ -1,5 +1,7 @@
 # Markdown 목록·대표 봉인 기록
 
+**현재판 v2:** 아래 초기 기록은 v1 보존이며, 말미 정정이 현재 판정이다. 주표 M-S1/M-S2는 미충원; Official6은 D-M1 진단이다.
+
 ## 출발과 판
 
 주목록은 [awesome-remark 고정판](https://github.com/remarkjs/awesome-remark/blob/82427708991528ad21475151aea2311f2699d549/readme.md)이다. remark README의 플러그인 발견 링크는 L210, L212, L214 순서로 선별 목록, 전체 목록, topic을 안내한다. 사전 SCOPE의 첫 목록 규칙에 따라 첫 링크를 사용했다. 후보 수·승격 여부를 보고 전체 플러그인 목록으로 바꾸지 않았다.
@@ -43,3 +45,15 @@ M-S1의 목적 연결은 M-N1이 첫 적격 요구이면서 Official에 입력 �
 ## 기록 파일
 
 `catalog-receipts.json`, `catalog-link-inventory.json`, `section-scan.csv`, `slot-status.csv`, `pools.csv`, `groups.csv`, `sensitivity-arrays.csv`가 목적지 이전 고정 입력이다. 출처 본문 전문은 cache에만 있고 Git 제출 자료는 URL·SHA·해시·행·자체 요약이다.
+
+
+## v2 사전 정정 — 기능 절과 편집 분류를 구별
+
+v1은 원격 `cd940aa340a5396611d028002ffc7150981f853a`에 남겨 두었다. 목적지를 추가로 열기 전에 기능 절을 ‘제목 또는 바로 이어지는 설명이 하나의 검증 가능한 처리 목적을 말하는 절’로 명확히 했다. 위 v1의 Official 보강 선정은 철회한다. Official은 공식 귀속, Plugins는 부품 분류, Built on은 구현 계보, Built with는 채택 관계, Related lists는 다른 목록 탐색이다. 모두 공통 기능 목적이 없어 적격 기능 절 **관측0**이다. 5개 편집 제목의 원문/링크 수는 바꾸지 않았다.
+
+- M-S1/M-S2 본표 자리는 미충원이다. 모집 대상 기능 절이 없으므로 실제 적격 풀의 기회/완결을 0개 후보 성공률로 바꾸지 않는다.
+- Official의6href와 A/B/C는 `D-M1` 진단으로 보존하며 본표8자리·자연/보강 분모에서 제외한다. 공유 목적은 M-N1 그대로다.
+- `pools.csv`는 header-only, `groups.csv`는 본표4자리×3방식의 빈 배열12행이다. diagnostic 파일들은 예전 원풀을 보존한다.
+- bare 저장소/웹사이트/package-directory URL은 문서역할을 overview라고 단정할 수 없어 C 역할 미상으로 정정했다. r6은 목록이 명세라고 직접 밝혀 reference를 유지했다. 제품판은 모두 미상이다. C=A 결론은 그대로다.
+- D-M1-R1의 라우팅 README 선노출은 그대로 유지한다. 나머지 목적지 본문은 아직 읽지 않았다. 이 정정은 정답 결과를 보고 고른 것이 아니다.
+- 목록 편집 분류와 기능별 요구를 구분하지 않은 v1 운용정의가 원인이다. `function-scan.json`과 `section-scan.csv`가 영향행/이유를, root CORRECTIONS가 전역 변경을 보존한다.
