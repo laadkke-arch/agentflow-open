@@ -90,3 +90,11 @@ Schema의 Validator 표제와 validation이라는 기능명은 서로 다른 철
 - 창 추출 결함 정정(v1→v2): raw Markdown의#및fence를단어로세어 README/홈페이지가표시487/479단어였다. 같은 고정응답의렌더500단어는각L106/webL105까지다. 원래렌더링규칙은그대로이며추출만정정했다. 새소스본문은이미진단에서노출된뒤라그순서를공개한다. 전후첫2링크·상위3·C1/C2·완결0은동일하다. v1receipt/hash와v2receipt/hash를별도보존하고최종windows는v2를쓴다. 감사자의처음감도-only권고와root의기계정정결정을함께보존한다. 원래C++fixture의 desired_full_contract_accept는전체guard가아닌두분석조건oracle였다는명명정정도입력/출력수정없이별도기록했다.
 
 - 원문 감사에서 CAT006 required 필드 위치를 L292–295에서 L291–295로 정정했다. 데이터 계약의 의미·저작 경계·허용V·순위는 바뀌지 않았다. 공급자5번째 라이선스 확인은 root중복행WIN-MIT를제거하고실제검토자AUD-SC032-LICENSE한행으로만합친다.
+
+## E. 결과 종합과 교차 검토
+
+창/판/반례/감도·원문 감사 묶음을 원격 `d9fbc7c9a8a1ee7c4febb1b2f3f3d29c286b8bac`에 고정한 뒤 RESULT·cards·SELF_CHECK·수용 원장을 작성한다. 최종 원문269행/고유109저작/필수24배당을715개 감사로 재계산했다. 최초269행 감사의 허가문 분류 실패(exit1)와 이를 바로잡은 exit0을 함께 보존했다.
+
+별도 문맥의 표/카드 검토에서 Python4.26 표기를 Python3.12.14 / python-jsonschema4.26.0으로 정정하고, 모집 당시 목적지 미열람과 이후 예산 밖 열람을 분리했다. 최소 PyLD fixture의 선택·b/c/issuer 보존을 원 credential 전체 성공으로 읽지 않도록 서술을 좁히고 JS-2 draft07·LD-3 @version/교체 가능성 미명시를 카드에 보완했다. Framing 절 placeholder는 이미 읽은 §2.1/2.1.1·4.2·4.3으로 표시했다. 동결 모집·용어·순위·입력/출력·본표 판정은 바뀌지 않았다.
+
+최종 서술 교차검토에서 jsonld.js9.0.0은 실행판이 아닌 고정 소스판임을 정정했다. SELF_CHECK의 파생형 문구도 허용 validate→validation과 보류 validation→Validator를 구분하도록 바로잡았다. 이는 동결 vocabulary의 실제 내용으로 서술을 맞춘 수정이며 질의 변경이 아니다.
