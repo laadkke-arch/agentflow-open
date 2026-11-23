@@ -51,6 +51,11 @@ def main():
         sources.append(json.loads((ROOT/'evidence/resume2/docker-postseal.json').read_text()))
     if (ROOT/'evidence/resume2/concurrent-original-sources.jsonl').exists():
         sources.extend(jl('evidence/resume2/concurrent-original-sources.jsonl'))
+    for rel in ['evidence/outcomes/acceptance-sources.jsonl','evidence/audit/upstream-plan-sources.jsonl']:
+        if (ROOT/rel).exists():
+            extra=jl(rel)
+            assert all(not r.get('count_minimum',False) for r in extra), 'post-integration supplements must not change fixed46 census'
+            sources.extend(extra)
     for source in sources:
         if source.get('count_minimum') and not source.get('duplicate_reason'):
             source['duplicate_reason']='One unique pinned upstream file, checked by fixed URL and body SHA256; repeated access is not another source and distinct files are not independent experiments.'

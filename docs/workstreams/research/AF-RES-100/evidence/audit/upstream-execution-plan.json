@@ -1,0 +1,568 @@
+{
+  "schema": "af-res-100-upstream-execution-plan-v1",
+  "created_utc": "2026-11-23T21:23:05.533Z",
+  "status": "planned_not_executed",
+  "original_tests_executed": 0,
+  "count_minimum": false,
+  "source_ledger": "upstream-plan-sources.jsonl",
+  "source_record_count": 31,
+  "scope": "Post-seal read-only inspection of preserved official source archives. No compilation, dependency installation, upstream test/program execution, recruitment, answer access, canonical/protocol edit or commit.",
+  "runtime_context": {
+    "basis": "Runtime facts supplied by the coordinating agent; no runtime program probes were executed in this task.",
+    "jq": "1.7",
+    "pandoc": "3.1.11.1",
+    "Rscript": "absent",
+    "cabal": "absent",
+    "sed": "No matching built 4.9 tree/result established in this task."
+  },
+  "preparation": {
+    "run_from": "AgentFlow repository root",
+    "commands": [
+      "AF100_REPO=\"$(git rev-parse --show-toplevel)\"",
+      "AF100_CACHE=\"$AF100_REPO/docs/workstreams/research/AF-RES-100/evidence/_cache/corpora\"",
+      "AF100_WORK=\"$(mktemp -d \"$AF100_REPO/docs/workstreams/research/AF-RES-100/evidence/_cache/upstream-run.XXXXXX\")\""
+    ],
+    "requirements": [
+      "Before extraction, compare each archive's SHA-256 with the fixed values below. Archive recompression/hash drift is not silently accepted.",
+      "Use complete archives or pinned checkouts in separate writable temporary trees; do not build or run tests in evidence/_cache/corpora.",
+      "The registered-file cache alone omits build inputs and auxiliary fixtures; keep upstream directory layouts and original test bodies.",
+      "External R/Haskell dependency resolution needs a recorded lock/plan before claiming repeatable runtime parity."
+    ],
+    "archive_sha256": {
+      "JQ": "3b0b7adbd7a7aa082716ba6dbeb23e11bf29fe8de58ed648402b86a30e79f664",
+      "PD": "0c10acd68912abc5a2a6c985936c057f1e3886b0aa5d67699922fed77a9d09bf",
+      "SED": "6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181",
+      "KN": "9c0ea5945ed3252916b2b0c5e1e7d8329753783b5eb3e60db0f018c6d9d65859"
+    }
+  },
+  "archive_member_observations": [
+    {
+      "label": "JQ",
+      "archive_sha256": "3b0b7adbd7a7aa082716ba6dbeb23e11bf29fe8de58ed648402b86a30e79f664",
+      "inspection": "Read-only member names from the cached pinned archive.",
+      "present": [
+        ".gitmodules",
+        "src/lexer.c",
+        "src/parser.c"
+      ],
+      "absent": [
+        "configure",
+        "modules/oniguruma/configure.ac"
+      ],
+      "implication": "Use the pinned Git checkout/submodule route for the documented builtin-Oniguruma build."
+    },
+    {
+      "label": "PD",
+      "archive_sha256": "0c10acd68912abc5a2a6c985936c057f1e3886b0aa5d67699922fed77a9d09bf",
+      "inspection": "Read-only member names.",
+      "present": [
+        "stack.yaml"
+      ],
+      "absent": [
+        "cabal.project.freeze"
+      ],
+      "implication": "The inspected Cabal project does not provide a complete Cabal freeze file."
+    }
+  ],
+  "families": [
+    {
+      "family_id": "jq-original-jq-test",
+      "case_ids": [
+        "J1",
+        "J2",
+        "J3",
+        "J4"
+      ],
+      "question_ids": [
+        79694539,
+        79699191,
+        79711268,
+        79727040
+      ],
+      "version": "jq 1.7.1",
+      "commit": "71c2ab509a8628dbbad4bc7b3f98a64aa90d3297",
+      "registered_file_id": "JQ-0080",
+      "test_file": "tests/jq.test",
+      "test_sha256": "35aade216e95e78e63e77011fb4588856a5d04d6ac7be572ad382a3430d8b4d5",
+      "status": "planned_not_executed",
+      "working_directory": "Root of a separate full checkout at the pinned jq commit, with no spaces in the path because the original driver leaves some path variables unquoted.",
+      "acquisition_commands": [
+        "git clone https://github.com/jqlang/jq.git \"$AF100_WORK/jq-1.7.1\"",
+        "cd \"$AF100_WORK/jq-1.7.1\"",
+        "git checkout --detach 71c2ab509a8628dbbad4bc7b3f98a64aa90d3297",
+        "git submodule update --init"
+      ],
+      "build_commands": [
+        "autoreconf -i",
+        "./configure --with-oniguruma=builtin",
+        "make -j2"
+      ],
+      "test_commands": [
+        "NO_VALGRIND=1 JQ=\"$PWD/jq\" sh ./tests/jqtest"
+      ],
+      "official_make_alternative": "make check TESTS=tests/jqtest NO_VALGRIND=1",
+      "inputs": [
+        "Entire unchanged tests/jq.test (40,026 bytes): original jq programs, JSON inputs and expected results.",
+        "tests/jqtest, tests/setup, complete tests/modules tree and the executable built from this checkout.",
+        "Oniguruma at the submodule gitlink of the pinned checkout. tests/onig.supp and tests/local.supp are also used when Valgrind is enabled."
+      ],
+      "dependencies": [
+        "C compiler/linker, POSIX shell, make, libtool, automake and autoconf.",
+        "Git and the pinned Oniguruma submodule for the documented bundled-library build.",
+        "Flex/Bison are relevant when regenerating lexer/parser sources; configure checks Bison >=3.0 in the applicable maintainer-mode path. The frozen archive already contains generated lexer/parser C.",
+        "NO_VALGRIND=1 deliberately selects the upstream-supported mode without optional memory checking."
+      ],
+      "evidence": [
+        {
+          "source_id": "UP-JQ-README",
+          "line_start": 20,
+          "line_end": 46,
+          "fact": "Upstream build tools and commands."
+        },
+        {
+          "source_id": "UP-JQ-RUNNER",
+          "line_start": 1,
+          "line_end": 5,
+          "fact": "Exact driver: setup, modules path and --run-tests."
+        },
+        {
+          "source_id": "UP-JQ-SETUP",
+          "line_start": 9,
+          "line_end": 27,
+          "fact": "Binary selection and optional Valgrind."
+        },
+        {
+          "source_id": "UP-JQ-MAKE",
+          "line_start": 136,
+          "line_end": 148,
+          "fact": "Official test registration and build-tree JQ environment."
+        },
+        {
+          "source_id": "UP-JQ-GITMODULES",
+          "line_start": 1,
+          "line_end": 3,
+          "fact": "Submodule origin."
+        }
+      ],
+      "current_runtime_mismatch": [
+        "Coordinator supplied installed jq 1.7; this is not pinned jq 1.7.1.",
+        "No pinned build or original fixture execution occurred.",
+        "Read-only archive member inspection found no top-level configure or modules/oniguruma/configure.ac. The cached GitHub archive alone is not the complete documented bundled-Oniguruma git build; use the checkout/submodule sequence."
+      ],
+      "success_evidence_required": [
+        "Record checkout and submodule SHAs, compiler/configuration, built jq version, original fixture hash, exact command, stdout/stderr and exit.",
+        "Require successful completion of the unchanged complete fixture; retain failures. This does not verify the original user's incomplete JOIN inputs."
+      ],
+      "limits": [
+        "The command executes the full jq.test fixture; individual cases do not become new independent evidence sources.",
+        "Optional Valgrind checks are disabled by the stated command.",
+        "All commands are plans, not observed executions."
+      ]
+    },
+    {
+      "family_id": "sed-original-bsd",
+      "case_ids": [
+        "J2"
+      ],
+      "question_ids": [
+        79699191
+      ],
+      "version": "GNU sed 4.9",
+      "commit": null,
+      "archive_sha256": "6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181",
+      "registered_file_id": "SED-0022",
+      "test_file": "testsuite/bsd.sh",
+      "test_sha256": "4633edc7078cc121aacb85dd4f9914f04bc174a52be78f55b289b408c7c1bb91",
+      "status": "planned_not_executed",
+      "working_directory": "Root of a separate full extraction of the preserved sed-4.9 release archive.",
+      "acquisition_commands": [
+        "mkdir \"$AF100_WORK/sed-4.9\"",
+        "tar -xJf \"$AF100_CACHE/SED/source.tar\" -C \"$AF100_WORK/sed-4.9\" --strip-components=1",
+        "cd \"$AF100_WORK/sed-4.9\""
+      ],
+      "build_commands": [
+        "./configure",
+        "make -j2"
+      ],
+      "test_commands": [
+        "make check-TESTS TESTS=testsuite/bsd-wrapper.sh"
+      ],
+      "inputs": [
+        "Complete release source and generated build files, not just the selected text-cache subset.",
+        "testsuite/bsd-wrapper.sh, bsd.sh, bsd.good, init.sh, envvar-check and project init.cfg when present.",
+        "Built sed/sed, generated configuration and the check_PROGRAMS required by check-TESTS.",
+        "bsd.sh generates lines1/lines2/etc. and sed.out. The expected-output oracle bsd.good has SHA-256 2c1028e0e605b9b9807517ac31c9f5fb12db38ae987a8e5b3c9ae2d8b6f17678."
+      ],
+      "dependencies": [
+        "C compiler/linker, make, POSIX shell, and the ordinary build/harness command-line utilities.",
+        "GNU tar with xz support for the extraction command. The release archive supplies configure; no git bootstrap is proposed.",
+        "The local check-TESTS target builds its declared helper programs. The harness supplies LC_ALL=C, source/build directories and PATH containing the built sed."
+      ],
+      "evidence": [
+        {
+          "source_id": "UP-SED-INSTALL",
+          "line_start": 50,
+          "line_end": 61,
+          "fact": "Release configure/make workflow."
+        },
+        {
+          "source_id": "UP-SED-GENERATED-MAKE",
+          "line_start": 5456,
+          "line_end": 5460,
+          "fact": "Verified local check-TESTS target and check_PROGRAMS prerequisite."
+        },
+        {
+          "source_id": "UP-SED-GENERATED-MAKE",
+          "line_start": 5704,
+          "line_end": 5708,
+          "fact": "Local versus recursive check."
+        },
+        {
+          "source_id": "UP-SED-LOCAL",
+          "line_start": 99,
+          "line_end": 119,
+          "fact": "Registered wrapper entrypoint."
+        },
+        {
+          "source_id": "UP-SED-LOCAL",
+          "line_start": 123,
+          "line_end": 177,
+          "fact": "Helpers and test environment."
+        },
+        {
+          "source_id": "UP-SED-WRAPPER",
+          "line_start": 19,
+          "line_end": 31,
+          "fact": "Execute bsd.sh, normalize CRs, compare bsd.good and propagate failure."
+        },
+        {
+          "source_id": "UP-SED-BSD",
+          "line_start": 49,
+          "line_end": 69,
+          "fact": "Generated inputs and executable/output paths."
+        }
+      ],
+      "current_runtime_mismatch": [
+        "This task has no recorded matching built sed 4.9 tree or wrapper result; the coordinator supplied no sed-version observation.",
+        "Running an arbitrary host sed or bsd.sh alone would not establish the official wrapper's golden comparison. No original test was executed."
+      ],
+      "success_evidence_required": [
+        "Record archive hash, compiler/platform/configure settings, built sed version, bsd.sh and bsd.good hashes, and the exact harness command.",
+        "Preserve testsuite/bsd-wrapper.log/.trs, test-suite.log and exit status. Distinguish PASS/FAIL/ERROR/SKIP; skip is not pass."
+      ],
+      "limits": [
+        "check-TESTS is verified in the pinned generated Makefile.in; selecting this local target avoids recursively propagating the test path into other subdirectories.",
+        "A standalone bsd.sh zero exit without bsd.good comparison is insufficient.",
+        "This fixture does not reproduce the user's raw evtx/XML/yq pipeline."
+      ]
+    },
+    {
+      "family_id": "knitr-original-plot",
+      "case_ids": [
+        "P1"
+      ],
+      "question_ids": [
+        79692729
+      ],
+      "version": "knitr 1.50",
+      "commit": "01bf7eff974903d1498e76e92a3e4b3bf9273cf5",
+      "archive_sha256": "9c0ea5945ed3252916b2b0c5e1e7d8329753783b5eb3e60db0f018c6d9d65859",
+      "registered_file_id": "KN-0133",
+      "test_file": "tests/testit/test-plot.R",
+      "test_sha256": "3694e39bb3cb4b89240d3996d9bd053ef679da2aca9bac7e13f118587224159a",
+      "status": "planned_not_executed",
+      "working_directory": "Root of a separate complete knitr 1.50 extraction; its parent must be writable for the source tarball and R check directory.",
+      "acquisition_commands": [
+        "mkdir \"$AF100_WORK/knitr-1.50\"",
+        "tar -xzf \"$AF100_CACHE/KN/source.tar\" -C \"$AF100_WORK/knitr-1.50\" --strip-components=1",
+        "cd \"$AF100_WORK/knitr-1.50\""
+      ],
+      "build_commands": [],
+      "test_commands": [
+        "make travis"
+      ],
+      "expanded_commands_from_parent": [
+        "R CMD build --no-manual knitr-1.50",
+        "R CMD check knitr_1.50.tar.gz --no-manual"
+      ],
+      "official_R_runner": "library(testit)\ntest_pkg(\"knitr\")",
+      "selection_limit": "The pinned source establishes a package-level testit runner, not a single-file selector. The exact existing make target therefore includes other package checks. No guessed testit filter argument or bare source() substitute is proposed.",
+      "inputs": [
+        "Complete pinned package source, DESCRIPTION/NAMESPACE/R implementation, tests/run-all.R, all tests/testit inputs and vignette inputs used by R CMD build.",
+        "Unchanged test-plot.R, which refers to internal knitr helpers and is not established as standalone in an arbitrary R session.",
+        "Optional tests/testit/knit-tikzDevice.Rnw, SHA-256 d6022af5c3d9cbebfbcaa0fa94d45c3bf6df3ae1cebf90b5e89bd84aedfabac7.",
+        "myfigure.pdf, img/test.png and ~/test.png are used with error=FALSE in the displayed include_graphics path tests; these tests do not prove those files exist."
+      ],
+      "dependencies": [
+        "R >=3.6.0 and Rscript.",
+        "Imports: evaluate >=0.15, highr >=0.11, xfun >=0.51, yaml >=2.1.19, methods and tools. testit is required by tests/run-all.R.",
+        "The full package build/check also needs its applicable Suggests and litedown/knitr vignette builders. The pinned metadata specifies bounds/categories, not a full immutable dependency lock.",
+        "Unconditional PDF/grid graphics support. A working PNG device enables PNG checks; ragg enables its guarded checks. tikzDevice, pdflatex and the stated platform/environment condition enable the TikZ fixture.",
+        "Record actual R/dependency versions and device capabilities. Optional branches not entered must not be reported as passed."
+      ],
+      "evidence": [
+        {
+          "source_id": "UP-KN-RUNNER",
+          "line_start": 1,
+          "line_end": 2,
+          "fact": "Exact package runner."
+        },
+        {
+          "source_id": "UP-KN-MAKE",
+          "line_start": 15,
+          "line_end": 33,
+          "fact": "Existing build and travis check targets."
+        },
+        {
+          "source_id": "UP-KN-DESCRIPTION",
+          "line_start": 116,
+          "line_end": 162,
+          "fact": "R, package and system requirements."
+        },
+        {
+          "source_id": "UP-KN-PLOTTEST",
+          "line_start": 1,
+          "line_end": 86,
+          "fact": "Graphics behavior and device gates."
+        },
+        {
+          "source_id": "UP-KN-PLOTTEST",
+          "line_start": 132,
+          "line_end": 146,
+          "fact": "Conditional TikZ input and path checks."
+        },
+        {
+          "source_id": "UP-KN-CI",
+          "line_start": 53,
+          "line_end": 81,
+          "fact": "Upstream dependency provisioning and Suggests policy."
+        }
+      ],
+      "current_runtime_mismatch": [
+        "Coordinator reports Rscript absent.",
+        "No R version, knitr 1.50/testit installation or graphics-device capability was established or executed here."
+      ],
+      "success_evidence_required": [
+        "Record source hash, R version, sessionInfo()/dependency versions, exact build/check commands, R CMD check result and logs.",
+        "Confirm tests/run-all.R actually ran, and distinguish conditional blocks entered from skipped branches.",
+        "Preserve original test bodies; generic plot/path checks do not establish an SVG/EMF default-selection option."
+      ],
+      "limits": [
+        "The verified upstream package runner is broader than test-plot.R. A precise isolated-file command remains unverified from the available pinned knitr sources.",
+        "Dependency versions and CI's R release aliases are not fully pinned.",
+        "No original runtime success is claimed."
+      ]
+    },
+    {
+      "family_id": "pandoc-original-yaml-metadata",
+      "case_ids": [
+        "P4"
+      ],
+      "question_ids": [
+        79714790
+      ],
+      "version": "Pandoc 3.6",
+      "commit": "8a72b8449ddccd84fcdffc1a09ae18c4baaca32a",
+      "archive_sha256": "0c10acd68912abc5a2a6c985936c057f1e3886b0aa5d67699922fed77a9d09bf",
+      "registered_file_id": "PD-1175",
+      "test_file": "test/command/yaml-metadata-blocks.md",
+      "test_sha256": "132e2020401710093aadefac1a01c781ce8d67cae9014f27ca9e874b3e3b7287",
+      "status": "planned_not_executed",
+      "working_directory": "Root of a separate complete Pandoc 3.6 source extraction, preserving cabal.project and its local packages.",
+      "acquisition_commands": [
+        "mkdir \"$AF100_WORK/pandoc-3.6\"",
+        "tar -xzf \"$AF100_CACHE/PD/source.tar\" -C \"$AF100_WORK/pandoc-3.6\" --strip-components=1",
+        "cd \"$AF100_WORK/pandoc-3.6\""
+      ],
+      "build_commands": [
+        "cabal update",
+        "cabal build test-pandoc"
+      ],
+      "test_commands": [
+        "cabal test test-pandoc --test-options='-p yaml-metadata-blocks.md'"
+      ],
+      "component_name_basis": "pandoc.cabal 780–784 explicitly declares test-suite test-pandoc, main-is test-pandoc.hs and hs-source-dirs test. INSTALL 353–356 documents -p name-pattern selection.",
+      "inputs": [
+        "Complete source, cabal.project, pandoc.cabal, local project package metadata, src/data/test trees.",
+        "test/test-pandoc.hs, test/Tests/Command.hs and test/Tests/Helpers.hs from this exact revision.",
+        "All five original fenced commands, stdin blocks and native-AST expected outputs in yaml-metadata-blocks.md.",
+        "test/command/yaml-metadata.yaml for cases 4–5, SHA-256 6ee9c4ff818ce0a3c96a6b0b73150a4a10448ec8f4223f72eba1b5110ca69e16."
+      ],
+      "embedded_commands": [
+        {
+          "case": 1,
+          "command": "pandoc -s -t native",
+          "input_lines": [
+            3,
+            7
+          ],
+          "expected_lines": [
+            9,
+            12
+          ]
+        },
+        {
+          "case": 2,
+          "command": "pandoc -s -t native",
+          "input_lines": [
+            16,
+            35
+          ],
+          "expected_lines": [
+            37,
+            62
+          ]
+        },
+        {
+          "case": 3,
+          "command": "pandoc -s -t native",
+          "input_lines": [
+            66,
+            70
+          ],
+          "expected_lines": [
+            72,
+            85
+          ]
+        },
+        {
+          "case": 4,
+          "command": "pandoc -s -t native --metadata-file command/yaml-metadata.yaml",
+          "input_lines": [
+            89,
+            91
+          ],
+          "expected_lines": [
+            93,
+            104
+          ]
+        },
+        {
+          "case": 5,
+          "command": "pandoc -s -t native --metadata-file command/yaml-metadata.yaml -M title=cmdline",
+          "input_lines": [],
+          "expected_lines": [
+            109,
+            120
+          ]
+        }
+      ],
+      "dependencies": [
+        "GHC and Cabal supporting cabal-version 2.4 syntax. The package lists tested GHC 8.10.7, 9.0.2, 9.2.5, 9.4.4 and 9.6.3; record the selected versions.",
+        "The core dependency closure in pandoc.cabal 435–551 and test dependencies in 785–804, under cabal.project constraints.",
+        "Test dependencies include tasty >=0.11 && <1.6, tasty-golden >=2.3 && <2.4, tasty-hunit >=0.9 && <0.11, tasty-quickcheck >=0.8 && <0.12 and pandoc-types >=1.23.1 && <1.24.",
+        "cabal.project enables tests/embedded data and names pandoc-lua-engine, pandoc-server and pandoc-cli; preserve the complete local project layout.",
+        "Shell/process support. These selected cases output native AST and do not invoke TeX, mermaid-filter or pandoc-eqnos."
+      ],
+      "evidence": [
+        {
+          "source_id": "UP-PD-CABAL",
+          "line_start": 780,
+          "line_end": 804,
+          "fact": "Verified suite name and bounds."
+        },
+        {
+          "source_id": "UP-PD-INSTALL",
+          "line_start": 347,
+          "line_end": 368,
+          "fact": "Documented test command and selector."
+        },
+        {
+          "source_id": "UP-PD-PROJECT",
+          "line_start": 1,
+          "line_end": 11,
+          "fact": "Local packages/flags/constraints."
+        },
+        {
+          "source_id": "UP-PD-RUNNER",
+          "line_start": 107,
+          "line_end": 123,
+          "fact": "Run from test/ and emulate with built code."
+        },
+        {
+          "source_id": "UP-PD-COMMAND",
+          "line_start": 60,
+          "line_end": 87,
+          "fact": "Command rewriting/discovery."
+        },
+        {
+          "source_id": "UP-PD-COMMAND",
+          "line_start": 101,
+          "line_end": 141,
+          "fact": "Golden comparison and file-name group."
+        },
+        {
+          "source_id": "UP-PD-YAML",
+          "line_start": 1,
+          "line_end": 121,
+          "fact": "Five unchanged original cases."
+        },
+        {
+          "source_id": "UP-PD-HELPERS",
+          "line_start": 86,
+          "line_end": 105,
+          "fact": "Built test-binary PATH and data environment."
+        }
+      ],
+      "current_runtime_mismatch": [
+        "Coordinator reports installed Pandoc 3.1.11.1, rather than pinned 3.6.",
+        "cabal is absent; no matching GHC/Cabal build was established.",
+        "The original runner uses built test-pandoc --emulate, not an arbitrary installed pandoc executable."
+      ],
+      "success_evidence_required": [
+        "Record source SHA, GHC/Cabal versions, resolved dependency plan/freeze, selected case names, original hashes, stdout/stderr and exit.",
+        "Require all five golden cases to pass without --accept or any fixture update.",
+        "Keep this result distinct from the user's Pandoc 2.18 execution, exact title-colon fix and downstream PDF/filter stages."
+      ],
+      "limits": [
+        "The five original cases do not contain the exact Heading1: Heading2 title or the user's filters/PDF command.",
+        "Dependency bounds are not a historical lock; cabal update depends on an external package index.",
+        "No original runtime success is claimed."
+      ]
+    }
+  ],
+  "source_ids": [
+    "UP-JQ-README",
+    "UP-JQ-MAKE",
+    "UP-JQ-RUNNER",
+    "UP-JQ-SETUP",
+    "UP-SED-README",
+    "UP-SED-MAKE",
+    "UP-SED-LOCAL",
+    "UP-SED-WRAPPER",
+    "UP-SED-BSD",
+    "UP-KN-RUNNER",
+    "UP-KN-PLOTTEST",
+    "UP-KN-DESCRIPTION",
+    "UP-KN-MAKE",
+    "UP-KN-CI",
+    "UP-PD-RUNNER",
+    "UP-PD-COMMAND",
+    "UP-PD-YAML",
+    "UP-PD-PROJECT",
+    "UP-PD-CABAL",
+    "UP-PD-INSTALL",
+    "UP-PD-MAKE",
+    "UP-PD-HELPERS",
+    "UP-PD-YAML-FIXTURE",
+    "UP-SED-INSTALL",
+    "UP-SED-GENERATED-MAKE",
+    "UP-JQ-CONFIGURE",
+    "UP-JQ-GITMODULES",
+    "UP-JQ-TEST",
+    "UP-SED-GOLDEN",
+    "UP-SED-INIT",
+    "UP-KN-TIKZ-FIXTURE"
+  ],
+  "tool_output_truncations": [
+    {
+      "source_id": "UP-PD-INSTALL",
+      "note": "The 2026-11-23T21:13:54 broad display exceeded the tool output budget. Use only the later complete explicit ranges for claims; do not cite the hidden middle."
+    }
+  ],
+  "unperformed": [
+    "Every proposed acquisition/build/dependency/test command.",
+    "Every original user input/runtime reproduction.",
+    "Full external dependency lock resolution."
+  ]
+}
