@@ -56,6 +56,16 @@ def cc02(mode):
         warnings.simplefilter("always", DeprecationWarning)
 
         class CustomCli(click.MultiCommand):
+            def __init__(self, *, use_builtin_decorator):
+                if use_builtin_decorator:
+                    parameter = click.version_option("0.1")
+                else:
+                    parameter = click.Option(
+                        ["--version", "-v"], is_flag=True, is_eager=True,
+                        expose_value=False, callback=self.show_version,
+                    )
+                super().__init__(name="probe", params=[parameter])
+
             def list_commands(self, ctx):
                 return ["child"]
 
@@ -67,12 +77,7 @@ def cc02(mode):
                     click.echo("cli 0.1")
                     ctx.exit()
 
-        app = CustomCli(name="probe")
-        if mode == "positive":
-            app.params = [click.Option(["--version", "-v"], is_flag=True, is_eager=True,
-                                       expose_value=False, callback=app.show_version)]
-        else:
-            app.params = [click.version_option("0.1")]
+        app = CustomCli(use_builtin_decorator=mode == "boundary")
         runner = CliRunner()
         outcome = {"version_flag": click_result(runner, app, ["--version"])}
         if mode == "positive":
@@ -121,9 +126,10 @@ def registry_example(*, slots, attrs_hook):
         name: str = "int-range"
 
     def lookup(key):
-        matched = registry.get(key)
-        if matched is None:
-            return {"exception": "KeyError"}
+        try:
+            matched = registry[key]
+        except KeyError as exc:
+            return {"exception": type(exc).__name__, "message": str(exc)}
         obj = matched()
         return {"class": type(obj).__name__, "name": obj.name,
                 "is_final_class": matched in (Int, IntRange)}
@@ -146,6 +152,10 @@ def ac01(mode):
 def ac02(mode):
     import attr
     import attrs
+
+    # The report defines the type in module scope. The isolated child
+    # processes run this once, so the field annotation resolves that name.
+    global AT_Base
 
     @attrs.define
     class AT_Base:
