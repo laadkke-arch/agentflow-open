@@ -1,0 +1,13 @@
+# AF-RES-067 — 자기 점검 (독립 검토 아님)
+
+| Q | 직접 열린 원전·위치 | 반대 증거/범위 | 뒤집힐 조건·남은 공백 |
+|---|---|---|---|
+| Q1 | [MAST 파일명](https://archive.stsci.edu/jwst/keyword/latest/meta_basic_filename.html) lines5–22; [jq source upload](https://tracker.debian.org/news/1508449/accepted-jq-171-3-source-into-unstable/) lines13–40 | source archive acceptance vs binary build attempt; 원목록 없음 | buildd binary ID / MAST product ID 목록·발행 시각 입수 |
+| Q2 | [deb-buildinfo](https://manpages.debian.org/testing/dpkg-dev/deb-buildinfo.5.en.html) FIELDS; [R_FLAT](https://archive.stsci.edu/jwst/keyword/build8.0/meta_ref_file_flat_name.html) lines0–20 | 설치 ≠ 호출 / 참조명 ≠ 바이트, 선택 여부 확인 못함 | 각 사례의 원 .buildinfo·FITS 헤더·steps 기록 |
+| Q3 | [deb-changes](https://manpages.debian.org/trixie/dpkg-dev/deb-changes.5.en.html) Checksums; [MAST products](https://mast.stsci.edu/viz/docs/products.html) GET | SHA256 upload target ≠ run output / same observation ≠ same processing | buildd attempt + binary changes 양쪽 원위치; MAST per-product processing identity |
+| Q4 | [dpkg-genbuildinfo](https://manpages.debian.org/unstable/dpkg-dev/dpkg-genbuildinfo.1.en.html) DESCRIPTION; [CRDS maps](https://jwst-pipeline.readthedocs.io/en/2.0.0/jwst/references_general/explain_rmaps.html) Best Reference Matching | 맵과 설치 가능성만으로 실제 read 불가 | 소비 프로세스 hash+output pair 영수증 |
+| Q5 | [pandoc source events](https://tracker.debian.org/news/1491612/accepted-pandoc-313ds-1-source-into-unstable/) and [next](https://tracker.debian.org/news/1492425/accepted-pandoc-313ds-2-source-into-unstable/) | 여러 source versions 존재하나 '같은 판의 두 실행' 직접 관측 아님 | same-version distinct attempts and MAST reprocessing catalogue |
+| Q6 | [MAST metadata API](https://outerspace.stsci.edu/spaces/MASTDOCS/pages/150113030/API%2Bfor%2BJWST%2BMetadata) parameters example; [deb-buildinfo](https://manpages.debian.org/testing/dpkg-dev/deb-buildinfo.5.en.html) | V1 output hash+id and V2 same-run process original **없음**; all 24 views unscored/미확인 | 8 fixed original outputs and run input logs; then actual call/byte cost |
+| Q7 | [JWST flat types](https://jwst-pipeline.readthedocs.io/en/1.18.x/jwst/flatfield/reference_files.html) FLAT vs SFLAT; [Debian source acceptance](https://tracker.debian.org/news/1508449/accepted-jq-171-3-source-into-unstable/) | 실제 사용자나 과학 타당성 검증 아님; 역할별 제안은 연구자 추론 | 원선정 과학 헤더/재처리 경로, 서명 실제 검증 |
+
+전체 판정: **부분 인계**. 본 세션은 요구 8개 원산출물과 4개 JWST FITS 헤더를 확보하지 못했고 V0~V2 실측 비교를 완료하지 못했다. 직접 읽은 공식 원전 21개 URL/저작 이벤트와 최소 범주 확보를 **주 표본 수집 완료로 오인하지 않음**. original sources 21; 지정 실제 빌드 원기록 0/4, JWST cal header 0/4, specification ≥6, distinct auxiliary acceptance events 9, selected output fingerprint 0/8, actual bytes read digest 0/8. 체크 명령 미실시, 독립 검토 미실시.
