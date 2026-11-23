@@ -1,0 +1,26 @@
+candidate_id,release,source_line,old_target,new_target,screen_decision,event_id,reason
+R01,1.5.0,77,linalg.eigh turbo/eigvals,subset_by_*,EXCLUDE_ARGUMENT_ONLY,,public callable identity unchanged
+R02,1.5.0,250,stats.median_absolute_deviation,stats.median_abs_deviation,SELECT,O01,first eligible migration; L296 is same event
+R03,1.5.0,291,special.bdtr family n,integral n,EXCLUDE_ARGUMENT_ONLY,,input-domain deprecation only
+R04,1.5.0,296,stats.median_absolute_deviation,stats.median_abs_deviation,DUPLICATE,O01,same event as R02
+R05,1.5.0,300,stats.iqr(scale=raw),scale=1,EXCLUDE_ARGUMENT_ONLY,,no public function/name move
+R06,1.5.0,494,approx_grad,_numdiff.approx_derivative,EXCLUDE_PRIVATE_TARGET,,issue title targets internal implementation; not public migration
+R07,1.5.0,735,_lib._version,_lib._pep440,EXCLUDE_PRIVATE_TARGET,,internal modules
+R08,1.5.0,860,xrange,range,EXCLUDE_INTERNAL_CLEANUP,,Python2 compatibility cleanup rather than SciPy public API migration
+R09,1.5.0,942,tostring uses,tobytes uses,EXCLUDE_INTERNAL_CLEANUP,,"internal use replacement, not a public SciPy callable being renamed"
+R10,1.6.0,52,integrate.simps/trapz/cumtrapz,integrate.simpson/trapezoid/cumulative_trapezoid,SELECT,O02,one naming decision #12924; PR12927 and12934 grouped
+R11,1.6.0,245,stats.trapz,stats.trapezoid,DUPLICATE,O02,"same PR12934 naming decision; distinct function IDs retained as subrows, not extra natural event"
+R12,1.6.0,270,KDTree.query(k=None),KDTree.query_ball_point,SELECT,O03,public all-neighbors feature migrated to another public method; not merely a default-value change
+R13,1.6.0,273,distance.wminkowski,distance.minkowski(w=...),EXCLUDE_PRIOR_EVENT,,"PR12374 says migration/soft-deprecation originated in SciPy1.0, outside window; 1.6 is warning enforcement"
+R14,1.6.0,281,scipy.fft callable alias,numpy.fft.fft / scipy.fft module,EXCLUDE_PRIOR_EVENT,,release explicitly says deprecated in1.4.0; no new migration counted
+R15,1.6.0,296,signal.slepian,unspecified,EXCLUDE_NO_TARGET,,simple removal and prior1.1 deprecation
+R16,1.6.0,307,stats.frechet_l/frechet_r,unspecified,EXCLUDE_PRIOR_EVENT,,prior1.0 deprecation; current notice supplies no target
+R17,1.6.0,490,ndimage.sum,ndimage.sum_labels,SELECT,O04,issue10593 named in release; exact new public name at L637 PR12242
+R18,1.6.0,568,integration naming proposal12924,three new names,DUPLICATE,O02,same R10 decision
+R19,1.6.0,637,ndimage.sum,ndimage.sum_labels,DUPLICATE,O04,same R17 event; supplies target mapping
+R20,1.6.0,645,LocalSearchWrapper bounds,internal bounds name,EXCLUDE_PRIVATE_TARGET,,optimizer implementation helper
+R21,1.6.0,686,KDTree implementation,cKDTree wrapper,DUPLICATE,O03,same PR12382 underlying change
+R22,1.6.0,811,cKDTree.query n_jobs,workers,EXCLUDE_ARGUMENT_ONLY,,public callable identity unchanged
+R23,1.6.0,844,simps,simpson,DUPLICATE,O02,same naming decision
+R24,1.6.0,845,trapz/cumtrapz,trapezoid/cumulative_trapezoid,DUPLICATE,O02,same naming decision
+R25,1.7.0,310,linalg.pinv2,linalg.pinv,AFTER_QUOTA,,not substituted for any failed pair
