@@ -540,6 +540,8 @@ def open_in_browser(binary, path, screenshot, failures, outbound):
                 sequence: Array.from(document.querySelectorAll('p,img')).map(
                     el => el.localName === 'img' ? '<img>' : el.innerText),
                 svgText: Array.from(document.querySelectorAll('svg text'), e => e.textContent),
+                svgLinks: Array.from(document.querySelectorAll('svg a'), el =>
+                    el.getAttribute('href') || el.getAttributeNS('http://www.w3.org/1999/xlink', 'href')),
                 images: Array.from(document.images ?? []).map(el => ({
                     source: el.getAttribute('src'), alt: el.getAttribute('alt'),
                     width: el.naturalWidth, height: el.naturalHeight, complete: el.complete,
