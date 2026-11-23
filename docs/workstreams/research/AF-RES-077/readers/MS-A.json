@@ -1,0 +1,118 @@
+{
+  "brief_id": "MS",
+  "view": "A",
+  "reader_role": "Isolated technical design reader; conditional assessment, not an execution report",
+  "completed_utc": "2026-11-23T11:40:02.881989+00:00",
+  "read_files": [
+    {
+      "path": "docs/workstreams/research/AF-RES-077/packets/MS-common.json",
+      "sha256": "00b3b8932b88c17b7257141e568d96bb4252db5c6bb0b14141c88c0e95a8554c"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-077/packets/MS-A.json",
+      "sha256": "b11b5dbdf0dcd23ab0a3e2a140175946904df42e1ad58e6f619f5377211142fe"
+    }
+  ],
+  "source_prior_familiarity": {
+    "answer": "unknown",
+    "training": "I cannot determine whether these sources occurred in training; general familiarity with linked documents is not documented source exposure.",
+    "actual_context_exposure": "Actual task exposure comprises only the two listed files and the assignment. No source URLs, code, outcomes, or other repository files were opened."
+  },
+  "extra_source_opens": [],
+  "candidates": [
+    {
+      "id": "C1",
+      "name": "Clear selection at the part-creation boundary",
+      "changes": {
+        "changed": "Add a destination-only finalization helper to Excerpt::createExcerpt/cloneStaves. Invoke Element::setSelected(false), clearing SELECTED 0x40, on each newly owned destination element, including independently cloned descendants. Leave P1 Selection empty.",
+        "unchanged": "Retain Element copy semantics elsewhere, source selection, pitch, other flags, mapped tracks, system-element exceptions, position/color, autoplace, Link/LinkUnlink membership, and linkedMain/linked/indexDiff serialization. Preserve P2 and local layout."
+      },
+      "order": [
+        "Construct the existing track map and clone only eligible source elements, retaining existing exceptions.",
+        "Existing linkedClone performs clone, autoplace, and score()->undo(new Link(e,this)). After return, clear each new destination selected flag before destination publication; never traverse into source/shared ownership.",
+        "Publish P1 with no selection-list insertion. Later, use existing linked pitch commands to change 60 to 62 and their recorded inverses to restore 60.",
+        "Save the current linked score through existing property writers; reopen through existing link readers without inventing history."
+      ],
+      "recovery": "Require failed creation to discard its new objects and reverse its own link registrations. Refuse publication if exclusive ownership or cleanup cannot be established. Missing undo history permits no pitch inversion.",
+      "cost": "O(n) flag resets over n new elements; constant auxiliary traversal state if existing clone visitation suffices. No persistent fields or history storage. Maintenance must cover every part-cloning path and descendant type."
+    },
+    {
+      "id": "C2",
+      "name": "Exclude selection from every Element copy",
+      "changes": {
+        "changed": "Change Element copy-constructor flag initialization to source._flags & ~SELECTED. Every copied Element starts unselected, including copies outside excerpt creation.",
+        "unchanged": "Keep all other copied fields, track mapping, autoplace, Selection lists, link registration/inversion, musical edits, and serialization unchanged."
+      },
+      "order": [
+        "Build the existing map. During clone construction copy all fields but clear SELECTED before linkedClone performs autoplace and registers Link.",
+        "Insert destination elements normally without selecting them. Existing linked commands propagate pitch edits and invert the recorded change.",
+        "Save current properties and linked membership; reload those properties without reconstructing discarded commands."
+      ],
+      "recovery": "Use the same required creation cleanup and history refusal as C1. A copy consumer requiring selected-state duplication would need an explicit restoration policy before adopting this broader change.",
+      "cost": "One mask per Element copy; no extra stored data or file migration. Simpler implementation, broader maintenance burden: clipboard, undo snapshots, and other copy consumers require semantic review, without asserting those consumers actually exist."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "C1",
+    "decision": "Choose provisionally: confine behavior to the stated part-creation defect. C2 may be preferable if complete clone coverage is otherwise impossible. The fixed cases predict equivalent successful results and cannot establish broader copy compatibility."
+  },
+  "source_to_choice": [
+    {
+      "section": "MS-A.sections: Parts overview/save; excerpt beginning A Part is an independent viewing profile",
+      "supported_inference": "Shared musical data and independent viewing configuration favor preserving links while correcting destination presentation.",
+      "unsupported": "This passage neither defines selection ownership nor selects a constructor versus excerpt fix. Those details come from MS-common.interface and conditions."
+    },
+    {
+      "section": "MS-A.excerpt: [Save Parts]",
+      "supported_inference": "Parts are saved with the score, supporting preservation of current part identity through existing serialization.",
+      "unsupported": "No guarantee of these exact link keys, successful round-trips, or persistent undo commands follows from this section."
+    },
+    {
+      "section": "MS-A.sections and excerpt: Undo and redo / [Undo and redo]",
+      "supported_inference": "Undo is an intended interaction; an available in-session command should provide its inverse.",
+      "unsupported": "Unlimited action count does not establish storage across sessions or recover values absent from both file and command history."
+    },
+    {
+      "section": "MS-common.interface; MS-C1; MS-C2; cases MS-N, MS-E, MS-X",
+      "supported_inference": "Copied SELECTED can explain mismatched appearance and destination selection; masking that bit preserves the described musical-link mechanism.",
+      "unsupported": "The packet does not prove every destination clone passes either proposed hook, rollback behavior, or observed success."
+    }
+  ],
+  "predictions": [
+    {
+      "case_id": "MS-N",
+      "candidate_results": {
+        "C1": "Objects: m1/P1 pitches 60 -> 62 -> 60, with mapped links retained; P2 remains pitch67/offset8. UI: P1 flag false, list empty, ordinary color. File/reload: current pitch60 and linked membership; expect default empty selection.",
+        "C2": "Same object, UI, and file results: masking an already-clear selection bit has no additional visible effect in this case."
+      },
+      "failure": "Either candidate fails if linked pitch propagation/inversion breaks, P2 or layout changes, P1 appears selected, or reloaded links differ.",
+      "necessary_assumption": "For both, existing musical commands and link serialization work; reopening initializes empty selection. C1 additionally requires complete destination visitation; C2 requires constructor coverage.",
+      "reversal": "One controlled trace showing C1 clears a shared source object or alters P2, while C2 avoids it with identical musical results, would reverse the provisional preference."
+    },
+    {
+      "case_id": "MS-E",
+      "candidate_results": {
+        "C1": "After cloning, source m1 remains selected; P1 flag becomes false and its list remains empty, eliminating selection color. Pitches follow 60 -> 62 -> 60; P2 stays pitch67/offset8. Save/reload retains current pitch60 and linked members.",
+        "C2": "Same predicted observations, but P1 starts unselected during construction. Clearing selection does not unlink its musical counterpart; expected reload selection is empty."
+      },
+      "failure": "Either fails if P1 retains SELECTED despite its empty list, source selection changes during creation, linked edits fail, P2 changes, or saved membership is lost.",
+      "necessary_assumption": "Both require color to reflect the described local selection state and functional edit/undo/readback. C1 requires owned descendant coverage; C2 requires every relevant clone to use the modified constructor.",
+      "reversal": "A single reachable selected descendant bypassing C1 sanitation while passing C2 construction would reverse this preference, subject to evidence that broader copying does not require retained selection."
+    },
+    {
+      "case_id": "MS-X",
+      "candidate_results": {
+        "C1": "UI: no applicable undo action, or explicit unavailable-history refusal. Objects remain current pitch62 with current links. File remains unchanged unless explicitly resaved; no former pitch can be established.",
+        "C2": "Identical refusal and preserved current objects/file. Copy-time deselection supplies no missing inverse or earlier pitch."
+      },
+      "failure": "Either fails by claiming successful historical undo, fabricating a former value, or changing current pitch/membership without evidence.",
+      "necessary_assumption": "For both, the stated empty stack and absence of earlier snapshots are exhaustive; neither introduces durable history.",
+      "reversal": "No observation within these fixed premises distinguishes C1 from C2. An actual earlier command/snapshot would reverse the refusal conclusion, but changes the case and still does not select a masking location."
+    }
+  ],
+  "limitations": [
+    "The supplied seal was not independently verified. Only packet bytes were hashed.",
+    "The handbook is a live later-3.x edition; v3.0.1 is contextual, not a verified affected build. No implementation execution or tests were performed.",
+    "Author adoption, historical causation, persistent undo, and actual rollback/loader behavior are unestablished. Undo, reopening, and unrelated-content requirements are research extensions, not demonstrated original demands."
+  ]
+}

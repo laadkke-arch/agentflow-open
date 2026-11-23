@@ -1,0 +1,123 @@
+{
+  "brief_id": "SG",
+  "view": "A",
+  "reader_role": "isolated technical design reader",
+  "completed_utc": "2026-11-23T11:40:33.944171+00:00",
+  "read_files": [
+    {
+      "path": "docs/workstreams/research/AF-RES-077/packets/SG-common.json",
+      "sha256": "63ecd7772091f830f37b91761b0d9874ede03359d0094f2e1bd5af75b0d37316"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-077/packets/SG-A.json",
+      "sha256": "47aa11f3dac8657bb138dfd6bdfe014a88967c01557559f3ef35e51d5cdcfd11"
+    }
+  ],
+  "source_prior_familiarity": {
+    "status": "unknown",
+    "training_vs_context": "General training familiarity with XHTML and relative URLs; occurrence of this exact Recommendation in training is unknown. Context exposure is limited to the two assigned packets."
+  },
+  "extra_source_opens": [],
+  "candidates": [
+    {
+      "id": "C0",
+      "name": "Unchanged split and anchor-update passes",
+      "changes": "None. Retain Book::CreateSectionBreakOriginalResource/CreateNewSections, AnchorUpdates::GetIDLocations, UpdateAllAnchorsWithIDs, UpdateExternalAnchors, TextResource::SetText, and SaveToDisk.",
+      "order": [
+        "Split and create working resources; the single-section path saves its new resource before reconciliation.",
+        "Build id-keyed locations; update split-derived files, then external chapters qualified by originating filename.",
+        "SetText updates GUI documents or worker caches; subsequent save persists contents. Move ordering is unspecified."
+      ],
+      "recovery": "No added refusal or rollback. Existing checks are unknown; early persistence permits a possible partial state.",
+      "cost": "No incremental storage or maintenance beyond existing hashes and rewritten text."
+    },
+    {
+      "id": "C1",
+      "name": "Scoped relocation plan within existing updates",
+      "changes": "Retain resource representation, GUI/cache routing, and save machinery. Add OriginTargetKey(original content URL, fragment), duplicate counts, and final-resource locations. Adapt Book orchestration, GetIDLocations interface, both anchor passes, and move notifications; replace id-only selection in these operations.",
+      "order": [
+        "Before mutation, resolve affected hrefs against original document bases and index source targets. Reject ambiguous or unsupported resolution.",
+        "Plan splits and final paths; map unique source targets to resulting resources. Calculate hrefs relative to final referring documents.",
+        "Validate planned references and paths; prepare changed strings. Defer the early working-resource save until validation.",
+        "Apply resource changes and SetText updates, then existing SaveToDisk/book-save operations. Reopen validation remains an implementation acceptance check."
+      ],
+      "recovery": "Preflight refusal reports the offending reference before writes. Retain original strings for in-session rollback. Interrupted multi-file saving still depends on existing recovery; no crash-atomic guarantee.",
+      "cost": "Transient O(targets + affected links + edited text); no persistent IDs. Moderate maintenance for URL normalization, moves, and both update passes."
+    },
+    {
+      "id": "C2",
+      "name": "Scoped relocation with staged publication",
+      "changes": "Reuse C1 resolution and resource model. Add staged copies, original snapshots, commit journal, and recovery coordinator; extend publication beyond SetText.",
+      "order": [
+        "Capture source bindings and validate C1 mappings before edits.",
+        "Write and validate staged contents and metadata; persist original snapshots, then a prepared journal.",
+        "Publish the completed book through verified atomic replacement where supported.",
+        "Record completion, synchronize live resources, and remove obsolete recovery data."
+      ],
+      "recovery": "Refuse ambiguity before staging. Recover interrupted publication from journal/snapshots. Verify replacement durability per storage backend; otherwise refuse an atomicity guarantee.",
+      "cost": "Temporary persistent storage proportional to the staged book plus snapshots; extra I/O and substantial recovery/platform maintenance."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "C1",
+    "reason": "Scoped target identity and rebasing directly address preservation. Persistent transaction infrastructure has no demonstrated necessity here. Selection is provisional without code inspection or execution.",
+    "global_reversal": "An unchanged-code pass on all cases favors C0. Required crash recovery or demonstrated unrecoverable partial saving favors C2."
+  },
+  "source_to_choice": [
+    {
+      "section": "EPUB33, 4.2.5 URLs in the OCF abstract container",
+      "supported": "Content URLs derive from container paths; XHTML URL parsing typically uses the referring document content URL. This supports document scope and relative-path recalculation after relocation.",
+      "unsupported": "No Sigil repair algorithm, fragment canonicalization details, duplicate-target selection, or transaction protocol is supplied. OriginTargetKey and planning are engineering extrapolations."
+    },
+    {
+      "section": "EPUB33, 6.1.2 XHTML requirements",
+      "supported": "XHTML inherits HTML semantics and processing, subject to the stated constraints.",
+      "unsupported": "This excerpt does not specify duplicate-ID resolution or establish intended target identity. Conservative refusal is my design choice, motivated by SG-X."
+    },
+    {
+      "section": "SG-common.json: interface; SG-C1/SG-C2; SG-N/SG-E/SG-X",
+      "supported": "The supplied summary identifies id-keyed lookup, split/external passes, separate text/persistence operations, and early saving.",
+      "unsupported": "It does not establish concrete runtime outputs, full move implementation, or crash behavior."
+    }
+  ],
+  "predictions": [
+    {
+      "case_id": "SG-N",
+      "assumptions": "Ordinary document base, unique fn, successful save, stated filenames; shared across candidates.",
+      "candidate_outputs": {
+        "C0": "Expected ch1 href ch1_1.xhtml#fn and tail containing FOOTNOTE_A. Existing hash locates fn in tail; GUI/cache and reopened files agree after successful saving. Interface-based prediction.",
+        "C1": "Plan binds original fn to ch1_1.xhtml; ch1 keeps ref, tail keeps FOOTNOTE_A, href becomes ch1_1.xhtml#fn. UI and reopened book resolve A.",
+        "C2": "Same final contents, binding, and UI as C1; staging/journal exist transiently."
+      },
+      "failure": "Each fails if saved/reopened ref resolves nowhere or elsewhere; C2 also fails if recovery loses both prior and completed states.",
+      "minimum_contrary_evidence": "A C1 prototype failing this simple case suspends selection. C0 passing this case alone does not settle boundary handling."
+    },
+    {
+      "case_id": "SG-E",
+      "assumptions": "Move participates in reconciliation before save; no base element or unsupported URL encoding; shared across candidates.",
+      "candidate_outputs": {
+        "C0": "Underdetermined: self may retain ch1.xhtml#fn, or repairs may retain pre-move filenames; toc A may be stale. Origin qualification suggests toc B remains ch2.xhtml#fn. GUI and persisted state can agree while links fail; cross-chapter hash contamination is unproven.",
+        "C1": "Plan keeps A/B distinct. ch1 self and toc A become parts/ch1_tail.xhtml#fn; toc B stays ch2.xhtml#fn. Tail contains FOOTNOTE_A; ch2 retains FOOTNOTE_B. UI and reopened files preserve bindings.",
+        "C2": "Same final objects, references, contents, and UI as C1; staged publication adds recovery metadata."
+      },
+      "failure": "Each fails if A reaches B, B reaches A, or a reopened reference is stale. C1/C2 additionally fail if moves bypass planning.",
+      "minimum_contrary_evidence": "A baseline trace correctly handling qualified self-links, relocation, and scope removes the main justification for C1, conditional on SG-X success."
+    },
+    {
+      "case_id": "SG-X",
+      "assumptions": "Duplicate fn in one original document; no trusted target choice; shared across candidates.",
+      "candidate_outputs": {
+        "C0": "An id-keyed hash cannot represent both targets; absent another check, one location wins and ref silently follows FIRST or SECOND. Exact winner, file serialization, and UI warning are unknown.",
+        "C1": "Duplicate-count objects expose ambiguity; preflight refuses. Original file and GUI remain unsplit; no target is guessed.",
+        "C2": "Same refusal and unchanged contents/UI as C1; no staging or journal writes occur."
+      },
+      "failure": "C0 fails if it silently chooses. C1/C2 fail if they claim preservation from an untrusted choice. Unchanged bytes/digests identify content, not intended target identity.",
+      "minimum_contrary_evidence": "Trusted provenance identifying the intended element permits binding and splitting. Existing baseline refusal plus SG-N/SG-E success would favor C0."
+    }
+  ],
+  "limitations": [
+    "Predictions only: no runs, implementation, or author adoption claimed. Exactly the assigned files were opened; no outcome sources accessed.",
+    "0.9.17 is operationally pinned; author version and initial report revision are unverified. The cross-document duplicate case is researcher-authored.",
+    "The 2023 excerpt informs design, not proven historical requirements. Complex bases and encodings require further primary-source review before implementation."
+  ]
+}

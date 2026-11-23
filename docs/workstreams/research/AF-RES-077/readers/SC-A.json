@@ -1,0 +1,143 @@
+{
+  "brief_id": "SC",
+  "view": "A",
+  "reader_role": "Isolated technical design reader; predictions, not execution evidence.",
+  "completed_utc": "2026-11-23T11:41:00.294382+00:00",
+  "read_files": [
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SC-common.json",
+      "sha256": "efe7bcda2e75aa759d476cba554e684bc623bee2254bdded233ab3c9ca9b555b",
+      "hash_basis": "Supplied whole-file hash in SC-A packet."
+    },
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SC-A.json",
+      "sha256": "33883d496f26e2dd3fff18771740f7e37c8b63c7872f87bc2e0692c75ed7eb74",
+      "hash_basis": "Reconstructed exact JSON formatting from captured authorized read; no additional source open.",
+      "excerpt_sha256": "a3508a283e07f06df40c5de8e13243545d8a9c7f97b3a2e0e5a0300f63428c4d"
+    }
+  ],
+  "source_prior_familiarity": {
+    "answer": "unknown",
+    "explanation": "Training may include these projects; exact prior exposure is untraceable. General proxy/checksum knowledge informs proposals. Task-context exposure is limited to the assigned packets; no outcomes or other views were read."
+  },
+  "extra_source_opens": [],
+  "candidates": [
+    {
+      "id": "A0",
+      "name": "Unchanged pinned behavior",
+      "changes": {
+        "unchanged": "All supplied symbols, original-resource retention, shotcut:hash cache, sampled hashing, filename fallback, and separate generation/publication writes.",
+        "changed": "None."
+      },
+      "order": [
+        "Restore retained original when disabling proxies; serialize original through the existing XML path.",
+        "Search by matching hash OR filename, warning on filename-only mismatch. Selection/confirmation semantics are unspecified.",
+        "If existing fixUnlinkedFile runs, update resource/hash/caption; leave generation and post-job replacement unchanged."
+      ],
+      "recovery": "Existing unlinked-file dialog and warning only; no transactional recovery or stale-cache guarantee is supplied.",
+      "cost": "No implementation/migration cost; existing cache and sampled I/O continue. Manual repair may remain necessary."
+    },
+    {
+      "id": "A1",
+      "name": "Scoped associations with verified proxy provenance",
+      "changes": {
+        "unchanged": "Keep shotcut:resource as original-path authority, ordinary XML restoration, unaffected producers, and sampled hashes as search hints.",
+        "changed": "Propose scoped changes to UnlinkedFilesDialog::lookInDir, fixUnlinkedFile, ProxyManager::resource/filterXML/processProperties, and MltXmlChecker::checkForProxy. Add per-producer shotcut:originalSha256 and shotcut:proxySourceSha256. Add full-file hashing without changing Util::getHash semantics; use a verified digest/settings cache namespace."
+      },
+      "order": [
+        "Read the producer association. Enumerate all candidates; names and sampled hashes rank suggestions. Automatic relocation requires a historical full-digest match, otherwise confirmation.",
+        "For an existing canonical original, read all bytes on reopen/proxy activation. Missing full provenance invalidates legacy proxy eligibility.",
+        "Generate from a private stable input snapshot into a unique temporary proxy. Reject failed or obsolete job completion.",
+        "Publish verified proxy without replacing unrelated associations; then update only the target producer's original, digests, proxy reference, and applicable hash/caption.",
+        "Save original and provenance together through temporary project output and atomic replacement where supported. Before publication, persist prior or unresolved state."
+      ],
+      "recovery": "Unconfirmed relocation remains unresolved. Legacy proxies cannot serve as verified current content. Failed generation retains prior XML and blocks stale preview. Reopen rejects inconsistent provenance; orphan output can be removed.",
+      "cost": "Two digests per association, full input reads, hashing CPU, temporary source snapshot up to original size, temporary proxy space, legacy rebuilds, and cleanup. Maintenance covers XML compatibility, job races, and filesystem publication guarantees."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "A1",
+    "reason": "Prefer explicit associations and conservative legacy migration to prevent silent substitution. Legacy missing sources lose availability. Feasibility and benefits remain untested."
+  },
+  "source_to_choice": [
+    {
+      "section": "SC-A: Proxy Settings",
+      "supplied": "Proxies substitute during editing; originals return for full-resolution rendering.",
+      "inference": "Keep original identity separately recoverable; this establishes roles, not identity validation.",
+      "unsupported": false
+    },
+    {
+      "section": "SC-A: Using Camera Proxy Clips; Clips/Clip0001.MXF, Sub/Clip0001S03.MP4, and six-field externalproxies.rc form",
+      "supplied": "Relative folders and filename transformations describe bidirectional links.",
+      "inference": "Explicit association information can generate candidates. Naming conventions do not prove byte identity.",
+      "unsupported": false
+    },
+    {
+      "section": "SC-common: interface; SC-C1; SC-C2; SC-X",
+      "supplied": "Retained original, cached sampled hash, filename fallback, and separate publication writes.",
+      "inference": "Propose producer scoping, full provenance, conservative migration, and ordered publication.",
+      "unsupported": true,
+      "qualification": "Engineering deductions: the excerpts supply none of these implementations or guarantees."
+    }
+  ],
+  "predictions": [
+    {
+      "case_id": "SC-N",
+      "candidates": [
+        {
+          "id": "A0",
+          "results": "Active p1 resource becomes /old/camA/clip.mp4; saved XML retains that original; reopening renders RED under the supplied restoration contract.",
+          "failure_rule": "Wrong or lost original or changed identity violates SC-C1."
+        },
+        {
+          "id": "A1",
+          "results": "Same active path, XML original, and RED identity. Direct original restoration needs no proxy rebuild.",
+          "failure_rule": "Provenance handling blocks direct restoration or changes the association."
+        }
+      ],
+      "assumption": "Existing original is unchanged and usable; supplied restore/save contract holds.",
+      "minimum_contrary_evidence": "One valid round trip where A1 loses the original while A0 preserves it reverses preference for this case."
+    },
+    {
+      "case_id": "SC-E",
+      "candidates": [
+        {
+          "id": "A0",
+          "results": "BLUE qualifies as the first filename offer with a mismatch warning; RED also qualifies by hash. Committed selection without confirmation is not established. If offers require confirmation, p1 stays unresolved; if filename offers autoapply, p1 may bind BLUE. Saved/reopened proxy identity follows that unresolved selection. p2 should stay BLUE if updates are producer-scoped, which is unverified.",
+          "failure_rule": "Unconfirmed BLUE association or altered p2 violates SC-C2."
+        },
+        {
+          "id": "A1",
+          "results": "RED ranks first but lacks a trusted historical full digest. No confirmation means no committed replacement: p1 retains missing /old/camA/clip.mp4, proxy activation is refused, and saved/reopened state remains unresolved. UI identifies required confirmation. p2 stays /new/camB/clip.mp4 and BLUE.",
+          "failure_rule": "Committing relocation without required evidence, serving unverified proxy, or touching p2."
+        }
+      ],
+      "assumption": "Fixture contains only the legacy sampled hash; a matching search suggestion is not confirmation.",
+      "minimum_contrary_evidence": "A trusted historical full digest matching RED reverses refusal and permits RED. Verified baseline refusal plus producer isolation reduces the need to modify this path."
+    },
+    {
+      "case_id": "SC-X",
+      "candidates": [
+        {
+          "id": "A0",
+          "results": "Cached and recomputed sampled hashes remain unchanged. No supplied mechanism detects the middle edit. If proxy playback works, preview shows old revision while current source contains D; recovery/refusal is not guaranteed.",
+          "failure_rule": "Serving old proxy as current without detection."
+        },
+        {
+          "id": "A1",
+          "results": "Missing full provenance blocks old proxy reuse. Current full bytes are fingerprinted; historical mutation cannot be proven without an old full digest. Rebuild is required and preview withheld until success. Successful generation from valid media would represent current bytes; invalid media remains refused.",
+          "failure_rule": "Legacy metadata authorizes old preview or obsolete completion changes current association."
+        }
+      ],
+      "assumption": "No historical full digest exists; synthetic bytes do not establish decodable media.",
+      "minimum_contrary_evidence": "Observed A1 reuse of this unverified proxy overturns its claim. Valid-media evidence of independent baseline stale detection reverses the predicted baseline disadvantage."
+    }
+  ],
+  "limitations": [
+    "No execution, GUI validation, repository implementation inspection, adoption, or issue reproduction occurred.",
+    "Request is auxiliary; restore/collision cases are research-authored. Exact binary and first issue revision are unverified.",
+    "Kdenlive 26.08 is cross-project design inspiration, not Shotcut implementation evidence.",
+    "Full digests establish byte correspondence, not human intent. Snapshot feasibility, concurrency, migration, XML persistence, and atomicity require source-level review.",
+    "Seal commit was supplied by the parent and not independently inspected."
+  ]
+}
