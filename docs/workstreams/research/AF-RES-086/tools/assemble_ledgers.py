@@ -30,13 +30,20 @@ for stream in STREAMS:
         row["section"] = old.get("section", old.get("version_or_section", ""))
         row["direct_read"] = True
         row["countable_original"] = old.get("countable_original", old.get("primary_count_eligible", old.get("counts_original", False)))
-        row["http_status"] = old.get("http_status", old.get("access_status"))
+        receipt = json.loads((ROOT / old["receipt_path"]).read_text())
+        if not isinstance(receipt, dict):
+            receipt = {}
+        row["http_status"] = old.get("http_status", old.get("access_status")) or receipt.get("status") or receipt.get("http_status")
+        row["request_started_utc"] = receipt.get("requested_at_utc", receipt.get("requested_utc", receipt.get("read_utc")))
+        row["response_received_utc"] = receipt.get("finished_at_utc", receipt.get("completed_utc"))
+        row["read_utc_basis"] = "Original stream retrieval timestamp retained. Use request_started_utc/response_received_utc for the measured retrieval interval; archived capture UTC and publisher event UTC are separate. Semantic reading was performed in this session, not timed independently."
         row["direct_sha256"] = old.get("direct_sha256", old.get("download_sha256"))
         row["publisher_hash"] = old.get("publisher_hash")
         row["transport_body_bytes"] = old.get("bytes", old.get("response_bytes"))
         row["minimum_count_note"] = "Same work/event grouped by lineage_id; discovery, failures, empty history and duplicate mirrors excluded."
         if stream == "r":
-            row["excerpt_path"] = f"streams/r/evidence/{row['id']}.extract.json"
+            candidates = [f"streams/r/evidence/{row['id']}.extract.{suffix}" for suffix in ("json", "txt")]
+            row["excerpt_path"] = next(path for path in candidates if (ROOT / path).exists())
         sources.append(row)
     eligible = [r for r in sources if r["stream"] == stream and r["countable_original"]]
     counts[stream] = {"rows": len(rows), "eligible_original_rows": len(eligible), "eligible_lineages": sorted({r["lineage_id"] for r in eligible})}
@@ -93,6 +100,7 @@ routes = []
 for stream in ("python", "r"):
     for row in read_jsonl(ROOT / "streams" / stream / "routes.jsonl"):
         row["stream"] = stream
+        row["retrieval_intervals"] = [{"source_id": sid, "request_started_utc": by_id[sid].get("request_started_utc"), "response_received_utc": by_id[sid].get("response_received_utc")} for sid in row.get("source_ids", [])]
         routes.append(row)
 assert len({r["route_id"] for r in routes}) == len(routes)
 save_jsonl(ROOT / "routes.jsonl", routes)
