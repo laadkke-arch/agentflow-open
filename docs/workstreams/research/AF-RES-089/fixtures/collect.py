@@ -24,8 +24,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--raw", type=Path, required=True)
     parser.add_argument("--dest", type=Path, required=True)
-    parser.add_argument("--phase", choices=("controls", "main"), required=True)
+    parser.add_argument("--phase", choices=("controls", "main", "auxiliary"), required=True)
     args = parser.parse_args()
+    if args.phase == "auxiliary":
+        for case in ("F-P", "F-X", "PEER", "VV"):
+            for build in "GL":
+                run = f"{case}-{build}"
+                collect(args.raw / run, args.dest / run)
+        return
     packet = Path(__file__).resolve().parents[1]
     with (packet / "cases.csv").open(newline="") as file:
         for row in csv.DictReader(file):

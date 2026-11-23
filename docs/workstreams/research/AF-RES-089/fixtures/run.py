@@ -95,12 +95,12 @@ def reopen(session_factory, app, saved, name, capture_screen):
         }
 
 
-def exercise(app, row, driver, session_factory):
+def exercise(app, row, driver, session_factory, prepare=prepare_selection):
     case = row["case"]
     app.init_display()
     opened = app.launch()
     app.results["start_undo_index"] = index(opened)
-    prepare_selection(app, case)
+    prepare(app, case)
     before = app.snapshot("before_v")
     app.screen("02-before-v", move_pointer=False)
     focus_before = app.x11_focus()
