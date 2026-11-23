@@ -130,11 +130,12 @@ def main() -> None:
             "author_publisher": "Official " + row["repository"] + " project; named revision/file credits are preserved in lineage",
             "lineage": authors,
             "exact_section_payload": [
-                {"section": section["section"], "line_start": section["line_start"], "line_end": section["line_end"], "char_start": section["char_start"], "char_end": section["char_end"], "byte_start": section["byte_start"], "byte_end": section["byte_end"], "text": "".join(lines[section["line_start"] - 1 : section["line_end"]]), "excerpt_sha256": section["excerpt_sha256"]}
+                {"section": section["section"], "line_start": section["line_start"], "line_end": section["line_end"], "char_start": section["char_start"], "char_end": section["char_end"], "byte_start": section["byte_start"], "byte_end": section["byte_end"], "excerpt_sha256": section["excerpt_sha256"], "fixed_url": canonical}
                 for section in sections
             ],
             "body_sha256": row["sha256"],
-            "confirmed": True,
+            "confirmed": [section["claim"] for section in sections],
+            "verified_body": True,
             "confirmation_scope": "Original source body and precise sections inspected; no implication of successful target execution.",
             "supports": [section["claim"] for section in sections],
             "limits": [section["limit"] for section in sections] + ["Shared project/author lineage is not statistical independence; this is Q7 context only."],

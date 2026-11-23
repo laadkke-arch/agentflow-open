@@ -49,6 +49,11 @@ def main():
         if (ROOT/rel).exists():sources.extend(jl(rel))
     if (ROOT/'evidence/resume2/docker-postseal.json').exists():
         sources.append(json.loads((ROOT/'evidence/resume2/docker-postseal.json').read_text()))
+    if (ROOT/'evidence/resume2/concurrent-original-sources.jsonl').exists():
+        sources.extend(jl('evidence/resume2/concurrent-original-sources.jsonl'))
+    for source in sources:
+        if source.get('count_minimum') and not source.get('duplicate_reason'):
+            source['duplicate_reason']='One unique pinned upstream file, checked by fixed URL and body SHA256; repeated access is not another source and distinct files are not independent experiments.'
     ids=[r['source_id'] for r in sources];assert len(ids)==len(set(ids)),'duplicate source ID'
     output('sources.jsonl',dump(sources),a.check)
     outcome_file=ROOT/'evidence/resume2/outcomes/outcomes.csv'
@@ -57,7 +62,7 @@ def main():
         assert len(outcome_rows)==8
         for row in outcome_rows:
             row['evidence_details_file']='evidence/resume2/outcomes/evidence-details.json'
-        ob=io.StringIO();ow=csv.DictWriter(ob,fieldnames=list(outcome_rows[0]));ow.writeheader();ow.writerows(outcome_rows)
+        ob=io.StringIO();ow=csv.DictWriter(ob,fieldnames=list(outcome_rows[0]),lineterminator='\n');ow.writeheader();ow.writerows(outcome_rows)
         output('outcomes.csv',ob.getvalue(),a.check)
     packets=jl('packets.jsonl');judgments={r['packet_id']:r for r in jl('judgments.jsonl')}
     pmap={(p['case_id'],p['policy'],p['mode']):p for p in packets}
@@ -110,7 +115,7 @@ def main():
             'same_result_failure_condition_removed':'none established; candidate constraints/corroboration are not a verified removed failure condition'}
           rows.append(row)
     assert len(rows)==24
-    buf=io.StringIO();w=csv.DictWriter(buf,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+    buf=io.StringIO();w=csv.DictWriter(buf,fieldnames=list(rows[0]),lineterminator='\n');w.writeheader();w.writerows(rows)
     output('displacement.csv',buf.getvalue(),a.check)
     print(json.dumps({'sources':len(sources),'counted':sum(bool(x.get('count_minimum')) for x in sources),'displacement_positions':len(rows),'check':a.check}))
 

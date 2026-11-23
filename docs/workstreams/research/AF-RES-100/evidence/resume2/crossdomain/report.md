@@ -84,9 +84,15 @@ Sphinx 8.1.3의 고정 revision은 `a1510de4777eaa2e569435f95b05f6f3293d7035`이
 
 지정된 이전 **본 문서·fixture 예제**인 OSR OnlyBest / EPSG:4746→4326 / BETA2007을 사용하지 않았다. `osr_ct.py`, `osr_api_tut.rst`, PROJ `usage/network.rst`·`usage/transformation.rst`, `test/gie/gridshift.gie`·`test_network.cpp`도 읽지 않았다. Sphinx 일반 `graphviz.rst`, `ext/graphviz.py`, `test_ext_graphviz.py`, `test-ext-graphviz` 입력 및 `test_build_text.py` 대신 상속도 전용 본 문서·fixture를 사용했다. 이 지정 경로 제외 확인은 공통 지원 파일까지 신규라는 의미가 아니다. `sphinx/testing/fixtures.py`의 gate는 AF-RES-096에서 사용한 공통 파일을 재열람한 것이며, 원장과 검증 기록에서 그 재사용과 비산입을 명시한다.
 
-## 4. 재현과 산출물
+## 4. 최종 감사 수리: stage4
 
-아래 명령은 저장소 루트에서 실행한다. 첫 명령은 고정 body의 SHA256을 확인하고 인용한 절을 표시한다. `--refetch`를 붙이면 고정 URL에서 다시 취득하고, hash가 같은 경우에만 cache를 갱신한다. 패키지 설치나 Git 작업은 수행하지 않는다.
+외부 저작을 원장에 장문으로 복제하지 않는 저장 규칙에 맞춰 `exact_section_payload[].text`를 제거했다. 재열람 URL, 정확한 줄·문자·바이트 구간, `excerpt_sha256`, 의역한 확인 사실과 한계는 유지했다. 재생성 스크립트도 절 원문을 다시 원장에 쓰지 않는다. `confirmed`에는 각 절에서 확인한 구체적인 사실을 기록하고, body hash 검증 여부는 `verified_body`로 분리했다.
+
+검증은 기존의 무시되는 cache body에서 구간과 hash를 계산해 수행했으며 새 원문 취득이나 GDAL·Graphviz runtime 재실행은 하지 않았다. 기존 AF-RES-096 공통 gate 재사용 공개와 비산입 판단을 그대로 유지했다. 수리 전후 파일 SHA256과 범위는 `audit-stage4.json`, 검증 결과는 `validation.json`에 기록한다.
+
+## 5. 재현과 산출물
+
+아래 명령은 저장소 루트에서 실행한다. 첫 명령은 고정 body의 SHA256과 인용 구간의 줄·문자·바이트 경계 및 hash를 검증하고 결과 메타데이터를 표시한다. 절 원문을 원장에 저장하거나 검증 출력에 복제하지 않는다. `--refetch`를 붙이면 고정 URL에서 다시 취득하고, hash가 같은 경우에만 무시되는 cache를 갱신한다. 패키지 설치나 Git 작업은 수행하지 않는다.
 
 ```bash
 python -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/reproduce_sources.py
@@ -102,7 +108,8 @@ python -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/run_
 - `gdal-runtime.json`, `graphviz-runtime.json`: 실제 보조 실행 기록.
 - `environment.json`, `version-probes.json`, `system-python-probe.json`: 실행 환경 조사.
 - `lineage.json`: 공식 프로젝트와 저자/commit 계보.
-- `validation.json`: 공통 원장 필드, 5+2 최소개수, 정확한 인용 payload hash, 지정된 본 문서·fixture 제외 경로 확인 및 AF-RES-096 공통 gate 재사용·비산입 공개.
+- `validation.json`: 공통 원장 필드, 5+2 최소개수, cache에 대한 인용 구간·hash 검증, 절 원문 비저장, 지정된 본 문서·fixture 제외 경로 확인 및 AF-RES-096 공통 gate 재사용·비산입 공개.
+- `audit-stage4.json`: 절 원문 제거 수리의 전후 파일 hash와 범위. 이전 공통 gate 재사용 공개는 보존한다.
 - `run_gdal_fixture.py`, `run_graphviz_probe.py`, `reproduce_sources.py`, `assemble_evidence.py`: 재현 가능한 절차.
 
 원 body와 생성된 GTX/SVG는 지정된 `evidence/_cache/resume2-crossdomain/`에 보존했다. 고정판의 전체 상류 테스트를 다시 실행할 경우 필요한 정확한 test node와 준비된 환경 조건은 `fixtures.json`에 명시했다. 그러한 준비나 실행이 이미 완료되었다고 가정하지 않는다.
