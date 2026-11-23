@@ -13,6 +13,7 @@ INPUTS = [
     "evidence/crossdomain/sources.jsonl",
     "evidence/post-jq/source-note.jsonl", "evidence/post-pandoc/sources-note.jsonl",
     "evidence/intake/sources-note.jsonl",
+    "evidence/post-evaluation-sources.jsonl",
 ]
 
 def choose(row, *keys, default=None):
@@ -101,8 +102,10 @@ def main():
         "rows_in_ledger": len(rows), "eligible_unique_primary_sources": len(eligible),
         "eligible_by_category": counts, "required_by_category": minima,
         "minima_satisfied": len(eligible) >= 24 and all(counts.get(k, 0) >= v for k, v in minima.items()),
-        "selected_independent_public_request_events": 8,
-        "request_event_note": "8 question IDs; answers/comments/revisions are follow-ups to those same events, not new independent requests.",
+        "distinct_selected_question_ids": 8,
+        "request_events_operationally_by_question_id": 8,
+        "independent_underlying_problem_events": "미확인: P3 says it is a repost of a question from the previous week; earlier ID not supplied or investigated.",
+        "request_event_note": "8 distinct selected question IDs are the operational units; actual independent problem episodes/persons are not established. Answers/comments/revisions are follow-ups, not additional requests. Bundle3 wording clarification preserved in post-evaluation-sensitivity.json.",
         "crossdomain_note": "14 primary files, 3 project lineages and 5 specification/test calibration goals; no newly recruited requests or A/B wins.",
         "counting_note": "Distinct versioned files/bodies, not independent authors or statistically independent observations. Search previews, prior handoffs, metadata, licenses, duplicate reads and own outputs excluded.",
         "eligible_ids": [x["source_id"] for x in eligible],

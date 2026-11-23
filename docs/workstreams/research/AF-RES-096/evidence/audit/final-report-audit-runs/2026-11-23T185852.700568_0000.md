@@ -1,0 +1,57 @@
+# AF-RES-096 최종 보고서 독립 감사
+
+**PASS · 오류 0건** · `2026-11-23T18:58:52.700568+00:00`.
+
+원 결과 생성기·source builder·experiment/sealer를 호출하거나 읽지 않고 protocol, 각 경로의 원 exposure/access/judgment, 원 source notes, 공개 후속 메타데이터에서 다시 계산했다. 모든 쓰기는 evidence/audit 아래다. 이전 감사의 최초 관측을 수정하지 않았다.
+
+|확인 항목|독립 실측|
+|---|---|
+|RESULT 처음 세 표|[8, 16, 8]|
+|경로·검색·본문시도|16 · 32 · 64|
+|실패·초과·미노출 근거|0 · 0 · 0|
+|동파일 절 이동|194, 새 본문시도로 세지 않음|
+|사전 전체|{'A만': 0, 'B만': 0, '양쪽': 5, '어느 쪽도 아님': 3, '비교불가': 0, 'planned_pairs': 8, 'comparable_pairs': 8}|
+|사후 옵션-only 민감도|{'A만': 0, 'B만': 0, '양쪽': 4, '어느 쪽도 아님': 4, '비교불가': 0, 'planned_pairs': 8, 'comparable_pairs': 8}|
+|통합 원장·산입 고유자료|169 · 46|
+|카드 링크 수|{'J1': 2, 'J2': 2, 'J3': 2, 'J4': 2, 'P1': 2, 'P2': 2, 'P3': 2, 'P4': 2}|
+|Q별 자가검산·마지막 약점|7행 · 정확히3행|
+|②봉인 불변|169파일: exact 168, 설정된 CSV EOL만 1|
+
+## 자료·사후 값 분리
+
+통합169행의 원위치와 embedded original_note가 모두 원 기록과 일치한다. 기존109+사후49+인수10+P3 재열람1이며 산입46의 ID·원주소·hash는 최초 독립 감사와 같다. 새 P3 재열람은 기존 R0와 같은 body hash이고 비산입이다. 주10/인접10/원시험4/R0 8/Sphinx7/GDAL7이며 후속이나 실행으로 하한을 보충하지 않았다.
+
+최초 사전5/3, P3를 옵션만으로 좁힌 사후4/4, 서로 다른 선정 질문 ID8과 실제 독립 사건 미확인을 구분했다. 공개 메타데이터에서 답8·댓글18·현재채택4·30일내 질문자후속5를 재계산했다. 이 감사는 현재채택 시각 또는 원 사용자 실행 성공을 새로 입증하지 않는다.
+
+## 내용 검토
+
+- **generalization / PASS:** RESULT explicitly limits zero discordance to six boundary pairs and distinguishes it from general equality, discovery probability, and time efficiency.
+- **posthoc_sensitivity / PASS:** Primary both5/neither3 is preserved; option-only P3 reading is explicitly post-unblinding and yields both4/neither4 with discordance0.
+- **runtime_attribution / PASS:** Documentary completeness, answer-author output, asker follow-up, researcher probes, and Q7 expected fixtures are distinguished. P4 exit83 and original asker execution0/8 remain explicit.
+- **independent_events / PASS:** Selected distinct question IDs8 are operational units; P3 repost makes independent underlying problem-event count unknown, with original wording/time preserved.
+- **known_calibration / PASS:** Q7 14 files and 5 goals are not added to new-request success, and discovery fraction is undefined at denominator0.
+- **displacement / PASS:** 12/12 slots checked, no observed A-only completeness, but J2 corroboration and J4 build caveat losses are retained.
+- **contract / PASS:** PARTIAL explicitly reflects unsuccessful specified dependency contract, and manifest.json is not presented as a successful tool contract.
+- **README_prior_issue / CORRECTED:** Originally all routes were said to connect all conditions through <=2 returns; root narrowed this to complete routes and separately noted noncomplete diagnostics after audit feedback.
+
+## 링크와 완료 단계
+
+Markdown 로컬 링크의 실제 경로를 검사했다. 의도적으로 아직 없는 HANDOFF 링크 2개를 제외한 누락은 0개다. 외부 링크는 이전에 취득한 원 source/corpus/public 메타데이터의 정체성과 대조했고 미대응은 0개다. 모든 URL에 새 HTTP를 보낸 검사는 아니다.
+
+이 감사는 ④ 푸시 전 산출물에 대한 것이다. 원격 결과 SHA에서의 GitHub 핵심 표·원장·반례 readback, 저장소 검사와 계약 검사 종료값, 마지막 단독 HANDOFF 커밋은 루트가 이어서 고정한다. 결과의 파일별 hash는 JSON에 있으며 감사 중 변경되지 않았음을 확인했다.
+
+최초 실행은 외부 링크 대조 집합에 저장소의 두 봉인 commit 링크를 넣지 않아 오탐했다. 기존 confirmed remote 영수증과 Git commit 객체로 그 두 링크를 검증하도록 감사기만 보완했고 최초 결과는 runs 아래 보존했다. 산출물을 수정해 검사를 통과시킨 것이 아니다.
+
+## 경고
+
+- {"kind": "noncomplete_extra_diagnostic_sources", "route": "P1-B", "file_ids": ["PD-0001"], "not_a_return_limit_violation": true}
+
+## 오류
+
+없음.
+
+## 재실행
+
+```sh
+python -B docs/workstreams/research/AF-RES-096/evidence/audit/final-report-audit.py
+```
