@@ -18,9 +18,13 @@ for f in files:
   downstream=(r.get('downstream_original',False)or r.get('downstream_authored_work',False)or bool(re.search(r'consumer|downstream',typ,re.I)))
   guide=downstream and bool(re.search(r'guide|tutorial|example|manual',typ,re.I))
   n={'source_id':sid,'lineage_id':r.get('lineage_id',r.get('independent_work_id')),'source_type':typ,'url':r.get('url',r.get('original_url')),'fixed_version':r.get('fixed_version',r.get('commit',r.get('tag',r.get('edition','retrieval snapshot')))),'location':r.get('location',r.get('section',r.get('path',''))),'lines':r.get('lines'),'opened_utc':opened,'questions':r.get('questions',r.get('related_questions',[])),'cases':r.get('cases',r.get('case_ids',[])),'observed':r.get('observed',r.get('confirmed',r.get('finding',''))),'limitations':r.get('limitations',r.get('limits',r.get('limits_unknowns',r.get('limitation','')))),'supports_or_refutes':r.get('supports_or_refutes',r.get('claim_relation',{'supports':r.get('supports',[]),'refutes':r.get('refutes',[])})),'directly_read':direct,'countable':count and direct,'count_reason':r.get('count_reason',r.get('countable_reason','같은 lineage_id는 한 번만 산입. source 원장의 산입 flag를 보존.')),'downstream_authored':downstream,'downstream_guide':guide,'sha256':r.get('sha256',r.get('content_sha256')),'stream_file':str(f.relative_to(P)),'historical_http_arrival':r.get('historical_arrival',r.get('history_http_arrival',r.get('historical_http_destination','역사적 도착 미확인')))}
-  for k in ['opened_utc_precision','read_again_utc','acquired_utc','sealed_before_acquisition_commit','section_sha256','snapshot_path','bytes','web_ref','repository','tag','commit']:
+  for k in ['opened_utc_precision','read_utc','visual_read_utc','hash_acquired_utc','read_again_utc','acquired_utc','sealed_before_acquisition_commit','section_sha256','snapshot_path','bytes','web_ref','repository','tag','commit']:
    if k in r:n[k]=r[k]
   n.setdefault('opened_utc_precision','원 스트림에 기록된 열람 시각; 추가 정밀도 주장 없음')
+  n['direct_read_utc']=r.get('read_utc',r.get('visual_read_utc',r.get('directly_opened_utc',opened)))
+  n['time_field_note']='opened_utc는 원 스트림의 최초 열기/취득 시각일 수 있음. 별도 read_utc 또는 visual_read_utc가 있으면 direct_read_utc에 보존. UTC 상한 precision은 exact second로 승격하지 않음.'
+  if not n['fixed_version']:
+   n['fixed_version']='retrieval snapshot at '+str(opened)+'; original issue/comment has no commit pin'
   correction_file=P/'streams/gis/postseal/corrections.jsonl'
   if correction_file.exists():
    corrections=[c for c in rows(correction_file)if c.get('row_id')==sid]
