@@ -165,13 +165,15 @@ def unpack_tiff(data: bytes):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--require-expanded", action="store_true", help="Require each frozen search frame's second12: total48")
+    parser.add_argument("--actor", default="unspecified external caller", help="Actual actor performing this validation")
     args = parser.parse_args()
     started = dt.datetime.now(dt.timezone.utc)
     a = Audit()
     def stop_prerequisite(reason):
         """Replace an old receipt with FAIL if an input cannot even be loaded."""
         a.check("prerequisite loading", False, reason)
-        report = {"validator_actor": "AF-RES-074 model structural auditor", "command": " ".join(["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]]), "cwd": str(ROOT), "started_utc": started.isoformat(), "ended_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "exit_code": 1, "structural_status": "FAIL", "research_status": "PARTIAL", "check_count": len(a.checks), "error_count": len(a.errors), "errors": a.errors, "warnings": a.warnings, "checks": a.checks}
+        report = {"validator_actor": "AF-RES-074 model structural auditor", "command": shlex.join(["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]]),
+        "argv": ["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]], "cwd": str(ROOT), "started_utc": started.isoformat(), "ended_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "exit_code": 1, "structural_status": "FAIL", "research_status": "PARTIAL", "check_count": len(a.checks), "error_count": len(a.errors), "errors": a.errors, "warnings": a.warnings, "checks": a.checks}
         output = TASK / "evidence/validation.json"
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -534,8 +536,10 @@ def main():
     ended = dt.datetime.now(dt.timezone.utc)
     exit_code = 0 if not a.errors else 1
     report = {
-        "validator_actor": "AF-RES-074 independent model structural auditor; also Pandoc stream author, not independent human",
-        "command": " ".join(["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]]),
+        "validator_author": "Pandoc model stream author; not independent human",
+        "validator_actor": args.actor,
+        "command": shlex.join(["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]]),
+        "argv": ["python", "-B", OWNED + "tools/validate.py", *sys.argv[1:]],
         "cwd": str(ROOT), "started_utc": started.isoformat(), "ended_utc": ended.isoformat(),
         "exit_code": exit_code, "structural_status": "PASS" if exit_code == 0 else "FAIL", "research_status": "PARTIAL",
         "research_gaps": ["Natural cases still lack independent same-version outputs for both selected field values; strict question-effect denominator remains zero despite recovery of all8 original bodies", "Pandoc controls were expectation-informed; PAN-C1 purpose-to-configuration mapping and PAN-N2 nonexclusive alternatives limit causal interpretation", "Some judgments require reading beyond the shared section budget; extra reading is a separate layer", "GDAL3.2.1 was not executed; GDAL3.10.3 receipts remain separate from historical expectations and mixed-version natural reports"],

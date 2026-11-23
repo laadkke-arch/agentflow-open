@@ -53,3 +53,15 @@
 ## 검토 주체
 
 병렬 모델 조사자는 서로 다른 자료를 읽는 공동연구자다. 별도 모델이 원문과 원장을 교차 대조한 경우 실제 검토 범위를 기록한다. 같은 작성자의 재판독은 자체 점검이다. 사람 독립판독자와 새 사용자 실험은 각각0명/0건이며, 이0은 본 연구 수행 범위에 대한 관측값이다.
+
+## 최종 정규화와 추가 근거
+
+`initial-version-review.csv`의8행은 최초 opened 이벤트와 현재 본문의 사후 일치 검토다. 최초403 기록을 지우지 않으며 `verified_before_policy_seal=false`다. `frame.csv`의 최초판 상태는 이 최신 검토를 연결하고, 원 봉인 packet은 그 시점의 current-only 노출을 그대로 보존한다. 사건 원장의 원요구8행에는 실제 opened event ID와 archive source ID를 연결했다. 현재 본문과 최초 body가 다른2건은 문법/표현 차이를 기록했고 새 발언으로 두 번 세지 않았다.
+
+`historical_execution_status=researcher_performed_fixed_release`는 **현재 조사에서 고정 과거 release를 실행했다**는 뜻이다. 과거 날짜의 upstream CI 실행은 아니다. PAN-C1/C2에만 이 상태가 있고 실제 stdout은 `evidence/pandoc-fixed-run.json`과 일치한다. 다른 과거판 실행 출력은 null이다. 논리적 fixture SHA는 delimiter 앞 마지막 LF를 제외하며 실제 stdin/stdout SHA는 LF를 포함한다. GDAL3.10.3 실행은 별도 researcher_execution 열이다.
+
+`technical_judgment_denominator`는 그 시나리오의 독립 기준 확보 여부다. 알려진 목표에서 보류한 A도 기준을 알면 분모에 남기되 정답/오답 대신 hold로 보고한다. 미응답 양성에서 목표 자체가 미지정이면 A/C의 완료 정오 기준은 없다. B의 명시적인 조건·행동 경로는 그와 별도로 조건부 사용 가능성을 평가할 수 있다.
+
+`observed_user_selection=null` 및 요약의 `not_measured`는 우리 A/B/C가 사람에게 제시되지 않았다는 뜻이다. `actual_dialogue_rounds=0`은 실행하지 않은 연구 대화의 수이며, `completed_reply_rounds_in_scenario=1`은 가상 응답 분기의 설계 가정이다. 공개 사건의 다른 조언 뒤 계획2건과 다른 필드 해결보고1건은 events에 별도로 남는다.
+
+`source_access_failures`는 실패한 접근 **시도 행**의 수다. 나중에 성공한 원선정8건의 예전403도 포함하므로 현재 미회수 사건 수가 아니다. `minimum_independent_works`는 지정 네 범주에 속하는65저작, `direct_independent_works_conservative`는 추가 구현 코드6개를 포함한71계보다. 원 요구의 댓글·판·fixture 입출력·NCAT 관련 페이지·GDAL 사용자 매뉴얼 페이지를 중복 산입하지 않는다.

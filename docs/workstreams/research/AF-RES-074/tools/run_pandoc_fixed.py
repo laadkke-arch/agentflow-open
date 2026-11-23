@@ -27,7 +27,9 @@ for t in fixture['tests']:
     result['tests'].append({'test_id':t['test_id'],'source_url':t['source_url'],'command':t['command'],'stdin_sha256':t['stdin_sha256'],'expected_stdout':expected,'actual_stdout':actual,'actual_stdout_sha256':hashlib.sha256(data).hexdigest(),'expected_stdout_sha256':hashlib.sha256(expected.encode()).hexdigest(),'exact_stdout_match':actual==expected,'calls':calls,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()})
 result['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat()
 result['test_count']=len(result['tests']);result['process_invocations']=sum(len(t['calls']) for t in result['tests']);result['all_exit_zero']=True;result['all_stdout_exact']=all(t['exact_stdout_match'] for t in result['tests'])
-(P/a.output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+output=(P/a.output).resolve();assert output.is_relative_to(P),'Output must stay in owned path'
+output.parent.mkdir(parents=True,exist_ok=True)
+output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps({k:result[k] for k in ['test_count','process_invocations','all_exit_zero','all_stdout_exact']},indent=2))
 for t in result['tests']:
     if not t['exact_stdout_match']:print(t['test_id'],'actual',repr(t['actual_stdout']),'expected',repr(t['expected_stdout']))
