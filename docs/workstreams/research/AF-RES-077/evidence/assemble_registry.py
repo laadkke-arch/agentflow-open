@@ -14,7 +14,7 @@ def csv_read(path):
 
 def main():
     rows=[]
-    for filename in ('recruitment-sources.jsonl','root-sources.jsonl','postseal-sources.jsonl'):
+    for filename in ('recruitment-sources.jsonl','root-sources.jsonl','postseal-sources.jsonl','resume-sources.jsonl'):
         rows.extend(json.loads(x) for x in (ROOT/'evidence'/filename).read_text().splitlines())
     assert len({x['id'] for x in rows})==len(rows)
     named=set();families=set()
@@ -39,7 +39,10 @@ def main():
     assert len(named)==24 and len(families)==21
     (ROOT/'SOURCES.jsonl').write_text(''.join(json.dumps(x,ensure_ascii=False)+'\n' for x in rows))
     post=csv_read(ROOT/'evidence/POSTSEAL_COSTS.csv');post_ids={x['id'] for x in post}
-    costs=[x for x in csv_read(ROOT/'COSTS.csv') if x['id'] not in post_ids and x['id']!='AUXILIARY-EXECUTION']
+    resume=csv_read(ROOT/'evidence/RESUME_COSTS.csv');resume_ids={x['id'] for x in resume}
+    # COSTS is both a retained base ledger and generated output. Strip previously
+    # generated rows before appending, so a second run never duplicates costs.
+    costs=[x for x in csv_read(ROOT/'COSTS.csv') if x['id'] not in post_ids|resume_ids and x['id']!='AUXILIARY-EXECUTION']
     for r in costs:
         external=r['unit']=='external read requests'
         r['aggregation_role']='base additive component' if external else 'local or unknown component'
@@ -47,6 +50,7 @@ def main():
         r['incremental_request_attempts_to_existing_root']=r['count'] if external else '0'
         r['project']=r.get('project','')
     costs.extend(post)
+    costs.extend(resume)
     aux=json.loads((ROOT/'evidence/auxiliary/observed-run-20261123/receipt.json').read_text())
     costs.append(dict(id='AUXILIARY-EXECUTION',actor='auxiliary_probe',phase='postseal research probe',unit='recorded supervisor run',count='1',
         count_status='actual execution, worker and supervisor exit0',excerpt_characters='',packet_characters='',common_characters='',
@@ -59,6 +63,20 @@ def main():
         w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(costs)
     reported=sum(int(x['incremental_request_attempts_to_existing_root'] or 0) for x in costs)
     incomplete=sum(int(x['incremental_request_attempts_to_existing_root'] or 0) for x in costs if x['id']=='POST-SG-WEB')
+    # Resume tool read operations include cached finds. They are explicitly not
+    # added to the older top-level-request components, whose units differ.
+    assert reported==224 and reported-incomplete==222
+    resume_operation_fields=('resume_read_operations','resume_github_read_operations',
+        'resume_web_open_operations','resume_web_find_operations',
+        'resume_access_failure_operations','resume_no_match_find_operations',
+        'resume_additional_sealed_reader_exposures','resume_native_target_runs')
+    resume_totals={k:sum(int(r.get(k) or 0) for r in resume) for k in resume_operation_fields}
+    resume_sources=[r for r in rows if r.get('phase')=='resume_postseal_review']
+    assert len(resume_ids)==len(resume)
+    assert all(not r['core20_eligible'] for r in resume_sources)
+    assert all(int(r['incremental_request_attempts_to_existing_root'])==0 for r in resume)
+    assert resume_totals['resume_read_operations']==50
+    assert sum(int(r.get('resume_read_operation_contribution') or 0) for r in resume_sources)==50
     tests=csv_read(ROOT/'TESTS.csv');views=csv_read(ROOT/'VIEWS.csv');frame=csv_read(ROOT/'FRAME.csv')
     counts=dict(source_records=len(rows),named_original_works=len(named),conservative_original_lineages=len(families),
         work_families=FAMILIES,eligible_named_work_ids=sorted(named),eligible_conservative_ids=sorted(families),
@@ -75,6 +93,17 @@ def main():
         source_excerpt_characters={v:sum(int(x['actual_excerpt_characters']) for x in views if x['view']==v) for v in ('A','B')},
         recorded_external_request_components_excluding_partially_logged_web=reported-incomplete,
         reported_external_request_components_including_partially_logged_web=reported,
+        historical_request_component_scope='pre-resume only; top-level request components with incomplete global instrumentation',
+        pre_resume_source_records=len(rows)-len(resume_sources),
+        resume_source_records=len(resume_sources),
+        resume_local_original_reread_records=sum(r.get('operation')=='retained_original_reread' for r in resume_sources),
+        resume_read_operations_by_actor={r['project']:int(r['resume_read_operations']) for r in resume},
+        resume_new_named_work_units=sum(r['named_work_units'] for r in resume_sources),
+        resume_new_conservative_lineage_units=sum(r['counted_work_units'] for r in resume_sources),
+        resume_transport_internal_http_count=None,
+        resume_cost_complete=False,
+        resume_unit_note='50 tool-level source read operations (including cached web finds), separate from historical request components; do not add to 222/224. Local rereads have zero external-operation contribution.',
+        **resume_totals,
         global_cost_complete=False,status='PARTIAL')
     assert counts['frozen_cases']==9 and counts['target_executed']==0 and counts['auxiliary_predicate_cases']==5
     (ROOT/'evidence/COUNTS.json').write_text(json.dumps(counts,ensure_ascii=False,indent=2)+'\n')

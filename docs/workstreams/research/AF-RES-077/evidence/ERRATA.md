@@ -17,3 +17,22 @@ SC-X의 두 입력 길이는 같고 1MiB 블록의 양끝은 바뀌지 않으므
 ## E4 · 원장 계수의 보수적 재분류
 
 최초 자료 묶음 커밋은 이름이 다른 원저작21개를 등록했다. 검토에서 같은 프로젝트의 코드와 설명서 사이의 상관을 지적했다. 이후 모든 대상 제품의 코드/설명서를 일관되게 한 보수적 계보로 합치고, 별도 분야의 원저작3개를 직접 더 읽었다. 최종 named works24개, conservative lineages21개다. 같은 자료를 반복해서 수를 늘린 것이 아니며 기존 커밋을 소급 수정하지 않았다. `COUNTING.md`와 최종 `SOURCES.jsonl`에서 두 수준을 재계산한다.
+
+## E5 · 재개에서 확보한 MuseScore tracker의 부분 캐시와 시간 순서
+
+2026-11-23 재개 검토자는 https://musescore.org/en/node/281441 의 검색 서비스 캐시 본문 일부를 읽었다. 표시 저자는 ericfontainejazz, 작성 표시는2019-01-08 19:55(시간대 미확인), Reported version은3.0이고 본문은2.3.2에서도 발생했다고 보고한다. source에서 notes 선택 뒤 parts를 만들면 실제 Selection에 없으면서 선택색이 남는다는 재현이다. 표시된 첫 이력은2019-01-16 제목 변경이다. 검색 서비스는 crawl을1.3 years ago로 표시했고, 후속 두 open과 root의 두 재열람은403이었다.
+
+따라서 당시 접근 실패 기록은 유효한 과거 관측이지만, 현재 모든 저자·본문·신고판 정보가 전혀 없다는 서술은 `부분 캐시 확보, 최초판·전체 이력·원 서버 fresh 접근 미확인`으로 갱신한다. v3.0.1은2019-01-16 PR 이전판이지만2019-01-08 원 tracker 이후판이다. `pre-request`는 PR을 기준으로 한 설명에만 한정하며 신고판3.0/2.3.2와의 동등성은 미검증이다. 봉인 target SHA·BRIEFS·reader는 바꾸지 않았다. 원 요구에는 여전히 undo/reopen·범위 밖 성부 보존이 확인되지 않아 주 모집0/3은 유지된다. 자세한 agent/UTC/cache 근거는 `resume-review-musescore.json`과 `resume-sources.jsonl`에 있다.
+
+## E6 · 추가로 확인한 구현 경계와 관찰 혼동
+
+- Shotcut `ProxyReplacePostJobAction::doAction`은 `MainWindow::replaceAllByHash`를 호출하며 playlist/timeline 등의 hash 기준 교체로 이어진다. A1/B-F의 producer-scoped publication을 구현하려면 이 경로와 downstream `replaceClipsWithHash`도 검토·변경 대상이다. 기존 후보의 심벌 목록만으로 구현 범위가 닫혔다고 하지 않는다. frozen p2는H_BLUE라 해당 경로 때문에 p2가 실제 변경됐다고 관측한 것은 아니다.
+- SC-X A1은 rebuild 필요, B-F는 명시적 recovery decision 대기를 적었다. 핵심 mechanism이 같다는0/3 집계를 모든 정책·쓰기 순서의 동일성으로 넓히지 않는다. A의 자동재생성이 확정돼 있다고도 읽지 않는다.
+- MuseScore `Element::curColor`는 `selected()` 외 `Note::mark()`와 drop-target/printing 조건에도 영향을 받는다. MS-E는 생성 직후 selected flag와 Selection list·관련 표시조건을 함께 관찰해야 하며 파란색만으로 선택을 판정하지 않는다.
+- Sigil nested-folder move를 수용하려면 `AnchorUpdates` 외 `FolderKeeper`·`OPFModel`·import/reopen 경로를 바꿔야 한다. frozen SG-E의 지원 불가를 flat rename으로 대체하지 않는다.
+
+이는 사후 코드 검토가 추가한 실행 전제이며 새 목표 실행·봉인 입력 변경이 아니다. 재개 검토 보고3개에서 고정 URL·심벌·검토 범위를 확인할 수 있다.
+
+## E7 · TEI 절 명칭
+
+TEI P5 4.8.0 `#TCAPWL`의 정확한 표제는 **13.1.4.3 The Witness List**다. 과거 SOURCES 일부의 Witness Information은 상위절 이름과 혼합됐다. 봉인 packet의 실제 발췌·anchor·판과 선택은 변경하지 않고 최종 RESULT·SELF_CHECK와 새 source correction evidence에서 바로잡았다.

@@ -37,6 +37,8 @@ SC-X의 중간 bytes만 바꾼 예는 shared input 불변이라는 darktable 전
 
 [PR4590](https://github.com/musescore/MuseScore/pull/4590)의 ericfont(CONTRIBUTOR)은 selected source에서 파트를 만들면 파트 Selection은 비어 있는데 복제 요소가 파랗게 표시된다고 썼다. v3.0.1은 PR 전날의 고정 가능한 소스이지 작성자가 확정한 affected build가 아니다. C1은 새 파트의 선택 flag와 선택 list를 일치시키는 저자 지지 조건이다. C2는 음악 link/track mapping과 범위 밖 P2의 음·배치를 보존하는 연구 조건이다. undo/reopen 요구를 이 작성자의 원 요구로 확장하지 않았다.
 
+재개에서 원 tracker281441의 공식 페이지 캐시 일부를 확보했다. 표시된2019-01-08 신고와 Reported version3.0/본문2.3.2 보고는 v3.0.1보다 앞서므로, 이 소스 pin은 **PR 이전·원 신고 이후**다. 최초 body와 전체 이력은 미확인이고 후속 재열람은403이었다. 과거 접근 실패를 지우거나 현재 캐시를 최초판으로 대체하지 않는다. [E5](evidence/ERRATA.md), [재검토](evidence/resume-review-musescore.md).
+
 | 보기·후보 | 그대로 두는 부분 | 바꾸는 지점 | 쓰기/취소/실패 순서 | 추가 부담 |
 |---|---|---|---|---|
 | **A-C1 선택** | Element의 일반 복사, source Selection, 음악 link/track/system 예외, 현재 XML | `Excerpt::createExcerpt/cloneStaves`의 destination-only finalization에서 새 요소·자식 selected=false | clone/link 등록→독점 소유 clone의 선택 제거→공개→기존 pitch command/undo→현재 state 저장·읽기. 실패 생성은 자신의 새 객체/link만 정리 | 새 clone 방문 O(n), 저장 형식 변경0, 모든 excerpt route의 coverage 유지 |
