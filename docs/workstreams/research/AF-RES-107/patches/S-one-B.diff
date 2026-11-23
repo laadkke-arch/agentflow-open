@@ -1,0 +1,26 @@
+--- a/input.html
++++ b/input.html
+@@ -39,7 +39,7 @@
+ path.setAttribute("fill", "none");
+ path.setAttribute("stroke", "green");
+ path.setAttribute("stroke-width", "10");
+-path.setAttribute("marker-start", "url(#marker)");
++path.setAttribute("marker-start", "url(#marker-local)");
+ path.setAttribute("marker-end", "url(#marker)");
+ path.setAttribute("d", "M 130 135 L 180 135 L 180 185");
+ path.setAttribute("transform", "translate(-130, -120)");
+@@ -54,6 +54,14 @@
+ animate1.setAttribute("to", "180deg");
+ animate1.setAttribute("fill", "freeze");
+ marker.appendChild(animate1);
++
++// The edited call sites use a separate instance definition with the same animation.
++const localMarker = marker.cloneNode(true);
++localMarker.id = "marker-local";
++localMarker.querySelector("animate").removeAttribute("id");
++localMarker.querySelector("path").setAttribute("fill", "red");
++defsElement.appendChild(localMarker);
++
+ 
+ // Setup animation test
+ function sample1() {
