@@ -1,0 +1,302 @@
+{
+  "sealed_utc": "2026-11-23T23:26:17.687914+00:00",
+  "intent": {
+    "one": "정해진 첫 발생 하나만 새 값. 같은 정의를 쓰는 나머지와 전체 그림 보존.",
+    "all": "판독 가능한 원 공유 적격 집합 전체만 새 값. 집합 밖 그림·노드·본문 보존."
+  },
+  "method": {
+    "A": "원 공유 정의 또는 기본 선언에만 편집. 그 정의가 이미 보는 인자·값·시간 조건을 사용 가능. 호출 줄을 함께 수정하면 혼합 방식이므로 주 A 결과에서 제외.",
+    "B": "호출/사용/생성 줄에서 수정. 로컬 복사·외부 전역의 영향이 없는 분기 및 덮어쓰기는 허용. 원 공유 정의 본문을 고치지 않음. 전체 목적은 여러 사용을 각각 고칠 수 있음."
+  },
+  "methods_expected_before_runs": {
+    "T": {
+      "one-A": "정의 인자 view=(-30,0)로 선택하면 g12와 g21이 모두 바뀔 것으로 예측. 동적 호출 횟수나 펼침 인덱스는 원 testplot의 인자에 없음.",
+      "one-B": "PITCH 순번 count=1에만 every axis plot post 오버라이드.",
+      "all-A": "정의의 blue 리터럴을 red로 변경.",
+      "all-B": "YAW/PITCH와 여섯 직접 호출의 지역 plot post."
+    },
+    "S": {
+      "one-A": "공유 marker 삼각형 paint는 호출 위치 구분 값이 없어서 리터럴 변경 시 둘 다 바뀔 것으로 예측.",
+      "one-B": "첫 marker 사용만 새 로컬 marker를 참조하고 원 marker·둘째 사용 보존. 로컬 복사의 애니메이션, 치수와 모양 보존.",
+      "all-A": "삼각형 fill 정의 하나 변경.",
+      "all-B": "두 사용에만 별도 새 marker 참조."
+    },
+    "D": {
+      "one-A": "원 edge 기본값이 첫 생성만 구분하지 않아 공통 색 변경 시 e01–e21이 바뀔 것으로 예측.",
+      "one-B": "첫 chain 토큰 쌍을 독립 문장으로 분리해 첫 간선에만 color 지정.",
+      "all-A": "원 edge 기본색 하나 변경.",
+      "all-B": "chain의 각 간선과 개별 문장에 명시 color."
+    }
+  },
+  "criteria": {
+    "T": {
+      "coords_abs_pt": 0.02,
+      "geometry": "14쪽 순서, 사전 위치의 27 shaft와 바로 뒤 stealth fill; 이동·라벨·비대상 도형 및 새 도형은 기준 벡터/텍스트의 전체 구조와 추가 대조",
+      "pixel": "원 크기 PDF 6·11쪽을 1.5x 렌더. RGB exact count와 해당 figure box 내 검산",
+      "metadata": "raw PDF SHA256, CreationDate/ModDate와 의미 판독 해시는 별도"
+    },
+    "S": {
+      "coord_abs_csspx": 0.02,
+      "angle_abs_deg": 1.0,
+      "pixel_channel_slop": 2,
+      "pixel_palette_min_per_marker": 8,
+      "geometry": "2.000s에서 마커 두 발생의 좌표·크기·d·orient, 원 path·stroke·변환·제목·순서 보존. marker-start/end 참조의 computed style와 각 ROI 실제 픽셀 색 마스크의 보존을 함께 요구",
+      "pixel": "300×150 SVG(기준 실제 크기도 보존), DPR 1, 두 비중첩 ROI. 파랑/빨강 외형의 지문 및 이외 픽셀 색 지문을 분리. 공식 SMIL harness 통과/하네스 없음을 별도 표시"
+    },
+    "D": {
+      "coord_abs_svgpt": 0.02,
+      "geometry": "21개 undirected edge, 14개 label·node, SVG 출력 그룹 및 path d/필드/화살촉 수 보존. 원 예상 DOT/PS와 자기 기준은 별도",
+      "pixel": "동일 Chromium 창에서 SVG를 다시 그려 path별 start/내부/tip 주변과 전체 화면을 확인. 붉은 픽셀과 XML 색 일치. e01/e02 같은 화면으로 확인",
+      "pixel_channel_slop": 2
+    }
+  },
+  "baseline_slots": [
+    {
+      "id": "T-base-1",
+      "case": "T",
+      "repeat": 1
+    },
+    {
+      "id": "T-base-2",
+      "case": "T",
+      "repeat": 2
+    },
+    {
+      "id": "S-base-1",
+      "case": "S",
+      "repeat": 1
+    },
+    {
+      "id": "S-base-2",
+      "case": "S",
+      "repeat": 2
+    },
+    {
+      "id": "D-base-1",
+      "case": "D",
+      "repeat": 1
+    },
+    {
+      "id": "D-base-2",
+      "case": "D",
+      "repeat": 2
+    }
+  ],
+  "main_slots": [
+    {
+      "id": "T-one-A-1",
+      "case": "T",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/T-one-A.diff"
+    },
+    {
+      "id": "T-one-A-2",
+      "case": "T",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/T-one-A.diff"
+    },
+    {
+      "id": "T-one-B-1",
+      "case": "T",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/T-one-B.diff"
+    },
+    {
+      "id": "T-one-B-2",
+      "case": "T",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/T-one-B.diff"
+    },
+    {
+      "id": "T-all-A-1",
+      "case": "T",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/T-all-A.diff"
+    },
+    {
+      "id": "T-all-A-2",
+      "case": "T",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/T-all-A.diff"
+    },
+    {
+      "id": "T-all-B-1",
+      "case": "T",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/T-all-B.diff"
+    },
+    {
+      "id": "T-all-B-2",
+      "case": "T",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/T-all-B.diff"
+    },
+    {
+      "id": "S-one-A-1",
+      "case": "S",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/S-one-A.diff"
+    },
+    {
+      "id": "S-one-A-2",
+      "case": "S",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/S-one-A.diff"
+    },
+    {
+      "id": "S-one-B-1",
+      "case": "S",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/S-one-B.diff"
+    },
+    {
+      "id": "S-one-B-2",
+      "case": "S",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/S-one-B.diff"
+    },
+    {
+      "id": "S-all-A-1",
+      "case": "S",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/S-all-A.diff"
+    },
+    {
+      "id": "S-all-A-2",
+      "case": "S",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/S-all-A.diff"
+    },
+    {
+      "id": "S-all-B-1",
+      "case": "S",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/S-all-B.diff"
+    },
+    {
+      "id": "S-all-B-2",
+      "case": "S",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/S-all-B.diff"
+    },
+    {
+      "id": "D-one-A-1",
+      "case": "D",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/D-one-A.diff"
+    },
+    {
+      "id": "D-one-A-2",
+      "case": "D",
+      "purpose": "one",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/D-one-A.diff"
+    },
+    {
+      "id": "D-one-B-1",
+      "case": "D",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/D-one-B.diff"
+    },
+    {
+      "id": "D-one-B-2",
+      "case": "D",
+      "purpose": "one",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/D-one-B.diff"
+    },
+    {
+      "id": "D-all-A-1",
+      "case": "D",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 1,
+      "patch": "patches/D-all-A.diff"
+    },
+    {
+      "id": "D-all-A-2",
+      "case": "D",
+      "purpose": "all",
+      "method": "A",
+      "repeat": 2,
+      "patch": "patches/D-all-A.diff"
+    },
+    {
+      "id": "D-all-B-1",
+      "case": "D",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 1,
+      "patch": "patches/D-all-B.diff"
+    },
+    {
+      "id": "D-all-B-2",
+      "case": "D",
+      "purpose": "all",
+      "method": "B",
+      "repeat": 2,
+      "patch": "patches/D-all-B.diff"
+    }
+  ],
+  "controls_planned": [
+    "T-args-B",
+    "T-revert",
+    "T-local-positive",
+    "S-marker-B-shorthand",
+    "S-use-isolation",
+    "S-use-independent",
+    "S-use-copied",
+    "S-use-param-A",
+    "S-use-cascade-B",
+    "D-chain-B",
+    "D-history-default",
+    "D-history-reassign",
+    "D-scope-A"
+  ],
+  "classification": {
+    "pass": "목표 모두 정확한 새 값, 오변경 0, 모든 보존 항목 통과",
+    "purpose_fail": "출력 관측 뒤 변경 집합/보존 항목 불일치",
+    "output_missing": "도구 실패나 판독 불가. 분자 미확인, 예정 분모 유지. 반복은 양쪽 출력 있는 쌍만 의미 분모 산입",
+    "vacant": "선정 한계 내 적격 원본 없음. 예정 자리 유지, 공개 사례 실측 분모에서 분리",
+    "tool_unavailable": "도구 준비 실패. 출력 없음과 원본 결원에서 분리"
+  },
+  "comparison": "원본·목적별 A/B 2회씩. 도구 각 단계 종료와 목적 판정 분리. view 인자가 같아도 그림 발생 ID는 다름. 실제 A/B 동등·비동등은 이름 대신 색 집합, 배경·화살촉·텍스트와 기하, 화면으로 대조. 입력·patch·출력 SHA-256은 실제 바이트."
+}
