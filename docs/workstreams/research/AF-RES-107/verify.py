@@ -89,7 +89,10 @@ def graph_values(folder, observed, case):
         record=dot_edges[frozenset(by_id[piece['id']]['endpoints'])]
         assert read_color==piece['color']==piece['css_color']==measure.rgb(record['color']), (folder,piece['id'])
         if 'arrowheads' in by_id[piece['id']]:
-            assert len(piece['head_shapes'])==by_id[piece['id']]['arrowheads'], (folder,piece['id'])
+            source_occurrence=by_id[piece['id']]
+            assert len(piece['head_shapes'])==source_occurrence['arrowheads'], (folder,piece['id'])
+            expected_len='2.5' if source_occurrence['chain_index'] is None else ''
+            assert record.get('len','')==expected_len, (folder,piece['id'],'len')
         exact,covered=measure.dot_samples(screen,piece['sample_xy'],case)
         assert exact==piece['pixel_neighborhood_counts'] and covered==piece['aa_neighborhood_counts'], (folder,piece['id'])
         opposite=case['new'] if read_color==case['old'] else case['old']
