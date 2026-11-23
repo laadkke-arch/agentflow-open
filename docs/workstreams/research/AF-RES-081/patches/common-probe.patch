@@ -1,0 +1,300 @@
+diff --git a/mtest/CMakeLists.txt b/mtest/CMakeLists.txt
+index 21799a0..fd2a361 100644
+--- a/mtest/CMakeLists.txt
++++ b/mtest/CMakeLists.txt
+@@ -244,6 +244,7 @@ subdirs (
+         zerberus/inputControls
+         zerberus/loop
+         testscript
++        af_res_081
+         )
+ 
+ 
+diff --git a/mtest/af_res_081/CMakeLists.txt b/mtest/af_res_081/CMakeLists.txt
+new file mode 100644
+index 0000000..4f67110
+--- /dev/null
++++ b/mtest/af_res_081/CMakeLists.txt
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0-only
++set(TARGET af_res_081)
++include(${PROJECT_SOURCE_DIR}/mtest/cmake.inc)
+diff --git a/mtest/af_res_081/af_res_081.cpp b/mtest/af_res_081/af_res_081.cpp
+new file mode 100644
+index 0000000..cb6a28e
+--- /dev/null
++++ b/mtest/af_res_081/af_res_081.cpp
+@@ -0,0 +1,273 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <QApplication>
++#include <QJsonArray>
++#include <QJsonDocument>
++#include <QJsonObject>
++#include <cstdio>
++#include <memory>
++
++#include "libmscore/chord.h"
++#include "libmscore/excerpt.h"
++#include "libmscore/fingering.h"
++#include "libmscore/measure.h"
++#include "libmscore/mscore.h"
++#include "libmscore/note.h"
++#include "libmscore/pitchspelling.h"
++#include "libmscore/score.h"
++#include "libmscore/segment.h"
++#include "libmscore/undo.h"
++#include "mtest/testutils.h"
++
++using namespace Ms;
++
++namespace {
++QString identity(const void* pointer)
++      {
++      return QString::number(reinterpret_cast<quintptr>(pointer), 16);
++      }
++
++Score* part(const MasterScore* master, const QString& title)
++      {
++      for (const Excerpt* excerpt : master->excerpts()) {
++            if (excerpt->title() == title)
++                  return excerpt->partScore();
++            }
++      return nullptr;
++      }
++
++Note* note(const Score* score, int track)
++      {
++      if (!score)
++            return nullptr;
++      Measure* measure = score->firstMeasure();
++      Segment* segment = measure ? measure->first(SegmentType::ChordRest) : nullptr;
++      if (!segment || !segment->tick().isZero())
++            return nullptr;
++      Element* element = segment->element(track);
++      if (!element || !element->isChord() || toChord(element)->notes().size() != 1)
++            return nullptr;
++      return toChord(element)->notes().front();
++      }
++
++Element* fingering(const Note* note)
++      {
++      if (note) {
++            for (Element* element : note->el()) {
++                  if (element->type() == ElementType::FINGERING)
++                        return element;
++                  }
++            }
++      return nullptr;
++      }
++
++QJsonObject pointerRecord(const ScoreElement* element)
++      {
++      return QJsonObject {
++            {"id", identity(element)}, {"score_id", identity(element->score())},
++            {"type", QString::fromLatin1(element->name())},
++            };
++      }
++
++QJsonObject describe(const Element* element, const Note* parentNote)
++      {
++      if (!element)
++            return QJsonObject {{"present", false}};
++
++      const Score* score = element->score();
++      QJsonObject row = pointerRecord(element);
++      row["present"] = true;
++      row["flag"] = element->selected();
++      row["member"] = score->selection().elements().contains(const_cast<Element*>(element));
++      row["tick"] = parentNote->tick().ticks();
++      row["track"] = element->track();
++      row["voice"] = element->voice();
++      row["note_ordinal"] = 0;
++      row["measure_ordinal"] = 0;
++      row["parent_id"] = identity(element->parent());
++      row["visible"] = element->visible();
++      row["printing"] = score->printing();
++      row["drop_target"] = element->flag(ElementFlag::DROP_TARGET);
++      row["color"] = element->color().name(QColor::HexArgb);
++      row["cur_color"] = element->curColor().name(QColor::HexArgb);
++      row["selection_color"] = MScore::selectColor[element->voice()].name(QColor::HexArgb);
++      row["offset_sp"] = QJsonArray {element->offset().x() / element->spatium(),
++                                    element->offset().y() / element->spatium()};
++      const LinkedElements* links = element->links();
++      QJsonArray linkMembers;
++      if (links) {
++            for (const ScoreElement* peer : *links)
++                  linkMembers.append(pointerRecord(peer));
++            }
++      row["link_members"] = linkMembers;
++      row["link_id"] = links ? QJsonValue(links->lid()) : QJsonValue(QJsonValue::Null);
++      if (element->isNote()) {
++            const Note* item = toNote(element);
++            row["pitch"] = item->pitch();
++            row["tpc"] = QJsonArray {item->tpc1(), item->tpc2()};
++            row["mark"] = item->mark();
++            }
++      else {
++            row["mark"] = QJsonValue(QJsonValue::Null);
++            row["text"] = static_cast<const Fingering*>(element)->plainText();
++            }
++      return row;
++      }
++
++QJsonObject describeScore(const Score* score)
++      {
++      if (!score)
++            return QJsonObject {{"present", false}};
++      QJsonArray selection;
++      for (const Element* element : score->selection().elements()) {
++            QJsonObject item = pointerRecord(element);
++            item["track"] = element->track();
++            item["flag"] = element->selected();
++            selection.append(item);
++            }
++      return QJsonObject {
++            {"present", true}, {"score_id", identity(score)}, {"staves", score->nstaves()},
++            {"selection_state", int(score->selection().state())}, {"selection", selection},
++            };
++      }
++
++void observe(const MasterScore* master, const QString& stage)
++      {
++      // A location key survives serialization. Pointer IDs identify the
++      // membership relationships within the current process only.
++      const Score* p1 = part(master, "Flute");
++      const Score* p2 = part(master, "Oboe");
++      const Note* m1 = note(master, 0);
++      const Note* m2 = note(master, 4);
++      const Note* f1 = note(p1, 0);
++      const Note* f2 = note(p2, 0);
++      const Note* c1 = note(master, 1);
++      QJsonObject observations {
++            {"M1", describe(m1, m1)}, {"M2", describe(m2, m2)},
++            {"P1", describe(f1, f1)}, {"P2", describe(f2, f2)}, {"C1", describe(c1, c1)},
++            {"M1F", describe(fingering(m1), m1)}, {"P1F", describe(fingering(f1), f1)},
++            {"C1F", describe(fingering(c1), c1)},
++            };
++      QJsonObject scores {
++            {"master", describeScore(master)}, {"Flute", describeScore(p1)},
++            {"Oboe", describeScore(p2)},
++            };
++      QJsonObject record {
++            {"stage", stage}, {"objects", observations}, {"scores", scores},
++            {"undo_available", master->undoStack()->canUndo()},
++            {"undo_index", master->undoStack()->getCurIdx()},
++            {"qt_runtime", QString::fromLatin1(qVersion())},
++            };
++      QByteArray bytes = QJsonDocument(record).toJson(QJsonDocument::Compact);
++      bytes.append('\n');
++      std::fwrite(bytes.constData(), 1, bytes.size(), stdout);
++      std::fflush(stdout);
++      }
++
++Score* beginPart(MasterScore* master, int partIndex, const char* title)
++      {
++      master->startCmd();
++      auto excerpt = new Excerpt(master);
++      auto destination = new Score(master);
++      excerpt->setTitle(QString::fromLatin1(title));
++      excerpt->setParts(QList<Part*> {master->parts().at(partIndex)});
++      excerpt->setPartScore(destination);
++      master->undo(new AddExcerpt(excerpt));
++      Excerpt::createExcerpt(excerpt);
++      return destination;
++      }
++
++bool editPitch(Score* score, int pitch, Tpc tpc)
++      {
++      Note* target = note(score, 0);
++      if (!target)
++            return false;
++      score->startCmd();
++      score->undoChangePitch(target, pitch, tpc, tpc);
++      score->endCmd();
++      return true;
++      }
++
++int fail(const char* message)
++      {
++      std::fprintf(stderr, "af_res_081: %s\n", message);
++      return 2;
++      }
++
++class Experiment : private MTest {
++   public:
++      int run(const QString& id, const QString& input, const QString& output)
++            {
++            initMTest();
++            std::unique_ptr<MasterScore> master(readCreatedScore(input));
++            if (!master || master->parts().size() != 2 || master->nstaves() != 2)
++                  return fail("could not load the expected two-staff master");
++
++            Note* m1 = note(master.get(), 0);
++            const Note* m2 = note(master.get(), 4);
++            Element* nested = fingering(m1);
++            if (!m1 || !m2 || !nested || m1->pitch() != 60 || m2->pitch() != 67)
++                  return fail("input location or pitches do not match the fixture");
++            if (id == "--smoke") {
++                  observe(master.get(), "smoke_input");
++                  return 0;
++                  }
++
++            Score* p2 = beginPart(master.get(), 1, "Oboe");
++            master->endCmd();
++            if (!note(p2, 0))
++                  return fail("could not prepare the second part");
++            if (id == "E01" || id == "E04" || id == "E05")
++                  master->select(m1, SelectType::SINGLE, 0);
++            if (id == "E03")
++                  master->select(nested, SelectType::SINGLE, 0);
++            if (id == "E06")
++                  m1->setMark(true);
++            observe(master.get(), "start");
++
++            Score* p1 = nullptr;
++            if (id == "E05") {
++                  Segment* start = m1->chord()->segment();
++                  master->startCmd();
++                  master->cloneVoice(0, 1, start, start->measure()->endTick(), false, false);
++                  }
++            else {
++                  p1 = beginPart(master.get(), 0, "Flute");
++                  }
++            observe(master.get(), "immediate");
++            master->endCmd();
++            observe(master.get(), "after_command");
++
++            if (id == "E04") {
++                  if (!editPitch(p2, 69, Tpc::TPC_A))
++                        return fail("P2 pitch edit target is missing");
++                  observe(master.get(), "p2_edit");
++                  if (!editPitch(p1, 62, Tpc::TPC_D))
++                        return fail("P1 pitch edit target is missing");
++                  observe(master.get(), "p1_edit");
++                  master->undoRedo(true, nullptr);
++                  observe(master.get(), "undo_p1");
++                  }
++
++            observe(master.get(), "before_save");
++            if (!saveScore(master.get(), output))
++                  return fail("the native save returned false");
++            std::unique_ptr<MasterScore> reopened(readCreatedScore(output));
++            if (!reopened)
++                  return fail("the native reader rejected the saved score");
++            observe(reopened.get(), "reopened");
++            return 0;
++            }
++      };
++}
++
++int main(int argc, char** argv)
++      {
++      QApplication app(argc, argv);
++      const QStringList args = app.arguments();
++      if (args.size() == 3 && args[1] == "--smoke")
++            return Experiment().run(args[1], args[2], QString());
++      const QStringList cases {"E01", "E02", "E03", "E04", "E05", "E06"};
++      if (args.size() != 4 || !cases.contains(args[1]))
++            return fail("usage: af_res_081 CASE absolute-input.mscx output.mscx");
++      return Experiment().run(args[1], args[2], args[3]);
++      }
