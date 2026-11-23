@@ -25,3 +25,11 @@ X1/X2 × G/L × 독립 프로세스 2회, 총 8자리와 같은 반복 번호의
 - 실제 V 도달은 X11 입력뿐 아니라 `gui_action` 및 `toggle_visible_enter`에서 확인한다. P에서 지정 음의 실값이 변하고 편집 macro 인덱스가 +1, Undo 1회로 편집 직전 인덱스와 객체값 복구를 예상한다. N은 NONE 및 공집합, 인덱스와 값 무변화 예상이다. 주 시험에서 메뉴 종료 시점보다 V 후 인덱스 +1을 예상한다. 실제 값이 변한 자리에서 V의 독립 macro임을 확인한 뒤 한 번만 Ctrl+Z를 보내며 Explode 구조와 주소를 대조한다. Undo는 RANGE의 복원을 가정하지 않는다. 상태마다 실제 목록을 기록한다. [명령 경계](https://github.com/musescore/MuseScore/blob/f4fcf53ff65c56f0efb616a3af209d3faba9b342/libmscore/cmd.cpp#L146-L191) · [UndoStack](https://github.com/musescore/MuseScore/blob/f4fcf53ff65c56f0efb616a3af209d3faba9b342/libmscore/undo.cpp#L319-L386)
 - 작동하는 두 빌드에 한한 일치 결론은 P/N 유효, 각 메뉴 분기와 V 도달 확인, 두 반복의 실제 변경 키/전후 값/Undo/재열기 대조가 전제다. V가 도달했으나 무변화, 포커스 이탈·액션 미도달, 프로세스/저장/식별 실패를 개별 집계한다. 색이 같아도 피어 효과 또는 Undo가 다르면 실질 불일치다. 개체가 없거나 분모가 0이면 각각 미확인과 산출 불가로 표기한다. 모델·UI·재열기 근거와 두 반복을 보존한다.
 - 제외는 081 직접 API, 085의 네 메뉴·픽셀 전수·원 CTest, 도착 보표에 음이 이미 있는 입력, 선택 필터를 변경한 정식 자리다. 실제 사람의 조작 비용은 조사 자료로 확인할 때만 평가한다.
+
+## Q6 탐색 추가 조건
+
+정식 12자리 실행을 마친 뒤 ④의 자기 결론 점검에 한해 아래 탐색을 고정한다. 정식 자리, 입력 바이트와 사전 기준은 ① 그대로다. 탐색 결과가 빠져도 사전 표를 채워 넣지 않는다.
+
+- **F-P / F-X**는 동일한 X1 및 G/L 각 새 프로세스의 Selection Filter에서 Voice 1만 끈다. 수동으로 동일한 두 보표를 범위 선택하면 voice 2의 원 E4만 목록에 남아 V가 바뀔 것을 예상한다. F-X에서는 같은 몸짓 뒤 Tools → Explode가 E4를 아래 보표 voice 1로 옮기므로 같은 범위 좌표에도 목록이 비고 V의 undo macro가 생기지 않을 것을 예상한다. 반증은 V 도달 확인 후 포커스가 동일한데 F-P가 무변화이거나 F-X가 요소를 하나라도 변경하는 경우다.
+- **PEER**는 X2 master의 Violin staff 2 첫 G4만 포함하는 수동 RANGE다. G/L 각 새 프로세스에서 master Note 67만 1→0, 링크된 Violin 파트의 Note 67은 1 유지, 링크 두 방향 보존을 예상한다. Q6의 피어 확인으로 쓴다. 이 범위에 우연히 딸려 온 객체는 실제 목록에 기록한다.
+- 추가 조건은 탐색에 따른 선택 편향이 가능한 사례다. 각각 두 빌드의 한 번씩을 증거로 남기고, 정식 8+4 및 두 반복의 결론과 분리한다. [선택 필터의 범위 생성](https://github.com/musescore/MuseScore/blob/f4fcf53ff65c56f0efb616a3af209d3faba9b342/libmscore/select.cpp#L479-L531)
