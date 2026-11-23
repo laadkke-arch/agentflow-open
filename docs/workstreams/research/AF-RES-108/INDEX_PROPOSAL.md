@@ -1,0 +1,1 @@
+- AF-RES-108 · PARTIAL · SQLite 3.51.1·Flexbox 8쌍, 32회 실행. 같은 문자에서 K/E 확정 8/16씩·오답 0/8씩, E에 F2 정상 정답 1과 F4 정상 손실 1. SQLite 당시 문서와 canonical 시험·POSIX 직접 열람 결원. [결과](RESULT.md) · [선행 AF-RES-104 고정판](https://github.com/laadkke-arch/agentflow-open/blob/f38c0af427c66876bf411bfd0a728cfcd60013eb/docs/workstreams/research/AF-RES-104/RESULT.md)
