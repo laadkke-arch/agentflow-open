@@ -233,10 +233,11 @@ def exact_validation(cases, packets, bodies, initial):
             span = stored["segments"][cite["segment"] - 1]
             file = stored["file_id"]
             raw, text = bodies[file]
+            recomputed = make_segment(raw, text, *cite["unicode"])
             if (file != cite["file_id"] or stored["url"] != cite["url"]
                     or not contained([span["unicode"]], *cite["unicode"])
                     or not contained([span["utf8"]], *cite["utf8"])
-                    or cite["sha256"] != make_segment(raw, text, *cite["unicode"])["sha256"]):
+                    or any(cite[k] != recomputed[k] for k in ("utf8", "sha256", "lines_lf"))):
                 raise ValueError("current citation outside its displayed window")
             n_citations += 1
     for pid, packet in by_packet.items():
@@ -332,6 +333,11 @@ def main():
     counted = [s for s in source_rows if s["census_counted"]]
     if len({s["fixed_url"] for s in counted}) != len(counted):
         raise ValueError("duplicate fixed URL in source census")
+    groups = Counter(r["census_group"] for r in counted)
+    cross_groups = Counter(r["question_and_case"][-1] for r in counted if r["census_group"] == "crossdomain")
+    if (len(counted) < 26 or groups["inherited_r0"] != 8 or groups["inherited_main"] < 8
+            or groups["inherited_adjacent"] < 6 or cross_groups["SQLite"] < 2 or cross_groups["CSS Grid"] < 2):
+        raise ValueError("source census misses a required fixed group")
     metrics = {
         "schema": "af-res-104-v1", "cases": len(cases), "packets": len(packets), "slots": sum(len(p["slots"]) for p in packets),
         "initial_condition_judgments": len(initial), "initial_citations_verified_visible": citations,
@@ -351,7 +357,7 @@ def main():
                           "F_whole_in_union": {w: sum(r["window_coverage"][w]["union_full"] for r in original_f) for w in ("W1", "W2")},
                           "F_any_overlap": {w: sum(r["window_coverage"][w]["overlap_codepoints"] > 0 for r in original_f) for w in ("W1", "W2")}},
         "new_refuted_conditions": sum(r["status"] == "refuted" for r in initial),
-        "source_census": {"rows": len(source_rows), "counted": len(counted), "by_group": dict(Counter(r["census_group"] for r in counted)),
+        "source_census": {"rows": len(source_rows), "counted": len(counted), "by_group": dict(groups),
                           "new_main_case_sample": 0},
         "prior_author_execution_verified_count": old_metrics["outcomes"]["same_version_input_output_verified"],
         "feature_visibility": {
