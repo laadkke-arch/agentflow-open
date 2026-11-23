@@ -1,0 +1,168 @@
+API Reference
+
+
+cy.validateSchema(schema, path)
+
+
+It is expected to be chained to an API response (from a cy.request() or cy.api()). It validates the response body against the provided schema.
+
+
+Parameters
+
+
+
+
+schema (object): The schema to validate against. Supported formats are plain JSON schema, Swagger, and OpenAPI documents.
+
+
+path (object, optional): This second parameter only applies to Swagger or OpenAPI documents. 
+It represents the path to the schema definition in a Swagger or OpenAPI document and is determined by three properties:
+
+
+endpoint (string, optional): The endpoint path.
+
+
+method (string, optional): The HTTP method. Defaults to 'GET'.
+
+
+status (integer, optional): The response status code. If not provided, defaults to 200.
+
+
+
+
+
+
+
+
+Returns
+
+
+
+
+Cypress.Chainable: The response object wrapped in a Cypress.Chainable.
+
+
+
+
+Throws
+
+
+
+
+Error: If any of the required parameters are missing or if the schema or schema definition is not found.
+
+
+
+
+Example providing a Plain JSON schema:
+
+
+cy.request('GET', 'https://awesome.api.com/users/1')
+  .validateSchema(schema);
+
+
+
+Example providing an OpenAPI 3.0.1 or Swagger 2.0 schema documents and path to the schema definition:
+
+
+cy.request('GET', 'https://awesome.api.com/users/1')
+  .validateSchema(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 });
+
+
+
+Using the path defined by { endpoint, method, status }, the plugin will automatically take the schema $ref for that definition, find it in the components section, and use it in the schema validation.
+
+
+ 
+
+
+Usage Examples
+
+
+For detailed usage examples, check the document USAGE-EXAMPLES.md.
+
+
+The examples included are for using:
+
+
+
+
+
+cy.validateSchema() command with a Plain JSON schema.
+
+
+
+
+
+cy.validateSchema() command with an OpenAPI 3.0.1 schema document.
+
+
+
+
+
+cy.validateSchema() command with a Swagger 2.0 schema document.
+
+
+
+
+
+cy.validateSchema() command in conjunction with cy.api() from the cypress-plugin-api or @bahmutov/cy-api plugins.
+
+
+
+
+
+
+Validation Results
+
+
+Here are some screenshots of schema validation tests run in Cypress.
+
+
+Test Passed
+
+
+When a test passes, the Cypress log will show the message: "✔️ PASSED - THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.".
+
+
+ 
+
+
+Test Failed
+
+
+When a test fails, the Cypress log will show the message: "❌ FAILED - THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA"; indicating the total number of errors: (Number of schema errors: N).
+
+
+Also, the Cypress log will show an entry for each of the individual schema validation errors as provided by Ajv. The errors that correspond to missing fields in the data validated are marked with the symbol 😡, and the rest of the errors with the symbol 😱.
+
+
+ 
+
+
+Detailed Error View in the Console
+
+
+If you open the Console in the browser DevTools, and click on the summary line for the schema validation error in the Cypress log, the console will display detailed information about all the errors. This includes:
+
+
+
+
+The total number of errors
+
+
+The full list of errors as provided by the Ajv.
+
+
+A user-friendly view of the mismatches between the validated data and the JSON schema, highlighting where each validation error occurred and the exact reason for the mismatch.
+
+
+
+
+ 
+
+
+Test Failed with More than 10 Errors
+
+
+When there are more than 10 schema validation errors, the Cypress log will show only the first 10 and, at the end of the list, an additional line indicating "...and N more

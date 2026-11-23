@@ -1,0 +1,228 @@
+API
+
+
+These are available from any of the exports that refer to a version of JSON
+Schema, such as @hyperjump/json-schema/draft-2020-12.
+
+
+
+
+
+registerSchema: (schema: object, retrievalUri?: string, defaultDialectId?: string) => void
+
+
+  Add a schema the local schema registry. When this schema is needed, it will
+  be loaded from the register rather than the filesystem or network. If a
+  schema with the same identifier is already registered, an exception will be
+  throw.
+
+
+
+
+
+unregisterSchema: (uri: string) => void
+
+
+  Remove a schema from the local schema registry.
+
+
+
+
+
+getAllRegisteredSchemaUris: () => string[]
+
+
+  This function returns the URIs of all registered schemas
+
+
+
+
+
+hasSchema: (uri: string) => boolean
+
+
+  Check if a schema with the given URI is already registered.
+
+
+
+
+
+(deprecated) addSchema: (schema: object, retrievalUri?: string, defaultDialectId?: string) => void
+
+
+  Load a schema manually rather than fetching it from the filesystem or over
+  the network. Any schema already registered with the same identifier will be
+  replaced with no warning.
+
+
+
+
+
+validate: (schemaURI: string, instance: any, outputFormat: ValidationOptions | OutputFormat = FLAG) => Promise<Output>
+
+
+  Validate an instance against a schema. This function is curried to allow
+  compiling the schema once and applying it to multiple instances.
+
+
+
+
+
+validate: (schemaURI: string) => Promise<Validator>
+
+
+  Compiling a schema to a validation function.
+
+
+
+
+
+restoreValidator: (serialized: string) => Validator
+
+
+  Restore a validation function from a serialized string without needing to recompile.
+
+
+
+
+
+FLAG: "FLAG"
+
+
+  An identifier for the FLAG output format as defined by the 2019-09 and
+  2020-12 specifications.
+
+
+
+
+
+InvalidSchemaError: Error & { output: Output & { valid: false } }
+
+
+  This error is thrown if the schema being compiled is found to be invalid.
+  The output field contains an Output object with information about the
+  error. You can use the setMetaSchemaOutputFormat configuration to set the
+  output format that is returned in output.
+
+
+
+
+
+setMetaSchemaOutputFormat: (outputFormat: OutputFormat) => void
+
+
+  Set the output format used for validating schemas.
+
+
+
+
+
+getMetaSchemaOutputFormat: () => OutputFormat
+
+
+  Get the output format used for validating schemas.
+
+
+
+
+
+setShouldMetaValidate: (isEnabled: boolean) => void
+
+
+  Enable or disable validating schemas.
+
+
+
+
+
+getShouldMetaValidate: (isEnabled: boolean) => void
+
+
+  Determine if validating schemas is enabled.
+
+
+
+
+
+
+Type Definitions
+
+
+The following types are used in the above definitions
+
+
+
+
+
+OutputFormat: FLAG
+
+
+  Only the FLAG output format is part of the Stable API. Additional output
+  formats are included as part of the Experimental API.
+
+
+
+
+
+Validator: (instance: any, outputFormat: ValidationOptions | OutputFormat = FLAG) => Output
+
+
+
+
+serialize: () => string
+
+
+
+
+  A compiled validation function that can be executed to validate an instance, or serialized to a string so it can be restored at a later time without needing to recompile.
+
+
+
+
+
+Output: { valid: boolean }
+
+
+  Output is an experimental feature of the JSON Schema specification. There
+  may be additional fields present in the Output, but only the valid
+  property should be considered part of the Stable API.
+
+
+
+
+
+OutputUnit:
+
+
+  A type used in detailed or hierarchical output formats. Contains information about an individual validation error or annotation.
+
+
+
+
+
+ValidationOptions:
+
+
+
+
+outputFormat?: OutputFormat
+
+
+plugins?: EvaluationPlugin[]
+
+
+
+
+
+
+
+
+Bundling
+
+
+Usage
+
+
+You can bundle schemas with external references into a single deliverable using
+the official JSON Schema bundling process introduced in the 2020-12
+specification. Given a schema

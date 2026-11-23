@@ -1,0 +1,137 @@
+{
+  "id": "SC-022",
+  "source_url": "https://github.com/elixir-europe/java-json-schema-validator/blob/fce4e303984b3b25087a1d9ce8985966e083c974/README.md",
+  "retrieved_utc": "2026-11-23T03:21:08.425Z",
+  "source_blob": "b5705c27806238c1c53ceba487e6d1d20eb904d2",
+  "raw_sha256": "e0db12a76f67827353ce0d1544904daf4d8724bd0019ea546a9fbf31445eae5f",
+  "format": ".md",
+  "renderer": "marked HTML + HTMLParser; RST=pandoc; AsciiDoc documented minimal title/paragraph/link/list mapping",
+  "first_heading": "Java Json Schema validation library based on JSONP v1.1 Json parser.",
+  "feature_section_found": false,
+  "word_count": 241,
+  "word_limit": 500,
+  "rendered_text_sha256": "120e99ece04573352916110149e013dc3587fee150b4ab909844807444dda75e",
+  "character_range": [
+    1,
+    2227
+  ],
+  "links": [],
+  "followup": null,
+  "structures": [
+    {
+      "tag": "h1",
+      "start": 1,
+      "end": 69,
+      "attrs": {},
+      "text": "Java Json Schema validation library based on JSONP v1.1 Json parser.",
+      "clipped": false
+    },
+    {
+      "tag": "h6",
+      "start": 72,
+      "end": 85,
+      "attrs": {},
+      "text": "compatibility",
+      "clipped": false
+    },
+    {
+      "tag": "h6",
+      "start": 195,
+      "end": 211,
+      "attrs": {},
+      "text": "maven repository",
+      "clipped": false
+    },
+    {
+      "tag": "code",
+      "start": 234,
+      "end": 512,
+      "attrs": {
+        "class": "language-xml"
+      },
+      "text": "<dependencies>\n  <dependency>\n    <groupId>es.elixir.bsc.json.schema</groupId>\n    <artifactId>jaronuinga</artifactId>\n    <version>0.5.6</version>\n  </dependency>\n...\n<repositories>\n  <repository>\n    <id>jaronuinga</id>\n    <url>https://inb.bsc.es/maven</url>\n  </repository>",
+      "clipped": false
+    },
+    {
+      "tag": "code",
+      "start": 537,
+      "end": 768,
+      "attrs": {
+        "class": "language-java"
+      },
+      "text": "JsonSchema schema = JsonSchemaReader.getReader().read(url); // parse JsonSchema from the URL location\nList<ValidationError> errors = new ArrayList(); // array to collect errors\nschema.validate(json, errors); // validate JsonObject",
+      "clipped": false
+    },
+    {
+      "tag": "code",
+      "start": 1077,
+      "end": 1222,
+      "attrs": {
+        "class": "language-java"
+      },
+      "text": "schema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n});",
+      "clipped": false
+    },
+    {
+      "tag": "li",
+      "start": 1249,
+      "end": 1296,
+      "attrs": {},
+      "text": "subschema - current validating Json (sub)schema",
+      "clipped": false
+    },
+    {
+      "tag": "li",
+      "start": 1299,
+      "end": 1350,
+      "attrs": {},
+      "text": "pointer - Json Pointer to the validating Json value",
+      "clipped": false
+    },
+    {
+      "tag": "li",
+      "start": 1353,
+      "end": 1392,
+      "attrs": {},
+      "text": "value - currently validating Json value",
+      "clipped": false
+    },
+    {
+      "tag": "li",
+      "start": 1395,
+      "end": 1447,
+      "attrs": {},
+      "text": "parent - a parent of currently validating Json value",
+      "clipped": false
+    },
+    {
+      "tag": "li",
+      "start": 1450,
+      "end": 1490,
+      "attrs": {},
+      "text": "err - collected validation errors so far",
+      "clipped": false
+    },
+    {
+      "tag": "code",
+      "start": 1495,
+      "end": 1907,
+      "attrs": {
+        "class": "language-java"
+      },
+      "text": "JsonSchemaReader reader = JsonSchemaReader.getReader();\nJsonSchemaLocator locator = reader.getJsonSchemaLocator(uri);\nJsonSchema schema = reader.read(locator);\nschema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n        JsonObject subschemaJsonObject = locator.getSchema(subschema.getId(), subschema.getJsonPointer());\n});",
+      "clipped": false
+    },
+    {
+      "tag": "code",
+      "start": 1972,
+      "end": 2228,
+      "attrs": {
+        "class": "language-java"
+      },
+      "text": "schema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n        throw new ValidationException(new ValidationError(subschema.getId(), subschema.getJsonPointer(), \"\"));\n});",
+      "clipped": true
+    }
+  ],
+  "rendered_text": "Java Json Schema validation library based on JSONP v1.1 Json parser.\n\n\ncompatibility\n\n\nThe library supports draft-4, draft-6, draft-7, draft-2019-09 and draft-2020-12 versions of Json Schema.\n\n\nmaven repository\n\n\nimport via maven:\n\n\n<dependencies>\n  <dependency>\n    <groupId>es.elixir.bsc.json.schema</groupId>\n    <artifactId>jaronuinga</artifactId>\n    <version>0.5.6</version>\n  </dependency>\n...\n<repositories>\n  <repository>\n    <id>jaronuinga</id>\n    <url>https://inb.bsc.es/maven</url>\n  </repository>\n\n\n\nThe simplest usage:\n\n\nJsonSchema schema = JsonSchemaReader.getReader().read(url); // parse JsonSchema from the URL location\nList<ValidationError> errors = new ArrayList(); // array to collect errors\nschema.validate(json, errors); // validate JsonObject\n\n\n\nNote that instead of URL users could provide their own schema locators.\nJsonSchemaLocator object is used for JsonSchema URI resolution and as a cache for local Schemas' definitions -\nto resolve \"$ref\" Json Pointers.\n\n\nTo provide flexibility it is possible to get callbacks during the validation process.\n\n\nschema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n});\n\n\n\nHere above we have:\n\n\n\n\nsubschema - current validating Json (sub)schema\n\n\npointer - Json Pointer to the validating Json value\n\n\nvalue - currently validating Json value\n\n\nparent - a parent of currently validating Json value\n\n\nerr - collected validation errors so far\n\n\n\n\nJsonSchemaReader reader = JsonSchemaReader.getReader();\nJsonSchemaLocator locator = reader.getJsonSchemaLocator(uri);\nJsonSchema schema = reader.read(locator);\nschema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n        JsonObject subschemaJsonObject = locator.getSchema(subschema.getId(), subschema.getJsonPointer());\n});\n\n\n\nWe can also stop further parsing on error via the callback:\n\n\nschema.validate(json, errors, (\n    JsonSchema subschema, String pointer, JsonValue value, JsonValue parent, List<ValidationError> err) -> {\n        throw new ValidationException(new ValidationError(subschema.getId(), subschema.getJsonPointer(), \"\"));\n});"
+}

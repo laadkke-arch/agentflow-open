@@ -1,0 +1,184 @@
+Features
+
+
+
+
+fully conforming JSON-LD 1.1 API processor
+
+
+JSON-LD reader/writer for RDF.ex
+
+
+customizable HTTP client for remote document loading
+
+
+tests of the JSON-LD test suite (see here for the EARL reports)
+
+
+
+
+TODO
+
+
+
+
+JSON-LD Framing
+
+
+JSON-LD HTML Content Algorithms
+
+
+
+
+Usage
+
+
+Expand a document
+
+
+"""
+{
+ "@context":
+ {
+    "name": "http://xmlns.com/foaf/0.1/name",
+    "homepage": {
+      "@id": "http://xmlns.com/foaf/0.1/homepage",
+      "@type": "@id"
+    }
+ },
+ "name": "Manu Sporny",
+ "homepage": "http://manu.sporny.org/"
+}
+"""
+|> Jason.decode!
+|> JSON.LD.expand
+
+
+
+produces
+
+
+[%{"http://xmlns.com/foaf/0.1/homepage" => [%{"@id" => "http://manu.sporny.org/"}],
+   "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Manu Sporny"}]}]
+
+
+
+Compact a document
+
+
+context = Jason.decode! """
+  {
+    "@context": {
+      "name": "http://xmlns.com/foaf/0.1/name",
+      "homepage": {
+        "@id": "http://xmlns.com/foaf/0.1/homepage",
+        "@type": "@id"
+      }
+    }
+  }
+  """
+
+"""
+[
+  {
+    "http://xmlns.com/foaf/0.1/name": [ "Manu Sporny" ],
+    "http://xmlns.com/foaf/0.1/homepage": [
+      {
+       "@id": "http://manu.sporny.org/"
+      }
+    ]
+  }
+]
+"""
+|> Jason.decode!
+|> JSON.LD.compact(context)
+
+
+
+produces 
+
+
+%{"@context" => %{
+    "homepage" => %{
+        "@id" => "http://xmlns.com/foaf/0.1/homepage", 
+        "@type" => "@id"},
+    "name" => "http://xmlns.com/foaf/0.1/name"
+    },
+  "homepage" => "http://manu.sporny.org/", 
+  "name" => "Manu Sporny"}
+
+
+
+RDF Reader and Writer
+
+
+JSON-LD.ex can be used to serialize or deserialize RDF graphs by using it as a RDF.ex reader and writer.
+
+
+dataset = JSON.LD.read_file!("file.jsonld")
+JSON.LD.write_file!(dataset, "file.jsonld")
+
+
+
+When a context is provided via the :context option (as a map, a RDF.PropertyMap or a string with a URL to a remote context), the document gets automatically compacted on serialization.
+
+
+JSON.LD.write_file!(dataset, "file.jsonld", context: %{ex: "https://example.com/"})
+JSON.LD.write_file!(dataset, "file.jsonld", context: "https://schema.org/")
+
+
+
+Pretty printing
+
+
+Pretty printing is possible on all writer functions with all the formatter options of Jason, the underlying JSON encoder, to which the given options are passed through.
+
+
+JSON.LD.write_file!(dataset, "file.jsonld", pretty: true)
+JSON.LD.write_string(dataset, "file.jsonld", pretty: [indent: "\t"])
+
+
+
+Contributing
+
+
+see CONTRIBUTING for details.
+
+
+Consulting
+
+
+If you need help with your Elixir and Linked Data projects, just contact NinjaConcept via contact@ninjaconcept.com.
+
+
+Acknowledgements
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+This project is partly funded through NGI0 Commons Fund, a fund established by NLnet with financial support from the European Commission's Next Generation Internet program.
+
+
+JetBrains supports the project with complimentary access to its development environments.
+
+
+License and Copyright
+
+
+(c) 2017-present Marcel Otto. MIT Licensed, see LICENSE for details.

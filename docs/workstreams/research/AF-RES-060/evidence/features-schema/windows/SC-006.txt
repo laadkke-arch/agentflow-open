@@ -1,0 +1,217 @@
+ajv-cli
+
+
+Command line interface for ajv, one of the fastest json schema validators.
+Supports JSON, JSON5, and YAML.
+
+
+
+
+
+
+
+
+Contents
+
+
+
+
+Installation
+
+
+JSON schema version
+
+
+Commands
+
+
+Help
+
+
+Validate data
+
+
+Compile schemas
+
+
+Migrate schemas
+
+
+Test validation result
+
+
+
+
+
+
+Ajv options
+
+
+Version History, License
+
+
+
+
+Installation
+
+
+npm install -g ajv-cli
+
+
+
+JSON schema language and version
+
+
+Parameter --spec can be used with all commands (other than help) to choose JSON schema language:
+
+
+
+
+--spec=draft7 (default) - support JSON Schema draft-07 (uses import Ajv from "ajv")
+
+
+--spec=draft2019 - support JSON Schema draft-2019-09 (uses import Ajv from "ajv/dist/2019")
+
+
+--spec=draft2020 - support JSON Schema draft-2020-12 (uses import Ajv from "ajv/dist/2020")
+
+
+--spec=jtd - support JSON Type Definition (uses import Ajv from "ajv/dist/jtd")
+
+
+
+
+Commands
+
+
+Help command
+
+
+ajv help
+ajv help validate
+ajv help compile
+ajv help migrate
+ajv help test
+
+
+
+Validate data
+
+
+This command validates data files against JSON-schema
+
+
+ajv validate -s test/schema.json -d test/valid_data.json
+ajv -s test/schema.json -d test/valid_data.json
+
+
+
+You can omit validate command name and .json from the input file names.
+
+
+Parameters
+
+
+-s - file name of JSON-schema
+
+
+Only one schema can be passed in this parameter
+
+
+-d - JSON data
+
+
+Multiple data files can be passed, as in -r parameter:
+
+
+ajv -s test/schema.json -d "test/valid*.json"
+
+
+
+If some file is invalid exit code will be 1.
+
+
+-r - referenced schemas
+
+
+The schema in -s parameter can reference any of these schemas with $ref keyword.
+
+
+Multiple schemas can be passed both by using this parameter multiple times and with glob patterns. Glob pattern should be quoted and extensions cannot be omitted.
+
+
+-m - meta-schemas
+
+
+Schemas can use any of these schemas as a meta-schema (that is the schema used in $schema keyword - it is used to validate the schema itself).
+
+
+Multiple meta-schemas can be passed, as in -r parameter.
+
+
+-c - custom keywords/formats definitions
+
+
+You can pass module(s) that define custom keywords/formats. The modules should export a function that accepts Ajv instance as a parameter. The file name should start with ".", it will be resolved relative to the current folder. The package name can also be passed - it will be used in require as is.
+These modules can be written in TypeScript if you have ts-node installed.
+
+
+For example, you can use -c ajv-keywords to add all keywords from ajv-keywords package or -c ajv-keywords/keywords/typeof to add only typeof keyword.
+
+
+Options
+
+
+
+
+
+--errors=: error reporting format. Possible values:
+
+
+
+
+js (default): JavaScript object
+
+
+json: JSON with indentation and line-breaks
+
+
+line: JSON without indentation/line-breaks (for easy parsing)
+
+
+text: human readable error messages with data paths
+
+
+
+
+
+
+
+--changes=: detect changes in data after validation.
+
+Data can be modified with Ajv options --remove-additional, --use-defaults and --coerce-types).
+
+The changes are reported in JSON-patch format (RFC6902).
+
+Possible values are js (default), json and line (see --errors option).
+
+
+
+
+
+
+Compile schemas
+
+
+This command validates and compiles schema without validating any data.
+
+
+It can be used to check that the schema is valid and to create a standalone module exporting validation function(s).
+
+
+ajv compile -s schema
+
+# compile to module file
+ajv compile -s schema -o validate.js
+
+## compile to stdout,

@@ -1,0 +1,167 @@
+API 
+
+
+Environment 
+
+
+To instantiate djv environment
+
+
+const djv = require('djv');
+const env = djv({
+  version: 'draft-06', // use json-schema draft-06
+  formats: { /*...*/ }, // custom formats @see #addFormat
+  errorHandler: () => { /*...*/ }, // custom error handler, @see #setErrorHandler
+});
+
+
+
+To use a previous version of JSON-Schema draft, use a draft-04 plugin, specified in optionalDependencies of djv package.
+
+
+const env = new djv({ version: 'draft-04' });
+
+
+
+addSchema(name: string, schema: object?) -> resolved: object 
+
+
+Add a schema to a current djv environment,
+
+
+env.addSchema('test', jsonSchema);
+/* => {
+  fn: function f0(data){...}
+  name: 'test'
+  schema: ...
+} */
+
+
+
+validate(name: string, object: object) -> error: string 
+
+
+Check if object is valid against the schema
+
+
+env.validate('test#/common', { type: 'common' });
+// => undefined
+
+env.validate('test#/common', { type: 'custom' });
+// => 'required: data'
+
+
+
+where
+
+
+
+
+name - schema path in current environment
+
+
+object - object to validate
+
+
+error - undefined if it is valid
+
+
+
+
+removeSchema(name: string) 
+
+
+Remove a schema or the whole structure from the djv environment
+
+
+env.removeSchema('test');
+
+
+
+resolve(name: string?) 
+
+
+Resolve the name by existing environment
+
+
+env.resolve('test');
+// => { name: 'test', schema: {} }, fn: ... }
+
+
+
+export(name: string?) -> state: object 
+
+
+Export the whole structure object from environment or resolved by a given name
+
+
+env.export();
+// => { test: { name: 'test', schema: {}, ... } }
+
+
+
+where state is an internal structure or only resolved schema object
+
+
+import(config: object) 
+
+
+Import all found structure objects to internal environment structure
+
+
+env.import(config);
+
+
+
+addFormat(name: string, formatter: string/function) 
+
+
+Add formatter to djv environment. When a string is passed it is interpreted as an expression which when returns true goes with an error, when returns false then a property is valid. When a function is passed it will be executed during schema compilation with a current schema and template helper arguments.
+
+
+env.addFormat('UpperCase', '%s !== %s.toUpperCase()');
+// or
+env.addFormat('isOk', function(schema, tpl){
+  return `!${schema.isOk}`;
+});
+env.validate('ok', 'valid') // => undefined if schema contains isOk property
+
+
+
+setErrorHandler(errorHandler: function) 
+
+
+Specify custom error handler which will be used in generated functions when problem found.
+The function should return a string expression, which will be executed when generated validator function is executed. The simplist use case is the default one @see template/defaultErrorHandler
+
+
+ function defaultErrorHandler(errorType) {
+   return `return "${errorType}: ${tpl.data}";`;
+ }
+
+
+
+It returns an expression 'return ...', so the output is an error string.
+
+
+djv({ errorHandler: () => 'return { error: true };' }) // => returns an object
+djv({
+  errorHandler(type) {
+    return `errors.push({
+      type: '${type}',
+      schema: '${this.schema[this.schema.length - 1]}',
+      data: '${this.data[this.data.length - 1]}'
+    });`;
+  }
+});
+
+
+
+When a custom error handler is used, the template body function adds a error variable inside a generated validator, which can be used to put error information. errorType is always passed to error handler function. Some validate utilities put extra argument, like f.e. currently processed property value. Inside the handler context is a templater instance, which contains this.schema, this.data paths arrays to identify validator position.
+@see test/index/setErrorHandler for more examples
+
+
+useVersion(version: string, configure: function) 
+
+
+To customize environment provide a configure function which will update configuration for djv instance.

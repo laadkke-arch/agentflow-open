@@ -1,0 +1,193 @@
+Features & conformance
+
+
+This library aims to conform with the following W3C Recommendations:
+
+
+
+
+
+
+
+Standard
+
+
+Status
+
+
+
+
+
+
+
+JSON-LD 1.1
+
+
+W3C Recommendation
+
+
+
+
+
+
+JSON-LD 1.1 Processing Algorithms and API
+
+
+W3C Recommendation
+
+
+
+
+
+
+JSON-LD 1.1 Framing
+
+
+W3C Recommendation
+
+
+
+
+
+
+RDF Dataset Canonicalization
+
+
+W3C Recommendation
+
+
+
+
+
+
+The test runner is
+often updated to note or skip newer tests that are not yet supported.
+
+
+Advanced Topics
+
+
+Document Loader
+
+
+The default document loader for PyLD uses
+Requests. In a production environment you
+may want to setup a custom loader that, at a minimum, sets a timeout value. You
+can also force requests to use https, set client certs, disable verification, or
+set other Requests parameters.
+
+
+jsonld.set_document_loader(jsonld.requests_document_loader(timeout=...))
+
+
+
+The factory remains the compatibility API, and the concrete class is also
+available when class-based construction is preferred:
+
+
+from pyld import RequestsDocumentLoader
+
+jsonld.set_document_loader(RequestsDocumentLoader(timeout=...))
+
+
+
+An asynchronous document loader using aiohttp is also available. Please note
+that this document loader limits asynchronicity to fetching documents only. The
+processing loops remain synchronous.
+
+
+jsonld.set_document_loader(jsonld.aiohttp_document_loader(timeout=...))
+
+
+
+The concrete aiohttp loader class is available from pyld as well:
+
+
+from pyld import AioHttpDocumentLoader
+
+jsonld.set_document_loader(AioHttpDocumentLoader(timeout=...))
+
+
+
+When no document loader is specified, the default loader is set to
+Requests. If Requests is not available, the
+loader is set to aiohttp. The fallback document loader is a dummy document
+loader that raises an exception on every invocation.
+
+
+Frozen Document Loader
+
+
+For air-gapped runs, reproducible builds, and security-hardened deployments that
+must not perform any remote context fetches at all, PyLD ships
+FrozenDocumentLoader: a class-based loader that serves only the URLs in its
+documents allowlist and refuses everything else with
+JsonLdError(code='loading document failed').
+
+
+Instantiating with no arguments serves the curated BUNDLED_CONTEXTS set
+(ActivityStreams, DID v1, Verifiable Credentials v1 and v2, Linked Data Security
+v1/v2, Ed25519-2020, and JWS-2020). To extend the bundle with additional
+pre-vetted contexts, pass a merged mapping:
+
+
+from pyld import jsonld, FrozenDocumentLoader, BUNDLED_CONTEXTS
+
+loader = FrozenDocumentLoader(documents=dict(
+    BUNDLED_CONTEXTS,
+    **{'https://example.com/my-ctx': Path('contexts/my-ctx.jsonld')},
+))
+jsonld.expand(doc, options={'documentLoader': loader})
+
+
+
+This honors the W3C JSON-LD Best Practices recommendation that clients SHOULD
+attempt to use a locally cached version of contexts (see
+§ Cache JSON-LD Contexts).
+Refresh the bundled copies with make download-bundled-contexts.
+
+
+Customizing the ContextResolver
+
+
+You can customize the way contexts are loaded and cached by passing an instance
+of ContextResolver. The following example implements a loader with a prefilled
+custom document cache and uses a custom LRU cache for resolved contexts:
+
+
+from pyld.jsonld import compact, expand, set_document_loader, ContextResolver
+import json
+from cachetools import LRUCache
+
+# Load the Linked Art context from file-system
+fh = open('linked-art.json')
+js = json.load(fh)
+fh.close()
+
+# Add to document cache
+docCache = {
+    "https://linked.art/ns/v1/linked-art.json": {
+        "contextUrl": None,
+        "documentUrl": "https://linked.art/ns/v1/linked-art.json",
+        "document": js
+    }
+}
+
+# Custom loader that uses the document cache
+def load_document_and_cache(url, options={}):
+    if url in docCache:
+        return docCache[url]
+    doc = {"contextUrl": None, "documentUrl": url, "document": ""}
+    resp = requests.get(url)
+    doc["document"] = resp.json()
+    docCache[url] = doc
+    return doc
+
+# Set the custom loader as global document loader
+set_document_loader(load_document_and_cache)
+# Create custom context resolver with custom LRU cache and custom loader
+resolved_context_cache = LRUCache(maxsize=1000)
+resolver = ContextResolver(resolved_context_cache, load_document_and_cache)
+
+# Expand JSON-LD document using custom context resolver
+input =

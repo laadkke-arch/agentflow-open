@@ -1,0 +1,370 @@
+Titanium JSON-LD 1.1 Processor & API
+
+
+An implementation of the JSON-LD 1.1 (JSON-based Serialization for Linked Data) specification in Java, utilizing Jakarta JSON Processing.
+
+
+🎯 Goals
+
+
+
+
+Full conformance to the specification
+
+
+Secure, stable, fast, high-quality code (~1800 tests)
+
+
+Minimal external dependencies
+
+
+Simple and easy-to-use
+
+
+
+
+🚦 Status
+
+
+
+
+
+
+
+
+
+
+
+
+🧩 Libraries & Tools
+
+
+
+
+LD-CLI - A native command line utility for Ubuntu, Mac, and Windows
+
+
+Titanium RDFC - W3C Standard RDF Dataset Canonicalization
+
+
+Titanium N-QUADS - W3C RDF 1.1 N-Quads
+
+
+Titanium JCS - RFC 8785 JSON Canonicalization Scheme (JCS)
+
+
+Iridium CBOR-LD - CBOR-based Processor for Linked Data
+
+
+
+
+Table of Contents
+
+
+
+
+Conformance
+
+
+Examples
+
+
+Installation
+
+
+Contributing
+
+
+Resources
+
+
+Commercial Support
+
+
+
+
+Conformance
+
+
+
+
+
+
+
+Feature
+
+
+Tests
+
+
+Pass
+
+
+Status
+
+
+Notes
+
+
+
+
+
+
+
+Expansion
+
+
+373
+
+
+373
+
+
+100%
+
+
+
+
+
+
+
+
+
+Compaction
+
+
+243
+
+
+243
+
+
+100%
+
+
+
+
+
+
+
+
+
+Flattening
+
+
+55
+
+
+55
+
+
+100%
+
+
+
+
+
+
+
+
+
+JSON-LD to RDF
+
+
+453
+
+
+451
+
+
+99.5%
+
+
+
+
+te075 - @vocab as blank node identifier
+
+tli12 - List with bad @base
+
+
+
+
+
+
+
+
+RDF to JSON-LD
+
+
+51
+
+
+51
+
+
+100%
+
+
+
+
+
+
+
+
+
+Framing
+
+
+89
+
+
+88
+
+
+98.8%
+
+
+
+
+t0059 - @embed: @last
+
+
+
+
+
+
+
+
+Remote Document and Context Retrieval
+
+
+18
+
+
+17
+
+
+94.4%
+
+
+
+
+t0013 - HTML document
+
+
+
+
+
+
+
+
+See EARL results from the JSON-LD 1.1 Test Suite for more details.
+
+
+Examples
+
+
+Titanium provides a high-level JsonLd API for interacting with JSON-LD documents.
+
+
+Transformations
+
+
+Perform standard JSON-LD operations such as expansion, compaction, flattening, framing, and conversion from/to RDF. The JSON-LD document to process can be remote or local, while context documents may also be local or remote.
+
+
+// Expansion from a remote JSON-LD document
+JsonLd.expand("https://w3c.github.io/json-ld-api/tests/expand/0001-in.jsonld")
+      .ordered()
+      .get();
+
+// Expansion from a local file with an external context
+JsonLd.expand("file:/home/filip/document.json")    // HTTP(S) and File schemes supported
+      .context("file:/home/filip/context.jsonld")  // external context
+      .get();
+
+// Compaction with a remote context
+JsonLd.compact("https://example/expanded.jsonld", "https://example/context.jsonld")
+      .compactToRelative(false)  // use absolute IRIs
+      .get();
+
+// Flattening a JSON-LD document
+JsonLd.flatten("https://example/document.jsonld").get();
+
+// Convert JSON-LD to RDF
+JsonLd.toRdf("https://example/document.jsonld").provide(RdfConsumer); 
+
+// RDF Dataset Canonicalization with Titanium RDFC
+var canonicalizer = new RdfCanon.create(...);
+JsonLd.toRdf("https://example/document.jsonld").provide(canonicalizer);
+canonicalizer.provide(RdfConsumer);
+// or with N-Quads output
+canonicalizer.provide(new NQuadsWriter(...));
+
+// Convert RDF to JSON-LD
+var consumer = JsonLd.fromRdf();
+consumer.quad(...);  // feed manually or via a reader
+(new NquadsReader(...)).provide(consumer);
+
+// Get the final JSON-LD result
+consumer.toJsonLd();
+
+// Framing a document
+JsonLd.frame("https://example/document.jsonld", "https://example/frame.jsonld").get();
+
+
+
+Local JSON Document
+
+
+Load and process JSON-LD documents directly from an InputStream or Reader. You can perform expansion or compaction using local documents and contexts.
+
+
+// Load JSON from InputStream or Reader
+Document document = JsonDocument.of(inputStream);
+Document context = JsonDocument.of(reader);
+
+// Expand the local document
+JsonLd.expand(document).get();
+
+// Compact using a local context
+JsonLd.compact(document, context).get();
+
+
+
+Processing Timeout [Experimental]
+
+
+Set a maximum processing duration for JSON-LD operations. The timeout does not include time spent loading external documents.
+
+
+// Terminates processing after the specified duration (excluding DocumentLoader time)
+JsonLd.expand(document)
+      .timeout(Duration.ofSeconds(5))
+      .get();
+
+
+
+HTTP Document Loader Timeout
+
+
+Customize the HTTP loader to apply a read timeout when fetching remote JSON-LD or context documents.
+
+
+// Configure a custom HTTP loader with a 30-second read timeout
+static DocumentLoader LOADER = HttpLoader.defaultInstance().timeout(Duration.ofSeconds(30));
+...
+JsonLd.expand(...).loader(LOADER).get();
+
+
+
+Document Caching
+
+
+Use an LRU-based cache to reuse previously loaded documents and reduce network calls. A cache instance can be shared across multiple operations.
+
+
+// LRU cache for remote documents (capacity = 100)
+JsonLd.expand("https://example.com/document.jsonld")
+      .loader(new LRUDocumentCache(loader, 100))
+      .get();

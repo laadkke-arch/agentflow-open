@@ -1,0 +1,189 @@
+JSON-LD Streaming Parser
+
+
+
+
+
+
+
+A fast and lightweight streaming and 100% spec-compliant JSON-LD 1.1 parser,
+with RDFJS representations of RDF terms, quads and triples.
+
+
+The streaming nature allows triples to be emitted as soon as possible, and documents larger than memory to be parsed.
+
+
+Make sure to enable the streamingProfile flag when parsing a JSON-LD document with a streaming profile
+to exploit the streaming capabilities of this parser, as this is disabled by default.
+
+
+Installation
+
+
+$ npm install jsonld-streaming-parser
+
+
+
+or
+
+
+$ yarn add jsonld-streaming-parser
+
+
+
+This package also works out-of-the-box in browsers via tools such as webpack and browserify.
+
+
+Require
+
+
+import {JsonLdParser} from "jsonld-streaming-parser";
+
+
+
+or
+
+
+const JsonLdParser = require("jsonld-streaming-parser").JsonLdParser;
+
+
+
+Usage
+
+
+JsonLdParser is a Node Transform stream
+that takes in chunks of JSON-LD data,
+and outputs RDFJS-compliant quads.
+
+
+It can be used to pipe streams to,
+or you can write strings into the parser directly.
+
+
+Print all parsed triples from a file to the console
+
+
+const myParser = new JsonLdParser();
+
+fs.createReadStream('myfile.jsonld')
+  .pipe(myParser)
+  .on('data', console.log)
+  .on('error', console.error)
+  .on('end', () => console.log('All triples were parsed!'));
+
+
+
+Manually write strings to the parser
+
+
+const myParser = new JsonLdParser();
+
+myParser
+  .on('data', console.log)
+  .on('error', console.error)
+  .on('end', () => console.log('All triples were parsed!'));
+
+myParser.write('{');
+myParser.write(`"@context": "https://schema.org/",`);
+myParser.write(`"@type": "Recipe",`);
+myParser.write(`"name": "Grandma's Holiday Apple Pie",`);
+myParser.write(`"aggregateRating": {`);
+myParser.write(`"@type": "AggregateRating",`);
+myParser.write(`"ratingValue": "4"`);
+myParser.write(`}}`);
+myParser.end();
+
+
+
+Convert a JSON-LD string to an RDF/JS dataset
+
+
+import { Store } from 'n3';
+import { JsonLdParser } from 'jsonld-streaming-parser';
+import { promisifyEventEmitter } from 'event-emitter-promisify';
+
+const store = new Store();
+const parser = new JsonLdParser();
+parser.write('{"@id": "http://example.org/jesse", "@type": "http://example.org/Thing"}');
+parser.end();
+await promisifyEventEmitter(store.import(parser));
+
+// Logs all the quads in the store
+console.log(...store);
+
+
+
+Import streams
+
+
+This parser implements the RDFJS Sink interface,
+which makes it possible to alternatively parse streams using the import method.
+
+
+const myParser = new JsonLdParser();
+
+const myTextStream = fs.createReadStream('myfile.jsonld');
+
+myParser.import(myTextStream)
+  .on('data', console.log)
+  .on('error', console.error)
+  .on('end', () => console.log('All triples were parsed!'));
+
+
+
+Capture detected contexts
+
+
+Using a context event listener,
+you can collect all detected contexts.
+
+
+const myParser = new JsonLdParser();
+
+const myTextStream = fs.createReadStream('myfile.jsonld');
+
+myParser.import(myTextStream)
+  .on('context', console.log)
+  .on('data', console.error)
+  .on('error', console.error)
+  .on('end', () => console.log('All triples were parsed!'));
+
+
+
+Parse from HTTP responses
+
+
+Usually, JSON-LD is published via the application/ld+json media type.
+However, when a JSON-LD context is attached via a link header,
+then it can also be published via application/json and +json extension types.
+
+
+This library exposes the JsonLdParser.fromHttpResponse
+function to abstract these cases,
+so that you can call it for any HTTP response,
+and it will return an appropriate parser
+which may or may not contain a custom header-defined context:
+
+
+const myParser = JsonLdParser.fromHttpResponse(
+  'http://example.org/my-file.json', // For example: response.url
+  'application/json', // For example: headers.get('content-type')
+  new Headers({ 'Link': '<my-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"' }), // Optional: WHATWG Headers
+  {}, // Optional: Any options you want to pass to the parser
+);
+
+// Parse anything with myParser like usual
+const quads = myParser.import(response.body);
+
+
+
+The Headers object must implement the Headers interface from the WHATWG Fetch API.
+
+
+This function will automatically detect the http://www.w3.org/ns/json-ld#streaming profile and set the streamingProfile flag.
+
+
+Configuration
+
+
+Optionally, the following parameters can be set in the JsonLdParser

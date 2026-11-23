@@ -1,0 +1,258 @@
+gojsonschema
+
+
+Description
+
+
+An implementation of JSON Schema for the Go  programming language. Supports draft-04, draft-06 and draft-07.
+
+
+References :
+
+
+
+
+http://json-schema.org
+
+
+http://json-schema.org/latest/json-schema-core.html
+
+
+http://json-schema.org/latest/json-schema-validation.html
+
+
+
+
+Installation
+
+
+go get github.com/xeipuuv/gojsonschema
+
+
+
+Dependencies :
+
+
+
+
+github.com/xeipuuv/gojsonpointer
+
+
+github.com/xeipuuv/gojsonreference
+
+
+github.com/stretchr/testify/assert
+
+
+
+
+Usage
+
+
+Example
+
+
+
+package main
+
+import (
+    "fmt"
+    "github.com/xeipuuv/gojsonschema"
+)
+
+func main() {
+
+    schemaLoader := gojsonschema.NewReferenceLoader("file:///home/me/schema.json")
+    documentLoader := gojsonschema.NewReferenceLoader("file:///home/me/document.json")
+
+    result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    if result.Valid() {
+        fmt.Printf("The document is valid\n")
+    } else {
+        fmt.Printf("The document is not valid. see errors :\n")
+        for _, desc := range result.Errors() {
+            fmt.Printf("- %s\n", desc)
+        }
+    }
+}
+
+
+
+
+Loaders
+
+
+There are various ways to load your JSON data.
+In order to load your schemas and documents,
+first declare an appropriate loader :
+
+
+
+
+Web / HTTP, using a reference :
+
+
+
+
+loader := gojsonschema.NewReferenceLoader("http://www.some_host.com/schema.json")
+
+
+
+
+
+Local file, using a reference :
+
+
+
+
+loader := gojsonschema.NewReferenceLoader("file:///home/me/schema.json")
+
+
+
+References use the URI scheme, the prefix (file://) and a full path to the file are required.
+
+
+
+
+JSON strings :
+
+
+
+
+loader := gojsonschema.NewStringLoader(`{"type": "string"}`)
+
+
+
+
+
+Custom Go types :
+
+
+
+
+m := map[string]interface{}{"type": "string"}
+loader := gojsonschema.NewGoLoader(m)
+
+
+
+And
+
+
+type Root struct {
+	Users []User `json:"users"`
+}
+
+type User struct {
+	Name string `json:"name"`
+}
+
+...
+
+data := Root{}
+data.Users = append(data.Users, User{"John"})
+data.Users = append(data.Users, User{"Sophia"})
+data.Users = append(data.Users, User{"Bill"})
+
+loader := gojsonschema.NewGoLoader(data)
+
+
+
+Validation
+
+
+Once the loaders are set, validation is easy :
+
+
+result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+
+
+
+Alternatively, you might want to load a schema only once and process to multiple validations :
+
+
+schema, err := gojsonschema.NewSchema(schemaLoader)
+...
+result1, err := schema.Validate(documentLoader1)
+...
+result2, err := schema.Validate(documentLoader2)
+...
+// etc ...
+
+
+
+To check the result :
+
+
+    if result.Valid() {
+    	fmt.Printf("The document is valid\n")
+    } else {
+        fmt.Printf("The document is not valid. see errors :\n")
+        for _, err := range result.Errors() {
+        	// Err implements the ResultError interface
+            fmt.Printf("- %s\n", err)
+        }
+    }
+
+
+
+Loading local schemas
+
+
+By default file and http(s) references to external schemas are loaded automatically via the file system or via http(s). An external schema can also be loaded using a SchemaLoader.
+
+
+	sl := gojsonschema.NewSchemaLoader()
+	loader1 := gojsonschema.NewStringLoader(`{ "type" : "string" }`)
+	err := sl.AddSchema("http://some_host.com/string.json", loader1)
+
+
+
+Alternatively if your schema already has an $id you can use the AddSchemas function
+
+
+	loader2 := gojsonschema.NewStringLoader(`{
+			"$id" : "http://some_host.com/maxlength.json",
+			"maxLength" : 5
+		}`)
+	err = sl.AddSchemas(loader2)
+
+
+
+The main schema should be passed to the Compile function. This main schema can then directly reference the added schemas without needing to download them.
+
+
+	loader3 := gojsonschema.NewStringLoader(`{
+		"$id" : "http://some_host.com/main.json",
+		"allOf" : [
+			{ "$ref" : "http://some_host.com/string.json" },
+			{ "$ref" : "http://some_host.com/maxlength.json" }
+		]
+	}`)
+
+	schema, err := sl.Compile(loader3)
+
+	documentLoader := gojsonschema.NewStringLoader(`"hello world"`)
+
+	result, err := schema.Validate(documentLoader)
+
+
+
+It's also possible to pass a ReferenceLoader to the Compile function that references a loaded schema.
+
+
+err = sl.AddSchemas(loader3)
+schema, err := sl.Compile(gojsonschema.NewReferenceLoader("http://some_host.com/main.json"))
+
+
+
+Schemas added by AddSchema and AddSchemas are only validated when the entire schema is compiled, unless meta-schema validation is used.
+
+
+Using a specific draft
+
+
+By default gojsonschema will try to detect the draft of a schema by using the $schema keyword and parse it in a strict draft-04, draft-06 or

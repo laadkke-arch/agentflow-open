@@ -1,0 +1,195 @@
+json-kotlin-schema
+
+
+
+
+
+
+
+
+Kotlin implementation of JSON Schema (Draft-07)
+
+
+NOTE: – from version 0.49, the underlying JSON and YAML libraries have been switched from
+jsonutil and yaml-simple to
+kjson-core and kjson-yaml.
+The change should be transparent to most users.
+
+
+Quick Start
+
+
+Given the following schema file (Taken from the Wikipedia article on JSON):
+
+
+{
+  "$schema": "http://json-schema.org/draft/2019-09/schema",
+  "$id": "http://pwall.net/test",
+  "title": "Product",
+  "type": "object",
+  "required": ["id", "name", "price"],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "Product identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the product"
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stock": {
+      "type": "object",
+      "properties": {
+        "warehouse": {
+          "type": "number"
+        },
+        "retail": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
+
+
+
+and this JSON (from the same article):
+
+
+{
+  "id": 1,
+  "name": "Foo",
+  "price": 123,
+  "tags": [
+    "Bar",
+    "Eek"
+  ],
+  "stock": {
+    "warehouse": 300,
+    "retail": 20
+  }
+}
+
+
+
+the following code will validate that the JSON matches the schema:
+
+
+    val schema = JSONSchema.parseFile("/path/to/example.schema.json")
+    val json = File("/path/to/example.json").readText()
+    require(schema.validate(json))
+
+
+
+To see the detail of any errors found during validation:
+
+
+    val schema = JSONSchema.parseFile("/path/to/example.schema.json")
+    val json = File("/path/to/example.json").readText()
+    val output = schema.validateBasic(json)
+    output.errors?.forEach {
+        println("${it.error} - ${it.instanceLocation}")
+    }
+
+
+
+The format of the error object produced by the validateBasic() function closely follows the
+Basic output specification.
+
+
+It is also possible to read a schema from a string in memory:
+
+
+    val str = File("/path/to/example.schema.json").readText()
+    val schema = JSONSchema.parse(str)
+
+
+
+An optional second parameter on the parse() function takes a URI, which will be used to construct the location in
+error objects.
+
+
+YAML
+
+
+While it may seem counter-intuitive to use a language other than JSON to express JSON Schema, YAML is a lot easier to
+work with, particularly when multi-line descriptions are required.
+This library functions equally well with schema representations in JSON or YAML.
+
+
+For example, the above schema looks like this in YAML:
+
+
+$schema: http://json-schema.org/draft/2019-09/schema
+$id: http://pwall.net/test
+title: Product
+type: object
+required:
+- id
+- name
+- price
+properties:
+  id:
+    type: number
+    description: Product identifier
+  name:
+    type: string
+    description: Name of the product
+  price:
+    type: number
+    minimum: 0
+  tags:
+    type: array
+    items:
+      type: string
+  stock:
+    type: object
+    properties:
+      warehouse:
+        type: number
+      retail:
+        type: number
+
+
+
+To use this schema, simply specify a schema file with an extension of .yaml or .yml to the schema parser:
+
+
+    val schema = JSONSchema.parseFile("/path/to/example.schema.yaml")
+
+
+
+The YAML library used is this one.
+
+
+References
+
+
+At many points in a JSON Schema, the $ref construct allows a reference to schema information defined elsewhere.
+The reference takes the form of a URL, which may be internal to the current schema document (reference starts with
+a # character) or external - the reference points to a different document.
+
+
+Internal references are resolved relative to the root of the schema document in which they appear, for example:
+
+
+{
+  "$ref": "#/$defs/Account"
+}
+
+
+
+This points to a schema named Account in the $defs section of the current schema document.
+
+
+An external reference may be relative (in which case the URL will be resolved relative to the location of

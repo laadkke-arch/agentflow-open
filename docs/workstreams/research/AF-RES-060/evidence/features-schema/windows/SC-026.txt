@@ -1,0 +1,190 @@
+jinx
+
+
+jinx is a recursive acronym: jinx is not xml-schema
+
+
+jinx is json-schema!
+
+
+Introduction
+
+
+Almost all Clojure implementations of json schema validators wrap Java libraries. This is generally a good idea.
+
+
+However, there are some reasons why a native Clojure implementation
+can be useful:
+
+
+
+
+
+Java libraries compile jsonschema to object graphs, making them
+inaccessible to many of the data functions in the Clojure core
+library.
+
+
+
+
+
+On the front-end, it can be painful to have to convert Clojure data
+to JavaScript objects simply for the purposes of calling a
+jsonschema validation such as
+Ajv.
+
+
+
+
+
+Extensibility: JSON Schema is designed to be extended with additional
+vocabularies. Clojure has some nice open-for-extension mechanisms.
+
+
+
+
+
+Size: Implementing JSON Schema is not that scary in a language as
+nice as Clojure. There's not so much code to read, understand and
+possibly extend.
+
+
+
+
+
+
+Scope
+
+
+This library implements JSON Schema 'draft7'
+(draft-handrews-json-schema-validation-01).
+
+
+Status
+
+
+CAUTION: This is a new project, of alpha status. There may be future
+incompatible changes ahead.
+
+
+Most core features are working but there is more work yet to do:
+
+
+
+
+Improved Error messages
+
+
+Relative json-pointer
+
+
+Patterns for uri-template and idn-email
+
+
+
+
+This library is tested with the official
+JSON-Schema-Test-Suite.
+
+
+JSON Schema provides an official test suite, of which jinx passes all
+the non-optional tests, and all but two of the optional tests.
+
+
+Usage
+
+
+Require
+
+
+(require '[juxt.jinx-alpha-2 :as jinx])
+
+
+
+Create a schema
+
+
+(jinx/schema {"type" "array" "items" {"type" "string"}})
+
+
+
+Create a schema (short-hand)
+
+
+(jinx/clj->jsch ['string])
+
+
+
+Validate a document
+
+
+(jinx/validate
+  {}
+  (jinx/schema {"type" "object"}))
+
+
+
+Schemas
+
+
+A schema is a Clojure map (or boolean) that should be augmented with
+metadata by calling juxt.jinx.schema/schema on the schema data:
+
+
+(juxt.jinx.schema/schema {"type" "object"})
+
+
+
+Resolvers
+
+
+Validation can take an optional options map.
+
+
+The :resolvers entry should be a collection of resolvers.
+
+
+
+
+
+:juxt.jinx.resolve/built-in is the built-in resolver which will resolve schemas contained in the library, such as the draft7 meta-schema.
+
+
+
+
+
+:juxt.jinx.resolve/default-resolver is a resolver which takes an argument of a map of URIs (or regexes) to values.
+
+
+
+
+
+
+A value can be a schema (which should be pre-processed with schema metadata by calling juxt.jinx.schema/schema).
+
+
+A value may also be a function (called with the URI or, in the case of a regex, the result of the regex match):
+
+
+{#"http://example.com/schemas/(.*)" (fn [match] {:type "object"
+                                                 :path (second match)})}
+
+
+
+Developing
+
+
+When you clone this repository, use the --recursive option to ensure
+that the official json schema repo is also cloned (as a submodule).
+
+
+git clone --recursive https://github.com/juxt/jinx
+
+
+
+Alternative implementations
+
+
+
+
+https://github.com/niquola/json-schema.clj

@@ -1,0 +1,97 @@
+Features
+
+
+
+
+
+Performance: Blaze compiles JSON Schema into a lower-level intermediate
+language for ultra fast evaluation. It can achieve schema validation in the
+nano-second range, making it a perfect fit for low-latency gateways and
+validation of large datasets
+
+
+
+
+
+Compliance: Blaze achieves a 100% compliance score in the official
+Bowtie benchmark, while
+popular validators like AJV
+only achieve an average 85% compliance. Furthermore, Blaze is built and
+maintained by a JSON Schema TSC member
+
+
+
+
+
+Extensibility: Blaze supports the implementation of custom vocabularies
+of arbitrary complexity, and the ability to setup custom resolution of
+external schemas from arbitrary sources, like from HTTP, filesystem,
+databases, etc
+
+
+
+
+
+Annotations: Blaze is one of the few implementations that fully supports
+annotation extraction during evaluation to augment instances with semantic
+information, making it a great fit for data science scenarios
+
+
+
+
+
+
+Example
+
+
+Blaze is designed to be easy to use, while at the same time providing extensive
+hooks for supporting custom vocabularies, resolving external schemas, and more.
+
+
+// (1) Get a JSON Schema
+const auto schema{sourcemeta::core::parse(R"JSON({
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "string"
+})JSON")};
+
+// (2) Compile the JSON Schema into an optimised representation
+const auto compiled_schema{sourcemeta::blaze::compile(
+  schema,
+
+  // These options allow you tweak how Blaze works,
+  // the JSON Schema vocabularies it understands,
+  // and how to resolve references to external schemas
+  sourcemeta::core::default_schema_walker,
+  sourcemeta::core::official_resolver,
+  sourcemeta::blaze::default_schema_compiler,
+
+  // Fast validation means getting to a boolean result
+  // as fast as possible. Check out the documentation
+  // for how to get detailed error information and/or
+  // collect JSON Schema annotations
+  sourcemeta::blaze::Mode::FastValidation)};
+
+// (3) Get a JSON instance
+const sourcemeta::core::JSON instance{"Hello Blaze!"};
+
+// (4) Validate the instance against the schema
+sourcemeta::blaze::Evaluator evaluator;
+const auto result{evaluator.validate(compiled_schema, instance)};
+if (result) {
+  std::cout << "Success!\n";
+}
+
+
+
+Documentation
+
+
+Refer to the project website for documentation and tutorials:
+https://blaze.sourcemeta.com.
+
+
+Contributors
+
+
+Blaze was designed and developed by a team of passionate JSON Schema developers
+and researchers.

@@ -1,0 +1,107 @@
+File modules#
+
+
+
+If the exact filename is not found, then Node.js will attempt to load the
+required filename with the added extensions: .js, .json, and finally
+.node. When loading a file that has a different extension (e.g. .cjs), its
+full name must be passed to require(), including its file extension (e.g.
+require('./file.cjs')).
+.json files are parsed as JSON text files, .node files are interpreted as
+compiled addon modules loaded with process.dlopen(). Files using any other
+extension (or no extension at all) are parsed as JavaScript text files. Refer to
+the Determining module system section to understand what parse goal will be
+used.
+A required module prefixed with '/' is an absolute path to the file. For
+example, require('/home/marco/foo.js') will load the file at
+/home/marco/foo.js.
+A required module prefixed with './' is relative to the file calling
+require(). That is, circle.js must be in the same directory as foo.js for
+require('./circle') to find it.
+Without a leading '/', './', or '../' to indicate a file, the module must
+either be a core module or is loaded from a node_modules folder.
+If the given path does not exist, require() will throw a
+MODULE_NOT_FOUND error.
+
+
+
+Folders as modules#
+
+
+
+
+Stability: 3 - Legacy: Use subpath exports or subpath imports instead.
+
+There are three ways in which a folder may be passed to require() as
+an argument.
+The first is to create a package.json file in the root of the folder,
+which specifies a main module. An example package.json file might
+look like this:
+{ "name" : "some-library",
+  "main" : "./lib/some-library.js" }
+
+jsoncopy
+
+
+If this was in a folder at ./some-library, then
+require('./some-library') would attempt to load
+./some-library/lib/some-library.js.
+If there is no package.json file present in the directory, or if the
+"main" entry is missing or cannot be resolved, then Node.js
+will attempt to load an index.js or index.node file out of that
+directory. For example, if there was no package.json file in the previous
+example, then require('./some-library') would attempt to load:
+
+
+./some-library/index.js
+
+
+./some-library/index.node
+
+
+
+If these attempts fail, then Node.js will report the entire module as missing
+with the default error:
+Error: Cannot find module 'some-library'
+
+consolecopy
+
+
+In all three above cases, an import('./some-library') call would result in a
+ERR_UNSUPPORTED_DIR_IMPORT error. Using package subpath exports or
+subpath imports can provide the same containment organization benefits as
+folders as modules, and work for both require and import.
+
+
+
+Loading from node_modules folders#
+
+
+
+If the module identifier passed to require() is not a
+built-in module, and does not begin with '/', '../', or
+'./', then Node.js starts at the directory of the current module, and
+adds /node_modules, and attempts to load the module from that location.
+Node.js will not append node_modules to a path already ending in
+node_modules.
+If it is not found there, then it moves to the parent directory, and so
+on, until the root of the file system is reached.
+For example, if the file at '/home/ry/projects/foo.js' called
+require('bar.js'), then Node.js would look in the following locations, in
+this order:
+
+
+/home/ry/projects/node_modules/bar.js
+
+
+/home/ry/node_modules/bar.js
+
+
+/home/node_modules/bar.js
+
+
+/node_modules/bar.js
+
+
+
+This

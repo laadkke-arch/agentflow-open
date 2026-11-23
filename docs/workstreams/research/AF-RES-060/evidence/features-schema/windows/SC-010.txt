@@ -1,0 +1,143 @@
+Features
+
+
+
+
+Source Generation — Generate strongly-typed C# from JSON Schema at build time with the Roslyn incremental source generator, or ahead of time with the corvusjson CLI tool.
+
+
+OpenAPI — Generate strongly-typed OpenAPI 2.0, 3.0, 3.1, and 3.2 HTTP clients and ASP.NET Core server stubs with typed parameters, request/response validation, streaming, and result matching.
+
+
+AsyncAPI — Generate strongly-typed AsyncAPI 2.6 and 3.0 producers, consumers, handlers, and request/reply flows with broker transport packages for NATS, Kafka, AMQP, MQTT, WebSocket, and Azure Service Bus.
+
+
+Schema Validation — Full JSON Schema draft 4, 6, 7, 2019-09, and 2020-12 validation. Over 10× faster than other .NET JSON Schema validators.
+
+
+Pooled Memory — ParsedJsonDocument<T> uses ArrayPool<byte> for minimal GC impact. Just 136 bytes per-document allocation.
+
+
+Mutable Documents — JsonDocumentBuilder<T> and JsonWorkspace provide a builder pattern for creating and modifying JSON with pooled workspace memory.
+
+
+Extended Types — BigNumber for arbitrary-precision decimals, BigInteger for large integers, plus NodaTime integration for date, date-time, time, and duration formats.
+
+
+Pattern Matching — Type-safe Match() for oneOf/anyOf discriminated unions with exhaustive dispatch.
+
+
+JSONata — Full JSONata query and transformation language with 100% test-suite conformance. Interpreted and code-generated evaluation modes.
+
+
+JMESPath — Full JMESPath query language with 100% conformance against the official test suite. Interpreted and code-generated evaluation modes.
+
+
+JsonLogic — Complete JsonLogic rule engine for evaluating business rules against JSON data with interpreted and code-generated modes.
+
+
+JSONPath — Full JSONPath (RFC 9535) query language with 100% conformance against the official compliance test suite. Interpreted and code-generated evaluation modes.
+
+
+JSON Pointer — RFC 6901 JSON Pointer for navigating and resolving paths within JSON documents.
+
+
+JSON Patch, Merge Patch & Diff — RFC 6902 JSON Patch, RFC 7396 Merge Patch, and diff with zero-allocation operations on JsonElement.
+
+
+JSON Canonicalization — RFC 8785 JSON Canonicalization Scheme (JCS) for deterministic serialization. Zero heap allocation.
+
+
+YAML — High-performance YAML 1.2 to JSON converter with 100% yaml-test-suite conformance. Zero-allocation ref struct tokenizer.
+
+
+TOON — Bidirectional TOON (Token-Oriented Object Notation) conversion for compact JSON-shaped LLM prompts, with Corvus and System.Text.Json packages.
+
+
+
+
+Quick Start
+
+
+// 1. Define a schema (Schemas/person.json)
+// {
+//     "$schema": "https://json-schema.org/draft/2020-12/schema",
+//     "type": "object",
+//     "required": ["name"],
+//     "properties": {
+//         "name": { "type": "string", "minLength": 1 },
+//         "age": { "type": "integer", "format": "int32", "minimum": 0 }
+//     }
+// }
+
+// 2. Use the source generator
+[JsonSchemaTypeGenerator("Schemas/person.json")]
+public readonly partial struct Person;
+
+// 3. Parse and access properties
+using var doc = ParsedJsonDocument<Person>.Parse(
+    """{"name":"Alice","age":30}""");
+Person person = doc.RootElement;
+
+string name = (string)person.Name;           // "Alice"
+int age = (int)person.Age;                        // 30
+
+// 4. Validate against the schema
+bool valid = person.EvaluateSchema();        // true
+
+// 5. Mutate with the builder pattern
+using JsonWorkspace workspace = JsonWorkspace.Create();
+using var builder = person.CreateBuilder(workspace);
+Person.Mutable root = builder.RootElement;
+root.SetAge(31);
+
+Console.WriteLine(root.ToString());
+// {"name":"Alice","age":31}
+
+
+
+NuGet Packages
+
+
+Most applications need Corvus.Text.Json plus either the source generator or the corvusjson CLI. Add the feature-specific runtime packages you use.
+
+
+
+
+
+
+
+Area
+
+
+Package
+
+
+Description
+
+
+
+
+
+
+
+Core runtime
+
+
+Corvus.Text.Json
+
+
+Core V5 runtime library. Required by all V5 generated types.
+
+
+
+
+
+
+JSON Schema generation
+
+
+Corvus.Text.Json.SourceGenerator
+
+
+Roslyn incremental source

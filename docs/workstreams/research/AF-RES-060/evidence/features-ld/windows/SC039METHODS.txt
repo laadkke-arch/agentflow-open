@@ -1,0 +1,176 @@
+SchemaNode methods
+
+
+addRemoteSchema ·
+compileSchema ·
+createSchema ·
+getChildSelection ·
+getData ·
+getNode ·
+getNodeChild ·
+getNodeRef ·
+getNodeRoot ·
+reduceNode ·
+toDataNodes ·
+toSchemaNodes ·
+validate
+
+
+addRemoteSchema
+
+
+addRemoteSchema lets you add additional schemas that can be referenced by an URL using $ref. Use this to combine multiple schemas without changing the actual schema.
+
+
+Each schema is referenced by their unique $id (since draft-06, previously id). Usually an $id is specified as an url, for example https://mydomain.com/schema/schema-name or with a file extension like https://mydomain.com/schema/schema-name.json.
+
+
+On a compiled schema
+
+
+const schemaNode = compileSchema({
+  $id: "https://sagold.com/local",
+  type: "object",
+  required: ["character"],
+  properties: {
+    character: {
+      $ref: "https://sagold.com/remote"
+    }
+  }
+});
+
+
+
+use the exposed method addRemoteSchema to add a remote schema for $ref-resolution:
+
+
+schemaNode.addRemoteSchema("https://sagold.com/remote", {
+  $id: "https://sagold.com/remote",
+  title: "A character",
+  type: "string",
+  minLength: 1,
+  maxLength: 1
+});
+
+
+
+Note the given url and $id on the root schema should match. If $id is omitted it will be added from the passed url.
+
+
+To access the remote schema, add a $ref within your local schema and the remote schema will be resolved automatically:
+
+
+schemaNode.validate({ character: "AB" }); // maxLength error
+schemaNode.getData({}); // { character: "A" } - default value resolved
+// returns remote schema (from compiled local schema):
+const node = schemaNode.getNodeRef("https://sagold.com/remote");
+
+
+
+Note JSON Schema $ref-keyword can become tricky when combined with $ids in sub-schemas. For more details, see json-schema.org: Structuring a complex schema.
+
+
+
+Adding remote schema to compileSchema
+
+
+
+
+It is possible to pass remoteSchema on compileSchema by passing a SchemaNode (with all its remote schemas) in remote:
+
+
+const remote = compileSchema({
+  $id: "https://sagold.com/remote",
+  $defs: {
+    character: {
+      title: "A character",
+      type: "string",
+      minLength: 1,
+      maxLength: 1
+    }
+  }
+});
+
+const schemaNode = compileSchema({ $ref: "https://sagold.com/remote#/defs/character" }, { remote });
+
+
+
+
+
+
+
+
+Access local subschemas in remote schemas
+
+
+
+
+You can add a local uri reference to the remote schema by using the # separator. The following example resolves hte local path /$defs/character in the remote schema https://sagold.com/remote throught the combined url:
+https://sagold.com/remote#/$defs/character
+
+
+const schemaNode = compileSchema({
+  $id: "https://sagold.com/local",
+  $ref: "https://sagold.com/remote#/$defs/character"
+});
+
+schemaNode.addRemoteSchema("https://sagold.com/remote", {
+  $defs: {
+    character: {
+      title: "A character",
+      type: "string",
+      minLength: 1,
+      maxLength: 1
+    }
+  }
+});
+
+schemaNode.validate("AB"); // maxLength error
+schemaNode.getData("A"); // "A" - default value resolved
+// returns remote schema (from compiled local schema):
+const node = schemaNode.getNodeRef("https://sagold.com/remote#/$defs/character");
+
+
+
+Note JSON Pointer are not restricted to $defs (definitions), but can reference any subschema. For example:
+
+
+const schemaNode = compileSchema({
+  $id: "https://sagold.com/local",
+  $ref: "https://sagold.com/remote#/properties/character"
+});
+
+schemaNode.addRemoteSchema("https://sagold.com/remote", {
+  type: "object",
+  properties: {
+    character: {
+      title: "A character",
+      type: "string",
+      minLength: 1,
+      maxLength: 1
+    }
+  }
+});
+
+schemaNode.validate("AB"); // maxLength error
+schemaNode.getData("A"); // "A" - default value resolved
+// returns remote schema (from compiled local schema):
+schemaNode.getNodeRef("https://sagold.com/remote#/properties/character");
+
+
+
+
+
+
+
+compileSchema
+
+
+node.compileSchema creates a new schema node in the same context as node. With this, the created node will be able to resolve local $ref and remote $ref correctly. Note, the created schema will not be part of (linked) from any nodes in the schema-tree.
+
+
+const someNode = node.compileSchema({ prefixItems: [{ type: "string" }, { $ref: "#/$defs/string" }] });
+
+
+
+custom error

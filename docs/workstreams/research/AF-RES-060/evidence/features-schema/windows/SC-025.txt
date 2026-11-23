@@ -1,0 +1,193 @@
+jesse 
+
+
+jesse (JSON Schema Erlang) is an implementation of a JSON Schema validator
+for Erlang, though it can work just as well as a CLI tool.
+
+
+jesse implements the following specifications:
+
+
+
+
+Draft 03
+
+
+Draft 04
+
+
+Draft 06
+
+
+
+
+Install from git or https://hex.pm/packages/jesse .
+
+
+For convenience, available as a Docker image too: docker run --rm -it -v $PWD:$PWD -w $PWD ysoftwareab/jesse ....
+
+
+And whalebrew package: brew install whalebrew && sudo whalebrew install ysoftwareab/jesse; jesse ...
+
+
+Erlang API Docs
+
+
+Automatically generated docs are available https://dev.erldocs.com/github.com/for-get/jesse/ .
+
+
+Please keep in mind that the public API is the jesse.erl module alone.
+
+
+Command-Line Interface
+
+
+You can either build the bin/jesse executable yourself (just type make),
+or you can use a Docker image a call it with docker run ysoftwareab/jesse.
+
+
+You can fire up jesse from the CLI, with
+
+
+bin/jesse [path_to_json_schema] path_to_json_schema -- path_to_json_instance [path_to_json_instance]
+
+
+
+You can also output the result in JSON format, with --json, and beautify it e.g. with python
+
+
+bin/jesse [path_to_json_schema] path_to_json_schema --json -- path_to_json_instance [path_to_json_instance] | python -m json.tool
+
+
+
+You can pass multiple JSON schemas which should be loaded into jesse in-memory storage, but JSON instances will be validated against the last JSON schema passed.
+
+
+Erlang Interface
+
+
+There are two ways of using jesse:
+
+
+
+
+to use jesse internal in-memory storage to keep all your schema definitions
+In this case jesse will look up a schema definition in its own storage,
+and then validate given a JSON instance.
+
+
+it is also possible to provide jesse with schema definitions when jesse is called.
+
+
+
+
+Examples
+
+
+NOTE: jesse doesn't have any parsing functionality. It currently works with four
+      formats: mochijson2, jiffy, jsx and Erlang 17+ maps, so JSON needs to be
+      parsed in advance, or you can specify a callback which jesse will use to
+      parse JSON.
+
+      In examples below and in jesse test suite jiffy parser is used.
+
+
+
+
+
+Use jesse's internal in-memory storage:
+
+
+
+
+(parse JSON in advance)
+
+
+1> Schema = jiffy:decode(<<"{\"items\": {\"type\": \"integer\"}}">>).
+{[{<<"items">>,{[{<<"type">>,<<"integer">>}]}}]}
+2> jesse:add_schema("some_key", Schema).
+ok
+3> Json1 = jiffy:decode(<<"[1, 2, 3]">>).
+[1,2,3]
+4> jesse:validate("some_key", Json1).
+{ok,[1,2,3]}
+5> Json2 = jiffy:decode(<<"[1, \"x\"]">>).
+[1,<<"x">>]
+6> jesse:validate("some_key", Json2).
+{error,[{data_invalid,{[{<<"type">>,<<"integer">>}]},
+                      wrong_type,<<"x">>,
+                      [1]}]}
+
+
+
+The [1] in the error is the path in the original value to <<"x">> where the
+validation failed. See Validation errors below for the full error format.
+
+
+(using a callback)
+
+
+1> jesse:add_schema("some_key",
+1>                  <<"{\"uniqueItems\": true}">>,
+1>                  [{parser_fun, fun jiffy:decode/1}]).
+ok
+2> jesse:validate("some_key",
+2>                <<"[1, 2]">>,
+2>                [{parser_fun, fun jiffy:decode/1}]).
+{ok,[1, 2]}
+3> jesse:validate("some_key",
+3>                <<"[{\"foo\": \"bar\"}, {\"foo\": \"bar\"}] ">>,
+3>                [{parser_fun, fun jiffy:decode/1}]).
+{error,[{data_invalid,{[{<<"uniqueItems">>,true}]},
+                      {not_unique,{[{<<"foo">>,<<"bar">>}]}},
+                      [{[{<<"foo">>,<<"bar">>}]},{[{<<"foo">>,<<"bar">>}]}],
+                      []}]}
+
+
+
+
+
+Call jesse with schema definition in place (do not use internal storage)
+
+
+
+
+(parse JSON in advance)
+
+
+1> Schema = jiffy:decode(<<"{\"pattern\": \"^a*$\"}">>).
+{[{<<"pattern">>,<<"^a*$">>}]}
+2> Json1 = jiffy:decode(<<"\"aaa\"">>).
+<<"aaa">>
+3> jesse:validate_with_schema(Schema, Json1).
+{ok,<<"aaa">>}
+4> Json2 = jiffy:decode(<<"\"abc\"">>).
+<<"abc">>
+5> jesse:validate_with_schema(Schema, Json2).
+{error,[{data_invalid,{[{<<"pattern">>,<<"^a*$">>}]},
+                      no_match,
+                      <<"abc">>,[]}]}
+
+
+
+(using a callback)
+
+
+1> Schema = <<"{\"patternProperties\": {\"f.*o\": {\"type\": \"integer\"}}}">>.
+<<"{\"patternProperties\": {\"f.*o\": {\"type\": \"integer\"}}}">>
+2> jesse:validate_with_schema(Schema,
+2>                            <<"{\"foo\": 1, \"foooooo\" : 2}">>,
+2>                            [{parser_fun, fun jiffy:decode/1}]).
+{ok,{[{<<"foo">>,1},{<<"foooooo">>,2}]}}
+3> jesse:validate_with_schema(Schema,
+3>                            <<"{\"foo\": \"bar\", \"fooooo\": 2}">>,
+3>                            [{parser_fun, fun jiffy:decode/1}]).
+{error,[{data_invalid,{[{<<"type">>,<<"integer">>}]},
+                      wrong_type,<<"bar">>,
+                      [<<"foo">>]}]}
+
+
+
+
+
+Since 0.4.0 it's possible

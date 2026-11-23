@@ -1,0 +1,282 @@
+[
+  {
+    "case_id": "JS-1",
+    "domain": "JSON Schema",
+    "rank": 5,
+    "question_id": 65660787,
+    "url": "https://stackoverflow.com/questions/65660787/how-to-set-one-schema-for-n-1-elements-and-another-for-the-nth-element",
+    "C1": "모든 마지막 이전 요소는 number이며 중간 string은 거부한다.",
+    "C2": "마지막 string은 허용하지만 필수는 아니다: 전부 number인 배열도 허용한다.",
+    "language": "명시 없음",
+    "version": "명시 없음",
+    "dialect": "명시 없음; draft07은 정의 비교용이며 요청판으로 가정하지 않음",
+    "guard": "가변 n; 빈 배열의 기대는 명시되지 않음",
+    "L_terms": [
+      "list of numbers",
+      "last element",
+      "optional"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "FF299B83-E209-42FB-BEE4-A732446B5F5B",
+    "original_body_sha256": "8c323c334b24e2aa7cac4a25cb623997aa3122b2038172b007025b57ae14dda2",
+    "source_location": "revision1 본문 array schema·허용 [3,4,5,\"hello\"]·거부 [3,\"hello\",4,5] 및 마지막 설명",
+    "condition_origin": "순서에 의존하는 한 predicate를 position restriction과 optionality 두 독립 검사로 분리. fixed tuple·string anywhere는 근접 오답.",
+    "substitution": "특정 구현 고정 없음",
+    "contrast_examples": {
+      "positive_1": "[3,4,5,\"hello\"]: terminal string allowed",
+      "positive_2": "[3,4,5]: string optional",
+      "near_negative": "[3,\"hello\",4,5]: contains allowed primitive types but string at nonterminal position",
+      "origin": "positive1/negative from inherited original example; positive2 is analyst instantiation of original optionality"
+    }
+  },
+  {
+    "case_id": "JS-2",
+    "domain": "JSON Schema",
+    "rank": 7,
+    "question_id": 65699699,
+    "url": "https://stackoverflow.com/questions/65699699/validate-json-schema-with-another-json-schema",
+    "C1": "검증 대상 schema의 root type은 object이다.",
+    "C2": "그 properties 내 각 property schema의 type 값은 string/number/integer/boolean만 허용한다.",
+    "language": "명시 없음",
+    "version": "명시 없음",
+    "dialect": "원문 $schema draft-07",
+    "guard": "null/array/object를 property type에 허용하지 않음; arbitrary latest draft를 추가하지 않음",
+    "L_terms": [
+      "validate JSON Schema",
+      "primitive type"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "9172C932-54A3-4E80-A903-46F7329EFE56",
+    "original_body_sha256": "ae7ba0e0d18a5e4b39940f3674ef7c1a478fb05404f90e93a4877fac14ccff67",
+    "source_location": "revision1 첫 요구 문단과 sample JSON; simpleTypes enum 수정의 실패 설명",
+    "condition_origin": "메타 검증의 두 위치별 enum 제약. 일반 인스턴스 검증만 보여주는 문서는 완결 아님.",
+    "substitution": "특정 엔진 필수라고 명시되지 않음",
+    "contrast_examples": {
+      "positive_1": "schema root type object with string property",
+      "positive_2": "object root with number/integer/boolean property schemas",
+      "near_negative": "object root with a property schema type array: C1 retained, C2 violated",
+      "origin": "analyst minimal contrast, no execution"
+    }
+  },
+  {
+    "case_id": "JS-3",
+    "domain": "JSON Schema",
+    "rank": 8,
+    "question_id": 65726164,
+    "url": "https://stackoverflow.com/questions/65726164/how-to-use-ajv-with-dependent-json-schemas",
+    "C1": "person.sex가 참조하는 외부 types.json#/properties/gender를 같은 검증 체인에서 해결하고 enum 제약을 적용한다.",
+    "C2": "Person의 name/surname/sex/email 필수 속성을 유지하여 example Person 검증을 수행한다.",
+    "language": "Node.js / TypeScript",
+    "version": "Ajv 판 명시 없음",
+    "dialect": "두 문서가 draft-04를 선언하지만 $id/JSONSchemaType 사용; 불일치 자체 보존",
+    "guard": "email format도 source schema에 있음. 형식 assertion 통과는 별도 미확인 guard; literal draft04/$id 혼용을 자동교정하지 않음",
+    "L_terms": [
+      "dependent json-schemas",
+      "$ref"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "88B51B29-6318-430E-A01F-75D88DB74236",
+    "original_body_sha256": "22c4fabd676097f0245eeeaa38628a1a905791afeb0c569ab1b19af735e9aa6a",
+    "source_location": "revision1 types.json properties.gender $ref 및 definitions.person.sex/$ref·required, isPerson(riccardo) 호출",
+    "condition_origin": "C1/C2 둘 다 source code-derived, 오류 메시지 해결을 두 개로 중복계수하지 않음. email 및 dialect guard를 확인하지 못하면 전체 요구 완결 승격 금지.",
+    "substitution": "Ajv 사용을 직접 묻는다. 다른 엔진은 대안 진단이며 원요구 완결과 분리",
+    "contrast_examples": {
+      "positive_1": "Person.sex external reference resolves to inherited gender enum",
+      "positive_2": "Person retains name/surname/sex/email required list",
+      "near_negative": "external reference resolves but required list removed; name absent accepted",
+      "origin": "analyst minimal contract probe; literal draft04/$id mismatch unresolved; no execution"
+    }
+  },
+  {
+    "case_id": "JS-4",
+    "domain": "JSON Schema",
+    "rank": 9,
+    "question_id": 65731152,
+    "url": "https://stackoverflow.com/questions/65731152/jsonschema-validate",
+    "C1": "pii의 값은 해당 instance columns에 실제 존재하는 column 이름으로만 제한한다.",
+    "C2": "column_datatype 값을 integer/string/object 중 하나로 제한한다.",
+    "language": "Python 3.x",
+    "version": "python-jsonschema 판 명시 없음",
+    "dialect": "명시 없음",
+    "guard": "이름·description·datatype에 값이 있어야 한다는 추가 문의를 보존한다. 빈 문자열/null/공백 기준은 미명시이므로 minLength1로 자동번역하지 않는다. 전체 요구를 반환하려면 이 guard도 별도 확인해야 한다.",
+    "L_terms": [
+      "schema check",
+      "validate",
+      "restrict column data type"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "C76C0362-B96B-4309-A7D6-38C3BD1F2D62",
+    "original_body_sha256": "cc627eaab184631c44d7407b90e62ffe809aa257c5630322d0c8fe43f6ec82db",
+    "source_location": "revision1 첫 3개 요구 문단 및 columns/pii example",
+    "condition_origin": "정해진 enum과 동적 다른 instance 값 참조를 혼동하지 않음. 핵심 두 조건 이외의 값 존재 의미가 모호하므로 두조건 완결과 전체질문 해결을 별도 표시한다.",
+    "substitution": "Python jsonschema 사용 예제이지만 대안 금지는 명시하지 않음",
+    "contrast_examples": {
+      "positive_1": "pii includes only column names present in this same instance",
+      "positive_2": "column_datatype belongs to integer/string/object",
+      "near_negative": "datatype string allowed while pii names absent column",
+      "origin": "analyst logical probe, inherited SC032 fixture not rerun"
+    }
+  },
+  {
+    "case_id": "LD-1",
+    "domain": "JSON-LD",
+    "rank": 1,
+    "question_id": 65565025,
+    "url": "https://stackoverflow.com/questions/65565025/how-to-generate-breadcrumb-schema-dynamically-using-javascript",
+    "C1": "예시와 같이 각 경로를 position/name/item이 있는 ListItem으로 만들며 순번·이름·계층 URL을 보존한다.",
+    "C2": "생성한 application/ld+json script를 head에 부착한다.",
+    "language": "Javascript 명시; JSP/JSTL 입력 코드와 jQuery ready 호출 노출",
+    "version": "제품판/JSON-LD processingMode 미명시",
+    "dialect": "제품판/JSON-LD processingMode 미명시",
+    "guard": "C2의 목적 위치 head는 원문 code에서 읽음. 끝 prose는 대상 tag 이름이 비어 있으므로 prose 명시라고 하지 않음. C1은 원하는 출력 예시의 비교 조건이다.",
+    "L_terms": [
+      "generate the schema dynamically",
+      "Breadcrumb Schema",
+      "getting appended"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "D0471C4B-5AC3-4328-8426-90E19F09F302",
+    "original_body_sha256": "4b6ef48ea33eb18710d841fbefcdedc8d5d338468501d2853d988ca657dcb4bd",
+    "source_location": {
+      "C1": "rev1 첫 HTML code block + 세 번째 code block의 원하는 BreadcrumbList",
+      "C2": "rev1 두 번째 Javascript code block의 마지막 명령 + 끝 문단의 append 실패"
+    },
+    "condition_origin": "C2의 목적 위치 head는 원문 code에서 읽음. 끝 prose는 대상 tag 이름이 비어 있으므로 prose 명시라고 하지 않음. C1은 원하는 출력 예시의 비교 조건이다.",
+    "substitution": "동일 Javascript/DOM 동작을 제공할 대체 구현 가능성은 열려 있으나 다른 언어로의 교체는 명시되지 않음",
+    "contrast_examples": {
+      "positive_1": "Home→Our Mission→Who We Are yields ordered position/name/item triples",
+      "positive_2": "generated application/ld+json element appended to head",
+      "near_negative": "correct BreadcrumbList returned as a string but no DOM head insertion",
+      "origin": "analyst contrast of inherited code/output constraints"
+    }
+  },
+  {
+    "case_id": "LD-2",
+    "domain": "JSON-LD",
+    "rank": 3,
+    "question_id": 65835110,
+    "url": "https://stackoverflow.com/questions/65835110/in-aem-i-want-to-add-sly-sly-tags-inside-a-script-script-tag-multifiel",
+    "C1": "값이 채워진 경우에만 FAQ JSON-LD script를 출력한다.",
+    "C2": "작성자가 추가한 여러 Question/Answer 쌍을 원하는 mainEntity 반복 구조로 보존한다.",
+    "language": "AEM HTL/Sightly 명시",
+    "version": "AEM 제품판과 JSON-LD 판 미명시",
+    "dialect": "AEM 제품판과 JSON-LD 판 미명시",
+    "guard": "단순 script 배치만이 아니라 조건부 데이터 생성과 반복 데이터 보존이 명시되어 모집. Google 검색 노출은 새 필수조건으로 추가하지 않음.",
+    "L_terms": [
+      "show this script only",
+      "add more Question and Answers values"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "6F5B7955-6A8B-41E4-9A40-A258EB2F71D0",
+    "original_body_sha256": "6748046f28910310473a5ee5978ad454bd2bc433b60d49087f0dc499355590f5",
+    "source_location": {
+      "C1": "rev1 첫 code block 직후 문단",
+      "C2": "같은 문단과 마지막 Authors can create 문단; FAQPage 원하는 출력 code block"
+    },
+    "condition_origin": "단순 script 배치만이 아니라 조건부 데이터 생성과 반복 데이터 보존이 명시되어 모집. Google 검색 노출은 새 필수조건으로 추가하지 않음.",
+    "substitution": "AEM 작성 흐름 내 구현/템플릿 보완 대상; 다른 프레임워크 교체 가능성 미확인",
+    "contrast_examples": {
+      "positive_1": "no populated input yields no FAQ script",
+      "positive_2": "two populated Q/A inputs yield both mainEntity pairs",
+      "near_negative": "two pairs preserved but empty input still emits script",
+      "origin": "analyst contrast, AEM execution not performed"
+    }
+  },
+  {
+    "case_id": "LD-3",
+    "domain": "JSON-LD",
+    "rank": 5,
+    "question_id": 65917156,
+    "url": "https://stackoverflow.com/questions/65917156/how-to-filter-json-ld-object-array-with-json-ld-frames",
+    "C1": "values에 a=1인 첫 객체만 남기고 두 번째 객체는 제거한다.",
+    "C2": "선택 객체의 b,c와 문서의 나머지 credential 필드를 보존한다.",
+    "language": "jsonld package 링크가 digitalbazaar/jsonld.js를 가리킴; 링크만 노출, 목적지 미열람",
+    "version": "package version 미명시; 사용자 context의 @version=1.1 명시",
+    "dialect": "package version 미명시; 사용자 context의 @version=1.1 명시",
+    "guard": "같은 값 목록과 같은 객체 식별은 다르다. @nest가 객체 경계를 보존한다고 가정하지 않는다. 최신 패키지 버전을 요구에 추가하지 않는다.",
+    "L_terms": [
+      "JSON-LD frame",
+      "filter only the element",
+      "values field filtered"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "CCBD3B77-B4AC-413C-9CAD-4D2C059BAB10",
+    "original_body_sha256": "26e7983883f73a547cf78d4cc44d3152a2a849df9ddebd0edbd88d5ee9658ebd",
+    "source_location": {
+      "C1": "rev1 세 번째 code block 도입 문단 및 최종 설명",
+      "C2": "rev1 최종 설명: 초기 문서에 대응하되 values만 필터링; 첫 입력 code block의 각 필드"
+    },
+    "condition_origin": "같은 값 목록과 같은 객체 식별은 다르다. @nest가 객체 경계를 보존한다고 가정하지 않는다. 최신 패키지 버전을 요구에 추가하지 않는다.",
+    "substitution": "질문은 사용하는 jsonld에서 context/frame 수정 허용을 명시; 다른 구현 교체는 미명시",
+    "contrast_examples": {
+      "positive_1": "retain only values object whose a=1",
+      "positive_2": "retain selected b=2,c=3 and remaining credential fields",
+      "near_negative": "select a=1 but drop b/c or surrounding credential fields",
+      "origin": "analyst contract contrast; no reexecution of existing PyLD diagnostics"
+    }
+  },
+  {
+    "case_id": "LD-4",
+    "domain": "JSON-LD",
+    "rank": 7,
+    "question_id": 66023851,
+    "url": "https://stackoverflow.com/questions/66023851/calling-a-json-file-with-php-but-cant-echo-in-a-way-i-would-like-to",
+    "C1": "요청한 ALGYO, ACSEL 등 지정 종목만 골라 목록 전체 출력은 제외한다.",
+    "C2": "선택 종목의 해당 가격(ALGYO 26.14, ACSEL 22.9)을 각 표/행에 짝지어 출력한다.",
+    "language": "PHP 코드 명시",
+    "version": "PHP/JSON-LD 제품판 미명시",
+    "dialect": "PHP/JSON-LD 제품판 미명시",
+    "guard": "문서에서 데이터 추출→출력 요구는 포함한다. graph framing과 PHP 출력이 동의라는 가정은 하지 않는다.",
+    "L_terms": [
+      "only call some certain elements",
+      "currency ALGYO, and its price"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "1A120700-778B-41D1-9D7D-EA8B62225853",
+    "original_body_sha256": "a638d42afbabc8ead589dce4e43d2291b05f74405f8183371d543dbad1ef4e2c",
+    "source_location": {
+      "C1": "rev1 PHP code 직후 What I want 문단",
+      "C2": "같은 문단과 본문 JSON의 ALGYO/ACSEL price 객체"
+    },
+    "condition_origin": "문서에서 데이터 추출→출력 요구는 포함한다. graph framing과 PHP 출력이 동의라는 가정은 하지 않는다.",
+    "substitution": "PHP로 해결하는 예제를 요구; 다른 언어 교체 가능성 미확인",
+    "contrast_examples": {
+      "positive_1": "only ALGYO and ACSEL emitted",
+      "positive_2": "ALGYO paired26.14 and ACSEL22.9 in distinct requested outputs",
+      "near_negative": "correct requested symbols emitted with swapped prices",
+      "origin": "analyst output contrast based on inherited requested values"
+    }
+  }
+]

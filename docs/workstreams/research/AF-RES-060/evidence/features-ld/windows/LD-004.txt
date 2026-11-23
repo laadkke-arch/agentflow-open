@@ -1,0 +1,335 @@
+RDF Parse
+
+
+
+
+
+
+
+This library parses RDF streams based on content type (or file name)
+and outputs RDF/JS-compliant quads as a stream.
+
+
+This is useful in situations where you have RDF in some serialization,
+and you just need the parsed triples/quads,
+without having to concern yourself with picking the correct parser.
+
+
+The following RDF serializations are supported:
+
+
+
+
+
+
+
+Name
+
+
+Content type
+
+
+Extensions
+
+
+
+
+
+
+
+TriG 1.2
+
+
+application/trig
+
+
+.trig
+
+
+
+
+
+
+N-Quads 1.2
+
+
+application/n-quads
+
+
+.nq, .nquads
+
+
+
+
+
+
+Turtle 1.2
+
+
+text/turtle
+
+
+.ttl, .turtle
+
+
+
+
+
+
+N-Triples 1.2
+
+
+application/n-triples
+
+
+.nt, .ntriples
+
+
+
+
+
+
+Notation3
+
+
+text/n3
+
+
+.n3
+
+
+
+
+
+
+JSON-LD 1.1
+
+
+application/ld+json, application/json
+
+
+.json, .jsonld
+
+
+
+
+
+
+RDF/XML 1.2
+
+
+application/rdf+xml
+
+
+.rdf, .rdfxml, .owl
+
+
+
+
+
+
+RDFa 1.1 and script RDF data tags HTML/XHTML
+
+
+text/html, application/xhtml+xml
+
+
+.html, .htm, .xhtml, .xht
+
+
+
+
+
+
+Microdata
+
+
+text/html, application/xhtml+xml
+
+
+.html, .htm, .xhtml, .xht
+
+
+
+
+
+
+RDFa 1.1 in SVG/XML
+
+
+image/svg+xml,application/xml
+
+
+.xml, .svg, .svgz
+
+
+
+
+
+
+SHACL Compact Syntax
+
+
+text/shaclc
+
+
+.shaclc, .shc
+
+
+
+
+
+
+Extended SHACL Compact Syntax
+
+
+text/shaclc-ext
+
+
+.shaclce, .shce
+
+
+
+
+
+
+Internally, this library makes use of RDF parsers from the Comunica framework,
+which enable streaming processing of RDF.
+
+
+Internally, the following fully spec-compliant parsers are used:
+
+
+
+
+N3.js
+
+
+jsonld-streaming-parser.js
+
+
+microdata-rdf-streaming-parser.js
+
+
+rdfa-streaming-parser.js
+
+
+rdfxml-streaming-parser.js
+
+
+shaclcjs
+
+
+
+
+Installation
+
+
+$ npm install rdf-parse
+
+
+
+or
+
+
+$ yarn add rdf-parse
+
+
+
+This package also works out-of-the-box in browsers via tools such as webpack and browserify.
+
+
+Require
+
+
+import { rdfParser } from "rdf-parse";
+
+
+
+or
+
+
+const { rdfParser } = require("rdf-parse");
+
+
+
+Usage
+
+
+Parsing by content type
+
+
+The rdfParser.parse method takes in a text stream containing RDF in any serialization,
+and an options object, and outputs an RDFJS stream that emits RDF quads.
+
+
+const textStream = require('streamify-string')(`
+<http://ex.org/s> <http://ex.org/p> <http://ex.org/o1>, <http://ex.org/o2>.
+`);
+
+rdfParser.parse(textStream, { contentType: 'text/turtle', baseIRI: 'http://example.org' })
+    .on('data', (quad) => console.log(quad))
+    .on('error', (error) => console.error(error))
+    .on('end', () => console.log('All done!'));
+
+
+
+Parsing by file name
+
+
+Sometimes, the content type of an RDF document may be unknown,
+for those cases, this library allows you to provide the path/URL of the RDF document,
+using which the extension will be determined.
+
+
+For example, Turtle documents can be detected using the .ttl extension.
+
+
+const textStream = require('streamify-string')(`
+<http://ex.org/s> <http://ex.org/p> <http://ex.org/o1>, <http://ex.org/o2>.
+`);
+
+rdfParser.parse(textStream, { path: 'http://example.org/myfile.ttl', baseIRI: 'http://example.org' })
+    .on('data', (quad) => console.log(quad))
+    .on('error', (error) => console.error(error))
+    .on('end', () => console.log('All done!'));
+
+
+
+Getting all known content types
+
+
+With rdfParser.getContentTypes(), you can retrieve a list of all content types for which a parser is available.
+Note that this method returns a promise that can be await-ed.
+
+
+rdfParser.getContentTypesPrioritized() returns an object instead,
+with content types as keys, and numerical priorities as values.
+
+
+// An array of content types
+console.log(await rdfParser.getContentTypes());
+
+// An object of prioritized content types
+console.log(await rdfParser.getContentTypesPrioritized());
+
+
+
+Handling versions
+
+
+Since RDF 1.2, serializations support optional version announcement
+to make parsers fail early on unsupported versions.
+By default, in-band version announcements (such as VERSION in Turtle) will be detected.
+Optionally, you can also pass versions out-of-band, for example when they are detected as media type parameter:
+
+
+rdfParser.parse(textStream, { version: '1.2', path: 'http://example.org/myfile.ttl', baseIRI: 'http://example.org' })
+
+
+
+By default, this library is strict on its supported versions, and will emit an error on unsupported versions.
+This behaviour can be disabled by setting parseUnsupportedVersions to true:
+
+
+rdfParser.parse(textStream, { parseUnsupportedVersions: true, path: 'http://example.org/myfile.ttl', baseIRI:

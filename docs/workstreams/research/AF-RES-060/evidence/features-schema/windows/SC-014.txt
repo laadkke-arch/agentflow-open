@@ -1,0 +1,438 @@
+EasyTalk
+
+
+
+
+
+
+
+
+
+
+
+
+Ruby library for defining structured data contracts that generate JSON Schema and (optionally) runtime validations from the same definition.
+
+
+Think “Pydantic-style ergonomics” for Ruby, with first-class JSON Schema output.
+
+
+
+
+Why EasyTalk?
+
+
+You can hand-write JSON Schema, then hand-write validations, then hand-write error responses… and eventually you’ll ship a bug where those three disagree.
+
+
+EasyTalk makes the schema definition the single source of truth, so you can:
+
+
+
+
+
+Define once, use everywhere
+One Ruby DSL gives you:
+
+
+
+
+json_schema for docs, OpenAPI, LLM tools, and external validators
+
+
+valid? / errors (when using EasyTalk::Model) for runtime validation
+
+
+
+
+
+
+
+Stop arguing with JSON Schema’s verbosity
+Express constraints in Ruby where you already live:
+
+
+property :email, String, format: "email"
+property :age, Integer, minimum: 18
+property :tags, T::Array[String], min_items: 1
+
+
+
+
+
+
+Use a richer type system than "string/integer/object"
+EasyTalk supports Sorbet-style types and composition:
+
+
+
+
+T.nilable(Type) for nullable fields
+
+
+T::Array[Type] for typed arrays
+
+
+T::Tuple[Type1, Type2, ...] for fixed-position typed arrays
+
+
+T::Boolean
+
+
+T::AnyOf, T::OneOf, T::AllOf for schema composition
+
+
+
+
+
+
+
+Get validations for free (when you want them)
+With auto_validations enabled (default), schema constraints generate ActiveModel validations—including nested models, even inside arrays.
+
+
+
+
+
+Make API errors consistent
+Format validation errors as:
+
+
+
+
+flat lists
+
+
+JSON Pointer
+
+
+RFC 7807 problem details
+
+
+JSON:API error objects
+
+
+
+
+
+
+
+LLM tool/function schemas without a second schema layer
+Use the same contract to generate JSON Schema for function/tool calling. See RubyLLM Integration.
+
+
+
+
+
+
+EasyTalk is for teams who want their data contracts to be correct, reusable, and boring (the good kind of boring).
+
+
+
+
+Table of Contents
+
+
+
+
+Installation
+
+
+Quick start
+
+
+Property constraints
+
+
+Core concepts
+
+
+Required vs optional vs nullable
+
+
+Nested models
+
+
+Tuple arrays
+
+
+Composition (AnyOf / OneOf / AllOf)
+
+
+
+
+
+
+Validations
+
+
+Automatic validations
+
+
+Per-model validation control
+
+
+Per-property validation control
+
+
+Validation adapters
+
+
+
+
+
+
+Error formatting
+
+
+Schema-only mode
+
+
+RubyLLM Integration
+
+
+Configuration highlights
+
+
+Advanced topics
+
+
+JSON Schema drafts, $id, and $ref
+
+
+Additional properties with types
+
+
+Object-level constraints
+
+
+Custom type builders
+
+
+
+
+
+
+Known limitations
+
+
+Contributing
+
+
+License
+
+
+
+
+
+
+Installation
+
+
+Requirements
+
+
+
+
+Ruby 3.2+
+
+
+
+
+Add to your Gemfile:
+
+
+gem "easy_talk"
+
+
+
+Then:
+
+
+bundle install
+
+
+
+
+
+Quick start
+
+
+
+
+
+
+EasyTalk Model
+
+
+Generated JSON Schema
+
+
+
+
+
+
+
+
+
+require "easy_talk"
+
+class User
+  include EasyTalk::Model
+
+  define_schema do
+    title "User"
+    description "A user of the system"
+
+    property :id, String
+    property :name, String, min_length: 2
+    property :email, String, format: "email"
+    property :age, Integer, minimum: 18
+  end
+end
+
+
+
+
+
+
+
+
+{
+  "type": "object",
+  "title": "User",
+  "description": "A user of the system",
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string", "minLength": 2 },
+    "email": { "type": "string", "format": "email" },
+    "age": { "type": "integer", "minimum": 18 }
+  },
+  "required": ["id", "name", "email", "age"]
+}
+
+
+
+
+
+
+
+
+
+
+User.json_schema   # => Ruby Hash (JSON Schema)
+user = User.new(name: "A")  # invalid: min_length is 2
+user.valid?        # => false
+user.errors        # => ActiveModel::Errors
+
+
+
+
+
+Property constraints
+
+
+
+
+
+
+
+Constraint
+
+
+Applies to
+
+
+Example
+
+
+
+
+
+
+
+min_length / max_length
+
+
+String
+
+
+property :name, String, min_length: 2, max_length: 50
+
+
+
+
+
+
+minimum / maximum
+
+
+Integer, Float
+
+
+property :age, Integer, minimum: 18, maximum: 120
+
+
+
+
+
+
+format
+
+
+String
+
+
+property :email, String, format: "email"
+
+
+
+
+
+
+pattern
+
+
+String
+
+
+property :zip, String, pattern: '^\d{5}$'
+
+
+
+
+
+
+enum
+
+
+Any
+
+
+property :status, String, enum: ["active", "inactive"]
+
+
+
+
+
+
+min_items / max_items
+
+
+Array, Tuple
+
+
+property :tags, T::Array[String], min_items: 1
+
+
+
+
+
+
+unique_items
+
+
+Array, Tuple
+
+
+property :ids, T::Array[Integer], unique_items:

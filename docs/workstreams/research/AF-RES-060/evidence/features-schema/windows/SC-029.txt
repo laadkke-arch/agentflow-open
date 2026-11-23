@@ -1,0 +1,88 @@
+JSI: JSON Schema Instantiation
+
+
+
+
+
+
+JSI offers an Object-Oriented representation for JSON data using JSON Schemas. Given your JSON Schemas, JSI constructs Ruby modules and classes which are used to instantiate your JSON data. These modules let you use JSON with all the niceties of OOP such as property accessors and application-defined instance methods.
+
+
+To learn more about JSON Schema see https://json-schema.org/.
+
+
+JSI marries object-oriented programming with JSON Schemas by associating a module with each schema, and constructing every instance described by a schema to be an instance of that module. When an application adds methods to a schema module, those methods can be used on the schema's instances.
+
+
+A JSI instance aims to offer a fairly unobtrusive wrapper around its JSON data, which is usually a Hash (JSON Object) or Array described by one or more JSON Schemas. JSI instances have accessors for property names described by schemas, schema validation, and other nice things. Mostly though, you use a JSI as you would use its underlying data, calling the same methods (e.g. #[], #map, #repeated_permutation) and passing it to anything that duck-types expecting #to_ary or #to_hash.
+
+
+Note: The canonical location of this README is on RubyDoc. When viewed on Github, it may be inconsistent with the latest released gem, and Yardoc links will not work.
+
+
+JSI documents a {file:docs/Glossary.md Glossary} of relevant terms.
+
+
+Example
+
+
+Words are boring, let's code. You can follow along from the code blocks - install the gem (gem install jsi), load an irb (irb -r jsi), and copy/paste/hack.
+
+
+Here's a schema in yaml:
+
+
+$schema: "http://json-schema.org/draft-07/schema"
+description: "A Contact"
+type: "object"
+properties:
+  name: {type: "string"}
+  phone:
+    type: "array"
+    items:
+      description: "A phone number"
+      type: "object"
+      properties:
+        location: {type: "string"}
+        number: {type: "string"}
+
+
+
+We pass that to {JSI.new_schema} which will instantiate a JSI Schema which represents it:
+
+
+# this would usually load YAML or JSON; the schema content
+# is inlined here for copypastability.
+contact_schema = JSI.new_schema({"$schema" => "http://json-schema.org/draft-07/schema", "description" => "A Contact", "type" => "object", "properties" => {"name" => {"type" => "string"}, "phone" => {"type" => "array", "items" => {"type" => "object", "properties" => {"location" => {"type" => "string"}, "number" => {"type" => "string"}}}}}})
+
+
+
+We name the module that JSI will use when instantiating a contact. Named modules are better to work with, and JSI will indicate the names of schema modules in its #inspect output.
+
+
+Contact = contact_schema.jsi_schema_module
+
+
+
+Note: it is more concise to instantiate the schema module with the shortcut {JSI.new_schema_module}, i.e. Contact = JSI.new_schema_module(...). This example includes the intermediate step to help show all that is happening.
+
+
+To instantiate the schema, we need some JSON data (expressed here as YAML)
+
+
+name: bill
+phone:
+- location: home
+  number: "555"
+nickname: big b
+
+
+
+So, if we construct an instance like:
+
+
+bill = Contact.new_jsi(
+  # this would usually load JSON or YAML; the instance content
+  # is inlined for copypastability.
+  {"name" => "bill", "phone" => [{"location" => "home", "number" => "555"}], "nickname" => "big b"},
+  # note: bill is mutable to demonstrate setters below; the default is

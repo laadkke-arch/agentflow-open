@@ -1,0 +1,118 @@
+2. Features
+
+This section is non-normative.
+
+
+  
+The JSON-LD Syntax specification [JSON-LD] defines a syntax to
+    express Linked Data in JSON. Because there is more than one way to
+    express Linked Data using this syntax, it is often useful to be able to
+    transform JSON-LD documents so that they may be more easily consumed by
+    specific applications.
+
+
+  
+JSON-LD uses contexts to allow Linked Data
+    to be expressed in a way that is specifically tailored to a particular
+    person or application. By providing a context,
+    JSON data can be expressed in a way that is a natural fit for a particular
+    person or application whilst also indicating how the data should be
+    understood at a global scale. In order for people or applications to
+    share data that was created using a context that is different
+    from their own, a JSON-LD processor must be able to transform a document
+    from one context to another. Instead of requiring JSON-LD
+    processors to write specific code for every imaginable
+    context switching scenario, it is much easier to specify a
+    single algorithm that can remove any context. Similarly,
+    another algorithm can be specified to subsequently apply any
+    context. These two algorithms represent the most basic
+    transformations of JSON-LD documents. They are referred to as
+    expansion and compaction, respectively.
+
+
+  
+There are four major types of transformation that are discussed in this
+    document: expansion, compaction, flattening, and RDF serialization/deserialization.
+
+
+  
+
+    
+2.1 Expansion
+
+This section is non-normative.
+
+
+    
+The algorithm that removes context is
+      called expansion. Before performing any other
+      transformations on a JSON-LD document, it is easiest to
+      remove any context from it and to make data structures
+      more regular.
+
+
+    
+To get an idea of how context and data structuring affects the same data,
+      here is an example of JSON-LD that uses only terms
+      and is fairly compact:
+
+
+    
+
+Example 1: Sample JSON-LD document
+
+{
+  "@context": {
+    "name": "http://xmlns.com/foaf/0.1/name",
+    "homepage": {
+      "@id": "http://xmlns.com/foaf/0.1/homepage",
+      "@type": "@id"
+    }
+  },
+  "@id": "http://me.markus-lanthaler.com/",
+  "name": "Markus Lanthaler",
+  "homepage": "http://www.markus-lanthaler.com/"
+}
+
+
+
+    
+The next input example uses one IRI to express a property
+    and an array to encapsulate another, but
+    leaves the rest of the information untouched.
+
+
+    
+
+Example 2: Sample JSON-LD document using an IRI instead of a term to express a property
+
+{
+  "@context": {
+    "website": "http://xmlns.com/foaf/0.1/homepage"
+  },
+  "@id": "http://me.markus-lanthaler.com/",
+  "http://xmlns.com/foaf/0.1/name": "Markus Lanthaler",
+  "website": { "@id": "http://www.markus-lanthaler.com/" }
+}
+
+
+
+    
+Note that both inputs are valid JSON-LD and both represent the same
+      information. The difference is in their context information
+      and in the data structures used. A JSON-LD processor can remove
+      context and ensure that the data is more regular by employing
+      expansion.
+
+
+    
+Expansion has two important goals: removing any contextual
+      information from the document, and ensuring all values are represented
+      in a regular form. These goals are accomplished by expanding all properties
+      to absolute IRIs and by expressing all
+      values in arrays in
+      expanded form. Expanded form is the most verbose
+      and regular way of expressing of values in JSON-LD; all contextual
+      information from the document is instead stored locally with each value.
+      Running the Expansion algorithm
+      (expand
