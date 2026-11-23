@@ -184,14 +184,17 @@ class Reader:
 
 def records(role, path, raw):
     offset = 0
-    found = []
+    found, ignored = [], []
     for line in raw.splitlines(keepends=True):
         cell = line.rstrip(b"\r\n")
         if cell and not cell.startswith(b"#"):
             found.append({"role": role, "path": path, "start": offset,
                           "end": offset + len(cell), "text": cell.decode()})
+        elif cell.startswith(b"#"):
+            ignored.append({"role": role, "path": path, "kind": "ignored_note" if cell.startswith(b"# note") else "padding",
+                            "start": offset, "end": offset + len(cell), "sha256": digest(cell)})
         offset += len(line)
-    return found
+    return found, ignored
 
 
 def quote(spec, parsed, policy):
@@ -243,12 +246,14 @@ def solve(spec, parsed, policy):
 
 def execute(spec, order, policy, reader, address, tag, run_id):
     parsed = {}
+    discarded = []
     for role in order:
-        parsed[role] = records(role, reader.paths[role], reader.read(role))
+        parsed[role], ignored = records(role, reader.paths[role], reader.read(role))
+        discarded.extend(ignored)
     value, cells, guards = solve(spec, parsed, policy)
     return {"id": run_id, "address": address, "tag": tag, "transform": TRANSFORM,
             "order": list(order), "policy": policy, "trace": reader.events, "parsed": parsed,
-            "cells": cells, "guards": guards, "value": value}
+            "cells": cells, "guards": guards, "discarded": discarded, "value": value}
 
 
 def run_local(spec, edition, directory, run_id):

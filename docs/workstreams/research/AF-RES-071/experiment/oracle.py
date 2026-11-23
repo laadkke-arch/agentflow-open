@@ -1,6 +1,7 @@
 """Separate oracle for the small sealed inputs. It never imports the reader or a view."""
 import csv
 from datetime import date
+from hashlib import sha256
 from pathlib import Path
 import re
 
@@ -118,6 +119,7 @@ def verify_observation(spec, edition, run):
         raw = bytes.fromhex(event["returned_hex"])
         assert role == opened[-1] and event["start"] == len(received[role])
         assert event["end"] == event["start"] + len(raw)
+        assert event["sha256"] == sha256(raw).hexdigest()
         received[role].extend(raw)
     assert tuple(opened) == edition.order
     assert set(received) == {"body", "context"}
@@ -125,6 +127,9 @@ def verify_observation(spec, edition, run):
         assert raw == edition.files[role]
         for parsed in run["parsed"][role]:
             assert parsed["text"].encode() == raw[parsed["start"]:parsed["end"]]
+    for row in run["discarded"]:
+        raw = received[row["role"]][row["start"]:row["end"]]
+        assert raw.startswith(b"#") and sha256(raw).hexdigest() == row["sha256"]
     more = [*run["guards"].values(), *(cell["input"] for cell in cells)]
     assert all(fragment in run["parsed"][fragment["role"]] for fragment in more)
     return value, cells

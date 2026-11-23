@@ -37,6 +37,7 @@ def pair_row(pair):
 
 
 def main(out):
+    (out / "inputs").mkdir(parents=True, exist_ok=True)
     specs = load_json(ROOT / "inputs" / "objects.json")
     pairs = list(design(specs))
     write_csv(out / "pairs.csv", PAIR_COLUMNS, (pair_row(pair) for pair in pairs))
