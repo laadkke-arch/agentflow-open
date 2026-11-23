@@ -32,3 +32,11 @@ git diff 469d8c569e054622567ecf328150898ed384ada1 HEAD -- docs/workstreams/resea
 이 과제는 공개 자료 비교다. 세 대상 프로젝트의 코드·운영환경·조직 권한을 바꾸지 않았다. 제품에 적용한 성공, 당시 작성자의 최초 인지, 사용자의 시간 절감은 별도 관측이다. 다음 첫 확인에는 원 요구의 버전·행위 주체·결과 관찰자·고정된 C1/C2를 함께 전달한다. 구체 최소 입력과 미해결은 judgments.csv, decisions.csv, SELF_CHECK.md 및 마지막 HANDOFF.md에서 확인한다.
 
 JEP97을 실제로 시험할 때는 원래 diff와 full schema의 `$schema` required 목록 불일치부터 원 저자의 의도로 확정해야 한다. 어느 쪽을 실행 기준으로 삼았는지 기록하지 않고 성공으로 세지 않는다. 구형 reader, schema 판, 정규/비정규 URI 및 version pair를 고정한 뒤 동일 입력을 두 이행안에 주어야 한다.
+
+## 원판 모집과 미실행 목표 검사
+
+JEP122 첫 PR는 `2b194a3c090fd375321871c47a3de503a0758206`, SPEC9 첫 PR는 `6ddd0d85a8acf184e2e7e35899c0d80af639dc94`, JEP97 첫 PR는 `0f4510266ead738e62f1d9e412d6bb9e7eb7a97d`다. 이는 확보한 최초 생존 PR판이며 Git 이전 창설 원고의 증명은 아니다. JEP97의 실험 C2는 `e2651761a98f673d9c1e05d02e33ac4b3668c736`에서 추가된다. 새 모집에서 첫8 후보의 PR 커밋과 added-file 이력을 모두 대조한 뒤 새 질의를 봉인해야 한다. 원 frame/queries를 사후 교체하지 않는다.
+
+[사후 재개 명령](postseal/P3/NEXT.md)은 nbformat5.7.3·두 validator·실제 구형 앱 설정과 [4개 JSON 입력](postseal/P3/fixtures.json)을 명시한다. [관측 probe](postseal/P3/probe_notebook_compatibility.py)는 구문만 확인했고 실행하지 않았다. 필요한 dependency lock과 실제 구형 앱이 없으면 현대 재구성 환경임을 표시한다. C2의 동일 URI/바이트 해시/버전쌍/alias 구성은 별도 입력이다.
+
+공통 `scripts/check.py`와 `cloud_check.py`는 기본값으로 checkout의 `.workbench`와 실습 결과를 쓴다. 허용 경로 밖 쓰기를 피하기 위해 필요한 공통 검사는 소유 경로 내부의 임시 detached worktree에서 수행하고 로그·SHA 영수증만 보존한다. 작업 checkout에서는 지정 session check와 읽기 전용 evidence/verify.py를 실행한다. 임시 worktree의 검사와 최종 보고서 SHA 검사를 구분한다.
