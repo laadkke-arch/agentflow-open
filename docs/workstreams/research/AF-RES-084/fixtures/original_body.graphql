@@ -1,0 +1,22 @@
+query OriginalDescription($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    id
+    databaseId
+    issue(number: $number) {
+      id
+      databaseId
+      number
+      url
+      createdAt
+      author { login }
+      body
+      lastEditedAt
+      includesCreatedEdit
+      userContentEdits(first: 100) {
+        totalCount
+        pageInfo { hasNextPage endCursor }
+        nodes { id createdAt editedAt deletedAt diff editor { login } }
+      }
+    }
+  }
+}
