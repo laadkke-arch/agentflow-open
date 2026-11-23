@@ -15,7 +15,7 @@ def capture(item, out):
         with response:
             data = response.read(4000001)
             row.update(status=response.code, final_url=response.url,
-                       headers=dict(response.headers), bytes=len(data), truncated=len(data)>4000000,
+                       headers={k:v for k,v in response.headers.items() if 'cookie' not in k.lower()}, bytes=len(data), truncated=len(data)>4000000,
                        response_sha256=hashlib.sha256(data).hexdigest())
             filename=key+('.json' if 'json' in response.headers.get('content-type','') else '.txt')
             (out/filename).write_bytes(data)
