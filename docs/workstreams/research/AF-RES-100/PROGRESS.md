@@ -32,3 +32,9 @@
 ③에는 `assemble_supplement.py`, `displacement.csv`, `outcomes.csv`, 확장 `sources.jsonl`, `evidence/resume2/{outcomes,crossdomain,semantic-review.*,postseal-access.jsonl,source-audit.md,supplement_annotations.json,failures.jsonl,docker-postseal.json,stage3-validation.json}`을 포함한다. 세 원장 검사는 종료0. ③ 원격 SHA는 다음 묶음 영수증과 최종 인계에 기록한다.
 
 다음 첫 행동은 원격 SHA 확인 후 ④ 필수표·층별 분모·해석 민감도·SELF_CHECK를 원장에서 재계산하는 것이다. 사전 원장·모집·protocol은 바꾸지 않는다. 별도 의미 검토도 주 판정 변경0이다.
+
+## 원래 작업 흐름과 병합 중
+
+원래 작업 흐름의 ③ `b3d7af5a3a55eba78adc6c3bd31db7eaf9de49b1`과 재개 흐름의 ③ `866ee7a68eec0f5c7077fec364685d6039d5ca75`를 함께 보존한다. 두 흐름 모두② 원판정 변경0이며, 원래 32자리·16쌍만 주 분석이다. 이 통합은 원래 흐름에서 수행하며 RESULT·SELF_CHECK·검사·최종 HANDOFF를 계속 작성 중이다. 중복 독자 로그는 계속 격리한다.
+
+재개 흐름의 세 집계 원장 원본은 `evidence/resume2/seal3-ledgers/`에 그대로 남겼다. 통합 sources는303행의 읽기·귀속 기록이며, 최소자료 하한은 원래 감사한32고유자료만 산입한다. 재개160행의 원래 산입 여부도 보존하되 중복 합산하지 않는다. 원래 흐름의5답/4질문/현재채택3질문, 원판·완전입력·필수출력을 함께 확인한 실행0/8은 별도 기계 검토 중이며 실행 실패8건을 뜻하지 않는다.
