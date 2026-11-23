@@ -1,0 +1,112 @@
+{
+  "status": "predeclared diagnostic inputs and predictions; actual observations in execution-attempts/",
+  "implementation": "PyLD 3.3.0 @ 3ac1987d9be3648c09b7c7e34865ce82d637e742",
+  "cases": [
+    {
+      "method": "frame",
+      "options": {
+        "processingMode": "json-ld-1.1",
+        "explicit": false,
+        "requireAll": true,
+        "embed": "@always",
+        "omitGraph": true,
+        "pruneBlankNodeIdentifiers": true
+      },
+      "origin": "researcher-authored local diagnostic; not original LD-3 or official fixture",
+      "case_id": "PLAN-LD-POS",
+      "input": {
+        "@context": {
+          "@version": 1.1,
+          "@vocab": "https://example.org/",
+          "values": {
+            "@id": "https://example.org/values",
+            "@container": "@set"
+          }
+        },
+        "@id": "https://example.org/credential",
+        "issuer": "issuer-A",
+        "values": [
+          {
+            "a": 1,
+            "b": 2,
+            "c": 3
+          },
+          {
+            "a": 4,
+            "b": 5,
+            "c": 6
+          }
+        ]
+      },
+      "frame": {
+        "@context": {
+          "@version": 1.1,
+          "@vocab": "https://example.org/",
+          "values": {
+            "@id": "https://example.org/values",
+            "@container": "@set"
+          }
+        },
+        "@id": "https://example.org/credential",
+        "@requireAll": true,
+        "values": {
+          "a": 1,
+          "@requireAll": true
+        }
+      },
+      "expected_claim": "Separate value nodes allow selecting a=1 and retaining that node b=2/c=3 plus issuer. Prediction pending execution.",
+      "C1_expected": true,
+      "C2_expected": true
+    },
+    {
+      "method": "frame",
+      "options": {
+        "processingMode": "json-ld-1.1",
+        "explicit": false,
+        "requireAll": true,
+        "embed": "@always",
+        "omitGraph": true,
+        "pruneBlankNodeIdentifiers": true
+      },
+      "origin": "researcher-authored local diagnostic; not original LD-3 or official fixture",
+      "case_id": "PLAN-LD-NEST",
+      "input": {
+        "@context": {
+          "@version": 1.1,
+          "@vocab": "https://example.org/",
+          "values": "@nest"
+        },
+        "@id": "https://example.org/credential",
+        "issuer": "issuer-A",
+        "values": [
+          {
+            "a": 1,
+            "b": 2,
+            "c": 3
+          },
+          {
+            "a": 4,
+            "b": 5,
+            "c": 6
+          }
+        ]
+      },
+      "frame": {
+        "@context": {
+          "@version": 1.1,
+          "@vocab": "https://example.org/",
+          "values": "@nest"
+        },
+        "@id": "https://example.org/credential",
+        "@requireAll": true,
+        "values": {
+          "a": 1,
+          "@requireAll": true
+        }
+      },
+      "expected_claim": "@nest removes the original object boundary; do not expect the same C1/C2 projection. Exact output pending execution.",
+      "C1_expected": false,
+      "C2_expected": false
+    }
+  ]
+}
