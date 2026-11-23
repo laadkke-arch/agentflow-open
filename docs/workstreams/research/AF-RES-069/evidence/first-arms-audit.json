@@ -1,0 +1,1130 @@
+{
+  "audit_id": "AF-RES-069-first-arms-audit",
+  "checked_at_utc": "2026-11-23T08:54:44.598934+00:00",
+  "snapshot_commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+  "query_freeze_commit": "03d1e436cfa7dc209b57b19508ef4b2e75942824",
+  "command": "python -B - <<'PY'\nimport subprocess,json,hashlib,datetime,collections,sys\nSNAP='649638c731e7f2c71c8c993bb0f9af9e0924fb79'\nFREEZE='03d1e436cfa7dc209b57b19508ef4b2e75942824'\nBASE='docs/workstreams/research/AF-RES-069/'\nfiles=[]; receipts=[]; format_findings=[]; checks=[]; failures=[]\ndef check(name,ok,detail=None):\n    row={'check':name,'status':'passed' if ok else 'failed'}\n    if detail is not None: row['detail']=detail\n    checks.append(row)\n    if not ok: failures.append(name)\ndef get(sha,path,jsonl=False):\n    argv=['git','show',sha+':'+path]\n    r=subprocess.run(argv,capture_output=True)\n    receipts.append({'command':argv,'exitcode':r.returncode})\n    if r.returncode: raise RuntimeError('git show failed for '+path)\n    b=r.stdout\n    files.append({'commit':sha,'path':path,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob_sha1':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()})\n    if not jsonl: return json.loads(b)\n    rows=[]; blanks=[]; invalid=[]\n    for n,line in enumerate(b.decode().splitlines(),1):\n        if not line.strip(): blanks.append(n);continue\n        try: rows.append(json.loads(line))\n        except json.JSONDecodeError as e: invalid.append({'line':n,'error':str(e)})\n    if blanks or invalid: format_findings.append({'path':path,'blank_line_numbers':blanks,'invalid_nonblank_lines':invalid,'nonblank_records':len(rows)})\n    check(path+'_strict_jsonl',not blanks and not invalid,{'blank_line_numbers':blanks,'invalid_nonblank_lines':invalid})\n    return rows\nqueries=get(FREEZE,BASE+'queries.jsonl',True)\nqm={q['query_id']:q for q in queries}\narms={}\nfor arm,problem,summary_name,cost_name in [('A','P1','P1-summary.json','accesses.jsonl'),('B','P2','execution-summary-P2.json','costs.jsonl')]:\n    prefix=BASE+'arms/'+arm+'/'\n    runs=get(SNAP,prefix+'runs.jsonl',True)\n    sources=get(SNAP,prefix+'sources.jsonl',True)\n    judgments=get(SNAP,prefix+'judgments.jsonl',True)\n    costs=get(SNAP,prefix+cost_name,True)\n    summary=get(SNAP,prefix+summary_name)\n    rmap={r['rank_id']:r for r in runs}; smap={s['source_id']:s for s in sources}; jmap={j['rank_id']:j for j in judgments}\n    check(arm+'_single_problem_scope',all(x['arm']==arm and x['problem_id']==problem for x in runs+sources+judgments+costs))\n    check(arm+'_15_rank_rows_unique',len(runs)==15 and len(rmap)==15)\n    expected=[f'{problem}-{arm}-Q{q}-R{n}' for q in range(1,4) for n in range(1,6)]\n    check(arm+'_rank_sequence_Q1Q2Q3_each_1to5',[r['rank_id'] for r in runs]==expected and all(r['original_rank']==int(r['rank_id'].split('-R')[-1]) for r in runs))\n    check(arm+'_one_judgment_per_rank',len(judgments)==15 and set(jmap)==set(rmap))\n    check(arm+'_source_ids_unique_and_all_used',len(sources)==len(smap) and set(smap)==set(r['source_id'] for r in runs))\n    query_errors=[]; join_errors=[]; reverse_errors=[]; duplicate_errors=[]\n    queries_performed=[]\n    for qi in range(1,4):\n        qid=f'{problem}-{arm}-Q{qi}'; group=[r for r in runs if r['query_id']==qid]; frozen=qm[qid]\n        if len(group)!=5: query_errors.append(qid+': slot count')\n        for r in group:\n            for k in ('query','query_number','engine','language','domain_filter','recency_filter'):\n                if r.get(k)!=frozen[k]:query_errors.append(r['rank_id']+': '+k)\n            payload=r.get('actual_tool_payload',r.get('query_payload'))\n            if payload.get('system2_search_query')!=[{'q':frozen['query']}] or payload.get('response_length')!='long':\n                query_errors.append(r['rank_id']+': payload')\n        searches=[c for c in costs if c['operation']=='search' and c['payload'].get('system2_search_query')==[{'q':frozen['query']}]]\n        if len(searches)!=1:query_errors.append(qid+': search operation count')\n        queries_performed.append({'query_id':qid,'query':frozen['query'],'recorded_slots':len(group),'recorded_search_operations':len(searches),'returned_blocks':group[0].get('search_returned_blocks_total',group[0].get('returned_results_in_response')) if group else None,'frozen_top_slots':frozen['top_slots'],'frozen_original_cap':frozen['open_unique_originals_cap_per_arm']})\n    check(arm+'_queries_match_frozen_and_exactly_once',not query_errors,query_errors)\n    for r in runs:\n        sid=r['source_id']; s=smap.get(sid); j=jmap.get(r['rank_id'])\n        if not s or not j:\n            join_errors.append(r['rank_id']+': missing source or judgment');continue\n        for k in ('source_id','query_id','original_rank','inspection_status'):\n            if j.get(k)!=r.get(k):join_errors.append(r['rank_id']+': judgment '+k)\n        if arm=='B' and (r['lineage_id']!=s['lineage_id'] or j['lineage_id']!=s['lineage_id']):\n            join_errors.append(r['rank_id']+': lineage')\n        url=r.get('original_url',r.get('actual_url'))\n        if url not in s.get('all_returned_urls',s.get('observed_urls',[])):\n            join_errors.append(r['rank_id']+': URL not in source URLs')\n        if r['rank_id'] not in [link['rank_id'] for link in s['query_rank_links']]:\n            reverse_errors.append(r['rank_id']+': missing source reverse link')\n        if r['inspection_status']=='direct_read' and not s['direct_read']:\n            join_errors.append(r['rank_id']+': read flag')\n        if arm=='A':\n            for key,urlkey in [('duplicate_url_of','original_url'),('duplicate_document_of','canonical_document_url')]:\n                prior=r.get(key)\n                if prior and (prior not in rmap or runs.index(rmap[prior])>=runs.index(r) or r[urlkey]!=rmap[prior][urlkey]):\n                    duplicate_errors.append(r['rank_id']+': '+key)\n            family=r.get('document_family_duplicate_of')\n            if family and family not in smap: duplicate_errors.append(r['rank_id']+': family source missing')\n        else:\n            first=r['first_exposure_rank_id']\n            group=[x['rank_id'] for x in runs if x['source_id']==sid]\n            if first!=group[0]:duplicate_errors.append(r['rank_id']+': first exposure')\n            prior=r.get('duplicate_of_rank_id')\n            if prior and (prior not in rmap or runs.index(rmap[prior])>=runs.index(r) or rmap[prior]['source_id']!=sid):\n                duplicate_errors.append(r['rank_id']+': duplicate link')\n    for s in sources:\n        got={link['rank_id'] for link in s['query_rank_links']}\n        expected_links={r['rank_id'] for r in runs if r['source_id']==s['source_id']}\n        if got!=expected_links:reverse_errors.append(s['source_id']+': reverse set')\n        for link in s['query_rank_links']:\n            r=rmap.get(link['rank_id'])\n            if not r or link['query_id']!=r['query_id'] or link['rank']!=r['original_rank']:\n                reverse_errors.append(s['source_id']+': reverse identity')\n        if s.get('duplicate_of') and s['duplicate_of'] not in smap:\n            duplicate_errors.append(s['source_id']+': source duplicate')\n    check(arm+'_run_source_judgment_joins',not join_errors,join_errors)\n    check(arm+'_all_source_reverse_links',not reverse_errors,reverse_errors)\n    check(arm+'_duplicate_links_existing_earlier_consistent',not duplicate_errors,duplicate_errors)\n    direct=[s for s in sources if s['direct_read']]\n    counted=[s for s in sources if s['count_toward_minimum']]\n    direct_ids={s['source_id'] for s in direct}\n    check(arm+'_counted_sources_have_direct_read_and_sections',all(s['direct_read'] and s['sections_read'] for s in counted))\n    check(arm+'_minimum_count_deduplicated_by_lineage',len(counted)==len({s['lineage_id'] for s in counted}))\n    check(arm+'_unread_sources_not_counted',all(not s['count_toward_minimum'] for s in sources if not s['direct_read']))\n    check(arm+'_direct_distinct_source_ids_at_most5',len(direct)<=5)\n    first_reads=[c for c in costs if c['operation'] not in ('search','same_document_line_open','same_document_find')]\n    first_read_ids=[c['source_id'] for c in first_reads]\n    earliest_unique=[]\n    for r in runs:\n        if r['source_id'] not in earliest_unique:earliest_unique.append(r['source_id'])\n    check(arm+'_first_open_ids_follow_first_five_source_ids',first_read_ids==earliest_unique[:5])\n    check(arm+'_direct_sources_equal_first_open_ids',direct_ids==set(first_read_ids))\n    cost_joins=[]; evidence_ref_mismatches=[]\n    if arm=='A':\n        queries_cost=sum(c['attempts'] for c in costs if c['operation']=='search')\n        first_cost=sum(c['attempts'] for c in first_reads)\n        extra_cost=0\n        research_cost=sum(c['attempts'] for c in costs)\n        retries=sum(bool(c['retry']) for c in costs)\n        if sum(r['query_attempt_charged_at_this_rank'] for r in runs)!=queries_cost:cost_joins.append('query attribution')\n        if sum(r['source_open_attempt_charged_at_this_rank'] for r in runs)!=first_cost:cost_joins.append('open attribution')\n        for c in first_reads:\n            if c['source_id'] not in smap or c['counts_toward_open_cap']!=1:cost_joins.append(c['access_id'])\n        summary_checks={'query_attempts':queries_cost,'original_open_attempts':first_cost,'successful_direct_reads':len(direct),'trial_rank_rows':len(runs),'independent_lineages_directly_read':len({s['lineage_id'] for s in direct})}\n        for k,v in summary_checks.items():\n            if summary[k]!=v:cost_joins.append('summary '+k)\n        if summary['research_tool_cost']['total_research_access_operations']!=research_cost:cost_joins.append('summary total research')\n    else:\n        queries_cost=sum(c['query_attempts'] for c in costs)\n        first_cost=sum(c['new_original_open_attempts'] for c in costs)\n        extra_cost=sum(c['same_document_access_attempts'] for c in costs)\n        research_cost=sum(c['tool_calls'] for c in costs)\n        retries=sum(c['retries'] for c in costs)\n        cmap={c['cost_id']:c for c in costs}\n        if len(cmap)!=len(costs):cost_joins.append('duplicate cost IDs')\n        if sum(r['tool_cost']['search_calls_attributed_to_this_rank'] for r in runs)!=queries_cost:cost_joins.append('query attribution')\n        for s in sources:\n            related=[s['initial_open_cost_id']] if s['initial_open_cost_id'] else []\n            related+=s['same_document_access_cost_ids']\n            for cid in related:\n                if cid not in cmap or cmap[cid].get('source_id')!=s['source_id']:cost_joins.append(s['source_id']+': '+cid)\n            if s['new_original_access_attempts']!=sum(c['new_original_open_attempts'] for c in costs if c.get('source_id')==s['source_id']):cost_joins.append(s['source_id']+': new count')\n            if s['same_document_line_open_attempts']!=sum(c['same_document_access_attempts'] for c in costs if c.get('source_id')==s['source_id']):cost_joins.append(s['source_id']+': same count')\n            refs={ref for c in costs if c.get('source_id')==s['source_id'] for ref in c.get('returned_ref_ids',[])}\n            for section in s['sections_read']:\n                if section['ref'] not in refs:evidence_ref_mismatches.append(s['source_id']+': '+section['ref'])\n            for j in judgments:\n                if j['source_id']==s['source_id']:\n                    for cond in j['conditions'].values():\n                        for ref in cond.get('evidence_refs',[]):\n                            if ref.split(':')[0] not in refs:evidence_ref_mismatches.append(j['rank_id']+': '+ref)\n        summary_checks={'query_calls':queries_cost,'first_original_open_attempts':first_cost,'same_document_line_open_attempts':extra_cost,'research_web_tool_calls':research_cost,'directly_read_independent_originals':len({s['lineage_id'] for s in direct}),'count_toward_minimum':len(counted),'unique_trial_document_lineages':len({s['lineage_id'] for s in sources})}\n        for k,v in summary_checks.items():\n            if summary[k]!=v:cost_joins.append('summary '+k)\n    check(arm+'_cost_and_summary_joins',not cost_joins,cost_joins)\n    if arm=='B':check(arm+'_recorded_evidence_refs_join_source_accesses',not evidence_ref_mismatches,evidence_ref_mismatches)\n    check(arm+'_three_search_five_first_open_zero_retry',queries_cost==3 and first_cost==5 and retries==0)\n    accepted=sum(j.get('verified_fit',j.get('accepted_as_complete_solution',False)) is True for j in judgments)\n    unread_j=[j for j in judgments if j['inspection_status']=='uninspected']\n    check(arm+'_uninspected_judgments_not_accepted',all(j.get('verified_fit',j.get('accepted_as_complete_solution',False)) is False and all(c['status']=='unknown' for c in j['conditions'].values()) for j in unread_j))\n    condition_counts=collections.Counter(c['status'] for j in judgments for c in j['conditions'].values())\n    total_returned=sum(q['returned_blocks'] for q in queries_performed)\n    direct_positions=sum(r['inspection_status']=='direct_read' for r in runs)\n    known_positions=sum(smap[r['source_id']]['direct_read'] for r in runs)\n    summary_total=summary.get('engine_returned_items',total_returned)\n    check(arm+'_returned_total_and_extra_counts',summary_total==total_returned and summary.get('extra_returned_blocks_excluded',summary.get('automatic_exposure',{}).get('outside_top5_search_items'))==total_returned-15)\n    recorded_tools=dict(collections.Counter(c['tool'] for c in costs))\n    source_rows=[{'source_id':s['source_id'],'lineage_id':s['lineage_id'],'direct_read':s['direct_read'],'count_toward_minimum':s['count_toward_minimum'],'duplicate_of':s.get('duplicate_of'),'rank_ids':[x['rank_id'] for x in s['query_rank_links']],'source_kind':s.get('source_kind'),'sections_recorded':len(s['sections_read'])} for s in sources]\n    arms[arm+'-'+problem]={'problem_id':problem,'arm':arm,'queries':queries_performed,'costs':{'search_operations':queries_cost,'first_original_access_operations':first_cost,'same_document_additional_access_operations':extra_cost,'total_recorded_research_access_operations':research_cost,'recorded_operation_rows_by_tool':recorded_tools,'retries':retries,'billed_currency':None,'tokens':None},'denominators':{'returned_trial_slots':len(runs),'all_auto_returned_blocks':total_returned,'outside_trial_auto_returned_blocks':total_returned-15,'unique_source_ids_in_trial_union':len(sources),'unique_recorded_lineages_in_trial_union':len({s['lineage_id'] for s in sources}),'direct_read_source_ids':len(direct),'direct_read_document_families':summary.get('distinct_document_families_opened',len(direct)),'direct_read_recorded_independent_lineages':len({s['lineage_id'] for s in direct}),'count_toward_minimum_flags':len(counted),'direct_access_charged_rank_positions':direct_positions,'rank_positions_referring_to_an_already_or_currently_read_source':known_positions,'rank_positions_without_source_read':len(runs)-known_positions,'unique_source_ids_not_read':len(sources)-len(direct),'strict_independent_unread_lineages':len({s['lineage_id'] for s in sources}-{s['lineage_id'] for s in direct}),'accepted_complete_solution_rows':accepted,'condition_status_counts':dict(condition_counts)},'source_rows':source_rows,'summary_exposure':summary.get('blind_exposure_events',summary.get('automatic_exposure')),'summary_protocol_deviations':summary.get('protocol_deviations',summary.get('violations')),'directly_read_target_issue_source_ids':[s['source_id'] for s in direct if s.get('source_kind')=='target_issue_author_report'],'duplicate_source_read_source_ids':[s['source_id'] for s in direct if s.get('duplicate_of')],'local_utility_failures_not_in_research_access_total':summary.get('local_utility_failures',[]),'recorded_complete_solution_count':summary.get('accepted_complete_solutions',summary.get('verified_fits'))}\nresult={'audit_id':'AF-RES-069-first-arms-audit','checked_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'snapshot_commit':SNAP,'query_freeze_commit':FREEZE,'scope':'A/P1 and B/P2 only; all source files read via git show; no live arm files or external originals read','checks':checks,'check_counts':dict(collections.Counter(c['status'] for c in checks)),'format_findings':format_findings,'established_check_failures':failures,'arms':arms,'source_file_hashes':files,'git_show_receipts':receipts,'scope_pair_count':0}\nprint(json.dumps(result,ensure_ascii=False,indent=2))\nsys.exit(1 if failures else 0)\n\nPY",
+  "cwd": "/workspace/scratch/41ae7a55914b/agentflow-open",
+  "exitcode": 1,
+  "exitcode_meaning": "1 reports the four strict JSONL blank-line failures in the fixed snapshot. All nonblank rows parsed and all other 44 structural/accounting checks passed. The snapshot was not changed.",
+  "scope": "A/P1 and B/P2 only; all source files read via git show; no live arm files or external originals read",
+  "review_type": "Independent-context structural and accounting audit of retained records; no independent semantic verification of original sources.",
+  "paired_problem_count_in_this_scope": 0,
+  "verdicts": {
+    "recorded_15_slots_per_arm": "passed",
+    "_six_queries_equal_frozen_queries": "passed",
+    "source_rank_judgment_and_cost_joins": "passed",
+    "unique_source_id_open_cap_at_most5": "passed",
+    "actual_research_operation_cost_equal": "false: A-P1 8, B-P2 13",
+    "entire_task_tool_call_count_equal": "not measured",
+    "strict_jsonl_valid_at_snapshot": "false for four A files",
+    "original_source_claims_or_fits_independently_verified": "not performed",
+    "no_blinding_loss_claim_permitted": "false for A-P1 because automatic issue/linked-pointer exposure was recorded",
+    "same_problem_A_vs_B_effect_comparison": "not available in this two-case subset"
+  },
+  "cost_comparison": [
+    {
+      "measure": "Frozen query attempts",
+      "A_P1": 3,
+      "B_P2": 3,
+      "equality": "equal"
+    },
+    {
+      "measure": "Trial slots, 3 queries × first 5",
+      "A_P1": 15,
+      "B_P2": 15,
+      "equality": "equal"
+    },
+    {
+      "measure": "Frozen unique-original upper bound",
+      "A_P1": 5,
+      "B_P2": 5,
+      "equality": "equal upper bound, not equal realized independent works"
+    },
+    {
+      "measure": "First source/edition access attempts",
+      "A_P1": 5,
+      "B_P2": 5,
+      "equality": "equal; A includes a duplicate document-family edition"
+    },
+    {
+      "measure": "Same-document additional line opens",
+      "A_P1": 0,
+      "B_P2": 5,
+      "equality": "different"
+    },
+    {
+      "measure": "Recorded research access operations",
+      "A_P1": 8,
+      "B_P2": 13,
+      "equality": "different"
+    },
+    {
+      "measure": "Recorded web_run operations",
+      "A_P1": 7,
+      "B_P2": 13,
+      "equality": "different; A also has one github_fetch_issue operation"
+    },
+    {
+      "measure": "Directly read document families",
+      "A_P1": 4,
+      "B_P2": 5,
+      "equality": "different"
+    },
+    {
+      "measure": "Directly read recorded independent lineages",
+      "A_P1": 2,
+      "B_P2": 5,
+      "equality": "different; A includes the target issue"
+    },
+    {
+      "measure": "Research query/source retries",
+      "A_P1": 0,
+      "B_P2": 0,
+      "equality": "equal according to the retained operation ledgers"
+    },
+    {
+      "measure": "Billed money, tokens, total labor, entire-session tool invocations",
+      "A_P1": null,
+      "B_P2": null,
+      "equality": "not measured"
+    }
+  ],
+  "recommended_cost_wording": "두 방식에 문제당 질의 3회, 각 질의 최초 반환 5자리, 고유 원문 최대 5개의 상한을 동일하게 부여했다. 실제 연구 접근 연산은 별도 기록했다. 이 첫 묶음에서 A-P1은 검색 3회와 본문 접근 5회로 8회였고, B-P2는 검색 3회·최초 본문 접근 5회·같은 문서의 추가 행 열람 5회로 13회였다. 두 사례는 서로 다른 문제이므로 효과나 효율의 짝 비교가 아니며, 금전·토큰·노동시간의 동일성은 측정하지 않았다.",
+  "findings": [
+    {
+      "id": "FAR-01",
+      "kind": "confirmed_format_defect",
+      "status": "retained_in_fixed_snapshot",
+      "finding": "A/runs.jsonl line16, A/sources.jsonl line12, A/judgments.jsonl line16 and A/accesses.jsonl line9 are blank lines. A strict per-line JSON parser failed; there are no malformed nonblank JSON records.",
+      "handling": "The auditor skipped only whitespace-only lines for the remaining structural checks, retained the format failure, and did not modify the snapshot. Root reported a later cleanup at 08:49:03 UTC; that live/later version was not read in this audit."
+    },
+    {
+      "id": "FAR-02",
+      "kind": "verified_record_consistency",
+      "status": "passed",
+      "finding": "Each scoped arm records Q1/Q2/Q3 and positions1–5 in order. Six exact query strings, engine/language/filter fields and one-query payloads match the frozen input. Every rank joins to a source and one judgment, and all reverse links and recorded cost references resolve.",
+      "limit": "This checks the saved records, not the literal raw search responses or source truth. Recorded result-block order is not independently exposed native engine rank."
+    },
+    {
+      "id": "FAR-03",
+      "kind": "realized_cost_asymmetry",
+      "status": "quantified",
+      "finding": "A-P1 records 8 research access operations: 7 web_run operations and one github_fetch_issue operation. B-P2 records 13 web_run operations because five same-document line opens were added. Those five accesses do not create five extra originals, but they are real recorded access work.",
+      "implication": "Equal query/slot/original upper bounds are supported. Equal realized research calls, reading volume, monetary cost or time are not supported. Local hash/file utilities are outside these research-operation totals."
+    },
+    {
+      "id": "FAR-04",
+      "kind": "duplicate_document_edition",
+      "status": "already_disclosed_deviation",
+      "finding": "A-P1-S05 is the 4.6.x edition of the document family already read as A-P1-S03. Its fifth access was charged, and no replacement original was opened. Thus five source/edition IDs were read, but only four document families and two recorded independent lineages.",
+      "implication": "Do not report five independent originals or three distinct useful components merely because three A rank rows have the component classification. The official manual lineage is counted once."
+    },
+    {
+      "id": "FAR-05",
+      "kind": "automatic_unblinding",
+      "status": "recorded_for_A",
+      "finding": "A-P1 Q1/R1 and Q2/R1 record automatic exposure of the target issue and a #19648 pointer outside the issue body. Q3/R1 records target-body re-exposure. The ledgers contain no explicit comment-body or linked-PR-body access.",
+      "implication": "Retain the recorded blinding failure despite frozen queries and the lack of an explicit PR fetch. The issue re-read is prior/problem evidence, not discovery of a new solution. B records no recognized target/comment/solution exposure; lack of recognition is not proof that no unrecognized exposure occurred."
+    },
+    {
+      "id": "FAR-06",
+      "kind": "automatic_outside_trial_snippets",
+      "status": "recorded_not_in_read_denominator",
+      "finding": "A's three responses contained 19+22+16=57 blocks; 42 were outside the 15 trial slots. B contained 18+18+18=54 blocks; 39 were outside the 15 trial slots.",
+      "implication": "The extra blocks were not counted as directly read originals or trial hits. Their automatic snippet exposure still belongs in the limitations. Without raw response review, this audit cannot independently certify their contents or exclusion behavior."
+    },
+    {
+      "id": "FAR-07",
+      "kind": "denominator_interpretation",
+      "status": "no_inflation_detected_in_count_flags",
+      "finding": "A: 15 rank slots, 11 source IDs/editions, 4 recorded lineages; directly read5 source IDs,4 families,2 lineages. B:15 rank slots,13 source IDs/lineages; directly read5. Only direct sources with recorded sections have count_toward_minimum=true, once per recorded lineage.",
+      "implication": "Do not sum rank appearances, repeat editions, same-document line opens or mirrors into the minimum20. A-P1-S01 is the original problem issue and must be counted only once when unioned with screening sources. Cross-arm/cross-problem canonical deduplication remains the integrator's task."
+    },
+    {
+      "id": "FAR-08",
+      "kind": "rank_access_vs_source_read",
+      "status": "separate_denominators_required",
+      "finding": "A marks5 rank positions as direct_read and10 as uninspected. Four of those10 point to a source read at an earlier rank, so9 rank positions refer to a read source. The distinct-source denominator remains5/11, and the recorded-lineage read denominator remains2/4. B has5 directly read sources out of13 and5 rank positions referring to those sources.",
+      "implication": "The wording uninspected10 in A describes no new access charged at those positions. It must not be interpreted as ten distinct unread documents. Reused read-source appearances cannot raise the independent-read numerator."
+    },
+    {
+      "id": "FAR-09",
+      "kind": "no_complete_fit_demonstrated",
+      "status": "recorded_not_independently_validated",
+      "finding": "Both scoped arm records have zero accepted complete-solution rows. A's two contradict statuses concern the author's reported existing faulty implementation; its other28 condition statuses are unknown. All30 B condition statuses are unknown.",
+      "implication": "Component/principle labels do not mean C1/C2 were established. This audit does not adjudicate those labels, source passages or proposed transfers because originals were not opened."
+    },
+    {
+      "id": "FAR-10",
+      "kind": "unpaired_scope",
+      "status": "not_an_effect_comparison",
+      "finding": "This snapshot subset contains A for P1 and B for P2. It contains zero complete within-problem A/B pairs.",
+      "implication": "The table diagnoses cost accounting and adherence only. It cannot estimate A-only/B-only/common/both-fail counts, relative effectiveness, time savings or equal-cost causal performance."
+    }
+  ],
+  "limits": [
+    "All trial records were read with git show from 649638c731e7f2c71c8c993bb0f9af9e0924fb79; queries were read from 03d1e436cfa7dc209b57b19508ef4b2e75942824. Live arm files, later appended problems and later format cleanup were not read.",
+    "No external search, original-source open, comment, PR or target-link follow was performed by this auditor.",
+    "Recorded MCP operation counts were reconciled to access/cost rows. The actual tool event stream, nested wrapper invocations, server-internal HTTP calls, paid tokens and currency were not independently measured.",
+    "Lineage identity, edition equivalence, authorship and section claims were checked for internal consistency only. Their substantive truth needs original-source review.",
+    "The absence of an explicit comment/PR operation in the retained ledger is narrower than independently proving that no hidden metadata or unrecognized snippet exposed post-body information.",
+    "B's duplicate mirror handling resolves its three uninspected Internet-Draft URLs to one source/lineage. Since it was not read or counted, this does not add to the directly read denominator.",
+    "The first-five source-ID order check passes. A's fifth source ID belongs to an already opened document family, a narrower distinct-original interpretation issue already retained as a deviation."
+  ],
+  "checks": [
+    {
+      "check": "docs/workstreams/research/AF-RES-069/queries.jsonl_strict_jsonl",
+      "status": "passed",
+      "detail": {
+        "blank_line_numbers": [],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/A/runs.jsonl_strict_jsonl",
+      "status": "failed",
+      "detail": {
+        "blank_line_numbers": [
+          16
+        ],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/A/sources.jsonl_strict_jsonl",
+      "status": "failed",
+      "detail": {
+        "blank_line_numbers": [
+          12
+        ],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/A/judgments.jsonl_strict_jsonl",
+      "status": "failed",
+      "detail": {
+        "blank_line_numbers": [
+          16
+        ],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/A/accesses.jsonl_strict_jsonl",
+      "status": "failed",
+      "detail": {
+        "blank_line_numbers": [
+          9
+        ],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "A_single_problem_scope",
+      "status": "passed"
+    },
+    {
+      "check": "A_15_rank_rows_unique",
+      "status": "passed"
+    },
+    {
+      "check": "A_rank_sequence_Q1Q2Q3_each_1to5",
+      "status": "passed"
+    },
+    {
+      "check": "A_one_judgment_per_rank",
+      "status": "passed"
+    },
+    {
+      "check": "A_source_ids_unique_and_all_used",
+      "status": "passed"
+    },
+    {
+      "check": "A_queries_match_frozen_and_exactly_once",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "A_run_source_judgment_joins",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "A_all_source_reverse_links",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "A_duplicate_links_existing_earlier_consistent",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "A_counted_sources_have_direct_read_and_sections",
+      "status": "passed"
+    },
+    {
+      "check": "A_minimum_count_deduplicated_by_lineage",
+      "status": "passed"
+    },
+    {
+      "check": "A_unread_sources_not_counted",
+      "status": "passed"
+    },
+    {
+      "check": "A_direct_distinct_source_ids_at_most5",
+      "status": "passed"
+    },
+    {
+      "check": "A_first_open_ids_follow_first_five_source_ids",
+      "status": "passed"
+    },
+    {
+      "check": "A_direct_sources_equal_first_open_ids",
+      "status": "passed"
+    },
+    {
+      "check": "A_cost_and_summary_joins",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "A_three_search_five_first_open_zero_retry",
+      "status": "passed"
+    },
+    {
+      "check": "A_uninspected_judgments_not_accepted",
+      "status": "passed"
+    },
+    {
+      "check": "A_returned_total_and_extra_counts",
+      "status": "passed"
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/B/runs.jsonl_strict_jsonl",
+      "status": "passed",
+      "detail": {
+        "blank_line_numbers": [],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/B/sources.jsonl_strict_jsonl",
+      "status": "passed",
+      "detail": {
+        "blank_line_numbers": [],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/B/judgments.jsonl_strict_jsonl",
+      "status": "passed",
+      "detail": {
+        "blank_line_numbers": [],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "docs/workstreams/research/AF-RES-069/arms/B/costs.jsonl_strict_jsonl",
+      "status": "passed",
+      "detail": {
+        "blank_line_numbers": [],
+        "invalid_nonblank_lines": []
+      }
+    },
+    {
+      "check": "B_single_problem_scope",
+      "status": "passed"
+    },
+    {
+      "check": "B_15_rank_rows_unique",
+      "status": "passed"
+    },
+    {
+      "check": "B_rank_sequence_Q1Q2Q3_each_1to5",
+      "status": "passed"
+    },
+    {
+      "check": "B_one_judgment_per_rank",
+      "status": "passed"
+    },
+    {
+      "check": "B_source_ids_unique_and_all_used",
+      "status": "passed"
+    },
+    {
+      "check": "B_queries_match_frozen_and_exactly_once",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_run_source_judgment_joins",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_all_source_reverse_links",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_duplicate_links_existing_earlier_consistent",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_counted_sources_have_direct_read_and_sections",
+      "status": "passed"
+    },
+    {
+      "check": "B_minimum_count_deduplicated_by_lineage",
+      "status": "passed"
+    },
+    {
+      "check": "B_unread_sources_not_counted",
+      "status": "passed"
+    },
+    {
+      "check": "B_direct_distinct_source_ids_at_most5",
+      "status": "passed"
+    },
+    {
+      "check": "B_first_open_ids_follow_first_five_source_ids",
+      "status": "passed"
+    },
+    {
+      "check": "B_direct_sources_equal_first_open_ids",
+      "status": "passed"
+    },
+    {
+      "check": "B_cost_and_summary_joins",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_recorded_evidence_refs_join_source_accesses",
+      "status": "passed",
+      "detail": []
+    },
+    {
+      "check": "B_three_search_five_first_open_zero_retry",
+      "status": "passed"
+    },
+    {
+      "check": "B_uninspected_judgments_not_accepted",
+      "status": "passed"
+    },
+    {
+      "check": "B_returned_total_and_extra_counts",
+      "status": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 44,
+    "failed": 4
+  },
+  "format_findings": [
+    {
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/runs.jsonl",
+      "blank_line_numbers": [
+        16
+      ],
+      "invalid_nonblank_lines": [],
+      "nonblank_records": 15
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/sources.jsonl",
+      "blank_line_numbers": [
+        12
+      ],
+      "invalid_nonblank_lines": [],
+      "nonblank_records": 11
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/judgments.jsonl",
+      "blank_line_numbers": [
+        16
+      ],
+      "invalid_nonblank_lines": [],
+      "nonblank_records": 15
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/accesses.jsonl",
+      "blank_line_numbers": [
+        9
+      ],
+      "invalid_nonblank_lines": [],
+      "nonblank_records": 8
+    }
+  ],
+  "established_check_failures": [
+    "docs/workstreams/research/AF-RES-069/arms/A/runs.jsonl_strict_jsonl",
+    "docs/workstreams/research/AF-RES-069/arms/A/sources.jsonl_strict_jsonl",
+    "docs/workstreams/research/AF-RES-069/arms/A/judgments.jsonl_strict_jsonl",
+    "docs/workstreams/research/AF-RES-069/arms/A/accesses.jsonl_strict_jsonl"
+  ],
+  "arms": {
+    "A-P1": {
+      "problem_id": "P1",
+      "arm": "A",
+      "queries": [
+        {
+          "query_id": "P1-A-Q1",
+          "query": "JupyterLab disabledExtensions lockedExtensions migration empty configuration",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 19,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        },
+        {
+          "query_id": "P1-A-Q2",
+          "query": "jupyter labextension disable locks extension migration",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 22,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        },
+        {
+          "query_id": "P1-A-Q3",
+          "query": "JupyterLab page_config migration marker recursive_update empty dictionary",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 16,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        }
+      ],
+      "costs": {
+        "search_operations": 3,
+        "first_original_access_operations": 5,
+        "same_document_additional_access_operations": 0,
+        "total_recorded_research_access_operations": 8,
+        "recorded_operation_rows_by_tool": {
+          "mcp__codex_apps__search_service_web_run": 7,
+          "mcp__codex_apps__github_fetch_issue": 1
+        },
+        "retries": 0,
+        "billed_currency": null,
+        "tokens": null
+      },
+      "denominators": {
+        "returned_trial_slots": 15,
+        "all_auto_returned_blocks": 57,
+        "outside_trial_auto_returned_blocks": 42,
+        "unique_source_ids_in_trial_union": 11,
+        "unique_recorded_lineages_in_trial_union": 4,
+        "direct_read_source_ids": 5,
+        "direct_read_document_families": 4,
+        "direct_read_recorded_independent_lineages": 2,
+        "count_toward_minimum_flags": 2,
+        "direct_access_charged_rank_positions": 5,
+        "rank_positions_referring_to_an_already_or_currently_read_source": 9,
+        "rank_positions_without_source_read": 6,
+        "unique_source_ids_not_read": 6,
+        "strict_independent_unread_lineages": 2,
+        "accepted_complete_solution_rows": 0,
+        "condition_status_counts": {
+          "contradict": 2,
+          "unknown": 28
+        }
+      },
+      "source_rows": [
+        {
+          "source_id": "A-P1-S01",
+          "lineage_id": "jupyterlab-issue-19647-family",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q1-R1",
+            "P1-A-Q2-R1",
+            "P1-A-Q3-R1"
+          ],
+          "source_kind": "target_issue_author_report",
+          "sections_recorded": 5
+        },
+        {
+          "source_id": "A-P1-S02",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q1-R2",
+            "P1-A-Q2-R3"
+          ],
+          "source_kind": "official_manual",
+          "sections_recorded": 1
+        },
+        {
+          "source_id": "A-P1-S03",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": true,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q1-R3"
+          ],
+          "source_kind": "official_manual",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "A-P1-S04",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": true,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q1-R4",
+            "P1-A-Q3-R3"
+          ],
+          "source_kind": "official_manual",
+          "sections_recorded": 2
+        },
+        {
+          "source_id": "A-P1-S05",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": true,
+          "count_toward_minimum": false,
+          "duplicate_of": "A-P1-S03",
+          "rank_ids": [
+            "P1-A-Q1-R5"
+          ],
+          "source_kind": "official_manual",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "A-P1-S06",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q2-R2"
+          ],
+          "source_kind": "official_manual_uninspected",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "A-P1-S07",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q2-R4"
+          ],
+          "source_kind": "official_manual_uninspected",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "A-P1-S08",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q2-R5"
+          ],
+          "source_kind": "official_manual_uninspected",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "A-P1-S09",
+          "lineage_id": "jupyterlab-official-manual",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q3-R2"
+          ],
+          "source_kind": "official_changelog_uninspected",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "A-P1-S10",
+          "lineage_id": "jupyterlab-labapp-code",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q3-R4"
+          ],
+          "source_kind": "upstream_code_uninspected",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "A-P1-S11",
+          "lineage_id": "jupyterlab-server-official-manual",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P1-A-Q3-R5"
+          ],
+          "source_kind": "official_changelog_uninspected",
+          "sections_recorded": 0
+        }
+      ],
+      "summary_exposure": [
+        {
+          "query_id": "P1-A-Q1",
+          "rank": 1,
+          "type": "automatic_target_issue_and_linked_pointer",
+          "detail": "검색 반환이 원이슈 본문과 본문 밖 #19648 표식을 자동 노출. 연결 PR/댓글 본문을 열지 않았다.",
+          "blindness_violation": true
+        },
+        {
+          "query_id": "P1-A-Q2",
+          "rank": 1,
+          "type": "automatic_target_issue_and_linked_pointer",
+          "detail": "같은 자동 노출이 반복됨. 신규 해결안 독해 없음.",
+          "blindness_violation": true
+        },
+        {
+          "query_id": "P1-A-Q3",
+          "rank": 1,
+          "type": "automatic_target_issue_body",
+          "detail": "원인·재현이 검색 결과에 재노출; 별도 REST에서 원문 body만 직접 읽음.",
+          "blindness_violation": true
+        }
+      ],
+      "summary_protocol_deviations": [
+        {
+          "type": "duplicate_document_edition_open",
+          "detail": "5번째 접근은 stable Extensions와 같은 문서 계열의 4.6.x URL이다. 서로 다른 원문을 문서 계열로 엄격히 해석하면 중복 접근이다. 비용을 그대로 세고 추가 접근으로 대체하지 않았다.",
+          "impact": "5 attempts, 4 document families, 2 independent lineages; no inflated independent-source count"
+        }
+      ],
+      "directly_read_target_issue_source_ids": [
+        "A-P1-S01"
+      ],
+      "duplicate_source_read_source_ids": [
+        "A-P1-S05"
+      ],
+      "local_utility_failures_not_in_research_access_total": [
+        {
+          "operation": "batch SHA256 computation",
+          "count": 1,
+          "error": "Argument list too long",
+          "recovery": "split into 8 local hash calls; no search or source retry"
+        },
+        {
+          "operation": "initial artifact patch path resolution",
+          "count": 1,
+          "error": "relative patch used scratch cwd instead of repo cwd",
+          "recovery": "moved only the five just-created files into the allowed repo arm directory and removed empty accidental directories; no pre-existing files overwritten"
+        }
+      ],
+      "recorded_complete_solution_count": 0
+    },
+    "B-P2": {
+      "problem_id": "P2",
+      "arm": "B",
+      "queries": [
+        {
+          "query_id": "P2-B-Q1",
+          "query": "root discovers intermediate device but paired leaf missing control capability through hierarchy",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 18,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        },
+        {
+          "query_id": "P2-B-Q2",
+          "query": "discover paired descendant device empty list parent attribute does not control child attribute",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 18,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        },
+        {
+          "query_id": "P2-B-Q3",
+          "query": "expose leaf device as separate identity or parent property through intermediate controller preserve command target",
+          "recorded_slots": 5,
+          "recorded_search_operations": 1,
+          "returned_blocks": 18,
+          "frozen_top_slots": 5,
+          "frozen_original_cap": 5
+        }
+      ],
+      "costs": {
+        "search_operations": 3,
+        "first_original_access_operations": 5,
+        "same_document_additional_access_operations": 5,
+        "total_recorded_research_access_operations": 13,
+        "recorded_operation_rows_by_tool": {
+          "mcp__codex_apps__search_service_web_run": 13
+        },
+        "retries": 0,
+        "billed_currency": null,
+        "tokens": null
+      },
+      "denominators": {
+        "returned_trial_slots": 15,
+        "all_auto_returned_blocks": 54,
+        "outside_trial_auto_returned_blocks": 39,
+        "unique_source_ids_in_trial_union": 13,
+        "unique_recorded_lineages_in_trial_union": 13,
+        "direct_read_source_ids": 5,
+        "direct_read_document_families": 5,
+        "direct_read_recorded_independent_lineages": 5,
+        "count_toward_minimum_flags": 5,
+        "direct_access_charged_rank_positions": 5,
+        "rank_positions_referring_to_an_already_or_currently_read_source": 5,
+        "rank_positions_without_source_read": 10,
+        "unique_source_ids_not_read": 8,
+        "strict_independent_unread_lineages": 8,
+        "accepted_complete_solution_rows": 0,
+        "condition_status_counts": {
+          "unknown": 30
+        }
+      },
+      "source_rows": [
+        {
+          "source_id": "B-P2-S01",
+          "lineage_id": "brooks-2004-aspect-oriented-sensor-networks",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q1-R1"
+          ],
+          "source_kind": "primary_original_text",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "B-P2-S02",
+          "lineage_id": "williams-device-interaction-tree-2011-priority",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q1-R2"
+          ],
+          "source_kind": "primary_original_text",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "B-P2-S03",
+          "lineage_id": "reedman-device-control-system-US20150051715",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q1-R3"
+          ],
+          "source_kind": "primary_original_text",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "B-P2-S04",
+          "lineage_id": "schmidt-controller-aggregation-dcds2009",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q1-R4"
+          ],
+          "source_kind": "primary_original_text",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "B-P2-S05",
+          "lineage_id": "vandwalle-hartman-group-formation-2012-priority",
+          "direct_read": true,
+          "count_toward_minimum": true,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q1-R5"
+          ],
+          "source_kind": "primary_original_text",
+          "sections_recorded": 3
+        },
+        {
+          "source_id": "B-P2-S06",
+          "lineage_id": "w3c-xquery-3",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q2-R1"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S07",
+          "lineage_id": "oreilly-xslt-mastering-xml-transformations",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q2-R2"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S08",
+          "lineage_id": "w3c-dom4",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q2-R3"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S09",
+          "lineage_id": "microsoft-ms-adts",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q2-R4"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S10",
+          "lineage_id": "w3c-xsd11-structures",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q2-R5"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S11",
+          "lineage_id": "draft-das-agent-tool-integrity-00",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q3-R1",
+            "P2-B-Q3-R2",
+            "P2-B-Q3-R3"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S12",
+          "lineage_id": "leaf-page-how-it-works",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q3-R4"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        },
+        {
+          "source_id": "B-P2-S13",
+          "lineage_id": "oma-dm-representation-protocol-1.2",
+          "direct_read": false,
+          "count_toward_minimum": false,
+          "duplicate_of": null,
+          "rank_ids": [
+            "P2-B-Q3-R5"
+          ],
+          "source_kind": "unverified_search_return",
+          "sections_recorded": 0
+        }
+      ],
+      "summary_exposure": {
+        "outside_top5_search_items": 39,
+        "treatment": "auto-returned snippets excluded from trial and not opened",
+        "recognized_target_issue_comment_or_solution_exposure": false
+      },
+      "summary_protocol_deviations": [],
+      "directly_read_target_issue_source_ids": [],
+      "duplicate_source_read_source_ids": [],
+      "local_utility_failures_not_in_research_access_total": [],
+      "recorded_complete_solution_count": 0
+    }
+  },
+  "source_file_hashes": [
+    {
+      "commit": "03d1e436cfa7dc209b57b19508ef4b2e75942824",
+      "path": "docs/workstreams/research/AF-RES-069/queries.jsonl",
+      "bytes": 6452,
+      "sha256": "c3996c9b977f95181210761877ca42c2704d1fcbc358a97867e2ff2e935f12e8",
+      "git_blob_sha1": "e73e7f7a593e7338588e6b6b9946a03827aa91b8"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/runs.jsonl",
+      "bytes": 28909,
+      "sha256": "2742999e9fb97887f2c0dad24775c0304dba7438cf93ac5dbdea018a2220304a",
+      "git_blob_sha1": "96ba4ccef5171d25d4e24d8624b5c29cf9032f16"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/sources.jsonl",
+      "bytes": 21166,
+      "sha256": "5c618e623fb30718393de098acf4e5962a9010ad93e2c8353e135ef420d3b68f",
+      "git_blob_sha1": "3c14d30b43dc5504c8142ef5f1cba996541da792"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/judgments.jsonl",
+      "bytes": 24106,
+      "sha256": "b91c3b31510e6ecf839eb419c397bffb033f499d8a8dee3f6352505de6172a72",
+      "git_blob_sha1": "8d779659a61f7bfdf4a23167c4b8f00ee9cd4111"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/accesses.jsonl",
+      "bytes": 4802,
+      "sha256": "2d88b6a00ed344d1fd8a703dc8f11e47ad0383b4e4fbb9da080c63ef1883a099",
+      "git_blob_sha1": "9ae33eff9811768943f9326296302282d16d1e13"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/A/P1-summary.json",
+      "bytes": 4274,
+      "sha256": "1edd8618d4c066229120af34aafcf5dcff53ef32906a3b0c073f5af8fc383ce7",
+      "git_blob_sha1": "2fb03991bb183497deeaa3d1ea424e7d982b0ada"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/B/runs.jsonl",
+      "bytes": 27836,
+      "sha256": "24a07d5637aec5e85c2609a5ec0d97d6593b2eaff32ab43bd30a5e547c889d91",
+      "git_blob_sha1": "b752eda5cec3b1941318f4c23002ef7d57ab6cce"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/B/sources.jsonl",
+      "bytes": 28836,
+      "sha256": "66ec778443ba6c60e58b1f7277e8292d96a44afc1f9e1f6da4921661bf540d10",
+      "git_blob_sha1": "af8695763476b36dbe758e8955286ef3449b66ed"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/B/judgments.jsonl",
+      "bytes": 29279,
+      "sha256": "55530d9e92a19d8ab22c09f179e1d7edf471a2fbf16943094d45f68ded021c41",
+      "git_blob_sha1": "abb6205dfa8f6f8d3f7dd80258a6d6f89a694b8e"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/B/costs.jsonl",
+      "bytes": 8115,
+      "sha256": "27668d6946e44336580047656074905f9217923fcc819bde4334ca14bb42a675",
+      "git_blob_sha1": "dded6b30a47d2f9220e2867fc2dfa029fe75f467"
+    },
+    {
+      "commit": "649638c731e7f2c71c8c993bb0f9af9e0924fb79",
+      "path": "docs/workstreams/research/AF-RES-069/arms/B/execution-summary-P2.json",
+      "bytes": 2188,
+      "sha256": "bff091e73643557592593d2a55495fb5247a763680cae4db81ae0922dc9ecbaa",
+      "git_blob_sha1": "3bbfb3a82bacf8fca185ab8cdd78682cd9ee2921"
+    }
+  ],
+  "git_show_receipts": [
+    {
+      "command": [
+        "git",
+        "show",
+        "03d1e436cfa7dc209b57b19508ef4b2e75942824:docs/workstreams/research/AF-RES-069/queries.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/A/runs.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/A/sources.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/A/judgments.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/A/accesses.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/A/P1-summary.json"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/B/runs.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/B/sources.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/B/judgments.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/B/costs.jsonl"
+      ],
+      "exitcode": 0
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "649638c731e7f2c71c8c993bb0f9af9e0924fb79:docs/workstreams/research/AF-RES-069/arms/B/execution-summary-P2.json"
+      ],
+      "exitcode": 0
+    }
+  ]
+}

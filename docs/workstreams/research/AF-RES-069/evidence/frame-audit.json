@@ -1,0 +1,842 @@
+{
+  "audit_id": "AF-RES-069-frame-audit",
+  "checked_at_utc": "2026-11-23T08:47:17.175539+00:00",
+  "reviewer": "/root/protocol_audit; same model in a separate context; metadata-only audit, not independent human review",
+  "command": "python -B - <<'PY'\nimport csv, json, hashlib, pathlib, collections, datetime, urllib.parse, re, sys\nbase=pathlib.Path('docs/workstreams/research/AF-RES-069')\nnames=sorted(str(p.relative_to(base)) for p in (base/'evidence').glob('*-frame-metadata.json'))\nnames += ['frame.csv','manifest.json','evidence/session-start.json','evidence/input-remote-verification.json','problems.jsonl']\nraw={name:(base/name).read_bytes() for name in names}\ninputs=[{'path':str(base/name),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()} for name,data in raw.items()]\nobjects={name:json.loads(data) for name,data in raw.items() if name.endswith('.json')}\nrows=list(csv.DictReader(raw['frame.csv'].decode().splitlines()))\nproblems=[json.loads(line) for line in raw['problems.jsonl'].decode().splitlines()]\nmeta={objects[name]['project']:objects[name] for name in names if name.endswith('-frame-metadata.json') and 'project' in objects[name]}\nagg=objects['evidence/github-frame-metadata.json']\ndef dt(x): return datetime.datetime.fromisoformat(x.replace('Z','+00:00'))\ndef duplicates(values): return [x for x,n in collections.Counter(values).items() if n>1]\nglwindows={}\nfor name in ('inkscape','kicad'):\n    q=urllib.parse.parse_qs(urllib.parse.urlparse(meta[name]['url']).query)\n    glwindows[name]={'lower':q['created_after'][0],'upper':q['created_before'][0]}\nlo=dt(glwindows['inkscape']['lower']); hi=dt(glwindows['inkscape']['upper'])\ngroups={name:[row for row in rows if row['project']==name] for name in meta}\nerrors=[]\ndef check(name,passed,details=None):\n    result={'check':name,'status':'passed' if passed else 'failed'}\n    if details is not None: result['details']=details\n    checks.append(result)\n    if not passed: errors.append(name)\nchecks=[]\ncheck('csv_rectangular', all(None not in r and all(v is not None for v in r.values()) for r in rows))\ncheck('frame_count_75',len(rows)==75)\nexpected=['jupyterlab','home_assistant','inkscape','godot','kicad']\ncheck('five_projects_15_each',set(groups)==set(expected) and all(len(groups[p])==15 for p in expected))\ncheck('project_block_order', [r['project'] for r in rows]==[p for p in expected for _ in range(15)])\ncheck('window_endpoints_agree',glwindows['inkscape']==glwindows['kicad'])\ncheck('window_exactly_90_days',(hi-lo).total_seconds()==90*86400)\ncheck('all_created_in_half_open_window',all(lo<=dt(r['created_at_utc'])<hi for r in rows))\ncheck('all_observed_open',all(r['state_at_observation'] in ('open','opened') for r in rows))\ncheck('frame_ids_unique',not duplicates(r['frame_id'] for r in rows))\ncheck('project_original_ids_unique',not duplicates((r['project'],r['original_id']) for r in rows))\ncheck('project_issue_numbers_unique',not duplicates((r['project'],r['issue_number']) for r in rows))\ncheck('source_urls_unique',not duplicates(r['source_url'] for r in rows))\nproject_results={}\nmetadata_mismatches=[]\nmapping={'original_rank':'rank','original_id':'id','issue_number':'number','created_at_utc':'created_at','updated_at_utc':'updated_at','state_at_observation':'state','source_url':'html_url','project':'project'}\nfor ix,p in enumerate(expected,1):\n    items=groups[p]; m=meta[p]; mf=m['frame']\n    ranks=[int(r['original_rank']) for r in items]\n    keys=[(dt(r['created_at_utc']),int(r['original_id'])) for r in items]\n    expected_ids=[f'F{ix}-{n:02d}' for n in range(1,16)]\n    check(p+'_ranks_1_to_15',ranks==list(range(1,16)))\n    check(p+'_frame_ids', [r['frame_id'] for r in items]==expected_ids)\n    check(p+'_sorted_created_then_id',keys==sorted(keys))\n    check(p+'_reserve_flags',all(r['reserve']==str(ix>=4).lower() for r in items))\n    check(p+'_metadata_frame_length_15',len(mf)==15)\n    for r,x in zip(items,mf):\n        for a,b in mapping.items():\n            if str(r[a])!=str(x.get(b)):\n                metadata_mismatches.append({'frame_id':r['frame_id'],'field':a,'csv':r[a],'metadata':x.get(b)})\n        if r['observed_utc']!=m['observed_utc']:\n            metadata_mismatches.append({'frame_id':r['frame_id'],'field':'observed_utc','csv':r['observed_utc'],'metadata':m['observed_utc']})\n    counts=collections.Counter(r['created_at_utc'] for r in items)\n    query=urllib.parse.parse_qs(urllib.parse.urlparse(m['url']).query)\n    last=m.get('last_returned_created_at')\n    cutoff=items[-1]['created_at_utc']\n    excluded=m.get('excluded_before_first15_count')\n    timing={'reported_observed_utc':m['observed_utc'],'seconds_after_t0_at_reported_observation':(dt(m['observed_utc'])-hi).total_seconds(),'completed_utc':m.get('completed_utc'),'seconds_after_t0_at_completion':(dt(m['completed_utc'])-hi).total_seconds() if m.get('completed_utc') else None}\n    project_results[p]={'frame_count':len(items),'created_first':items[0]['created_at_utc'],'created_15th':cutoff,'returned_count':m.get('returned_count'),'total_count':m.get('total_count'),'incomplete_results':m.get('incomplete_results'),'page':query.get('page',['1 (implicit)'])[0],'per_page':int(query['per_page'][0]),'sort':query.get('sort',[None])[0],'order':query.get('order',[None])[0],'order_by':query.get('order_by',[None])[0],'first_returned_created_at':m.get('first_returned_created_at'),'last_returned_created_at':last,'last_returned_strictly_after_15th':dt(last)>dt(cutoff) if last else None,'excluded_before_first15_count':excluded,'reported_first15_raw_prefix_length':15+excluded if excluded is not None else None,'returned_prefix_can_contain_reported_first15':m['returned_count']>=15+excluded if excluded is not None else None,'retained_same_timestamp_groups':[t for t,n in counts.items() if n>1],'saved_frame_fields':sorted(set().union(*(x.keys() for x in mf))),'saved_per_row_author_fields':sum(any(k in x for k in ('author','author_type','author_bot','user','bot')) for x in mf),'bot_filter_description':m.get('bot_filter'),'frame_eligibility_counts':dict(collections.Counter(r['eligibility'] for r in items)),'state_updated_at_not_after_t0':all(dt(r['updated_at_utc'])<=hi for r in items),'time_boundary':timing}\ncheck('metadata_matches_all_csv_fields',not metadata_mismatches,metadata_mismatches)\nagg_results=[]\nfor am in agg['projects']:\n    p=am['project']; single=meta[p]\n    match=am['frame']==single['frame']\n    aggregate_fields=['total_count','returned_count','incomplete_results']\n    counts_equal=all(am[k]==single[k] for k in aggregate_fields)\n    agg_results.append({'project':p,'frame_equal':match,'counts_equal':counts_equal,'aggregate_observed_utc':agg['observed_utc'],'aggregate_time_precision':agg['observation_time_precision'],'project_observed_utc':single['observed_utc']})\ncheck('aggregate_and_per_project_github_records_agree',all(x['frame_equal'] and x['counts_equal'] for x in agg_results))\nselected=[r for r in rows if r['eligibility']=='selected_observed']\ncheck('selected_rows_count_three',len(selected)==3)\ncheck('problem_count_three',len(problems)==3)\ncheck('selected_problem_ids_unique',not duplicates(r['problem_id'] for r in selected))\ncheck('selected_problem_ids_join',set(r['problem_id'] for r in selected)==set(p['problem_id'] for p in problems))\njoins=[]\nby_frame={r['frame_id']:r for r in rows}\ndisplay={'jupyterlab':'JupyterLab','home_assistant':'Home Assistant Core','inkscape':'Inkscape'}\nfor problem in problems:\n    r=by_frame.get(problem['frame_id']); obs=problem['source_observation']\n    values={}\n    if r:\n        values={'selected_status':r['eligibility']=='selected_observed','problem_id':r['problem_id']==problem['problem_id'],'project':display.get(r['project'])==problem['project'],'issue_number':int(r['issue_number'])==problem['issue_number'],'body_version':r['body_version']==obs['body_sha256'],'created_at':r['created_at_utc']==obs['created_at'],'updated_at':r['updated_at_utc']==obs['updated_at'],'source_url':r['source_url']==obs['url'],'state':r['state_at_observation']==obs['state'],'source_observation_frame_id':obs['frame_id']==r['frame_id'],'strict_layer_excluded':r['strict_layer']=='excluded_initial_revision_unverified' and problem['strict_layer_eligible'] is False and obs['original_version_verified'] is False}\n        preceding=[x for x in groups[r['project']] if int(x['original_rank'])<int(r['original_rank'])]\n        values['preceding_rows_explicitly_excluded']=all(x['eligibility']=='excluded_observed' for x in preceding)\n    joins.append({'problem_id':problem['problem_id'],'frame_id':problem['frame_id'],'checks':values,'source_body_observed_utc':obs['observed_utc'],'source_author_type':obs.get('author_type'),'source_author_bot':obs.get('author_bot')})\ncheck('all_selected_row_joins_match',all(x['checks'] and all(x['checks'].values()) for x in joins))\nmanifest=objects['manifest.json']; session=objects['evidence/session-start.json']; remote=objects['evidence/input-remote-verification.json']\nsession_manifest=json.loads(session['stdout'])\nfoundation='76b8c1d15812fbf91b879f8444fd188ae7445802'; dep='18e4449eb0ac04464aee8fa6cc07f1f6a54d0b5d'\nfingerprint=hashlib.sha256(json.dumps(manifest['contract']['files'],sort_keys=True,separators=(',',':')).encode()).hexdigest()\ncheck('manifest_equals_session_start_stdout',manifest==session_manifest)\ncheck('session_start_exit_zero',session['exit_code']==0)\ncheck('foundation_sha_agrees',manifest['base_commit']==manifest['integration']['commit']==session['head']==foundation)\ncheck('allowed_paths_only_owned_path',manifest['allowed_paths']==[str(base)+'/'])\ncheck('dependency_sha_and_branch_agree',manifest['dependencies']==[{'branch':'work/research-af-res-065','commit':dep}])\ncheck('contract_hash_map_fingerprint_consistent',fingerprint==manifest['contract']['sha256'])\ncheck('manifest_created_during_start_receipt',dt(session['started_at_utc'])<=dt(manifest['created_at'])<=dt(session['finished_at_utc']))\ncheck('manifest_remote_checked_start',manifest['freshness_at_start']=='remote_checked' and '--fetch' in session['command'])\ncheck('session_cwd_matches',session['cwd']==str(pathlib.Path.cwd()))\nblob_results=[]\nfor item in remote['files']:\n    n=item['path']\n    rec={'path':n,'recorded_blob_sha':item['sha'],'recorded_local_blob_sha':item.get('local_blob_sha'),'record_claims_match':item.get('matches'),'record_read':item.get('read'),'record_isError':item.get('isError'),'recorded_bytes_or_chars':item.get('bytes_or_chars')}\n    if n in raw:\n        b=raw[n]; oid=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()\n        rec.update({'recomputed_blob_sha':oid,'matches_recorded_sha':oid==item['sha'],'utf8_bytes':len(b),'characters':len(b.decode()),'count_matches_bytes':len(b)==item.get('bytes_or_chars'),'count_matches_characters':len(b.decode())==item.get('bytes_or_chars')})\n    else:\n        rec['not_recomputed_reason']='Current audit read scope excludes this file.'\n    rec['freeze_sha_in_recorded_url']=('/blob/'+remote['freeze_sha']+'/') in item['url']\n    blob_results.append(rec)\ncheck('allowed_current_files_match_recorded_remote_blob_shas',all(x.get('matches_recorded_sha',True) for x in blob_results))\ncheck('remote_verification_record_internally_consistent',all(x['recorded_blob_sha']==x['recorded_local_blob_sha'] and x['record_claims_match'] is True and x['record_read'] is True and x['record_isError'] is False and x['freeze_sha_in_recorded_url'] for x in blob_results) and remote['all_match'] is True)\ncounts={'metadata_files':len(meta)+1,'project_metadata_files':len(meta),'frame_rows':len(rows),'by_project':{p:len(groups[p]) for p in expected},'selected_observed_problems':len(selected),'selected_strict_eligible':sum(p['strict_layer_eligible'] is True for p in problems),'eligibility_counts':dict(collections.Counter(r['eligibility'] for r in rows)),'body_hash_present_rows':sum(bool(r['body_version']) for r in rows),'unread_or_not_assessed_rows':sum(r['strict_layer']=='not_assessed' for r in rows),'gitlab_frame_rows_with_unverified_bot_status':sum(len(groups[p]) for p in ('inkscape','kicad')),'checks_total':len(checks),'checks_passed':sum(c['status']=='passed' for c in checks),'checks_failed':len(errors),'metadata_csv_mismatches':len(metadata_mismatches),'retained_within_project_timestamp_tie_groups':sum(len(x['retained_same_timestamp_groups']) for x in project_results.values())}\nresult={'audit_id':'AF-RES-069-frame-audit','checked_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'inputs':inputs,'counts':counts,'window':{'lower_inclusive':lo.isoformat(),'upper_exclusive_t0':hi.isoformat(),'duration_seconds':(hi-lo).total_seconds(),'derived_from':'GitLab created_after/created_before URLs in the allowed frame metadata files','matching_gitlab_windows':glwindows},'checks':checks,'projects':project_results,'aggregate_record_comparison':agg_results,'selected_joins':joins,'manifest_summary':{'task_id':manifest['task_id'],'base_commit':manifest['base_commit'],'integration_commit':manifest['integration']['commit'],'dependency':manifest['dependencies'],'contract_sha256':manifest['contract']['sha256'],'session_start_exit_code':session['exit_code'],'session_start_command':session['command'],'session_start_cwd':session['cwd']},'recorded_remote_verification':{'freeze_sha':remote['freeze_sha'],'first_frame_sha':remote['first_frame_sha'],'current_file_blob_comparisons':blob_results,'no_network_reverification_performed':True},'established_invariant_failures':errors}\nprint(json.dumps(result,ensure_ascii=False,indent=2))\nsys.exit(1 if errors else 0)\n\nPY",
+  "cwd": "/workspace/scratch/41ae7a55914b/agentflow-open",
+  "exitcode": 0,
+  "verdicts": {
+    "retained_record_internal_consistency": "passed",
+    "observed_frame_window_order_uniqueness_and_selected_joins": "passed",
+    "source_sha_and_manifest_agreement": "passed_for_retained_records",
+    "independently_reconstructed_first15_after_all_filters": "not_established_from_retained_metadata",
+    "bot_exclusion_for_entire_frame": "not_established",
+    "open_membership_exactly_at_t0": "not_established",
+    "confirmed_wrong_or_duplicate_frame_rows": 0,
+    "exitcode_meaning": "Checker execution and the 55 explicit internal invariants passed. This is not a pass for the informational limits below."
+  },
+  "counts": {
+    "metadata_files": 6,
+    "project_metadata_files": 5,
+    "frame_rows": 75,
+    "by_project": {
+      "jupyterlab": 15,
+      "home_assistant": 15,
+      "inkscape": 15,
+      "godot": 15,
+      "kicad": 15
+    },
+    "selected_observed_problems": 3,
+    "selected_strict_eligible": 0,
+    "eligibility_counts": {
+      "selected_observed": 3,
+      "not_read_after_first_eligible": 36,
+      "excluded_observed": 5,
+      "extra_read_not_selected": 1,
+      "reserve_not_activated": 30
+    },
+    "body_hash_present_rows": 9,
+    "unread_or_not_assessed_rows": 66,
+    "gitlab_frame_rows_with_unverified_bot_status": 30,
+    "checks_total": 55,
+    "checks_passed": 55,
+    "checks_failed": 0,
+    "metadata_csv_mismatches": 0,
+    "retained_within_project_timestamp_tie_groups": 0
+  },
+  "window": {
+    "lower_inclusive": "2026-08-25T08:24:37+00:00",
+    "upper_exclusive_t0": "2026-11-23T08:24:37+00:00",
+    "duration_seconds": 7776000,
+    "derived_from": "GitLab created_after/created_before URLs in the allowed frame metadata files",
+    "matching_gitlab_windows": {
+      "inkscape": {
+        "lower": "2026-08-25T08:24:37Z",
+        "upper": "2026-11-23T08:24:37Z"
+      },
+      "kicad": {
+        "lower": "2026-08-25T08:24:37Z",
+        "upper": "2026-11-23T08:24:37Z"
+      }
+    }
+  },
+  "first15_assessment": [
+    {
+      "project": "jupyterlab",
+      "query_cap_verdict": "cap_sufficient_in_principle",
+      "evidence": "total_count=50, returned_count=50, page=1/per_page=100, created ascending; 15th=2026-10-09T19:43:36Z and last returned=2026-11-20T13:45:25Z; excluded_before_first15_count=0.",
+      "distinction": "No page-cap omission is indicated. Only the chosen 15 rows were retained, so the original returned membership and bot filtering cannot be independently reconstructed."
+    },
+    {
+      "project": "home_assistant",
+      "query_cap_verdict": "cap_sufficient_in_principle_despite_total_count_1593",
+      "evidence": "First 100 were requested in created ascending order. The recorded one exclusion places the first15 within a 16-row prefix. The 15th is 2026-08-26T14:31:27Z, strictly before the 100th returned timestamp 2026-09-04T07:11:34Z. incomplete_results=false.",
+      "distinction": "A total_count above 100 does not imply loss of the earliest15. Assuming recorded sorting and exclusion count are correct, unseen later pages cannot precede that timestamp cutoff. Whether all skipped/bot classifications were correct is a separate unverified question."
+    },
+    {
+      "project": "inkscape",
+      "query_cap_verdict": "no_cap_truncation_indicated_conditional_on_normal_pagination",
+      "evidence": "Exact timestamp window, state=opened, created_at ascending, per_page=100, returned_count=98, retained15.",
+      "distinction": "A response below the requested page size gives no cap-truncation signal. No response pagination headers or full 98-row metadata survive in the allowed records, and unknown GitLab bot status prevents confirming first15 nonbot issues."
+    },
+    {
+      "project": "godot",
+      "query_cap_verdict": "cap_sufficient_in_principle_despite_total_count_519",
+      "evidence": "First 100 were requested in created ascending order. The recorded one exclusion places the first15 within a 16-row prefix. The 15th is 2026-08-28T04:43:06Z, strictly before the last returned 2026-09-11T20:14:52Z. incomplete_results=false.",
+      "distinction": "The cap does not by itself compromise first15 coverage. Filtering provenance is not reconstructable from the retained15 and an exclusion count. This reserve frame was not activated."
+    },
+    {
+      "project": "kicad",
+      "query_cap_verdict": "insufficient_retained_tail_information_for_a_complete_cap_proof",
+      "evidence": "Exact timestamp window, state=opened, created_at ascending, per_page=100, returned_count=100, retained15. The last returned timestamp, total/next-page metadata, and exclusion count are absent.",
+      "distinction": "There is no demonstrated missing first15 row. However the saved evidence cannot exclude a timestamp-tie group straddling the retrieved-page boundary after filtering, nor can it verify first15 nonbot issues. This is an evidence gap in an unused reserve frame, not an observed recruitment failure."
+    }
+  ],
+  "limits": [
+    {
+      "id": "FA-L01",
+      "kind": "state_time_boundary",
+      "status": "unverified_not_observed_membership_error",
+      "finding": "The creation window ends at T0=2026-11-23T08:24:37Z, but open/opened state was queried later. Reported observation starts are 187.556872 to 205.288312 seconds after T0; known GitHub completions are 216.464229 to 217.816189 seconds after T0. GitLab completion times are absent.",
+      "implication": "The records support open status at the recorded live retrieval, not exact membership at T0. All 75 included updated_at values precede T0, but omitted issues that closed between T0 and retrieval cannot be ruled out. No history was retrieved in this audit.",
+      "minimum_resolving_evidence": "A contemporaneous T0 state snapshot or retained state-event history covering potential inclusion/exclusion changes during the retrieval interval."
+    },
+    {
+      "id": "FA-L02",
+      "kind": "gitlab_bot_screening",
+      "status": "unknown_not_confirmed_bot_inclusion",
+      "finding": "The GitLab metadata says author.bot is used only if present and is otherwise unknown. Neither GitLab frame saves per-row author/bot fields. All 30 GitLab frame rows lack independently checkable bot screening; P3 source_observation also has null author_type/author_bot.",
+      "implication": "Do not label unknown as nonbot or treat it as a proven bot. The required bot-excluded GitLab sampling frame is not fully verified.",
+      "minimum_resolving_evidence": "Bot classification evidence captured for each included GitLab author and for any excluded rows affecting the initial15."
+    },
+    {
+      "id": "FA-L03",
+      "kind": "github_bot_and_pr_filter_provenance",
+      "status": "partially_supported",
+      "finding": "GitHub URLs explicitly request is:issue and is:open. The retained frame rows omit author fields. P1/P2 source_observation records author_type=User, but that does not reproduce screening for all 45 GitHub frame rows.",
+      "implication": "The request documents PR exclusion intent and two selected authors' recorded API type. Full-frame bot screening and the precise identities/reasons behind the reported exclusions remain unavailable in the allowed evidence.",
+      "minimum_resolving_evidence": "Metadata-only returned rows including account type and exclusion reasons; no title/body or candidate search is required."
+    },
+    {
+      "id": "FA-L04",
+      "kind": "first15_filter_reconstruction",
+      "status": "not_independently_reconstructable",
+      "finding": "Each project saves only the chosen15 rows. Original responses reportedly contained 50, 100, 98, 100 and 100 rows. GitHub exclusion counts are retained, but excluded row IDs/timestamps/reasons and the remaining returned metadata are not.",
+      "implication": "The auditor can verify the chosen rows' order, window, uniqueness and equality across files. The auditor cannot independently rerun all filtering and prove that no earlier qualifying returned row was skipped. This limitation is distinct from whether the API page cap was sufficient.",
+      "minimum_resolving_evidence": "A metadata-only ledger of the returned prefix through the 15th qualifying row, all exclusions in that prefix, and enough following metadata to close any timestamp tie."
+    },
+    {
+      "id": "FA-L05",
+      "kind": "tie_break",
+      "status": "retained_order_passed_tie_case_not_exercised",
+      "finding": "All five saved frames are ordered by (created_at, numeric original_id), and there are zero within-project equal-created_at groups in the saved75.",
+      "implication": "The ordering check passes for retained data. It does not empirically test the numeric-ID tie-break on an actual tie or rule out omitted same-timestamp rows outside the retained prefix. GitHub's later returned tail timestamps support its page-boundary argument; KiCad lacks that tail evidence.",
+      "minimum_resolving_evidence": "Returned metadata at and immediately after each 15th-place timestamp, including all equal-timestamp items if any."
+    },
+    {
+      "id": "FA-L06",
+      "kind": "source_sha_verification_scope",
+      "status": "retained_records_checked_no_new_remote_read",
+      "finding": "manifest.json equals the parsed session-start stdout; the foundation and dependency SHAs agree with the fixed instructions. Git blob IDs recomputed from current manifest.json, frame.csv and problems.jsonl match input-remote-verification.json. Its queries.jsonl entry was checked only for internal consistency because the current read scope excludes that file.",
+      "implication": "No new network verification, remote freshness test, or referenced contract-file re-read was performed. The contract hash-map fingerprint is internally consistent, which does not itself authenticate the source.",
+      "minimum_resolving_evidence": "Use the required final session check --fetch and fixed-result remote re-read in the integrating workflow; this metadata audit does not replace them."
+    },
+    {
+      "id": "FA-L07",
+      "kind": "selection_and_revision_scope",
+      "status": "joins_passed_eligibility_not_readjudicated",
+      "finding": "The three selected rows join correctly by frame ID, problem ID, issue number, URL, creation/update times, body hash and state. Their preceding rows are explicitly excluded. All three selected original_version_verified values are false, and strict eligible count is zero. The extra P3 provisional row is preserved as extra_read_not_selected.",
+      "implication": "This verifies the recorded selection relationships, not the substantive eligibility reasons or proof of original issue versions. A three-problem observed layer must not be reported as a three-problem strict layer.",
+      "minimum_resolving_evidence": "Original-version evidence or an explicitly maintained observed-only result layer; no eligibility reinterpretation is made in this audit."
+    }
+  ],
+  "notes": [
+    {
+      "id": "FA-N01",
+      "status": "not_a_defect",
+      "finding": "problems.jsonl is 10348 UTF-8 bytes and 7509 Unicode characters. The recorded bytes_or_chars=7509 matches characters, and its exact Git blob SHA matches. Do not treat this unit ambiguity as a content mismatch."
+    },
+    {
+      "id": "FA-N02",
+      "status": "not_an_extra_sample",
+      "finding": "github-frame-metadata.json repeats the JupyterLab/Home Assistant frames with minute-level approximate observation time. The five per-project files contain the canonical75 rows; the repeated aggregate rows are not an additional30 samples. The duplicated frame contents and counts agree."
+    }
+  ],
+  "checks": [
+    {
+      "check": "csv_rectangular",
+      "status": "passed"
+    },
+    {
+      "check": "frame_count_75",
+      "status": "passed"
+    },
+    {
+      "check": "five_projects_15_each",
+      "status": "passed"
+    },
+    {
+      "check": "project_block_order",
+      "status": "passed"
+    },
+    {
+      "check": "window_endpoints_agree",
+      "status": "passed"
+    },
+    {
+      "check": "window_exactly_90_days",
+      "status": "passed"
+    },
+    {
+      "check": "all_created_in_half_open_window",
+      "status": "passed"
+    },
+    {
+      "check": "all_observed_open",
+      "status": "passed"
+    },
+    {
+      "check": "frame_ids_unique",
+      "status": "passed"
+    },
+    {
+      "check": "project_original_ids_unique",
+      "status": "passed"
+    },
+    {
+      "check": "project_issue_numbers_unique",
+      "status": "passed"
+    },
+    {
+      "check": "source_urls_unique",
+      "status": "passed"
+    },
+    {
+      "check": "jupyterlab_ranks_1_to_15",
+      "status": "passed"
+    },
+    {
+      "check": "jupyterlab_frame_ids",
+      "status": "passed"
+    },
+    {
+      "check": "jupyterlab_sorted_created_then_id",
+      "status": "passed"
+    },
+    {
+      "check": "jupyterlab_reserve_flags",
+      "status": "passed"
+    },
+    {
+      "check": "jupyterlab_metadata_frame_length_15",
+      "status": "passed"
+    },
+    {
+      "check": "home_assistant_ranks_1_to_15",
+      "status": "passed"
+    },
+    {
+      "check": "home_assistant_frame_ids",
+      "status": "passed"
+    },
+    {
+      "check": "home_assistant_sorted_created_then_id",
+      "status": "passed"
+    },
+    {
+      "check": "home_assistant_reserve_flags",
+      "status": "passed"
+    },
+    {
+      "check": "home_assistant_metadata_frame_length_15",
+      "status": "passed"
+    },
+    {
+      "check": "inkscape_ranks_1_to_15",
+      "status": "passed"
+    },
+    {
+      "check": "inkscape_frame_ids",
+      "status": "passed"
+    },
+    {
+      "check": "inkscape_sorted_created_then_id",
+      "status": "passed"
+    },
+    {
+      "check": "inkscape_reserve_flags",
+      "status": "passed"
+    },
+    {
+      "check": "inkscape_metadata_frame_length_15",
+      "status": "passed"
+    },
+    {
+      "check": "godot_ranks_1_to_15",
+      "status": "passed"
+    },
+    {
+      "check": "godot_frame_ids",
+      "status": "passed"
+    },
+    {
+      "check": "godot_sorted_created_then_id",
+      "status": "passed"
+    },
+    {
+      "check": "godot_reserve_flags",
+      "status": "passed"
+    },
+    {
+      "check": "godot_metadata_frame_length_15",
+      "status": "passed"
+    },
+    {
+      "check": "kicad_ranks_1_to_15",
+      "status": "passed"
+    },
+    {
+      "check": "kicad_frame_ids",
+      "status": "passed"
+    },
+    {
+      "check": "kicad_sorted_created_then_id",
+      "status": "passed"
+    },
+    {
+      "check": "kicad_reserve_flags",
+      "status": "passed"
+    },
+    {
+      "check": "kicad_metadata_frame_length_15",
+      "status": "passed"
+    },
+    {
+      "check": "metadata_matches_all_csv_fields",
+      "status": "passed",
+      "details": []
+    },
+    {
+      "check": "aggregate_and_per_project_github_records_agree",
+      "status": "passed"
+    },
+    {
+      "check": "selected_rows_count_three",
+      "status": "passed"
+    },
+    {
+      "check": "problem_count_three",
+      "status": "passed"
+    },
+    {
+      "check": "selected_problem_ids_unique",
+      "status": "passed"
+    },
+    {
+      "check": "selected_problem_ids_join",
+      "status": "passed"
+    },
+    {
+      "check": "all_selected_row_joins_match",
+      "status": "passed"
+    },
+    {
+      "check": "manifest_equals_session_start_stdout",
+      "status": "passed"
+    },
+    {
+      "check": "session_start_exit_zero",
+      "status": "passed"
+    },
+    {
+      "check": "foundation_sha_agrees",
+      "status": "passed"
+    },
+    {
+      "check": "allowed_paths_only_owned_path",
+      "status": "passed"
+    },
+    {
+      "check": "dependency_sha_and_branch_agree",
+      "status": "passed"
+    },
+    {
+      "check": "contract_hash_map_fingerprint_consistent",
+      "status": "passed"
+    },
+    {
+      "check": "manifest_created_during_start_receipt",
+      "status": "passed"
+    },
+    {
+      "check": "manifest_remote_checked_start",
+      "status": "passed"
+    },
+    {
+      "check": "session_cwd_matches",
+      "status": "passed"
+    },
+    {
+      "check": "allowed_current_files_match_recorded_remote_blob_shas",
+      "status": "passed"
+    },
+    {
+      "check": "remote_verification_record_internally_consistent",
+      "status": "passed"
+    }
+  ],
+  "projects": {
+    "jupyterlab": {
+      "frame_count": 15,
+      "created_first": "2026-08-30T10:31:27Z",
+      "created_15th": "2026-10-09T19:43:36Z",
+      "returned_count": 50,
+      "total_count": 50,
+      "incomplete_results": false,
+      "page": "1",
+      "per_page": 100,
+      "sort": "created",
+      "order": "asc",
+      "order_by": null,
+      "first_returned_created_at": "2026-08-30T10:31:27Z",
+      "last_returned_created_at": "2026-11-20T13:45:25Z",
+      "last_returned_strictly_after_15th": true,
+      "excluded_before_first15_count": 0,
+      "reported_first15_raw_prefix_length": 15,
+      "returned_prefix_can_contain_reported_first15": true,
+      "retained_same_timestamp_groups": [],
+      "saved_frame_fields": [
+        "created_at",
+        "html_url",
+        "id",
+        "number",
+        "project",
+        "rank",
+        "state",
+        "updated_at"
+      ],
+      "saved_per_row_author_fields": 0,
+      "bot_filter_description": null,
+      "frame_eligibility_counts": {
+        "selected_observed": 1,
+        "not_read_after_first_eligible": 14
+      },
+      "state_updated_at_not_after_t0": true,
+      "time_boundary": {
+        "reported_observed_utc": "2026-11-23T08:28:02.283001+00:00",
+        "seconds_after_t0_at_reported_observation": 205.283001,
+        "completed_utc": "2026-11-23T08:28:13.464229+00:00",
+        "seconds_after_t0_at_completion": 216.464229
+      }
+    },
+    "home_assistant": {
+      "frame_count": 15,
+      "created_first": "2026-08-25T12:01:38Z",
+      "created_15th": "2026-08-26T14:31:27Z",
+      "returned_count": 100,
+      "total_count": 1593,
+      "incomplete_results": false,
+      "page": "1",
+      "per_page": 100,
+      "sort": "created",
+      "order": "asc",
+      "order_by": null,
+      "first_returned_created_at": "2026-08-25T03:22:35Z",
+      "last_returned_created_at": "2026-09-04T07:11:34Z",
+      "last_returned_strictly_after_15th": true,
+      "excluded_before_first15_count": 1,
+      "reported_first15_raw_prefix_length": 16,
+      "returned_prefix_can_contain_reported_first15": true,
+      "retained_same_timestamp_groups": [],
+      "saved_frame_fields": [
+        "created_at",
+        "html_url",
+        "id",
+        "number",
+        "project",
+        "rank",
+        "state",
+        "updated_at"
+      ],
+      "saved_per_row_author_fields": 0,
+      "bot_filter_description": null,
+      "frame_eligibility_counts": {
+        "excluded_observed": 3,
+        "selected_observed": 1,
+        "not_read_after_first_eligible": 11
+      },
+      "state_updated_at_not_after_t0": true,
+      "time_boundary": {
+        "reported_observed_utc": "2026-11-23T08:28:02.285370+00:00",
+        "seconds_after_t0_at_reported_observation": 205.28537,
+        "completed_utc": "2026-11-23T08:28:13.996031+00:00",
+        "seconds_after_t0_at_completion": 216.996031
+      }
+    },
+    "inkscape": {
+      "frame_count": 15,
+      "created_first": "2026-08-26T04:33:51.833Z",
+      "created_15th": "2026-09-10T09:08:04.605Z",
+      "returned_count": 98,
+      "total_count": null,
+      "incomplete_results": null,
+      "page": "1 (implicit)",
+      "per_page": 100,
+      "sort": "asc",
+      "order": null,
+      "order_by": "created_at",
+      "first_returned_created_at": null,
+      "last_returned_created_at": null,
+      "last_returned_strictly_after_15th": null,
+      "excluded_before_first15_count": null,
+      "reported_first15_raw_prefix_length": null,
+      "returned_prefix_can_contain_reported_first15": null,
+      "retained_same_timestamp_groups": [],
+      "saved_frame_fields": [
+        "created_at",
+        "html_url",
+        "id",
+        "number",
+        "project",
+        "rank",
+        "state",
+        "updated_at"
+      ],
+      "saved_per_row_author_fields": 0,
+      "bot_filter_description": "author.bot if present; unknown otherwise",
+      "frame_eligibility_counts": {
+        "excluded_observed": 2,
+        "selected_observed": 1,
+        "extra_read_not_selected": 1,
+        "not_read_after_first_eligible": 11
+      },
+      "state_updated_at_not_after_t0": true,
+      "time_boundary": {
+        "reported_observed_utc": "2026-11-23T08:27:44.556872+00:00",
+        "seconds_after_t0_at_reported_observation": 187.556872,
+        "completed_utc": null,
+        "seconds_after_t0_at_completion": null
+      }
+    },
+    "godot": {
+      "frame_count": 15,
+      "created_first": "2026-08-25T14:08:50Z",
+      "created_15th": "2026-08-28T04:43:06Z",
+      "returned_count": 100,
+      "total_count": 519,
+      "incomplete_results": false,
+      "page": "1",
+      "per_page": 100,
+      "sort": "created",
+      "order": "asc",
+      "order_by": null,
+      "first_returned_created_at": "2026-08-25T05:19:15Z",
+      "last_returned_created_at": "2026-09-11T20:14:52Z",
+      "last_returned_strictly_after_15th": true,
+      "excluded_before_first15_count": 1,
+      "reported_first15_raw_prefix_length": 16,
+      "returned_prefix_can_contain_reported_first15": true,
+      "retained_same_timestamp_groups": [],
+      "saved_frame_fields": [
+        "created_at",
+        "html_url",
+        "id",
+        "number",
+        "project",
+        "rank",
+        "state",
+        "updated_at"
+      ],
+      "saved_per_row_author_fields": 0,
+      "bot_filter_description": null,
+      "frame_eligibility_counts": {
+        "reserve_not_activated": 15
+      },
+      "state_updated_at_not_after_t0": true,
+      "time_boundary": {
+        "reported_observed_utc": "2026-11-23T08:28:02.288312+00:00",
+        "seconds_after_t0_at_reported_observation": 205.288312,
+        "completed_utc": "2026-11-23T08:28:14.816189+00:00",
+        "seconds_after_t0_at_completion": 217.816189
+      }
+    },
+    "kicad": {
+      "frame_count": 15,
+      "created_first": "2026-08-25T13:01:23.381Z",
+      "created_15th": "2026-08-30T18:45:21.255Z",
+      "returned_count": 100,
+      "total_count": null,
+      "incomplete_results": null,
+      "page": "1 (implicit)",
+      "per_page": 100,
+      "sort": "asc",
+      "order": null,
+      "order_by": "created_at",
+      "first_returned_created_at": null,
+      "last_returned_created_at": null,
+      "last_returned_strictly_after_15th": null,
+      "excluded_before_first15_count": null,
+      "reported_first15_raw_prefix_length": null,
+      "returned_prefix_can_contain_reported_first15": null,
+      "retained_same_timestamp_groups": [],
+      "saved_frame_fields": [
+        "created_at",
+        "html_url",
+        "id",
+        "number",
+        "project",
+        "rank",
+        "state",
+        "updated_at"
+      ],
+      "saved_per_row_author_fields": 0,
+      "bot_filter_description": "author.bot if present; unknown otherwise",
+      "frame_eligibility_counts": {
+        "reserve_not_activated": 15
+      },
+      "state_updated_at_not_after_t0": true,
+      "time_boundary": {
+        "reported_observed_utc": "2026-11-23T08:27:53.101913+00:00",
+        "seconds_after_t0_at_reported_observation": 196.101913,
+        "completed_utc": null,
+        "seconds_after_t0_at_completion": null
+      }
+    }
+  },
+  "selected_joins": [
+    {
+      "problem_id": "P1",
+      "frame_id": "F1-01",
+      "checks": {
+        "selected_status": true,
+        "problem_id": true,
+        "project": true,
+        "issue_number": true,
+        "body_version": true,
+        "created_at": true,
+        "updated_at": true,
+        "source_url": true,
+        "state": true,
+        "source_observation_frame_id": true,
+        "strict_layer_excluded": true,
+        "preceding_rows_explicitly_excluded": true
+      },
+      "source_body_observed_utc": "2026-11-23T08:28:56.838267+00:00",
+      "source_author_type": "User",
+      "source_author_bot": null
+    },
+    {
+      "problem_id": "P2",
+      "frame_id": "F2-04",
+      "checks": {
+        "selected_status": true,
+        "problem_id": true,
+        "project": true,
+        "issue_number": true,
+        "body_version": true,
+        "created_at": true,
+        "updated_at": true,
+        "source_url": true,
+        "state": true,
+        "source_observation_frame_id": true,
+        "strict_layer_excluded": true,
+        "preceding_rows_explicitly_excluded": true
+      },
+      "source_body_observed_utc": "2026-11-23T08:30:49.145280+00:00",
+      "source_author_type": "User",
+      "source_author_bot": null
+    },
+    {
+      "problem_id": "P3",
+      "frame_id": "F3-03",
+      "checks": {
+        "selected_status": true,
+        "problem_id": true,
+        "project": true,
+        "issue_number": true,
+        "body_version": true,
+        "created_at": true,
+        "updated_at": true,
+        "source_url": true,
+        "state": true,
+        "source_observation_frame_id": true,
+        "strict_layer_excluded": true,
+        "preceding_rows_explicitly_excluded": true
+      },
+      "source_body_observed_utc": "2026-11-23T08:32:06.841333+00:00",
+      "source_author_type": null,
+      "source_author_bot": null
+    }
+  ],
+  "aggregate_record_comparison": [
+    {
+      "project": "jupyterlab",
+      "frame_equal": true,
+      "counts_equal": true,
+      "aggregate_observed_utc": "2026-11-23T08:28:00Z",
+      "aggregate_time_precision": "minute-level approximate; exact retrieval timestamp not captured; T0 is exact",
+      "project_observed_utc": "2026-11-23T08:28:02.283001+00:00"
+    },
+    {
+      "project": "home_assistant",
+      "frame_equal": true,
+      "counts_equal": true,
+      "aggregate_observed_utc": "2026-11-23T08:28:00Z",
+      "aggregate_time_precision": "minute-level approximate; exact retrieval timestamp not captured; T0 is exact",
+      "project_observed_utc": "2026-11-23T08:28:02.285370+00:00"
+    }
+  ],
+  "manifest_summary": {
+    "task_id": "af-res-069",
+    "base_commit": "76b8c1d15812fbf91b879f8444fd188ae7445802",
+    "integration_commit": "76b8c1d15812fbf91b879f8444fd188ae7445802",
+    "dependency": [
+      {
+        "branch": "work/research-af-res-065",
+        "commit": "18e4449eb0ac04464aee8fa6cc07f1f6a54d0b5d"
+      }
+    ],
+    "contract_sha256": "19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc",
+    "session_start_exit_code": 0,
+    "session_start_command": [
+      "python",
+      "-B",
+      "-m",
+      "workbench.session",
+      "start",
+      "af-res-069",
+      "--allow",
+      "docs/workstreams/research/AF-RES-069/",
+      "--dependency",
+      "work/research-af-res-065=18e4449eb0ac04464aee8fa6cc07f1f6a54d0b5d",
+      "--output",
+      "docs/workstreams/research/AF-RES-069/manifest.json",
+      "--fetch"
+    ],
+    "session_start_cwd": "/workspace/scratch/41ae7a55914b/agentflow-open"
+  },
+  "recorded_remote_verification": {
+    "freeze_sha": "03d1e436cfa7dc209b57b19508ef4b2e75942824",
+    "first_frame_sha": "c5b0410ef23fa44fdc3c4129682f9a468330b783",
+    "current_file_blob_comparisons": [
+      {
+        "path": "manifest.json",
+        "recorded_blob_sha": "df89dc668a2e0953dca00fe59073683986791f2b",
+        "recorded_local_blob_sha": "df89dc668a2e0953dca00fe59073683986791f2b",
+        "record_claims_match": true,
+        "record_read": true,
+        "record_isError": false,
+        "recorded_bytes_or_chars": 1736,
+        "recomputed_blob_sha": "df89dc668a2e0953dca00fe59073683986791f2b",
+        "matches_recorded_sha": true,
+        "utf8_bytes": 1736,
+        "characters": 1736,
+        "count_matches_bytes": true,
+        "count_matches_characters": true,
+        "freeze_sha_in_recorded_url": true
+      },
+      {
+        "path": "queries.jsonl",
+        "recorded_blob_sha": "e73e7f7a593e7338588e6b6b9946a03827aa91b8",
+        "recorded_local_blob_sha": "e73e7f7a593e7338588e6b6b9946a03827aa91b8",
+        "record_claims_match": true,
+        "record_read": true,
+        "record_isError": false,
+        "recorded_bytes_or_chars": 6452,
+        "not_recomputed_reason": "Current audit read scope excludes this file.",
+        "freeze_sha_in_recorded_url": true
+      },
+      {
+        "path": "frame.csv",
+        "recorded_blob_sha": "84373d6b85242ab4282a56771e1ce7d8c5b2497e",
+        "recorded_local_blob_sha": "84373d6b85242ab4282a56771e1ce7d8c5b2497e",
+        "record_claims_match": true,
+        "record_read": true,
+        "record_isError": false,
+        "recorded_bytes_or_chars": 22245,
+        "recomputed_blob_sha": "84373d6b85242ab4282a56771e1ce7d8c5b2497e",
+        "matches_recorded_sha": true,
+        "utf8_bytes": 22245,
+        "characters": 22245,
+        "count_matches_bytes": true,
+        "count_matches_characters": true,
+        "freeze_sha_in_recorded_url": true
+      },
+      {
+        "path": "problems.jsonl",
+        "recorded_blob_sha": "ff25ba065100699dac126dd5a0a7e7b444aef25a",
+        "recorded_local_blob_sha": "ff25ba065100699dac126dd5a0a7e7b444aef25a",
+        "record_claims_match": true,
+        "record_read": true,
+        "record_isError": false,
+        "recorded_bytes_or_chars": 7509,
+        "recomputed_blob_sha": "ff25ba065100699dac126dd5a0a7e7b444aef25a",
+        "matches_recorded_sha": true,
+        "utf8_bytes": 10348,
+        "characters": 7509,
+        "count_matches_bytes": false,
+        "count_matches_characters": true,
+        "freeze_sha_in_recorded_url": true
+      }
+    ],
+    "no_network_reverification_performed": true
+  },
+  "inputs": [
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/github-frame-metadata.json",
+      "bytes": 12280,
+      "sha256": "29c5f906a0fecfb38355a58419de62b64631f456998692569f57ee9349e83933"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/godot-frame-metadata.json",
+      "bytes": 4949,
+      "sha256": "742f00259b521d776736d1484af83fa23699e2c8ad89dcaf853b7fc3d0ca1f3d"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/home_assistant-frame-metadata.json",
+      "bytes": 5128,
+      "sha256": "d2d217ef06b084814d5870fa9110e153d1ebabda678e422141c5937e0ebc4ad1"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/inkscape-frame-metadata.json",
+      "bytes": 4896,
+      "sha256": "9bb1837b3ecb1f6f3cff265cd88fcc0af6e945d3f664aeca4c56064b02e774c0"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/jupyterlab-frame-metadata.json",
+      "bytes": 5065,
+      "sha256": "24f5d5b14a38168a3e12bc4e8a53b66b9e8b875c3601f060f318c52212c6f4a2"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/kicad-frame-metadata.json",
+      "bytes": 4883,
+      "sha256": "d0c1a5724ed40f8db088e7e26c607991c35c4e5595e135f9de5689fa279055c1"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/frame.csv",
+      "bytes": 22245,
+      "sha256": "530c28a5a3afc8e132e6229a5009df7360049a97516a2c11e413c7832dab4259"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/manifest.json",
+      "bytes": 1736,
+      "sha256": "8ba021eda738597886a8ca18ed1554172a65a7ea3ab620000804bbb71ebae884"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/session-start.json",
+      "bytes": 2506,
+      "sha256": "2d324eda111c37df9bc46edcdbf7070b11af691374b799be91fdf1ca7e320e10"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/evidence/input-remote-verification.json",
+      "bytes": 1970,
+      "sha256": "02933341ba25e0b2fd7b60fc845d3c651ab3e014cf116491f2ead3979b2f1057"
+    },
+    {
+      "path": "docs/workstreams/research/AF-RES-069/problems.jsonl",
+      "bytes": 10348,
+      "sha256": "d4019d7dcf1b0a899b1d0d0c0f373d4eaf9c58d8e39897eec0804572e72ba0c8"
+    }
+  ],
+  "established_invariant_failures": []
+}
