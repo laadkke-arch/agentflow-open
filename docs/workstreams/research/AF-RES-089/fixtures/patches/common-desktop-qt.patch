@@ -1,0 +1,58 @@
+diff --git a/mscore/musescore.cpp b/mscore/musescore.cpp
+index 9619e03..7dd9f08 100644
+--- a/mscore/musescore.cpp
++++ b/mscore/musescore.cpp
+@@ -6683,7 +6683,8 @@ bool MuseScore::saveMp3(Score* score, QIODevice* device, bool& wasCanceled)
+       {
+ #ifndef USE_LAME
+       Q_UNUSED(score);
+-      Q_UNUSED(name);
++      Q_UNUSED(device);
++      Q_UNUSED(wasCanceled);
+       return false;
+ #else
+       EventMap events;
+diff --git a/mscore/preferences.h b/mscore/preferences.h
+index 6aa3420..0d8659a 100644
+--- a/mscore/preferences.h
++++ b/mscore/preferences.h
+@@ -361,6 +361,7 @@ class Preferences {
+ // singleton
+ extern Preferences preferences;
+ 
++#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+ // Stream operators for enum classes
+ // enum classes don't play well with QSettings without custom serialization
+ template<typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
+@@ -377,6 +378,31 @@ inline QDataStream &operator>>(QDataStream &in, T &val)
+     val = static_cast<T>(tmp);
+     return in;
+ }
++#else
++template<typename T>
++inline QDataStream &readPreferenceEnum(QDataStream &in, T &value)
++{
++    int serialized;
++    in >> serialized;
++    value = static_cast<T>(serialized);
++    return in;
++}
++
++inline QDataStream &operator<<(QDataStream &out, SessionStart value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, SessionStart &value)
++{ return readPreferenceEnum(in, value); }
++
++inline QDataStream &operator<<(QDataStream &out, MusicxmlExportBreaks value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, MusicxmlExportBreaks &value)
++{ return readPreferenceEnum(in, value); }
++
++inline QDataStream &operator<<(QDataStream &out, MuseScoreStyleType value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, MuseScoreStyleType &value)
++{ return readPreferenceEnum(in, value); }
++#endif
+ 
+ class PreferenceVisitor {
+    public:

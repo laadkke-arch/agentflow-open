@@ -1,0 +1,377 @@
+diff --git a/libmscore/cmd.cpp b/libmscore/cmd.cpp
+index 08bc2f4..d5a812e 100644
+--- a/libmscore/cmd.cpp
++++ b/libmscore/cmd.cpp
+@@ -15,6 +15,7 @@
+  Handling of several GUI commands.
+ */
+ 
++#include "af085_model.h"
+ #include <assert.h>
+ 
+ #include "types.h"
+@@ -148,12 +149,14 @@ void Score::undoRedo(bool undo, EditData* ed)
+       if (readOnly())
+             return;
+       cmdState().reset();
++      Af085::snapshot(undo ? "undo_enter" : "redo_enter", this);
+       if (undo)
+             undoStack()->undo(ed);
+       else
+             undoStack()->redo(ed);
+       update();
+       updateSelection();
++      Af085::snapshot(undo ? "undo_exit" : "redo_exit", this);
+       }
+ 
+ //---------------------------------------------------------
+@@ -2473,6 +2476,7 @@ void Score::cmdAddGrace (NoteType graceType, int duration)
+ 
+ void Score::cmdExplode()
+       {
++      Af085::snapshot("explode_enter", this);
+       if (!selection().isRange())
+             return;
+ 
+@@ -2607,9 +2611,11 @@ void Score::cmdExplode()
+             }
+ 
+       // select exploded region
++      Af085::snapshot("explode_before_reselect", this);
+       deselectAll();
+       select(startMeasure, SelectType::RANGE, srcStaff);
+       select(endMeasure, SelectType::RANGE, lastStaff - 1);
++      Af085::snapshot("explode_reselected", this);
+       }
+ 
+ //---------------------------------------------------------
+@@ -3470,13 +3476,19 @@ void Score::cmdAddPitch(int step, bool addFlag, bool insert)
+ 
+ void Score::cmdToggleVisible()
+       {
++      Af085::snapshot("toggle_visible_enter", this);
+       QSet<Element*> spanners;
+       for (Element* e : selection().elements()) {
+             if (e->isBracket())     // ignore
+                   continue;
+             bool spannerSegment = e->isSpannerSegment();
+-            if (!spannerSegment || !spanners.contains(toSpannerSegment(e)->spanner()))
+-                  e->undoChangeProperty(Pid::VISIBLE, !e->getProperty(Pid::VISIBLE).toBool());
++            if (!spannerSegment || !spanners.contains(toSpannerSegment(e)->spanner())) {
++                  const bool af089VisibleBefore = e->getProperty(Pid::VISIBLE).toBool();
++                  e->undoChangeProperty(Pid::VISIBLE, !af089VisibleBefore);
++                  if (Af085::enabled())
++                        Af085::record("visibility_target", {{"visible_before", af089VisibleBefore},
++                              {"target", Af085::elementState(e)}});
++                  }
+             if (spannerSegment)
+                   spanners.insert(toSpannerSegment(e)->spanner());
+             }
+@@ -3674,9 +3686,15 @@ void Score::cmd(const QAction* a, EditData& ed)
+ 
+       for (const auto& c : cmdList) {
+             if (cmd == c.name) {
++                  const bool af085Command = cmd == "explode" || cmd == "pad-note-2" || cmd == "toggle-visible";
++                  if (af085Command && Af085::enabled())
++                        Af085::record("score_action", {{"action", cmd}, {"score_id", Af085::identity(this)}});
+                   startCmd();
+                   c.cmd();
+                   endCmd();
++                  if (af085Command && Af085::enabled())
++                        Af085::record("score_action_ended", {{"action", cmd},
++                              {"active_score_id", Af085::identity(this)}, {"scores", Af085::scoreStates(this)}});
+                   return;
+                   }
+             }
+diff --git a/libmscore/edit.cpp b/libmscore/edit.cpp
+index 8c8998a..6a9d8c6 100644
+--- a/libmscore/edit.cpp
++++ b/libmscore/edit.cpp
+@@ -10,6 +10,7 @@
+ //  the file LICENCE.GPL
+ //=============================================================================
+ 
++#include "af085_model.h"
+ #include "note.h"
+ #include "rest.h"
+ #include "chord.h"
+@@ -3075,6 +3076,9 @@ void Score::timeDelete(Measure* m, Segment* startSegment, const Fraction& f)
+ 
+ void Score::cloneVoice(int strack, int dtrack, Segment* sf, const Fraction& lTick, bool link, bool spanner)
+       {
++      if (Af085::enabled())
++            Af085::record("cloneVoice_call", {{"source_track", strack}, {"destination_track", dtrack},
++                {"start_tick", sf->tick().ticks()}, {"end_tick", lTick.ticks()}, {"link", link}, {"spanner", spanner}});
+       Fraction start = sf->tick();
+       TieMap  tieMap;
+       TupletMap tupletMap;    // tuplets cannot cross measure boundaries
+@@ -3259,6 +3263,7 @@ void Score::cloneVoice(int strack, int dtrack, Segment* sf, const Fraction& lTic
+                         else {
+                               undoAddCR(toChordRest(ne), dm, oseg->tick());
+                               }
++                        Af085::pairedInsertion(oe, ne, oseg->tick().ticks());
+                         }
+                   }
+             Segment* tst = dm->segments().firstCRSegment();
+diff --git a/libmscore/excerpt.cpp b/libmscore/excerpt.cpp
+index 3356654..2cdd6c0 100644
+--- a/libmscore/excerpt.cpp
++++ b/libmscore/excerpt.cpp
+@@ -10,6 +10,7 @@
+ //  the file LICENCE.GPL
+ //=============================================================================
+ 
++#include "af085_model.h"
+ #include "excerpt.h"
+ #include "score.h"
+ #include "part.h"
+@@ -121,6 +122,7 @@ void Excerpt::createExcerpt(Excerpt* excerpt)
+       {
+       MasterScore* oscore = excerpt->oscore();
+       Score* score        = excerpt->partScore();
++      Af085::ObservePart af085Part(oscore, score);
+ 
+       QList<Part*>& parts = excerpt->parts();
+       QList<int> srcStaves;
+@@ -181,6 +183,7 @@ void Excerpt::createExcerpt(Excerpt* excerpt)
+             }
+ 
+       cloneStaves(oscore, score, srcStaves, excerpt->tracks());
++      Af085::snapshot("excerpt_cloned", score);
+ 
+       // create excerpt title and title frame for all scores if not already there
+       MeasureBase* measure = oscore->first();
+@@ -270,6 +273,9 @@ void Excerpt::createExcerpt(Excerpt* excerpt)
+ 
+       score->setLayoutAll();
+       score->doLayout();
++      Af085::partStage() = "after_final_layout";
++      Af085::snapshot("excerpt_before_cleanup", score);
++      Af085::snapshot("excerpt_return", score);
+       }
+ 
+ //---------------------------------------------------------
+diff --git a/libmscore/note.cpp b/libmscore/note.cpp
+index e76c7e8..4a152e4 100644
+--- a/libmscore/note.cpp
++++ b/libmscore/note.cpp
+@@ -15,6 +15,7 @@
+  Implementation of classes Note and ShadowNote.
+ */
+ 
++#include "af085_model.h"
+ #include <assert.h>
+ 
+ #include "note.h"
+@@ -2233,8 +2234,14 @@ void Note::scanElements(void* data, void (*func)(void*, Element*), bool all)
+       //      if (_tieFor && !staff()->isTabStaff(chord->tick()))  // no ties in tablature
+       //            _tieFor->scanElements(data, func, all);
+       for (Element* e : _el) {
+-            if (score()->tagIsValid(e->tag()))
++            const bool pass = score()->tagIsValid(e->tag());
++            const bool trace = Af085::tracedPart() == score() && e->isFingering();
++            const bool before = trace && e->selected();
++            if (pass)
+                   e->scanElements(data, func, all);
++            if (trace)
++                  Af085::record("note_child_scan", {{"stage", Af085::partStage()},
++                        {"tag_pass", pass}, {"all", all}, {"flag_before", before}, {"child", Af085::elementState(e)}});
+             }
+       for (Spanner* sp : _spannerFor)
+             sp->scanElements(data, func, all);
+diff --git a/libmscore/paste.cpp b/libmscore/paste.cpp
+index 6cb0a0d..66c00e1 100644
+--- a/libmscore/paste.cpp
++++ b/libmscore/paste.cpp
+@@ -10,6 +10,7 @@
+ //  the file LICENCE.GPL
+ //=============================================================================
+ 
++#include "af085_model.h"
+ #include "score.h"
+ 
+ #include "rest.h"
+@@ -79,6 +80,8 @@ static void transposeChord(Chord* c, Interval srcTranspose, const Fraction& tick
+ 
+ bool Score::pasteStaff(XmlReader& e, Segment* dst, int dstStaff)
+       {
++      if (Af085::enabled())
++            Af085::record("pasteStaff_call", {{"staff", dstStaff}, {"tick", dst->tick().ticks()}, {"paste_mode", e.pasteMode()}});
+       Q_ASSERT(dst->isChordRestType());
+ 
+       QList<Chord*> graceNotes;
+@@ -293,6 +296,7 @@ bool Score::pasteStaff(XmlReader& e, Segment* dst, int dstStaff)
+                                                 }
+                                           }
+                                     pasteChordRest(cr, tick, e.transpose());
++                                    Af085::snapshot("pasteStaff_insert", this);
+                                     }
+                               }
+                         else if (tag == "Spanner")
+@@ -423,6 +427,7 @@ bool Score::pasteStaff(XmlReader& e, Segment* dst, int dstStaff)
+                         m->checkMeasure(i);
+                   }
+             _selection.setRangeTicks(dstTick, dstTick + tickLen, dstStaff, endStaff);
++            Af085::snapshot("pasteStaff_range_planned", this);
+ 
+             //finding the first element that has a track
+             //the canvas position will be set to this element
+diff --git a/libmscore/select.cpp b/libmscore/select.cpp
+index e718c5a..08b2283 100644
+--- a/libmscore/select.cpp
++++ b/libmscore/select.cpp
+@@ -15,6 +15,7 @@
+  Implementation of class Selection plus other selection related functions.
+ */
+ 
++#include "af085_model.h"
+ #include "mscore.h"
+ #include "arpeggio.h"
+ #include "barline.h"
+@@ -294,6 +295,8 @@ static QRectF changeSelection(Element* e, bool b)
+ 
+ void Selection::clear()
+       {
++      if (Af085::enabled() && !isNone())
++            Af085::record("selection_clear", {{"score", Af085::identity(_score)}, {"before", Af085::selection(*this)}});
+       for (Element* e : _el) {
+             if (e->isSpanner()) {   // TODO: only visible elements should be selectable?
+                   Spanner* sp = toSpanner(e);
+@@ -555,6 +558,8 @@ void Selection::updateSelectedElements()
+                   appendFiltered(sp); // spanner with start and end in range selection
+             }
+       update();
++      if (Af085::enabled())
++            Af085::record("range_members_rebuilt", {{"score", Af085::identity(_score)}, {"after", Af085::selection(*this)}});
+       }
+ 
+ //---------------------------------------------------------
+diff --git a/mscore/excerptsdialog.cpp b/mscore/excerptsdialog.cpp
+index 8b858ee..ed4a0cb 100644
+--- a/mscore/excerptsdialog.cpp
++++ b/mscore/excerptsdialog.cpp
+@@ -17,6 +17,7 @@
+ //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ //=============================================================================
+ 
++#include "libmscore/af085_model.h"
+ #include "excerptsdialog.h"
+ #include "musescore.h"
+ #include "libmscore/score.h"
+@@ -519,6 +520,7 @@ void ExcerptsDialog::createExcerptClicked(QListWidgetItem* cur)
+       qDebug() << " + Add part : " << e->title();
+       score->undo(new AddExcerpt(e));
+       Excerpt::createExcerpt(e);
++      Af085::snapshot("excerpts_dialog_create_return", nscore);
+ 
+       // a new excerpt is created in AddExcerpt, make sure the parts are filed
+       for (Excerpt* ee : e->oscore()->excerpts()) {
+diff --git a/mscore/musescore.cpp b/mscore/musescore.cpp
+index 9619e03..fd7483a 100644
+--- a/mscore/musescore.cpp
++++ b/mscore/musescore.cpp
+@@ -10,6 +10,8 @@
+ //  the file LICENCE.GPL
+ //=============================================================================
+ 
++#include "musescore.h"
++#include "af085_ui.h"
+ #include <fenv.h>
+ #include "network/loginmanager.h"
+ #include "uploadscoredialog.h"
+@@ -989,6 +991,7 @@ MuseScore::MuseScore()
+       _tourHandler = new TourHandler(this);
+       qApp->installEventFilter(_tourHandler);
+       _tourHandler->loadTours();
++      Af085::observeRequestedSnapshots(this);
+ 
+       QScreen* screen = QGuiApplication::primaryScreen();
+       if (userDPI == 0.0) {
+@@ -5325,9 +5328,11 @@ void MuseScore::midiNoteReceived(int pitch, bool ctrl, int vel)
+ 
+ void MuseScore::switchLayer(const QString& s)
+       {
++      Af085::snapshot("switch_layer_before", cs);
+       if (cs->switchLayer(s)) {
+             cs->setLayoutAll();
+             cs->update();
++            Af085::snapshot("switch_layer_after", cs);
+             }
+       }
+ 
+@@ -5644,6 +5649,8 @@ void MuseScore::cmd(QAction* a)
+       MScore::setError(MS_NO_ERROR);
+ 
+       QString cmdn(a->data().toString());
++      if (Af085::enabled())
++            Af085::record("gui_action", {{"action", cmdn}, {"score_id", Af085::identity(cs)}});
+ 
+       if (MScore::debugMode)
+             qDebug("MuseScore::cmd <%s>", qPrintable(cmdn));
+@@ -6683,7 +6690,8 @@ bool MuseScore::saveMp3(Score* score, QIODevice* device, bool& wasCanceled)
+       {
+ #ifndef USE_LAME
+       Q_UNUSED(score);
+-      Q_UNUSED(name);
++      Q_UNUSED(device);
++      Q_UNUSED(wasCanceled);
+       return false;
+ #else
+       EventMap events;
+diff --git a/mscore/preferences.h b/mscore/preferences.h
+index 6aa3420..0d8659a 100644
+--- a/mscore/preferences.h
++++ b/mscore/preferences.h
+@@ -361,6 +361,7 @@ class Preferences {
+ // singleton
+ extern Preferences preferences;
+ 
++#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+ // Stream operators for enum classes
+ // enum classes don't play well with QSettings without custom serialization
+ template<typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
+@@ -377,6 +378,31 @@ inline QDataStream &operator>>(QDataStream &in, T &val)
+     val = static_cast<T>(tmp);
+     return in;
+ }
++#else
++template<typename T>
++inline QDataStream &readPreferenceEnum(QDataStream &in, T &value)
++{
++    int serialized;
++    in >> serialized;
++    value = static_cast<T>(serialized);
++    return in;
++}
++
++inline QDataStream &operator<<(QDataStream &out, SessionStart value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, SessionStart &value)
++{ return readPreferenceEnum(in, value); }
++
++inline QDataStream &operator<<(QDataStream &out, MusicxmlExportBreaks value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, MusicxmlExportBreaks &value)
++{ return readPreferenceEnum(in, value); }
++
++inline QDataStream &operator<<(QDataStream &out, MuseScoreStyleType value)
++{ return out << static_cast<int>(value); }
++inline QDataStream &operator>>(QDataStream &in, MuseScoreStyleType &value)
++{ return readPreferenceEnum(in, value); }
++#endif
+ 
+ class PreferenceVisitor {
+    public:
+diff --git a/thirdparty/dtl/dtl/Diff.hpp b/thirdparty/dtl/dtl/Diff.hpp
+index 222d9ad..914ae82 100644
+--- a/thirdparty/dtl/dtl/Diff.hpp
++++ b/thirdparty/dtl/dtl/Diff.hpp
+@@ -162,7 +162,7 @@ namespace dtl {
+             return trivial;
+         }
+         
+-        void enableTrivial () const {
++        void enableTrivial () {
+             this->trivial = true;
+         }
+         

@@ -1,0 +1,32 @@
+diff --git a/libmscore/excerpt.cpp b/libmscore/excerpt.cpp
+index 3356654..b4ce797 100644
+--- a/libmscore/excerpt.cpp
++++ b/libmscore/excerpt.cpp
+@@ -121,6 +121,7 @@ void Excerpt::createExcerpt(Excerpt* excerpt)
+       {
+       MasterScore* oscore = excerpt->oscore();
+       Score* score        = excerpt->partScore();
++      const bool freshDestination = score->nstaves() == 0 && !score->first();
+ 
+       QList<Part*>& parts = excerpt->parts();
+       QList<int> srcStaves;
+@@ -270,6 +271,19 @@ void Excerpt::createExcerpt(Excerpt* excerpt)
+ 
+       score->setLayoutAll();
+       score->doLayout();
++
++      if (freshDestination) {
++            // Preserve the master selection and link groups. The new score
++            // owns these visual flags and starts with an empty Selection.
++            score->scanElements(score, [](void* destination, Element* element) {
++                  if (static_cast<Score*>(destination) == element->score())
++                        element->setFlag(ElementFlag::SELECTED, false);
++                  }, true);
++            for (const auto& entry : score->spanner()) {
++                  if (entry.second->score() == score)
++                        entry.second->setFlag(ElementFlag::SELECTED, false);
++                  }
++            }
+       }
+ 
+ //---------------------------------------------------------
