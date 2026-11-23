@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import subprocess
 from tempfile import TemporaryDirectory
+import zipfile
 
 from fixturegen import CELLS, OWNED, digest, fixtures, read_lines, utc
 from oracle import csv_middle, image_conditions, image_expectation, png_info, source_table, table_final, zip_members
@@ -246,7 +247,11 @@ def verify_replay(tests, source, saved, diagnostics):
     tests.need("replay", len(rerun_solo) == 8 and all(row["status"] == 0 for row in rerun_solo), "solo run status")
     versions = json.loads((source / "evidence/runtime-versions.json").read_text(encoding="utf-8"))
     originals = version_json("evidence/runtime-versions.json")
-    tests.need("replay", versions == originals, "runtime probes")
+    tests.need("replay", set(versions) == set(originals), "all runtime probes")
+    for name, version in versions.items():
+        for field in ("binary_sha256", "exit", "stdout"):
+            tests.need("replay", version[field] == originals[name][field], f"{name} {field}")
+        tests.need("replay", version["argv"][1:] == originals[name]["argv"][1:], f"{name} probe command")
     return {"core_rows": len(replay), "core_processes": sum(len(r["events"]) for r in replay),
             "diagnostic_rows": len(rerun_diag), "diagnostic_processes": sum(len(r["events"]) for r in rerun_diag),
             "solo_processes": len(rerun_solo), "version_probes": len(versions)}
@@ -352,6 +357,9 @@ def main():
     for d in "TI":
         tests.need("matrix", sum(r["adoption"] for r in runs if r["domain"] == d) == (5 if d == "T" else 4), d)
     replay = verify_replay(tests, args.replay_dir, run_index, diagnostics) if args.replay_dir else None
+    if args.replay_dir:
+        tests.need("replay", digest(Path(zipfile.__file__).read_bytes()) == correction["zipfile_sha256"],
+                   "independent ZIP reader module")
     result = {
         "actor": "AF-RES-078 작업자 / codex-cloud", "utc": utc(), "status": "pass",
         "checked_commit": git("rev-parse", "HEAD").stdout.decode().strip(),
