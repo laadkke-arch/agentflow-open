@@ -129,7 +129,8 @@ def main():
     cli = argparse.ArgumentParser()
     cli.add_argument("--scratch", type=Path, required=True)
     cli.add_argument("--output", type=Path, required=True)
-    cli.add_argument("--case", choices=CASES)
+    cli.add_argument("--case", choices=CASES, action="append")
+    cli.add_argument("--node", default="node", help="Node binary used by the fixture, separate from npm installer")
     cli.add_argument("--locks", type=Path, help="Optional original official npm dependency lock directory")
     args = cli.parse_args()
     scratch = args.scratch.resolve()
@@ -145,7 +146,7 @@ def main():
             raise ValueError(f"Pre-run seal changed: {name}")
     receipts, pkgs, rows = [], {}, []
     for case in CASES:
-        if args.case and args.case != case:
+        if args.case and case not in args.case:
             continue
         fixture_path = ROOT / "fixtures" / f"{case}.json"
         fixture = read_json(fixture_path)
@@ -170,7 +171,7 @@ def main():
             if not ok:
                 row.update(status="미실시", reason="frozen npm install failed", exit_code=None, stdout="", stderr="")
             else:
-                result = call(["node", str(ROOT / "fixtures/probe.cjs"), str(pkgdir), str(fixture_path), group],
+                result = call([args.node, str(ROOT / "fixtures/probe.cjs"), str(pkgdir), str(fixture_path), group],
                               scratch, log, runtime)
                 row.update(result, status="ran", output_location=f"evidence/runtime/{log}.stdout")
                 if result["exit_code"] == 0:
@@ -184,9 +185,10 @@ def main():
                 else:
                     row.update(status="process_failed", error_location=f"evidence/runtime/{log}.stderr")
             rows.append(row)
-    node = subprocess.check_output(["node", "-v"], text=True).strip()
+    node = subprocess.check_output([args.node, "-v"], text=True).strip()
+    install_node = subprocess.check_output(["node", "-v"], text=True).strip()
     npm = subprocess.check_output(["npm", "-v"], text=True).strip()
-    write_json(runtime / "package-identity.json", {"node": node, "npm": npm, "receipts": receipts})
+    write_json(runtime / "package-identity.json", {"node": node, "installer_node": install_node, "npm": npm, "receipts": receipts})
     (output / "runs.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
     for r in rows:
         print(r["case"],r["group"],r["status"],r["exit_code"],r.get("observed",{}).get("observed",{}).get("phase"),

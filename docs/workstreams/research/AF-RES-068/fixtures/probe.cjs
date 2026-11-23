@@ -10,6 +10,10 @@ const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 const {input} = fixture.groups.find(group => group.group === groupName);
 const requirePackage = createRequire(path.resolve(install, 'package.json'));
 
+function cloneJson(value) {
+  return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+}
+
 function snapshot(value) {
   if (typeof value === 'function') {
     return {
@@ -21,7 +25,7 @@ function snapshot(value) {
       properties: Object.fromEntries(Object.entries(value))
     };
   }
-  return structuredClone(value);
+  return cloneJson(value);
 }
 
 function inputValue(input) {
@@ -43,11 +47,13 @@ function validate() {
   const data = fixture.kind === 'ajv2019' ? input.data : inputValue(input);
   const before = snapshot(data);
   let result;
+  let phase = 'compile';
   try {
     const check = instance.compile(input.schema);
-    result = {phase: 'validate', valid: check(data), errors: check.errors};
+    phase = "validate";
+    result = {phase, valid: check(data), errors: check.errors};
   } catch (error) {
-    result = {phase: 'caught_compile_or_validate', error_name: error.name, error: error.message};
+    result = {phase: phase + '_error', error_name: error.name, error: error.message};
   }
   const after = snapshot(data);
   return {...result, before, after, unchanged: JSON.stringify(before) === JSON.stringify(after)};
@@ -55,8 +61,8 @@ function validate() {
 
 async function convert() {
   const jsonld = requirePackage('jsonld');
-  const before = structuredClone(input.document);
-  const contextBefore = structuredClone(input.context);
+  const before = cloneJson(input.document);
+  const contextBefore = cloneJson(input.context);
   const loaderCalls = [];
   const options = {
     ...input.options,

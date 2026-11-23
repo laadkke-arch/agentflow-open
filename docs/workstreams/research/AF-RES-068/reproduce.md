@@ -36,3 +36,22 @@ git clone --bare --single-branch --branch v5.2.0 --no-tags https://github.com/di
 "$render" -B "$study/select_routes.py" --repos "$scratch/providers" --output "$scratch/index"
 cmp "$study/evidence/selector-metadata.json" "$scratch/index/selector-metadata.json"
 ```
+
+## 고정 배포 실행
+
+최초 실행 `dd41f04279f50cc083c6a442fef5bb32803a49fb`의 probe를 쓰면 Node v24.22.1/npm 11.9.0에서 생긴 원 실행을 재현할 수 있다. JSON-LD 두 시리즈는 이 조합에서 `esm` 로더 TypeError로 메서드 진입 전 종료 1이었다. 현재 probe의 JSON 복사와 예외 단계 분리는 이 실패 이후 변경이며, 초기 실행 stdout의 stage 이름을 검산할 때 초기 커밋을 사용한다. 두 시리즈에 같은 fixture bytes와 npm lock을 사용한 Node v14.18.3 재시도는 별도로 저장했다. [최초 출력](evidence/runtime) · [재시도와 Node 배포 해시](evidence/runtime-recovery) · [검증군·시도 원장](runs.jsonl)
+
+```sh
+python -B "$study/run_fixtures.py" --locks "$study/evidence/runtime" --scratch "$scratch/node24" --output "$scratch/node24-out"
+mkdir "$scratch/node14-release"
+cd "$scratch/node14-release"
+curl -fsSLO https://nodejs.org/dist/v14.18.3/SHASUMS256.txt
+curl -fsSLO https://nodejs.org/dist/v14.18.3/node-v14.18.3-linux-x64.tar.xz
+rg '  node-v14.18.3-linux-x64.tar.xz$' SHASUMS256.txt | sha256sum -c
+tar -xJf node-v14.18.3-linux-x64.tar.xz node-v14.18.3-linux-x64/bin/node
+python -B "$study/run_fixtures.py" --case L01 --case L02 \
+  --node "$scratch/node14-release/node-v14.18.3-linux-x64/bin/node" \
+  --locks "$study/evidence/runtime" --scratch "$scratch/node14" --output "$scratch/node14-out"
+```
+
+L01은 저자가 보고한 출력 포맷 비교를 위해 N-Quads 문자열과 RDFJS dataset 반환을 같은 inline 입력·옵션에서 각각 읽는다. 두 출력의 JSON-encoded 구조 해시와 `termType`/값을 본다. L02는 alias 및 해당 값·자료형을 따로 확인한다. npm 설치와 Node 평가의 런타임은 별도이며 14.18.3 재시도의 npm은 24.22.1 엔진으로 실행했다. URL 호출이 발생하면 loader가 즉시 오류를 반환하게 했다.
