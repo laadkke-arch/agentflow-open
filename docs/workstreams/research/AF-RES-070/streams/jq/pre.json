@@ -1,0 +1,166 @@
+{
+  "stream": "jq",
+  "scope_commit": "41fa88918ab89617deb220fd491ad06ca1d29b5f",
+  "cutoff_A_utc": "2026-11-23T08:38:14.762713+00:00",
+  "rows": [
+    {
+      "issue_id": "jq-2259",
+      "repo": "jqlang/jq",
+      "sequence": 1,
+      "slot": 1,
+      "original_body_sha256": "c05ed5d335f48a8cfd20a60cad97e4a66f0bc9285f0e3f30fddc551bf7ee8380",
+      "current_body_sha256": "c05ed5d335f48a8cfd20a60cad97e4a66f0bc9285f0e3f30fddc551bf7ee8380",
+      "original_url": "https://github.com/jqlang/jq/issues/2259#issue-797676529",
+      "archive_url": "https://data.gharchive.org/2021-01-31-10.json.gz",
+      "archive_event_id": "15008479635",
+      "archive_line": 25893,
+      "author_id": 2165604,
+      "author": "ChCyrill",
+      "created_at": "2021-01-31T10:17:32Z",
+      "candidate_budget": "각 후보 2문서 × 문서당 지정절 1개; B에서도 동일",
+      "cutoff_A_utc": "2026-11-23T08:38:14.762713+00:00",
+      "first_comment_read_utc": null,
+      "number": 2259,
+      "field_category": "실행 설정",
+      "field": "읽을 수 있는 원본 파일이 있는가",
+      "field_in_A": true,
+      "value_in_A": "test_raw.txt 파일 있음; cat으로 stdin에 공급",
+      "question_decision": "skip",
+      "question": "",
+      "skip_reason": "첫 입력 명령에 파일이 있고 A에 rawfile 대조도 이미 적혀 있다",
+      "excerpt": "jq keeps strings as it is.",
+      "context": "jq 1.6, Arch Linux, 4096 경계 이상의 UTF-8 문자열을 stdin raw-input으로 읽음",
+      "goal": "유효 UTF-8 문자 보존",
+      "prohibitions": "U+FFFD로 치환하면 실패; 파일 경로 보존 자체는 요구하지 않음",
+      "candidate_1": "JQ2259-C1: 기존 -R stdin 줄 입력 유지",
+      "candidate_2": "JQ2259-C2: 이미 존재하는 파일을 --rawfile로 읽는 대조 경로",
+      "advice_A": "파일 대조가 이미 제공되어 입력 출처를 재질문할 필요 없음. 차이는 버퍼/디코딩 경로 검토 대상으로 제한하며 두 경로의 완전한 바이트 동등성은 미확인.",
+      "if_value_1": "파일 있음: --rawfile 대조 가능",
+      "if_value_2": "stdin만 있고 파일 없음: 같은 --rawfile 권고는 직접 적용 불가",
+      "version": "jq-1.6@2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e (OP 1.6 보고)",
+      "source_ids": [
+        "SRC-JQ-MANUAL16",
+        "SRC-JQ-UTIL16"
+      ],
+      "evidence_sections": {
+        "C1": [
+          "manual:L131-L135 --raw-input",
+          "util.c:L411-L438 Raw input branch"
+        ],
+        "C2": [
+          "manual:L244-L249 --rawfile",
+          "util.c:L411-L438 Raw input branch"
+        ]
+      },
+      "preread": true,
+      "analysis_layer": "main_blind",
+      "exposure_note": "현재/생성 body 동일; 댓글 미열람"
+    },
+    {
+      "issue_id": "jq-2267",
+      "repo": "jqlang/jq",
+      "sequence": 3,
+      "slot": 2,
+      "original_body_sha256": "fe6fd1b545cc7856b77a2492e71d9e9cbaa7300c594c4d90c8eaa12205c00de7",
+      "current_body_sha256": "a02af8ca2579cf538381e71e47d924b8285f0d273c5912dfb8fa66a161008bfb",
+      "original_url": "https://github.com/jqlang/jq/issues/2267#issue-806567324",
+      "archive_url": "https://data.gharchive.org/2021-02-11-16.json.gz",
+      "archive_event_id": "15153330985",
+      "archive_line": 127839,
+      "author_id": 1524059,
+      "author": "lhns",
+      "created_at": "2021-02-11T16:52:13Z",
+      "candidate_budget": "각 후보 2문서 × 문서당 지정절 1개; B에서도 동일",
+      "cutoff_A_utc": "2026-11-23T08:38:14.762713+00:00",
+      "first_comment_read_utc": null,
+      "number": 2267,
+      "field_category": "목적",
+      "field": "숫자 변환 실패 항목의 처리",
+      "field_in_A": true,
+      "value_in_A": "실패 항목은 null; 다음 정상 숫자 2는 유지",
+      "question_decision": "skip",
+      "question": "",
+      "skip_reason": "Expected behavior 배열이 null 대체와 후속 원소 유지를 이미 구체적으로 정함",
+      "excerpt": "try in a map",
+      "context": "Debian10; jq dev a17dd3248a666d01be75f6b16be37e80e20b0954; 1.5에서는 정상이라는 작성자 보고",
+      "goal": "오류 항목에만 null을 내고 정상 숫자를 계속 처리",
+      "prohibitions": "오류 뒤 정상 원소까지 null로 바꾸면 실패",
+      "candidate_1": "JQ2267-C1: 명시적 catch null을 유지하고 해당 판 회귀를 확인",
+      "candidate_2": "JQ2267-C2: catch를 없애 try의 empty 처리로 실패 항목을 제거",
+      "advice_A": "A의 목적은 C1이며 C2는 기대 배열과 다르다. 이미 명시한 오류 정책을 묻지 말고 해당 개발판 문제로 한정한다.",
+      "if_value_1": "null 자리 보존: C1",
+      "if_value_2": "실패 항목 제거 허용: C2",
+      "version": "a17dd3248a666d01be75f6b16be37e80e20b0954; commit 2020-06-08",
+      "source_ids": [
+        "SRC-JQ-MANUALDEV",
+        "SRC-JQ-TESTDEV"
+      ],
+      "evidence_sections": {
+        "C1": [
+          "dev manual:L2162-L2182 try-catch",
+          "tests/jq.test:L1186-L1197 Try/catch block"
+        ],
+        "C2": [
+          "dev manual:L2162-L2182 try-catch",
+          "tests/jq.test:L1186-L1197 Try/catch block"
+        ]
+      },
+      "preread": false,
+      "analysis_layer": "main_reconstructed_exposed",
+      "exposure_note": "현재본문의 개발판 이후 문서만 바뀌었다는 괄호 문장을 먼저 읽음. 원본문의 SHA·기대출력은 동일. 추가 안정판 try-catch 절을 탐색 중 읽은 노출도 기록; 엄격 가림/예산층 제외"
+    },
+    {
+      "issue_id": "jq-2349",
+      "repo": "jqlang/jq",
+      "sequence": 4,
+      "slot": 3,
+      "original_body_sha256": "d537695247cb998f76e5408e68af468793334725be4b97f52684b4ebdee0d2cd",
+      "current_body_sha256": "d537695247cb998f76e5408e68af468793334725be4b97f52684b4ebdee0d2cd",
+      "original_url": "https://github.com/jqlang/jq/issues/2349#issue-996198370",
+      "archive_url": "https://data.gharchive.org/2021-09-14-16.json.gz",
+      "archive_event_id": "17982701434",
+      "archive_line": 40531,
+      "author_id": 10223913,
+      "author": "Fribb",
+      "created_at": "2021-09-14T16:15:03Z",
+      "candidate_budget": "각 후보 2문서 × 문서당 지정절 1개; B에서도 동일",
+      "cutoff_A_utc": "2026-11-23T08:38:14.762713+00:00",
+      "first_comment_read_utc": null,
+      "number": 2349,
+      "field_category": "금지조건",
+      "field": "병합키 anidb_id가 없는 원소의 보존",
+      "field_in_A": true,
+      "value_in_A": "anidb_id 없는 mal_id 34777 원소도 독립 항목으로 남겨야 함",
+      "question_decision": "skip",
+      "question": "",
+      "skip_reason": "작성자의 예시 기대 출력에 키 없는 항목이 그대로 남아 있어 버릴 것인지 재질문할 근거가 없다",
+      "excerpt": "2 elements",
+      "context": "두 JSON 배열; flatten→group_by(.anidb_id)→reduce object merge; 설치판 미기재",
+      "goal": "동일 anidb_id의 항목은 병합하고 다른/미지정 ID의 항목을 잃지 않음",
+      "prohibitions": "원소 손실; 서로 다른 mal_id를 같은 결측 그룹으로 합침",
+      "candidate_1": "JQ2349-C1: 누락키도 group_by(.anidb_id)의 공통 null 그룹으로 보냄",
+      "candidate_2": "JQ2349-C2: 키 없는 원소는 분리 보존하고 키 있는 원소만 같은 그룹으로 병합",
+      "advice_A": "C2 방향을 조건부 제안. missing key가 null로 평가되고 같은 값은 함께 묶이는 판별 근거는 있으나 원 두 파일의 당시 전체내용·실행판·전체 파이프 출력은 미확인.",
+      "if_value_1": "키 없는 원소 개별 보존: C2",
+      "if_value_2": "키 없는 원소끼리 합쳐도 됨: C1 가능하나 A 기대와 다름",
+      "version": "조건부 jq-1.6@2e01ff1fb69609540b2bdc4e62a60499f2b2fb8e; 2018 공개, 실제 설치판 미확인",
+      "source_ids": [
+        "SRC-JQ-MANUAL16",
+        "SRC-JQ-AUX16"
+      ],
+      "evidence_sections": {
+        "C1": [
+          "manual:L1306-L1321 group_by",
+          "jv_aux.c:L54-L62 jv_get object-key branch"
+        ],
+        "C2": [
+          "manual:L1306-L1321 group_by",
+          "jv_aux.c:L617-L644 jv_group"
+        ]
+      },
+      "preread": true,
+      "analysis_layer": "main_blind_conditional_version",
+      "exposure_note": "현재/생성 body 동일; 댓글 미열람; 후보별 동일 파일의 다른 지정 절은 각 1개로 고정"
+    }
+  ]
+}

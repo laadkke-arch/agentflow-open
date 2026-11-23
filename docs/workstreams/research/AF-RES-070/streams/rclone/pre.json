@@ -1,0 +1,317 @@
+[
+  {
+    "stage": "A_before_comments",
+    "analyst": "/root/protocol_audit",
+    "cutoff_A_utc": "2026-11-23T08:37:33.004132Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_COMMIT",
+    "comment_text_read_before_seal": false,
+    "version_tag": "v1.53.3",
+    "version_sha": "55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "tag_object_sha": "9e9f1be849f17d4a3754317dc39fb5d75ac7ceb0",
+    "tag_date": "2020-11-19T17:02:01Z",
+    "b_value": null,
+    "issue_id": "RCL-4911",
+    "number": 4911,
+    "main_slot": 1,
+    "first_expression_minimal": "expected memory consumption",
+    "first_expression_position": "opening body L13",
+    "part": "rcd /sync/copy로 S3에서 로컬 파일시스템으로 전송",
+    "purpose": "큰 파일 자동 전송에서 메모리 사용과 할당 실패를 설명",
+    "explicit_forbidden_conditions": "명시 없음",
+    "initial_settings": "전송 수10·기본 버퍼16MB·Docker; v1.50.2와 v1.54.0-beta.5029.add7a35e5를 보고",
+    "two_interpretations": [
+      "전송 중 필요한 살아 있는 버퍼가 큰 메모리를 사용하는 상황",
+      "전송 완료 뒤 사용이 끝난 버퍼 메모리가 OS에 천천히 반환되는 상황"
+    ],
+    "candidates": [
+      {
+        "id": "RCL4911-C1",
+        "action": "사용이 끝난 버퍼의 반환 지연 가설에 한정하여 --use-mmap을 조건부 검토",
+        "source_sections": [
+          {
+            "source_id": "RCL-D1",
+            "section": "--use-mmap",
+            "lines": "1467-1480"
+          }
+        ]
+      },
+      {
+        "id": "RCL4911-C2",
+        "action": "활성 전송 중 메모리라면 mmap으로 누수 해결을 단정하지 않고 실행 중 작업의 메모리 구성을 추가 진단",
+        "source_sections": [
+          {
+            "source_id": "RCL-D1",
+            "section": "--use-mmap",
+            "lines": "1467-1480"
+          }
+        ]
+      }
+    ],
+    "selected_field_class": "adjacent_stage",
+    "selected_field": "high_memory_observed_after_all_transfers_finished",
+    "question_action": "ask_one",
+    "question": "높은 메모리를 관측한 순간에 모든 전송이 이미 끝난 상태였나요?",
+    "field_values": [
+      "yes",
+      "no"
+    ],
+    "already_in_A": false,
+    "if_yes": "C1을 조건부 후보로 남김; 사용이 끝난 전송 버퍼인지 추가 확인 없이는 누수 결론 불가",
+    "if_no": "C2; --use-mmap 설명은 사용 중인 모든 메모리를 줄인다는 보장이 아님",
+    "A_recommendation": "조건부 두 후보 유지; 어느 하나를 정답으로 확정하지 않음",
+    "independent_criterion_limit": "이 한 필드는 활성/완료 단계만 가른다. 메모리가 실제 전송 버퍼인지 밝히지 못하므로 필요충분한 진단 필드가 아니다.",
+    "version_status": "conditional_contemporaneous_version_not_reported_installation",
+    "masked_information": "모든 댓글·후속 실행·작성자 후속 값",
+    "source_ids": [
+      "RCL-I4911",
+      "RCL-D1"
+    ],
+    "exposure_note": "문서 범위 출력이 L1497까지 이어져 --use-server-modtime 절 일부도 읽음. 관련 후보의 근거에는 사용하지 않음. 동일 예산 엄격 분석에서 제외 표시.",
+    "strict_budget_compliant": false,
+    "body_sha256": "673bc73b1661cd11d5efb1f1e603f60b6a7d4ceb36bc4b6efbe3a43e4fb81ee5",
+    "first_body_url": "https://github.com/rclone/rclone/issues/4911#issue-781393226",
+    "initial_version_status": "recovered_opened_event",
+    "repo": "rclone/rclone",
+    "sequence": 1,
+    "slot": 1,
+    "analysis_layer": "main_chronological_budget_deviation",
+    "preread": false,
+    "original_body_sha256": "673bc73b1661cd11d5efb1f1e603f60b6a7d4ceb36bc4b6efbe3a43e4fb81ee5",
+    "current_body_sha256": "673bc73b1661cd11d5efb1f1e603f60b6a7d4ceb36bc4b6efbe3a43e4fb81ee5",
+    "original_url": "https://github.com/rclone/rclone/issues/4911#issue-781393226",
+    "author": "brxie",
+    "created_at": "2021-01-07T15:23:51Z",
+    "context": "rcd /sync/copy로 S3에서 로컬 파일시스템으로 전송",
+    "goal": "큰 파일 자동 전송에서 메모리 사용과 할당 실패를 설명",
+    "prohibitions": "명시 없음",
+    "field_category": "adjacent_stage",
+    "field": "high_memory_observed_after_all_transfers_finished",
+    "field_in_A": false,
+    "value_in_A": null,
+    "question_decision": "ask",
+    "candidate_1": "사용이 끝난 버퍼의 반환 지연 가설에 한정하여 --use-mmap을 조건부 검토",
+    "candidate_2": "활성 전송 중 메모리라면 mmap으로 누수 해결을 단정하지 않고 실행 중 작업의 메모리 구성을 추가 진단",
+    "advice_A": "조건부 두 후보 유지; 어느 하나를 정답으로 확정하지 않음",
+    "if_value_1": "C1을 조건부 후보로 남김; 사용이 끝난 전송 버퍼인지 추가 확인 없이는 누수 결론 불가",
+    "if_value_2": "C2; --use-mmap 설명은 사용 중인 모든 메모리를 줄인다는 보장이 아님",
+    "version": "v1.53.3@55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "candidate_budget": {
+      "RCL4911-C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "RCL4911-C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    }
+  },
+  {
+    "stage": "A_before_comments",
+    "analyst": "/root/protocol_audit",
+    "cutoff_A_utc": "2026-11-23T08:37:33.004132Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_COMMIT",
+    "comment_text_read_before_seal": false,
+    "version_tag": "v1.53.3",
+    "version_sha": "55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "tag_object_sha": "9e9f1be849f17d4a3754317dc39fb5d75ac7ceb0",
+    "tag_date": "2020-11-19T17:02:01Z",
+    "b_value": null,
+    "issue_id": "RCL-4897",
+    "number": 4897,
+    "main_slot": 2,
+    "first_expression_minimal": "copy a file referenced with ..",
+    "first_expression_position": "opening body L3",
+    "part": "Linux 로컬 원본 경로에서 ../가 포함된 파일 복사",
+    "purpose": "명시한 원본 파일을 Google Drive로 복사",
+    "explicit_forbidden_conditions": "입력 문자열 변경 금지나 심볼릭 링크 조건은 명시 없음",
+    "initial_settings": "Fedora33; v1.53.3-DEV; 원본 /tmp/../tmp/test.txt와 전각 점 변환을 보여주는 strace",
+    "two_interpretations": [
+      "부모 디렉터리 표기로 같은 로컬 파일을 지칭",
+      "두 점을 실제 파일 이름 문자로 보존하려는 요청이라는 해석은 최초글과 맞지 않음"
+    ],
+    "candidates": [
+      {
+        "id": "RCL4897-C1",
+        "action": "부모 경로 참조로 해석하고 경로 처리 문제로 답변; 같은 파일을 가리키는 명시 경로를 우회 후보로 제시",
+        "source_sections": [
+          {
+            "source_id": "RCL-D2",
+            "section": "cleanRootPath",
+            "lines": "1259-1286"
+          }
+        ]
+      },
+      {
+        "id": "RCL4897-C2",
+        "action": "점을 문자 데이터로 인코딩해 보존하도록 권고하는 후보는 원문의 부모 경로 목표와 맞지 않아 제외",
+        "source_sections": [
+          {
+            "source_id": "RCL-D3",
+            "section": "MultiEncoder.Encode EncodeDot",
+            "lines": "214-230"
+          }
+        ]
+      }
+    ],
+    "selected_field_class": null,
+    "selected_field": null,
+    "question_action": "skip",
+    "question": null,
+    "field_values": [],
+    "already_in_A": true,
+    "skip_reason": "운영체제·문제 경로·원하는 복사·관측 변환이 이미 있음. 두 해석이 모두 살아 있다고 가정해 추가 질문을 만들 근거가 없음.",
+    "A_recommendation": "C1 범주의 직접 설명; 동일 파일 참조는 보존해야 하며 임의 경로 문자열 정규화의 성공을 실측으로 주장하지 않음",
+    "independent_criterion_limit": "독립 코드는 조건부 경로 변환을 설명하며 모든 하위 호출과 실제 설치판 빌드의 성공을 검증한 것은 아님.",
+    "version_status": "reported_v1.53.3_DEV_analyzed_release_v1.53.3_conditionally",
+    "masked_information": "모든 댓글·수정 PR·작성자 후속 실행",
+    "source_ids": [
+      "RCL-I4897",
+      "RCL-D2",
+      "RCL-D3"
+    ],
+    "exposure_note": "경로 함수 뒤 interface assertion과 EncodeDot 뒤 prefix handling 일부를 범위 출력으로 읽었음. 직접 지정 판별부 밖 노출로 보존.",
+    "strict_budget_compliant": false,
+    "body_sha256": "692c728fe71b28ba0db772b08d3d58c06505af1f129e4428b717b750744da788",
+    "first_body_url": "https://github.com/rclone/rclone/issues/4897#issue-777508146",
+    "initial_version_status": "recovered_opened_event",
+    "repo": "rclone/rclone",
+    "sequence": 2,
+    "slot": 2,
+    "analysis_layer": "main_chronological_budget_deviation",
+    "preread": false,
+    "original_body_sha256": "692c728fe71b28ba0db772b08d3d58c06505af1f129e4428b717b750744da788",
+    "current_body_sha256": "692c728fe71b28ba0db772b08d3d58c06505af1f129e4428b717b750744da788",
+    "original_url": "https://github.com/rclone/rclone/issues/4897#issue-777508146",
+    "author": "kartiksubbarao",
+    "created_at": "2021-01-02T18:56:33Z",
+    "context": "Linux 로컬 원본 경로에서 ../가 포함된 파일 복사",
+    "goal": "명시한 원본 파일을 Google Drive로 복사",
+    "prohibitions": "입력 문자열 변경 금지나 심볼릭 링크 조건은 명시 없음",
+    "field_category": null,
+    "field": null,
+    "field_in_A": true,
+    "value_in_A": null,
+    "question_decision": "skip",
+    "candidate_1": "부모 경로 참조로 해석하고 경로 처리 문제로 답변; 같은 파일을 가리키는 명시 경로를 우회 후보로 제시",
+    "candidate_2": "점을 문자 데이터로 인코딩해 보존하도록 권고하는 후보는 원문의 부모 경로 목표와 맞지 않아 제외",
+    "advice_A": "C1 범주의 직접 설명; 동일 파일 참조는 보존해야 하며 임의 경로 문자열 정규화의 성공을 실측으로 주장하지 않음",
+    "if_value_1": null,
+    "if_value_2": null,
+    "version": "v1.53.3@55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "candidate_budget": {
+      "RCL4897-C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "RCL4897-C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    }
+  },
+  {
+    "stage": "A_before_comments",
+    "analyst": "/root/protocol_audit",
+    "cutoff_A_utc": "2026-11-23T08:37:33.004132Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_COMMIT",
+    "comment_text_read_before_seal": false,
+    "version_tag": "v1.53.3",
+    "version_sha": "55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "tag_object_sha": "9e9f1be849f17d4a3754317dc39fb5d75ac7ceb0",
+    "tag_date": "2020-11-19T17:02:01Z",
+    "b_value": null,
+    "issue_id": "RCL-4921",
+    "number": 4921,
+    "main_slot": 3,
+    "first_expression_minimal": "Immutable does not work outside of sync",
+    "first_expression_position": "opening body L3; 정확한 식별자는 L10",
+    "part": "syncCopyMove와 moveOrCopyFile의 immutable 처리 범위",
+    "purpose": "파일 수정 금지 옵션이 단일파일 전송에도 적용되는지 일치시킴",
+    "explicit_forbidden_conditions": "기존 파일 수정 금지; 삭제까지 금지한다는 요구는 없음",
+    "initial_settings": "1.53.3 / master; 문서 계약과 두 함수 이름을 최초글이 명시",
+    "two_interpretations": [
+      "문서상 전송 명령의 수정 금지를 단일파일 경로에도 적용하려는 요청",
+      "immutable라는 말만으로 파일의 삭제·이름·위치까지 모두 고정하려는 해석은 원문에 없음"
+    ],
+    "candidates": [
+      {
+        "id": "RCL4921-C1",
+        "action": "단일파일 전송 경로의 수정 금지 적용 일관성을 확인하는 답변",
+        "source_sections": [
+          {
+            "source_id": "RCL-D4",
+            "section": "moveOrCopyFile",
+            "lines": "1549-1648"
+          }
+        ]
+      },
+      {
+        "id": "RCL4921-C2",
+        "action": "삭제까지 금지해야 한다고 목적을 넓히는 답변은 요청 밖; 그 별도 목적이라면 문서는 copy --immutable를 구별",
+        "source_sections": [
+          {
+            "source_id": "RCL-D1",
+            "section": "--immutable",
+            "lines": "691-709"
+          }
+        ]
+      }
+    ],
+    "selected_field_class": null,
+    "selected_field": null,
+    "question_action": "skip",
+    "question": null,
+    "field_values": [],
+    "already_in_A": true,
+    "skip_reason": "두 코드 경로와 수정 금지 계약의 불일치를 이미 특정함. 목적을 확대해 삭제 금지를 묻는 것은 이 요청에 필요한 한 필드가 아님.",
+    "A_recommendation": "C1; 코드 한 함수의 직접 검사 부재만으로 하위 호출 전체의 보호 부재를 확정하지는 않음",
+    "independent_criterion_limit": "후속 PR/테스트를 읽기 전 보호 누락을 독립 재현했다는 주장은 금지. 문서 계약은 수정과 삭제를 구별한다.",
+    "version_status": "reported_release_v1.53.3_matches_pinned_release; master_is_unpinned",
+    "masked_information": "모든 댓글·PR·수정·작성자 결과",
+    "source_ids": [
+      "RCL-I4921",
+      "RCL-D1",
+      "RCL-D4"
+    ],
+    "exposure_note": "moveOrCopyFile 범위 후 MoveFile/CopyFile wrappers와 SetTier 및 ListFormat 서두를 읽음. 지정 판별부 밖 노출로 보존.",
+    "strict_budget_compliant": false,
+    "body_sha256": "fc0d2a47bcee0b0dfa82b60ac6948f5220564a072c3ddf56550e2e58a5325376",
+    "first_body_url": "https://github.com/rclone/rclone/issues/4921#issue-783263405",
+    "initial_version_status": "recovered_opened_event",
+    "repo": "rclone/rclone",
+    "sequence": 3,
+    "slot": 3,
+    "analysis_layer": "main_chronological_budget_deviation",
+    "preread": false,
+    "original_body_sha256": "fc0d2a47bcee0b0dfa82b60ac6948f5220564a072c3ddf56550e2e58a5325376",
+    "current_body_sha256": "183b27726ff9637e6e995bce56e7771495c8f3098184a909409c6dd9d4d47c5f",
+    "original_url": "https://github.com/rclone/rclone/issues/4921#issue-783263405",
+    "author": "mmatczuk",
+    "created_at": "2021-01-11T10:49:38Z",
+    "context": "syncCopyMove와 moveOrCopyFile의 immutable 처리 범위",
+    "goal": "파일 수정 금지 옵션이 단일파일 전송에도 적용되는지 일치시킴",
+    "prohibitions": "기존 파일 수정 금지; 삭제까지 금지한다는 요구는 없음",
+    "field_category": null,
+    "field": null,
+    "field_in_A": true,
+    "value_in_A": null,
+    "question_decision": "skip",
+    "candidate_1": "단일파일 전송 경로의 수정 금지 적용 일관성을 확인하는 답변",
+    "candidate_2": "삭제까지 금지해야 한다고 목적을 넓히는 답변은 요청 밖; 그 별도 목적이라면 문서는 copy --immutable를 구별",
+    "advice_A": "C1; 코드 한 함수의 직접 검사 부재만으로 하위 호출 전체의 보호 부재를 확정하지는 않음",
+    "if_value_1": null,
+    "if_value_2": null,
+    "version": "v1.53.3@55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "candidate_budget": {
+      "RCL4921-C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "RCL4921-C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    }
+  }
+]
