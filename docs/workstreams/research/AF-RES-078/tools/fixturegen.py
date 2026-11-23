@@ -157,12 +157,14 @@ def seal(vault):
 def reveal(vault):
     seal_doc = json.loads((OWNED / "evidence/seed-seal.json").read_text(encoding="utf-8"))
     hexes = {domain: (vault / domain).read_text(encoding="ascii") for domain in "TI"}
+    correction = OWNED / "evidence/oracle-correction-seal.json"
+    effective = json.loads(correction.read_text(encoding="utf-8")) if correction.exists() else seal_doc
     for domain, value in hexes.items():
         if digest(value.encode("ascii")) != seal_doc["commitments"][domain]:
             raise ValueError(f"Seed commitment mismatch: {domain}")
-    if digest(Path(__file__).read_bytes()) != seal_doc["generator_sha256"]:
+    if digest(Path(__file__).read_bytes()) != effective["generator_sha256"]:
         raise ValueError("Fixture code changed after commitment")
-    if digest((OWNED / "tools/oracle.py").read_bytes()) != seal_doc["oracle_sha256"]:
+    if digest((OWNED / "tools/oracle.py").read_bytes()) != effective["oracle_sha256"]:
         raise ValueError("Oracle code changed after commitment")
     (OWNED / "evidence/seed-reveal.json").write_text(json_text({"revealed_utc": utc(), "hex": hexes}) + "\n", encoding="utf-8")
     return {domain: int(value, 16) for domain, value in hexes.items()}

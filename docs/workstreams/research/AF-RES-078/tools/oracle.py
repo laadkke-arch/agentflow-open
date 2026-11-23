@@ -236,7 +236,8 @@ def zip_members(data, metadata_encoding=None, extract=()):
             for entry in z.infolist():
                 with z.open(entry) as opened:
                     body = opened.read()
-                record = png_record(entry.orig_filename, body)
+                record = png_record(entry.filename, body)
+                record["legacy_decoded_name"] = entry.orig_filename
                 if metadata_encoding is None:
                     record["raw_name_hex"], record["appnote_name"] = zip_unicode_name(entry)
                 record.update(flag_bits=entry.flag_bits, crc32=f"{entry.CRC:08x}", zip_time=list(entry.date_time))
