@@ -29,6 +29,6 @@
 
 ## 계약·검사·미실시
 
-시작 통합SHA는01177554d0fbd33a914ea9c982c348d442d1358d이며 의존branch 원격b09dd21…와 연구입력082ba3…를 구별했다. 실제 읽은5blob은 같았다. start 명령 종료0은 [입력 계약](evidence/input-contract.json)에서 확인한다. 결과판의 `check --fetch`, 공통 `cloud_check --fetch-contract --require-clean`, 구조검산·선택적네트워크재검사의 실제SHA/종료값/범위와 skipped 상태는 **검사 후** [validation.json](evidence/validation.json)에 기록한다. 이 초안에서는 통과를 선기입하지 않는다.
+시작 통합SHA는01177554d0fbd33a914ea9c982c348d442d1358d이며 의존branch 원격b09dd21…와 연구입력082ba3…를 구별했다. 실제 읽은5blob은 같았다. start 명령 종료0은 [입력 계약](evidence/input-contract.json)에서 확인한다. 실제 결과판 `01fe105974365042f7efd0991cba0ddfbf07a0ba`에서 `check --fetch`, 공통 `cloud_check --fetch-contract --require-clean`, 구조 검산·24URL 네트워크 재검사·19파일 GitHub 재열람이 모두 종료0이었다. [validation.json](evidence/validation.json)에 실제SHA·UTC·범위를 기록했다. 공통 sessions는 no_active_sessions로 개별 검사를 건너뛰었고, 별도의 명시적 manifest 검사는 remote_checked/passed였다. 영수증 추가·상태 문구 갱신 커밋과 마지막 인계 커밋은 이 검사SHA와 구별한다.
 
 예제프로그램 빌드·실행, browser/DPR·EPUBreader 실행, Corpus 대용량ZIP MD5재계산, 자원생성 job재현은 미실시다. 필요한 명령·입력과 재개의 첫 행동은 [reproduce.md](reproduce.md)와 마지막 HANDOFF에 둔다. 모든 최종수정은 owned_path에만 커밋하고, 필수표·원증거·재현절차를 GitHub고정결과판에서 다시열어확인한 뒤 HANDOFF만 마지막에 단독커밋한다.

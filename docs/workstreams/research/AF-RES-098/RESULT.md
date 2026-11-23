@@ -152,7 +152,11 @@ Childhood는 container→`EPUB/cole.opf`→spine의 XHTML→`img#i1 src=../image
 
 작성자 자체 검산과 별도 AI 에이전트의 실제 교차검토를 구분한다. 별도 검토는 봉인 순서·1,335 경로 순서·GG 앞선 후보·예측 규칙을 다시 읽었으며, PY2의 설명문에 있던 **500×322 오기**를 찾았다. 원 payload·IHDR·selected.json은 처음부터 500×320이었고 봉인 파일을 바꾸지 않고 후속 audit와 결과에 정정했다. GG의 세 source 행에서 빈 claim도 수정했다. 최종 검토는 MP 본문 중복2개와 첫 새 자원 시각의 전역/MP 범위 혼동도 찾아 정정했다. CPython의 첫 새 본문19:46:14.413029Z·PNG19:46:14.414533Z가 MP보다 먼저였으며 모두 봉인 이후다. 사람의 검토를 수행했다고 주장하지 않는다. 최종 표·숫자 교차검토 결과와 실제 실행 대상은 검증 영수증에 기록한다.
 
-재현 절차는 [reproduce.md](reproduce.md), Q별 답·반증·다음 최소 확인은 [SELF_CHECK.md](SELF_CHECK.md)다. 작업 계약·공통 cloud_check는 결과 커밋을 만든 다음 실행하고 **실제 검사 SHA·종료값·검사 범위**를 `evidence/validation.json`에 별도로 남긴다. 이 보고서 초안 작성 시 아직 그 결과를 미리 통과로 쓰지 않았다. GitHub 고정 결과판의 필수 표·원 증거·재현 절차를 다시 열어 비교한 기록도 같은 검증 묶음에 남기며, 마지막 HANDOFF 단독 커밋은 검사 대상 결과 SHA와 구별한다.
+재현 절차는 [reproduce.md](reproduce.md), Q별 답·반증·다음 최소 확인은 [SELF_CHECK.md](SELF_CHECK.md)다. **실제 검사 대상은 결과판 `01fe105974365042f7efd0991cba0ddfbf07a0ba`**다. 읽기 전용 구조 검사, 작업별 `check --fetch`, 공통 `cloud_check --environment codex-cloud --fetch-contract --require-clean`, 본문/PNG 재요청, GitHub 결과판 재열람이 각각 종료0이었다. [검사 영수증](evidence/validation.json)에 명령·UTC·실제SHA·범위를 남겼다. 공통 검사의 시작·끝 작업 사본은 모두 깨끗했다.
+
+공통 sessions 하위 과정은 process exit0이지만 실제 개별 검사는 **`not-executed / no_active_sessions / freshness:not_checked`**였다. 따라서 별도로 실행한 이 manifest의 `workbench.session check ... --fetch`가 passed/remote_checked였다는 사실과 구별한다. 검사 시 통합 브랜치는 시작 `01177554…`에서 `2bb12eaf77b7ad42667a7222ba1da8c802ccb2e8`로 진행했으나 계약 지문은 같았고, 작업 범위 밖 변경0·오류0이었다. 연구 의존 원격b09dd21…와 연구입력082ba3…는 유지했다.
+
+[24개 본문·주PNG 재요청](evidence/network-recheck-result.json)은 **24/24 MIME·길이·SHA 일치**, [GitHub 고정 결과판 재열람](evidence/github-readback-result.json)은 필수 표·원 증거·재현 절차 **19/19 Git blob 일치**였다. 이는 마감 재검사이며 고유 자료 최소 개수를 늘리지 않는다. 연구 수집 비용의 하한과도 별도 회차다. 이 검사는 animation/reader 실행이나 신규 생성 귀속을 인증하지 않는다. 이후 커밋은 검사 영수증·실제 상태 설명을 추가하고, HANDOFF는 마지막 단독 커밋으로 남긴다. 후속 커밋을 위 검사 대상SHA와 같은 것으로 표시하지 않는다.
 
 | 가장 중요한 불일치·약점 | 다음에 열 자료 또는 실행할 입력 | 어떤 관측이면 결론을 바꿀지 |
 |---|---|---|
