@@ -1,0 +1,3 @@
+# 첫 출력 전 x 예측 보충
+
+봉인판 [ef159f3](https://github.com/laadkke-arch/agentflow-open/commit/ef159f3b81ab210003668be9ffd0faa82c450b09)의 M03 B는 xlim `[0,1]`이면 x=.5라고 조건을 두었다. 3.0.2의 `_mesh`와 `_config_axes`를 직접 대조하니 이 imshow/Normalize 경로에서는 `norm.inverse`가 x와 y 양쪽에 적용된다. 실제 선형 xlim이 `[0,99×factor]`이면 x에도 50/99 또는 500/99를 예상한다. 실제 xlim이 다르면 대응하는 조건을 따로 판단한다. 대상은 R1/R2의 B 네 행이다. G1 혼합 두 행은 x=.5 axes fraction 그대로다. 목적·판·표본·허용오차와 045의 y 예측은 그대로 적용한다. 이 보충은 새 Agg 실행 전에 같은 기준선 커밋에 넣었다. [v3.0.2 `_mesh` L984–1014](https://github.com/matplotlib/matplotlib/blob/8858a0d1bdd149a0897789e8503ac586be14676d/lib/matplotlib/colorbar.py#L984) · [`_config_axes` L604–615](https://github.com/matplotlib/matplotlib/blob/8858a0d1bdd149a0897789e8503ac586be14676d/lib/matplotlib/colorbar.py#L604)
