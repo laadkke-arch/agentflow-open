@@ -24,7 +24,7 @@
 
 ## 검사 주체·실행 범위
 
-하위 실제 점검은 pandas19/19, Moment일관성점검, execution_artifacts일관성점검이며 각 하위 디렉터리에 결과가 있다. 원시 공개 사용자 프로세스를 재검증한 검사가 아니다. 루트는 JSON/CSV/출처/로컬링크/표순서/분모/소유경로 검사를 `evidence/validate.py`로 수행하고 그 실제 결과를 `evidence/validation.json`에 남긴다. 요구된 `workbench.session check ... --fetch`와 고정 결과·수용원장의 원격 재열람은 별도 `evidence/final-check.json`에 기록한다.
+하위 실제 점검은 pandas19/19, Moment일관성점검, execution_artifacts일관성점검이며 각 하위 디렉터리에 결과가 있다. 원시 공개 사용자 프로세스를 재검증한 검사가 아니다. 루트는 JSON/CSV/출처/로컬링크/표순서/분모/소유경로 검사를 `evidence/validate.py`로 실제 수행해44/44를 통과했고 결과를 `evidence/validation.json`에 남겼다. 요구된 `workbench.session check ... --fetch`와 고정 결과·수용원장의 원격 재열람은 별도 `evidence/final-check.json`에 기록한다.
 
 독립 검토자 moment_reports는 네 원저작 독해 수와 실제 실행증명의 차이를, pandas_reports는 통합 표의 pandas 주장·후보·분모를 읽기 전용으로 검토했다. 후자는 Berlin의부분offset양립과전체호출충돌을명확히하도록권고했고반영했다. 외부사람검수나모든원웹자료의독립복제라고주장하지않는다.
 
