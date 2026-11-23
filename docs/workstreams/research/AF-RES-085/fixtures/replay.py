@@ -16,7 +16,8 @@ def utc():
 
 
 def sha256(path):
-    return hashlib.file_digest(path.open("rb"), "sha256").hexdigest()
+    with path.open("rb") as file:
+        return hashlib.file_digest(file, "sha256").hexdigest()
 
 
 def entries(path):
@@ -198,7 +199,13 @@ class Session:
     def switch_layer(self, name):
         self.click_widget("layer_combo")
         self.snapshot(f"layer_{name}_popup")
-        self.click_widget("layer_choice", name)
+        self.widget("layer_choice", name)
+        if name == "hidden":
+            self.key("End", "Navigate to the hidden layer in the open native combo")
+        else:
+            self.key("Home", "Navigate to the first layer in the open native combo")
+            self.key("Down", "Navigate to the shown layer")
+        self.key("Return", f"Activate layer {name}")
         state = self.snapshot(f"layer_{name}")
         if (name == "shown" and active_score(state)["layer_mask"] != 3
                 or name == "hidden" and active_score(state)["layer_mask"] != 1):
@@ -299,7 +306,20 @@ def create_part(session, case):
         state = session.snapshot("layer_shown")
     check(session, "flute_tab", active_score(state)["title"] == "Flute")
     session.screen("04-shown")
-    find_object(active_score(state), "Fingering", 0, 60)
+    # Both conditions use the same tab-only focus transfer. A combo popup leaves key focus on itself.
+    before_focus = find_object(active_score(state), "Fingering", 0, 60)
+    master_name = next(score["title"] for score in state["scores"] if score["master"])
+    master_tabs = [widget for widget in state["widgets"] if widget["kind"] == "tab"
+                   and widget["text"].replace("&", "").rstrip("*") == master_name]
+    part_bar_y = session.widget("tab", "Flute")["rect"][1]
+    master_tab = next(widget for widget in master_tabs if widget["rect"][1] == part_bar_y)
+    session.click(master_tab, "Return focus through the master tab without selecting a score element")
+    session.snapshot("focus_master_tab")
+    session.click_widget("tab", "Flute")
+    state = session.snapshot("focus_flute_tab")
+    focus_target = find_object(active_score(state), "Fingering", 0, 60)
+    check(session, "document_focused", state["focus_class"] == "Ms::ScoreView")
+    check(session, "focus_transfer_preserved", focus_target == before_focus)
     return "v", "toggle-visible", "Fingering", 60, 0
 
 
@@ -315,6 +335,11 @@ def next_edit(session, case, edit, command, kind, pitch, track):
     if change:
         session.key("ctrl+z", "Undo primary edit")
     session.snapshot("primary_undo_boundary")
+    session.key("ctrl+s", "Save the primary path before any reselection")
+    session.snapshot("primary_saved")
+    session.results["saved_sha256"] = sha256(session.input)
+    if session.results["saved_sha256"] == session.results["input_sha256"]:
+        raise ValueError("the primary save produced unchanged input bytes")
 
     # This coordinate is an explicit new selection and starts a distinct condition.
     session.score_object(kind, track, pitch)
@@ -332,9 +357,8 @@ def next_edit(session, case, edit, command, kind, pitch, track):
 
 
 def roundtrip(session):
-    session.key("ctrl+s", "Save in original MSCX format")
-    session.snapshot("save_after")
-    session.results["saved_sha256"] = sha256(session.input)
+    if sha256(session.input) != session.results["saved_sha256"]:
+        raise ValueError("the separate control modified the saved primary input")
     session.quit()
     session.launch()
     if session.experimental:
