@@ -1,5 +1,19 @@
 # AF-RES-077 자기검산 — PARTIAL
 
+## 완료한 실제 검사
+
+결과 본문 고정판 `88ee29fd7866474500406d94ef96f17b03142096`에 대해 root가 다음을 실제 수행했다. 이후 추가한 영수증과 이 문단을 앞선 검사에 소급 포함시키지 않는다. 수용기록을 포함한 마지막 결과판의 추가 확인은 HANDOFF에 기록한다.
+
+| 검사 | 실제 시점 UTC / 종료값 | 확인 범위 |
+| --- | --- | --- |
+| `verify.py --phase final` | 2026-11-23 12:48:02, exit0, **6,210개 검사** | 시작 clean. 봉인·해시·358개 source의 조인·분모·비용·형식·허용 경로. 목표 실행은 수행하지 않음. |
+| `workbench.session check … --fetch` | 12:48:02–12:48:11, exit0 | 현재 계약과 허용 경로 확인. outside_paths/unmerged_paths/errors 모두 빈 배열. |
+| 공통 `cloud_check … --require-clean` 첫 시도 | 12:48:16–12:48:27, **exit1** | shallow checkout의 Git bundle 복원에서 부모 이력 누락. 55+7+9 unit test가 통과했어도 전체 검사는 실패로 보존. |
+| 같은 source의 공통 검사 재시도 | 12:49:41–12:49:52, **exit0** | `git fetch --unshallow`로 이력 보충 후 재시도. 검사기·gate 미수정. 시작/종료 clean. doctor/acceptance/research-case/original-smoke 명령 완료. sessions 명령 exit0의 내용은 `no_active_sessions`; 협업 실행 성공으로 세지 않음. |
+| GitHub 원격 결과 본문 재열람 | 12:50:55–12:50:56 | 필수10개 파일의 반환 UTF-8 bytes로 Git blob SHA1을 재계산. local Git blob 및 원격 blob SHA와 **10/10 일치**. |
+
+원래 실패·성공 receipt와14개 stdout/stderr 로그는 `evidence/common-*`에 있고, 재개용 임시 worktree는 영수증을 복사한 뒤 제거했다. 이력 보충은 저장소 객체를 읽은 조치이며 기존 브랜치/커밋 reset이나 검사 완화가 아니다. 원격 재열람과 검증 비용은 A/B 자료 노출이나 연구 원문 최소량에 추가하지 않았다.
+
 ## 검토 주체와 범위
 
 원 연구는 root와 같은 모델 계열의 모집·판독·사후 조사 문맥을 사용했다. 재개 root는 원격 `2f7e07542b4a59839556e00c9e266179150b21a3`의 커밋된 파일을 읽고 결과를 작성했다. 재개 Shotcut/MuseScore/Sigil 검토자 3명은 원 A/B 판독자가 아니지만 **사후 source 검토자**이며 새 blind reader·독립 인간 표본으로 세지 않는다. 최종 결과 작성·기계 검사·통합 판정은 root가 맡았다. 검토자의 원문 재열람과 자기 재판독을 독립 효과 표본으로 바꾸지 않는다.

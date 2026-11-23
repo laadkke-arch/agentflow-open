@@ -26,6 +26,15 @@
 3. 원장 조인·봉인 해시·분모·비용 중복·허용 경로를 실제 검사하고 결과 SHA의 파일을 원격에서 재열람한다.
 4. evidence/acceptance-evidence.json을 커밋한 뒤 HANDOFF.md만 마지막 단독 커밋한다.
 
+## 재개 완료 기록
+
+- 결과 본문과 재검토 묶음을 `88ee29fd7866474500406d94ef96f17b03142096`에 공개했다.
+- RESULT의 필수 3표·Q1–Q8·약점 정확히 3건과 SELF_CHECK의 질문별 7열 검산을 작성했다.
+- 결과판의 기계검사 6,210개와 task-specific 계약/범위 검사는 exit0이다. 공통검사 첫 exit1은 shallow Git bundle 복원이었고 실패 로그를 보존했다. 전체 이력 보충 후 같은 source의 재시도는 exit0이다.
+- 필수 10개 원격 본문을 재열람하고 반환 bytes의 Git blob 해시 10/10 일치를 확인했다.
+- 최종 계수: source358행, named24/conservative21, FRAME30, views6, candidates13, tests9, target0/9, aux predicate5/9. primary0/3과 최초판0/3, 당시판 target 자료3/6 미달을 유지한다.
+- 이 다음 수용 영수증 묶음이 result commit이다. **최종 HANDOFF.md의 존재와 그 부모 result SHA로 종료를 확인**한다. HANDOFF는 마지막 단독 파일 커밋으로 남긴다.
+
 ## 잠정 판단
 
 주 모집 적격 0/3, 보조 사례 3/3, 보수적 원저작 21계보, 보기 6개, 봉인 입력 9개다. 핵심 선택 변화 0/3이라는 기술 대조를 보존한다. 목표 프로그램 실행 0/9와 보조 predicate 관측 5/9를 혼동하지 않는다. 20계보 충족은 판고정 대상 자료의 독립 6저작 층이나 최초판 요구 검증을 대신하지 않으므로 최종 상태는 PARTIAL이 예상된다. 이 문서의 잠정 수치는 최종 COUNTS·SELF_CHECK·HANDOFF로 검산한다.
