@@ -16,7 +16,7 @@ def csvrows(path):
 def writecsv(name, rows, fields=None):
     fields = fields or list(dict.fromkeys(k for r in rows for k in r))
     with (ROOT / name).open('w', newline='') as f:
-        w = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore', lineterminator='\n')
         w.writeheader()
         for r in rows:
             w.writerow({k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict,list)) else v for k,v in r.items()})
@@ -46,7 +46,7 @@ for c,doi,author,when,inp,call,out,detail in [
  ('X-D1','10.7910/DVN/XAMFQK','Krzysztof Rybinski et al.','V1 2022-03-16; V2 2022-03-18','observation month 199210; source execution inputs 미확인','미확인; published spreadsheets only','U_Data.xlsx C2=96.71812781026418','dataverse-version-inspection.json'),
  ('X-Z1','10.5281/zenodo.6532252','Mustapha Regragui et al.','2022-05-09','scenario1, FIFO,4workers,seed1,frame0','simulator output; notebook pd.read_csv path code only','duration9378.21 microseconds; 200 raw frame rows','zenodo-package-inspection.json'),
  ('A-XG9','10.7910/DVN/G9QZOU','Iasmin Goes; inherited James R. Vreeland log','2023-03-19 package; 2008-04-18 log local time','Vreeland_2008_IO.dta old local path; 2023 inputs separate','ologit torture party level g population tradegdp war communist if reg==1, robust','N694; party=.5780659; log pseudolikelihood=-893.5787','READING.md')]:
-    receipts.append(dict(receipt_id='R-'+c,case_id=c,layer='cross-field' if c.startswith('X-') else 'auxiliary-cross-field',report_or_run_id=doi,publication_utc=when,execution_utc='미확인 (A-XG9 log gives local time only)',executor=author,input_utc='해당 없음',input_local=inp,timezone_id='해당 없음',call=call,input_format='month/scenario/datafile',offset_convention='해당 없음',declared_version=when,installed_or_lock='deposit checksum; no same-run installation receipt',loaded_provider='미확인',loaded_edition='미확인',loaded_path_or_hash='deposited member hashes verified; not original process load',actual_output=out,output_role='author-published numeric output',evidence_level='published bytes + output; same-run input/load linkage incomplete',same_run_key='deposit DOI + file/member; not process UUID',input_output_join='see reading; do not join separate-era files',source_id={'X-D1':'S-XD1','X-Z1':'S-XZ1','A-XG9':'S-XG9'}[c],original_url='https://doi.org/'+doi,locator='evidence/crossfield/'+detail,traceable=True,date_output_published=False,provider_label_confirmed=False,loaded_bytes_confirmed=False,same_run_label_output=False,same_run_full_bytes=False,missing='original execution input digest, timestamp and output linkage',next_minimum='author-published original run receipt matching fixed input digest and output',detail_file='evidence/crossfield/'+detail))
+    receipts.append(dict(receipt_id='R-'+c,case_id=c,layer='cross-field' if c.startswith('X-') else 'auxiliary-cross-field',report_or_run_id=doi,publication_utc=when,execution_utc='2008-04-18 23:05:09 local; UTC미확인' if c=='A-XG9' else '미확인',executor=author,input_utc='해당 없음',input_local=inp,timezone_id='해당 없음',call=call,input_format='month/scenario/datafile',offset_convention='해당 없음',declared_version=when,installed_or_lock='deposit checksum; no same-run installation receipt',loaded_provider='미확인',loaded_edition='미확인',loaded_path_or_hash='deposited member hashes verified; not original process load',actual_output=out,output_role='author-published numeric output',evidence_level='published bytes + output; same-run input/load linkage incomplete',same_run_key='deposit DOI + file/member; not process UUID',input_output_join='see reading; do not join separate-era files',source_id={'X-D1':'S-XD1','X-Z1':'S-XZ1','A-XG9':'S-XG9'}[c],original_url='https://doi.org/'+doi,locator='evidence/crossfield/'+detail,traceable=True,date_output_published=False,provider_label_confirmed=False,loaded_bytes_confirmed=False,same_run_label_output=False,same_run_full_bytes=False,missing='original execution input digest, timestamp and output linkage',next_minimum='author-published original run receipt matching fixed input digest and output',detail_file='evidence/crossfield/'+detail))
 writecsv('receipts.csv',receipts)
 
 # Same work/revisions and mirrors count once. Retain each read row for traceability.
@@ -60,6 +60,9 @@ for origin in [E/'pandas/sources.jsonl',E/'moment/sources.jsonl',E/'artifacts/so
                 if fragment in url:
                     r['lineage_id']=key;break
         r['original_lineage_id']=original
+        if not r.get('case_ids'):
+            r['case_ids']=[next((f['frame_id'] for f in frames if f['original_url']==r['original_url']), 'SCOPE')]
+            r['case_link_note']='Screening/exclusion evidence linked to frame position; not promoted to a selected case'
         if category in ['issue_scope_exclusion','screened_ineligible_issue']:
             r['count_minimum']=False;r['count_note']='screened original body directly read; conservatively excluded from evidence minimum because it is outside output eligibility'
         if r.get('count_minimum'):

@@ -7,7 +7,7 @@ def rows(p): return list(csv.DictReader(p.open()))
 def out(p,rs):
     keys=list(dict.fromkeys(k for r in rs for k in r))
     with p.open('w',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=keys);w.writeheader();w.writerows(rs)
+        w=csv.DictWriter(f,fieldnames=keys,lineterminator='\n');w.writeheader();w.writerows(rs)
 c=[]
 for r in rows(E/'pandas/candidate-editions.csv'):
     c.append(dict(case_id=r['case_id'],candidate_package=r['candidate'],candidate_edition=r['data_edition'],available_at_report='bounded sources; see exact release/code evidence',decision=r['input_compatibility'],label_effect=r['label_or_code_exclusion'],loaded_fingerprint_effect=r['member_fingerprint_exclusion'],observed_value_effect=r['observation_exclusion'],enumeration_scope=r['enumeration'],unique_edition='미확인',source_url=r['source_url'],evidence_file='evidence/pandas/official-evidence.json; evidence/pandas/candidate-member-evidence.json',next_discriminating_observation='same original run whole distribution fingerprint; conditional new-region probe only as specified in card'))
