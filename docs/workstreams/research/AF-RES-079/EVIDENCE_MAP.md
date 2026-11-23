@@ -28,7 +28,7 @@
 | R022 | cpython-98040 | [원문](https://api.github.com/repos/python/cpython/issues/98040) | Tracks concrete removal of imp and related deprecated import APIs for3.12. | Issue proposal/status does not replace a released artifact inspection. |
 | R030 | pillow-source-implementation | [원문](https://raw.githubusercontent.com/python-pillow/Pillow/baea361b9a29e9a1dfa5a9b8e11bc9624a9cee46/PIL/Image.py) | Pillow2.0 still contains VERSION=1.1.7; missing core creates placeholder; open invalid mode raises ValueError. | Same VERSION string is not proof of identical distribution; current porting description changed later. |
 | R032 | cpython-import-implementation | [원문](https://raw.githubusercontent.com/python/cpython/v3.11.0/Lib/imp.py) | Old load_source reexecutes existing module; find_module checks argument types and yields legacy tuple. | Static implementation, not original-runtime run. |
-| R035 | image-sig-pillow-fork-thread | [원문](https://mail.python.org/pipermail/image-sig/2010-July/006423.html) | Fork creator explicitly announces a packaging-oriented PIL fork and links Pillow1.0. | Does not assert all image functionality equivalent or origin-author transfer consent. |
+| R035 | image-sig-pillow-fork-thread | [원문](https://mail.python.org/pipermail/image-sig/2010-July/006423.html) | Original2010-07-31 Image-SIG author announcement explicitly calls Pillow a PIL fork and links the first Pillow1.0 release. Packaging-specific claims are supported separately by R036/R015, not inferred from this announcement alone. | Does not assert all image functionality equivalent or origin-author transfer consent. |
 | STD-S01 | IANA-LANGUAGE-SUBTAG-REGISTRY | [원문](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) | mo는 2008-11-22 폐기와 ro 단일 선호값을 가진다. bhk는 2010-03-11 폐기와 네 코드 fbl/lbl/rbl/ubl 참조를 갖지만 단일 Preferred-Value는 없다. 수신 다섯 레코드도 실제 존재한다. | 현재 공식 등록부의 이력 필드다. 당시 웹 리다이렉트나 당시 파일 전체의 바이트를 증명하지 않는다. mo/ro는 IANA namespace이고 ISO639-3 mol/ron로 바꾸어 쓰지 않는다. |
 | STD-S02 | RFC5646 | [원문](https://www.rfc-editor.org/rfc/rfc5646.html) | 폐기만 있고 선호값이 없으면 대체 매핑이 없다. Type/Subtag/Tag/Added는 고정하고 폐기·선호값은 유지관리 절차로 바꿀 수 있다. 정규화는 명시적 선호값을 사용한다. | 언어 태그 규칙이며 소프트웨어 ID 자동 병합 규칙이 아니다. 선호값 변동이 기존 자료의 재태깅을 반드시 뜻하지 않는다. |
 | STD-S03 | RFC8141 | [원문](https://www.rfc-editor.org/rfc/rfc8141.html) | 위치 독립적 이름과 변하는 locator 매핑을 분리한다. URN 동등성은 scheme/NID 대소문자 등을 정규화하지만 NSS의 일반 문자를 무조건 같은 것으로 취급하지 않는다. | 해석 서비스의 매핑이 유지되어야 실제 검색이 지속된다. URN을 부여하는 일만으로 원문·기능·서비스 동작을 보존하지 못한다. |
@@ -41,7 +41,7 @@
 
 - 모집: SCOPE.md의 사전 규칙, frame.csv의11자리, streams/gis/recruitment.csv의115 후보 및 streams/oss/recruitment.csv의25 후보. 후보행은 독립 사건 수가 아니다.
 - 원문: sources.jsonl. stream 원장과 단계2 commit의 최초 정적 예측을 보존했다. R037/R038은 이미 읽은 문서의 immutable source pin이고 원저작 수0 추가다.
-- 관측: observations.csv. H-로 시작하는49행은 SciPy 역사판 대응 실행, PA-O01~04는 원PIL 확보 보충, 각 사건 HTTP-U11행은 HTTP 관측이며 native 시험이 아니다.
+- 관측: observations.csv. H-로 시작하는49행은 SciPy 역사판 대응 실행, GN01–GN11은 GIS 후속 native 묶음(양판9·같은판2), PA-O01~04는 원PIL 확보 보충, 각 사건 HTTP-U11행은 HTTP 관측이며 native 시험이 아니다.
 - 수선: relations.csv의26행. 두 조건부③행은 실재 운영 레코드 입력이 없어 관측 오류나 완료 분리로 산입하지 않는다.
 - 가림: evidence/first-assessment.json, streams/review/blind-review.json, streams/review/RECONCILIATION.md. 별도 도구 에이전트 판독이며 사람 검토나 통계적 독립성을 주장하지 않는다.
 - 실행: streams/oss/historical/paired-observations.jsonl·각 판 원행·영수증. 같은 사건의 여러 입력과 P1/P2 대응을 자연 분모에 더하지 않는다.
