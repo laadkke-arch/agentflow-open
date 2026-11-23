@@ -1,0 +1,185 @@
+[
+  {
+    "analysis_layer": "diagnostic",
+    "cutoff_A_utc": "2026-11-23T08:49:46.893312Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_DIAGNOSTIC_COMMIT",
+    "comments_read_before_seal": false,
+    "main_slot": null,
+    "repo": "rclone/rclone",
+    "strict_budget_compliant": true,
+    "issue_id": "RCL-4912",
+    "number": 4912,
+    "sequence": 6,
+    "diagnostic_selection": "초기8의 사전 지목된 압축 ON/OFF 작성자 관측 쌍",
+    "preread": false,
+    "context": "MinIO 자동 압축을 켠 텍스트 파일 copyto에서 체크섬 오류",
+    "goal": "원본 내용을 복사하고 오류 원인을 설명",
+    "prohibitions": "압축을 반드시 유지해야 하는지는 명시 없음",
+    "field_category": "prohibition",
+    "field": "automatic_server_compression_must_remain_enabled",
+    "field_in_A": false,
+    "value_in_A": null,
+    "question_decision": "ask",
+    "question": "서버의 자동 압축을 반드시 켠 채로 복사해야 하나요?",
+    "candidate_1": "압축 해제가 허용되면 원래 체크섬 검사를 유지하는 비압축 우회책을 조건부 검토",
+    "candidate_2": "압축 유지가 필수이면 그 조건을 보존한 호환성 원인을 조사; 체크섬 생략을 안전한 해결로 단정하지 않음",
+    "advice_A": "두 경로를 조건부로 유지. 작성자가 압축 해제 시 오류가 없다고 이미 보고했지만 그 우회책의 허용 여부는 미기재.",
+    "if_value_1": "yes → 압축유지 경로 C2; ignore-checksum이 검사를 생략한다는 것만 알 수 있고 성공/보존 보장은 없음",
+    "if_value_2": "no → 작성자가 이미 보고한 비압축 우회 C1을 검토",
+    "version": "v1.47.0@a0d4fdb2fa34c7f6ac5a86021d16403713499aaf",
+    "source_ids": [
+      "RCL-I4912",
+      "RCL-D5"
+    ],
+    "evidence_sections": [
+      {
+        "source_id": "RCL-D5",
+        "section": "--ignore-checksum",
+        "lines": "503-511"
+      }
+    ],
+    "candidate_budget": {
+      "C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    },
+    "independent_limit": "서버 판·압축 처리 원인은 미확인. 한 필드가 경로를 가르더라도 정확한 해결책의 충분조건은 아님.",
+    "observed_pair_in_A": "OP가 자동압축 ON=오류 / OFF=오류없음을 최초글에 보고. 새 B 실험이 아님.",
+    "original_body_sha256": "300cd7743a9628f1b2187f1e739b03a897675004547f0ca250a1df1b4e77c945",
+    "current_body_sha256": "300cd7743a9628f1b2187f1e739b03a897675004547f0ca250a1df1b4e77c945",
+    "original_url": "https://github.com/rclone/rclone/issues/4912#issue-781504582",
+    "archive_url": "https://data.gharchive.org/2021-01-07-18.json.gz",
+    "archive_event_id": "14746394439",
+    "archive_line": 10992,
+    "author": "jmargallo",
+    "author_id": 42610447,
+    "created_at": "2021-01-07T18:04:57Z",
+    "initial_version_status": "recovered_opened_event"
+  },
+  {
+    "analysis_layer": "diagnostic",
+    "cutoff_A_utc": "2026-11-23T08:49:46.893312Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_DIAGNOSTIC_COMMIT",
+    "comments_read_before_seal": false,
+    "main_slot": null,
+    "repo": "rclone/rclone",
+    "strict_budget_compliant": true,
+    "issue_id": "RCL-4956",
+    "number": 4956,
+    "sequence": 9,
+    "diagnostic_selection": "다음8 중 첫 행; 주슬롯 대체 없음",
+    "preread": true,
+    "preread_reason": "현재 검색 제목이 후대 cache full 한정을 포함함. 최초 제목은 두 번 업로드라는 증상만 표현하므로 완전 사전판독으로 세지 않음. 댓글은 미열람.",
+    "context": "sftp serve와 sync에서 중단된 전송 후 정상 파일을 받는 데 재전송이 필요",
+    "goal": "중단 후 정상 내용·해시를 얻는 재시도",
+    "prohibitions": "완성된 이전 파일을 같은 경로에 유지해야 한다는 금지조건은 명시 없음",
+    "field_category": "execution_setting",
+    "field": "vfs_cache_mode",
+    "field_in_A": true,
+    "value_in_A": "writes",
+    "question_decision": "skip",
+    "question": null,
+    "skip_reason": "본문 명령에 cache writes가 있고 Ctrl-C 중단 및 첫 실패·둘째 성공이 이미 제시됨. 제목의 후대 full을 최초값으로 섞지 않음.",
+    "candidate_1": "명시된 writes 모드·중단 상태의 해시/재시도 문제로 읽기",
+    "candidate_2": "사용자가 캐시 모드를 밝히지 않았다고 가정하고 모드부터 묻는 후보는 제외",
+    "advice_A": "명시 모드에서의 중단/재시도 문제를 직접 설명하되 문서만으로 버그 수정·성공을 주장하지 않음",
+    "version": "v1.53.3@55bd60019e12a65430867a4c334f2d0ab49bdc3e",
+    "source_ids": [
+      "RCL-I4956",
+      "RCL-D6"
+    ],
+    "evidence_sections": [
+      {
+        "source_id": "RCL-D6",
+        "section": "--vfs-cache-mode writes",
+        "lines": "175-185"
+      }
+    ],
+    "candidate_budget": {
+      "C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    },
+    "independent_limit": "재시도 계약은 확인되지만 관측 해시 오류의 코드 원인은 이 절로 판정불가.",
+    "original_body_sha256": "196ebe699b0e107f2d2081c03fe9eb598ca08b76f3dcae94ffd08132d4160a71",
+    "current_body_sha256": "196ebe699b0e107f2d2081c03fe9eb598ca08b76f3dcae94ffd08132d4160a71",
+    "original_url": "https://github.com/rclone/rclone/issues/4956#issue-793425095",
+    "archive_url": "https://data.gharchive.org/2021-01-25-14.json.gz",
+    "archive_event_id": "14937232478",
+    "archive_line": 60022,
+    "author": "sp31415t1",
+    "author_id": 33207650,
+    "created_at": "2021-01-25T14:23:55Z",
+    "initial_version_status": "recovered_opened_event"
+  },
+  {
+    "analysis_layer": "diagnostic",
+    "cutoff_A_utc": "2026-11-23T08:49:46.893312Z",
+    "a_seal_sha": "TO_BE_FILLED_AFTER_ROOT_DIAGNOSTIC_COMMIT",
+    "comments_read_before_seal": false,
+    "main_slot": null,
+    "repo": "rclone/rclone",
+    "strict_budget_compliant": true,
+    "issue_id": "RCL-4914",
+    "number": 4914,
+    "sequence": 10,
+    "diagnostic_selection": "다음8 중 둘째 행; 댓글 없이 선정",
+    "preread": false,
+    "context": "원격 core/command가 CLI와 직접 HTTP에서 같은 내부 오류; noop은 동작",
+    "goal": "rclone terminal 명령을 rc로 실행",
+    "prohibitions": "명시 없음",
+    "field_category": "execution_setting",
+    "field": "request_entry",
+    "field_in_A": true,
+    "value_in_A": "CLI와 직접 HTTP 모두 시험",
+    "question_decision": "skip",
+    "question": null,
+    "skip_reason": "최초글에 명령·서버옵션·판·오류와 두 호출 방식이 이미 있다. 호출 경로만 추가로 물어도 새 정보가 아님.",
+    "candidate_1": "같은 core/command 처리경로의 오류를 조사",
+    "candidate_2": "CLI 대신 직접 HTTP만 쓰면 해결된다는 후보는 최초글의 대조에 배제됨",
+    "advice_A": "초기 대조를 보존하여 공통 처리경로 쪽으로 읽기; 인증 요구와 구현 타입 오류의 원인은 별도로 미확인",
+    "version": "v1.54.0-beta.5050.ef2bfb971@ef2bfb9718fefe8975b32a27530ea300004859ee",
+    "source_ids": [
+      "RCL-I4914",
+      "RCL-D7"
+    ],
+    "evidence_sections": [
+      {
+        "source_id": "RCL-D7",
+        "section": "core/command",
+        "lines": "510-546"
+      }
+    ],
+    "candidate_budget": {
+      "C1": {
+        "documents": 1,
+        "sections": 1
+      },
+      "C2": {
+        "documents": 1,
+        "sections": 1
+      }
+    },
+    "independent_limit": "매뉴얼은 API 계약을 설명하고, 동일 오류 관측은 OP의 원시험 보고. 연구자의 재실행 아님.",
+    "original_body_sha256": "2ea8f8c2f52f7f154ef36749ecfe40ddab9c6b10abc0903f520044283c53420c",
+    "current_body_sha256": "98e026c7fd32c6ddf4513f98b74e17c9856eed15fce5bdfcc3322ec23a0c3e5e",
+    "original_url": "https://github.com/rclone/rclone/issues/4914#issue-782519718",
+    "archive_url": "https://data.gharchive.org/2021-01-09-5.json.gz",
+    "archive_event_id": "14762779860",
+    "archive_line": 51151,
+    "author": "siopaonow",
+    "author_id": 44518048,
+    "created_at": "2021-01-09T05:48:31Z",
+    "initial_version_status": "recovered_opened_event"
+  }
+]
