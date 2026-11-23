@@ -1,0 +1,204 @@
+{
+  "case": "L01",
+  "package": "jsonld",
+  "version": "5.2.0",
+  "kind": "rdf",
+  "document_prediction": "B shows basic expansion, C shows @context recognition. Scope/full-IRI object kinds U.",
+  "order": [
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+  ],
+  "groups": [
+    {
+      "group": "G1",
+      "variant": "literal scoped term",
+      "input": {
+        "document": {
+          "@context": {
+            "bizStep": {
+              "@id": "https://example.org/bizStep",
+              "@type": "@vocab",
+              "@context": {
+                "v1": "https://example.org/values/v1",
+                "v2": "https://example.org/values/v2"
+              }
+            }
+          },
+          "bizStep": [
+            "v1",
+            "v2"
+          ]
+        },
+        "options": {
+          "format": "application/n-quads",
+          "base": "",
+          "processingMode": "json-ld-1.1"
+        }
+      },
+      "expectation": {
+        "predicate": "https://example.org/bizStep",
+        "objects": [
+          [
+            "NamedNode",
+            "https://example.org/values/v1"
+          ],
+          [
+            "NamedNode",
+            "https://example.org/values/v2"
+          ]
+        ],
+        "quad_count": 2,
+        "unchanged": true
+      },
+      "basis": "author inline input, local RDF reconstruction"
+    },
+    {
+      "group": "G2",
+      "variant": "remove only the @vocab coercion",
+      "input": {
+        "document": {
+          "@context": {
+            "bizStep": {
+              "@id": "https://example.org/bizStep",
+              "@context": {
+                "v1": "https://example.org/values/v1",
+                "v2": "https://example.org/values/v2"
+              }
+            }
+          },
+          "bizStep": [
+            "v1",
+            "v2"
+          ]
+        },
+        "options": {
+          "format": "application/n-quads",
+          "base": "",
+          "processingMode": "json-ld-1.1"
+        }
+      },
+      "expectation": {
+        "predicate": "https://example.org/bizStep",
+        "objects": [
+          [
+            "Literal",
+            "v1"
+          ],
+          [
+            "Literal",
+            "v2"
+          ]
+        ],
+        "quad_count": 2,
+        "unchanged": true
+      },
+      "basis": "near C1 negative"
+    },
+    {
+      "group": "G3",
+      "variant": "literal full IRI property",
+      "input": {
+        "document": {
+          "@context": {
+            "bizStep": {
+              "@id": "https://example.org/bizStep",
+              "@type": "@vocab",
+              "@context": {
+                "v1": "https://example.org/values/v1",
+                "v2": "https://example.org/values/v2"
+              }
+            }
+          },
+          "https://example.org/bizStep": [
+            "v1",
+            "v2"
+          ]
+        },
+        "options": {
+          "format": "application/n-quads",
+          "base": "",
+          "processingMode": "json-ld-1.1"
+        }
+      },
+      "expectation": {
+        "predicate": "https://example.org/bizStep",
+        "objects": [
+          [
+            "NamedNode",
+            "https://example.org/values/v1"
+          ],
+          [
+            "NamedNode",
+            "https://example.org/values/v2"
+          ]
+        ],
+        "quad_count": 2,
+        "unchanged": true,
+        "reported_counterexample": [
+          [
+            "Literal",
+            "v1"
+          ],
+          [
+            "Literal",
+            "v2"
+          ]
+        ]
+      },
+      "basis": "C2 desired preservation; author reports literals"
+    },
+    {
+      "group": "G4",
+      "variant": "retain adjacent property",
+      "input": {
+        "document": {
+          "@context": {
+            "bizStep": {
+              "@id": "https://example.org/bizStep",
+              "@type": "@vocab",
+              "@context": {
+                "v1": "https://example.org/values/v1",
+                "v2": "https://example.org/values/v2"
+              }
+            }
+          },
+          "bizStep": [
+            "v1",
+            "v2"
+          ],
+          "https://example.org/marker": "kept"
+        },
+        "options": {
+          "format": "application/n-quads",
+          "base": "",
+          "processingMode": "json-ld-1.1"
+        }
+      },
+      "expectation": {
+        "predicate": "https://example.org/bizStep",
+        "objects": [
+          [
+            "NamedNode",
+            "https://example.org/values/v1"
+          ],
+          [
+            "NamedNode",
+            "https://example.org/values/v2"
+          ]
+        ],
+        "quad_count": 3,
+        "extra_predicate": "https://example.org/marker",
+        "extra_objects": [
+          [
+            "Literal",
+            "kept"
+          ]
+        ],
+        "unchanged": true
+      },
+      "basis": "structure-preservation reconstruction"
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+{
+  "case": "L02",
+  "package": "jsonld",
+  "version": "5.2.0",
+  "kind": "compact",
+  "document_prediction": "B shows compact(doc, context) but a different schema.org basic example. C is keyword list. Bare XSD string and array/ID structure U.",
+  "order": [
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+  ],
+  "groups": [
+    {
+      "group": "G1",
+      "variant": "literal untyped string",
+      "input": {
+        "document": [
+          {
+            "@id": "http://a.example/Employee7",
+            "http://xmlns.com/foaf/0.1/givenName": [
+              {
+                "@value": "Robert"
+              },
+              {
+                "@value": "Taylor"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/familyName": [
+              {
+                "@value": "Johnson"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/mbox": [
+              {
+                "@id": "mailto:rtj@example.com"
+              }
+            ]
+          }
+        ],
+        "context": {
+          "givenName": {
+            "@id": "http://xmlns.com/foaf/0.1/givenName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@container": "@set"
+          },
+          "familyName": {
+            "@id": "http://xmlns.com/foaf/0.1/familyName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "phone": {
+            "@id": "http://xmlns.com/foaf/0.1/phone",
+            "@container": "@set"
+          },
+          "mbox": {
+            "@id": "http://xmlns.com/foaf/0.1/mbox"
+          }
+        },
+        "options": {
+          "processingMode": "json-ld-1.1",
+          "compactArrays": true
+        }
+      },
+      "expectation": {
+        "given_key": "givenName",
+        "given": [
+          "Robert",
+          "Taylor"
+        ],
+        "family_key": "familyName",
+        "family": "Johnson",
+        "mbox": {
+          "@id": "mailto:rtj@example.com"
+        },
+        "id": "http://a.example/Employee7",
+        "unchanged": true
+      },
+      "basis": "author expanded JSON and context; C1 desired alias, C2 given array + family scalar + ID object"
+    },
+    {
+      "group": "G2",
+      "variant": "typed string, mismatched integer context",
+      "input": {
+        "document": [
+          {
+            "@id": "http://a.example/Employee7",
+            "http://xmlns.com/foaf/0.1/givenName": [
+              {
+                "@value": "Robert",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              },
+              {
+                "@value": "Taylor",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/familyName": [
+              {
+                "@value": "Johnson",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/mbox": [
+              {
+                "@id": "mailto:rtj@example.com"
+              }
+            ]
+          }
+        ],
+        "context": {
+          "givenName": {
+            "@id": "http://xmlns.com/foaf/0.1/givenName",
+            "@type": "http://www.w3.org/2001/XMLSchema#integer",
+            "@container": "@set"
+          },
+          "familyName": {
+            "@id": "http://xmlns.com/foaf/0.1/familyName",
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          "phone": {
+            "@id": "http://xmlns.com/foaf/0.1/phone",
+            "@container": "@set"
+          },
+          "mbox": {
+            "@id": "http://xmlns.com/foaf/0.1/mbox"
+          }
+        },
+        "options": {
+          "processingMode": "json-ld-1.1",
+          "compactArrays": true
+        }
+      },
+      "expectation": {
+        "given_key": "http://xmlns.com/foaf/0.1/givenName",
+        "given": [
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "Robert"
+          },
+          {
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@value": "Taylor"
+          }
+        ],
+        "family_key": "http://xmlns.com/foaf/0.1/familyName",
+        "family": {
+          "@type": "http://www.w3.org/2001/XMLSchema#string",
+          "@value": "Johnson"
+        },
+        "mbox": {
+          "@id": "mailto:rtj@example.com"
+        },
+        "id": "http://a.example/Employee7",
+        "unchanged": true
+      },
+      "basis": "near C1 negative, altered type restriction; full-IRI is expected"
+    },
+    {
+      "group": "G3",
+      "variant": "typed singleton, no @set",
+      "input": {
+        "document": [
+          {
+            "@id": "http://a.example/Employee7",
+            "http://xmlns.com/foaf/0.1/givenName": [
+              {
+                "@value": "Robert",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/familyName": [
+              {
+                "@value": "Johnson",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/mbox": [
+              {
+                "@id": "mailto:rtj@example.com"
+              }
+            ]
+          }
+        ],
+        "context": {
+          "givenName": {
+            "@id": "http://xmlns.com/foaf/0.1/givenName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "familyName": {
+            "@id": "http://xmlns.com/foaf/0.1/familyName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "phone": {
+            "@id": "http://xmlns.com/foaf/0.1/phone",
+            "@container": "@set"
+          },
+          "mbox": {
+            "@id": "http://xmlns.com/foaf/0.1/mbox"
+          }
+        },
+        "options": {
+          "processingMode": "json-ld-1.1",
+          "compactArrays": true
+        }
+      },
+      "expectation": {
+        "given_key": "givenName",
+        "given": "Robert",
+        "family_key": "familyName",
+        "family": "Johnson",
+        "mbox": {
+          "@id": "mailto:rtj@example.com"
+        },
+        "id": "http://a.example/Employee7",
+        "unchanged": true
+      },
+      "basis": "near C2 negative, no @set should compact to scalar"
+    },
+    {
+      "group": "G4",
+      "variant": "typed singleton with @set",
+      "input": {
+        "document": [
+          {
+            "@id": "http://a.example/Employee7",
+            "http://xmlns.com/foaf/0.1/givenName": [
+              {
+                "@value": "Robert",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/familyName": [
+              {
+                "@value": "Johnson",
+                "@type": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            ],
+            "http://xmlns.com/foaf/0.1/mbox": [
+              {
+                "@id": "mailto:rtj@example.com"
+              }
+            ]
+          }
+        ],
+        "context": {
+          "givenName": {
+            "@id": "http://xmlns.com/foaf/0.1/givenName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string",
+            "@container": "@set"
+          },
+          "familyName": {
+            "@id": "http://xmlns.com/foaf/0.1/familyName",
+            "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "phone": {
+            "@id": "http://xmlns.com/foaf/0.1/phone",
+            "@container": "@set"
+          },
+          "mbox": {
+            "@id": "http://xmlns.com/foaf/0.1/mbox"
+          }
+        },
+        "options": {
+          "processingMode": "json-ld-1.1",
+          "compactArrays": true
+        }
+      },
+      "expectation": {
+        "given_key": "givenName",
+        "given": [
+          "Robert"
+        ],
+        "family_key": "familyName",
+        "family": "Johnson",
+        "mbox": {
+          "@id": "mailto:rtj@example.com"
+        },
+        "id": "http://a.example/Employee7",
+        "unchanged": true
+      },
+      "basis": "boundary @set one element and mailbox/ID preservation; typed control reported by author"
+    }
+  ]
+}

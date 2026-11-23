@@ -1,0 +1,117 @@
+{
+  "case": "A01",
+  "package": "ajv",
+  "version": "8.8.2",
+  "kind": "ajv2019",
+  "document_prediction": "B shows Ajv2019 class + draft-07 registration, actual validation and unknown-keyword outputs U.",
+  "order": [
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+  ],
+  "groups": [
+    {
+      "group": "G1",
+      "variant": "2019-09 positive",
+      "input": {
+        "schema": {
+          "$schema": "https://json-schema.org/draft/2019-09/schema",
+          "type": "array",
+          "contains": {
+            "type": "number"
+          },
+          "minContains": 2
+        },
+        "data": [
+          1,
+          2
+        ],
+        "module": "ajv/dist/2019",
+        "register_draft07": true,
+        "options": {}
+      },
+      "expectation": {
+        "valid": true,
+        "unchanged": true
+      },
+      "basis": "minimum reconstruction; author wants two draft modes"
+    },
+    {
+      "group": "G2",
+      "variant": "2019-09 one match",
+      "input": {
+        "schema": {
+          "$schema": "https://json-schema.org/draft/2019-09/schema",
+          "type": "array",
+          "contains": {
+            "type": "number"
+          },
+          "minContains": 2
+        },
+        "data": [
+          1
+        ],
+        "module": "ajv/dist/2019",
+        "register_draft07": true,
+        "options": {}
+      },
+      "expectation": {
+        "valid": false,
+        "keyword": "contains",
+        "unchanged": true
+      },
+      "basis": "near C1 negative"
+    },
+    {
+      "group": "G3",
+      "variant": "draft-07 literal",
+      "input": {
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema",
+          "type": "array",
+          "contains": {
+            "type": "number"
+          },
+          "minContains": 2
+        },
+        "data": [
+          1
+        ],
+        "module": "ajv/dist/2019",
+        "register_draft07": true,
+        "options": {}
+      },
+      "expectation": {
+        "compile_error_contains": "unknown keyword",
+        "unchanged": true
+      },
+      "basis": "author snippet and desired strict rejection"
+    },
+    {
+      "group": "G4",
+      "variant": "draft-07 valid boundary without minContains",
+      "input": {
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema",
+          "type": "array",
+          "contains": {
+            "type": "number"
+          }
+        },
+        "data": [
+          1,
+          "x"
+        ],
+        "module": "ajv/dist/2019",
+        "register_draft07": true,
+        "options": {}
+      },
+      "expectation": {
+        "valid": true,
+        "unchanged": true
+      },
+      "basis": "only minContains removed; original data shape carried through"
+    }
+  ]
+}
