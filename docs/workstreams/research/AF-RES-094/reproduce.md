@@ -57,3 +57,21 @@ python -B -m workbench.session check "$af_root/manifest.json" --fetch
 python -B scripts/cloud_check.py --environment codex-cloud --fetch-contract --require-clean
 python -B scripts/check.py --require-git
 ```
+
+## 보조 조사와 원 행 재계산
+
+판별 시각과 정확한 URL은 출처 원장과 보조 GET 영수증에 있다. 다음 명령은 당시 원 바이트 재확인용이다. 고정 URL이 아닌 응답은 이후 시점에 달라질 수 있다.
+
+```sh
+python -B "$af_root/tools/read_sources.py" /tmp/af094-source-new "$af_root/evidence/new-read-receipt.json"
+python -B "$af_root/tools/audit_payloads.py" /tmp/af094-source-new /tmp/af094-main-new-UTC "$af_root/evidence/new-payload-audit.json"
+python -B "$af_root/tools/measure.py" --verify
+```
+
+measure.py는 이 결과판에 저장한 원 회차와 판별 표본을 재계산한다. 새 회차의 접근과 pane·문서판 차이는 기존 점수를 덮어쓰지 않고 별도 비교한다. 파일 계보 확인은 GitHub의 asciicast gh-pages 이력에서 92fecbc0까지의 마지막 파일 변경을 읽거나 이전 트리와 비교한다.
+
+```sh
+git clone --filter=blob:none --no-checkout --branch gh-pages --single-branch https://github.com/r-lib/asciicast.git /tmp/af094-asciicast-provenance-new
+git -C /tmp/af094-asciicast-provenance-new log -1 --format='%H %aI %s' 92fecbc0ce019cc03086d5fc3f5b9e1a788a84c1 -- articles/asciicast-demo_files/figure-html/unnamed-chunk-6.svg
+git -C /tmp/af094-asciicast-provenance-new show a79eac83fa8ef967ff3d4da9bea1d646291cccb6:articles/asciicast-demo.html
+```
