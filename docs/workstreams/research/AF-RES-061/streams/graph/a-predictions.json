@@ -1,0 +1,98 @@
+[
+  {
+    "case_id": "D3-N",
+    "view": "A",
+    "input": "nodes=[{index:0,x:0,y:0,vx:0,vy:0},{index:1,x:3,y:4,vx:0,vy:0}],strength=-30,alpha=1,force.initialize(nodes,random),force(1)",
+    "expected_direction": "Mutual repulsion: node0 velocity away from node1 (negative x/y), node1 away from node0 (positive x/y).",
+    "boundary": "Direct force velocity update must be distinguished from simulation.tick position change/decay.",
+    "undetermined": "Exact magnitude is 미확인: common many-body API does not specify radial distance exponent or full numerical update. Coordinates after direct force call not inferred as tick movement.",
+    "falsifier": "A fixed-version direct force(1) gives attractive direction, no response, or unequal sign not explained by public API. Exact value can be established only from later code/output, not guessed from gravity metaphor.",
+    "scope": "common API plus one eligible same-domain official example, where available; no donor or implementation/output access",
+    "exposure": "General learned knowledge cannot be removed. Release/search snippets exposed unit time/mass and deterministic jiggle. Common API contains an unrelated custom-force example and default accessor code, not selected input outputs. Added A setup subsection is 37 whitespace tokens/11 code lines; no rendered graph. Fixed notebook version340 window verified identical; exact runtime d3-force dependency unresolved.",
+    "reader": "/root/graph_releases",
+    "saved_utc": "2026-11-23T05:19:04.804767+00:00",
+    "baseline_seal": "1068a5b0ff2097f8558c98f1360213c3bd48bb78",
+    "basis_api": [
+      "https://github.com/d3/d3-force/blob/156712c8c3285d77cb487e1685c5adafcd0394a4/README.md#many-body",
+      "https://github.com/d3/d3-force/blob/156712c8c3285d77cb487e1685c5adafcd0394a4/README.md#_force",
+      "https://github.com/d3/d3-force/blob/156712c8c3285d77cb487e1685c5adafcd0394a4/README.md#simulation_tick"
+    ],
+    "basis_url": [
+      "https://observablehq.com/d/a6c00de7c09bdfa1@340"
+    ],
+    "a_window": "d3-a-window.json",
+    "a_available": true,
+    "new_explanation": "Example distinguishes many-body, link and centering forces: a final graph image mixes these and tick handling. The added subsection supplies no distance exponent, one-step numerical result, or distanceMax alteration; baseline direction/boundary prediction retained."
+  },
+  {
+    "case_id": "D3-B",
+    "view": "A",
+    "input": "D3-N same, but distanceMax=4; actual separation=5",
+    "expected_direction": "No mutual force contribution expected; both velocities remain (0,0).",
+    "boundary": "Both nodes lie beyond documented maximum interaction distance.",
+    "undetermined": "Exact equality-at-cutoff behavior at d=4, tree aggregation edge cases, or coincident direction are not tested by this row.",
+    "falsifier": "Same fixed-version pair at d=5 and distanceMax4 yields nonzero velocity with no other forces and correct initialization.",
+    "scope": "common API plus one eligible same-domain official example, where available; no donor or implementation/output access",
+    "exposure": "General learned knowledge cannot be removed. Release/search snippets exposed unit time/mass and deterministic jiggle. Common API contains an unrelated custom-force example and default accessor code, not selected input outputs. Added A setup subsection is 37 whitespace tokens/11 code lines; no rendered graph. Fixed notebook version340 window verified identical; exact runtime d3-force dependency unresolved.",
+    "reader": "/root/graph_releases",
+    "saved_utc": "2026-11-23T05:19:04.804767+00:00",
+    "baseline_seal": "1068a5b0ff2097f8558c98f1360213c3bd48bb78",
+    "basis_api": [
+      "https://github.com/d3/d3-force/blob/156712c8c3285d77cb487e1685c5adafcd0394a4/README.md#manyBody_distanceMax"
+    ],
+    "basis_url": [
+      "https://observablehq.com/d/a6c00de7c09bdfa1@340"
+    ],
+    "a_window": "d3-a-window.json",
+    "a_available": true,
+    "new_explanation": "Example distinguishes many-body, link and centering forces: a final graph image mixes these and tick handling. The added subsection supplies no distance exponent, one-step numerical result, or distanceMax alteration; baseline direction/boundary prediction retained."
+  },
+  {
+    "case_id": "GV-N",
+    "view": "A",
+    "input": "sfdp 14.1.1; graph a--b; proposed positions a=(0,0),b=(3,4),K=1; requested one force/movement step",
+    "expected_direction": "미확인 for specified one-step direction. K roughly controls ideal final edge length but does not give one-step force magnitude/direction.",
+    "boundary": "Public API read does not establish fixed initial pos or one-iteration sfdp entry point: pos/maxiter pages only list neato/fdp; start initializes random layout.",
+    "undetermined": "Whether public sfdp accepts these initial coordinates and whether maxiter restricts exactly one inner force step; internal units/time and postprocessing are 미확인.",
+    "falsifier": "A tagged sfdp API/fixture explicitly accepts the exact coordinate pair, exposes exactly one step, and reports the step vector. A final graph layout alone does not refute this uncertainty.",
+    "scope": "common API plus one eligible same-domain official example, where available; no donor or implementation/output access",
+    "exposure": "Only API docs. Live pos page postdates release; tagged man inspected. Incidental fdp seed examples visible, no sfdp selected output or donor paper.",
+    "reader": "/root/graph_releases",
+    "saved_utc": "2026-11-23T05:19:04.804767+00:00",
+    "baseline_seal": "1068a5b0ff2097f8558c98f1360213c3bd48bb78",
+    "basis_api": [
+      "https://graphviz.org/docs/layouts/sfdp/",
+      "https://graphviz.org/docs/attrs/K/",
+      "https://graphviz.org/docs/attrs/pos/",
+      "https://graphviz.org/docs/attrs/maxiter/",
+      "https://gitlab.com/graphviz/graphviz/-/blob/a74b50c20fc624f46f72e24f981b261f6e5edf71/cmd/dot/dot.1"
+    ],
+    "basis_url": [],
+    "a_window": "gv-a-window.json",
+    "a_available": false,
+    "new_explanation": "미확인: no eligible worked sfdp force-setup section located by preregistered route. Kept baseline uncertainty, not an experimentally observed A treatment."
+  },
+  {
+    "case_id": "GV-B",
+    "view": "A",
+    "input": "GV-N same edge,K1; proposed coincident positions a=(0,0),b=(0,0); requested one step",
+    "expected_direction": "미확인: cannot infer finite separation, NaN, random perturbation, or no motion from current API window.",
+    "boundary": "Coincident-input boundary additionally depends on initialization and overlap handling not fixed by public controls.",
+    "undetermined": "Whether sfdp actually starts from supplied zero coordinates; singularity policy; exact directional tie breaking and one-step movement.",
+    "falsifier": "Tagged same-input fixture with clear initialization and one-step output establishes finite/no-motion/failure behavior. Final non-overlap image cannot substitute.",
+    "scope": "common API plus one eligible same-domain official example, where available; no donor or implementation/output access",
+    "exposure": "Same as GV-N; no implementation or donor read.",
+    "reader": "/root/graph_releases",
+    "saved_utc": "2026-11-23T05:19:04.804767+00:00",
+    "baseline_seal": "1068a5b0ff2097f8558c98f1360213c3bd48bb78",
+    "basis_api": [
+      "https://graphviz.org/docs/layouts/sfdp/",
+      "https://graphviz.org/docs/attrs/start/",
+      "https://graphviz.org/docs/attrs/pos/"
+    ],
+    "basis_url": [],
+    "a_window": "gv-a-window.json",
+    "a_available": false,
+    "new_explanation": "미확인: no eligible worked sfdp force-setup section located by preregistered route. Kept baseline uncertainty, not an experimentally observed A treatment."
+  }
+]
