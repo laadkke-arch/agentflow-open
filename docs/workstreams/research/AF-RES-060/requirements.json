@@ -1,0 +1,1024 @@
+[
+  {
+    "case_id": "JS-1",
+    "domain": "JSON Schema",
+    "rank": 5,
+    "question_id": 65660787,
+    "url": "https://stackoverflow.com/questions/65660787/how-to-set-one-schema-for-n-1-elements-and-another-for-the-nth-element",
+    "C1": "모든 마지막 이전 요소는 number이며 중간 string은 거부한다.",
+    "C2": "마지막 string은 허용하지만 필수는 아니다: 전부 number인 배열도 허용한다.",
+    "language": "명시 없음",
+    "version": "명시 없음",
+    "dialect": "명시 없음; draft07은 정의 비교용이며 요청판으로 가정하지 않음",
+    "guard": "가변 n; 빈 배열의 기대는 명시되지 않음",
+    "L_terms": [
+      "list of numbers",
+      "last element",
+      "optional"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "FF299B83-E209-42FB-BEE4-A732446B5F5B",
+    "original_body_sha256": "8c323c334b24e2aa7cac4a25cb623997aa3122b2038172b007025b57ae14dda2",
+    "source_location": "revision1 본문 array schema·허용 [3,4,5,\"hello\"]·거부 [3,\"hello\",4,5] 및 마지막 설명",
+    "condition_origin": "순서에 의존하는 한 predicate를 position restriction과 optionality 두 독립 검사로 분리. fixed tuple·string anywhere는 근접 오답.",
+    "substitution": "특정 구현 고정 없음",
+    "contrast_examples": {
+      "positive_1": "[3,4,5,\"hello\"]: terminal string allowed",
+      "positive_2": "[3,4,5]: string optional",
+      "near_negative": "[3,\"hello\",4,5]: contains allowed primitive types but string at nonterminal position",
+      "origin": "positive1/negative from inherited original example; positive2 is analyst instantiation of original optionality"
+    }
+  },
+  {
+    "case_id": "JS-2",
+    "domain": "JSON Schema",
+    "rank": 7,
+    "question_id": 65699699,
+    "url": "https://stackoverflow.com/questions/65699699/validate-json-schema-with-another-json-schema",
+    "C1": "검증 대상 schema의 root type은 object이다.",
+    "C2": "그 properties 내 각 property schema의 type 값은 string/number/integer/boolean만 허용한다.",
+    "language": "명시 없음",
+    "version": "명시 없음",
+    "dialect": "원문 $schema draft-07",
+    "guard": "null/array/object를 property type에 허용하지 않음; arbitrary latest draft를 추가하지 않음",
+    "L_terms": [
+      "validate JSON Schema",
+      "primitive type"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "9172C932-54A3-4E80-A903-46F7329EFE56",
+    "original_body_sha256": "ae7ba0e0d18a5e4b39940f3674ef7c1a478fb05404f90e93a4877fac14ccff67",
+    "source_location": "revision1 첫 요구 문단과 sample JSON; simpleTypes enum 수정의 실패 설명",
+    "condition_origin": "메타 검증의 두 위치별 enum 제약. 일반 인스턴스 검증만 보여주는 문서는 완결 아님.",
+    "substitution": "특정 엔진 필수라고 명시되지 않음",
+    "contrast_examples": {
+      "positive_1": "schema root type object with string property",
+      "positive_2": "object root with number/integer/boolean property schemas",
+      "near_negative": "object root with a property schema type array: C1 retained, C2 violated",
+      "origin": "analyst minimal contrast, no execution"
+    }
+  },
+  {
+    "case_id": "JS-3",
+    "domain": "JSON Schema",
+    "rank": 8,
+    "question_id": 65726164,
+    "url": "https://stackoverflow.com/questions/65726164/how-to-use-ajv-with-dependent-json-schemas",
+    "C1": "person.sex가 참조하는 외부 types.json#/properties/gender를 같은 검증 체인에서 해결하고 enum 제약을 적용한다.",
+    "C2": "Person의 name/surname/sex/email 필수 속성을 유지하여 example Person 검증을 수행한다.",
+    "language": "Node.js / TypeScript",
+    "version": "Ajv 판 명시 없음",
+    "dialect": "두 문서가 draft-04를 선언하지만 $id/JSONSchemaType 사용; 불일치 자체 보존",
+    "guard": "email format도 source schema에 있음. 형식 assertion 통과는 별도 미확인 guard; literal draft04/$id 혼용을 자동교정하지 않음",
+    "L_terms": [
+      "dependent json-schemas",
+      "$ref"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "88B51B29-6318-430E-A01F-75D88DB74236",
+    "original_body_sha256": "22c4fabd676097f0245eeeaa38628a1a905791afeb0c569ab1b19af735e9aa6a",
+    "source_location": "revision1 types.json properties.gender $ref 및 definitions.person.sex/$ref·required, isPerson(riccardo) 호출",
+    "condition_origin": "C1/C2 둘 다 source code-derived, 오류 메시지 해결을 두 개로 중복계수하지 않음. email 및 dialect guard를 확인하지 못하면 전체 요구 완결 승격 금지.",
+    "substitution": "Ajv 사용을 직접 묻는다. 다른 엔진은 대안 진단이며 원요구 완결과 분리",
+    "contrast_examples": {
+      "positive_1": "Person.sex external reference resolves to inherited gender enum",
+      "positive_2": "Person retains name/surname/sex/email required list",
+      "near_negative": "external reference resolves but required list removed; name absent accepted",
+      "origin": "analyst minimal contract probe; literal draft04/$id mismatch unresolved; no execution"
+    }
+  },
+  {
+    "case_id": "JS-4",
+    "domain": "JSON Schema",
+    "rank": 9,
+    "question_id": 65731152,
+    "url": "https://stackoverflow.com/questions/65731152/jsonschema-validate",
+    "C1": "pii의 값은 해당 instance columns에 실제 존재하는 column 이름으로만 제한한다.",
+    "C2": "column_datatype 값을 integer/string/object 중 하나로 제한한다.",
+    "language": "Python 3.x",
+    "version": "python-jsonschema 판 명시 없음",
+    "dialect": "명시 없음",
+    "guard": "이름·description·datatype에 값이 있어야 한다는 추가 문의를 보존한다. 빈 문자열/null/공백 기준은 미명시이므로 minLength1로 자동번역하지 않는다. 전체 요구를 반환하려면 이 guard도 별도 확인해야 한다.",
+    "L_terms": [
+      "schema check",
+      "validate",
+      "restrict column data type"
+    ],
+    "definition_file": "evidence/schema-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "C76C0362-B96B-4309-A7D6-38C3BD1F2D62",
+    "original_body_sha256": "cc627eaab184631c44d7407b90e62ffe809aa257c5630322d0c8fe43f6ec82db",
+    "source_location": "revision1 첫 3개 요구 문단 및 columns/pii example",
+    "condition_origin": "정해진 enum과 동적 다른 instance 값 참조를 혼동하지 않음. 핵심 두 조건 이외의 값 존재 의미가 모호하므로 두조건 완결과 전체질문 해결을 별도 표시한다.",
+    "substitution": "Python jsonschema 사용 예제이지만 대안 금지는 명시하지 않음",
+    "contrast_examples": {
+      "positive_1": "pii includes only column names present in this same instance",
+      "positive_2": "column_datatype belongs to integer/string/object",
+      "near_negative": "datatype string allowed while pii names absent column",
+      "origin": "analyst logical probe, inherited SC032 fixture not rerun"
+    }
+  },
+  {
+    "case_id": "LD-1",
+    "domain": "JSON-LD",
+    "rank": 1,
+    "question_id": 65565025,
+    "url": "https://stackoverflow.com/questions/65565025/how-to-generate-breadcrumb-schema-dynamically-using-javascript",
+    "C1": "예시와 같이 각 경로를 position/name/item이 있는 ListItem으로 만들며 순번·이름·계층 URL을 보존한다.",
+    "C2": "생성한 application/ld+json script를 head에 부착한다.",
+    "language": "Javascript 명시; JSP/JSTL 입력 코드와 jQuery ready 호출 노출",
+    "version": "제품판/JSON-LD processingMode 미명시",
+    "dialect": "제품판/JSON-LD processingMode 미명시",
+    "guard": "C2의 목적 위치 head는 원문 code에서 읽음. 끝 prose는 대상 tag 이름이 비어 있으므로 prose 명시라고 하지 않음. C1은 원하는 출력 예시의 비교 조건이다.",
+    "L_terms": [
+      "generate the schema dynamically",
+      "Breadcrumb Schema",
+      "getting appended"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "D0471C4B-5AC3-4328-8426-90E19F09F302",
+    "original_body_sha256": "4b6ef48ea33eb18710d841fbefcdedc8d5d338468501d2853d988ca657dcb4bd",
+    "source_location": {
+      "C1": "rev1 첫 HTML code block + 세 번째 code block의 원하는 BreadcrumbList",
+      "C2": "rev1 두 번째 Javascript code block의 마지막 명령 + 끝 문단의 append 실패"
+    },
+    "condition_origin": "C2의 목적 위치 head는 원문 code에서 읽음. 끝 prose는 대상 tag 이름이 비어 있으므로 prose 명시라고 하지 않음. C1은 원하는 출력 예시의 비교 조건이다.",
+    "substitution": "동일 Javascript/DOM 동작을 제공할 대체 구현 가능성은 열려 있으나 다른 언어로의 교체는 명시되지 않음",
+    "contrast_examples": {
+      "positive_1": "Home→Our Mission→Who We Are yields ordered position/name/item triples",
+      "positive_2": "generated application/ld+json element appended to head",
+      "near_negative": "correct BreadcrumbList returned as a string but no DOM head insertion",
+      "origin": "analyst contrast of inherited code/output constraints"
+    }
+  },
+  {
+    "case_id": "LD-2",
+    "domain": "JSON-LD",
+    "rank": 3,
+    "question_id": 65835110,
+    "url": "https://stackoverflow.com/questions/65835110/in-aem-i-want-to-add-sly-sly-tags-inside-a-script-script-tag-multifiel",
+    "C1": "값이 채워진 경우에만 FAQ JSON-LD script를 출력한다.",
+    "C2": "작성자가 추가한 여러 Question/Answer 쌍을 원하는 mainEntity 반복 구조로 보존한다.",
+    "language": "AEM HTL/Sightly 명시",
+    "version": "AEM 제품판과 JSON-LD 판 미명시",
+    "dialect": "AEM 제품판과 JSON-LD 판 미명시",
+    "guard": "단순 script 배치만이 아니라 조건부 데이터 생성과 반복 데이터 보존이 명시되어 모집. Google 검색 노출은 새 필수조건으로 추가하지 않음.",
+    "L_terms": [
+      "show this script only",
+      "add more Question and Answers values"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "6F5B7955-6A8B-41E4-9A40-A258EB2F71D0",
+    "original_body_sha256": "6748046f28910310473a5ee5978ad454bd2bc433b60d49087f0dc499355590f5",
+    "source_location": {
+      "C1": "rev1 첫 code block 직후 문단",
+      "C2": "같은 문단과 마지막 Authors can create 문단; FAQPage 원하는 출력 code block"
+    },
+    "condition_origin": "단순 script 배치만이 아니라 조건부 데이터 생성과 반복 데이터 보존이 명시되어 모집. Google 검색 노출은 새 필수조건으로 추가하지 않음.",
+    "substitution": "AEM 작성 흐름 내 구현/템플릿 보완 대상; 다른 프레임워크 교체 가능성 미확인",
+    "contrast_examples": {
+      "positive_1": "no populated input yields no FAQ script",
+      "positive_2": "two populated Q/A inputs yield both mainEntity pairs",
+      "near_negative": "two pairs preserved but empty input still emits script",
+      "origin": "analyst contrast, AEM execution not performed"
+    }
+  },
+  {
+    "case_id": "LD-3",
+    "domain": "JSON-LD",
+    "rank": 5,
+    "question_id": 65917156,
+    "url": "https://stackoverflow.com/questions/65917156/how-to-filter-json-ld-object-array-with-json-ld-frames",
+    "C1": "values에 a=1인 첫 객체만 남기고 두 번째 객체는 제거한다.",
+    "C2": "선택 객체의 b,c와 문서의 나머지 credential 필드를 보존한다.",
+    "language": "jsonld package 링크가 digitalbazaar/jsonld.js를 가리킴; 링크만 노출, 목적지 미열람",
+    "version": "package version 미명시; 사용자 context의 @version=1.1 명시",
+    "dialect": "package version 미명시; 사용자 context의 @version=1.1 명시",
+    "guard": "같은 값 목록과 같은 객체 식별은 다르다. @nest가 객체 경계를 보존한다고 가정하지 않는다. 최신 패키지 버전을 요구에 추가하지 않는다.",
+    "L_terms": [
+      "JSON-LD frame",
+      "filter only the element",
+      "values field filtered"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "CCBD3B77-B4AC-413C-9CAD-4D2C059BAB10",
+    "original_body_sha256": "26e7983883f73a547cf78d4cc44d3152a2a849df9ddebd0edbd88d5ee9658ebd",
+    "source_location": {
+      "C1": "rev1 세 번째 code block 도입 문단 및 최종 설명",
+      "C2": "rev1 최종 설명: 초기 문서에 대응하되 values만 필터링; 첫 입력 code block의 각 필드"
+    },
+    "condition_origin": "같은 값 목록과 같은 객체 식별은 다르다. @nest가 객체 경계를 보존한다고 가정하지 않는다. 최신 패키지 버전을 요구에 추가하지 않는다.",
+    "substitution": "질문은 사용하는 jsonld에서 context/frame 수정 허용을 명시; 다른 구현 교체는 미명시",
+    "contrast_examples": {
+      "positive_1": "retain only values object whose a=1",
+      "positive_2": "retain selected b=2,c=3 and remaining credential fields",
+      "near_negative": "select a=1 but drop b/c or surrounding credential fields",
+      "origin": "analyst contract contrast; no reexecution of existing PyLD diagnostics"
+    }
+  },
+  {
+    "case_id": "LD-4",
+    "domain": "JSON-LD",
+    "rank": 7,
+    "question_id": 66023851,
+    "url": "https://stackoverflow.com/questions/66023851/calling-a-json-file-with-php-but-cant-echo-in-a-way-i-would-like-to",
+    "C1": "요청한 ALGYO, ACSEL 등 지정 종목만 골라 목록 전체 출력은 제외한다.",
+    "C2": "선택 종목의 해당 가격(ALGYO 26.14, ACSEL 22.9)을 각 표/행에 짝지어 출력한다.",
+    "language": "PHP 코드 명시",
+    "version": "PHP/JSON-LD 제품판 미명시",
+    "dialect": "PHP/JSON-LD 제품판 미명시",
+    "guard": "문서에서 데이터 추출→출력 요구는 포함한다. graph framing과 PHP 출력이 동의라는 가정은 하지 않는다.",
+    "L_terms": [
+      "only call some certain elements",
+      "currency ALGYO, and its price"
+    ],
+    "definition_file": "evidence/ld-pre/requirements.json",
+    "layer": "existing_tuning",
+    "status": "selected",
+    "prior_exposure": "AF056 investigator and current root read fixed report before registration; not a fresh holdout",
+    "source_basis": "IN056-REQUIREMENTS",
+    "original_revision": "1A120700-778B-41D1-9D7D-EA8B62225853",
+    "original_body_sha256": "a638d42afbabc8ead589dce4e43d2291b05f74405f8183371d543dbad1ef4e2c",
+    "source_location": {
+      "C1": "rev1 PHP code 직후 What I want 문단",
+      "C2": "같은 문단과 본문 JSON의 ALGYO/ACSEL price 객체"
+    },
+    "condition_origin": "문서에서 데이터 추출→출력 요구는 포함한다. graph framing과 PHP 출력이 동의라는 가정은 하지 않는다.",
+    "substitution": "PHP로 해결하는 예제를 요구; 다른 언어 교체 가능성 미확인",
+    "contrast_examples": {
+      "positive_1": "only ALGYO and ACSEL emitted",
+      "positive_2": "ALGYO paired26.14 and ACSEL22.9 in distinct requested outputs",
+      "near_negative": "correct requested symbols emitted with swapped prices",
+      "origin": "analyst output contrast based on inherited requested values"
+    }
+  },
+  {
+    "case_id": "JS-5",
+    "domain": "JSON Schema",
+    "stratum": "new_holdout",
+    "status": "selected",
+    "rank": 1,
+    "question_id": 76598757,
+    "url": "https://stackoverflow.com/questions/76598757/json-schema-if-then-else-validation-for-array",
+    "revision_url": "https://stackoverflow.com/revisions/76598757/1",
+    "revision_guid": "8FD9025D-AA2A-4FA1-8AFF-80EBDC905E9A",
+    "body_sha256": "177e8655ed8074bc7fb12cae8c57cc2035ae9bc46bd6b4830dcd718f06b46daf",
+    "source_id": "H-SO-S01",
+    "C1": "root usertype=employee이면 user 배열의 각 항목에 batchId를 요구한다.",
+    "C2": "각 항목의 firstName·lastName을 필수 문자열로 유지한다.",
+    "language": "명시 없음; draft-07 schema 환경만 고정",
+    "version": "validator 제품판 미명시",
+    "dialect": "원문 $schema=http://json-schema.org/draft-07/schema",
+    "guard": "원문 userType/usertype 대소문자 불일치, array 위치의 required 및 sample trailing comma를 보존한다. 이 오류를 자동 교정한 실행 성공으로 보고하지 않는다. visitor에게 batchId 의무가 없다는 해석은 조건문의 범위에서 얻은 연구자 해석이다. 빈 배열/root 속성 부재의 기대는 미명시.",
+    "L_terms": [
+      "batchId to be required",
+      "if then else"
+    ],
+    "definition_file": "evidence/holdout/requirements-new.json",
+    "condition_origins": {
+      "C1": {
+        "origin": "explicit_prose_plus_expected_output",
+        "locus": "p1; p2; pre2 employee sample"
+      },
+      "C2": {
+        "origin": "explicit_schema_code_not_separate_prose",
+        "locus": "pre1 $.properties.user.items.required; $.properties.user.items.properties.firstName/lastName"
+      },
+      "environment": {
+        "origin": "code",
+        "locus": "pre1 $schema"
+      }
+    },
+    "fixtures": [
+      {
+        "id": "JS-5-P1",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B",
+              "batchId": "b1"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=true; accept"
+      },
+      {
+        "id": "JS-5-P2",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B",
+              "batchId": "b1"
+            },
+            {
+              "firstName": "C",
+              "lastName": "D",
+              "batchId": "b2"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=true; accept"
+      },
+      {
+        "id": "JS-5-N1",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B"
+            }
+          ]
+        },
+        "expected": "C1=false,C2=true; reject"
+      },
+      {
+        "id": "JS-5-N2",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "batchId": "b1"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=false; reject"
+      },
+      {
+        "id": "JS-5-G1",
+        "origin": "researcher_guard_probe_unrun",
+        "input": {
+          "usertype": "visitor",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B"
+            }
+          ]
+        },
+        "expected": "conditional batchId assertion inactive; source code name constraints remain"
+      }
+    ],
+    "dynamic_values": [
+      "root usertype controls item-level condition; batchId string contents not fixed"
+    ],
+    "preserved_fields": [
+      "usertype",
+      "user array",
+      "firstName",
+      "lastName",
+      "batchId when employee"
+    ],
+    "unspecified": [
+      "runtime",
+      "validator version",
+      "empty user array",
+      "root usertype/user absence"
+    ],
+    "prohibited_behavior": [
+      "입력에 batchId를 임의 삽입하여 검증을 대신하지 않는다(연구자 보존 규칙).",
+      "원문의 잘못된 schema가 실제 성공한다고 보고하지 않는다."
+    ],
+    "selection_basis": "first eligible 2 in current canonical-tag creation order; chosen before candidate ranking, without F1/answers/comments/scores",
+    "claim_status": "requirements and proposed tests; no provider execution or user success verified",
+    "frozen_utc": "2026-11-23T03:51:08.979411+00:00",
+    "preserved_field_origins": {
+      "usertype,batchId": "p1 explicit prose; pre2 expected failure; relation within user array is code context",
+      "firstName,lastName": "pre1 schema required/type and pre2 sample; source code requirement, not separate prose",
+      "user array": "pre1 schema/pre2 example; code-derived shape"
+    },
+    "layer": "new_holdout",
+    "prior_exposure": "First author body read only after stage2 remote feature seal; selector did not read F1 or rankings; root reviewed selected original bodies before ranking.",
+    "source_basis": "H-SO-S01",
+    "original_revision": "8FD9025D-AA2A-4FA1-8AFF-80EBDC905E9A",
+    "original_body_sha256": "177e8655ed8074bc7fb12cae8c57cc2035ae9bc46bd6b4830dcd718f06b46daf",
+    "source_location": {
+      "C1": {
+        "origin": "explicit_prose_plus_expected_output",
+        "locus": "p1; p2; pre2 employee sample"
+      },
+      "C2": {
+        "origin": "explicit_schema_code_not_separate_prose",
+        "locus": "pre1 $.properties.user.items.required; $.properties.user.items.properties.firstName/lastName"
+      },
+      "environment": {
+        "origin": "code",
+        "locus": "pre1 $schema"
+      }
+    },
+    "contrast_examples": [
+      {
+        "id": "JS-5-P1",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B",
+              "batchId": "b1"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=true; accept"
+      },
+      {
+        "id": "JS-5-P2",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B",
+              "batchId": "b1"
+            },
+            {
+              "firstName": "C",
+              "lastName": "D",
+              "batchId": "b2"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=true; accept"
+      },
+      {
+        "id": "JS-5-N1",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B"
+            }
+          ]
+        },
+        "expected": "C1=false,C2=true; reject"
+      },
+      {
+        "id": "JS-5-N2",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "usertype": "employee",
+          "user": [
+            {
+              "firstName": "A",
+              "batchId": "b1"
+            }
+          ]
+        },
+        "expected": "C1=true,C2=false; reject"
+      },
+      {
+        "id": "JS-5-G1",
+        "origin": "researcher_guard_probe_unrun",
+        "input": {
+          "usertype": "visitor",
+          "user": [
+            {
+              "firstName": "A",
+              "lastName": "B"
+            }
+          ]
+        },
+        "expected": "conditional batchId assertion inactive; source code name constraints remain"
+      }
+    ],
+    "substitution": "Original environment and constraints retained; replacement permission not assumed."
+  },
+  {
+    "case_id": "JS-6",
+    "domain": "JSON Schema",
+    "stratum": "new_holdout",
+    "status": "selected",
+    "rank": 2,
+    "question_id": 76601421,
+    "url": "https://stackoverflow.com/questions/76601421/json-schema-for-jsonapi-how-to-add-type-keyword-for-jsonapi-type",
+    "revision_url": "https://stackoverflow.com/revisions/76601421/1",
+    "revision_guid": "541EDBF7-9BE8-4F82-9C5B-51E93C4D3879",
+    "body_sha256": "05b2b20aa316652e2ee39d0f329069696dad62585c3196c4171e42db6987684d",
+    "source_id": "H-SO-S02",
+    "C1": "JSON:API 데이터의 type 속성을 schema 키워드와 혼동하지 않고 기술하여 예시 type=article 데이터를 허용한다.",
+    "C2": "기존 schema 조각의 id 속성에 string 타입 제약을 유지한다.",
+    "language": "웹앱 Ajv 명시; JavaScript는 도구명에서의 추론이며 본문 언어 선언은 없음",
+    "version": "Ajv 판 미명시 / 서버 Drupal 10 JSON:API",
+    "dialect": "JSON Schema draft 및 JSON:API 버전 미명시; draft-07은 정의 비교용",
+    "guard": "C2는 기존 schema 코드에서 읽은 유지 조건이지 별도 prose 요청은 아니다. type 및 id의 required는 본문에 없다. article을 유일한 enum 값으로 제한하라는 요청도 없다. 원 예시 trailing comma와 불완전 schema 조각을 자동 교정한 실행 성공으로 보고하지 않는다.",
+    "L_terms": [
+      "property named type",
+      "validate the JSON"
+    ],
+    "definition_file": "evidence/holdout/requirements-new.json",
+    "condition_origins": {
+      "C1": {
+        "origin": "explicit_prose_plus_example",
+        "locus": "last p property named type; pre1 type:article"
+      },
+      "C2": {
+        "origin": "code_implied_preservation_not_separate_prose",
+        "locus": "pre2 properties.id.type:string"
+      },
+      "environment": {
+        "origin": "explicit_prose",
+        "locus": "p1 Ajv webapp / Drupal10 JSON:API"
+      }
+    },
+    "fixtures": [
+      {
+        "id": "JS-6-P1",
+        "origin": "researcher_constructed_from_source_unrun",
+        "input": {
+          "type": "article",
+          "id": "1"
+        },
+        "expected": "C1=true,C2=true; accept; source trailing comma removed only in this named researcher fixture"
+      },
+      {
+        "id": "JS-6-P2",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "type": "article",
+          "id": "2"
+        },
+        "expected": "C1=true,C2=true; accept; id value is not const1"
+      },
+      {
+        "id": "JS-6-N1",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "type": "article",
+          "id": 1
+        },
+        "expected": "C1=true,C2=false; reject numeric id"
+      },
+      {
+        "id": "JS-6-N2",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": {
+          "type": "article",
+          "id": "1"
+        },
+        "implementation_behavior": "rejects or renames the data property type as if it were a forbidden schema keyword",
+        "expected": "C1=false,C2=true; cannot claim complete"
+      },
+      {
+        "id": "JS-6-G1",
+        "origin": "researcher_guard_probe_unrun",
+        "input": {},
+        "expected": "do not invent required fields; original body does not specify absent-key result"
+      }
+    ],
+    "dynamic_values": [
+      "id string value",
+      "type value is data; allowed type-value set not specified"
+    ],
+    "preserved_fields": [
+      "type property name and shown article value",
+      "id as string; description uuid is annotation text"
+    ],
+    "unspecified": [
+      "Ajv version",
+      "JSON Schema dialect",
+      "JSON:API version",
+      "required keys",
+      "allowed resource types",
+      "UUID format assertion",
+      "exact app language beyond Ajv environment"
+    ],
+    "prohibited_behavior": [
+      "type 필드를 다른 이름으로 바꾸거나 제거해 문제를 우회하지 않는다(보존 추론).",
+      "id number를 string으로 강제변환하여 원문 type 검사를 대체하지 않는다.",
+      "uuid description을 실제 UUID format 제약이라고 발명하지 않는다."
+    ],
+    "selection_basis": "first eligible 2 in current canonical-tag creation order; chosen before candidate ranking, without F1/answers/comments/scores",
+    "claim_status": "requirements and proposed tests; no provider execution or user success verified",
+    "frozen_utc": "2026-11-23T03:51:08.979411+00:00",
+    "preserved_field_origins": {
+      "type": "last p explicit property-name request; pre1 example value article",
+      "id:string": "pre2 existing schema code; preservation inferred from code, not a separate prose request",
+      "description:uuid": "pre2 annotation text; no format validation request"
+    },
+    "layer": "new_holdout",
+    "prior_exposure": "First author body read only after stage2 remote feature seal; selector did not read F1 or rankings; root reviewed selected original bodies before ranking.",
+    "source_basis": "H-SO-S02",
+    "original_revision": "541EDBF7-9BE8-4F82-9C5B-51E93C4D3879",
+    "original_body_sha256": "05b2b20aa316652e2ee39d0f329069696dad62585c3196c4171e42db6987684d",
+    "source_location": {
+      "C1": {
+        "origin": "explicit_prose_plus_example",
+        "locus": "last p property named type; pre1 type:article"
+      },
+      "C2": {
+        "origin": "code_implied_preservation_not_separate_prose",
+        "locus": "pre2 properties.id.type:string"
+      },
+      "environment": {
+        "origin": "explicit_prose",
+        "locus": "p1 Ajv webapp / Drupal10 JSON:API"
+      }
+    },
+    "contrast_examples": [
+      {
+        "id": "JS-6-P1",
+        "origin": "researcher_constructed_from_source_unrun",
+        "input": {
+          "type": "article",
+          "id": "1"
+        },
+        "expected": "C1=true,C2=true; accept; source trailing comma removed only in this named researcher fixture"
+      },
+      {
+        "id": "JS-6-P2",
+        "origin": "researcher_constructed_unrun",
+        "input": {
+          "type": "article",
+          "id": "2"
+        },
+        "expected": "C1=true,C2=true; accept; id value is not const1"
+      },
+      {
+        "id": "JS-6-N1",
+        "origin": "researcher_near_negative_unrun",
+        "input": {
+          "type": "article",
+          "id": 1
+        },
+        "expected": "C1=true,C2=false; reject numeric id"
+      },
+      {
+        "id": "JS-6-N2",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": {
+          "type": "article",
+          "id": "1"
+        },
+        "implementation_behavior": "rejects or renames the data property type as if it were a forbidden schema keyword",
+        "expected": "C1=false,C2=true; cannot claim complete"
+      },
+      {
+        "id": "JS-6-G1",
+        "origin": "researcher_guard_probe_unrun",
+        "input": {},
+        "expected": "do not invent required fields; original body does not specify absent-key result"
+      }
+    ],
+    "substitution": "Original environment and constraints retained; replacement permission not assumed."
+  },
+  {
+    "case_id": "LD-5",
+    "domain": "JSON-LD",
+    "stratum": "new_holdout",
+    "status": "selected",
+    "rank": 1,
+    "question_id": 76620107,
+    "url": "https://stackoverflow.com/questions/76620107/why-is-conversion-from-json-ld-to-turtle-in-rdflib-not-working",
+    "revision_url": "https://stackoverflow.com/revisions/76620107/1",
+    "revision_guid": "728CD2E0-8B81-4666-A242-BABAD3C8C7EB",
+    "body_sha256": "ed94940861c64f1e2fe0402846fcfaa2aa4485ebc02b4a426e64ef07380d2c89",
+    "source_id": "H-SO-L01",
+    "C1": "Windows 로컬 파일의 JSON-LD를 읽어 Turtle로 내보낸다.",
+    "C2": "Turtle에서 context를 사용해 JSON-LD로 돌아오는 반대 방향도 같은 도구 흐름에서 지원한다.",
+    "language": "Python 3.11 / Windows",
+    "version": "RDFLib 6.3.2라고 요청자 명시",
+    "dialect": "JSON-LD processingMode 및 Turtle 판 미명시; 1.1 표준은 용어 정의용",
+    "guard": "Windows 경로가 URL scheme c로 처리되어 실패한 trace를 보존한다. @id/@type, 언어 태그가 붙은 label/definitions를 보존할 필요가 있다. 원문 nested @context·@로 시작하는 prefix·angle-bracket IRI의 정확한 유효성은 별도 미확인; 일반 변환 기능만으로 그 원문 파일을 성공 처리했다고 하지 않는다.",
+    "L_terms": [
+      "converts JSON-LD to Turtle",
+      "from Turtle to JSON-LD",
+      "conversion circle"
+    ],
+    "definition_file": "evidence/holdout/requirements-new.json",
+    "condition_origins": {
+      "C1": {
+        "origin": "explicit_prose_plus_code",
+        "locus": "p1,p3; pre1 Graph.parse/serialize"
+      },
+      "C2": {
+        "origin": "explicit_prose",
+        "locus": "p1,p2; pre3 JSON-LD is previous conversion output"
+      },
+      "environment": {
+        "origin": "explicit_prose",
+        "locus": "last p RDFLib6.3.2/Python3.11/Windows"
+      }
+    },
+    "fixtures": [
+      {
+        "id": "LD-5-P1",
+        "origin": "researcher_constructed_unrun",
+        "input_jsonld": {
+          "@id": "https://example.org/item",
+          "https://example.org/name": {
+            "@value": "A",
+            "@language": "en"
+          }
+        },
+        "local_path": "C:\\af_res_060\\input.json",
+        "expected": "JSON-LD→Turtle triple and Turtle→JSON-LD language-tagged value preserved; graph-equivalent, no byte/ordering promise"
+      },
+      {
+        "id": "LD-5-P2",
+        "origin": "researcher_constructed_unrun",
+        "input_turtle": "<https://example.org/item> <https://example.org/name> \"A\"@en, \"B\"@fr .",
+        "context": {
+          "name": "https://example.org/name"
+        },
+        "expected": "Turtle→JSON-LD and reverse retain both language-tagged literals"
+      },
+      {
+        "id": "LD-5-N1",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "valid local JSON-LD plus reverse-direction Turtle fixture",
+        "implementation_behavior": "JSON-LD→Turtle succeeds but Turtle→JSON-LD unsupported",
+        "expected": "C1=true,C2=false; partial"
+      },
+      {
+        "id": "LD-5-N2",
+        "origin": "researcher_near_negative_environment_probe_unrun",
+        "input": "same valid JSON-LD at C:\\af_res_060\\input.json",
+        "implementation_behavior": "reverse conversion succeeds, local input parsed as URL scheme c and fails",
+        "expected": "C1=false,C2=true; reject complete claim"
+      }
+    ],
+    "dynamic_values": [
+      "file locations",
+      "context supplied by caller",
+      "RDF literals and language tags"
+    ],
+    "preserved_fields": [
+      "@id",
+      "@type",
+      "skos:prefLabel@en",
+      "isDefinedAs values with en/fr/it/de tags"
+    ],
+    "unspecified": [
+      "JSON-LD processingMode",
+      "desired whitespace/key order",
+      "numeric lexical round-trip",
+      "invalid-context repair",
+      "whether switching RDFLib version is acceptable"
+    ],
+    "prohibited_behavior": [
+      "서로 다른 엔진/판의 한 방향씩 성공을 합쳐 완결로 보지 않는다.",
+      "개념 IRI를 반드시 dereference해야 한다고 요구하지 않는다; 실제 remote @context loading과도 구별한다.",
+      "데이터의 literal/언어 태그 손실을 단순 성공으로 감추지 않는다."
+    ],
+    "selection_basis": "first eligible 2 in current canonical-tag creation order; chosen before candidate ranking, without F1/answers/comments/scores",
+    "claim_status": "requirements and proposed tests; no provider execution or user success verified",
+    "frozen_utc": "2026-11-23T03:51:08.979411+00:00",
+    "preserved_field_origins": {
+      "two conversion directions": "p1 explicit prose",
+      "context": "p2 explicit prose for Turtle→JSON-LD",
+      "@id,@type,prefLabel,language-tagged definitions": "pre3 sample-derived preservation guard; no separate prose assertion of byte-for-byte round-trip"
+    },
+    "layer": "new_holdout",
+    "prior_exposure": "First author body read only after stage2 remote feature seal; selector did not read F1 or rankings; root reviewed selected original bodies before ranking.",
+    "source_basis": "H-SO-L01",
+    "original_revision": "728CD2E0-8B81-4666-A242-BABAD3C8C7EB",
+    "original_body_sha256": "ed94940861c64f1e2fe0402846fcfaa2aa4485ebc02b4a426e64ef07380d2c89",
+    "source_location": {
+      "C1": {
+        "origin": "explicit_prose_plus_code",
+        "locus": "p1,p3; pre1 Graph.parse/serialize"
+      },
+      "C2": {
+        "origin": "explicit_prose",
+        "locus": "p1,p2; pre3 JSON-LD is previous conversion output"
+      },
+      "environment": {
+        "origin": "explicit_prose",
+        "locus": "last p RDFLib6.3.2/Python3.11/Windows"
+      }
+    },
+    "contrast_examples": [
+      {
+        "id": "LD-5-P1",
+        "origin": "researcher_constructed_unrun",
+        "input_jsonld": {
+          "@id": "https://example.org/item",
+          "https://example.org/name": {
+            "@value": "A",
+            "@language": "en"
+          }
+        },
+        "local_path": "C:\\af_res_060\\input.json",
+        "expected": "JSON-LD→Turtle triple and Turtle→JSON-LD language-tagged value preserved; graph-equivalent, no byte/ordering promise"
+      },
+      {
+        "id": "LD-5-P2",
+        "origin": "researcher_constructed_unrun",
+        "input_turtle": "<https://example.org/item> <https://example.org/name> \"A\"@en, \"B\"@fr .",
+        "context": {
+          "name": "https://example.org/name"
+        },
+        "expected": "Turtle→JSON-LD and reverse retain both language-tagged literals"
+      },
+      {
+        "id": "LD-5-N1",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "valid local JSON-LD plus reverse-direction Turtle fixture",
+        "implementation_behavior": "JSON-LD→Turtle succeeds but Turtle→JSON-LD unsupported",
+        "expected": "C1=true,C2=false; partial"
+      },
+      {
+        "id": "LD-5-N2",
+        "origin": "researcher_near_negative_environment_probe_unrun",
+        "input": "same valid JSON-LD at C:\\af_res_060\\input.json",
+        "implementation_behavior": "reverse conversion succeeds, local input parsed as URL scheme c and fails",
+        "expected": "C1=false,C2=true; reject complete claim"
+      }
+    ],
+    "substitution": "Original environment and constraints retained; replacement permission not assumed."
+  },
+  {
+    "case_id": "LD-6",
+    "domain": "JSON-LD",
+    "stratum": "new_holdout",
+    "status": "selected",
+    "rank": 3,
+    "question_id": 76653659,
+    "url": "https://stackoverflow.com/questions/76653659/error-parse-error-trailing-garbage-how-do-i-get-content-of-script-type-a",
+    "revision_url": "https://stackoverflow.com/revisions/76653659/1",
+    "revision_guid": "D1D43BFE-EDEC-4F7C-A4A9-92C26835E223",
+    "body_sha256": "49b6476ff17c9427f5ab2b2ef39537f67b7c2446e956f5978fdc4f39928d8a77",
+    "source_id": "H-SO-L03",
+    "C1": "R에서 HTML의 application/ld+json script 내용들을 추출한다.",
+    "C2": "복수 추출 결과를 trailing-garbage 오류 없이 JSON으로 읽어 가격·설명 등 원문에 있는 요청 필드의 값과 구조를 보존한다.",
+    "language": "R; rvest/xml2/jsonlite/dplyr 코드 명시",
+    "version": "각 package/R 판 미명시",
+    "dialect": "JSON-LD processingMode 미명시; JSON-LD1.1 HTML 추출 정의는 번역용",
+    "guard": "원문은 price, lot area, description, location 등을 요청하지만 제시한 Product 부분에는 price와 description만 확인 가능하다. 없는 면적/위치를 생성하지 않는다. [1]/[2]/[3] excerpt와 JSON parser 오류는 저자 보고이며 실제 웹사이트를 재수집한 실행이 아니다.",
+    "L_terms": [
+      "extract some data",
+      "get data from <script type=\"application/ld+json\">"
+    ],
+    "definition_file": "evidence/holdout/requirements-new.json",
+    "condition_origins": {
+      "C1": {
+        "origin": "explicit_prose_plus_code",
+        "locus": "p1; pre1 html_nodes(...)/html_text()/fromJSON; pre2 error"
+      },
+      "C2": {
+        "origin": "explicit_prose_plus_sample_fields",
+        "locus": "p1 price/lot area/description/location; pre3 Product/offers.price/description"
+      },
+      "environment": {
+        "origin": "explicit_library_calls",
+        "locus": "pre1 library calls; later stringr attempt"
+      }
+    },
+    "fixtures": [
+      {
+        "id": "LD-6-P1",
+        "origin": "researcher_constructed_unrun",
+        "input_html": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000,\"priceCurrency\":\"SEK\"}}</script>",
+        "expected": "one parsed object; offers.price remains number950000 and description Unicode preserved"
+      },
+      {
+        "id": "LD-6-P2",
+        "origin": "researcher_constructed_unrun",
+        "input_html": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Site\"}</script><script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000}}</script>",
+        "expected": "both JSON script contents handled separately/structured array, Product price/description retained"
+      },
+      {
+        "id": "LD-6-N1",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "LD-6-P2 (two valid independent script bodies)",
+        "intermediate_output": [
+          "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Site\"}",
+          "{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000}}"
+        ],
+        "implementation_behavior": "both script texts extracted, but passed as concatenated JSON texts to one parser and rejected",
+        "expected": "C1=true,C2=false; actual parser execution not claimed"
+      },
+      {
+        "id": "LD-6-N2",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "LD-6-P1",
+        "implementation_behavior": "script text extracted and parsed but output drops offers.price",
+        "expected": "C1=true,C2=false; field-loss counterexample"
+      }
+    ],
+    "dynamic_values": [
+      "different site script counts",
+      "listing price/description values",
+      "HTML content"
+    ],
+    "preserved_fields": [
+      "offers.price",
+      "description",
+      "priceCurrency in shown sample",
+      "lot area/location only if actual source provides them"
+    ],
+    "unspecified": [
+      "R/packages versions",
+      "schema.org version",
+      "exact area/location keys",
+      "output dataframe/list shape",
+      "malformed script policy"
+    ],
+    "prohibited_behavior": [
+      "원문에 없는 부동산 필드를 추측해서 채우지 않는다.",
+      "첫 script만 처리하는 기능을 복수 script 처리로 간주하지 않는다.",
+      "R 요구를 JavaScript API로 대체한 것을 완결로 보지 않는다."
+    ],
+    "selection_basis": "first eligible 2 in current canonical-tag creation order; chosen before candidate ranking, without F1/answers/comments/scores",
+    "claim_status": "requirements and proposed tests; no provider execution or user success verified",
+    "frozen_utc": "2026-11-23T03:51:08.979411+00:00",
+    "preserved_field_origins": {
+      "price,lot area,description,location": "p1 explicitly named requested data",
+      "offers.price,description": "pre3 actual code/output locations",
+      "priceCurrency": "pre3 sample-derived preservation guard, not separately requested in prose",
+      "lot area/location keys": "not shown in the Product excerpt; remain unspecified, do not invent"
+    },
+    "layer": "new_holdout",
+    "prior_exposure": "First author body read only after stage2 remote feature seal; selector did not read F1 or rankings; root reviewed selected original bodies before ranking.",
+    "source_basis": "H-SO-L03",
+    "original_revision": "D1D43BFE-EDEC-4F7C-A4A9-92C26835E223",
+    "original_body_sha256": "49b6476ff17c9427f5ab2b2ef39537f67b7c2446e956f5978fdc4f39928d8a77",
+    "source_location": {
+      "C1": {
+        "origin": "explicit_prose_plus_code",
+        "locus": "p1; pre1 html_nodes(...)/html_text()/fromJSON; pre2 error"
+      },
+      "C2": {
+        "origin": "explicit_prose_plus_sample_fields",
+        "locus": "p1 price/lot area/description/location; pre3 Product/offers.price/description"
+      },
+      "environment": {
+        "origin": "explicit_library_calls",
+        "locus": "pre1 library calls; later stringr attempt"
+      }
+    },
+    "contrast_examples": [
+      {
+        "id": "LD-6-P1",
+        "origin": "researcher_constructed_unrun",
+        "input_html": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000,\"priceCurrency\":\"SEK\"}}</script>",
+        "expected": "one parsed object; offers.price remains number950000 and description Unicode preserved"
+      },
+      {
+        "id": "LD-6-P2",
+        "origin": "researcher_constructed_unrun",
+        "input_html": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Site\"}</script><script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000}}</script>",
+        "expected": "both JSON script contents handled separately/structured array, Product price/description retained"
+      },
+      {
+        "id": "LD-6-N1",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "LD-6-P2 (two valid independent script bodies)",
+        "intermediate_output": [
+          "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"Site\"}",
+          "{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"description\":\"Ångström plot\",\"offers\":{\"price\":950000}}"
+        ],
+        "implementation_behavior": "both script texts extracted, but passed as concatenated JSON texts to one parser and rejected",
+        "expected": "C1=true,C2=false; actual parser execution not claimed"
+      },
+      {
+        "id": "LD-6-N2",
+        "origin": "researcher_near_negative_capability_probe_unrun",
+        "input": "LD-6-P1",
+        "implementation_behavior": "script text extracted and parsed but output drops offers.price",
+        "expected": "C1=true,C2=false; field-loss counterexample"
+      }
+    ],
+    "substitution": "Original environment and constraints retained; replacement permission not assumed."
+  }
+]
