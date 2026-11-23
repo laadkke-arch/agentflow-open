@@ -33,3 +33,7 @@
 - 지정 `python -B -m workbench.session check docs/workstreams/research/AF-RES-061/manifest.json --fetch`는 실제 종료0/passed, outside/unmerged/errors 모두0. 검사시각06:37:17–06:37:30UTC, integration a388314d32b2679223f9e3e99b78b93eb1678bf5. `evidence/session-check-stage4.json`.
 - 초기 자기receipt 링크2건은 생성 뒤 재검해 구조·봉인·링크34/34 통과. `evidence/audit-initial.json`은 최초 실패를 보존한다.
 - 다음은 이 검사 영수증을 포함한 결과를 커밋하고, 그 고정판을 다시 열어 최종check한 뒤 HANDOFF만 마지막 단독커밋하는 것이다. 연구상 부분 인계 판정은 유지한다.
+
+## 고정판 로컬 링크 마감 정정
+
+검사영수증 포함판ac768fc를 다시 열고 계약check가통과한 뒤, 그 고정판에서는 아직 존재하지 않는 HANDOFF를 가리키는 선행 링크2건을 확인했다. 이후 작성될 파일이라는 검사기의 예외를 없애고 RESULT/SELF_CHECK에서 해당 언급을 링크 없는 파일명으로 바꿨다. 사실·분모·예측은 변하지 않았다. 엄격한 로컬 링크 검사도34/34 통과했고 결손링크는0이다. `evidence/closure-corrections.json`. 이 정정을 포함한 새 결과판을 마지막으로 고정·재열람·check한 뒤 HANDOFF만 작성한다.

@@ -117,8 +117,7 @@ def main():
             if not target or re.match(r'[A-Za-z][\w+.-]*:',target):continue
             target=unquote(target)
             if not (P/target).is_file():
-                if target=='HANDOFF.md' and not args.require_handoff: planned.append({'from':name,'target':target})
-                else: missing.append({'from':name,'target':target})
+                missing.append({'from':name,'target':target})
     check('final_document_local_links', not missing, {'missing':missing,'planned_final_handoff_links':planned})
     cited=set(re.findall(r'\b[AGRDVE]\d{3}\b','\n'.join((P/f).read_text() for f in docs)))
     check('referenced_source_ids_exist', cited<=ids, sorted(cited-ids))
