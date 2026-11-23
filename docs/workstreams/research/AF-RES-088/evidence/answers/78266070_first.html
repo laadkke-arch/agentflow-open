@@ -1,0 +1,34 @@
+<p>To convert all values of an array, you need to <a href="https://jqlang.github.io/jq/manual/#map-map_values" rel="nofollow noreferrer"><code>map</code></a> its elements:</p>
+<pre><code>.DailyForecasts | map(.Day.RainProbability)
+</code></pre>
+<p><code>map(f)</code> is equivalent to <code>[.[]|f]</code>, so the above can be rewritten to the equivalent:</p>
+<pre><code>[.DailyForecasts.[].Day.RainProbability]
+</code></pre>
+<p>Output:</p>
+<pre class="lang-json prettyprint-override"><code>[
+  2,
+  1,
+  7,
+  6,
+  9
+]
+</code></pre>
+<p>Similarly for your second query:</p>
+<pre><code>.DailyForecasts | map(.AirAndPollen[1].Value)
+</code></pre>
+<p>or</p>
+<pre><code>[.DailyForecasts.[].AirAndPollen[1].Value]
+</code></pre>
+<p>Output:</p>
+<pre class="lang-json prettyprint-override"><code>[
+  12,
+  12,
+  13,
+  29,
+  69
+]
+</code></pre>
+<p>Note that your code is very sensitive to the order of the elements in the array. It looks like you are interested in the &quot;Grass&quot; value (the second element in the array, <code>.[1]</code>), so I would suggest to filter for this element specifically:</p>
+<pre><code>.DailyForecasts
+| map(.AirAndPollen.[] | select(.Name==&quot;Grass&quot;).Value)
+</code></pre>

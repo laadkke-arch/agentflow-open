@@ -1,0 +1,89 @@
+{
+  "url": "https://api.stackexchange.com/2.3/questions/60148441/answers?site=stackoverflow&filter=withbody&pagesize=100&sort=creation&order=asc",
+  "read_utc": "2026-11-23T15:09:44.851934Z",
+  "response": {
+    "items": [
+      {
+        "owner": {
+          "account_id": 2550933,
+          "reputation": 13399,
+          "user_id": 2214695,
+          "user_type": "registered",
+          "accept_rate": 100,
+          "profile_image": "https://www.gravatar.com/avatar/dee2ef257601e05c5659f04de9cb7c67?s=256&d=identicon&r=PG",
+          "display_name": "oliv",
+          "link": "https://stackoverflow.com/users/2214695/oliv"
+        },
+        "is_accepted": false,
+        "score": 3,
+        "last_activity_date": 1581364880,
+        "creation_date": 1581364880,
+        "answer_id": 60157559,
+        "question_id": 60148441,
+        "content_license": "CC BY-SA 4.0",
+        "body": "<p><code>jq</code> doesn't have (yet) a <code>printf</code> function to format according locale settings.\nIf that's an option for you can pass the number to the shell using <code>printf</code>:</p>\n\n<pre><code>echo '{\"a\": 12345}' | jq '.a' | xargs printf \"%'.f\\n\"\n12,345\n</code></pre>\n\n<p>Note that the printf conversion relies on the format <code>%'.f</code> that is explained in <code>man 3 printf</code> </p>\n"
+      },
+      {
+        "owner": {
+          "account_id": 316835,
+          "reputation": 120015,
+          "user_id": 997358,
+          "user_type": "registered",
+          "profile_image": "https://www.gravatar.com/avatar/f849cfde4e526e22e916fa69103ef7e7?s=256&d=identicon&r=PG",
+          "display_name": "peak",
+          "link": "https://stackoverflow.com/users/997358/peak"
+        },
+        "is_accepted": false,
+        "score": 2,
+        "last_activity_date": 1581408530,
+        "creation_date": 1581408530,
+        "answer_id": 60164419,
+        "question_id": 60148441,
+        "content_license": "CC BY-SA 4.0",
+        "body": "<p>Here's a generic solution for integers or integer-valued strings:</p>\n\n<pre><code># \"h\" for \"human-readable\"\ndef h:\n  def hh: .[0] as $s | .[1] as $answer\n    | if ($s|length) == 0 then $answer\n      else ((if $answer == \"\" then \"\" else \",\" end) + $answer ) as $a\n      | [$s[0:-3], $s[-3:] + $a] | hh\n      end;\n   [ tostring, \"\"] | hh;\n</code></pre>\n\n<h2>Example</h2>\n\n<pre><code>12, 123, 1234, 12345678 | h\n</code></pre>\n\n<h2>Result (using -r option):</h2>\n\n<pre><code>12\n123\n1,234\n12,345,678\n</code></pre>\n"
+      },
+      {
+        "owner": {
+          "account_id": 316835,
+          "reputation": 120015,
+          "user_id": 997358,
+          "user_type": "registered",
+          "profile_image": "https://www.gravatar.com/avatar/f849cfde4e526e22e916fa69103ef7e7?s=256&d=identicon&r=PG",
+          "display_name": "peak",
+          "link": "https://stackoverflow.com/users/997358/peak"
+        },
+        "is_accepted": true,
+        "score": 10,
+        "last_activity_date": 1581463086,
+        "last_edit_date": 1592644375,
+        "creation_date": 1581463086,
+        "answer_id": 60178790,
+        "question_id": 60148441,
+        "content_license": "CC BY-SA 4.0",
+        "body": "<p>Here's an idiomatic one-liner definition:</p>\n<pre><code>def h: tostring | [while(length&gt;0; .[:-3]) | .[-3:]] | reverse | join(&quot;,&quot;);\n</code></pre>\n<h2>Example</h2>\n<pre><code>12, 123, 1234, 12345678 | h\n</code></pre>\n<h3>Output (using -r option):</h3>\n<pre><code>12\n123\n1,234\n12,345,678\n</code></pre>\n"
+      },
+      {
+        "owner": {
+          "account_id": 2565071,
+          "reputation": 414,
+          "user_id": 2225377,
+          "user_type": "registered",
+          "profile_image": "https://www.gravatar.com/avatar/803e49997d23175a13c3e0ebe6d244cc?s=256&d=identicon&r=PG",
+          "display_name": "Patrick T",
+          "link": "https://stackoverflow.com/users/2225377/patrick-t"
+        },
+        "is_accepted": false,
+        "score": 1,
+        "last_activity_date": 1718808765,
+        "creation_date": 1718808765,
+        "answer_id": 78643232,
+        "question_id": 60148441,
+        "content_license": "CC BY-SA 4.0",
+        "body": "<p>Building on @peak's excellent answer from Feb 2020, I offer this version which also correctly handles negative numbers and numbers with digits after the decimal point (which are not supposed to have separators).</p>\n<pre><code>def commas:\n    if type == &quot;number&quot; then\n        (. &lt; 0) as $neg |\n        abs |\n        tostring |\n        split(&quot;.&quot;) |\n        .[0] |= ([while (length &gt; 0; .[:-3]) | .[-3:]] | reverse | join(&quot;,&quot;)) |\n        join(&quot;.&quot;) |\n        if $neg then &quot;-&quot; + . end\n    end\n;\n</code></pre>\n<p>Example:</p>\n<pre><code>$ jq -nr '-1234567.8901, -123, 1234 | commas'\n-1,234,567.8901\n-123\n1,234\n</code></pre>\n"
+      }
+    ],
+    "has_more": false,
+    "quota_max": 300,
+    "quota_remaining": 235
+  }
+}

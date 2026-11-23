@@ -1,0 +1,42 @@
+<p>I think the following jq program will generate your desired output format. I had to make a few assumptions, because <code>source</code> is nowhere to be found in your input and your output doc is not valid JSON.</p>
+<pre><code>to_entries | map({
+    page_content: .value.page_data,
+    metadata: (.value | {
+        source: &quot;/content/json_data.json&quot;,
+        page_name,
+        page_url
+    } + {seq_num:(.key+1)})
+})
+</code></pre>
+<p>or</p>
+<pre><code>to_entries | map((.value | {
+    page_content: .page_data,
+    metadata: {
+        source: &quot;/content/json_data.json&quot;,
+        page_name,
+        page_url
+    }
+}) * { metadata: { seq_num: (.key+1) } })
+</code></pre>
+<p>Output:</p>
+<pre class="lang-json prettyprint-override"><code>[
+  {
+    &quot;page_content&quot;: &quot;Content about homepage&quot;,
+    &quot;metadata&quot;: {
+      &quot;source&quot;: &quot;/content/json_data.json&quot;,
+      &quot;page_name&quot;: &quot;Homepage&quot;,
+      &quot;page_url&quot;: &quot;https://mywebsite.com/homepage&quot;,
+      &quot;seq_num&quot;: 1
+    }
+  },
+  {
+    &quot;page_content&quot;: &quot;Content about Contact US&quot;,
+    &quot;metadata&quot;: {
+      &quot;source&quot;: &quot;/content/json_data.json&quot;,
+      &quot;page_name&quot;: &quot;Contact US&quot;,
+      &quot;page_url&quot;: &quot;https://mywebsite.com/contactus&quot;,
+      &quot;seq_num&quot;: 1
+    }
+  }
+]
+</code></pre>
