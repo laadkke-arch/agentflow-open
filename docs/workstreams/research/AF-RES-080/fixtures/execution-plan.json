@@ -1,0 +1,59 @@
+{
+  "contract": "Four original provisional calibration seats. One identical fixture entry point for both version axes. No substitution when the actual success release is unavailable.",
+  "runtime": {
+    "implementation": "CPython",
+    "installation": "separate no-site-package venv for each package and release, HTTPS wheel from PyPI release evidence, verify SHA-256, pip --no-index --no-deps",
+    "claim_ceiling": "Reference runs on the available Linux runtime, with no historical consumer environment inferred from the question"
+  },
+  "seats": {
+    "CC01": {
+      "package": "click", "reference": "8.5.1", "exact": null, "question_version": "8.1.2",
+      "user_code": "minimal command only; no plugin",
+      "positive": {
+        "input": "Register (-V, alpha) as positional version-option inputs, invoke -V, no arguments, and --version",
+        "expect": {"selected_flag.exit_code": 0, "selected_flag.output": "probe, version alpha\n", "ordinary.output": "normal command\n", "default_flag.exit_code": 2}
+      },
+      "boundary": {
+        "input": "Attempt to register alpha and -V using named param_decls",
+        "expect": {"invoked": false, "error.type": "TypeError"}
+      }
+    },
+    "CC02": {
+      "package": "click", "reference": "8.5.1", "exact": null, "question_version": "8.1.3",
+      "user_code": "custom root and author-style eager callback; no plugin",
+      "positive": {
+        "input": "Pass an Option object with an eager callback to custom MultiCommand, invoke --version and child",
+        "expect": {"version_flag.exit_code": 0, "version_flag.output": "cli 0.1\n", "child.exit_code": 0, "child.output": "child\n"}
+      },
+      "boundary": {
+        "input": "Pass the callable returned from version_option in params, invoke --version",
+        "expect": {"version_flag.exit_code": 1, "version_flag.error.type": "AttributeError"}
+      }
+    },
+    "AC01": {
+      "package": "attrs", "reference": "26.1.0", "exact": null, "question_version": null,
+      "user_code": "two subclass implementations and user-owned registry; no plugin",
+      "positive": {
+        "input": "Test author-reported slots=False (regular hook) and the separate documented attrs subclass hook with slots=True",
+        "author_report_prediction": "The first variant was reported working in an unspecified prior version; reference docs say a regular hook can still fire before attrs assembles the class.",
+        "expect": {"reported_unslotted.call_count": 2, "reported_unslotted.range_lookup.exception": "KeyError", "documented_attrs_hook.call_count": 2, "documented_attrs_hook.int_lookup.class": "Int", "documented_attrs_hook.range_lookup.class": "IntRange", "documented_attrs_hook.original_class_defaults": ["NOTHING", "int", "int-range"]}
+      },
+      "boundary": {
+        "input": "Use normal __init_subclass__ while both classes are slotted",
+        "expect": {"original_slotted.call_count": 4, "original_slotted.int_lookup.class": "IntRange", "original_slotted.original_class_defaults": ["NOTHING", "int", "int-range"]}
+      }
+    },
+    "AC02": {
+      "package": "attrs", "reference": "26.1.0", "exact": null, "question_version": "22.1.0",
+      "user_code": "minimal fixture classes; no plugin",
+      "positive": {
+        "input": "Same lexical type and field name, use annotation-only define and construct Owner with a preexisting value",
+        "expect": {"field_name": "AT_Base", "reports_original_type": true, "owner_value_is_original": true, "original_before": "keep", "original_after": "keep", "exception": null}
+      },
+      "boundary": {
+        "input": "Same lexical type and field name, evaluate a legacy attr.ib right-hand assignment in the class body",
+        "expect": {"field_name": "AT_Base", "reports_original_type": false, "owner_value_is_original": true, "original_before": "keep", "original_after": "keep", "exception": null}
+      }
+    }
+  }
+}

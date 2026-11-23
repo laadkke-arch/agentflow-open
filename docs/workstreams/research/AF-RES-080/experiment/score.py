@@ -170,10 +170,10 @@ def matches_for(requests, decisions, catalogs, editions, gold):
             assert candidate_set <= features, (seat, code, candidate_set - features)
             matched_gold_ids = sorted(set(gold_ids) & features)
             gold_join = "unopened" if not gold else "no-author-confirmation"
-            if combined.get("status") == "author-confirmed":
-                if not gold_ids:
-                    gold_join = "no-explicit-upstream-unit"
-                elif not catalog or not acquired:
+            if combined.get("scope_status") in ("out-of-scope", "outside-two-unit-rule", "outside-original-input"):
+                gold_join = combined["scope_status"]
+            if gold_ids:
+                if not catalog or not acquired:
                     gold_join = "unknown"
                 elif set(gold_ids) <= features:
                     gold_join = "present"
@@ -284,7 +284,7 @@ def main():
     assert len({(r["seat_id"], r["cell"]) for r in matches}) == len(matches)
     csv_path = out / "matches.csv"
     with csv_path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=MATCH_FIELDS)
+        writer = csv.DictWriter(stream, fieldnames=MATCH_FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(matches)
 
