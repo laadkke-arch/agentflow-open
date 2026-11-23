@@ -23,7 +23,7 @@
 - 카드·예측·결과는 각각18개의 같은 ID를 갖는다. I/D 추가 예산5쌍은72/68/114/87/87단어 및0/0/0/1/1그림으로 일치한다. 18보기·5요구·20논리셀·6renderer변형·추가2버전변형을 서로 바꾸어 세지 않았다.
 - 원격 예측 seal의 일곱 파일을 Git blob 기준으로 대조했다. frame의 CRLF/LF 기록 차이만 있으며 내용·예측은 같다. 출력 후 선택지/예측 수정은 없다. 2.7.0은 별도 사후 탐색으로 표시했다.
 - replay의 JSON/SVG·원출력 hash·local link 검산은 [replay/validation.json](replay/validation.json), 실행 stdout/stderr/exit/UTC는 replay/logs에 있다. render exit1은 지정 B의 실제 compile 실패다. 접근 실패와503 재시도 기록도 남겼다.
-- 최종 결과 고정 SHA의 원격 RESULT/acceptance 재열람 및 지정 session check는 결과 커밋 뒤 수행하고 실제 기록을 evidence에 추가한다. 수행 전 문서에 성공으로 선기재하지 않았다. 최종 상태는 HANDOFF의 고정 SHA·검사 영수증을 참조한다.
+- 결과 `c906fc608c78025b8e3577e6a559c6b2feb44217`의 원격 RESULT/acceptance 내용을 다시 열어 일치를 확인했다. 지정 session check는 2026-11-23T02:31:59.321849Z에 passed/exit0, outside_paths·unmerged_paths·errors 모두 빈 배열이었다. 실제 stdout/stderr·UTC·검사SHA는 [session-check-result.json](evidence/session-check-result.json), 원격 대조는 [remote-readback-result.json](evidence/remote-readback-result.json)에 있다. 검사영수증 저장 뒤 최종 결과판 검사와 마지막 HANDOFF 단독 커밋을 수행하며 그 실제 결과는 HANDOFF에 남긴다.
 
 ## 재개 우선순위
 

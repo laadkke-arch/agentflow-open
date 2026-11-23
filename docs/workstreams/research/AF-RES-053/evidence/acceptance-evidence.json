@@ -1,7 +1,7 @@
 {
   "schema": "af-res-053-acceptance-v1",
   "task_id": "AF-RES-053",
-  "generated_UTC": "2026-11-23T02:26:35.367010+00:00",
+  "generated_UTC": "2026-11-23T02:33:15.559500+00:00",
   "overall_status": "부분 인계",
   "fully_satisfied": false,
   "source_minimum_met": true,
@@ -643,22 +643,28 @@
     {
       "requirement_id": "R21",
       "requirement": "결과 커밋 뒤 원격 재열람 및 지정 session check",
-      "status": "결과 커밋 후 실행 대기",
-      "numerator": null,
+      "status": "충족(명시한 결과 SHA 검사)",
+      "numerator": 1,
       "denominator": 1,
       "unit": "검사 회차",
       "evidence": [
         {
-          "file": "HANDOFF.md"
+          "file": "evidence/remote-readback-result.json"
+        },
+        {
+          "file": "evidence/session-check-result.json"
+        },
+        {
+          "file": "evidence/session-check-result.stdout.txt"
         }
       ],
-      "missing_reason": "이 원장을 저장한 결과 커밋 뒤에 수행한다. 성공으로 선기재하지 않음",
-      "minimum_next_action": "고정 SHA RESULT/acceptance 원격 재열람 후 python -B -m workbench.session check ... --fetch의 실제 stdout/stderr/exit/UTC 저장"
+      "missing_reason": "Git 계약/소유경로 검사 통과이며 연구 완전 충족을 의미하지 않음. 검사 결과 SHA는 c906fc608c78025b8e3577e6a559c6b2feb44217.",
+      "minimum_next_action": "검사영수증 저장 뒤 최종 고정 결과판도 원격 재열람하고 HANDOFF에 최종 검사 결과를 기록"
     },
     {
       "requirement_id": "R22",
       "requirement": "마지막 단독 HANDOFF 커밋",
-      "status": "결과 검사 뒤 작성 대기",
+      "status": "최종 HANDOFF 단독 커밋에서 확정(결과판 시점 대기)",
       "numerator": null,
       "denominator": 1,
       "unit": "독립 최종 커밋",
@@ -667,9 +673,21 @@
           "file": "HANDOFF.md"
         }
       ],
-      "missing_reason": "최종 결과/검사 뒤 고정 SHA·표 위치·재개자료·약점3건을 작성",
+      "missing_reason": "결과판의 후속 마지막 커밋인 HANDOFF 및 Git diff로 완료를 판정한다. 이 결과판 안에 자기 후속 커밋 SHA를 선기재하지 않는다.",
       "minimum_next_action": "결과 검사 완료 후 HANDOFF 한 파일만 커밋"
     }
   ],
-  "interpretation": "검산 통과·총수 충족·보조 재생 성공을 연구의 완전 충족으로 바꾸지 않는다. 0/미확인/해당없음/미실시를 구분하며 사후 검사는 별도 영수증으로 추가한다."
+  "interpretation": "검산 통과·총수 충족·보조 재생 성공을 연구의 완전 충족으로 바꾸지 않는다. 0/미확인/해당없음/미실시를 구분하며 사후 검사는 별도 영수증으로 추가한다.",
+  "completed_verification": {
+    "result_sha": "c906fc608c78025b8e3577e6a559c6b2feb44217",
+    "remote_readback_exact_match": true,
+    "command_exit_code": 0,
+    "session_status": "passed",
+    "freshness": "remote_checked",
+    "checked_UTC": "2026-11-23T02:31:59.321849+00:00",
+    "outside_paths": [],
+    "unmerged_paths": [],
+    "errors": [],
+    "boundary": "Git contract and ownership checks; not a new AI chat or product verification"
+  }
 }
