@@ -1,0 +1,260 @@
+{
+  "stage": "requirements frozen before catalog/destination exposure",
+  "created_utc": "2026-11-23T00:06:49.264Z",
+  "scope": "eligible_later only; does not replace first two natural requirements",
+  "source_locator": "normalized CRLF->LF first available current issue body lines; original revisions unconfirmed",
+  "requirements": [
+    {
+      "issue": 575,
+      "id": "PP-575",
+      "purpose": "PyPI에 배포한 프로그램을 패키지로 실행하면서 모듈과 그림 리소스를 포함한다.",
+      "conditions": [
+        {
+          "id": "PP-575-R1",
+          "requirement": "설치한 패키지에서 data/analysis/pdf 모듈을 찾을 수 있게 구성한다.",
+          "lines": "5-18,47-48",
+          "origin": "명시된 오류 및 입력 설정"
+        },
+        {
+          "id": "PP-575-R2",
+          "requirement": "프로그램의 PNG 리소스를 배포 구성에 포함한다.",
+          "lines": "56-69",
+          "origin": "명시된 입력 설정; 주된 오류 원인이라고 주장하지 않음"
+        }
+      ],
+      "nouns": [
+        "package",
+        "py_modules",
+        "data",
+        "analysis",
+        "pdf",
+        "include_package_data",
+        "package_data",
+        "resources"
+      ],
+      "environment": "본문 로그 Python 3.9.9; 설정 python_requires>=3.6; 프로그램판 0.0.13. 백엔드 실제판 미상.",
+      "negative": "명시적 금지 없음. 일반적인 설치 성공만으로 실행·리소스 가용성을 대체하지 않는다.",
+      "allowed": "동일 패키지·판에서 모듈 탐색과 데이터 포함 설정을 합칠 수 있다. 서로 다른 프로그램 구성의 부분 성공을 더하지 않는다.",
+      "limits": "독립 저장소 소스나 PyPI 배포물은 아직 읽지 않음. 두 번째 조건은 예시 구성 보존이지 사용자 문장에 별도 필수 선언된 항목은 아니므로 강한 목표 적합성은 미확인.",
+      "near_miss": "모듈 import만 설명하고 리소스 포함을 생략한 구성"
+    },
+    {
+      "issue": 576,
+      "id": "PP-576",
+      "purpose": "Linux 시스템 서비스 파일을 wheel 설치로 배치할 수 있는지 판단한다.",
+      "conditions": [
+        {
+          "id": "PP-576-R1",
+          "requirement": "배포·설치 단위를 wheel로 유지한다.",
+          "lines": "3",
+          "origin": "요구자의 지정 형식"
+        },
+        {
+          "id": "PP-576-R2",
+          "requirement": "파일을 Python 패키지 경로가 아닌 지정한 절대 시스템 서비스 디렉터리에 놓는다.",
+          "lines": "3",
+          "origin": "요구자의 구체 예시"
+        }
+      ],
+      "nouns": [
+        "wheel",
+        "file",
+        "Linux"
+      ],
+      "environment": "Linux; Python·installer·wheel 제품판 미지정.",
+      "negative": "경로에 대한 부정 문장 없음. 패키지 내부 데이터 파일만 설치하는 것은 구체 예시를 충족하지 않는다.",
+      "allowed": "wheel 생성기+installer가 지정 경로를 함께 보장하면 조합 허용. wheel 외 별도 관리자 복사 명령은 R1 만족 대안으로 세지 않는다.",
+      "limits": "한 문장 안의 형식 제약과 위치 제약을 둘로 판정했다. 절대 경로가 예시이고 임의 파일 설치가 더 일반적 질문임을 유지.",
+      "near_miss": "package_data를 wheel에 포함하지만 systemd 위치로 설치하지 않는 방법"
+    },
+    {
+      "issue": 577,
+      "id": "PP-577",
+      "purpose": "잘못된 wheel 데이터 파일 목적지 설정을 빌드 때 발견하여 조용한 실패를 막는다.",
+      "conditions": [
+        {
+          "id": "PP-577-R1",
+          "requirement": "data_files의 절대 목적지 경로를 빌드 시 탐지한다.",
+          "lines": "3-5",
+          "origin": "명시적 기능 요청"
+        },
+        {
+          "id": "PP-577-R2",
+          "requirement": "그 경우 명시적 오류를 발생시켜 조용히 잘못 패키징하지 않는다.",
+          "lines": "5",
+          "origin": "명시적 실패 동작 요청"
+        }
+      ],
+      "nouns": [
+        "data_files",
+        "absolute paths",
+        "wheel",
+        "bdist_wheel",
+        "error"
+      ],
+      "environment": "setuptools 및 bdist_wheel 언급; 실제판·OS 미지정.",
+      "negative": "조용한 잘못된 패키징을 금지; 경고만 남기는 방안은 제목의 warn와 본문의 raise error가 상충할 수 있어 보조로 표시한다.",
+      "allowed": "같은 wheel 빌드 경로에서 검증기와 빌더가 연동되고 오류 전파가 명시되면 허용.",
+      "limits": "제목은 warn, 본문은 error이므로 본문의 강한 조건을 주분석에 사용; 약한 경고 대안은 감도. 링크된 distutils 문서는 이 시점 열지 않음.",
+      "near_miss": "문서에 주의사항만 쓰거나 설치 이후에 오류를 내는 방법"
+    },
+    {
+      "issue": 583,
+      "id": "PP-583",
+      "purpose": "개발하는 패키지의 설정을 통해 editable 개발과 설치된 패키지를 대상으로 한 테스트를 함께 수행한다.",
+      "conditions": [
+        {
+          "id": "PP-583-R1",
+          "requirement": "editable 모드 개발이 가능하도록 구성한다.",
+          "lines": "7",
+          "origin": "명시적 목적"
+        },
+        {
+          "id": "PP-583-R2",
+          "requirement": "테스트가 설치된 패키지를 대상으로 실행되도록 구성한다.",
+          "lines": "7-9",
+          "origin": "명시적 목적"
+        }
+      ],
+      "nouns": [
+        "config files",
+        "editable mode",
+        "tests",
+        "installed package"
+      ],
+      "environment": "특정 Python·OS·backend 판 미지정.",
+      "negative": "테스트 디렉터리를 빈 채 두는 튜토리얼로는 목적 미달; 다른 명시적 금지 없음.",
+      "allowed": "패키지 설치 설정과 테스트 runner/import 설정이 한 환경에서 연결되는 조합 허용.",
+      "limits": "아무 테스트나 성공했다는 근거로 installed package 대상임을 추정하지 않는다. 링크한 튜토리얼/모듈 문서는 미열람.",
+      "near_miss": "현재 작업 디렉터리 소스만 우연히 import하여 통과한 테스트"
+    },
+    {
+      "issue": 588,
+      "id": "PP-588",
+      "purpose": "import hook/finder 방식 editable 설치에서 namespace package를 안정적으로 지원할 방법을 찾는다.",
+      "conditions": [
+        {
+          "id": "PP-588-R1",
+          "requirement": "namespace package를 editable import hook/finder 방식으로 지원한다.",
+          "lines": "3-5,9",
+          "origin": "명시적 목적"
+        },
+        {
+          "id": "PP-588-R2",
+          "requirement": "namespace의 동적 경로 계산을 처리하는 근거가 있고 우연히 동작하는 기법에 의존하지 않는다.",
+          "lines": "3,7,9",
+          "origin": "명시적 난점 및 안정성 질문"
+        }
+      ],
+      "nouns": [
+        "editable installs",
+        "namespace packages",
+        "MetaPathFinder",
+        "dynamic path computation",
+        "editable namespaces",
+        "import hooks",
+        "finders"
+      ],
+      "environment": "PEP 420/660 문맥; Python·backend 실제판 미지정.",
+      "negative": "우연한 현재 동작만으로 향후 안정성을 보장하지 않는다.",
+      "allowed": "명시된 hook/finder 구현과 namespace 경로 처리 규칙이 같은 구현에서 연결되면 허용.",
+      "limits": "미래 모든 버전 안정성은 직접 입증 불가능. 문서 계약·지원판을 한정해만 판정. 외부 논의의 두 제안은 미열람으로 조건 세부 미확인.",
+      "near_miss": "일반 패키지 editable 지원 또는 고정 경로 namespace만 지원하는 구현"
+    },
+    {
+      "issue": 1020,
+      "id": "PP-1020",
+      "purpose": "새 build frontend로 wheel을 만들면서 플랫폼 태그 선택을 유지한다.",
+      "conditions": [
+        {
+          "id": "PP-1020-R1",
+          "requirement": "python3 -m build 경로에서 wheel의 플랫폼 태그 설정을 적용한다.",
+          "lines": "1-5",
+          "origin": "명시적 방식·목적"
+        },
+        {
+          "id": "PP-1020-R2",
+          "requirement": "환경에서 계산한 구체적 플랫폼 태그를 wheel 이름에 반영할 수 있다.",
+          "lines": "7-10",
+          "origin": "명시된 동적 선택 방식"
+        }
+      ],
+      "nouns": [
+        "platform tag",
+        "binary wheel name",
+        "bdist_wheel options",
+        "setup.py",
+        "python3 -m build",
+        "platform"
+      ],
+      "environment": "build0.8.0, packaging20.4, setuptools41.1.0.post, wheel0.35.1; Python3.6/CentOS7.",
+      "negative": "setup.py bdist_wheel로 돌아가는 방법만으로 지정 frontend 경로 만족이라 세지 않는다.",
+      "allowed": "frontend config-settings와 backend 옵션 전달이 같은 판에서 연결되면 허용.",
+      "limits": "요구 본문의 linux→manylinux 태그 변경이 바이너리의 실제 ABI 적합성을 증명하지 않는다. 이 조사는 표시 태그 전달과 실제 호환성을 분리한다.",
+      "near_miss": "파일 이름만 바꾸거나 해당 frontend에 전달되지 않는 setup.py 옵션"
+    },
+    {
+      "issue": 605,
+      "id": "PP-605",
+      "purpose": "프로젝트의 tests 디렉터리에 단위 테스트를 두고 테스트에서 프로젝트 코드를 가져올 수 있게 구성한다.",
+      "conditions": [
+        {
+          "id": "PP-605-R1",
+          "requirement": "기존 단위 테스트를 프로젝트의 tests 구조에 포함한다.",
+          "lines": "19-22",
+          "origin": "명시적 목적·배치"
+        },
+        {
+          "id": "PP-605-R2",
+          "requirement": "테스트에서 프로젝트의 다른 파일을 올바른 패키지 문맥으로 import할 수 있다.",
+          "lines": "22-24",
+          "origin": "명시적 오류·설명 요청"
+        }
+      ],
+      "nouns": [
+        "unit tests",
+        "tests directory",
+        "files",
+        "relative import",
+        "parent package"
+      ],
+      "environment": "Ubuntu22.04/Python3.10/pip22.0.2.",
+      "negative": "명시적 금지 없음. 테스트를 비워 두는 예시는 목적 미달.",
+      "allowed": "테스트 배치·패키지 설치·import 실행 문맥을 동일 프로젝트에서 설명하는 조합 허용.",
+      "limits": "'include tests'를 wheel/sdist 안에 tests를 출하하라는 뜻으로 확대하지 않는다. 테스트 실행기 종류 미지정.",
+      "near_miss": "배포 archive에 테스트 파일은 넣었지만 실행시 import 경로가 해결되지 않는 설정"
+    },
+    {
+      "issue": 609,
+      "id": "PP-609",
+      "purpose": "editable 개발을 유지하면서 패키지와 배포물의 메타데이터 매핑을 사용할 수 있게 한다.",
+      "conditions": [
+        {
+          "id": "PP-609-R1",
+          "requirement": "패키지 import가 작동하는 editable 설치를 유지한다.",
+          "lines": "19-21",
+          "origin": "명시적 개발 목적·관측"
+        },
+        {
+          "id": "PP-609-R2",
+          "requirement": "importlib_metadata의 packages_distributions가 해당 패키지를 배포물로 매핑한다.",
+          "lines": "23",
+          "origin": "명시적 사용 문맥·오류 가설"
+        }
+      ],
+      "nouns": [
+        "editable install",
+        "RECORD",
+        "source files",
+        "metadata files",
+        "importlib_metadata.packages_distributions",
+        "package"
+      ],
+      "environment": "Ubuntu20.04/Python3.7.13/pip22.2.2; hatchling/flit 시험했다고 보고, setuptools/setup.py 대비. 세 backend 실제판 미상.",
+      "negative": "일반 설치로 바꾸면 R1을 잃는다. RECORD에 모든 소스가 있어야 한다는 것은 질문자의 원인 가설이지 유일한 해법 제한이 아니다.",
+      "allowed": "동일 editable backend와 메타데이터 reader의 호환 규칙을 결합할 수 있다.",
+      "limits": "사용자 보고 시험은 재실행하지 않았다. RECORD 파일 목록을 결과 목표로 잘못 대체하지 않는다.",
+      "near_miss": "editable 설치 자체는 성공하지만 reader가 배포물 매핑을 반환하지 못함"
+    }
+  ]
+}

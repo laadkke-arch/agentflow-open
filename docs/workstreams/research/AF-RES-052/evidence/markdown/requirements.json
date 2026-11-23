@@ -1,0 +1,98 @@
+[
+  {
+    "requirement_id": "M-N1",
+    "frame_row": "FM-01",
+    "source_id": "M-ISS-941",
+    "issue_number": 941,
+    "url": "https://github.com/remarkjs/remark/issues/941",
+    "created_at": "2022-01-21T10:09:22Z",
+    "selection_rationale": "Earliest request with explicit paired code-node input and expected serialization; component configuration is included even when requester calls it a bug.",
+    "purpose": "AST code 노드를 Markdown 문자열로 내보내되 언어 지정 여부와 무관하게 backtick 구분자를 유지한다.",
+    "direction": "code AST -> Markdown string",
+    "user_musts": [
+      {
+        "id": "M-N1-C1",
+        "summary": "lang이 없는 code 노드에도 backtick delimiters를 출력한다.",
+        "locator": "body L22,L30-40,L55-60"
+      },
+      {
+        "id": "M-N1-C2",
+        "summary": "lang=javascript인 첫 code 노드의 언어표시와 코드내용을 유지한다.",
+        "locator": "body L30-36,L42-53"
+      }
+    ],
+    "version_environment": {
+      "literal": "react-stringify 10.0.2; unified 10.1.1",
+      "locator": "body L8-10",
+      "limitation": "react-stringify label retained verbatim; cannot silently correct to remark-stringify. Runtime/OS/build fields blank."
+    },
+    "negative_constraints": "언어 미지정 노드를 들여쓰기만 있는 코드로 바꾸지 않을 것; 코드 내용을 삭제하지 않을 것.",
+    "reader_added_conditions": [
+      "완결 구현은 같은 판의 동일 파이프라인에서 두 조건을 확인해야 한다.",
+      "제시한 예상 문자열의 fence 줄바꿈 모호성은 원문 그대로 결측; 표준 적합성을 사용자 요구로 새로 추가하지 않는다."
+    ],
+    "optional_choices": [
+      "후보는 기존 직렬화기의 옵션 또는 조합으로 요구를 만족해도 허용한다.",
+      "DOM/React rendering은 이 요구의 입출력 대체가 아니다."
+    ],
+    "near_miss": "코드 구문강조·HTML code 렌더링만 제공하는 플러그인은 backtick Markdown 문자열을 보장하지 않는다.",
+    "allowed_combination": "AST 처리기와 Markdown 직렬화기의 명시된 조합; 두 개 문서의 조건을 합치려면 동일한 implementation/version과 실행 순서를 확인해야 한다.",
+    "feature_nouns_exact": [
+      "code",
+      "code block",
+      "lang",
+      "backticks",
+      "string"
+    ],
+    "matching_rule": "case-fold only for heading comparison; exact noun/phrase token sequence first, official alias only if publisher declares it; no semantic code-highlighting expansion",
+    "first_revision_status": "API에서 확보한 현재 본문이 최초 가용; 2022 생성시 본문 판은 미복원",
+    "exposure": "Search issue metadata/title/body then direct issue API. No comments read. CodeSandbox attachment open failed."
+  },
+  {
+    "requirement_id": "M-N2",
+    "frame_row": "FM-02",
+    "source_id": "M-ISS-955",
+    "issue_number": 955,
+    "url": "https://github.com/remarkjs/remark/issues/955",
+    "created_at": "2022-02-18T19:54:23Z",
+    "selection_rationale": "Second chronological request specifies HTML raw-output examples for inline and block code in an explicit processing tuple.",
+    "purpose": "Markdown 코드 내용을 HTML로 내보낼 때 코드 안의 꺾쇠를 raw HTML 문자열에 엔티티로 표시한다.",
+    "direction": "Markdown -> HTML string",
+    "user_musts": [
+      {
+        "id": "M-N2-C1",
+        "summary": "인라인 code span의 '<' 및 '>'를 named 또는 numeric character reference로 출력한다.",
+        "locator": "body L22-35 (L25,L32)"
+      },
+      {
+        "id": "M-N2-C2",
+        "summary": "pre/code 코드 블록의 '<' 및 '>'도 reference로 출력하며 language-html 표시를 유지한다.",
+        "locator": "body L22-35 (L26-27,L33-34),L47"
+      }
+    ],
+    "version_environment": {
+      "literal": "unified v10.1.1; rehype-stringify v9.0.3; remark-parse v10.0.1; remark-rehype v10.1.0",
+      "locator": "body L8-10",
+      "limitation": "Runtime/OS/build fields blank. Treat tuple as original environment; current-version re-search cannot prove this historical tuple."
+    },
+    "negative_constraints": "'>'가 literal로 남아 있는 raw HTML을 요청된 출력의 성공으로 세지 않는다.",
+    "reader_added_conditions": [
+      "명시된 두 code context는 독립적으로 검사한다; 한쪽 예시만으로 전체 충족을 주장하지 않는다.",
+      "최신판에 대한 증거와 원문 버전 tuple 증거를 분리한다."
+    ],
+    "optional_choices": [
+      "Named entity와 numeric entity는 본문 'or'가 허용하는 대안이다."
+    ],
+    "near_miss": "화면 렌더링이 동일하거나 '<'만 escape하는 serializer는 raw output의 '>' 조건을 충족하지 않는다.",
+    "allowed_combination": "remark parser→HTML bridge→HTML serializer 조합 허용; 한 시행의 두 열람 예산에서는 함께 읽은 근거만 합친다.",
+    "feature_nouns_exact": [
+      "code block",
+      "span",
+      "raw result",
+      "greater-than signs"
+    ],
+    "matching_rule": "case-fold only; exact requester nouns first, publisher-declared alias second; cannot add escaping/html headings unless exact requester feature noun is present",
+    "first_revision_status": "API 현재 본문이 최초 가용; creation revision 미복원",
+    "exposure": "Search issue metadata/title/body then direct issue API; later comments unread; CodeSandbox open failed."
+  }
+]
