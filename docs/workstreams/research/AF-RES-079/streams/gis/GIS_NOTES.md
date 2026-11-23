@@ -1,5 +1,7 @@
 # AF-RES-079 GIS 원문 판독
 
+> 후속 확인: 이 문서는 원판 조사 체크포인트의 GIS native0/4 상태를 보존한다. 이후 G02/G03/G04의 역사판 실행은 historical/native-summary.json과 historical/observations.jsonl GN01–GN11에 추가했다. 재개 시 streams/resume-gis/audit.json에서 영수증65개와 핵심7개 read를 검증했다. G01 native는 미확인이다. 현재 판정은 RESULT.md·observations.csv의 GN행을 읽는다.
+
 ## 범위와 분모
 
 봉인된 GDAL 정식 minor 공지 5개를 읽었다. 모집은 3.7.0 → 3.8.0 → 3.9.0 → 3.10.0 → 3.11.0 발행 순서이고, 각 NEWS에서 해당 릴리스의 첫 절만 검사했다. 자연 자리는 **4/4**, 양판의 문서·등록부·구현 자료는 **4/4**, 선택한 양판을 같은 입력으로 직접 실행한 자리는 **0/4**다. 현재 환경의 GDAL 3.10.3 ARG 접근 실패를 별도 1회 실행했으며 자연 양판 실행의 분자에 넣지 않았다.

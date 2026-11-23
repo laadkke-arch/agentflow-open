@@ -18,7 +18,8 @@ ROWS = []
 
 def locator(sid):
     s = S[sid]
-    return s['fixed_location'] if isinstance(s['fixed_location'],str) else s['original_url']
+    fixed = s['fixed_location']
+    return fixed if isinstance(fixed,str) and fixed.startswith(('https://','http://')) and not any(c.isspace() for c in fixed) else s['original_url']
 
 
 def add(rid, old, new, kind, code, relation, versions, sources, observations,
@@ -34,7 +35,7 @@ def add(rid, old, new, kind, code, relation, versions, sources, observations,
         'publisher_lineage_declaration':e.get('declared_lineage',e.get('publisher_declaration',e.get('declaration','see external-records.json'))),
         'receiver_confirmation':e.get('receiver_confirmation','same-publisher fixed source/registration or linked receiving record; source IDs below'),
         'behavior_observation_ids':observations,
-        'behavior_acceptance':'see observations.csv and later historical paired execution; lineage alone never implies compatibility',
+        'behavior_acceptance':'see explicitly scoped observations.csv rows; historical pair unexecuted unless an execution receipt says otherwise; current supplemental probes do not establish historical equivalence',
         'source_ids':sources, 'new_evidence_link':locator(sources[-1]),
         'original_address_action':action,
         'preserve_old_id':True, 'preserve_old_citation':True,
@@ -142,7 +143,7 @@ add('C01-R02','python-namespace:scikits.learn','python-namespace:sklearn','Pytho
 add('C02-R01','distribution:PythonWare/Imaging@1.1.7','pypi:pillow','separate source distributions sharing PIL import namespace','4','forked_into',
     'PIL1.1.7 README2009-11-15; Pillow fork2010-07-31; inspectedPillow2.0 source; current13.0 probe separate',
     ['R031','R035','R036','R008'],['C02-P1','C02-P2'],
-    'retain original PIL evidence; append fork and old-author response; mark current pythonware content as later authorship',
+    'retain original PIL evidence; append fork and old-author response; mark authorship continuity between current2026 pythonware guide and original PIL publisher as unverified',
     'same PIL import string, version constant or domain cannot merge distributions',
     'independent original PIL source archive and same-image decoding/error test in a compatible historical runtime')
 add('C02-R02','pypi-project-name:PIL','pypi-project-name:PIL','registry-name custody, separate from distribution version','1','registry_custody_changed',
@@ -211,6 +212,26 @@ if hp.exists():
                 'O03':'P1 exact-radius membership and scalar index type differ. P2 lacks distance outputs. Adapter not implemented or certified.',
                 'O04':'tested provider/float32/empty values and complex/shape error contracts match; scoped alias supported.',
             }[r['event_id']]
+gp = B/'streams/gis/historical/observations.jsonl'
+if gp.exists():
+    gis_native = [json.loads(line) for line in gp.read_text().splitlines()]
+    for r in ROWS:
+        selected = [x for x in gis_native if x['event_id'] == r['event_id']]
+        if selected:
+            r['behavior_observation_ids'] += [x['observation_id'] for x in selected]
+            r['evidence_level'] += '; downloaded historical GDAL binaries executed on recorded immutable input bytes; native receipts independently reread and selected cases replayed during attempt2'
+            r['behavior_acceptance'] = {
+                'G02':'Default3.8 rejects and3.9 lacks ARG; opt-in restores values/type/CRS but nodata=-32767 already differs from sealed-9999 in3.7. Full P1/P2 rejected; old limitation is not migration-induced loss.',
+                'G03':'Normal fixed-file P1 and new-output/old-consumer P2 preserve required fields/order/geometry/CRS; beta->1.0 metadata change observed. Invalid compression/PointM rejected in both. General format conformance and all consumers unverified.',
+                'G04':'Normal WKB P1 preserved. New same-name struct output opens in old3.8 with exit0 but loses recognized geometry/CRS; reject blind P2. Scoped interleaved alias restores geometry, adds bbox attributes for old consumer; null->EMPTY existed before. Same3.9 encoding contrast separately confirms distinction.',
+            }[r['event_id']]
+            r['resume_condition'] = {
+                'G02':'Provide one named successor/converter and replay the original nodata=-9999 requirement without silently replacing it by the fixed sentinel; auto-detection and broader invalid files remain untested.',
+                'G03':'Use any additional real caller input, non-diagonal coordinates/actual nulls and exact downstream consumer not covered by the preserved normal fixture; normal pair gap is closed.',
+                'G04':'Obtain actual consumer required fields versus exact schema and null/EMPTY policy; test a named conversion only for the remaining contract. Recorded old-consumer geometry loss is already observed.',
+            }[r['event_id']]
+            if r['relation_id'] == 'G04-R03':
+                r['resume_condition'] = 'obtain the actual recommendation record conflating both versioned meanings; split remains conditional because no production record was supplied'
 if 'PA001' in S:
     for r in ROWS:
         if r['event_id'] == 'C02':
@@ -222,7 +243,7 @@ if 'PA001' in S:
             r['resume_condition'] = 'source gap closed; next run identical PNG load (not just lazy open), invalid/truncated bytes and stage-sensitive exceptions under original PIL1.1.7 and pinned Pillow; verify signer only if stronger provenance is required'
 
 with (B/'relations.csv').open('w',newline='') as f:
-    w=csv.DictWriter(f,fieldnames=list(ROWS[0]))
+    w=csv.DictWriter(f,fieldnames=list(ROWS[0]),lineterminator="\n")
     w.writeheader()
     for r in ROWS:
         w.writerow({k:json.dumps(v,ensure_ascii=False) if isinstance(v,(list,dict)) else v for k,v in r.items()})

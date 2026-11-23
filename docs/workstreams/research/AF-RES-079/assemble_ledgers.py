@@ -33,7 +33,7 @@ def text(value):
 def csvout(path, rows):
     keys = list(dict.fromkeys(k for row in rows for k in row))
     with (BASE / path).open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=keys)
+        w = csv.DictWriter(f, fieldnames=keys, lineterminator="\n")
         w.writeheader()
         for row in rows:
             w.writerow({k: text(v) for k, v in row.items()})
@@ -100,6 +100,13 @@ hist_path = BASE / "streams/oss/historical/paired-observations.jsonl"
 historical = jl("streams/oss/historical/paired-observations.jsonl") if hist_path.exists() else []
 assert all(x["native_pair_observed"] for x in historical)
 historical_events = {x["event_id"] for x in historical}
+gis_native_path = BASE / "streams/gis/historical/observations.jsonl"
+gis_native = jl("streams/gis/historical/observations.jsonl") if gis_native_path.exists() else []
+gis_native_events = {x["event_id"] for x in gis_native if x["actual_pair_run"]}
+if gis_native:
+    assert j("streams/gis/historical/native-summary.json")["validation_exit_code"] == 0
+    assert gis_native_events == {"G02", "G03", "G04"}
+historical_events |= gis_native_events
 archive_available = (BASE / "streams/pil_archive/archive-verification.json").exists()
 if archive_available:
     archive_check = j("streams/pil_archive/archive-verification.json")
@@ -115,7 +122,7 @@ for events, domain in ((gis, "GIS_GDAL"), (oss, "OSS_SCIPY")):
             "new_version": e.get("new_edition", e.get("new_version")),
             "status": "SELECTED_TWO_SOURCE_EDITIONS", "missing_reason": "",
             "historical_native_pair": e["event_id"] in historical_events,
-            "historical_pair_evidence": "streams/oss/historical/paired-observations.jsonl" if e["event_id"] in historical_events else "not observed",
+            "historical_pair_evidence": ("streams/gis/historical/observations.jsonl" if e["event_id"] in gis_native_events else "streams/oss/historical/paired-observations.jsonl") if e["event_id"] in historical_events else "not observed",
             "screening_record": f"streams/{'gis' if domain == 'GIS_GDAL' else 'oss'}/recruitment.csv",
             "first_seal_commit": "dfdfe1b82ee1921f2f90c723dbd9fe8d22138ead",
             "source_checkpoint": "2f0afa4d415a9e97b6f3d510b23958aeafd54a34",
@@ -184,6 +191,25 @@ for h in historical:
         "norm_behavior_discrepancy": {"values_equal": h["numeric_values_equal"], "representation_equal": h["output_shape_dtype_representation_equal"], "exception_type_equal": h["exception_type_equal"], "exception_message_equal": h["exception_message_equal"], "warning_types_equal": h["warning_types_equal"]},
         "judgment": h["comparison"], "limitation": h["limits"] + " O02 simps/cumtrapz not separately executed; multiple comparisons reuse one natural event.",
         "checked_utc": h["checked_utc"], "reader": "oss_evidence tool agent; root incorporates completed pair receipt",
+    })
+for x in gis_native:
+    e = events[x["event_id"]]
+    prefix = "docs/workstreams/research/AF-RES-079/"
+    artifacts = [p.removeprefix(prefix) for p in x["command_receipts"] + x["raw_outputs"]]
+    artifacts += ["streams/gis/historical/observations.jsonl#" + x["observation_id"], "streams/gis/historical/native-summary.json", "streams/gis/historical/environment-packages.json", "streams/resume-gis/audit.json"]
+    limits = list(x["limitations"])
+    if x["event_id"] == "G04":
+        limits.append("Matched14.0.2 denotes Python pyarrow; actual writer metadata reports parquet-cpp-arrow14.0.1 for GDAL3.8 and14.0.2 for GDAL3.9. GN07 is the separate same3.9-environment encoding contrast.")
+    observations.append({
+        "observation_id": x["observation_id"], "event_id": x["event_id"], "stratum": "natural", "question": x["question"],
+        "old_id": e["old_id"], "new_id": e["new_id"], "old_edition": e.get("old_edition"), "new_edition": e.get("new_edition"),
+        "input_environment": {"input": x["input"], "environment": x["environment"], "run_ids": x["run_ids"]},
+        "expected": x["expected"], "old_actual_or_prediction": "Actual named old/new run outputs are retained in the cited raw logs; use run_ids to distinguish editions.",
+        "new_actual_or_prediction": x["observed"], "evidence_kind": x["evidence_kind"],
+        "historical_pair_executed": x["actual_pair_run"], "historical_single_edition_executed": not x["actual_pair_run"], "current_supplement_executed": False,
+        "source_ids": x["source_ids"], "evidence_artifacts": artifacts,
+        "norm_behavior_discrepancy": x["norm_behavior_discrepancy"], "judgment": x["question_judgment"],
+        "limitation": limits, "checked_utc": x["checked_utc"], "reader": "gis_evidence original runs; gis_resume_audit non-blind receipt validation and targeted replay; root integrates",
     })
 if archive_available:
     for x in jl("streams/pil_archive/observations.jsonl"):
@@ -277,6 +303,12 @@ dump("evidence/ledger-counts.json", {
     "historical_native_event_pairs_current": len(historical_events),
     "historical_native_event_ids": sorted(historical_events),
     "historical_native_comparison_rows": len(historical),
+    "historical_native_comparison_rows_scope": "OSS individual pair rows only; do not add to GIS grouped observations as independent events",
+    "oss_native_event_pairs": len({x["event_id"] for x in historical}),
+    "gis_native_event_pairs": len(gis_native_events),
+    "gis_native_observation_groups": len(gis_native),
+    "gis_historical_pair_groups": sum(x["actual_pair_run"] for x in gis_native),
+    "gis_same_edition_supplement_groups": sum(not x["actual_pair_run"] for x in gis_native),
     "historical_supplement_status": "validated paired receipts appended; original static/prediction rows preserved",
     "natural_U": {a: sum(r["stratum"] == "natural" and r["U_action"] == a for r in policy) for a in ("hold", "keep_record", "repair_location_keep_record")},
     "control_U": {a: sum(r["stratum"] == "control" and r["U_action"] == a for r in policy) for a in ("hold", "keep_record", "repair_location_keep_record")},

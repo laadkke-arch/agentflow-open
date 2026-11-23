@@ -18,6 +18,7 @@ OWNED = 'docs/workstreams/research/AF-RES-079/'
 START = 'd73c8ec85d375f37451795b575dd7d0e6b2f3594'
 parser = argparse.ArgumentParser()
 parser.add_argument('--phase',choices=('ledgers','result'),default='result')
+parser.add_argument('--output',help='Optional receipt path relative to this owned task directory')
 args = parser.parse_args()
 checks = []
 
@@ -102,6 +103,24 @@ check('blind_review_original_preserved',hashfile('streams/review/blind-review.js
 check('mask_before_first_result',not first['blind_review_results_opened'] and review['protocol']['first_decisions_or_repair_plans_seen'] is False,'source selection was not blind; no statistical independent agreement claim')
 counts=j('evidence/ledger-counts.json')
 check('reported_ledger_counts',counts['source_rows']==len(sources) and counts['independent_works']==len(works) and counts['observations']==len(obs),counts)
+native_events = {x['event_id'] for x in obs if x['historical_pair_executed']=='True'}
+check('native_event_counts_recomputed',native_events=={'G02','G03','G04','O01','O02','O03','O04'} and counts['historical_native_event_pairs_current']==len(native_events),sorted(native_events))
+check('frame_native_flags_agree',all((r['historical_native_pair']=='True')==(r['event_id'] in native_events) for r in frame),len(frame))
+if (B/'streams/resume-gis/audit.json').exists():
+    ga=j('streams/resume-gis/audit.json')
+    check('GIS_recovered_receipts_validated',ga['audit_exit_code']==0 and len(ga['receipt_checks'])==65 and all(x['output_hash_matches'] for x in ga['receipt_checks']),{'receipts':len(ga['receipt_checks']),'expected_failure_exit_codes_are_not_success':True})
+    damaged=[]
+    for x in ga['artifact_manifest']:
+        for field in ('prior_path','preserved_path'):
+            if not (B/x[field]).is_file() or hashfile(x[field])!=x['sha256']:damaged.append([x[field],x['sha256']])
+    check('GIS_immutable_inputs_and_outputs_preserved',len(ga['artifact_manifest'])==11 and not damaged,damaged)
+    check('GIS_writer_output_hashes',len(ga['writer_hash_checks'])==6 and all(x['output_hash_matches'] for x in ga['writer_hash_checks']),6)
+    rr=ga['targeted_replays']
+    check('GIS_targeted_replay_semantics',len(rr)==7 and all(not x['semantic_differences'] and x['exact_recorded_input_equal'] for x in rr),{'replays':len(rr),'exit_codes':[x['exit_code'] for x in rr]})
+    gn=[x for x in obs if x['observation_id'].startswith('GN')]
+    check('GIS_temporal_and_same_edition_separated',len(gn)==11 and sum(x['historical_pair_executed']=='True' for x in gn)==9 and {x['observation_id'] for x in gn if x['historical_pair_executed']=='False'}=={'GN07','GN11'},'9 temporal groups,2 same-edition supplements;3 natural events')
+oa=j('streams/resume-oss/audit.json')
+check('OSS_targeted_replay_receipts',oa['resume_reexecution_scope']['public_api_calls']==18 and oa['resume_reexecution_scope']['exit_codes']==[0,0,0,0],oa['resume_reexecution_scope'])
 if (B/'streams/oss/historical/paired-check.receipt.json').exists():
     receipt=j('streams/oss/historical/paired-check.receipt.json')
     pairs=jl('streams/oss/historical/paired-observations.jsonl')
@@ -124,6 +143,9 @@ if args.phase=='result':
     check('self_check_seven_questions',all('Q'+str(i) in selfcheck for i in range(1,8)),'presence only; substantive reading still required')
 failed=[x['check'] for x in checks if not x['passed']]
 report={'task_id':'AF-RES-079','phase':args.phase,'actor':'root via local Python','location':str(ROOT),'checked_utc':dt.datetime.now(dt.timezone.utc).isoformat(),'command':'python -B '+OWNED+'audit.py --phase '+args.phase,'exit_code':1 if failed else 0,'failed_checks':failed,'checks':checks,'artifact_hashes':{p:hashfile(p) for p in required if (B/p).is_file()},'limit':'Structural/reference/ownership audit; source truth, universal compatibility and server availability are not proved by exit0.'}
-(B/'evidence'/('audit-'+args.phase+'.json')).write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+out=(B/args.output).resolve() if args.output else B/'evidence'/('audit-'+args.phase+'.json')
+if not out.is_relative_to(B):raise SystemExit('receipt must remain under owned_path')
+out.parent.mkdir(parents=True,exist_ok=True)
+out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
 print(json.dumps({'phase':args.phase,'checks':len(checks),'failed':failed,'exit_code':report['exit_code']},ensure_ascii=False))
 sys.exit(report['exit_code'])

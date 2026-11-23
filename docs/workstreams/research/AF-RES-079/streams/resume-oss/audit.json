@@ -1,0 +1,184 @@
+{
+  "status": "ACCEPT_WITH_EDITORIAL_RECONCILIATION",
+  "actor": "oss_controls_audit separate unmasked tool agent",
+  "native_spot_checks": [
+    {
+      "version": "1.4.1",
+      "executable_exists": true,
+      "script_sha256": "91a7a23ab0134645258dd0e665683e80faea194830e683144a1639f6f5379b02",
+      "checked_utc": "2026-11-23T12:15:10.286643+00:00",
+      "argv": [
+        "/workspace/scratch/ac46ee61e54a/agentflow-open/docs/workstreams/research/AF-RES-079/streams/oss/historical/envs/scipy-1.4.1/bin/python",
+        "-B",
+        "-c",
+        "\nimport json,warnings,inspect\nimport scipy,numpy as np\nfrom scipy import stats,spatial,integrate,ndimage\nr={'scipy':scipy.__version__,'numpy':np.__version__}\ndef ser(v):\n if isinstance(v,np.ndarray): return {'shape':list(v.shape),'dtype':str(v.dtype),'values':ser(v.tolist())}\n if isinstance(v,np.generic): return {'type':str(type(v).__name__),'value':ser(v.item())}\n if isinstance(v,(tuple,list)): return [ser(x) for x in v]\n if isinstance(v,float) and not np.isfinite(v): return str(v)\n return v\ndef run(key,fn):\n try:\n  with warnings.catch_warnings(record=True) as ws:\n   warnings.simplefilter('always');val=fn()\n  r[key]={'result':ser(val),'warnings':[w.category.__name__ for w in ws]}\n except Exception as e:r[key]={'exception':type(e).__name__,'message':str(e)}\nif scipy.__version__ in ['1.4.1','1.5.0']:\n run('mad_old_normal',lambda:stats.median_absolute_deviation([1.,3.,2.]))\n run('mad_old_empty2D',lambda:stats.median_absolute_deviation(np.ones((3,0)),axis=1))\n if hasattr(stats,'median_abs_deviation'):\n  run('mad_new_normal',lambda:stats.median_abs_deviation([1.,3.,2.]))\n  run('mad_new_adapter',lambda:stats.median_abs_deviation([1.,3.,2.],scale=1/1.4826))\nelse:\n tree=spatial.KDTree([[0.],[1.],[2.]])\n r['KDTree_default_leafsize']=tree.leafsize\n run('kdtree_query_exact',lambda:tree.query([0.],k=None,distance_upper_bound=1.0))\n run('kdtree_query_near',lambda:tree.query([0.],k=None,distance_upper_bound=1.1))\n run('kdtree_ball_exact',lambda:tree.query_ball_point([0.],1.0))\n run('trapz_normal',lambda:integrate.trapz([1.,3.,2.],x=[0.,1.,2.]))\n run('sum_provider',lambda:ndimage.sum([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\n if hasattr(integrate,'trapezoid'):run('trapezoid_normal',lambda:integrate.trapezoid([1.,3.,2.],x=[0.,1.,2.]))\n if hasattr(ndimage,'sum_labels'):run('sum_labels_provider',lambda:ndimage.sum_labels([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\nprint(json.dumps(r,allow_nan=False))\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"scipy\": \"1.4.1\", \"numpy\": \"1.19.5\", \"mad_old_normal\": {\"result\": {\"type\": \"float64\", \"value\": 1.4826}, \"warnings\": []}, \"mad_old_empty2D\": {\"result\": \"nan\", \"warnings\": []}}\n",
+      "stderr": ""
+    },
+    {
+      "version": "1.5.0",
+      "executable_exists": true,
+      "script_sha256": "91a7a23ab0134645258dd0e665683e80faea194830e683144a1639f6f5379b02",
+      "checked_utc": "2026-11-23T12:15:13.734980+00:00",
+      "argv": [
+        "/workspace/scratch/ac46ee61e54a/agentflow-open/docs/workstreams/research/AF-RES-079/streams/oss/historical/envs/scipy-1.5.0/bin/python",
+        "-B",
+        "-c",
+        "\nimport json,warnings,inspect\nimport scipy,numpy as np\nfrom scipy import stats,spatial,integrate,ndimage\nr={'scipy':scipy.__version__,'numpy':np.__version__}\ndef ser(v):\n if isinstance(v,np.ndarray): return {'shape':list(v.shape),'dtype':str(v.dtype),'values':ser(v.tolist())}\n if isinstance(v,np.generic): return {'type':str(type(v).__name__),'value':ser(v.item())}\n if isinstance(v,(tuple,list)): return [ser(x) for x in v]\n if isinstance(v,float) and not np.isfinite(v): return str(v)\n return v\ndef run(key,fn):\n try:\n  with warnings.catch_warnings(record=True) as ws:\n   warnings.simplefilter('always');val=fn()\n  r[key]={'result':ser(val),'warnings':[w.category.__name__ for w in ws]}\n except Exception as e:r[key]={'exception':type(e).__name__,'message':str(e)}\nif scipy.__version__ in ['1.4.1','1.5.0']:\n run('mad_old_normal',lambda:stats.median_absolute_deviation([1.,3.,2.]))\n run('mad_old_empty2D',lambda:stats.median_absolute_deviation(np.ones((3,0)),axis=1))\n if hasattr(stats,'median_abs_deviation'):\n  run('mad_new_normal',lambda:stats.median_abs_deviation([1.,3.,2.]))\n  run('mad_new_adapter',lambda:stats.median_abs_deviation([1.,3.,2.],scale=1/1.4826))\nelse:\n tree=spatial.KDTree([[0.],[1.],[2.]])\n r['KDTree_default_leafsize']=tree.leafsize\n run('kdtree_query_exact',lambda:tree.query([0.],k=None,distance_upper_bound=1.0))\n run('kdtree_query_near',lambda:tree.query([0.],k=None,distance_upper_bound=1.1))\n run('kdtree_ball_exact',lambda:tree.query_ball_point([0.],1.0))\n run('trapz_normal',lambda:integrate.trapz([1.,3.,2.],x=[0.,1.,2.]))\n run('sum_provider',lambda:ndimage.sum([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\n if hasattr(integrate,'trapezoid'):run('trapezoid_normal',lambda:integrate.trapezoid([1.,3.,2.],x=[0.,1.,2.]))\n if hasattr(ndimage,'sum_labels'):run('sum_labels_provider',lambda:ndimage.sum_labels([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\nprint(json.dumps(r,allow_nan=False))\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"scipy\": \"1.5.0\", \"numpy\": \"1.19.5\", \"mad_old_normal\": {\"result\": {\"type\": \"float64\", \"value\": 1.4826}, \"warnings\": [\"DeprecationWarning\"]}, \"mad_old_empty2D\": {\"result\": {\"shape\": [3], \"dtype\": \"float64\", \"values\": [\"nan\", \"nan\", \"nan\"]}, \"warnings\": [\"DeprecationWarning\"]}, \"mad_new_normal\": {\"result\": {\"type\": \"float64\", \"value\": 1.0}, \"warnings\": []}, \"mad_new_adapter\": {\"result\": {\"type\": \"float64\", \"value\": 1.4826}, \"warnings\": []}}\n",
+      "stderr": ""
+    },
+    {
+      "version": "1.5.4",
+      "executable_exists": true,
+      "script_sha256": "91a7a23ab0134645258dd0e665683e80faea194830e683144a1639f6f5379b02",
+      "checked_utc": "2026-11-23T12:15:15.989640+00:00",
+      "argv": [
+        "/workspace/scratch/ac46ee61e54a/agentflow-open/docs/workstreams/research/AF-RES-079/streams/oss/historical/envs/scipy-1.5.4/bin/python",
+        "-B",
+        "-c",
+        "\nimport json,warnings,inspect\nimport scipy,numpy as np\nfrom scipy import stats,spatial,integrate,ndimage\nr={'scipy':scipy.__version__,'numpy':np.__version__}\ndef ser(v):\n if isinstance(v,np.ndarray): return {'shape':list(v.shape),'dtype':str(v.dtype),'values':ser(v.tolist())}\n if isinstance(v,np.generic): return {'type':str(type(v).__name__),'value':ser(v.item())}\n if isinstance(v,(tuple,list)): return [ser(x) for x in v]\n if isinstance(v,float) and not np.isfinite(v): return str(v)\n return v\ndef run(key,fn):\n try:\n  with warnings.catch_warnings(record=True) as ws:\n   warnings.simplefilter('always');val=fn()\n  r[key]={'result':ser(val),'warnings':[w.category.__name__ for w in ws]}\n except Exception as e:r[key]={'exception':type(e).__name__,'message':str(e)}\nif scipy.__version__ in ['1.4.1','1.5.0']:\n run('mad_old_normal',lambda:stats.median_absolute_deviation([1.,3.,2.]))\n run('mad_old_empty2D',lambda:stats.median_absolute_deviation(np.ones((3,0)),axis=1))\n if hasattr(stats,'median_abs_deviation'):\n  run('mad_new_normal',lambda:stats.median_abs_deviation([1.,3.,2.]))\n  run('mad_new_adapter',lambda:stats.median_abs_deviation([1.,3.,2.],scale=1/1.4826))\nelse:\n tree=spatial.KDTree([[0.],[1.],[2.]])\n r['KDTree_default_leafsize']=tree.leafsize\n run('kdtree_query_exact',lambda:tree.query([0.],k=None,distance_upper_bound=1.0))\n run('kdtree_query_near',lambda:tree.query([0.],k=None,distance_upper_bound=1.1))\n run('kdtree_ball_exact',lambda:tree.query_ball_point([0.],1.0))\n run('trapz_normal',lambda:integrate.trapz([1.,3.,2.],x=[0.,1.,2.]))\n run('sum_provider',lambda:ndimage.sum([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\n if hasattr(integrate,'trapezoid'):run('trapezoid_normal',lambda:integrate.trapezoid([1.,3.,2.],x=[0.,1.,2.]))\n if hasattr(ndimage,'sum_labels'):run('sum_labels_provider',lambda:ndimage.sum_labels([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\nprint(json.dumps(r,allow_nan=False))\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"scipy\": \"1.5.4\", \"numpy\": \"1.19.5\", \"KDTree_default_leafsize\": 10, \"kdtree_query_exact\": {\"result\": [[{\"type\": \"float64\", \"value\": 0.0}], [{\"type\": \"int64\", \"value\": 0}]], \"warnings\": []}, \"kdtree_query_near\": {\"result\": [[{\"type\": \"float64\", \"value\": 0.0}, {\"type\": \"float64\", \"value\": 1.0}], [{\"type\": \"int64\", \"value\": 0}, {\"type\": \"int64\", \"value\": 1}]], \"warnings\": []}, \"kdtree_ball_exact\": {\"result\": [0, 1], \"warnings\": []}, \"trapz_normal\": {\"result\": {\"type\": \"float64\", \"value\": 4.5}, \"warnings\": []}, \"sum_provider\": {\"result\": {\"shape\": [3], \"dtype\": \"float64\", \"values\": [4.0, 0.0, 5.0]}, \"warnings\": []}}\n",
+      "stderr": ""
+    },
+    {
+      "version": "1.6.0",
+      "executable_exists": true,
+      "script_sha256": "91a7a23ab0134645258dd0e665683e80faea194830e683144a1639f6f5379b02",
+      "checked_utc": "2026-11-23T12:15:18.014025+00:00",
+      "argv": [
+        "/workspace/scratch/ac46ee61e54a/agentflow-open/docs/workstreams/research/AF-RES-079/streams/oss/historical/envs/scipy-1.6.0/bin/python",
+        "-B",
+        "-c",
+        "\nimport json,warnings,inspect\nimport scipy,numpy as np\nfrom scipy import stats,spatial,integrate,ndimage\nr={'scipy':scipy.__version__,'numpy':np.__version__}\ndef ser(v):\n if isinstance(v,np.ndarray): return {'shape':list(v.shape),'dtype':str(v.dtype),'values':ser(v.tolist())}\n if isinstance(v,np.generic): return {'type':str(type(v).__name__),'value':ser(v.item())}\n if isinstance(v,(tuple,list)): return [ser(x) for x in v]\n if isinstance(v,float) and not np.isfinite(v): return str(v)\n return v\ndef run(key,fn):\n try:\n  with warnings.catch_warnings(record=True) as ws:\n   warnings.simplefilter('always');val=fn()\n  r[key]={'result':ser(val),'warnings':[w.category.__name__ for w in ws]}\n except Exception as e:r[key]={'exception':type(e).__name__,'message':str(e)}\nif scipy.__version__ in ['1.4.1','1.5.0']:\n run('mad_old_normal',lambda:stats.median_absolute_deviation([1.,3.,2.]))\n run('mad_old_empty2D',lambda:stats.median_absolute_deviation(np.ones((3,0)),axis=1))\n if hasattr(stats,'median_abs_deviation'):\n  run('mad_new_normal',lambda:stats.median_abs_deviation([1.,3.,2.]))\n  run('mad_new_adapter',lambda:stats.median_abs_deviation([1.,3.,2.],scale=1/1.4826))\nelse:\n tree=spatial.KDTree([[0.],[1.],[2.]])\n r['KDTree_default_leafsize']=tree.leafsize\n run('kdtree_query_exact',lambda:tree.query([0.],k=None,distance_upper_bound=1.0))\n run('kdtree_query_near',lambda:tree.query([0.],k=None,distance_upper_bound=1.1))\n run('kdtree_ball_exact',lambda:tree.query_ball_point([0.],1.0))\n run('trapz_normal',lambda:integrate.trapz([1.,3.,2.],x=[0.,1.,2.]))\n run('sum_provider',lambda:ndimage.sum([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\n if hasattr(integrate,'trapezoid'):run('trapezoid_normal',lambda:integrate.trapezoid([1.,3.,2.],x=[0.,1.,2.]))\n if hasattr(ndimage,'sum_labels'):run('sum_labels_provider',lambda:ndimage.sum_labels([[1,2],[3,4]],labels=[[1,2],[2,4]],index=[4,8,2]))\nprint(json.dumps(r,allow_nan=False))\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"scipy\": \"1.6.0\", \"numpy\": \"1.19.5\", \"KDTree_default_leafsize\": 10, \"kdtree_query_exact\": {\"result\": [[{\"type\": \"float64\", \"value\": 0.0}, {\"type\": \"float64\", \"value\": 1.0}], [0, 1]], \"warnings\": [\"DeprecationWarning\"]}, \"kdtree_query_near\": {\"result\": [[{\"type\": \"float64\", \"value\": 0.0}, {\"type\": \"float64\", \"value\": 1.0}], [0, 1]], \"warnings\": [\"DeprecationWarning\"]}, \"kdtree_ball_exact\": {\"result\": [0, 1], \"warnings\": []}, \"trapz_normal\": {\"result\": {\"type\": \"float64\", \"value\": 4.5}, \"warnings\": []}, \"sum_provider\": {\"result\": {\"shape\": [3], \"dtype\": \"float64\", \"values\": [4.0, 0.0, 5.0]}, \"warnings\": []}, \"trapezoid_normal\": {\"result\": {\"type\": \"float64\", \"value\": 4.5}, \"warnings\": []}, \"sum_labels_provider\": {\"result\": {\"shape\": [3], \"dtype\": \"float64\", \"values\": [4.0, 0.0, 5.0]}, \"warnings\": []}}\n",
+      "stderr": ""
+    }
+  ],
+  "record_integrity_checks": [
+    {
+      "version": "1.4.1",
+      "rows": 50,
+      "result_hash_matches": true,
+      "probe_hash_matches": true,
+      "environment_matches": true
+    },
+    {
+      "version": "1.5.0",
+      "rows": 50,
+      "result_hash_matches": true,
+      "probe_hash_matches": true,
+      "environment_matches": true
+    },
+    {
+      "version": "1.5.4",
+      "rows": 50,
+      "result_hash_matches": true,
+      "probe_hash_matches": true,
+      "environment_matches": true
+    },
+    {
+      "version": "1.6.0",
+      "rows": 50,
+      "result_hash_matches": true,
+      "probe_hash_matches": true,
+      "environment_matches": true
+    }
+  ],
+  "PIL_archive_spot_check": {
+    "archive_sha256": "895bc7c2498c8e1f9b99938f1a40dc86b3f149741f105cf7c7bd2e0725405211",
+    "matches_descriptor": true,
+    "matches_existing_receipt": true,
+    "selftest_contains_from_PIL_import_Image": true,
+    "readme_contains_version": true,
+    "upstream_native_execution": false,
+    "pgp_validation": false,
+    "checked_utc": "2026-11-23T12:16:01.363976+00:00"
+  },
+  "task": "AF-RES-079",
+  "attempt": 2,
+  "completed_utc": "2026-11-23T12:16:47.124876+00:00",
+  "review_mode": "separate_agent_unmasked_targeted_audit",
+  "prior_result_and_repairs_seen": true,
+  "independent_agreement_rate": null,
+  "original_historical_scope": {
+    "natural_events_with_pairs": 4,
+    "natural_allocated": 4,
+    "historical_release_runs": 4,
+    "native_calls": 200,
+    "paired_comparisons": 49,
+    "pairs_by_event": {
+      "O01": 13,
+      "O02": 20,
+      "O03": 6,
+      "O04": 10
+    },
+    "exact_recorded_input_payload_pairs": 46,
+    "explicit_parameter_mapping_pairs": 3
+  },
+  "resume_reexecution_scope": {
+    "processes": 4,
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "public_api_calls": 18,
+    "property_observations": 2,
+    "reused_existing_environments": true,
+    "new_installation": false,
+    "new_natural_events": 0
+  },
+  "controls_scope": {
+    "declaration_and_source_pairs": 3,
+    "historical_native_pairs": 0,
+    "allocated": 3,
+    "current_supplemental_only": [
+      "C02",
+      "C03"
+    ]
+  },
+  "findings": [
+    {
+      "id": "OSS-AUDIT-01",
+      "severity": "medium",
+      "status": "revision_recommended",
+      "path": "streams/oss/OSS_NOTES.md",
+      "finding": "Checkpoint note still says historical native0/4, exact-radius unobserved, installation/run commands unexecuted despite historical paired results already being present. RESULT and relations use the later native evidence correctly.",
+      "minimum_change": "Preserve checkpoint body and add a leading supersession notice linking historical/paired-check.receipt.json and this targeted recheck; explicitly state current4/4 and49 comparisons."
+    },
+    {
+      "id": "OSS-AUDIT-02",
+      "severity": "low",
+      "status": "revision_recommended",
+      "path": "relations.csv, C01-C03 behavior_acceptance",
+      "finding": "Generic text mentions later historical paired execution in all control relation rows. Their native historical pairs are actually0/3; other evidence fields correctly state limitations.",
+      "minimum_change": "Use control-specific text: historical pair unexecuted; declaration/static source and separately labeled current supplement only."
+    },
+    {
+      "id": "OSS-AUDIT-03",
+      "severity": "informational",
+      "status": "verified_no_change_required",
+      "path": "OS-PR-12382 / O03",
+      "finding": "PR describes KDTree versus cKDTree default leafsize difference. Reexecuted public KDTree default is10 in both1.5.4 and1.6.0. Existing RESULT does not claim a cross-release default change.",
+      "minimum_change": "Retain version/scope distinction; do not describe the PR issue as an observed before-after default change."
+    }
+  ],
+  "limits": [
+    "This is not the blinded six-event reread and yields no independent agreement rate.",
+    "Only18 targeted public API calls were rerun; the other original calls were integrity/record checked, not independently reexecuted.",
+    "Original PIL1.1.7 archive was inspected, not executed. PGP trust was not verified.",
+    "Controls C01-C03 retain0/3 historical native pairs. Current Pillow/Python observations are not historical equivalence.",
+    "O02 simps/cumtrapz remain source-supported aliases, not separately native-executed in this dataset.",
+    "The existing serializer normalizes list/tuple containers; matching serialized representation is not a universal Python object-identity/type-equivalence proof."
+  ]
+}

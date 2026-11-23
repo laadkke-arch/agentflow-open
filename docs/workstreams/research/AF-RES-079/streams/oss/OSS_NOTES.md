@@ -1,5 +1,7 @@
 # AF-RES-079 OSS 조사 인계
 
+> 후속 확인: 이 문서는 원판 조사 체크포인트의 미실행 상태를 보존한다. 이후 OSS4개 사건의 역사판 실행200호출/49대응은 historical/HISTORICAL_RESULTS.md와 historical/paired-check.receipt.json에 있으며, 재개 시 streams/resume-oss/audit.json에서 핵심18호출을 별도로 재실행했다. 현재 판정은 RESULT.md·observations.csv의 H-행을 읽는다.
+
 ## 범위와 분모
 
 이 스트림의 자연 모집은 **4 / 4 사건**이다. 양쪽 판의 공식 문서와 고정 구현을 확보한 쌍도 **4 / 4**다. 반면 같은 입력을 양쪽 역사판의 설치 환경에서 실행한 쌍은 **0 / 4**다. 소스 판독·공급자 시험의 기대값과 실제 실행을 서로 대체하지 않았다.
