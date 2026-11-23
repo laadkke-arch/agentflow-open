@@ -1,0 +1,534 @@
+{
+  "dependency_commit": "cc527e2c4f827afaaaa63f75c897d863c3adcc80",
+  "read_utc": "2026-11-23T13:30:14.073734+00:00",
+  "purpose": "Join against consumer instructions; inherited execution, not replayed in AF-RES-083",
+  "GIS": [
+    {
+      "observation_id": "GN04",
+      "event_id": "G04",
+      "question": "P1",
+      "input": {
+        "old_file": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g03-new.parquet",
+          "bytes": 1583,
+          "sha256": "9627995630cbf05f21c31a68e018e8ef0d2630e730a2472ad39ae66d89e07c0a"
+        },
+        "file_creation": "g03-new-write inGDAL3.8/Arrow10.0.1; reader pairGDAL3.8/3.9 bothArrow14.0.2"
+      },
+      "environment": "See native-summary.json environment profiles and environment-packages.json; pinned version strings, distinct binary builds/PROJ remain.",
+      "expected": "Existing named default-WKB read preserves the recorded normal contract.",
+      "observed": "Same old-file hash yielded same required fields, values/order, Point WKT, EPSG4326, data-axis[2,1], nullable declarations and metadata in3.8/3.9.",
+      "source_ids": [
+        "G-parquet-doc-3.8",
+        "G-parquet-doc-3.9"
+      ],
+      "run_ids": [
+        "g04-p1-wkb-3.8.0",
+        "g04-p1-wkb-3.9.0",
+        "contract-g04-p1-old",
+        "contract-g04-p1-new"
+      ],
+      "command_receipts": [
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-p1-wkb-3.8.0.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-p1-wkb-3.9.0.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-p1-old.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-p1-new.json"
+      ],
+      "actual_pair_run": true,
+      "executed": true,
+      "question_judgment": "P1 accepted within recorded WKB fixture scope.",
+      "limitations": [
+        "Two diagonal Point coordinates and no null values: no coordinate transformation test or general null-processing certification.",
+        "CRS authority, data-axis mapping, field/Arrow nullability and actual metadata are observed; metadata version is not full specification-conformance certification.",
+        "Version strings were matched for Python/NumPy/Arrow within the comparison; binary build IDs, PROJ and transitive dependencies differ, so this is not GDAL-only causal isolation."
+      ]
+    },
+    {
+      "observation_id": "GN05",
+      "event_id": "G04",
+      "question": "P2",
+      "input": {
+        "same_writer_input": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/inputs/point-boundary.json",
+          "sha256": "99c9b3c4e44ec414f489ee6a8fb5ff70a1f4c1d760f97155bce985bababeecfb",
+          "geometry_sequence": [
+            "POINT (1 2)",
+            null,
+            "POINT EMPTY",
+            "POINT (1 2)"
+          ],
+          "fixture_status": "Research serialization of directly read supplier boundary input; not another natural event."
+        },
+        "new_struct_file_read_by_both": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g04-new-same-name.parquet",
+          "bytes": 3973,
+          "sha256": "f71606cd995ad8b04533735d47abe8490bcc5faf75206f1e727610a6238b9f45"
+        }
+      },
+      "environment": "See native-summary.json environment profiles and environment-packages.json; pinned version strings, distinct binary builds/PROJ remain.",
+      "expected": "Unchanged GEOARROW option output must still supply geometry and CRS to the old3.8 consumer.",
+      "observed": "Both consumers returned exit0 for the same3.9 struct file.3.8 returned zero geometry fields/no CRS and exposed geometry.x/y plus bbox as ordinary Real attributes;3.9 returned one geometry field, EPSG4326/[2,1] and preserved null versus EMPTY. Successful open did not satisfy the old consumer's required geometry/error contract.",
+      "source_ids": [
+        "G-parquet-doc-3.9",
+        "G-parquet-test-3.9",
+        "G-gp-spec1.1"
+      ],
+      "run_ids": [
+        "g04-old-write",
+        "g04-new-same-name-write",
+        "g04-old-reads-new-name",
+        "g04-new-reads-new-name",
+        "contract-g04-new-name-old-consumer",
+        "contract-g04-new-name-new-consumer"
+      ],
+      "command_receipts": [
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-old-write.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-same-name-write.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-old-reads-new-name.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-reads-new-name.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-new-name-old-consumer.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-new-name-new-consumer.json"
+      ],
+      "actual_pair_run": true,
+      "executed": true,
+      "question_judgment": "Reject blind same-name substitution for the pinned3.8 geometry consumer, despite process success.",
+      "limitations": [
+        "This is a task-contract failure, not a claim that exposing attributes from an unsupported encoding is a universal GDAL bug.",
+        "Arrow version14.0.2 matched; package builds and dependencies differ. Same3.9-environment encoding contrast inGN07 separately supports representation distinction."
+      ]
+    },
+    {
+      "observation_id": "GN06",
+      "event_id": "G04",
+      "question": "P2",
+      "input": {
+        "writer_input": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/inputs/point-boundary.json",
+          "sha256": "99c9b3c4e44ec414f489ee6a8fb5ff70a1f4c1d760f97155bce985bababeecfb",
+          "geometry_sequence": [
+            "POINT (1 2)",
+            null,
+            "POINT EMPTY",
+            "POINT (1 2)"
+          ],
+          "fixture_status": "Research serialization of directly read supplier boundary input; not another natural event."
+        },
+        "renamed_legacy_output": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g04-new-alias.parquet",
+          "bytes": 3695,
+          "sha256": "e52386a1bbf3d3fd01bd5cb2da8ce86c198f545a3cdf1c009f736cfdc3b27002"
+        },
+        "old_legacy_output": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g04-old.parquet",
+          "bytes": 1885,
+          "sha256": "5ccca113d5fbcb8904b031777d22cd8a70aafd81d909aee5e5884462e44d322d"
+        }
+      },
+      "environment": "See native-summary.json environment profiles and environment-packages.json; pinned version strings, distinct binary builds/PROJ remain.",
+      "expected": "Version-scoped alias should retain the old interleaved function; evaluate required-field and exact-schema consumers separately.",
+      "observed": "GEOARROW_INTERLEAVED restored Point geometry and EPSG4326/[2,1] for3.8. Four bbox attributes appeared for3.8 but not3.9. Required id/label values/order were retained. Null→EMPTY occurred in the original3.8 interleaved output too; raw Arrow geometry null_count is0 for both old and alias files.",
+      "source_ids": [
+        "G-parquet-doc-3.9",
+        "G-parquet-test-3.9"
+      ],
+      "run_ids": [
+        "g04-old-read",
+        "g04-new-alias-write",
+        "g04-old-reads-alias",
+        "g04-new-reads-alias",
+        "contract-g04-old-encoding",
+        "contract-g04-alias-old-consumer",
+        "contract-g04-alias-new-consumer"
+      ],
+      "command_receipts": [
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-old-read.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-alias-write.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-old-reads-alias.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-reads-alias.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-old-encoding.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-alias-old-consumer.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-alias-new-consumer.json"
+      ],
+      "actual_pair_run": true,
+      "executed": true,
+      "question_judgment": "Scoped alias supported for legacy representation. Extra fields reject exact-schema consumers only; they alone do not fail a required-id/label subset consumer. Strict null-preservation requirement already failed in the old representation.",
+      "limitations": [
+        "Do not count old null→EMPTY behavior as a new migration-induced loss.",
+        "An observed1.0.0 metadata string on the legacy extension is not proof of full GeoParquet1.0 conformance."
+      ]
+    },
+    {
+      "observation_id": "GN07",
+      "event_id": "G04",
+      "question": "P2",
+      "input": {
+        "same3_9_writer_input": {
+          "path": "docs/workstreams/research/AF-RES-079/streams/gis/inputs/point-boundary.json",
+          "sha256": "99c9b3c4e44ec414f489ee6a8fb5ff70a1f4c1d760f97155bce985bababeecfb",
+          "geometry_sequence": [
+            "POINT (1 2)",
+            null,
+            "POINT EMPTY",
+            "POINT (1 2)"
+          ],
+          "fixture_status": "Research serialization of directly read supplier boundary input; not another natural event."
+        },
+        "files": [
+          {
+            "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g04-new-same-name.parquet",
+            "bytes": 3973,
+            "sha256": "f71606cd995ad8b04533735d47abe8490bcc5faf75206f1e727610a6238b9f45"
+          },
+          {
+            "path": "docs/workstreams/research/AF-RES-079/streams/gis/historical/runs/g04-new-alias.parquet",
+            "bytes": 3695,
+            "sha256": "e52386a1bbf3d3fd01bd5cb2da8ce86c198f545a3cdf1c009f736cfdc3b27002"
+          }
+        ]
+      },
+      "environment": "See native-summary.json environment profiles and environment-packages.json; pinned version strings, distinct binary builds/PROJ remain.",
+      "expected": "Determine whether two encoding names identify the same behavior under the same3.9 environment.",
+      "observed": "Same3.9 binary and input produce struct with one null geometry underGEOARROW, and FixedSizeList with zero null geometries/EMPTY substitution underGEOARROW_INTERLEAVED. Values/order otherwise agree.",
+      "source_ids": [
+        "G-parquet-doc-3.9",
+        "G-parquet-test-3.9"
+      ],
+      "run_ids": [
+        "g04-new-same-name-write",
+        "g04-new-alias-write",
+        "g04-new-reads-new-name",
+        "g04-new-reads-alias",
+        "contract-g04-new-name-new-consumer",
+        "contract-g04-alias-new-consumer"
+      ],
+      "command_receipts": [
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-same-name-write.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-alias-write.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-reads-new-name.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/g04-new-reads-alias.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-new-name-new-consumer.json",
+        "docs/workstreams/research/AF-RES-079/streams/gis/historical/contract-g04-alias-new-consumer.json"
+      ],
+      "actual_pair_run": false,
+      "executed": true,
+      "question_judgment": "Behavioral distinction supports separate encoding IDs plus a version-scoped alias, not global same-name merging.",
+      "limitations": [
+        "Same-edition discriminator, not an additional natural event or independent old/new migration."
+      ]
+    }
+  ],
+  "OSS_sample": [
+    {
+      "pair_id": "O02-P1-normal",
+      "event_id": "O02",
+      "question": "P1",
+      "case": "normal",
+      "old_version": "1.5.4",
+      "new_version": "1.6.0",
+      "old_api": "trapz",
+      "new_api": "trapz",
+      "old_row_id": "O02-RUN-normal-trapz",
+      "new_row_id": "O02-RUN-normal-trapz",
+      "old_file": "scipy-1.5.4.jsonl",
+      "new_file": "scipy-1.6.0.jsonl",
+      "old_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "new_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "old_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "new_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "exact_recorded_input_equal": true,
+      "semantic_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "semantic_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "input_mapping": "identical recorded input; only API identity changes for P2",
+      "old_outcome": "returned",
+      "new_outcome": "returned",
+      "old_output": {
+        "dtype": "float64",
+        "value": 4.5
+      },
+      "new_output": {
+        "dtype": "float64",
+        "value": 4.5
+      },
+      "old_exception": null,
+      "new_exception": null,
+      "numeric_values_equal": true,
+      "output_shape_dtype_representation_equal": true,
+      "exception_type_equal": null,
+      "exception_message_equal": null,
+      "old_warnings": [],
+      "new_warnings": [],
+      "warning_types_equal": true,
+      "comparison": "SAME_VALUE_SHAPE_DTYPE_REPRESENTATION",
+      "native_pair_observed": true,
+      "environment": {
+        "python": "3.8.20",
+        "numpy": "1.19.5",
+        "same_host": true
+      },
+      "checked_utc": "2026-11-23T11:51:13.675055+00:00",
+      "limits": "Only the exact recorded inputs are covered. Exceptions may suppress warning capture in the unchanged probe; null warnings are not evidence of no warning."
+    },
+    {
+      "pair_id": "O02-P2-normal",
+      "event_id": "O02",
+      "question": "P2",
+      "case": "normal",
+      "old_version": "1.5.4",
+      "new_version": "1.6.0",
+      "old_api": "trapz",
+      "new_api": "trapezoid",
+      "old_row_id": "O02-RUN-normal-trapz",
+      "new_row_id": "O02-RUN-normal-trapezoid",
+      "old_file": "scipy-1.5.4.jsonl",
+      "new_file": "scipy-1.6.0.jsonl",
+      "old_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "new_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "old_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "new_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "exact_recorded_input_equal": true,
+      "semantic_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "kwargs": {}
+      },
+      "semantic_input_sha256": "1239b91be2ce603fb31ae88216f2f0b893b15be51ab60bcc9a603e411b059f26",
+      "input_mapping": "identical recorded input; only API identity changes for P2",
+      "old_outcome": "returned",
+      "new_outcome": "returned",
+      "old_output": {
+        "dtype": "float64",
+        "value": 4.5
+      },
+      "new_output": {
+        "dtype": "float64",
+        "value": 4.5
+      },
+      "old_exception": null,
+      "new_exception": null,
+      "numeric_values_equal": true,
+      "output_shape_dtype_representation_equal": true,
+      "exception_type_equal": null,
+      "exception_message_equal": null,
+      "old_warnings": [],
+      "new_warnings": [],
+      "warning_types_equal": true,
+      "comparison": "SAME_VALUE_SHAPE_DTYPE_REPRESENTATION",
+      "native_pair_observed": true,
+      "environment": {
+        "python": "3.8.20",
+        "numpy": "1.19.5",
+        "same_host": true
+      },
+      "checked_utc": "2026-11-23T11:51:13.675092+00:00",
+      "limits": "Only the exact recorded inputs are covered. Exceptions may suppress warning capture in the unchanged probe; null warnings are not evidence of no warning."
+    },
+    {
+      "pair_id": "O02-P1-reverse",
+      "event_id": "O02",
+      "question": "P1",
+      "case": "reverse",
+      "old_version": "1.5.4",
+      "new_version": "1.6.0",
+      "old_api": "trapz",
+      "new_api": "trapz",
+      "old_row_id": "O02-RUN-reverse-trapz",
+      "new_row_id": "O02-RUN-reverse-trapz",
+      "old_file": "scipy-1.5.4.jsonl",
+      "new_file": "scipy-1.6.0.jsonl",
+      "old_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          2.0,
+          1.0,
+          0.0
+        ],
+        "kwargs": {}
+      },
+      "new_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          2.0,
+          1.0,
+          0.0
+        ],
+        "kwargs": {}
+      },
+      "old_input_sha256": "4264ff4625521298643f7b1b7b40d5a437259065b455899e9c2281b06b0ff4f3",
+      "new_input_sha256": "4264ff4625521298643f7b1b7b40d5a437259065b455899e9c2281b06b0ff4f3",
+      "exact_recorded_input_equal": true,
+      "semantic_input": {
+        "y": {
+          "dtype": "float64",
+          "shape": [
+            3
+          ],
+          "values": [
+            1.0,
+            3.0,
+            2.0
+          ]
+        },
+        "x": [
+          2.0,
+          1.0,
+          0.0
+        ],
+        "kwargs": {}
+      },
+      "semantic_input_sha256": "4264ff4625521298643f7b1b7b40d5a437259065b455899e9c2281b06b0ff4f3",
+      "input_mapping": "identical recorded input; only API identity changes for P2",
+      "old_outcome": "returned",
+      "new_outcome": "returned",
+      "old_output": {
+        "dtype": "float64",
+        "value": -4.5
+      },
+      "new_output": {
+        "dtype": "float64",
+        "value": -4.5
+      },
+      "old_exception": null,
+      "new_exception": null,
+      "numeric_values_equal": true,
+      "output_shape_dtype_representation_equal": true,
+      "exception_type_equal": null,
+      "exception_message_equal": null,
+      "old_warnings": [],
+      "new_warnings": [],
+      "warning_types_equal": true,
+      "comparison": "SAME_VALUE_SHAPE_DTYPE_REPRESENTATION",
+      "native_pair_observed": true,
+      "environment": {
+        "python": "3.8.20",
+        "numpy": "1.19.5",
+        "same_host": true
+      },
+      "checked_utc": "2026-11-23T11:51:13.675131+00:00",
+      "limits": "Only the exact recorded inputs are covered. Exceptions may suppress warning capture in the unchanged probe; null warnings are not evidence of no warning."
+    }
+  ]
+}
