@@ -1,6 +1,7 @@
 """Read-only reconciliation of AF-RES-093 source rows and reported denominators."""
 from collections import Counter
 import csv
+from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
@@ -66,6 +67,17 @@ def main():
         assert first == set(range(1, 31)), (project, first)
         selected = {r["url"] for r in rows if r["selected_for_study"] == "true"}
         assert len(selected) == 3, (project, selected)
+        canonical = {}
+        for row in rows:
+            if row["is_first30"] == "true":
+                canonical.setdefault(int(row["event_rank"]), row)
+        ordered = [canonical[n] for n in range(1, 31)]
+        chronological = sorted(ordered, key=lambda r: (
+            datetime.fromisoformat(r["created_utc"].replace("Z", "+00:00")),
+            int(r["issue_id"] or r["number"]),
+        ))
+        assert [r["url"] for r in ordered] == [r["url"] for r in chronological], project
+        assert {r["url"] for r in ordered[:3]} == selected, project
         frames[project] = {"raw_rows": len(rows), "first30_events": len(first), "selected": len(selected)}
 
     judgments = csv_rows(ROOT / "judgments.csv")
@@ -106,9 +118,14 @@ def main():
         }
 
     sources = jl(ROOT / "sources.jsonl")
-    assert len({r["source_id"] for r in sources}) == len(sources)
+    source_ids = {r["source_id"] for r in sources}
+    assert len(source_ids) == len(sources)
+    for judgment in judgments:
+        assert set(filter(None, judgment["post_source_ids"].split(";"))) <= source_ids, judgment["request_id"]
     counted = [r for r in sources if r.get("counted") is True]
     for row in sources:
+        assert {"url", "reopen_url", "published_at", "accessed_utc", "version", "locator",
+                "observation", "questions", "limitations", "work_id", "event_id", "counted"} <= row.keys(), row["source_id"]
         assert row.get("url") and row.get("limitations")
         if row.get("counted") is True:
             assert row.get("accessed_utc"), row["source_id"]
