@@ -6,6 +6,12 @@
 
 수치 기준은 [정규화 원장 수치](evidence/normalized-counts.json), 판단 근거는 [RESULT.md](RESULT.md), 실행 검산은 [수용 기록](evidence/acceptance-evidence.json) 및 [검사 영수증](evidence/validation-receipt.json)이다. 영수증의 checked_head와 입력 SHA256을 구분한다. 이후 문서 커밋을 이전 검사에 포함된 것으로 말하지 않는다. 마지막 결과 SHA에 대한 실제 check와 GitHub 재열람은 HANDOFF에 별도 적는다.
 
+## 실행 영수증
+
+결과 본문 고정 커밋 `d2ed9b26bd993cad0e7e5c58788bc59dbafc0be3`의 깨끗한 실제 checkout에서 증거 검사247항목·종료0을 얻었다. 지정 `session check --fetch`는 첫 fetch 실패(종료2)를 보존한 뒤 정확한 refspec 진단 조회와 재시행으로 종료0을 얻었다. 통합 HEAD는 `4d5185e75e52f405bfa7d149c32a0cd135395bbd`로 전진했지만 계약 hash와 고정 의존은 유지되었다. 허용 경로 밖·unmerged·계약 오류는0이다.
+
+같은 커밋의 소유 경로 내부 임시 detached worktree에서 `python -B scripts/cloud_check.py --environment chatgpt-executor --fetch-contract --require-clean`을 실제 실행했다. doctor·acceptance·research-case·original-smoke·sessions 다섯 검사 묶음이 모두 종료0이고 시작/끝이 clean이다. [영수증](evidence/common-check.json)과 로그를 복사한 뒤 임시 worktree를 제거했다. 이는 저장소 공통 회귀 검사이며 JEP/SPEC 목표 시스템의 적용 시험이 아니다. 환경 이름은 호출자 표지이고 특정 클라우드 계정 연결의 증거가 아니다.
+
 ## Q별 답·원절·반증 탐색·재개 입력
 
 | Q / 주장 ID | 답과 RESULT 행 | 직접 읽은 원절 주소·자료 ID | 자기 결론을 뒤집으려고 찾은 경로 | 판독 결과 | 남은 미확인 | 재개 최소 입력 |
