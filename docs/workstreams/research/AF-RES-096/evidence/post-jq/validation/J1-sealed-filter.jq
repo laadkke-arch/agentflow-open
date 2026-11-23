@@ -1,0 +1,1 @@
+.data[] | .startTime as $t | .data[] | "\($t), \(.one), \(.two)"

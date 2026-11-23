@@ -1,0 +1,1 @@
+.elements | [range(0; length; 2) as $i | .[$i] + .[$i+1]]
