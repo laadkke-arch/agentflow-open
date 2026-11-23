@@ -2,6 +2,8 @@
 
 상태: 아래 도구 동작 재현은 **미실시**다. 이번 과제는 공개 원자료와 고정판의 좁은 절을 읽고 비교했다. 저장소 원장 검사와 작업 계약 검사는 VALIDATION.md의 실제 실행 항목이다. 아래 재현을 성공시켜도 과거 작성자의 새 B 응답이나 질문의 인과효과를 만들어내지는 않는다.
 
+각 절은 독립적으로 저장소 루트에서 시작하며, 따로 지정한 실행 블록만 fixture cwd를 사용한다.
+
 모든 입력·출력은 저장소의 `docs/workstreams/research/AF-RES-070/private/reproduction/` 아래에서만 만든다. 기존 사용자의 데이터·원격 저장소·계정 설정을 쓰지 않는다. `private/`는 산출물 커밋 대상이 아니다. 결과를 인수하려면 명령·바이너리 버전/빌드 소스 SHA·표준출력/오류 해시·종료코드의 공개 요약을 새 커밋으로 남겨야 한다.
 
 ## 1. 계약과 원장 검사
@@ -26,7 +28,7 @@ python -B docs/workstreams/research/AF-RES-070/tools/recover_opened.py \
   docs/workstreams/research/AF-RES-070/private/reproduction/jq-2349-opening.json
 ```
 
-복구 후 `payload.issue.body`의 UTF-8 SHA256을 A 원장과 대조한다. 시간순 주 분석에 넣지 못한 ripgrep9–16은 ENROLLMENT의 repo/number/created_utc를 같은 helper에 주어 복구부터 재개한다. 현재 본문과 최초판이 같다고 가정하지 않는다. HTTP403/404가 나면 실패를 기록하고 접근제한을 우회하지 않는다.
+복구 후 회수 JSON의 `body` 또는 `event.payload.issue.body`의 UTF-8 SHA256을 A 원장과 대조한다. 시간순 주 분석에 넣지 못한 ripgrep9–16은 ENROLLMENT의 repo/number/created_utc를 같은 helper에 주어 복구부터 재개한다. 현재 본문과 최초판이 같다고 가정하지 않는다. HTTP403/404가 나면 실패를 기록하고 접근제한을 우회하지 않는다.
 
 ## 3. ripgrep 제외 이유의 독립 기전 시험
 
