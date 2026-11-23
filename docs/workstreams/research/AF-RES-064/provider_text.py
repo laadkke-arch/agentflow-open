@@ -108,7 +108,7 @@ class RawHTML(HTMLParser):
 
 
 def slug(label):
-    return re.sub(r"[^\w\s-]", "", label.lower()).replace(" ", "-")
+    return re.sub(r"[^\w -]", "", label.strip().lower()).replace(" ", "-")
 
 
 def markdown_blocks(source):
@@ -178,7 +178,10 @@ def rst_blocks(source):
     import io
 
     tree = publish_doctree(source, settings_overrides={"halt_level": 6, "warning_stream": io.StringIO(),
-                                                       "file_insertion_enabled": False, "raw_enabled": False})
+                                                       "file_insertion_enabled": False, "raw_enabled": False,
+                                                       "syntax_highlight": "none"})
+    for image in list(tree.findall(nodes.image)):
+        image.parent.remove(image)
     visited = []
     kinds = (nodes.title, nodes.subtitle, nodes.paragraph, nodes.literal_block, nodes.term)
     for node in tree.findall():
