@@ -65,8 +65,10 @@ DOI는 https://doi.org/ 및 doi: 접두부 제거, 소문자, trailing punctuati
 
 ## R1 — 결과표 열람 전 발견 정렬 보정
 
-2026-11-23T03:23Z. A/B 조사자가 각각 원문 결과표 미열람·미선정 상태임을 보고했다. R0 Crossref `sort=published,order=asc`는 broad soft-match에서 대부분 무관한2015년 결과로100칸을 채웠다(A 2질의200/2질의429; B3질의200/1질의429). Native ACM403, ACL은 JS shell 또는 추출 실패였고, fallback의 스니펫 노출은 있었다. 이를 빈 분야의 증거로 삼지 않는다.
+2026-11-23T03:21:18Z (R1 원격 커밋 시각). A/B 조사자가 각각 원문 결과표 미열람·미선정 상태임을 보고했다. R0 Crossref `sort=published,order=asc`는 broad soft-match에서 대부분 무관한2015년 결과로100칸을 채웠다(A 2질의200/2질의429; B3질의200/1질의429). Native ACM403, ACL은 JS shell 또는 추출 실패였고, fallback의 스니펫 노출은 있었다. 이를 빈 분야의 증거로 삼지 않는다.
 
 **변경:** 동일8개 Crossref 질의·날짜/type filter·페이지 예산을 `sort=score,order=desc,rows=100,offset=0`으로 한 차례 더 실행한다. 요청은 각 조사 stream 내 순차로 수행하고429일 때 같은 URL 한 번만 재시도한다. 발견 metadata의 합집합을 기존 중복/venue/주제 선별 후 **발행일·DOI 순**으로 정렬하여 각 층 최대30 DOI의 방법 검토를 한다. 이 변경은 metadata 발견의 정렬만이며 선정 기준·종점·배당을 바꾸지 않는다. R0/R1 원시 목록은 별도 보존한다. 날짜순 검토와 score순 발견을 구별한다. 후속 결과 접근 전에 pool/선정을 별도 커밋한다.
 
 노출: root는054 인수와 검색 실패보고를 읽었으며 새 외부 실험 결과표를 읽지 않았다. A에는SIGIR2020 Measuring Recommendation Explanation Quality 등의 제목/스니펫, B에는관련성 낮은CSUR/CSCW 스니펫이 보였다. 각 검색 원장에 개별 노출을 남긴다. 진단 조사자는 사전지식에서 출발한 논문을 별도층으로 읽고 있으며 primary선정의 효과 방향 기준으로 쓰지 않는다.
+
+R1 시각 정정: 초안의03:23Z는 부정확한 예정 시각이었다. 원격c47d842의 실제commit 시각03:21:18Z로 교정했다(시계 도구 확인03:21:42Z). 검색 규칙은 변경하지 않았다.
