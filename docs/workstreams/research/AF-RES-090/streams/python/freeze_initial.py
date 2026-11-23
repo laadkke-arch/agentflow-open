@@ -5,6 +5,8 @@ from urllib.parse import urljoin
 sys.path.insert(0,str(Path(__file__).parents[2]/'tools'))
 from http_evidence import now,save_excerpt
 R=Path(__file__).parent;E=R/'evidence'
+if (R/'freeze.json').exists():
+ raise SystemExit('Existing candidate freeze must not be overwritten. Preserve it and record a new, explicitly versioned observation instead.')
 class Parser(HTMLParser):
  def __init__(self):super().__init__();self.events=[]
  def handle_starttag(self,tag,attrs):self.events.append({'line':self.getpos()[0],'tag':tag,**dict(attrs)})
