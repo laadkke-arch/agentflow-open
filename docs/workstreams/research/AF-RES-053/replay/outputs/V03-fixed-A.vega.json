@@ -1,0 +1,402 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": {
+    "type": "pad",
+    "resize": true
+  },
+  "background": "white",
+  "padding": 5,
+  "width": 200,
+  "height": 300,
+  "style": "cell",
+  "data": [
+    {
+      "name": "source_0",
+      "values": [
+        {
+          "section": "1. General Health & Safety",
+          "Index": 38.40277777777778,
+          "resilience": 31
+        },
+        {
+          "section": "10. Environmental Accidents",
+          "Index": 38.40277777777778,
+          "resilience": 19
+        },
+        {
+          "section": "2. Health - Process",
+          "Index": 38.40277777777778,
+          "resilience": 39
+        },
+        {
+          "section": "3. Health - People",
+          "Index": 38.40277777777778,
+          "resilience": 47
+        },
+        {
+          "section": "4. Hygiene & Cleaning",
+          "Index": 38.40277777777778,
+          "resilience": 0
+        },
+        {
+          "section": "5. Health Care & Working Conditions",
+          "Index": 38.40277777777778,
+          "resilience": 25
+        },
+        {
+          "section": "6. External Pollution & Extreme Weather Conditions",
+          "Index": 38.40277777777778,
+          "resilience": 16
+        },
+        {
+          "section": "7. Hazardous Materials/Substances",
+          "Index": 38.40277777777778,
+          "resilience": 25
+        },
+        {
+          "section": "8. Safety Accidents",
+          "Index": 38.40277777777778,
+          "resilience": 46
+        },
+        {
+          "section": "9. Subcontractors Training",
+          "Index": 38.40277777777778,
+          "resilience": "1"
+        }
+      ]
+    },
+    {
+      "name": "data_0",
+      "source": "source_0",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "toNumber(datum[\"Index\"])",
+          "as": "Index"
+        }
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "data_0",
+      "transform": [
+        {
+          "type": "stack",
+          "groupby": [
+            "section"
+          ],
+          "field": "resilience",
+          "sort": {
+            "field": [
+              "resilience"
+            ],
+            "order": [
+              "ascending"
+            ]
+          },
+          "as": [
+            "resilience_start",
+            "resilience_end"
+          ],
+          "offset": "zero"
+        },
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"resilience\"]) && isFinite(+datum[\"resilience\"])"
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "data_0",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [],
+          "ops": [
+            "max"
+          ],
+          "fields": [
+            "Index"
+          ],
+          "as": [
+            "max_Index"
+          ]
+        },
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"max_Index\"]) && isFinite(+datum[\"max_Index\"])"
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "facet": {
+          "data": "data_1",
+          "name": "stack_group_layer_0_main",
+          "groupby": [
+            "section"
+          ],
+          "aggregate": {
+            "fields": [
+              "resilience_start",
+              "resilience_start",
+              "resilience_end",
+              "resilience_end"
+            ],
+            "ops": [
+              "min",
+              "max",
+              "min",
+              "max"
+            ]
+          }
+        }
+      },
+      "encode": {
+        "update": {
+          "y": {
+            "scale": "y",
+            "field": "section"
+          },
+          "height": {
+            "scale": "y",
+            "band": 1
+          },
+          "cornerRadiusTopRight": {
+            "value": 2
+          },
+          "cornerRadiusBottomRight": {
+            "value": 2
+          },
+          "x": {
+            "signal": "min(scale('x',datum[\"min_resilience_start\"]),scale('x',datum[\"max_resilience_start\"]),scale('x',datum[\"min_resilience_end\"]),scale('x',datum[\"max_resilience_end\"]))"
+          },
+          "x2": {
+            "signal": "max(scale('x',datum[\"min_resilience_start\"]),scale('x',datum[\"max_resilience_start\"]),scale('x',datum[\"min_resilience_end\"]),scale('x',datum[\"max_resilience_end\"]))"
+          },
+          "clip": {
+            "value": true
+          }
+        }
+      },
+      "marks": [
+        {
+          "type": "group",
+          "encode": {
+            "update": {
+              "x": {
+                "field": {
+                  "group": "x"
+                },
+                "mult": -1
+              },
+              "height": {
+                "field": {
+                  "group": "height"
+                }
+              }
+            }
+          },
+          "marks": [
+            {
+              "name": "layer_0_marks",
+              "type": "rect",
+              "style": [
+                "bar"
+              ],
+              "from": {
+                "data": "stack_group_layer_0_main"
+              },
+              "encode": {
+                "update": {
+                  "fill": {
+                    "scale": "color",
+                    "field": "resilience"
+                  },
+                  "tooltip": {
+                    "signal": "format(datum[\"resilience\"], \".0f\")"
+                  },
+                  "ariaRoleDescription": {
+                    "value": "bar"
+                  },
+                  "description": {
+                    "signal": "\"resilience: \" + (format(datum[\"resilience\"], \"\")) + \"; section: \" + (isValid(datum[\"section\"]) ? datum[\"section\"] : \"\"+datum[\"section\"]) + \"; Score: \" + (format(datum[\"resilience\"], \"\"))"
+                  },
+                  "x": {
+                    "scale": "x",
+                    "field": "resilience_end"
+                  },
+                  "x2": {
+                    "scale": "x",
+                    "field": "resilience_start"
+                  },
+                  "height": {
+                    "field": {
+                      "group": "height"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "layer_1_marks",
+      "type": "rule",
+      "style": [
+        "rule"
+      ],
+      "from": {
+        "data": "data_2"
+      },
+      "encode": {
+        "update": {
+          "stroke": {
+            "value": "red"
+          },
+          "description": {
+            "signal": "\"Module Resilience: \" + (format(datum[\"max_Index\"], \".0f\"))"
+          },
+          "x": {
+            "scale": "x",
+            "field": "max_Index"
+          },
+          "y": {
+            "value": 0
+          },
+          "y2": {
+            "field": {
+              "group": "height"
+            }
+          },
+          "strokeWidth": {
+            "value": 3
+          }
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": [
+        0,
+        100
+      ],
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ],
+      "nice": true,
+      "zero": true
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {
+        "data": "data_1",
+        "field": "section",
+        "sort": true
+      },
+      "range": [
+        0,
+        {
+          "signal": "height"
+        }
+      ],
+      "paddingInner": 0.1,
+      "paddingOuter": 0.05
+    },
+    {
+      "name": "color",
+      "type": "linear",
+      "domain": [
+        0,
+        30,
+        50,
+        55,
+        60,
+        65,
+        70,
+        75,
+        80,
+        90,
+        100
+      ],
+      "range": [
+        "#DE7363",
+        "#FB9F38",
+        "#F9B821",
+        "#FBE8C9",
+        "#F5DA01",
+        "#E2D91E",
+        "#CBD641",
+        "#B6D35F",
+        "#A2D180",
+        "#7CC895",
+        "#52BEA9"
+      ],
+      "interpolate": "hcl",
+      "zero": true
+    }
+  ],
+  "axes": [
+    {
+      "scale": "y",
+      "orient": "left",
+      "grid": false,
+      "domain": false,
+      "labelAlign": "left",
+      "labelBaseline": "middle",
+      "labelOffset": 0,
+      "labelPadding": -5,
+      "ticks": false,
+      "encode": {
+        "labels": {
+          "update": {
+            "fill": [
+              {
+                "test": "datum.value === '4. Hygiene & Cleaning'",
+                "value": "red"
+              },
+              {
+                "value": "black"
+              }
+            ]
+          }
+        }
+      },
+      "zindex": 0
+    }
+  ],
+  "legends": [
+    {
+      "title": "Score",
+      "fill": "color",
+      "gradientLength": {
+        "signal": "clamp(height, 64, 200)"
+      }
+    }
+  ],
+  "config": {
+    "style": {
+      "cell": {
+        "stroke": null
+      }
+    }
+  },
+  "usermeta": {
+    "embedOptions": {
+      "renderer": "svg"
+    }
+  }
+}

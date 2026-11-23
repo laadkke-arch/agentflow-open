@@ -1,0 +1,308 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v4.json",
+  "autosize": {
+    "type": "pad",
+    "resize": true
+  },
+  "padding": 5,
+  "width": 200,
+  "height": 300,
+  "style": "cell",
+  "data": [
+    {
+      "name": "source_0",
+      "values": [
+        {
+          "section": "1. General Health & Safety",
+          "Index": 38.40277777777778,
+          "resilience": 31
+        },
+        {
+          "section": "10. Environmental Accidents",
+          "Index": 38.40277777777778,
+          "resilience": 19
+        },
+        {
+          "section": "2. Health - Process",
+          "Index": 38.40277777777778,
+          "resilience": 39
+        },
+        {
+          "section": "3. Health - People",
+          "Index": 38.40277777777778,
+          "resilience": 47
+        },
+        {
+          "section": "4. Hygiene & Cleaning",
+          "Index": 38.40277777777778,
+          "resilience": 0
+        },
+        {
+          "section": "5. Health Care & Working Conditions",
+          "Index": 38.40277777777778,
+          "resilience": 25
+        },
+        {
+          "section": "6. External Pollution & Extreme Weather Conditions",
+          "Index": 38.40277777777778,
+          "resilience": 16
+        },
+        {
+          "section": "7. Hazardous Materials/Substances",
+          "Index": 38.40277777777778,
+          "resilience": 25
+        },
+        {
+          "section": "8. Safety Accidents",
+          "Index": 38.40277777777778,
+          "resilience": 46
+        },
+        {
+          "section": "9. Subcontractors Training",
+          "Index": 38.40277777777778,
+          "resilience": "1"
+        }
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "source_0",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "toNumber(datum[\"resilience\"])",
+          "as": "resilience"
+        },
+        {
+          "type": "filter",
+          "expr": "datum[\"resilience\"] !== null && !isNaN(datum[\"resilience\"])"
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "source_0",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "toNumber(datum[\"Index\"])",
+          "as": "Index"
+        },
+        {
+          "type": "aggregate",
+          "groupby": [],
+          "ops": [
+            "max"
+          ],
+          "fields": [
+            "Index"
+          ],
+          "as": [
+            "max_Index"
+          ]
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "layer_0_marks",
+      "type": "rect",
+      "style": [
+        "bar"
+      ],
+      "from": {
+        "data": "data_1"
+      },
+      "encode": {
+        "update": {
+          "fill": {
+            "scale": "color",
+            "field": "resilience"
+          },
+          "tooltip": {
+            "signal": "format(datum[\"resilience\"], \".0f\")"
+          },
+          "x": {
+            "scale": "x",
+            "field": "resilience"
+          },
+          "x2": {
+            "scale": "x",
+            "value": 0
+          },
+          "y": {
+            "scale": "y",
+            "field": "section"
+          },
+          "height": {
+            "scale": "y",
+            "band": true
+          }
+        }
+      }
+    },
+    {
+      "name": "layer_1_marks",
+      "type": "rule",
+      "style": [
+        "rule"
+      ],
+      "from": {
+        "data": "data_2"
+      },
+      "encode": {
+        "update": {
+          "stroke": {
+            "value": "red"
+          },
+          "x": {
+            "scale": "x",
+            "field": "max_Index"
+          },
+          "y": {
+            "field": {
+              "group": "height"
+            }
+          },
+          "y2": {
+            "value": 0
+          },
+          "strokeWidth": {
+            "value": 3
+          }
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {
+        "fields": [
+          [
+            0,
+            100
+          ],
+          {
+            "data": "data_2",
+            "field": "max_Index"
+          }
+        ]
+      },
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ],
+      "nice": true,
+      "zero": false
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {
+        "data": "data_1",
+        "field": "section",
+        "sort": true
+      },
+      "range": [
+        0,
+        {
+          "signal": "height"
+        }
+      ],
+      "paddingInner": 0.1,
+      "paddingOuter": 0.05
+    },
+    {
+      "name": "color",
+      "type": "sequential",
+      "domain": [
+        0,
+        30,
+        50,
+        55,
+        60,
+        65,
+        70,
+        75,
+        80,
+        90,
+        100
+      ],
+      "range": [
+        "#DE7363",
+        "#FB9F38",
+        "#F9B821",
+        "#FBE8C9",
+        "#F5DA01",
+        "#E2D91E",
+        "#CBD641",
+        "#B6D35F",
+        "#A2D180",
+        "#7CC895",
+        "#52BEA9"
+      ],
+      "nice": false,
+      "zero": false
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "grid": false,
+      "labelFlush": true,
+      "labelOverlap": true,
+      "tickCount": {
+        "signal": "ceil(width/40)"
+      },
+      "zindex": 1
+    },
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "grid": true,
+      "tickCount": {
+        "signal": "ceil(width/40)"
+      },
+      "gridScale": "y",
+      "domain": false,
+      "labels": false,
+      "maxExtent": 0,
+      "minExtent": 0,
+      "ticks": false,
+      "zindex": 0
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "grid": false,
+      "domain": false,
+      "labelPadding": -5,
+      "ticks": false,
+      "labelOverlap": true,
+      "zindex": 1
+    }
+  ],
+  "legends": [
+    {
+      "title": "Score",
+      "fill": "color",
+      "type": "gradient"
+    }
+  ],
+  "config": {
+    "axisY": {
+      "minExtent": 30
+    },
+    "style": {
+      "cell": {
+        "stroke": null
+      }
+    }
+  }
+}
