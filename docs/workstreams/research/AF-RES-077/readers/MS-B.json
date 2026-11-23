@@ -1,0 +1,72 @@
+{
+  "brief_id": "MS",
+  "view": "B",
+  "reader_role": "Bounded technical reader; design comparison from the two authorized packets only",
+  "completed_utc": "2026-11-23T11:45:42.357619+00:00",
+  "read_files": [
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/MS-common.json",
+      "sha256": "00b3b8932b88c17b7257141e568d96bb4252db5c6bb0b14141c88c0e95a8554c"
+    },
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/MS-B.json",
+      "sha256": "dc3e44299fd6b645eb6e7a8425216eb4a47abaaf1f89dc710f8a3cc6d1c767bf"
+    }
+  ],
+  "source_prior_familiarity": "General background familiarity includes object identity, UI selection, textual witnesses, and undo commands. Familiarity with these exact sources through pretraining is unmeasurable. No remembered source detail supplements the supplied evidence.",
+  "extra_source_opens": [],
+  "target": {
+    "project": "musescore/MuseScore",
+    "tag": "v3.0.1",
+    "sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "fixed_inputs": "MS-N, MS-E, and MS-X remain exactly as supplied."
+  },
+  "candidates": [
+    {
+      "id": "local_excerpt_reset",
+      "proposal": "Clear inherited selection on every materialized destination element during excerpt creation, while retaining existing musical linking and track mapping.",
+      "objects_keys_functions_to_change": "Change Excerpt::createExcerpt/cloneStaves in excerpt.cpp at the destination-clone boundary to invoke Element::setSelected(false). Coverage must include materialized child elements, not merely a container. The ownership traversal is unspecified in the packet and requires later implementation inspection. Preserve the source Element, destination Selection element list, mapped track, position, color, and non-SELECTED flags. Do not modify ScoreElement::linkTo/unlink, LinkUnlink, or linkedMain/linked/indexDiff serialization.",
+      "event_write_order": "Use the existing map to admit a destination track, preserving stated system-element exceptions. Obtain the linked clone through the established creation path; retain the existing Link undo registration. Clear selection before exposing the destination element to rendering or user interaction. Do not insert it into P1 Selection. Finish creation, then execute the separate pitch command and its single undo. Save current musical properties and links; reload through existing readers. These operations must not clear the master selection or enroll P2.",
+      "recovery_refusal": "Use only the existing accessible command record for session undo. If construction fails, do not expose the partial excerpt; rely on an established rollback path if available. Its existence is unverified. Missing history never authorizes inferring an earlier pitch.",
+      "persistence_and_maintenance_costs": "No new persistent schema or history journal. Clearing costs one selection operation per destination element and adds clone-coverage maintenance. Multiple excerpt creation routes or nested notes could escape the boundary; coverage is the principal implementation risk."
+    },
+    {
+      "id": "global_copy_reset",
+      "proposal": "Make all copied Elements begin unselected, establishing a universal copy-constructor invariant.",
+      "objects_keys_functions_to_change": "Change Element copy construction in element.cpp so copied _flags exclude SELECTED, identified as 0x40. Preserve every other copied flag and track/position/color. Leave Selection, linkedClone, excerpt track mapping, musical link membership, and persistence keys unchanged.",
+      "event_write_order": "Copy durable element properties while removing SELECTED; then allow the existing clone, autoplace, Link registration, and mapped destination insertion order to proceed. Perform pitch editing, undo, saving, and reading through existing operations. No intermediate cloned Element carries the inherited selection bit.",
+      "recovery_refusal": "Keep existing session undo and construction rollback contracts. This constructor change supplies no command history and cannot recover a former pitch after reopening without a record. Refuse or leave unavailable that undo action.",
+      "persistence_and_maintenance_costs": "No storage additions and constant flag-masking cost per copy. Centralized coverage reduces excerpt-specific maintenance but changes every constructor client. A copy used for undo snapshots, replacement, or another operation might legitimately preserve selection; those possibilities are risks, not established uses."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "local_excerpt_reset",
+    "reason": "The established request concerns newly created parts. Local clearing addresses the copied-flag mechanism without asserting an unsupported invariant for all Element copies. It preserves explicit link and mapped-track mechanisms independently of selection. Both candidates predict the same fixed-case outcomes when fully implemented, so the choice rests on scope and maintenance risk, not discriminatory test evidence."
+  },
+  "source_to_choice": {
+    "donor_warrants": "The TEI excerpt assigns unique identifiers to witnesses, explicitly associates readings with witnesses, and limits complement calculations to witnesses active at a location. It also recognizes that explicit enumeration may reduce encoding errors. This warrants treating identity references and participation scope as distinct information in its own textual-apparatus domain.",
+    "target_warrants": "The common packet identifies inherited _flags as the selection mechanism, selection lists as score-local, and musical links and mapped tracks as separate mechanisms. These facts support clearing an appearance flag without unlinking musical content.",
+    "inference": "I transfer the distinction, not a data format: explicit link membership represents musical association, while track eligibility and local Selection represent different scopes. Neither selection nor its absence should infer membership. Preferring a local reset over a constructor invariant is my engineering inference; TEI does not prescribe either function change.",
+    "rejected_transfer": "Witness identifiers and variant attribution do not encode temporal command order, previous values, or an inverse operation. I explicitly reject using the donor principle to warrant rollback, undo reconstruction, or recovery after history loss. Active-witness subtraction also cannot authorize adding links to every apparently eligible part."
+  },
+  "predictions": [
+    {
+      "case": "MS-N",
+      "local_excerpt_reset": "At creation, P1 clone pitch60/track0 has selected=false, empty Selection, and ordinary curColor. Under existing musical edit/undo contracts, m1 and its P1 member change to62 and return to60. P2 u1 remains67 with offset8. The saved score file, whose filename is unspecified, records current pitches and linkedMain/linked/indexDiff relationships; reopened objects retain those memberships.",
+      "global_copy_reset": "Same expected observable trace: P1 unselected with empty list, linked pitches60→62→60, P2 pitch67/offset8 unchanged, and current pitch60 plus membership surviving serialization. This case does not distinguish the candidates."
+    },
+    {
+      "case": "MS-E",
+      "local_excerpt_reset": "Immediately after creation, master m1 remains selected in its source list; P1 clone has selected=false and an empty local list. Musical pitches follow60→62→60 under the existing command contracts. P2 remains67/offset8; saved and reloaded links identify the same musical members.",
+      "global_copy_reset": "Same expected observations, with selection removed during construction instead of at the excerpt boundary. Neither candidate should unlink the clone or modify source selection to fix its appearance. Reopened selection appearance requires checking because the packet does not specify selection deserialization."
+    },
+    {
+      "case": "MS-X",
+      "local_excerpt_reset": "An empty new-session undo stack offers no supported inverse action: unavailable or refused, with exact UI unspecified. Only current pitch62 and linked members are established. No earlier pitch is recoverable; objects and the reopened file remain unchanged.",
+      "global_copy_reset": "Identical refusal. Constructor selection policy supplies no historical information. Preserve current pitch62 and existing links; do not fabricate a predecessor from the other fixed cases."
+    }
+  ],
+  "failure_criteria": "Either design fails if P1 appears selected without selection-list membership, linked edits or undo diverge, mapped tracks change, P2 pitch/layout changes, reopening loses membership, or MS-X invents history. Local reset additionally fails implementation coverage if any destination descendant retains SELECTED. Predicted edit/undo and reload behavior is conditional, not observed.",
+  "smallest_evidence_reversing_decision": "A verified target-version constructor contract stating that every copied Element must start unselected would remove the main objection to global reset and favor its centralized coverage. Conversely, one actual copy use requiring preserved selection would reinforce local scope. Neither piece of evidence is supplied.",
+  "limitations": "No target-code or test outcomes were consulted. The packet does not establish affected-build status, exact clone traversal, pitch-command implementation, rollback availability, or selection persistence. The donor is a short primary excerpt; the target request is auxiliary and its original tracker inaccessible. This is a bounded proposal, not verified behavior."
+}

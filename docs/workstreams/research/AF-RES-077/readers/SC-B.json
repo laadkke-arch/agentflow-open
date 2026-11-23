@@ -1,0 +1,85 @@
+{
+  "brief_id": "SC",
+  "view": "B",
+  "reader_role": "Bounded technical reader; proposal assessment using exactly two packets",
+  "completed_utc": "2026-11-23T11:46:13.384572+00:00",
+  "target": {
+    "project": "mltframework/shotcut",
+    "tag": "v20.09.13",
+    "sha": "0898bdf3fc0f9f3fbf78336bad21d5506e19c118",
+    "fixed_inputs": "SC-N, SC-E, and SC-X unchanged"
+  },
+  "read_files": [
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SC-common.json",
+      "sha256": "efe7bcda2e75aa759d476cba554e684bc623bee2254bdded233ab3c9ca9b555b"
+    },
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SC-B.json",
+      "sha256": "7e2d1a45264d08fa263e725b2497ed57dae52cb12c605658fbceb0647537ee77"
+    }
+  ],
+  "source_prior_familiarity": {
+    "session_access": "Only these two packets were opened, once each. Linked source pages were not opened.",
+    "pretraining_knowledge": "Pretraining familiarity with darktable, Shotcut, metadata authority, and hashing is unmeasurable and cannot be excluded. Claims of source support below refer only to supplied text."
+  },
+  "extra_source_opens": [],
+  "candidates": [
+    {
+      "id": "S",
+      "name": "Producer-scoped association with sampled-hash relinking",
+      "proposal": "Preserve independent associations and scan all candidates before selecting. Automatically accept one matching stored sample hash; refuse filename-only mismatches and multiple matching candidates. Basenames locate possibilities, never authorize replacement.",
+      "objects_keys_functions_to_change": "In each producer retain shotcut:resource and shotcut:hash; add proposed shotcut:association_id, shotcut:proxy_generation, and shotcut:binding_state. Change UnlinkedFilesDialog::lookInDir to collect candidates and fixUnlinkedFile to update only the selected producer. Carry association state through ProxyManager::resource, MltXmlChecker::checkForProxy, and ProxyManager::filterXML/processProperties. Retain the described sampled getFileHash algorithm.",
+      "event_write_order": [
+        "Resolve a unique sample match, then stage that producer association without modifying another producer or any original media.",
+        "Write pending proxy output under an association-specific temporary filename. Complete the job, publish its file by rename, and only then publish the generation binding.",
+        "Save original-resource XML and binding together through temporary-file replacement. On disable, select the recorded original before saving."
+      ],
+      "recovery_refusal": "A crash before binding publication leaves disposable output; an interrupted binding remains pending and cannot authorize proxy playback. Keep the previous committed association where usable. Missing or ambiguous originals remain unresolved. Never repair every producer sharing a basename.",
+      "persistence_maintenance_costs": "Small per-producer XML additions, migration defaults, pending-file cleanup, and serialization maintenance. Relinking costs directory traversal and sampled reads. Cached hashes still cannot establish whether an externally replaced original changed."
+    },
+    {
+      "id": "F",
+      "name": "Producer-scoped association with verified content provenance",
+      "proposal": "Extend S with whole-content provenance for newly established bindings. Legacy sampled matches remain suggestions requiring identity confirmation when the original is missing. Refuse proxy playback when provenance is absent or disagrees. Direct restoration to the recorded existing original remains available.",
+      "objects_keys_functions_to_change": "Add proposed shotcut:source_digest, shotcut:proxy_source_digest, and shotcut:digest_algorithm on the producer association. Introduce a fresh full-content verification helper beside Util::getHash/getFileHash; do not reinterpret shotcut:hash. Gate checkForProxy and proxy selection on provenance. Ensure filterXML/processProperties preserves these fields while restoring the original resource.",
+      "event_write_order": [
+        "Establish source identity through an existing verified binding or explicit confirmation; capture a stable source snapshot and compute its full digest. If stable capture cannot be established, refuse generation.",
+        "Generate into a temporary proxy from that captured source. Publish the proxy file first, then commit its generation and source digest together in the producer binding; atomically replace saved XML last.",
+        "Before subsequent proxy use, freshly verify the original against the recorded full digest. Missing historical provenance is an unverified state, never a newly invented historical digest."
+      ],
+      "recovery_refusal": "Preserve original files and previous binding evidence. Refuse missing, ambiguous, unverified, or changed sources. Offer explicit relink or acceptance of the current revision followed by regeneration; never claim that a proxy reconstructs its original. Resume or discard pending output using its generation record.",
+      "persistence_maintenance_costs": "Additional digest and provenance fields, stable snapshot storage during jobs, full-file read costs, migration handling, cache invalidation, and cleanup. Reverification must not rely solely on copied metadata. Legacy projects incur confirmation or regeneration work; schema support and snapshot guarantees require implementation investigation."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "F",
+    "reason": "Choose F because refusing an unsupported association best satisfies the prohibition on silently substituting media. S resolves the supplied collision case efficiently but knowingly permits the stale preview in SC-X. F sacrifices unattended legacy recovery and diagnoses insufficient evidence, not necessarily the underlying modification."
+  },
+  "source_to_choice": {
+    "source_warrants": "The darktable excerpts describe independent metadata histories for versions sharing one input, database precedence over sidecars, and an optional startup conflict choice. They support separating producer-specific editing state and making competing authorities explicit.",
+    "inference": "Applying that separation to Shotcut producer bindings is an analogy. Content digests, candidate filtering, generation publication order, immutable capture, and refusal thresholds are engineering inferences from the supplied target conditions, not documented darktable mechanisms.",
+    "rejected_transfer": "Reject transferring database precedence into automatic media overwrite or relinking. The donor provides no inverse mapping from proxy to original, no content-identity guarantee, and no warranted recovery policy for replaced or missing media. Independent sidecars also do not prevent changes to their shared underlying input."
+  },
+  "predictions": {
+    "SC-N": {
+      "S": "p1 activates /old/camA/clip.mp4 when disabled. Saved XML retains that original; reopening renders RED. /cache/H1.mp4 remains inactive.",
+      "F": "Same original-resource and RED result. Legacy proxy provenance may remain unverified, but disabling does not require trusting the proxy. Saved p1 retains the original path and binding state."
+    },
+    "SC-E": {
+      "S": "Scan BLUE first without committing; reject its H_BLUE mismatch. Select the unique H_RED candidate /new/camA/clip.mp4. Commit only p1, generate its RED proxy, and preserve that association through save/reopen. p2 remains /new/camB/clip.mp4 and BLUE.",
+      "F": "Present /new/camA/clip.mp4 as the sample-matching suggestion, but no historical full digest or human confirmation authorizes commitment. Refuse new p1 proxy binding. Saved p1 retains /old/camA/clip.mp4 with unresolved/unverified state; p2 remains BLUE. This is intentional refusal despite researcher-known identity."
+    },
+    "SC-X": {
+      "S": "The cached or recomputed sampled hash is unchanged. Existing proxy-backed preview shows the old revision while the original contains middle D. No stale-content detection or refusal is expected.",
+      "F": "Existing inputs supply no historical full digest, so the change cannot be proved by hashing the current original alone. Mark the binding unverified and refuse the old proxy preview. Preserve original bytes and proxy file; expose missing-provenance evidence. Regeneration awaits an explicit recovery decision."
+    }
+  },
+  "failure_criteria": [
+    "Any p2 mutation in SC-E, wrong original resource after SC-N reopening, or filename-only automatic substitution violates the preservation conditions.",
+    "F fails if it presents the old SC-X proxy as verified, fabricates historical provenance from current bytes, or publishes a committed binding before its completed proxy exists.",
+    "A refusal without an actionable producer-specific explanation and recovery choice leaves the proposed workflow incomplete."
+  ],
+  "smallest_evidence_reversing_decision": "One pinned-version trace showing F loses its provenance fields during ordinary save/reopen, then accepts the old SC-X proxy as verified, would withdraw this choice pending redesign. Evidence of an independently checked revision mechanism already detecting the unchanged SC-X fixture would instead weaken the reason to prefer F over cheaper S.",
+  "limitations": "These are conditional design predictions, not observed runtime outcomes. Only interface summaries and donor excerpts were supplied. Serialization support, concurrency, snapshot feasibility, and filesystem atomicity remain unverified. SC-X is not yet a valid-media GUI fixture. The issue is auxiliary, exact installed binary is unknown, and these research cases do not establish the reported black-timeline cause."
+}

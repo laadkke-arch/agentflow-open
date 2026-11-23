@@ -1,0 +1,73 @@
+{
+  "brief_id": "SG",
+  "view": "B",
+  "reader_role": "Bounded technical reader; prospective design assessment from two supplied packets only.",
+  "completed_utc": "2026-11-23T11:46:21.117679+00:00",
+  "read_files": [
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SG-common.json",
+      "sha256": "63ecd7772091f830f37b91761b0d9874ede03359d0094f2e1bd5af75b0d37316",
+      "reads": 1
+    },
+    {
+      "path": "/workspace/scratch/7da6ec5e3bc5/agentflow-open/docs/workstreams/research/AF-RES-077/packets/SG-B.json",
+      "sha256": "97c54fd0ffc373ddf5083308a041952b62c899256d1c9f6c0942d3167e01eedd",
+      "reads": 1
+    }
+  ],
+  "source_prior_familiarity": "Exact prior familiarity with these excerpts is unknown. Pretraining knowledge and exposure are unmeasurable. General knowledge of hashing, relative references, and staged edits informs proposals but supplies no additional empirical evidence.",
+  "extra_source_opens": [],
+  "target_version": {
+    "project": "Sigil-Ebook/Sigil",
+    "tag": "0.9.17",
+    "sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+    "qualification": "Operational pin only; reporter's installed version is unconfirmed. Fixed inputs remain unchanged."
+  },
+  "candidates": [
+    {
+      "id": "digest_catalog",
+      "proposal": "Persist versioned file-digest inventories, mapping each digest to physical content paths and logical chapter paths. Detect affected links by their original resolved document. Relocate an affected fragment only when a book-wide post-edit fragment multimap yields exactly one location. Refuse ambiguous operations before applying any change. This conservative catalog design deliberately has no original-document-to-segment provenance relation.",
+      "objects_keys_functions": "Add DigestSplitInventory with manifest[digest] and versions[revision].state[digest] path arrays; retain duplicate locations in a fragment multimap instead of overwriting them. Extend AnchorUpdates update methods to demand a singleton candidate. Book split methods stage inventories and text together.",
+      "event_write_order": "Snapshot original texts and digest/path state; parse links; construct proposed segments and final paths; collect candidates; reject ambiguity; serialize proposed texts; apply SetText; invoke SaveToDisk; publish the inventory only after successful saves. A published inventory is an integrity record, not proof that publication was atomic.",
+      "recovery_refusal": "Duplicate or absent candidate targets reject the whole requested operation. Retained original texts permit attempted compensation before saving. After interrupted disk writes, inventory discrepancies require explicit reconciliation; selecting the newest-looking inventory is unsafe.",
+      "persistence_and_maintenance_costs": "Requires durable inventory files, retained content snapshots, revision identifiers, consistency validation, retention rules, and cleanup. Storage grows with retained changed chapter bytes; digest recalculation follows every href rewrite. These costs exceed the immediate link-preservation need."
+    },
+    {
+      "id": "scoped_relocation",
+      "proposal": "Build an operation-local relocation map keyed by original canonical book path plus fragment, with a destination chapter path and unique source occurrence. Associate occurrences with segments during the split. Resolve each href against its pre-edit reference base, then regenerate its relative path from the reference's final location. Subsequent movement uses the same relocation mechanism.",
+      "objects_keys_functions": "Introduce SplitLinkPlan containing original text/digest, original target key, final reference base, destination, and proposed text. Replace or augment AnchorUpdates::GetIDLocations with scoped multimaps; adapt UpdateAllAnchorsWithIDs and UpdateExternalAnchors to consume the plan. Modify Book::CreateSectionBreakOriginalResource/CreateNewSections to reconcile before saving. A move entry point must also consume this plan; its existing symbol is unknown.",
+      "event_write_order": "Capture original resource/path/text state; validate source occurrence uniqueness; plan segmentation and relocation; calculate all href replacements; validate planned targets; apply SetText; save all affected resources; finish bookkeeping. Delay the described early new-resource save until reconciliation succeeds. Preserve the old reference base even if its containing segment also moves.",
+      "recovery_refusal": "Refuse a referenced duplicate ID within its original document before creating final resources. A stale original-text digest invalidates the plan and forces recomputation. On application failure, restore retained texts and discard tentative resources through explicit cleanup. Disk-failure recovery remains incomplete without additional transaction machinery; do not claim atomicity.",
+      "persistence_and_maintenance_costs": "No permanent digest inventory is required. Keep temporary text snapshots and scoped maps, with memory proportional to affected content and references. Maintain shared split/move planning, URL resolution, and cleanup logic; verify all callers preserve document scope."
+    }
+  ],
+  "chosen_candidate": {
+    "id": "scoped_relocation",
+    "reason": "It represents the identity distinction demanded by SG-C2 and can complete SG-E without treating independent chapters' IDs as ambiguous. The digest catalog safely refuses that case but cannot satisfy the requested successful transformation. Adding provenance to the catalog would adopt the essential scoped design while retaining greater persistence cost."
+  },
+  "source_to_choice": {
+    "warrant": "OCFL sections 3.5.2 and 3.5.3.1 distinguish digest-indexed physical content paths from version-specific logical paths, allow multiple paths per digest, and require unique non-conflicting logical paths. This warrants separating content equality from location. The common packet supplies the split/update interface, separate SetText and SaveToDisk behavior, and the two required identity conditions.",
+    "inference": "Using original document plus fragment as identity, carrying segment provenance, staging writes, and rejecting ambiguity are engineering inferences from the fixed cases. OCFL does not prescribe HTML reference rewriting. Its logical-path restrictions apply usefully to canonical inventory keys; copying its prohibition of dot-dot into relative href syntax would wrongly reject legitimate parent-relative links.",
+    "rejected_transfer": "Reject any claim that a file digest or OCFL manifest supplies an inverse split, identifies the intended duplicate anchor, guarantees rollback, or establishes atomic publication. The excerpts specify representations, not recovery protocols. Even identical unchanged bytes cannot choose FIRST versus SECOND in SG-X."
+  },
+  "predictions": [
+    {
+      "case": "SG-N",
+      "digest_catalog": "Accept: Text/ch1.xhtml contains href ch1_1.xhtml#fn; Text/ch1_1.xhtml contains FOOTNOTE_A. Reopening resolves A. A new inventory revision records digests of the rewritten chapters and their paths.",
+      "scoped_relocation": "Accept with the same chapter paths, href, and resolved FOOTNOTE_A after reopening. SplitLinkPlan maps (Text/ch1.xhtml, fn) to Text/ch1_1.xhtml; no permanent inventory appears."
+    },
+    {
+      "case": "SG-E",
+      "digest_catalog": "Refuse before mutation because the proposed global fn candidates include Text/parts/ch1_tail.xhtml and Text/ch2.xhtml. No tail file or new published revision appears; original ch1, ch2, and toc remain. This fails the requirement to complete the split/move despite preserving current links.",
+      "scoped_relocation": "Accept: self in Text/ch1.xhtml and A in Text/toc.xhtml both use parts/ch1_tail.xhtml#fn and resolve FOOTNOTE_A. B remains ch2.xhtml#fn and resolves FOOTNOTE_B. Text/ch2.xhtml remains unchanged. The map separates original ch1/fn from ch2/fn."
+    },
+    {
+      "case": "SG-X",
+      "digest_catalog": "Refuse the two fn occurrences before publishing inventory or chapter changes. Text/ch1.xhtml retains both FIRST and SECOND; its original digest does not identify the intended target.",
+      "scoped_relocation": "Refuse the duplicate (Text/ch1.xhtml, fn) key before SetText or final resource creation. Preserve original bytes, report ambiguity, and do not silently select either occurrence."
+    }
+  ],
+  "failure_criteria": "Reject the chosen design if reopening SG-N or SG-E resolves the wrong content, preserves a stale source path, rewrites toc B, or loses chapter content; also reject silent target selection or final-file mutation on SG-X refusal. A successful GUI update alone is insufficient evidence of persistence.",
+  "smallest_evidence_reversing_decision": "One trace showing that split/move orchestration cannot retain source occurrence provenance would reverse feasibility of this exact plan. One demonstrated requirement for restart recovery before final save would reverse its persistence-cost preference and motivate a durable journal. Neither would establish that digests resolve anchor ambiguity.",
+  "limitations": "Predictions describe proposed candidates, not observed behavior. No Sigil execution, tests, repository inspection, or extra sources were used. Auxiliary report provenance, unconfirmed installed version, unspecified move plumbing, and absent transactional guarantees limit confidence. The fixed ASCII cases do not establish correctness for encoded URLs, malformed markup, or concurrent edits."
+}
