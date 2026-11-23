@@ -251,7 +251,14 @@ GDAL3.10.0 원시험135s의2247행은f접두사없이 `{empty_grid_gtx}`를전�
 
 최종재현순서는 [REPRODUCE.md](REPRODUCE.md),실행하지않은jq/sed/knitr/Pandoc고정원시험의실제runner·입력·환경은 [upstream-execution-plan.md](evidence/audit/upstream-execution-plan.md)에있다. 공통검사는수정없는결과SHAcheckout을owned cache안에만들어실행하며 [run_result_checks.py](run_result_checks.py)에실제명령과기록절차가있다.
 
-실제결과판check/cloud_check는결과를커밋한뒤수행한다. 아직실행을주장하지않는다.
+### 실제 결과판 검사
+
+| 검사 | 실제 대상SHA | 종료값 | 범위·건너뜀 |
+|---|---|---|---|
+| workstream check --fetch | 8b22a47f9daaf8f6bfaaec06f441edb7c78a9ff9 | 0 | af-res-100 manifest, fetched integration/dependency pins, ancestry, conflict and owned-path checks; original research execution excluded |
+| common cloud_check | 8b22a47f9daaf8f6bfaaec06f441edb7c78a9ff9 | 0 | Common gates doctor:0, acceptance:0, research-case:0, original-smoke:0, sessions:0; individual-session result {"status": "not-executed", "reason": "no_active_sessions", "count": 0, "freshness": "not_checked", "contract_sha256": "19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc"} |
+
+[실제명령·UTC·stdout/stderr영수증](evidence/result-checks.json). 이표는실제검사한SHA를명시하며,영수증추가후속커밋을소급해검사했다고하지않는다. 최종GitHub재열람과마지막검사대상은HANDOFF에기록한다.
 
 ## 가장 중요한 남은 불일치·약점
 

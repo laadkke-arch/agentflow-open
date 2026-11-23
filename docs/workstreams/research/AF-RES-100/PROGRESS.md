@@ -58,3 +58,9 @@
 ## 원래 흐름의최종canonical인수
 
 `b3f3694b54bb7a85dc7a21e2731841679fc6753c`의RESULT/SELF_CHECK/recompute/46자료계수를최종기준으로인수했다. 원래흐름은이를다시다른집계로덮지않고직접timeline재열람·60entity귀속대조·실행계획·원문반례·검사runner만추가한다. 두집합32/46은28개중복이며합산하지않는다. 초기사전32판정·16쌍은계속불변이다. 최종재현은assemble_supplement.py와recompute.py를사용한다. 이전assemble_evidence.py·원래source-summary는③계수기록이며canonical총량이아니다.
+
+## 통합결과검사완료
+
+보강결과SHA `8b22a47f9daaf8f6bfaaec06f441edb7c78a9ff9`에서실제작업별check --fetch와공통cloud_check --require-clean을실행해모두종료0이다. 공통sessions는no_active_sessions로개별작업검사를수행하지않았으므로AF100 manifest는별도직접검사했다. 최신fetch통합SHA는ace1a06a13ea435f5cb6a3e340ad24f03f68ecae,계약/소유범위오류0. 두검사는ownedcache안의동일SHA·clean checkout에서수행했다.
+
+원격80e2d74의기존단독HANDOFF는이력과evidence/resume2/handoff-80e2d74.md에보존했다. 보강29파일후속을3ac381d후보로만든동안도착한이인계를덮지않고8b22a47의부모로연결했다. 최종인계는검사영수증이실린결과판을GitHub에서재열람한후다시마지막단독HANDOFF커밋으로완성한다. 주32판정·16쌍과46자료계수는불변이다.
