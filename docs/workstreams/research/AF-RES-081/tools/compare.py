@@ -311,7 +311,7 @@ def markdown(summary):
         for row in (first, second):
             result = row["artifacts"].get("stdout.jsonl", {}).get("path")
             paths.append(f"[r{row['repeat']}]({result})" if result else f"r{row['repeat']} 공석")
-        raw = " · ".join(paths) + f" · {first['exit_code']}/{second['exit_code']}"
+        raw = " · ".join(paths) + f" · exit {first['exit_code']} · {second['exit_code']}"
         if info["repeat_consistency"] != "same":
             problems = ", ".join(r.get("reason", info["repeat_consistency"]) for r in info["readings"])
             print(f"| {case} | {builds} | 판별불능 | 판별불능 | 판별불능 | {raw} | {problems} |")
