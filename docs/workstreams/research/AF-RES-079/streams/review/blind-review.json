@@ -1,0 +1,480 @@
+{
+  "task_id": "AF-RES-079",
+  "artifact": "masked relation reread",
+  "protocol": {
+    "reviewer": "separate tool agent /root/standards_evidence",
+    "reviewer_kind": "separate tool-agent reading; not a human review; different model independence not established",
+    "started_utc": "2026-11-23T11:33:44Z",
+    "completed_utc": "2026-11-23T11:41:51.337317+00:00",
+    "inputs": [
+      {
+        "path": "SCOPE.md",
+        "sha256": "ddd40c967448d6b93cc3620edcc329f40f6a2fb9a5a0358742bbccdc97622267"
+      },
+      {
+        "path": "streams/gis/evidence-packet.json",
+        "sha256": "19e434c08fcf4f9b2a5342fcb7fcd11e862342f700b1e4da8d97bdffc4b121e8"
+      },
+      {
+        "path": "streams/oss/evidence-packet.json",
+        "sha256": "27a6753b1d1d02d3e477d2a16d05d76619abfa821e2f10469b14eb64f76b4982"
+      },
+      {
+        "path": "streams/root/evidence-packet.json",
+        "sha256": "0a970b2b7f25ad17224f7dab89eae744088ca2f485e9607ce0a5ce04fc335593"
+      }
+    ],
+    "no_first_view": true,
+    "first_decisions_or_repair_plans_seen": false,
+    "masked_files_not_read": [
+      "streams/gis/notes, events, relations",
+      "streams/oss/notes, events, relations",
+      "streams/root/notes, events, relations",
+      "RESULT.md"
+    ],
+    "source_selection_blind": false,
+    "source_selection_limit": "The researchers selected source packets; old/new labels and factual source-locator summaries were visible. Identity codes and proposed repairs were not visible. Parent supplied additional source URLs and pointed out a factual date discrepancy, but did not provide identity codes.",
+    "packet_revision": {
+      "initial_read_utc": "2026-11-23T11:33:44Z",
+      "initial_GIS_labels": {
+        "G01": "ARG",
+        "G02": "Parquet"
+      },
+      "finalized_utc": "2026-11-23T11:35:48.215082+00:00",
+      "final_GIS_labels": {
+        "G01": "Rasdaman",
+        "G02": "ARG"
+      },
+      "handling": "Initial provisional sources remain in HTTP receipts for provenance. Provisional Parquet is excluded from the final six-case review; original ARG receipts support final G02. Current packet SHA256 values above fix final identities."
+    },
+    "locator_correction": "An initial O02 old-version URL named quadrature.py and returned404. Same-commit _quadrature.py was opened successfully. The final packet already contains the corrected URL.",
+    "direct_read_method": [
+      "public primary pages through web open",
+      "raw.githubusercontent.com and api.github.com through Python urllib GET"
+    ],
+    "software_executed": false,
+    "evidence_classification": "Source code, provider documentation, and provider-reported observations read directly. No library binaries were installed or behavior tests run by this reviewer.",
+    "agreement_rate_calculated": false,
+    "agreement_reason": "First decisions remain masked; the root researcher may compare scope-matched decisions only after this review is frozen.",
+    "recruitment_audit_limit": "Six supplied cases reviewed. Full release-note frame ordering and all exclusion decisions were not independently re-audited under the source-packet restriction."
+  },
+  "cases": [
+    {
+      "event_id": "G01",
+      "stratum": "natural",
+      "field": "GIS",
+      "identity_scope": "Logical RASDAMAN GDAL driver is distinct from the GDAL-core distribution membership and the archived source-artifact location.",
+      "old": {
+        "id": "GDAL-driver:RASDAMAN",
+        "namespace": "GDAL driver short name",
+        "kind": "driver/function",
+        "edition": "pre-removal source b77481ccf9f84a708fd37a13a7e0a3384fdf1622",
+        "container": "OSGeo/gdal integrated driver"
+      },
+      "new": {
+        "id": "GDAL-driver:RASDAMAN",
+        "namespace": "GDAL driver short name retained in archived source",
+        "kind": "driver/function source, not a proven installed replacement",
+        "edition": "extra-drivers ffe0c44714a491eb90ba82d8df74f621ac6003e7",
+        "container": "OSGeo/gdal-extra-drivers/not_integrated_in_build/rasdaman"
+      },
+      "primary_code": "①",
+      "additional_codes": [
+        "④"
+      ],
+      "scoped_decisions": [
+        {
+          "code": "①",
+          "scope": "logical driver/source lineage",
+          "claim": "Retain the historical RASDAMAN driver ID; OSGeo explicitly relocated that driver source. A repository move alone does not establish a new logical driver."
+        },
+        {
+          "code": "④",
+          "scope": "distinct distribution/source-container records",
+          "claim": "Record direction core-integrated component → separately archived not-integrated source artifact; do not identify the new artifact as an available stock-GDAL driver or a verified replacement package."
+        }
+      ],
+      "relation_direction": "GDAL core RASDAMAN component → OSGeo extra-drivers RASDAMAN source (source relocated; core registration removed in3.7.0)",
+      "lineage_evidence": "GDAL3.7.0 NEWS names the move; maintainer comment2023-03-12 and receiver commit2023-03-12 agree. Receiver README lists the code as not integrated in the build.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "Frozen raster fixture; unchanged RASDAMAN lookup/open in stock GDAL after removal. Driver actually uses a rasql database-query input, so a file-only fixture is not directly applicable. Georeferencing remains a required declared attribute.",
+          "expected": "Old call reads required values and georeferencing.",
+          "observed": "Static: old registration exists; 3.7.0 registration does not. Receiver driver documentation explicitly lacks georeferencing read/write support. No server/database query or installed before/after pair run.",
+          "status": "not demonstrated; unchanged stock-GDAL call predicted unavailable; full georeferencing contract unsupported even before move",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "Create/CreateCopy with the fixed decoded raster, CRS and nodata; new extra-driver source with an exact compatible GDAL build would be needed.",
+          "expected": "Write then old consumer rereads values, CRS and nodata; invalid input rejected.",
+          "observed": "Static old driver registration exposes open but no create callback; receiver code is explicitly outside integrated build and docs lack georeferencing.",
+          "status": "reject claimed full write-contract compatibility from this evidence; actual executable replacement remains unobserved",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://github.com/OSGeo/gdal/blob/ab9cb1a1d4928cdcf2877d8e0c6ad9fc2c79fbc9/NEWS.md#L37-L38",
+        "https://github.com/OSGeo/gdal/blob/b77481ccf9f84a708fd37a13a7e0a3384fdf1622/frmts/gdalallregister.cpp#L158-L160",
+        "https://github.com/OSGeo/gdal/blob/ab9cb1a1d4928cdcf2877d8e0c6ad9fc2c79fbc9/frmts/gdalallregister.cpp",
+        "https://github.com/OSGeo/gdal/blob/b77481ccf9f84a708fd37a13a7e0a3384fdf1622/frmts/rasdaman/rasdamandataset.cpp#L700-L716",
+        "https://github.com/OSGeo/gdal/issues/4808#issuecomment-1465303489",
+        "https://github.com/OSGeo/gdal-extra-drivers/commit/ffe0c44714a491eb90ba82d8df74f621ac6003e7",
+        "https://github.com/OSGeo/gdal-extra-drivers/blob/ffe0c44714a491eb90ba82d8df74f621ac6003e7/README.md",
+        "https://github.com/OSGeo/gdal-extra-drivers/blob/ffe0c44714a491eb90ba82d8df74f621ac6003e7/not_integrated_in_build/rasdaman/rasdaman.rst"
+      ],
+      "counterevidence": "Receiver README blanket heading says removed in GDAL3.5, but the same list now includes Rasdaman. Exact move commit/comment and3.7 NEWS contradict applying that heading to this driver. Source continuity also does not prove binary availability.",
+      "missing": "No before/after executable database input; no compatible extra-driver build; no georeferencing support. No evidence of a mixed historical driver record supplied.",
+      "reopen": "Pin original driver build and an extra-drivers build compatible with a named GDAL version; provide identical rasql fixture, expected raster and exception cases. A supported write/georeferencing implementation would be required to change P2.",
+      "repair": "Keep old ID and versioned original citations; add relocation URL and retirement/container status. Keep source-container relationship separate from a drop-in installation claim.",
+      "comparison_note": "Primary① applies to logical driver identity. If a first decision used distribution artifact as its identity unit, compare the scoped④ decision rather than declaring a disagreement solely from different units."
+    },
+    {
+      "event_id": "G02",
+      "stratum": "natural",
+      "field": "GIS",
+      "identity_scope": "GDAL ARG driver and its historical format support; no concrete successor supplied.",
+      "old": {
+        "id": "GDAL-driver:ARG",
+        "namespace": "GDAL driver short name",
+        "kind": "driver/function",
+        "edition": "GDAL3.8.0 c46fe7e20e33925735ae4b785752795af72823bc"
+      },
+      "new": {
+        "id": null,
+        "namespace": null,
+        "kind": "driver retired; replacement unspecified",
+        "edition": "GDAL3.9.0 bb5ea618e23e498e79e8b8e6bd7215ad94bb2103"
+      },
+      "primary_code": "①",
+      "additional_codes": [
+        "⑤"
+      ],
+      "scoped_decisions": [
+        {
+          "code": "①",
+          "scope": "historical ARG identity",
+          "claim": "Retain ID and previous version evidence, update deprecated3.8/removed3.9 lifecycle."
+        },
+        {
+          "code": "⑤",
+          "scope": "replacement or new-target link",
+          "claim": "Hold: advice to convert to a common format does not nominate a unique successor."
+        }
+      ],
+      "relation_direction": "ARG old support → retired in GDAL3.9.0. No successor edge asserted.",
+      "lineage_evidence": "3.8 NEWS deprecation and old driver doc name planned3.9 removal;3.9 NEWS and missing registration show execution of that plan.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "Same ARG raster, original GDAL call/default environment; frozen raster plus provider ARG fixtures when serializable.",
+          "expected": "Preserve values, nodata, transform, CRS.",
+          "observed": "Provider3.8 tests explicitly set GDAL_ENABLE_DEPRECATED_DRIVER_ARG=YES. After-source registration has no ARG call. No runtime pair was run.",
+          "status": "default compatibility not established; after3.9 old driver call predicted unavailable",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "Create/CreateCopy into a specific replacement format and reread with pinned old consumer.",
+          "expected": "Preserve required data and errors.",
+          "observed": "Old ARG docs expose Create/CreateCopy/georeferencing. No replacement driver or conversion input/output test supplied.",
+          "status": "hold; unspecified alternative is not a tested successor",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://github.com/OSGeo/gdal/blob/c46fe7e20e33925735ae4b785752795af72823bc/NEWS.md#L25",
+        "https://github.com/OSGeo/gdal/blob/bb5ea618e23e498e79e8b8e6bd7215ad94bb2103/NEWS.md#L25",
+        "https://github.com/OSGeo/gdal/issues/7920",
+        "https://github.com/OSGeo/gdal/blob/c46fe7e20e33925735ae4b785752795af72823bc/doc/source/drivers/raster/arg.rst#L16-L37",
+        "https://github.com/OSGeo/gdal/blob/c46fe7e20e33925735ae4b785752795af72823bc/frmts/gdalallregister.cpp#L485-L492",
+        "https://github.com/OSGeo/gdal/blob/bb5ea618e23e498e79e8b8e6bd7215ad94bb2103/frmts/gdalallregister.cpp",
+        "https://github.com/OSGeo/gdal/blob/c46fe7e20e33925735ae4b785752795af72823bc/autotest/gdrivers/arg.py#L48-L51"
+      ],
+      "counterevidence": "A passing provider test definition would not establish default-enable support because the test explicitly opts in; a live raster-driver index would not identify ARG as a current driver.",
+      "missing": "Concrete replacement, identical serialized sample, same-input executions, before-version default config behavior.",
+      "reopen": "Choose a specified replacement format and old consumer version, convert the same ARG fixture, then compare values/dtype/order/CRS/nodata and malformed-file error behavior.",
+      "repair": "Retain old URL as versioned historical citation and retired status; do not silently substitute a general driver index or invent a GeoTIFF successor ID."
+    },
+    {
+      "event_id": "O01",
+      "stratum": "natural",
+      "field": "OSS",
+      "identity_scope": "Named public callable contract within the same SciPy project, including scale direction/default; broad median-absolute-deviation mathematics is not a complete callable identity.",
+      "old": {
+        "id": "scipy.stats.median_absolute_deviation",
+        "namespace": "Python public callable",
+        "kind": "function/API contract",
+        "edition": "1.4.1; preserved deprecated wrapper in1.5.0"
+      },
+      "new": {
+        "id": "scipy.stats.median_abs_deviation",
+        "namespace": "Python public callable",
+        "kind": "function/API contract",
+        "edition": "1.5.0 4c0fd79391e3b2ec2738bf85bb5dab366dcd12e4"
+      },
+      "primary_code": "④",
+      "additional_codes": [],
+      "scoped_decisions": [
+        {
+          "code": "④",
+          "scope": "old/new public callable contracts",
+          "claim": "Directed replacement with scale-argument adaptation, not unconditional alias."
+        },
+        {
+          "code": "③",
+          "scope": "conditional repair only",
+          "claim": "Split only if an existing record actually mixed the two public callable contracts; no such record was supplied, so no observed split is claimed."
+        }
+      ],
+      "relation_direction": "median_absolute_deviation → median_abs_deviation; preserve numeric scale by inverse mapping, not blind name replacement.",
+      "lineage_evidence": "Maintainer PR11431 introduces new name and divisor semantics; pinned1.5 implementation preserves deprecated old wrapper and inverts numeric scale.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "y=[1.,3.,2.], unchanged old public call and defaults,1.4.1→1.5.0.",
+          "expected": "Predicted result1.4826, with old multiplicative scale; any new warning handled separately.",
+          "observed": "Static1.5 wrapper preserves default1.4826 and forwards reciprocal scale. No runtime pair; warnings-as-errors policy not checked.",
+          "status": "qualified static support for old wrapper; complete dtype/NaN/axis/error equivalence unexecuted",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "Same y with new function under default arguments; also scale=2 distinguishing input.",
+          "expected": "Old default1.4826 and old scale=2 result2.0.",
+          "observed": "Static new default predicts1.0; new scale=2 predicts0.5. New implementation divides by scale. These are source-derived predictions, not this reviewer’s executions.",
+          "status": "reject bare rename/default replacement; adapted replacement can reopen after boundary/dtype/error tests",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://docs.scipy.org/doc/scipy-1.4.1/reference/generated/scipy.stats.median_absolute_deviation.html",
+        "https://docs.scipy.org/doc/scipy-1.5.0/reference/generated/scipy.stats.median_abs_deviation.html",
+        "https://github.com/scipy/scipy/pull/11431",
+        "https://github.com/scipy/scipy/blob/4c0fd79391e3b2ec2738bf85bb5dab366dcd12e4/scipy/stats/stats.py#L2878-L3151"
+      ],
+      "counterevidence": "Same publisher and similar function name do not preserve defaults or argument meaning. Old wrapper preservation gives different P1/P2 answers for the same version pair.",
+      "missing": "Executed same-input matrix, exact NaN/dtype/error/warning policy for both versions; no actual mixed identity record provided.",
+      "reopen": "Run pinned1.4.1 and1.5.0 on frozen normal, empty, singleton,2-D, float32, complex and invalid-axis cases; compare old name unchanged and new name with inverse numeric scale separately.",
+      "repair": "Keep old callable/version citation; link new callable as successor with argument mapping and explicit applicability. Do not overwrite old default semantics."
+    },
+    {
+      "event_id": "O02",
+      "stratum": "natural",
+      "field": "OSS",
+      "identity_scope": "Each fully-qualified public function/distribution name separately; four pairs in one coordinated naming campaign are not one mathematical function.",
+      "old": {
+        "id": [
+          "scipy.integrate.simps",
+          "scipy.integrate.trapz",
+          "scipy.integrate.cumtrapz",
+          "scipy.stats.trapz"
+        ],
+        "namespace": "fully-qualified Python public callable/distribution",
+        "kind": "function/API name",
+        "edition": "1.5.4 19acfed431060aafaa963f7e530c95e70cd4b85c"
+      },
+      "new": {
+        "id": [
+          "scipy.integrate.simpson",
+          "scipy.integrate.trapezoid",
+          "scipy.integrate.cumulative_trapezoid",
+          "scipy.stats.trapezoid"
+        ],
+        "namespace": "fully-qualified Python public callable/distribution",
+        "kind": "function/API name",
+        "edition": "1.6.0 ab1c0907fe9255582397db04592d6066745018d3"
+      },
+      "primary_code": "②",
+      "additional_codes": [],
+      "scoped_decisions": [
+        {
+          "code": "②",
+          "scope": "each old/new fully-qualified name pair in1.6.0",
+          "claim": "Official backwards-compatible names with preserved wrappers/alias declaration. Scope ends at inspected release; later presence not inferred."
+        },
+        {
+          "code": "③",
+          "scope": "conditional mixed short-name record",
+          "claim": "Only if an existing record confuses integrate.trapz with stats.trapz; no supplied evidence shows such a mixed record."
+        }
+      ],
+      "relation_direction": "Pairwise old name ↔ new alias name in1.6.0; naming recommendation old→new. No equivalence asserted between different pairs.",
+      "lineage_evidence": "1.6 NEWS keeps old names; PR12927 and12934 reference issue12924 as one coordinated naming decision. Pinned wrappers forward the same arguments for integration names; stats alias independently declared in release notes.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "y=[1.,3.,2.],x=[0.,1.,2.], old integrate names unchanged1.5.4→1.6.0; stats distribution tested only with an appropriate separate provider input.",
+          "expected": "Same numeric/axis behavior and errors.",
+          "observed": "Static old/new cumulative and Simpson implementations and1.6 forwarding wrappers read. No provider test execution; stats numerical pair not run.",
+          "status": "qualified static compatibility for named wrappers; complete frozen input matrix unexecuted",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "Same sampled numeric inputs using the corresponding new integrate names, keeping x/dx/axis/initial/even arguments.",
+          "expected": "Same specified output/error contract.",
+          "observed": "Pinned1.6 wrapper forwarding preserves arguments; identical numerical task is predicted equivalent for that pair. Complete dtype/shape/error and all four-pair behavior not executed.",
+          "status": "qualified static support; runtime acceptance remains hold pending required matrix",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://github.com/scipy/scipy/blob/ab1c0907fe9255582397db04592d6066745018d3/doc/release/1.6.0-notes.rst",
+        "https://github.com/scipy/scipy/pull/12927",
+        "https://github.com/scipy/scipy/pull/12934",
+        "https://github.com/scipy/scipy/issues/12924",
+        "https://github.com/scipy/scipy/blob/19acfed431060aafaa963f7e530c95e70cd4b85c/scipy/integrate/_quadrature.py",
+        "https://github.com/scipy/scipy/blob/ab1c0907fe9255582397db04592d6066745018d3/scipy/integrate/_quadrature.py"
+      ],
+      "counterevidence": "Short name trapz is ambiguous: integrate is numerical quadrature, stats is a probability distribution. Splitting one pair into unrelated jobs creates duplicate work, but merging different fully-qualified functions discards meaning.",
+      "missing": "Full executed numerical/exception matrix for each applicable pair; stats implementation pair independently executed; proof beyond1.6.0.",
+      "reopen": "Execute pinned1.5.4/1.6.0 matrix separately by fully-qualified pair; use distribution-specific inputs for scipy.stats instead of claiming sampled quadrature fixtures cover it.",
+      "repair": "Add scoped aliases pairwise and preserve original fully-qualified citations. One migration-event count is defensible because both PRs implement the same issue12924 campaign; preserve four target-pair subrows."
+    },
+    {
+      "event_id": "C01",
+      "stratum": "control",
+      "field": "OSS control",
+      "identity_scope": "Package import namespace within the same scikit-learn project; not all numerical/API behaviors across a release.",
+      "old": {
+        "id": "scikits.learn",
+        "namespace": "Python import package",
+        "kind": "namespace/package name",
+        "edition": "scikit-learn0.8 f7c9f24511d9b32add23e75bbf0a2a6c223d932f"
+      },
+      "new": {
+        "id": "sklearn",
+        "namespace": "Python import package",
+        "kind": "namespace/package name",
+        "edition": "scikit-learn0.9 3f1ea662ee1b1b08cee63cc31e4e3e36ec532208"
+      },
+      "primary_code": "②",
+      "additional_codes": [
+        "①"
+      ],
+      "scoped_decisions": [
+        {
+          "code": "②",
+          "scope": "import namespace0.9",
+          "claim": "Old namespace retained as a compatibility wrapper; record old/new namespace alias with inspected0.9 scope."
+        },
+        {
+          "code": "①",
+          "scope": "project identity",
+          "claim": "No evidence of a distinct project or fork merely from namespace change."
+        }
+      ],
+      "relation_direction": "scikits.learn → sklearn canonical namespace; old namespace forwards in0.9.",
+      "lineage_evidence": "0.9 API changes explicitly state rename and retained alias; pinned old namespace file imports from sklearn and emits a deprecation warning.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "Original top-level package import under0.8/0.9; model-specific numerical fixture not supplied.",
+          "expected": "Import compatibility and a named old workflow.",
+          "observed": "Static wrapper supports top-level namespace forwarding; deep imports, numerical output and warning policy not executed. Release includes independent API/default changes.",
+          "status": "namespace continuity supported; full workflow compatibility unconfirmed",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "New sklearn import for a specified learning function. Frozen SciPy quadrature fixture is inapplicable.",
+          "expected": "Same function’s output and error contract.",
+          "observed": "No model-specific before/after input provided;0.9 notes include fit-parameter and gamma-default changes.",
+          "status": "hold at function behavior scope; namespace alias alone is insufficient",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://scikit-learn.sourceforge.net/0.9/whats_new.html#api-changes-summary",
+        "https://raw.githubusercontent.com/scikit-learn/scikit-learn/f7c9f24511d9b32add23e75bbf0a2a6c223d932f/scikits/learn/__init__.py",
+        "https://raw.githubusercontent.com/scikit-learn/scikit-learn/3f1ea662ee1b1b08cee63cc31e4e3e36ec532208/scikits/learn/__init__.py"
+      ],
+      "counterevidence": "0.9 rename coexists with actual API/default changes. Announced alias removal at0.11 is an announced endpoint, not directly verified implementation evidence in this packet.",
+      "missing": "Actual deep-import and named estimator input/output pair; actual alias-removal version.",
+      "reopen": "Specify estimator/fit parameters and dataset; run0.8/0.9 with identical call and then migrated import; separately inspect0.11 if recording a verified alias end.",
+      "repair": "Retain project ID; add namespace alias only for verified0.9; preserve old0.8 citation and record planned removal separately from observed removal."
+    },
+    {
+      "event_id": "C02",
+      "stratum": "control",
+      "field": "OSS control",
+      "identity_scope": "PIL and Pillow distributions/projects, separate from the shared PIL import namespace and later PyPI PIL project custody.",
+      "old": {
+        "id": "PIL distribution1.1.7",
+        "namespace": "distribution/project; historically Image/PIL import forms",
+        "kind": "project/distribution",
+        "edition": "PIL1.1.7 released2009-11-15; downstream-preserved attributed README"
+      },
+      "new": {
+        "id": "Pillow distribution",
+        "namespace": "distribution/project; PIL import namespace",
+        "kind": "fork project/distribution",
+        "edition": "fork launch1.0 in2010; pinned2.0 README; current porting/About docs13.0.0 read2026-11-23"
+      },
+      "primary_code": "④",
+      "additional_codes": [],
+      "scoped_decisions": [
+        {
+          "code": "④",
+          "scope": "distribution/project lineage",
+          "claim": "PIL → Pillow friendly fork/successor; distinct distribution IDs retained."
+        },
+        {
+          "code": "③",
+          "scope": "conditional conflated record repair",
+          "claim": "If a record keyed only PIL mixed distribution, import namespace and registry ownership, split those scopes; no actual mixed prior record supplied."
+        }
+      ],
+      "relation_direction": "PIL original project → Pillow fork; separately PyPI PIL project custody → Pillow team in2020. Neither edge makes all distributions interchangeable.",
+      "lineage_evidence": "Alex Clark’s2010 fork notice and Fredrik Lundh’s response are distinct original-party sources. Official Pillow About calls itself a fork. PyPI moderation comments separately document2020 ownership transfer after failed old-owner contact.",
+      "behavior": [
+        {
+          "question": "P1",
+          "input_environment": "PIL1.1.7 import/call depending on installation method under Python2; Pillow corresponding version must be fixed.",
+          "expected": "Old imports and image behavior preserved unchanged.",
+          "observed": "Original2010 report distinguishes easy_install versus setup.py import behavior. Official porting requires namespace changes in some code; later Pillow drops Python2. No same image input across two installed versions run.",
+          "status": "unconditional compatibility rejected; exact version/install/import workflow remains unconfirmed",
+          "execution": false
+        },
+        {
+          "question": "P2",
+          "input_environment": "A named image decode/encode task and plugin/core-extension errors in pinned versions; frozen SciPy numeric fixture is inapplicable.",
+          "expected": "Preserve image output and declared errors.",
+          "observed": "Porting notes document plugin auto-loading and missing-core-extension behavior differences. Current broad drop-in wording does not establish exact output or error equivalence.",
+          "status": "hold pending exact version/fixture; counterexamples block blanket replacement",
+          "execution": false
+        }
+      ],
+      "evidence_urls": [
+        "https://www.pythonware.com/products/pil/",
+        "https://pillow.readthedocs.io/en/stable/about.html",
+        "https://pillow.readthedocs.io/en/stable/porting.html",
+        "https://api.github.com/repos/python-pillow/Pillow/issues/1535/comments?per_page=100",
+        "https://mail.python.org/pipermail/image-sig/2010-August/006480.html",
+        "https://mail.python.org/pipermail/image-sig/2010-July/006423.html",
+        "https://mail.python.org/pipermail/image-sig/2010-August/006429.html",
+        "https://raw.githubusercontent.com/python-pillow/Pillow/baea361b9a29e9a1dfa5a9b8e11bc9624a9cee46/README.rst"
+      ],
+      "source_authority_warning": "The current pythonware.com page footer says this was formerly PythonWare’s site and the current material is newly written. It is not original PIL publisher testimony. Its claimed2011 release conflicts with the2009 release in official About and attributed original README. Exclude that live page from original-author consent evidence.",
+      "counterevidence": "Same import namespace does not establish same distribution. Original author’s response acknowledges the fork but does not declare a product rename or full transfer.2020 PyPI custody transfer is later than2010 fork and does not make old PIL installation a Pillow shim.",
+      "missing": "Version-matched executable before/after image fixture, mode/metadata checks, plugin/missing-core error cases; independent original-host snapshot for exact historical PIL README if stronger provenance required.",
+      "reopen": "Pin PIL1.1.7 environment and a named Pillow version; decode/encode identical image plus plugin and missing-core cases. Preserve the2010 two-party notices and2020 registry custody evidence as different events.",
+      "repair": "Keep original PIL distribution and historical citations; add directed fork/successor relationship and separate registry-custody history. Use attributed pinned README and original mailing-list notices instead of treating today’s old-domain page as original testimony."
+    }
+  ],
+  "coverage": {
+    "natural": {
+      "reviewed": 4,
+      "required": 4
+    },
+    "control": {
+      "reviewed": 2,
+      "required": 2
+    },
+    "cases_with_actual_execution": 0,
+    "first_decision_agreement_rate": null
+  },
+  "classification_warning": "Codes are scope-sensitive.③ is only conditional in this packet because no actual preexisting mixed record was supplied. Do not count conditional splits as observed false merges."
+}
