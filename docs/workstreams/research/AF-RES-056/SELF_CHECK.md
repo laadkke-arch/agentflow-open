@@ -6,7 +6,7 @@
 
 작성·집계 교차 검토: `/root/catalogs`. 이 담당자는 공식 목록 복원과 Schema 예산 밖 진단을 작성했고, root의 최종 출처 집계를 별도 코드로 다시 계산했다. 따라서 자신의 자료를 포함한 팀내 자체 검토이다. `/root/authority_records`는 전거 조사와 일부 Schema 선정 경계 검토, 별도 순위·창 계산 감사를 수행했다. root는 요구 계약 통합·본표·SC032 경로와 C++ 진단을, JSON-LD 담당은 해당 모집·표준·공급자 및 PyLD 진단을 수행했다. **외부·인간·맹검 독립 검토가 아니다.** Git 선후와 역할 분리는 기록했지만 인지적 비노출 전체를 증명하지 않는다. 감사자가 공급자 실행을 독립적으로 재실행한 것으로도 표시하지 않는다.
 
-이 문서는 원장, 두 필수 표, 하위 결과, 실제 검사·실행 영수증을 대조한 자체 검토이다. 문서 작성 때의 집계는 `evidence/review/source-audit-receipt.json`에 고정된 269행판이다. 최종 결과 커밋의 원격 재열람과 session check는 별도의 최종 발행 검증으로 확인해야 하며, 여기서 미리 성공했다고 표시하지 않는다.
+이 문서는 원장, 두 필수 표, 하위 결과, 실제 검사·실행 영수증을 대조한 자체 검토이다. 문서 작성 때의 집계는 `evidence/review/source-audit-receipt.json`에 고정된 269행판이다. 초기 작성 시 최종 gate는 미실시였다. 이후 결과판78cad3d0…의 RESULT/수용원장을 원격에서 바이트 대조했고, 2026-11-23T02:30:15–02:30:24 UTC 실제 session check가 exit0으로 완료됐다. 아래 후속 발행 검증 행은 해당 receipt에만 근거한다.
 
 ## 1. 예정 분모·실측 단위·표와 원장의 대응
 
@@ -162,7 +162,7 @@ CAT006의 데이터 계약은 `/items/required`, L291–292가 정확하다. 원
 | 원장 결합·고유/배당·원문 ID/위치 감사 | 실시;269행에서715검사, 최종 exit0 | `evidence/review/source-audit-receipt.json`;265행 및269첫검사도 별도 보존 |
 | 두 필수 표·원장 ID 대응 | 이 SELF_CHECK 작성 시점의16행/8행·8 ID·16비교와 연결 확인 | RESULT 첫 두 표, matches/slots/windows/judgments |
 | 원 요구 전체·공식 전체 suite·인간 독자 실험 | 미실시 또는 미측정 | 위 Q5/Q6의 구체 범위와 하위 진단 receipt |
-| 최종 결과 고정SHA의 원격 RESULT·수용 원장 재열람 및 session check | 이 문서 작성 시점 미실시인 별도 최종 gate; 성공을 선기록하지 않음 | root가 최종 결과 커밋 뒤 보존할 명령 출력·종료 코드·UTC·원격 판 확인 기록으로만 완료 판단 |
+| 결과 고정SHA의 원격 RESULT·수용 원장 재열람 및 session check | 결과판78cad3d0595e0c40e06cfe1562ceda53c89029c1에서 실제2파일 바이트 일치; check exit0, outside_paths/errors 비어 있음 | evidence/verification/remote-read-result.json 및 session-check-result.json. 당시 final-review.md는 소유 경로의 미커밋 검토였으며 후속 봉인 뒤 깨끗한 반복검사는 HANDOFF에서 별도 연결 |
 
 이미 수행한 감사의 재생 명령은 다음과 같다. 새 증거를 얻는 명령과 같은 입력을 다시 계산하는 명령을 구분한다.
 
@@ -174,7 +174,7 @@ python -B docs/workstreams/research/AF-RES-056/evidence/review/source_audit.py
 
 각 감사가 입력으로 쓰는 고정 Git 객체·창 receipt·원장 파일이 필요하다. source_audit.py의 Schema40 재해시에는 공개 저장하지 않은 최초 body 캐시도 필요하며, [재생 입력 안내](evidence/REPLAY.md)의 동일 ID·GUID·hash 검증으로 복구해야 한다. 캐시 없이 그 감사가 즉시 재생된다고 주장하지 않는다. 원래 홈페이지 응답이 없으면 나중의 live 홈페이지로 교체해 같은 창 검증이라고 할 수 없다. 공급자 재생은 `evidence/windows/FINDINGS.md`, `evidence/schema-diagnostics/FINDINGS.md`, `evidence/ld-suppliers/REPLAY_PLAN.md`의 정확한 SHA·입력·환경과 별도 출력 파일을 따른다. 해당 재생이 원 요구 전체를 검증하는 것은 아니다.
 
-최종 결과가 커밋된 뒤 root가 실행할 고정 명령은 아래와 같다. 이 문서 자체는 그 실행의 receipt가 아니다.
+결과판78cad3d0… 커밋 뒤 root가 실제 실행한 고정 명령은 아래와 같다. 이 문서 자체가 실행 receipt를 대신하지 않으며 stdout·stderr·UTC·exit는 위 verification 파일에 있다.
 
 ```bash
 python -B -m workbench.session check docs/workstreams/research/AF-RES-056/manifest.json --fetch

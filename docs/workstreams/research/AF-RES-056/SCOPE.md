@@ -98,3 +98,9 @@ Schema의 Validator 표제와 validation이라는 기능명은 서로 다른 철
 별도 문맥의 표/카드 검토에서 Python4.26 표기를 Python3.12.14 / python-jsonschema4.26.0으로 정정하고, 모집 당시 목적지 미열람과 이후 예산 밖 열람을 분리했다. 최소 PyLD fixture의 선택·b/c/issuer 보존을 원 credential 전체 성공으로 읽지 않도록 서술을 좁히고 JS-2 draft07·LD-3 @version/교체 가능성 미명시를 카드에 보완했다. Framing 절 placeholder는 이미 읽은 §2.1/2.1.1·4.2·4.3으로 표시했다. 동결 모집·용어·순위·입력/출력·본표 판정은 바뀌지 않았다.
 
 최종 서술 교차검토에서 jsonld.js9.0.0은 실행판이 아닌 고정 소스판임을 정정했다. SELF_CHECK의 파생형 문구도 허용 validate→validation과 보류 validation→Validator를 구분하도록 바로잡았다. 이는 동결 vocabulary의 실제 내용으로 서술을 맞춘 수정이며 질의 변경이 아니다.
+
+## F. 결과 봉인 뒤 실제 발행 검증
+
+결과/카드/자체검토/수용 원장은 원격 `78cad3d0595e0c40e06cfe1562ceda53c89029c1`로 봉인했다. 그 SHA의 RESULT와 수용 JSON을 GitHub에서 다시 열어 전체 UTF-8 byte 및 blob SHA를 대조했다. 2026-11-23T02:30:15.021867~02:30:24.875953 UTC 지정 session check --fetch의 실제 exit0·status passed·errors/outside_paths 빈 목록을 기록했다. 당시 소유경로의 final-review.md만 미커밋 검토로 남아 있었다. 이 Git 검사로 역사 모집이나 원 구현 완결을 승격하지 않는다.
+
+수용 원장의 미실시 gate를 실제 receipt에 근거해 완료로 갱신하고, 기실행 진단 재생까지 묶던 unexecuted_commands_and_inputs 필드는 최종 검토 권고대로 reproduction_commands_and_remaining_inputs로 바꾼다. 원문·질의·순위·실행결과·RESULT 본문은 바꾸지 않았다. 본문 말미 빈줄 하나의 발행 검사 실패는 prepublication-check.json에 보존하고 단일 끝줄로 정정했다.
