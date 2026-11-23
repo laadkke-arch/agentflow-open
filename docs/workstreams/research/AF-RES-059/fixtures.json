@@ -1,35 +1,573 @@
 {
   "work_id": "AF-RES-059",
-  "window_utc": {"start_inclusive": "2023-03-20T00:00:00Z", "end_exclusive": "2023-04-11T00:00:00Z"},
+  "window_utc": {
+    "start_inclusive": "2023-03-20T00:00:00Z",
+    "end_exclusive": "2023-04-11T00:00:00Z"
+  },
   "coordinate": "Unix instant to local, positive seconds east of UTC",
-  "consumers": ["pandas-dev/pandas", "grafana/grafana"],
+  "consumers": [
+    "pandas-dev/pandas",
+    "grafana/grafana"
+  ],
   "inputs": [
-    {"id": "B21", "zone": "Asia/Beirut", "utc": "2023-04-20T21:00:00Z", "unix_seconds": 1682024400},
-    {"id": "B23", "zone": "Asia/Beirut", "utc": "2023-04-20T23:00:00Z", "unix_seconds": 1682031600},
-    {"id": "N21", "zone": "America/New_York", "utc": "2023-04-20T21:00:00Z", "unix_seconds": 1682024400},
-    {"id": "N23", "zone": "America/New_York", "utc": "2023-04-20T23:00:00Z", "unix_seconds": 1682031600}
+    {
+      "id": "B21",
+      "zone": "Asia/Beirut",
+      "utc": "2023-04-20T21:00:00Z",
+      "unix_seconds": 1682024400
+    },
+    {
+      "id": "B23",
+      "zone": "Asia/Beirut",
+      "utc": "2023-04-20T23:00:00Z",
+      "unix_seconds": 1682031600
+    },
+    {
+      "id": "N21",
+      "zone": "America/New_York",
+      "utc": "2023-04-20T21:00:00Z",
+      "unix_seconds": 1682024400
+    },
+    {
+      "id": "N23",
+      "zone": "America/New_York",
+      "utc": "2023-04-20T23:00:00Z",
+      "unix_seconds": 1682031600
+    }
   ],
   "reference": {
-    "B21_normal": {"offset_s": 10800, "wall": "2023-04-21T00:00:00", "abbr": "EEST"},
-    "B21_2023b": {"offset_s": 7200, "wall": "2023-04-20T23:00:00", "abbr": "EET"},
-    "B23": {"offset_s": 10800, "wall": "2023-04-21T02:00:00", "abbr": "EEST"},
-    "N21": {"offset_s": -14400, "wall": "2023-04-20T17:00:00", "abbr": "EDT"},
-    "N23": {"offset_s": -14400, "wall": "2023-04-20T19:00:00", "abbr": "EDT"}
+    "B21_normal": {
+      "offset_s": 10800,
+      "wall": "2023-04-21T00:00:00",
+      "abbr": "EEST"
+    },
+    "B21_2023b": {
+      "offset_s": 7200,
+      "wall": "2023-04-20T23:00:00",
+      "abbr": "EET"
+    },
+    "B23": {
+      "offset_s": 10800,
+      "wall": "2023-04-21T02:00:00",
+      "abbr": "EEST"
+    },
+    "N21": {
+      "offset_s": -14400,
+      "wall": "2023-04-20T17:00:00",
+      "abbr": "EDT"
+    },
+    "N23": {
+      "offset_s": -14400,
+      "wall": "2023-04-20T19:00:00",
+      "abbr": "EDT"
+    }
   },
   "basis": {
     "B21_B23": "AF-RES-055@f3faf7002c287d103f380c23d04a344e6d40ebc1 runs.jsonl lines 13–16 and evidence/contrasts.json tzdb.reversion",
     "N21_N23": "Prediction from Rule US March Sun>=8 +1h and America/New_York base -5h, to be checked directly in each upstream source"
   },
   "fingerprint_instants_utc": [
-    "2023-03-25T21:59:59Z", "2023-03-25T22:00:00Z",
-    "2023-04-20T21:59:59Z", "2023-04-20T22:00:00Z"
+    "2023-03-25T21:59:59Z",
+    "2023-03-25T22:00:00Z",
+    "2023-04-20T21:59:59Z",
+    "2023-04-20T22:00:00Z"
   ],
   "controls": {
-    "relabel": {"donor": "nearest earlier full normal edition in each ecosystem", "claimed": "first observed edition expected to carry 2023b, if present; otherwise first subsequent claimed edition", "target": "B21", "strict_expected": "reject exact-member mismatch even if value agrees"},
-    "python_default": {"wheel": "same chosen claimed edition as relabel control", "experiments": ["normal TZPATH before wheel", "empty PYTHONTZPATH forces wheel fallback"], "target": "B21"},
-    "node_host": {"experiment": "Intl.DateTimeFormat with explicit zone, report ICU tz version and platform, track display token separately", "target": "B21"},
-    "wall_as_utc": {"experiment": "strip Z from B21 clock digits and parse as Beirut local, expose changed Unix time", "target": "B21"},
-    "bundles": {"experiment": "execute present reduced-data builds separately, record published range and distinguish absent zone from out-of-range extrapolation"}
+    "relabel": {
+      "donor": "nearest earlier full normal edition in each ecosystem",
+      "claimed": "first observed edition expected to carry 2023b, if present; otherwise first subsequent claimed edition",
+      "target": "B21",
+      "strict_expected": "reject exact-member mismatch even if value agrees"
+    },
+    "python_default": {
+      "wheel": "same chosen claimed edition as relabel control",
+      "experiments": [
+        "normal TZPATH before wheel",
+        "empty PYTHONTZPATH forces wheel fallback"
+      ],
+      "target": "B21"
+    },
+    "node_host": {
+      "experiment": "Intl.DateTimeFormat with explicit zone, report ICU tz version and platform, track display token separately",
+      "target": "B21"
+    },
+    "wall_as_utc": {
+      "experiment": "strip Z from B21 clock digits and parse as Beirut local, expose changed Unix time",
+      "target": "B21"
+    },
+    "bundles": {
+      "experiment": "execute present reduced-data builds separately, record published range and distinguish absent zone from out-of-range extrapolation"
+    }
   },
-  "predictions": []
+  "predictions": [
+    {
+      "id": "PYP-2022.7",
+      "ecosystem": "PyPI",
+      "package": "tzdata",
+      "version": "2022.7",
+      "file": "tzdata-2022.7-py2.py3-none-any.whl",
+      "source_id": "PYP-FILE-2022.7-W",
+      "url": "https://files.pythonhosted.org/packages/fa/5e/f99a7df3ae2079211d31ec23b1d34380c7870c26e99159f6e422dcbab538/tzdata-2022.7-py2.py3-none-any.whl",
+      "sha256": "2b88858b0e3120792a3c0635c23daf36a7d7eeeca657c323da299d2094402a0d",
+      "iana": "2022g",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "PYP-2023.1",
+      "ecosystem": "PyPI",
+      "package": "tzdata",
+      "version": "2023.1",
+      "file": "tzdata-2023.1-py2.py3-none-any.whl",
+      "source_id": "PYP-FILE-2023.1-W",
+      "url": "https://files.pythonhosted.org/packages/64/51/39de8e01614e18ca41c5c79140e730dbdc612893ba14662fd41727e70622/tzdata-2023.1-py2.py3-none-any.whl",
+      "sha256": "027ebdafcf386857fc2ce00f3a9e58b7a721d0e8237da60a7abce6d8bbd608a5",
+      "iana": "2023a",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "PYP-2023.2",
+      "ecosystem": "PyPI",
+      "package": "tzdata",
+      "version": "2023.2",
+      "file": "tzdata-2023.2-py2.py3-none-any.whl",
+      "source_id": "PYP-FILE-2023.2-W",
+      "url": "https://files.pythonhosted.org/packages/24/85/4a1b9beb6e1cf19b85f8b33b7a54fec284fead03ca41c37e55f0bc3ef39a/tzdata-2023.2-py2.py3-none-any.whl",
+      "sha256": "905ae9e6744dd9ef5ce94d2aaa2dd00282fee38b670b2133407f23c388f110a1",
+      "iana": "2023b",
+      "expected": {
+        "B21": {
+          "offset_s": 7200,
+          "wall": "2023-04-20T23:00:00",
+          "abbr": "EET"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          7200,
+          "EET"
+        ],
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "PYP-2023.3",
+      "ecosystem": "PyPI",
+      "package": "tzdata",
+      "version": "2023.3",
+      "file": "tzdata-2023.3-py2.py3-none-any.whl",
+      "source_id": "PYP-FILE-2023.3-W",
+      "url": "https://files.pythonhosted.org/packages/d5/fb/a79efcab32b8a1f1ddca7f35109a50e4a80d42ac1c9187ab46522b2407d7/tzdata-2023.3-py2.py3-none-any.whl",
+      "sha256": "7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda",
+      "iana": "2023c",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "PYP-2023.4",
+      "ecosystem": "PyPI",
+      "package": "tzdata",
+      "version": "2023.4",
+      "file": "tzdata-2023.4-py2.py3-none-any.whl",
+      "source_id": "PYP-FILE-2023.4-W",
+      "url": "https://files.pythonhosted.org/packages/a3/fb/52b62131e21b24ee297e4e95ed41eba29647dad0e0051a92bb66b43c70ff/tzdata-2023.4-py2.py3-none-any.whl",
+      "sha256": "aa3ace4329eeacda5b7beb7ea08ece826c28d761cda36e747cfbf97996d39bf3",
+      "iana": "2023d",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "NPM-0.5.41",
+      "ecosystem": "npm",
+      "package": "moment-timezone",
+      "version": "0.5.41",
+      "file": "moment-timezone-0.5.41.tgz",
+      "source_id": "NPM-FILE-0.5.41-T",
+      "url": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.41.tgz",
+      "sha256": "b23d4e159e02ac904e15dd55d6fef71f89d8c5575968fa943da0e1b1a9f1cf43",
+      "iana": "2022g",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "NPM-0.5.42",
+      "ecosystem": "npm",
+      "package": "moment-timezone",
+      "version": "0.5.42",
+      "file": "moment-timezone-0.5.42.tgz",
+      "source_id": "NPM-FILE-0.5.42-T",
+      "url": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.42.tgz",
+      "sha256": "7c03b7592eef9557b2d2e242f763e984b6343b564c1a47a1777f009d11764a76",
+      "iana": "2023b",
+      "expected": {
+        "B21": {
+          "offset_s": 7200,
+          "wall": "2023-04-20T23:00:00",
+          "abbr": "EET"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          7200,
+          "EET"
+        ],
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "NPM-0.5.43",
+      "ecosystem": "npm",
+      "package": "moment-timezone",
+      "version": "0.5.43",
+      "file": "moment-timezone-0.5.43.tgz",
+      "source_id": "NPM-FILE-0.5.43-T",
+      "url": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.43.tgz",
+      "sha256": "468c06d19dfd2a79ad093e861651a1b7d9fd65b48f2587649d28781b75f37c81",
+      "iana": "2023c",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    },
+    {
+      "id": "NPM-0.5.44",
+      "ecosystem": "npm",
+      "package": "moment-timezone",
+      "version": "0.5.44",
+      "file": "moment-timezone-0.5.44.tgz",
+      "source_id": "NPM-FILE-0.5.44-T",
+      "url": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.44.tgz",
+      "sha256": "c6984dbbfb4b08e06742a22280d20b2f436bcb282321a86033907ff67456b3f4",
+      "iana": "2023d",
+      "expected": {
+        "B21": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T00:00:00",
+          "abbr": "EEST"
+        },
+        "B23": {
+          "offset_s": 10800,
+          "wall": "2023-04-21T02:00:00",
+          "abbr": "EEST"
+        },
+        "N21": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T17:00:00",
+          "abbr": "EDT"
+        },
+        "N23": {
+          "offset_s": -14400,
+          "wall": "2023-04-20T19:00:00",
+          "abbr": "EDT"
+        }
+      },
+      "fingerprint_offset_abbr": [
+        [
+          7200,
+          "EET"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ],
+        [
+          10800,
+          "EEST"
+        ]
+      ]
+    }
+  ],
+  "sealed_metadata_at_utc": "2026-11-23T03:21:40.301296Z",
+  "node_dependency": {
+    "package": "moment",
+    "version": "2.29.4",
+    "filename": "moment-2.29.4.tgz",
+    "original_url": "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz",
+    "observed_sha256": "42bc763358b31c962bfd0c2563e6cd66e73b8e952833ed03faf351a3ad871c74",
+    "registry_integrity": "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==",
+    "file_utc": "2022-07-06T16:01:32.700Z"
+  }
 }
