@@ -41,7 +41,7 @@ def cell(v):
 
 def write_csv(path, fields, rows):
     with path.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fields)
+        w = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
         w.writeheader()
         for d in rows:
             w.writerow({k: cell(d.get(k)) for k in fields})
