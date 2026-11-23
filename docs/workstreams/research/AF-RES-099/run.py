@@ -414,12 +414,33 @@ class Study:
             self.route_c_plus(index, embedded=True)
         self.route_c_plus(1, missing=True)
 
+    def preamble_control(self):
+        cwd, env = self.slot("B-CUSTOM-PREAMBLE", observe=True)
+        original = self.tex.read_text()
+        before = r"\begin{document}"
+        original = original.replace(before, r"\definecolor{AFControl}{RGB}{0,94,179}" + "\n" + before, 1)
+        original = original.replace("fill=gray!10", "fill=AFControl!10", 1)
+        # Color must occur inside the transferred block, not only in the document's tikzset.
+        original = original.replace(r"\node[state, initial, accepting]",
+                                    r"\node[state, initial, accepting, draw=AFControl]", 1)
+        path = cwd / TEX
+        path.write_text(original)
+        steps = [
+            execute([self.pdflatex, "-interaction=nonstopmode", "-halt-on-error",
+                     "-jobname=original-custom", TEX], cwd, env, "reference-compile"),
+            self.frozen(cwd, env),
+        ]
+        self.row(cwd, "preamble-dependency-counterexample", steps, digest(path),
+                 derivation="One preamble definecolor and one node draw option depend on AFControl.")
+
     def run(self, stage):
         try:
             if stage == "formats":
                 return 0 if self.build_formats() else 1
             if stage == "calibrate":
                 self.calibration()
+            if stage == "counterexample":
+                self.preamble_control()
             if stage == "matrix":
                 for index in (1, 2):
                     self.route_a(index)
@@ -559,7 +580,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "_trace":
         sys.exit(trace_child())
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=["formats", "calibrate", "matrix"])
+    parser.add_argument("stage", choices=["formats", "calibrate", "matrix", "counterexample"])
     parser.add_argument("--tools", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
