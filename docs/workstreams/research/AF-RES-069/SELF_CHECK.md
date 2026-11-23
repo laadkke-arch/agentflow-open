@@ -56,7 +56,11 @@ python -B -m workbench.session check docs/workstreams/research/AF-RES-069/manife
 ```
 
 <!-- FINAL_VALIDATION_STATUS -->
-최종 delivery 검사·session check·원격 고정판 재열람은 결과 묶음을 커밋한 뒤 실제 SHA와 종료값으로 이 절을 갱신한다. 현재 이 문구 자체는 검사를 완료했다는 증거가 아니다.
+결과 내용 커밋 **0c3ab1c1c8359d3c5f85c8b9e51dc7119f8b2dec**에서 `session check --fetch`를 실제 실행했고 **종료0**이었다. 실행 위치는 `/workspace/scratch/41ae7a55914b/agentflow-open`, 시작/완료는 `2026-11-23T09:26:19.220766+00:00` / `2026-11-23T09:26:29.129963+00:00`이다. fetch가 확인한 통합 HEAD는 **dfe4c46e3e27629d44ff12ec2f613ba4e031c42e**, manifest 시작판은 **76b8c1d15812fbf91b879f8444fd188ae7445802**, 선행은 **18e4449eb0ac04464aee8fa6cc07f1f6a54d0b5d** 그대로다. contract hash는 `19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc`, outside_paths/unmerged_paths/errors는 모두 빈 배열이었다. [전체 영수증](evidence/session-check-result.json).
+
+같은 결과 SHA로 GitHub의 RESULT, source/rank/judgment, 문제·질의·frame, 수용 파일 등 **13파일을 다시 열었다**. 반환한 전체 내용 길이와 Git blob SHA를 로컬 커밋 객체와 대조했고, 원격 JSON/CSV를 다시 파싱한 **8검사 모두 통과**했다. [원격 대조](evidence/result-remote-verification.json). 이 SHA의 수용 파일은 검사 전 pending 항목을 포함하므로, 현재 audit 묶음에서 실제 결과로 갱신한다. 그 다음 고정 audit SHA도 다시 열고 마지막 HANDOFF에 대조를 기록한다.
+
+최종 delivery checker는 같은 결과 HEAD에서 audit 작업 파일을 포함해 **41검사, 실패0, 실제 종료0**이다. RESULT의5표 및 전달한 모든 Markdown 표 열 수, CSV18/23열, 조인, 원래85 source행의 정확한 바이트, 사후14행, 고정 질의·순위·판정 불변을 검사했다. [delivery-audit-committed](evidence/delivery-audit-committed.json). 독립 claim review17항목도 미해결0이며 같은 모델의 후행 검토라는 범위를 유지한다.
 <!-- END_FINAL_VALIDATION_STATUS -->
 
 ## 6. 미실시와 부분 인계 이유

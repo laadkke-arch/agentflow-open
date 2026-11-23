@@ -166,25 +166,41 @@
       "id": "final_delivery_audit",
       "status": "pass",
       "evidence": [
-        "evidence/delivery-audit.json"
+        "evidence/delivery-audit-committed.json"
       ],
       "exit_code": 0,
-      "check_count": 40,
-      "tested_phase": "result working tree based on sealed HEAD; committed-content check follows"
+      "check_count": 41,
+      "tested_phase": "committed result content plus audit-only working changes",
+      "tested_head_sha": "0c3ab1c1c8359d3c5f85c8b9e51dc7119f8b2dec"
     },
     {
       "id": "session_check_fetch",
-      "status": "pending",
-      "command": "python -B -m workbench.session check docs/workstreams/research/AF-RES-069/manifest.json --fetch"
+      "status": "pass",
+      "command": "python -B -m workbench.session check docs/workstreams/research/AF-RES-069/manifest.json --fetch",
+      "exit_code": 0,
+      "tested_head_sha": "0c3ab1c1c8359d3c5f85c8b9e51dc7119f8b2dec",
+      "integration_commit": "dfe4c46e3e27629d44ff12ec2f613ba4e031c42e",
+      "contract_sha256": "19f08ce67f7b9d1914ccf214ac68112f3cefc68c95855c4aac0bbbd3393cd8bc",
+      "evidence": [
+        "evidence/session-check-result.json"
+      ]
     },
     {
       "id": "github_fixed_result_reread",
-      "status": "pending"
+      "status": "pass",
+      "exit_code": 0,
+      "ref": "0c3ab1c1c8359d3c5f85c8b9e51dc7119f8b2dec",
+      "files": 13,
+      "check_count": 8,
+      "evidence": [
+        "evidence/result-remote-verification.json"
+      ]
     },
     {
       "id": "handoff_last_only_commit",
-      "status": "pending",
-      "path": "docs/workstreams/research/AF-RES-069/HANDOFF.md"
+      "status": "required_final_step",
+      "path": "docs/workstreams/research/AF-RES-069/HANDOFF.md",
+      "boundary": "Only HANDOFF is written after the containing audit commit is remotely re-read. Its own commit SHA cannot be embedded in itself; verify final commit diff and final response."
     },
     {
       "id": "final_claim_review",
@@ -194,7 +210,8 @@
       ],
       "initial_findings": 3,
       "unresolved_findings": 0,
-      "boundary": "same-model postseal source-ledger consistency; not independent human or runtime validation"
+      "boundary": "same-model postseal source-ledger consistency; not independent human or runtime validation",
+      "check_count": 17
     }
   ],
   "unmeasured": [
@@ -207,5 +224,8 @@
   ],
   "next_first_action": "Verify selected issues original body revisions and T0 context against saved hashes; do not rerun or alter sealed queries.",
   "resume_environment_commands_and_inputs": "evidence/resume-checks.md",
-  "closure_policy": "PARTIAL remains even if all record/Git checks pass; final exact result and handoff SHAs are in HANDOFF.md."
+  "closure_policy": "PARTIAL remains even if all record/Git checks pass; final exact result and handoff SHAs are in HANDOFF.md.",
+  "validated_result_content_sha": "0c3ab1c1c8359d3c5f85c8b9e51dc7119f8b2dec",
+  "integration_observed_by_final_fetch": "dfe4c46e3e27629d44ff12ec2f613ba4e031c42e",
+  "final_record_check_utc": "2026-11-23T09:28:11.486744+00:00"
 }

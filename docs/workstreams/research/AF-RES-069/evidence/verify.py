@@ -103,6 +103,17 @@ for lineno,line in enumerate(lines+[""],1):
         errors += [{'line':n,'columns':k,'expected':sizes[0]} for (n,_),k in zip(current,sizes) if k!=sizes[0]]
         current=[]
 check("RESULT table rows rectangular",not errors,{'tables':tables,'errors':errors})
+all_md_errors=[]
+for f in sorted(P.rglob('*.md')):
+    group_rows=[]
+    for n,line in enumerate(f.read_text().splitlines()+[''],1):
+        if line.startswith('|'):
+            group_rows.append((n,len(re.split(r'(?<!\\)\|',line))-2))
+        elif group_rows:
+            expected=group_rows[0][1]
+            all_md_errors.extend({'file':str(f.relative_to(P)),'line':i,'columns':w,'expected':expected} for i,w in group_rows if w!=expected)
+            group_rows=[]
+check("all delivered Markdown tables rectangular",not all_md_errors,all_md_errors)
 check("top three tables before Q1",report.index('## 표 1')<report.index('## 표 2')<report.index('## 표 3')<report.index('## Q1'))
 check("Q1..Q8 present",all('## Q'+str(i)+' ' in report for i in range(1,9)))
 check("every fixed query appears in report",all(g[0]['query'] in report for g in group.values()))
