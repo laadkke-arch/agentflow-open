@@ -69,4 +69,15 @@ python -B -m workbench.session check docs/workstreams/research/AF-RES-070/manife
 
 역사적 제품 바이너리 실행, 작성자의 실제 환경 복제, 통제된 질문 실험, 질문 비용 측정은 미실시다. 부분 자료와 조건부 판만으로 완전한 실사용 성공을 주장하지 않는다. REPRODUCE.md에 필요한 판 SHA·실행 환경·명령·입력과 해시 대조 방법을 적었다. 해당 실행을 성공시켜도 과거 OP의 새 B나 질문 인과효과를 만들어내지는 않는다.
 
-GitHub 결과 커밋의 표·원장 재열람은 결과 발행 뒤 수행한다. 이 단계가 끝난 뒤 HANDOFF.md만 마지막 단독 커밋한다. 최종 확인 SHA와 원격 재열람 영수증은 다음 절 또는 HANDOFF에서 고정한다.
+GitHub 결과 커밋의 표·원장 재열람을 수행했고 아래에 실제 SHA·결과를 고정했다. 이 검증 기록을 동결한 뒤 최종 결과 SHA를 다시 읽고 HANDOFF.md만 마지막 단독 커밋한다. 그 최종 재열람 영수증은 HANDOFF 본문에 남긴다.
+
+
+## 결과 발행 뒤 실제 원격 재검증
+
+- 검증 대상 결과 SHA: `f2e13005ff9e0ef8fe307ed48f2d13fbeba1dedc` (C05).
+- GitHub 재열람 확인 UTC: `2026-11-23 09:26:55 UTC`. GitHub contents API의 해당 ref에서18개 파일의 완전한 디코딩 본문을 다시 가져와, 발행한 로컬 바이트와 일대일 비교했다.18/18일치, 잘린 본문이나 메타데이터만으로 통과시킨 파일0.
+- 원격 CSV/JSONL을 다시 파싱해 ENROLLMENT64, EVENTS127, VIEWS48, OUTCOMES35, SOURCES253, PINS66, PAIRS10, Q_CHECK8, SEARCHES8행을 확인했다. RESULT 원격 표의 자료행은4/12/12/6/4/4이고 Q1–Q8 및 약점3개가 있다. 자세한 파일별 Git blob 기대값·본문 비교·열 수는 `evidence/remote-result-c05.json`에 있다.
+- C05 checkout 뒤 `python -B docs/workstreams/research/AF-RES-070/tools/validate.py`를 다시 실행했다. exit0,646체크 통과. 입력별SHA256과실행cwd/대상HEAD는`evidence/validation.json`에 있다.
+- `python -B -m workbench.session check docs/workstreams/research/AF-RES-070/manifest.json --fetch`를 C05에서실행했다. exit0, status=passed, checked_at=2026-11-23T09:27:28.121639+00:00, freshness=remote_checked. 실제stdout JSON과stderr를`evidence/session-check-c05.json`에보존했다. outside0·unmerged0·errors0이다.
+- C05의diff-tree대조는exit0,141변경경로가모두owned_path에있었다(`evidence/scope-c05.json`). 중앙원장·다른작업브랜치의수정은없다.
+- 이절은원격읽기와계약검증완료를뜻한다. 역사적도구실행·질문실험·빈정오효과분모를완료로바꾸지않으며연구상태는PARTIAL로유지한다.
