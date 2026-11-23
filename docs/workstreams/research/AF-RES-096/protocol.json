@@ -1,0 +1,576 @@
+{
+  "schema": "af-res-096-exposure-policy-v1",
+  "created_utc": "2026-11-23T18:01:14.706744+00:00",
+  "planning_sha": "e2a80afec762b10ee7979136c6332473c70905bb",
+  "start_sha": "f72073277e6be643302a33f204d70baeb2c749a4",
+  "research_dependency_handoff": "e0d7ecda64bab2bd5d5779a9fb2a18d39a83bcdf",
+  "research_dependency_result": "707216d8a7f2f09948bb79bfb30e9b2d62cde9ef",
+  "corpus_plan": "corpus-plan.json",
+  "corpus_files": "corpus-files.jsonl",
+  "normalization": {
+    "unicode": "NFKC then casefold",
+    "tokens_regex": "[a-z0-9_]+",
+    "match": "exact normalized token membership in whole file; no stemming, no synonym or filename bonus",
+    "query_duplicate_tokens": "deduplicate",
+    "path_scoring": false
+  },
+  "ranking": {
+    "per_query_score": "number of DISTINCT query tokens present in file body",
+    "per_query_order": [
+      "score descending",
+      "repo/path case-sensitive lexicographic ascending"
+    ],
+    "merge": "union matched tokens across both queries; duplicate token counted once; re-sort by distinct union count then repo/path",
+    "zero_match": "retain with rank and score0 in full ranking; ineligible for exposure",
+    "one_file_one_result": true,
+    "manual_mirrors": "only canonical frozen version; no mirror/translation duplicate",
+    "A_slots": [
+      "main rank1",
+      "main rank2",
+      "main rank3",
+      "main rank4"
+    ],
+    "B_boundary_slots": [
+      "main rank1",
+      "main rank2",
+      "adjacent rank1",
+      "adjacent rank2"
+    ],
+    "B_control_slots": "identical to A",
+    "missing_slots": "explicit null, never refill adjacent slots from main",
+    "excerpt_chars": 600,
+    "excerpt_anchor": "first occurrence of any merged matched token in original text (case insensitive boundary); take 100 chars before anchor, then600; pad short files with spaces; preserve original offset/hash; if raw matching fails despite normalized positive score, deterministic offset0 and anchor_fallback=true; no rescore or extra source"
+  },
+  "budget": {
+    "searches_per_route": 2,
+    "body_attempts_per_route": 4,
+    "returned_links_per_route": 2,
+    "failed_attempts_charge": true,
+    "retries_charge": true,
+    "open_order": "ascending exposure slot",
+    "reading_policy": "open all nonempty exposed slots in order to inspect corroboration and contradictions; no early stop planned; empty slots consume no attempt",
+    "within_file_navigation": "one local corpus file is opened once; subsequent section navigation of its already-opened bytes is logged and not a new external source/body attempt",
+    "navigation_outside_exposed_files": "forbidden",
+    "corpus_construction": "separate archive/metadata cost; no corpus bodies displayed to researcher before seal1"
+  },
+  "evaluation": {
+    "complete": "every explicit condition and necessary intermediate format supported by at most two returned sources; requirements may include multiple fields; documentary completeness under the frozen comparison version",
+    "partial": "some required conditions supported, others missing",
+    "refuted": "an explicit required interface or proposed returned solution is contradicted",
+    "unverified": "insufficient documentary support",
+    "original_user_execution": "separate from documentary completeness; unknown version/input never marked runtime success",
+    "postseal_links": "may improve cards but never revise frozen success",
+    "strict_comparability_exclusions": [
+      "more than4 charged body attempts",
+      "unexposed file used as route evidence",
+      "answer/comment/acceptance leakage before remote seal2",
+      "failed ranking/exposure protocol",
+      "cross-route-only section used without opening that file in route"
+    ],
+    "memory": "same tag researcher sees both routes in alternating order; crossover recollection declared, only route-opened file IDs can support a judgment",
+    "equal_scope_controls": [
+      "J1",
+      "P2"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "J1",
+      "question_id": 79322478,
+      "tag": "jq",
+      "stratum": "control",
+      "original_rank": 1,
+      "creation_utc": "2025-01-01T23:11:18+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/583B2AA1-40EA-4ECC-A5CB-FD9EBDF4A0E3/view-source",
+      "r0_guid": "583B2AA1-40EA-4ECC-A5CB-FD9EBDF4A0E3",
+      "main_label": "JQ",
+      "adjacent_label": null,
+      "queries": [
+        [
+          "starttime",
+          "one",
+          "two",
+          "output",
+          "lines"
+        ],
+        [
+          "objects",
+          "outer",
+          "data",
+          "array",
+          "items"
+        ]
+      ],
+      "query_origins": [
+        "요구 출력 필드와 행 표현",
+        "최초 본문의 입력 구조"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "부모 startTime과 각 자식 one,two를 같은 줄로 반환한다.",
+          "basis": "본문 출력 목록 및 세 줄 요구"
+        },
+        {
+          "id": "C2",
+          "requirement": "자식 one과 two의 대응을 유지하고 모든 one×two 조합을 만들지 않는다.",
+          "basis": "원문이 잘못된 9행 출력을 제시하고 올바른 세 행을 요구"
+        }
+      ],
+      "second_condition_blank": false,
+      "input_summary": "outer data 배열의 각 객체는 startTime과 inner data 배열을 가진다. 예시 inner 행은 one=a,b,c 및 two=1125.000,2119.000,0.000. 원 JSON 예시는 닫는 구분자가 생략되어 완전 실행 입력은 아니다.",
+      "desired_output": "각 inner 항목당 한 줄에 대응하는 outer startTime, inner one, inner two. 주어진 한 outer 객체에서는 세 행.",
+      "user_versions": "미확인: 최초 보존 본문에 판 없음",
+      "uncertainties": [
+        "사용 jq 판",
+        "완전한 원 입력의 닫는 구분자",
+        "원문에 두 번 제시된 jq 명령은 같지만 관측 출력은 달라 실제 두 번째 명령 미확인",
+        "소수점 세 자리 유지가 별도 요구인지 미확인; 출력 예시를 독립 formatting 조건으로 승격하지 않음"
+      ],
+      "route_order": [
+        "A",
+        "B"
+      ],
+      "expected_positive": "주 도구 매뉴얼의 변수 바인딩과 반복/문자열 보간이 같은 부모의 자식 대응을 지지할 수 있다(사전 가설).",
+      "expected_loss": "대조 A=B이므로 노출 정책 자체로 차이가 나면 순서·기억·채점 문제가 의심된다(사전 가설).",
+      "source_id": "R0-J1",
+      "adjacency_evidence": "본문은 jq의 부모·자식 값 출력만 요구한다. 파일 생산자·소비자 이름이나 연결 동작이 없다.",
+      "requirements_origin_file": "evidence/jq/selected.json"
+    },
+    {
+      "case_id": "J2",
+      "question_id": 79388729,
+      "tag": "jq",
+      "stratum": "boundary",
+      "original_rank": 3,
+      "creation_utc": "2025-01-26T15:02:04+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/480452B5-2D5B-4B1B-9495-E529E99145B9/view-source",
+      "r0_guid": "480452B5-2D5B-4B1B-9495-E529E99145B9",
+      "main_label": "JQ",
+      "adjacent_label": "CU",
+      "queries": [
+        [
+          "data",
+          "array",
+          "objects",
+          "output",
+          "select"
+        ],
+        [
+          "cat",
+          "sample",
+          "json",
+          "title",
+          "tracks"
+        ]
+      ],
+      "query_origins": [
+        "입력 구조·요구 출력·원 시도 select",
+        "실제 생산 명령과 요구 출력 키"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "aod_play_area에서 title을 만들고 aod_tracks에서 tracks를 만들어 하나의 최상위 객체로 반환한다.",
+          "basis": "원문 two top-level properties 및 각 id별 입력 설명"
+        },
+        {
+          "id": "C2",
+          "requirement": "tracks의 각 항목은 해당 항목의 title/artist 및 apple/spotify uri를 연결한다.",
+          "basis": "명시 기대 JSON과 개별 추출 시도"
+        },
+        {
+          "id": "C3",
+          "requirement": "기대 예시는 start=3645/end=3820을 포함한다. 원 입력에는 offset 필드가 없어 값의 출처를 확인할 수 없다.",
+          "basis": "기대 출력에 숫자 필드가 있으나 입력 샘플에는 없고 작성자의 단독 추출 결과는 null"
+        }
+      ],
+      "second_condition_blank": false,
+      "input_summary": "JSON modules.data 배열에서 id=aod_play_area 요소의 data[0].titles(primary/secondary), id=aod_tracks 요소의 data 배열에서 titles와 uris를 읽는다. 샘플에는 offset이 없다.",
+      "desired_output": "하나의 최상위 객체에 title과 tracks 배열을 함께 만든다. 각 track은 title/artist/start/end/apple/spotify를 가진 예시다.",
+      "user_versions": "미확인: 최초 보존 본문에 판 없음",
+      "uncertainties": [
+        "jq/cat 사용판",
+        "실제 cat 구현",
+        "offset 값의 생략된 원 입력",
+        "원 기대 title/artist가 입력 문자열의 here 접미사를 생략하고 개별 시도는 primary/secondary를 뒤바꾼 이유"
+      ],
+      "route_order": [
+        "B",
+        "A"
+      ],
+      "expected_positive": "cat의 원바이트 입출력 계약을 확인하면 JSON 전달 접합을 명시할 수 있다(사전 가설).",
+      "expected_loss": "단순 파일 전달 문서가 jq의 객체 생성/스코프 근거를 밀어낼 수 있다. offset 미제공은 어느 범위도 해결하지 못할 수 있다(사전 가설).",
+      "source_id": "R0-J2",
+      "adjacency_evidence": "최초 본문에 cat sample.json | jq 가 실제 세 명령에서 등장. cat이 파일 바이트를 jq 표준입력으로 보내는 명시된 생산 단계다. 구현·판 미상; 비교용 GNU coreutils는 사용자 실제 cat의 확정이 아니다.",
+      "requirements_origin_file": "evidence/jq/selected.json"
+    },
+    {
+      "case_id": "J3",
+      "question_id": 79389414,
+      "tag": "jq",
+      "stratum": "boundary",
+      "original_rank": 4,
+      "creation_utc": "2025-01-26T22:29:17+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/532ED4EF-D347-4002-AFF7-24307CD888E8/view-source",
+      "r0_guid": "532ED4EF-D347-4002-AFF7-24307CD888E8",
+      "main_label": "JQ",
+      "adjacent_label": "OP",
+      "queries": [
+        [
+          "merge",
+          "consecutive",
+          "objects",
+          "pair",
+          "input"
+        ],
+        [
+          "overpassql",
+          "json",
+          "position",
+          "range",
+          "indices"
+        ]
+      ],
+      "query_origins": [
+        "최초 요청의 병합 행동 및 객체 관계",
+        "생산자·입출력·원시도 토큰"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "위치로 연결된 연속 두 원소를 순서대로 병합해 모든 쌍을 반환한다.",
+          "basis": "원문 consecutive/pair 설명 및 배열 대응"
+        },
+        {
+          "id": "C2",
+          "requirement": "jq 안에서 처리하며 외부 스크립트 루프와 JSON 재구축을 답으로 대체하지 않는다.",
+          "basis": "본문에서 외부 루프를 거부하고 in just jq를 명시"
+        }
+      ],
+      "second_condition_blank": false,
+      "input_summary": "공유 키가 없는 연속 객체들을 위치로만 짝지어 병합해야 한다. 단순 대응 예시는 [a,b,c,d] → [ab,cd]. 실제 Overpass JSON 전체와 원 질의는 없다.",
+      "desired_output": "연속한 두 원소마다 합쳐 모든 쌍을 출력한다. 외부 루프·JSON 재구축 대신 jq만 사용한다.",
+      "user_versions": "미확인: 최초 보존 본문에 판 없음",
+      "uncertainties": [
+        "jq/Overpass 사용자판",
+        "원 OverpassQL 질의",
+        "전체 실제 객체 예제",
+        "입력이 홀수 개일 때 요구"
+      ],
+      "route_order": [
+        "A",
+        "B"
+      ],
+      "expected_positive": "생산 측 순서·형식 설명이 위치 접합의 가정을 드러낼 수 있다(사전 가설).",
+      "expected_loss": "Overpass 생산 질의 변경은 jq만 사용 조건을 깨며, 인접 두 자리 때문에 jq pairing 근거가 탈락할 수 있다(사전 가설).",
+      "source_id": "R0-J3",
+      "adjacency_evidence": "작성자가 JSON의 큰 객체와 뒤 작은 객체가 교대로 나오는 구조를 OverpassQL의 제약 때문이라고 명시했다. 원 생산 질의는 없다.",
+      "requirements_origin_file": "evidence/jq/selected.json"
+    },
+    {
+      "case_id": "J4",
+      "question_id": 79410149,
+      "tag": "jq",
+      "stratum": "boundary",
+      "original_rank": 5,
+      "creation_utc": "2025-02-03T22:21:17+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/7484AB9A-3750-485D-8065-EAE246037770/view-source",
+      "r0_guid": "7484AB9A-3750-485D-8065-EAE246037770",
+      "main_label": "JQ",
+      "adjacent_label": "GR",
+      "queries": [
+        [
+          "specificword",
+          "brackets",
+          "text",
+          "empty",
+          "repeating"
+        ],
+        [
+          "logcat",
+          "grep",
+          "json",
+          "data",
+          "parse"
+        ]
+      ],
+      "query_origins": [
+        "원문 대상·경계·빈값·반복 요구",
+        "실제 파이프라인과 작성자의 parsing 표현"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "로그 줄에서 specificword의 대괄호 범위를 추출하고 뒤의 status 등 이웃 필드는 출력하지 않는다.",
+          "basis": "원 입력·기대 출력의 대조"
+        },
+        {
+          "id": "C2",
+          "requirement": "중첩 []/() 내용 및 빈 specificword=[]를 유지하며 반복 발생도 처리한다.",
+          "basis": "본문 반복·중첩·빈 값 예시"
+        }
+      ],
+      "second_condition_blank": false,
+      "input_summary": "logcat 텍스트 중 my.app을 grep한 줄. specificword=[...] 뒤에 다른 로그 필드가 이어지며 대괄호·소괄호가 값 내부에 중첩될 수 있다.",
+      "desired_output": "각 발생의 specificword=[...] 부분만 반환하고 값 안 중첩 대괄호와 빈 []도 유지한다.",
+      "user_versions": "미확인: 최초 보존 본문에 판 없음",
+      "uncertainties": [
+        "jq 판과 jq 사용이 필수인지(본문 command 자리만 지정)",
+        "grep 구현/판",
+        "adb/Android 판",
+        "여러 specificword가 한 줄에 있을 때 정확한 출력 구분 규칙"
+      ],
+      "route_order": [
+        "B",
+        "A"
+      ],
+      "expected_positive": "grep이 선택하는 단위와 원문 전달 범위를 확인하면 jq에 들어오는 것은 완전 JSON이 아닌 로그 줄이라는 접합을 드러낼 수 있다(사전 가설).",
+      "expected_loss": "grep 문서가 중첩 괄호 추출을 직접 해결하지 못하면서 jq raw-input/문자열처리 근거 두 자리를 차지할 수 있다(사전 가설).",
+      "source_id": "R0-J4",
+      "adjacency_evidence": "명시 파이프라인은 adb logcat → grep my.app → command. jq는 본문에서 직접 지명되지 않고 모집 태그에 있다. jq 직전 이름 있는 생산자로 grep 한 프로젝트만 허용한다. Android logcat은 두 단계 전이며 추가 인접 프로젝트로 허용하지 않는다.",
+      "requirements_origin_file": "evidence/jq/selected.json"
+    },
+    {
+      "case_id": "P1",
+      "question_id": 79332660,
+      "tag": "pandoc",
+      "stratum": "boundary",
+      "original_rank": 1,
+      "creation_utc": "2025-01-06T09:49:37+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/79332660/1",
+      "r0_guid": "1025A561-7FAC-47F9-B587-B84D76A5E72F",
+      "main_label": "PD",
+      "adjacent_label": "AD",
+      "queries": [
+        [
+          "custom",
+          "style",
+          "docbook",
+          "docx"
+        ],
+        [
+          "asciidoctor",
+          "simpara",
+          "role",
+          "reference"
+        ]
+      ],
+      "query_origins": [
+        "R0 actions/objects/formats",
+        "R0 producer/interface wording"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "DocBook의 custom 역할이 DOCX에서 기대한 사용자 스타일로 보존되어야 한다.",
+          "quote": "custom style gets lost during the second step",
+          "attribution": "requester original body"
+        }
+      ],
+      "second_condition_blank": true,
+      "input_summary": "AsciiDoc에 .custom 클래스 문단; Asciidoctor의 DocBook5 출력은 simpara role=custom. Pandoc은 reference.docx를 사용해 docbook→docx 변환.",
+      "desired_output": "BodyText로 손실되지 않고 지정한 custom 스타일이 DOCX에 보존되는 변환.",
+      "user_versions": {
+        "asciidoctor_container": "asciidoctor/docker-asciidoctor:1.67",
+        "asciidoctor_core": "미확인; 컨테이너 태그가 core 버전 아님",
+        "pandoc_container": "pandoc/core:latest",
+        "pandoc_core": "미확인; 실행 당시 latest digest/버전 없음",
+        "docbook": "5.0",
+        "reference_docx": "standard reference.docx; actual binary link/file missing"
+      },
+      "uncertainties": [
+        "CustomStyle라는 기대 이름과 role=custom의 실제 대응이 원문에서 정확하게 정해지지 않는다.",
+        "사용된 reference.docx의 스타일 정의 및 Pandoc latest 실제판을 보지 못했다."
+      ],
+      "route_order": [
+        "A",
+        "B"
+      ],
+      "expected_positive": "생산자 원문에서 role 전달의 의미를 확인하면 내부 reader/writer와 연결할 수 있다.",
+      "expected_loss": "역할은 이미 XML에 존재하므로 Asciidoctor 두 자리가 Pandoc reader/writer의 직접 근거를 밀어낼 수 있다.",
+      "source_id": "R0-P1",
+      "adjacency_evidence": "질문자의 명령이 Asciidoctor로 .adoc→DocBook XML을 만들고 Pandoc이 그 XML→DOCX를 만든다. Docker는 실행 호스트, Word는 목표 형식/스타일 소비 문맥. 인접은 입력 생산자 Asciidoctor 하나만 고정.",
+      "requirements_origin_file": "evidence/pandoc/selected.json"
+    },
+    {
+      "case_id": "P2",
+      "question_id": 79369213,
+      "tag": "pandoc",
+      "stratum": "control",
+      "original_rank": 2,
+      "creation_utc": "2025-01-19T15:28:09+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/79369213/1",
+      "r0_guid": "70C422A7-127A-4E35-8D51-31264D8104DC",
+      "main_label": "PD",
+      "adjacent_label": null,
+      "queries": [
+        [
+          "custom",
+          "style",
+          "docx",
+          "reference"
+        ],
+        [
+          "style",
+          "already",
+          "same",
+          "name"
+        ]
+      ],
+      "query_origins": [
+        "R0 actions/objects/formats",
+        "R0 producer/interface wording"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "참조 DOCX의 기존 VE 스타일을 재사용하고 동일 이름 스타일을 새로 만들지 않아야 한다.",
+          "quote": "added a second style",
+          "attribution": "requester original body"
+        }
+      ],
+      "second_condition_blank": true,
+      "input_summary": "Markdown inline span custom-style=VE와 VE라는 기존 빨간 글자 스타일을 가진 reference.docx.",
+      "desired_output": "동일 이름의 두 번째 스타일을 만들지 않고 기존 VE 스타일을 적용한 DOCX.",
+      "user_versions": {
+        "pandoc_container": "pandoc/core:latest",
+        "pandoc_core": "미확인",
+        "reference_docx": "본문에는 링크로 지칭됨; 원 reference binary 미열람; 후보 corpus/route 외 원문으로 사용하지 않음"
+      },
+      "uncertainties": [
+        "VE 스타일의 styleId/name/type 정의와 실제 참조 바이너리는 미확인.",
+        "사용판 latest의 정확한 Pandoc 버전 미확인."
+      ],
+      "route_order": [
+        "B",
+        "A"
+      ],
+      "expected_positive": "B=A로 동일 파일/같은 반환을 보여야 한다.",
+      "expected_loss": "동일 범위라 범위 확대에 의한 손실은 없어야 한다. 차이가 나면 연구자 순서/기억 또는 기록 문제다.",
+      "source_id": "R0-P2",
+      "adjacency_evidence": "Markdown→Pandoc→DOCX와 reference.docx만 요구. Docker 실행은 문서를 생산하거나 소비하는 별도 변환 프로젝트가 아니다. Word는 결과 문서 표현이며 다른 도구의 I/O 동작을 명시하지 않는다.",
+      "requirements_origin_file": "evidence/pandoc/selected.json"
+    },
+    {
+      "case_id": "P3",
+      "question_id": 79375162,
+      "tag": "pandoc",
+      "stratum": "boundary",
+      "original_rank": 3,
+      "creation_utc": "2025-01-21T16:26:06+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/79375162/1",
+      "r0_guid": "1B054996-200D-4090-BAC2-A656EDCBC92D",
+      "main_label": "PD",
+      "adjacent_label": "RM",
+      "queries": [
+        [
+          "line",
+          "break",
+          "table",
+          "html"
+        ],
+        [
+          "template",
+          "signature",
+          "tags",
+          "br"
+        ]
+      ],
+      "query_origins": [
+        "R0 actions/objects/formats",
+        "R0 producer/interface wording"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "Rmarkdown→Pandoc template의 HTML 승인 표에서 업그레이드 후 추가되는 줄바꿈 태그를 없애야 한다.",
+          "quote": "adding line break tags",
+          "attribution": "requester original body"
+        }
+      ],
+      "second_condition_blank": true,
+      "input_summary": "Rmd에서 SIGNATURE 문자열로 HTML 승인자 표를 만들고 YAML signature를 거쳐 RMtemplate.html의 signature 변수로 사용.",
+      "desired_output": "Pandoc 업그레이드 후 태그마다 생긴 불필요한 br 삽입을 막아 승인 표가 원래대로 표시되도록 한다.",
+      "user_versions": {
+        "pandoc_old": "2.11.2 (requester says worked)",
+        "pandoc_new": "3.1.11 (requester says changed)",
+        "rmarkdown": "미확인; packageVersion printing code only, output not in textual body",
+        "r": "미확인; version printing code only",
+        "knitr": "미확인"
+      },
+      "uncertainties": [
+        "비교 스크린샷은 존재하지만 이 모집 단계에서 이미지 픽셀/내부 출력은 열지 않았다.",
+        "원 사용판2.11.2/3.1.11과 연구판3.6을 구분해야 한다."
+      ],
+      "route_order": [
+        "A",
+        "B"
+      ],
+      "expected_positive": "Rmarkdown이 Pandoc에 넘기는 입력 형식을 확인하면 metadata/template 줄바꿈 경계를 분리할 수 있다.",
+      "expected_loss": "실제 문제는 Pandoc 내부 YAML/metadata 변환일 수 있어 Rmarkdown 두 파일이 주 도구의 관련 절을 밀어낼 수 있다.",
+      "source_id": "R0-P3",
+      "adjacency_evidence": "Rmarkdown 문서에서 R 변수 SIGNATURE의 HTML 테이블을 YAML signature로 주입하고 Pandoc 사용자 template의 $signature$에 배치한다. 생산자 이름과 실제 입력/출력 코드를 모두 명시.",
+      "requirements_origin_file": "evidence/pandoc/selected.json"
+    },
+    {
+      "case_id": "P4",
+      "question_id": 79393445,
+      "tag": "pandoc",
+      "stratum": "boundary",
+      "original_rank": 4,
+      "creation_utc": "2025-01-28T10:24:15+00:00",
+      "r0_url": "https://stackoverflow.com/revisions/79393445/1",
+      "r0_guid": "5938869D-E61B-410C-97F5-035731293446",
+      "main_label": "PD",
+      "adjacent_label": "DG",
+      "queries": [
+        [
+          "convert",
+          "latex",
+          "tikz",
+          "html"
+        ],
+        [
+          "lua",
+          "filter",
+          "diagram",
+          "picture"
+        ]
+      ],
+      "query_origins": [
+        "R0 actions/objects/formats",
+        "R0 producer/interface wording"
+      ],
+      "conditions": [
+        {
+          "id": "C1",
+          "requirement": "입력 LaTeX의 TikZ 그림을 보존하여 HTML에 나타나도록 변환해야 한다.",
+          "quote": "picture is missing",
+          "attribution": "requester original body"
+        }
+      ],
+      "second_condition_blank": true,
+      "input_summary": "LaTeX report 문서에 TikZ 유한상태 그림; pandoc --standalone -N --lua-filter=diagram.lua -f latex -t html 변환 시 그림이 사라짐.",
+      "desired_output": "주어진 TikZ 그림이 나타나는 HTML 문서.",
+      "user_versions": {
+        "pandoc": "미확인",
+        "diagram": "main 링크만 있음; 실행 당시 SHA/판 미확인",
+        "latex_tikz": "미확인"
+      },
+      "uncertainties": [
+        "원 명령 실행판/diagram SHA 미확인.",
+        "원 PDF/HTML 이미지는 이 모집 단계에 열지 않았다."
+      ],
+      "route_order": [
+        "B",
+        "A"
+      ],
+      "expected_positive": "인접 필터 문서/코드가 허용하는 AST 입력과 출력 연결이 주 도구 매뉴얼만으로 빈 경계를 채울 수 있다.",
+      "expected_loss": "필터가 LaTeX reader의 raw 입력을 처리하지 않는다면 두 슬롯을 사용해도 새 전처리가 필요하고 완결되지 않는다.",
+      "source_id": "R0-P4",
+      "adjacency_evidence": "질문자가 diagram.lua의 공식 저장소 파일 URL과 --lua-filter=diagram.lua 명령을 직접 제공한다. LaTeX TikZ 입력을 HTML 그림으로 바꾸는 경계다. 인접은 명시한 필터 하나만 허용.",
+      "requirements_origin_file": "evidence/pandoc/selected.json"
+    }
+  ]
+}

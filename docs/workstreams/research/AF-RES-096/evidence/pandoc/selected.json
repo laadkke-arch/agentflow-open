@@ -1,0 +1,283 @@
+[
+  {
+    "case_id": "P1",
+    "question_id": 79332660,
+    "original_rank": 1,
+    "kind": "boundary",
+    "adjacent_repository": "asciidoctor/asciidoctor",
+    "adjacent_name": "Asciidoctor",
+    "connection": "질문자의 명령이 Asciidoctor로 .adoc→DocBook XML을 만들고 Pandoc이 그 XML→DOCX를 만든다. Docker는 실행 호스트, Word는 목표 형식/스타일 소비 문맥. 인접은 입력 생산자 Asciidoctor 하나만 고정.",
+    "selection_reason": "첫 번째 실제 생산자 이름과 출력/입력 접합을 함께 명시한 R0.",
+    "input_summary": "AsciiDoc에 .custom 클래스 문단; Asciidoctor의 DocBook5 출력은 simpara role=custom. Pandoc은 reference.docx를 사용해 docbook→docx 변환.",
+    "desired_output": "BodyText로 손실되지 않고 지정한 custom 스타일이 DOCX에 보존되는 변환.",
+    "explicit_conditions": [
+      {
+        "id": "C1",
+        "requirement": "DocBook의 custom 역할이 DOCX에서 기대한 사용자 스타일로 보존되어야 한다.",
+        "quote": "custom style gets lost during the second step",
+        "attribution": "requester original body"
+      }
+    ],
+    "condition_2": null,
+    "condition_2_reason": "별개의 두 번째 요구는 없다. 원 파이프라인/기준 DOCX는 입력 문맥으로 기록한다.",
+    "input_output_interface": "Asciidoctor .adoc→DocBook5 XML(simpara role=custom)→Pandoc DOCX(w:pStyle BodyText observed by requester).",
+    "user_versions": {
+      "asciidoctor_container": "asciidoctor/docker-asciidoctor:1.67",
+      "asciidoctor_core": "미확인; 컨테이너 태그가 core 버전 아님",
+      "pandoc_container": "pandoc/core:latest",
+      "pandoc_core": "미확인; 실행 당시 latest digest/버전 없음",
+      "docbook": "5.0",
+      "reference_docx": "standard reference.docx; actual binary link/file missing"
+    },
+    "queries": [
+      [
+        "custom",
+        "style",
+        "docbook",
+        "docx"
+      ],
+      [
+        "asciidoctor",
+        "simpara",
+        "role",
+        "reference"
+      ]
+    ],
+    "positive_prediction": "생산자 원문에서 role 전달의 의미를 확인하면 내부 reader/writer와 연결할 수 있다.",
+    "loss_prediction": "역할은 이미 XML에 존재하므로 Asciidoctor 두 자리가 Pandoc reader/writer의 직접 근거를 밀어낼 수 있다.",
+    "uncertainties": [
+      "CustomStyle라는 기대 이름과 role=custom의 실제 대응이 원문에서 정확하게 정해지지 않는다.",
+      "사용된 reference.docx의 스타일 정의 및 Pandoc latest 실제판을 보지 못했다."
+    ],
+    "stratum": "pandoc",
+    "period": "2025-H1",
+    "comparison_main_repository": "jgm/pandoc",
+    "comparison_main_ref": "3.6",
+    "comparison_main_commit": "8a72b8449ddccd84fcdffc1a09ae18c4baaca32a",
+    "comparison_main_commit_utc": "2024-12-08 (metadata confirmed by root)",
+    "answer_comment_accepted_score_seen": false,
+    "researcher": "/root/pandoc_recruit",
+    "second_condition_policy": "독립적인 둘째 명시조건이 없으면 공석. 입력 속성·시도한 명령·당연한 문서 보존을 새 조건으로 발명하지 않음.",
+    "creation_epoch": 1736156977,
+    "creation_utc": "2025-01-06T09:49:37+00:00",
+    "r0_url": "https://stackoverflow.com/revisions/79332660/1",
+    "r0_guid": "1025A561-7FAC-47F9-B587-B84D76A5E72F",
+    "r0_api_url": "https://api.stackexchange.com/2.3/revisions/1025A561-7FAC-47F9-B587-B84D76A5E72F?site=stackoverflow&filter=%21R1.Y5iw_Z1WCrEMwmtA2p",
+    "r0_revision_epoch": 1736156977,
+    "r0_revision_number": 1,
+    "r0_initial_creation_confirmed": true,
+    "body_sha256": "95c4411f7faed7a2453abc569179769d335188563c6a732a8d045203c31f8aab",
+    "r0_retrieved_utc": "2026-11-23T17:56:02.010385+00:00",
+    "prior_id_excluded": false,
+    "raw_body_cache_not_for_commit": "evidence/pandoc/_cache/79332660.html"
+  },
+  {
+    "case_id": "P2",
+    "question_id": 79369213,
+    "original_rank": 2,
+    "kind": "control",
+    "adjacent_repository": null,
+    "adjacent_name": null,
+    "connection": "Markdown→Pandoc→DOCX와 reference.docx만 요구. Docker 실행은 문서를 생산하거나 소비하는 별도 변환 프로젝트가 아니다. Word는 결과 문서 표현이며 다른 도구의 I/O 동작을 명시하지 않는다.",
+    "selection_reason": "첫 번째 연결 근거 없이 주 도구 내부 동작만 요청한 R0.",
+    "input_summary": "Markdown inline span custom-style=VE와 VE라는 기존 빨간 글자 스타일을 가진 reference.docx.",
+    "desired_output": "동일 이름의 두 번째 스타일을 만들지 않고 기존 VE 스타일을 적용한 DOCX.",
+    "explicit_conditions": [
+      {
+        "id": "C1",
+        "requirement": "참조 DOCX의 기존 VE 스타일을 재사용하고 동일 이름 스타일을 새로 만들지 않아야 한다.",
+        "quote": "added a second style",
+        "attribution": "requester original body"
+      }
+    ],
+    "condition_2": null,
+    "condition_2_reason": "기존 스타일 재사용과 중복 방지는 같은 요구다. 빨간색은 입력 스타일 속성으로 기록하고 별도 독립 요구로 세지 않는다.",
+    "input_output_interface": "Markdown inline Span(custom-style=VE) + reference.docx VE style→DOCX style reference.",
+    "user_versions": {
+      "pandoc_container": "pandoc/core:latest",
+      "pandoc_core": "미확인",
+      "reference_docx": "본문에는 링크로 지칭됨; 원 reference binary 미열람; 후보 corpus/route 외 원문으로 사용하지 않음"
+    },
+    "queries": [
+      [
+        "custom",
+        "style",
+        "docx",
+        "reference"
+      ],
+      [
+        "style",
+        "already",
+        "same",
+        "name"
+      ]
+    ],
+    "positive_prediction": "B=A로 동일 파일/같은 반환을 보여야 한다.",
+    "loss_prediction": "동일 범위라 범위 확대에 의한 손실은 없어야 한다. 차이가 나면 연구자 순서/기억 또는 기록 문제다.",
+    "uncertainties": [
+      "VE 스타일의 styleId/name/type 정의와 실제 참조 바이너리는 미확인.",
+      "사용판 latest의 정확한 Pandoc 버전 미확인."
+    ],
+    "stratum": "pandoc",
+    "period": "2025-H1",
+    "comparison_main_repository": "jgm/pandoc",
+    "comparison_main_ref": "3.6",
+    "comparison_main_commit": "8a72b8449ddccd84fcdffc1a09ae18c4baaca32a",
+    "comparison_main_commit_utc": "2024-12-08 (metadata confirmed by root)",
+    "answer_comment_accepted_score_seen": false,
+    "researcher": "/root/pandoc_recruit",
+    "second_condition_policy": "독립적인 둘째 명시조건이 없으면 공석. 입력 속성·시도한 명령·당연한 문서 보존을 새 조건으로 발명하지 않음.",
+    "creation_epoch": 1737300489,
+    "creation_utc": "2025-01-19T15:28:09+00:00",
+    "r0_url": "https://stackoverflow.com/revisions/79369213/1",
+    "r0_guid": "70C422A7-127A-4E35-8D51-31264D8104DC",
+    "r0_api_url": "https://api.stackexchange.com/2.3/revisions/70C422A7-127A-4E35-8D51-31264D8104DC?site=stackoverflow&filter=%21R1.Y5iw_Z1WCrEMwmtA2p",
+    "r0_revision_epoch": 1737300489,
+    "r0_revision_number": 1,
+    "r0_initial_creation_confirmed": true,
+    "body_sha256": "1c32002aaa29afefddd30e4938b325e2b88fd244307661da6ffddf73ffac3a0a",
+    "r0_retrieved_utc": "2026-11-23T17:56:02.010385+00:00",
+    "prior_id_excluded": false,
+    "raw_body_cache_not_for_commit": "evidence/pandoc/_cache/79369213.html"
+  },
+  {
+    "case_id": "P3",
+    "question_id": 79375162,
+    "original_rank": 3,
+    "kind": "boundary",
+    "adjacent_repository": "rstudio/rmarkdown",
+    "adjacent_name": "R Markdown",
+    "connection": "Rmarkdown 문서에서 R 변수 SIGNATURE의 HTML 테이블을 YAML signature로 주입하고 Pandoc 사용자 template의 $signature$에 배치한다. 생산자 이름과 실제 입력/출력 코드를 모두 명시.",
+    "selection_reason": "두 번째 실제 생산자 이름과 입출력 연결을 명시한 R0.",
+    "input_summary": "Rmd에서 SIGNATURE 문자열로 HTML 승인자 표를 만들고 YAML signature를 거쳐 RMtemplate.html의 signature 변수로 사용.",
+    "desired_output": "Pandoc 업그레이드 후 태그마다 생긴 불필요한 br 삽입을 막아 승인 표가 원래대로 표시되도록 한다.",
+    "explicit_conditions": [
+      {
+        "id": "C1",
+        "requirement": "Rmarkdown→Pandoc template의 HTML 승인 표에서 업그레이드 후 추가되는 줄바꿈 태그를 없애야 한다.",
+        "quote": "adding line break tags",
+        "attribution": "requester original body"
+      }
+    ],
+    "condition_2": null,
+    "condition_2_reason": "독립된 두 번째 요구 없음. 표 내용·배치 유지와 Rmd/template는 원 입력/목표 문맥이다.",
+    "input_output_interface": "R SIGNATURE string→Rmd inline evaluation/YAML signature→Pandoc metadata/template $signature$→HTML table.",
+    "user_versions": {
+      "pandoc_old": "2.11.2 (requester says worked)",
+      "pandoc_new": "3.1.11 (requester says changed)",
+      "rmarkdown": "미확인; packageVersion printing code only, output not in textual body",
+      "r": "미확인; version printing code only",
+      "knitr": "미확인"
+    },
+    "queries": [
+      [
+        "line",
+        "break",
+        "table",
+        "html"
+      ],
+      [
+        "template",
+        "signature",
+        "tags",
+        "br"
+      ]
+    ],
+    "positive_prediction": "Rmarkdown이 Pandoc에 넘기는 입력 형식을 확인하면 metadata/template 줄바꿈 경계를 분리할 수 있다.",
+    "loss_prediction": "실제 문제는 Pandoc 내부 YAML/metadata 변환일 수 있어 Rmarkdown 두 파일이 주 도구의 관련 절을 밀어낼 수 있다.",
+    "uncertainties": [
+      "비교 스크린샷은 존재하지만 이 모집 단계에서 이미지 픽셀/내부 출력은 열지 않았다.",
+      "원 사용판2.11.2/3.1.11과 연구판3.6을 구분해야 한다."
+    ],
+    "stratum": "pandoc",
+    "period": "2025-H1",
+    "comparison_main_repository": "jgm/pandoc",
+    "comparison_main_ref": "3.6",
+    "comparison_main_commit": "8a72b8449ddccd84fcdffc1a09ae18c4baaca32a",
+    "comparison_main_commit_utc": "2024-12-08 (metadata confirmed by root)",
+    "answer_comment_accepted_score_seen": false,
+    "researcher": "/root/pandoc_recruit",
+    "second_condition_policy": "독립적인 둘째 명시조건이 없으면 공석. 입력 속성·시도한 명령·당연한 문서 보존을 새 조건으로 발명하지 않음.",
+    "creation_epoch": 1737476766,
+    "creation_utc": "2025-01-21T16:26:06+00:00",
+    "r0_url": "https://stackoverflow.com/revisions/79375162/1",
+    "r0_guid": "1B054996-200D-4090-BAC2-A656EDCBC92D",
+    "r0_api_url": "https://api.stackexchange.com/2.3/revisions/1B054996-200D-4090-BAC2-A656EDCBC92D?site=stackoverflow&filter=%21R1.Y5iw_Z1WCrEMwmtA2p",
+    "r0_revision_epoch": 1737476766,
+    "r0_revision_number": 1,
+    "r0_initial_creation_confirmed": true,
+    "body_sha256": "aa68802d57a2ab46c2fa48e6e484407046ae0c6344c788862037f478cc88793c",
+    "r0_retrieved_utc": "2026-11-23T17:56:02.010385+00:00",
+    "prior_id_excluded": false,
+    "raw_body_cache_not_for_commit": "evidence/pandoc/_cache/79375162.html"
+  },
+  {
+    "case_id": "P4",
+    "question_id": 79393445,
+    "original_rank": 4,
+    "kind": "boundary",
+    "adjacent_repository": "pandoc-ext/diagram",
+    "adjacent_name": "pandoc-ext/diagram",
+    "connection": "질문자가 diagram.lua의 공식 저장소 파일 URL과 --lua-filter=diagram.lua 명령을 직접 제공한다. LaTeX TikZ 입력을 HTML 그림으로 바꾸는 경계다. 인접은 명시한 필터 하나만 허용.",
+    "selection_reason": "세 번째 실제 다른 프로젝트 이름/URL과 호출·입출력 동작을 명시한 R0.",
+    "input_summary": "LaTeX report 문서에 TikZ 유한상태 그림; pandoc --standalone -N --lua-filter=diagram.lua -f latex -t html 변환 시 그림이 사라짐.",
+    "desired_output": "주어진 TikZ 그림이 나타나는 HTML 문서.",
+    "explicit_conditions": [
+      {
+        "id": "C1",
+        "requirement": "입력 LaTeX의 TikZ 그림을 보존하여 HTML에 나타나도록 변환해야 한다.",
+        "quote": "picture is missing",
+        "attribution": "requester original body"
+      }
+    ],
+    "condition_2": null,
+    "condition_2_reason": "별개의 두 번째 명시조건 없음. 필터 사용은 시도한 방법이며 반드시 그 필터만 고집한다는 요구는 아님.",
+    "input_output_interface": "LaTeX tikzpicture→Pandoc LaTeX reader AST→diagram.lua filter→HTML image/embedding. 마지막 두 연결은 검증 전 연구자 분석틀이며 아직 관측 아님.",
+    "user_versions": {
+      "pandoc": "미확인",
+      "diagram": "main 링크만 있음; 실행 당시 SHA/판 미확인",
+      "latex_tikz": "미확인"
+    },
+    "queries": [
+      [
+        "convert",
+        "latex",
+        "tikz",
+        "html"
+      ],
+      [
+        "lua",
+        "filter",
+        "diagram",
+        "picture"
+      ]
+    ],
+    "positive_prediction": "인접 필터 문서/코드가 허용하는 AST 입력과 출력 연결이 주 도구 매뉴얼만으로 빈 경계를 채울 수 있다.",
+    "loss_prediction": "필터가 LaTeX reader의 raw 입력을 처리하지 않는다면 두 슬롯을 사용해도 새 전처리가 필요하고 완결되지 않는다.",
+    "uncertainties": [
+      "원 명령 실행판/diagram SHA 미확인.",
+      "원 PDF/HTML 이미지는 이 모집 단계에 열지 않았다."
+    ],
+    "stratum": "pandoc",
+    "period": "2025-H1",
+    "comparison_main_repository": "jgm/pandoc",
+    "comparison_main_ref": "3.6",
+    "comparison_main_commit": "8a72b8449ddccd84fcdffc1a09ae18c4baaca32a",
+    "comparison_main_commit_utc": "2024-12-08 (metadata confirmed by root)",
+    "answer_comment_accepted_score_seen": false,
+    "researcher": "/root/pandoc_recruit",
+    "second_condition_policy": "독립적인 둘째 명시조건이 없으면 공석. 입력 속성·시도한 명령·당연한 문서 보존을 새 조건으로 발명하지 않음.",
+    "creation_epoch": 1738059855,
+    "creation_utc": "2025-01-28T10:24:15+00:00",
+    "r0_url": "https://stackoverflow.com/revisions/79393445/1",
+    "r0_guid": "5938869D-E61B-410C-97F5-035731293446",
+    "r0_api_url": "https://api.stackexchange.com/2.3/revisions/5938869D-E61B-410C-97F5-035731293446?site=stackoverflow&filter=%21R1.Y5iw_Z1WCrEMwmtA2p",
+    "r0_revision_epoch": 1738059855,
+    "r0_revision_number": 1,
+    "r0_initial_creation_confirmed": true,
+    "body_sha256": "ddb73cf5ed41e2931fdefc58a7e180391b3741ca3b18ed7d0b8243a3f1ff28bf",
+    "r0_retrieved_utc": "2026-11-23T17:56:02.010385+00:00",
+    "prior_id_excluded": false,
+    "raw_body_cache_not_for_commit": "evidence/pandoc/_cache/79393445.html"
+  }
+]
