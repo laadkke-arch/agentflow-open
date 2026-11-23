@@ -1,0 +1,7 @@
+#set page(height: 16.5cm, width: 18cm, margin: 1cm)
+#set text(14pt, fill: rgb("#444444"))
+#let members = range(1, 5).map(i => [Author #i \ Lab #i \ #link("mailto:author" + str(i) + "@example.invalid")])
+#let edges = (paint: silver, thickness: 1pt, dash: "dashed")
+#set align(center)
+#set page(background: grid(columns: (1fr, 1fr), rows: (1fr, 1fr, 1fr, 1fr), row-gutter: 1cm, block(height: 100%, width: 100%, stroke: edges)))
+#grid(columns: (1fr, 1fr), rows: (1fr, 1fr, 1fr, 1fr), row-gutter: 1cm, ..members)
