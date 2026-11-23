@@ -1,0 +1,46 @@
+{
+  "scope": "Expected observations sealed before running any fixture in this workstream. Positive names an attempted path. For CN01 and AC01 historical, it does not preassign joint satisfaction.",
+  "environment_rule": "One new venv per package/version/python from the PyPI official wheel with SHA-256 pinned. CPython x86_64 Linux; for 3.8.12 and 3.10.3 use portable CPython via uv. Record the executable, platform and wheel digests. Source callers did not provide OS/terminal, so version-label match does not authenticate the original machine. CliRunner emulates CLI input.",
+  "matrix": [
+    {"case":"CN01","role":"stated-question-match","package":"click","version":"8.0.3","python":"3.8.12"},
+    {"case":"CN01","role":"new-reference","package":"click","version":"8.5.1","python":"3.12.14"},
+    {"case":"AN01","role":"new-reference","package":"attrs","version":"26.1.0","python":"3.12.14"},
+    {"case":"CC01","role":"question-only","package":"click","version":"8.1.2","python":"3.10.3"},
+    {"case":"AC01","role":"historical-control","package":"attrs","version":"21.4.0","python":"3.10.3"}
+  ],
+  "inherited_reference": {
+    "CC01": ["CC01-reference-positive", "CC01-reference-boundary"],
+    "AC01": ["AC01-reference-positive", "AC01-reference-boundary"]
+  },
+  "exact_not_run": {
+    "AN01": "Author's question Python and attrs tuple undisclosed",
+    "CC01": "Version and actual stdout of chr7's later successful -V execution undisclosed",
+    "AC01": "Version and final identities for both keys of sscherfke's later successful execution undisclosed"
+  },
+  "cases": {
+    "CN01": {
+      "positive": {"input":"no --names; input foo bar then LF; program uses explicitly split click.prompt response",
+                   "expect":{"cli_exit":0,"names":["foo","bar"],"prompt_seen":true,"iterable_error":false}},
+      "boundary": {"input":"no --names; same foo bar then LF; stock option multiple=True and prompt=Names",
+                   "expect":{"cli_exit":1,"names":[],"prompt_seen":true,"iterable_error":true}}
+    },
+    "AN01": {
+      "positive": {"input":"@define with a,b; sum=field(default=None,init=False); instantiate 11,23",
+                   "expect":{"parameters":["a","b"],"sum":null,"field_present":true}},
+      "boundary": {"input":"identical a,b and default; enable init; instantiate 11,23",
+                   "expect":{"parameters":["a","b","sum"],"sum":null,"field_present":true}}
+    },
+    "CC01": {
+      "positive": {"input":"version_option('alpha','-V'); invoke -V and --version in probed app",
+                   "expect":{"registered":true,"cli_exit":0,"stdout":"probe, version alpha\n","default_cli_exit":2}},
+      "boundary": {"input":"version_option(version='alpha',param_decls='-V'); registration before CLI",
+                   "expect":{"registered":false,"error":"TypeError"}}
+    },
+    "AC01": {
+      "positive": {"input":"21.4.0 historical control of attr.define(slots=False) author variant with same Base auto_attribs=False and registry; look up int and int-range",
+                   "expect":{"call_count":2,"define_alias_identity":true,"int_lookup":{"class":"IntRange","name":"int-range","matches_requested_final_class":false},"range_lookup":{"error":"KeyError"}}},
+      "boundary": {"input":"21.4.0; regular hook with default slots and external registry; same two lookups",
+                   "expect":{"call_count":4,"define_alias_identity":true,"int_lookup":{"class":"IntRange","name":"int","matches_requested_final_class":false},"range_lookup":{"class":"IntRange","name":"int-range","matches_requested_final_class":true}}}
+    }
+  }
+}
