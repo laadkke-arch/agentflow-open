@@ -1,0 +1,128 @@
+# draft-04
+ 
+You can use JSON Schema draft-04 schemas with Ajv from v8.5.0 and the additional package ajv-draft-04 (opens new window) (both ajv and ajv-draft-04 should be installed).
+  
+
+Ajv cannot combine multiple JSON Schema versions
+ 
+You can only use this import with JSON Schema draft-04, you cannot combine multiple JSON Schema versions in this ajv instance.
+
+ 
+# OpenAPI support
+ 
+Ajv supports these additional OpenAPI specification (opens new window) keywords:
+ 
+
+nullable - to avoid using type keyword with array of types.
+ 
+discriminator -  to optimize validation and error reporting of tagged unions
+
+ 
+# JSON data type
+ 
+# type
+ 
+type keyword requires that the data is of certain type (or some of types). Its value can be a string (the allowed type) or an array of strings (multiple allowed types).
+ 
+Type can be: number, integer, string, boolean, array, object or null.
+ 
+Examples
+ 
+
+
+schema: {type: "number"}
+ 
+valid: 1, 1.5
+ 
+invalid: "abc", "1", [], {}, null, true
+
+
+ 
+
+
+schema: {type: "integer"}
+ 
+valid: 1, 2
+ 
+invalid: "abc", "1", 1.5, [], {}, null, true
+
+
+ 
+
+
+schema: {type: ["number", "string"]}
+ 
+valid: 1, 1.5, "abc", "1"
+ 
+invalid: [], {}, null, true
+
+
+ 
+All examples above are JSON Schemas that only require data to be of certain type to be valid.
+ 
+Most other keywords apply only to a particular type of data. If the data is of different type, the keyword will not apply and the data will be considered valid.
+ 
+In v7 Ajv introduced Strict types mode that makes these mistakes less likely by requiring that types are constrained with type keyword whenever another keyword that applies to specific type is used.
+ 
+# nullable OpenAPI
+ 
+This keyword can be used to allow null value in addition to the defined type.
+ 
+Ajv supports it by default, without additional options. These two schemas are equivalent, but the first one is better supported by some tools and is also compatible with strictTypes option (see Strict types)
+ 
+
+{
+  "type": "string",
+  "nullable": true
+}
+
+
+
+and
+ 
+
+{
+  "type": ["string", "null"]
+}
+
+
+
+
+nullable does not extend enum and const
+ 
+If you use enum or const keywords, "nullable": true would not extend the list of allowed values - null value has to be explicitly added to enum (and const would fail, unless it is "const": null)
+ 
+This is different from how nullable is defined in JSON Type Definition, where "nullable": true allows null value in addition to any data defined by the schema.
+
+ 
+# Keywords for numbers
+ 
+# maximum / minimum and exclusiveMaximum / exclusiveMinimum
+ 
+The value of keyword maximum (minimum) should be a number. This value is the maximum (minimum) allowed value for the data to be valid.
+ 
+The value of keyword exclusiveMaximum (exclusiveMinimum) should be a number. This value is the exclusive maximum (minimum) allowed value for the data to be valid (the data equal to this keyword value is invalid).
+ 
+
+NO support for boolean keyword values
+ 
+Boolean values for keywords exclusiveMaximum (exclusiveMinimum) are not supported.
+
+ 
+Examples
+ 
+
+
+schema: {type: "number", maximum: 5}
+ 
+valid: 4, 5
+ 
+invalid: 6, 7
+
+ 
+
+schema: {type: "number", minimum: 5}
+ 
+valid: 5, 6
+ 
+invalid:

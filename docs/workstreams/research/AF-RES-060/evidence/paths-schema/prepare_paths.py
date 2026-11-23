@@ -65,7 +65,9 @@ def content_html(raw_path: Path, renderer):
         selection = 'rendered-repository-document'
     # Remove semantic chrome; authored README lists and internal TOC links remain.
     for node in list(tree.iterdescendants()):
-        tag = str(node.tag).lower()
+        if not isinstance(node.tag, str):
+            continue  # lxml comment nodes have no element attributes
+        tag = node.tag.lower()
         role = node.get('role', '').lower()
         classes = set(node.get('class', '').lower().split())
         chrome = bool(classes & {'navbar', 'site-nav', 'site-navigation', 'cookie-banner', 'site-footer'})

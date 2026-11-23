@@ -1,0 +1,304 @@
+Ajv JSON schema validator
+
+
+The fastest JSON validator for Node.js and browser.
+
+
+Supports JSON Schema draft-04/06/07/2019-09/2020-12 (draft-04 support requires ajv-draft-04 package) and JSON Type Definition RFC8927.
+
+
+
+
+
+
+
+
+
+
+
+Ajv sponsors
+
+
+
+
+
+
+
+
+
+
+
+Contributing
+
+
+More than 100 people contributed to Ajv, and we would love to have you join the development. We welcome implementing new features that will benefit many users and ideas to improve our documentation.
+
+
+Please review Contributing guidelines and Code components.
+
+
+Documentation
+
+
+All documentation is available on the Ajv website.
+
+
+Some useful site links:
+
+
+
+
+Getting started
+
+
+JSON Schema vs JSON Type Definition
+
+
+API reference
+
+
+Strict mode
+
+
+Standalone validation code
+
+
+Security considerations
+
+
+Command line interface
+
+
+Frequently Asked Questions
+
+
+
+
+Please sponsor Ajv development
+
+
+Since I asked to support Ajv development 40 people and 6 organizations contributed via GitHub and OpenCollective - this support helped receiving the MOSS grant!
+
+
+Your continuing support is very important - the funds will be used to develop and maintain Ajv once the next major version is released.
+
+
+Please sponsor Ajv via:
+
+
+
+
+GitHub sponsors page (GitHub will match it)
+
+
+Ajv Open Collective
+
+
+
+
+Thank you.
+
+
+Open Collective sponsors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Performance
+
+
+Ajv generates code to turn JSON Schemas into super-fast validation functions that are efficient for v8 optimization.
+
+
+Currently Ajv is the fastest and the most standard compliant validator according to these benchmarks:
+
+
+
+
+json-schema-benchmark - 50% faster than the second place
+
+
+jsck benchmark - 20-190% faster
+
+
+z-schema benchmark
+
+
+themis benchmark
+
+
+
+
+Performance of different validators by json-schema-benchmark:
+
+
+
+
+
+Features
+
+
+
+
+Ajv implements JSON Schema draft-06/07/2019-09/2020-12 standards (draft-04 is supported in v6):
+
+
+all validation keywords (see JSON Schema validation keywords)
+
+
+OpenAPI extensions:
+
+
+NEW: keyword discriminator.
+
+
+keyword nullable.
+
+
+
+
+
+
+full support of remote references (remote schemas have to be added with addSchema or compiled to be available)
+
+
+support of recursive references between schemas
+
+
+correct string lengths for strings with unicode pairs
+
+
+JSON Schema formats (with ajv-formats plugin).
+
+
+validates schemas against meta-schema
+
+
+
+
+
+
+NEW: supports JSON Type Definition:
+
+
+all keywords (see JSON Type Definition schema forms)
+
+
+meta-schema for JTD schemas
+
+
+"union" keyword and user-defined keywords (can be used inside "metadata" member of the schema)
+
+
+
+
+
+
+supports browsers and Node.js 10.x - current
+
+
+asynchronous loading of referenced schemas during compilation
+
+
+"All errors" validation mode with option allErrors
+
+
+error messages with parameters describing error reasons to allow error message generation
+
+
+i18n error messages support with ajv-i18n package
+
+
+removing-additional-properties
+
+
+assigning defaults to missing properties and items
+
+
+coercing data to the types specified in type keywords
+
+
+user-defined keywords
+
+
+additional extension keywords with ajv-keywords package
+
+
+$data reference to use values from the validated data as values for the schema keywords
+
+
+asynchronous validation of user-defined formats and keywords
+
+
+
+
+Install
+
+
+To install version 8:
+
+
+npm install ajv
+
+
+
+Getting started
+
+
+Try it in the Node.js REPL: https://runkit.com/npm/ajv
+
+
+In JavaScript:
+
+
+// or ESM/TypeScript import
+import Ajv from "ajv"
+// Node.js require:
+const Ajv = require("ajv")
+
+const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
+
+const schema = {
+  type: "object",
+  properties: {
+    foo: {type: "integer"},
+    bar: {type: "string"},
+  },
+  required: ["foo"],
+  additionalProperties: false,
+}
+
+const data = {
+  foo: 1,
+  bar: "abc",
+}
+
+const validate = ajv.compile(schema)

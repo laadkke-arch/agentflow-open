@@ -1,0 +1,159 @@
+Ruby JSON Schema Validator
+
+
+
+
+
+
+
+
+
+
+This library is intended to provide Ruby with an interface for validating JSON
+objects against a JSON schema conforming to JSON Schema Draft
+6. Legacy support for
+JSON Schema Draft 4,
+JSON Schema Draft 3,
+JSON Schema Draft 2, and
+JSON Schema Draft 1 is
+also included.
+
+
+Additional Resources
+
+
+
+
+Google Groups
+
+
+#voxpupuli on irc.libera.chat
+
+
+
+
+Version 2.0.0 Upgrade Notes
+
+
+Please be aware that the upgrade to version 2.0.0 will use Draft-04 by
+default, so schemas that do not declare a validator using the $schema
+keyword will use Draft-04 now instead of Draft-03. This is the reason for the
+major version upgrade.
+
+
+Version 3.0.0 Upgrade Notes
+
+
+All individual changes are documented in the CHANGELOG.md. The biggest change
+is that the new version only supports Ruby 2.5 and newer. Take a look into the
+gemspec file to see the currently supported Ruby version and also
+.github/workflows/test.yml to see the Ruby versions we test on.
+
+
+Installation
+
+
+From rubygems.org:
+
+
+gem install json-schema
+
+
+
+From the git repo:
+
+
+gem build json-schema.gemspec
+gem install json-schema-*.gem
+
+
+
+Validation
+
+
+Three base validation methods exist:
+
+
+
+
+validate: returns a boolean on whether a validation attempt passes
+
+
+validate!: throws a JSON::Schema::ValidationError with an appropriate message/trace on where the validation failed
+
+
+fully_validate: builds an array of validation errors return when validation is complete
+
+
+
+
+All methods take two arguments, which can be either a JSON string, a file
+containing JSON, or a Ruby object representing JSON data. The first argument to
+these methods is always the schema, the second is always the data to validate.
+An optional third options argument is also accepted; available options are used
+in the examples below.
+
+
+By default, the validator uses the JSON Schema Draft
+4 specification for
+validation; however, the user is free to specify additional specifications or
+extend existing ones. Legacy support for Draft 1, Draft 2, and Draft 3 is
+included by either passing an optional :version parameter to the validate
+method (set either as :draft1 or draft2), or by declaring the $schema
+attribute in the schema and referencing the appropriate specification URI. Note
+that the $schema attribute takes precedence over the :version option during
+parsing and validation.
+
+
+For further information on json schema itself refer to Understanding
+JSON Schema.
+
+
+Basic Usage
+
+
+require "json-schema"
+
+schema = {
+  "type" => "object",
+  "required" => ["a"],
+  "properties" => {
+    "a" => {"type" => "integer"}
+  }
+}
+
+#
+# validate ruby objects against a ruby schema
+#
+
+# => true
+JSON::Validator.validate(schema, { "a" => 5 })
+# => false
+JSON::Validator.validate(schema, {})
+
+#
+# validate a json string against a json schema file
+#
+
+require "json"
+File.write("schema.json", JSON.dump(schema))
+
+# => true
+JSON::Validator.validate('schema.json', '{ "a": 5 }')
+
+#
+# raise an error when validation fails
+#
+
+# => "The property '#/a' of type String did not match the following type: integer"
+begin
+  JSON::Validator.validate!(schema, { "a" => "taco" })
+rescue JSON::Schema::ValidationError => e
+  e.message
+end
+
+#
+# return an array of error messages when validation fails
+#
+
+# => ["The property '#/a' of type String did not match the following type:

@@ -1,0 +1,260 @@
+json-sKema
+
+
+json-sKema is a Json Schema validator library for the Java Virtual Machine. It implements the draft 2020-12 specification.
+
+
+Are you new to JSON Schema? Get started with Understanding JSON Schema!
+
+
+
+
+
+json-sKema
+
+
+Installation
+
+
+Maven
+
+
+Gradle
+
+
+
+
+
+
+Usage
+
+
+Hello-world
+
+
+Loading a schema file from URL
+
+
+Pre-registering schemas by URI before schema loading
+
+
+Validating in Read or Write context
+
+
+SchemaBuilder for dynamic (programmatic) schema construction
+
+
+YAML Support
+
+
+
+
+
+
+Compatibility notes
+
+
+"format" support
+
+
+Support for older JSON Schema drafts
+
+
+
+
+
+
+Contribution guideline
+
+
+Building the project:
+
+
+Building the project and running the official test suite:
+
+
+Building the project without running the official test suite:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Installation
+
+
+Maven
+
+
+Add the following dependency to the <dependencies> section of your project:
+
+
+<dependency>
+    <groupId>com.github.erosb</groupId>
+    <artifactId>json-sKema</artifactId>
+    <version>0.25.0</version>
+</dependency>
+
+
+
+Gradle
+
+
+dependencies {
+    implementation("com.github.erosb:json-sKema:0.25.0")
+}
+
+
+
+Usage
+
+
+Hello-world
+
+
+Complete source
+
+
+// parse the schema JSON as string
+JsonValue schemaJson = new JsonParser("""
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"type": "object",
+	"properties": {
+		"age": {
+			"type": "number",
+			"minimum": 0
+		},
+		"name": {
+			"type": "string"
+		},
+		"email": {
+			"type": "string",
+			"format": "email"
+		}
+	}
+}
+""").parse();
+// map the raw json to a reusable Schema instance
+Schema schema = new SchemaLoader(schemaJson).load();
+
+// create a validator instance for each validation (one-time use object)
+Validator validator = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS));
+
+// parse the input instance to validate against the schema
+JsonValue instance = new JsonParser("""
+{
+	"age": -5,
+	"name": null,
+	"email": "invalid"
+}
+""").parse();
+
+// run the validation
+ValidationFailure failure = validator.validate(instance);
+
+// print the validation failures (if any)
+System.out.println(failure);
+
+
+
+Loading a schema file from URL
+
+
+// HTTP(s) protocol is also supported
+Schema schema = SchemaLoader.forURL("classpath:///path/to/your/schema.json").load();
+
+// create a validator instance for each validation (one-time use object) 
+Validator validator = Validator.forSchema(schema);
+// ...
+
+
+
+Pre-registering schemas by URI before schema loading
+
+
+Complete source
+
+
+// Creating a SchemaLoader config with a pre-registered schema by URI
+SchemaLoaderConfig config = createDefaultConfig(Map.of(
+			// When the loader sees this URI,
+			new URI("urn:uuid:d652a438-9897-4160-959c-bbdb690c3e0d"),
+
+			// then it will resolve it to this schema json
+			"""
+			{
+				"$defs": {
+					"ItemType": {
+						"type": "integer",
+						"minimum": 0
+					}
+				}
+			}
+			"""
+	));
+// parsing the schema json, with a $ref to the above pre-configured URI
+JsonValue schemaJson = new JsonParser("""
+		{
+			"type": "array",
+			"items": {
+				"$ref": "urn:uuid:d652a438-9897-4160-959c-bbdb690c3e0d#/$defs/ItemType"
+			}
+		}
+		""").parse();
+// loading the schema json into a Schema object
+Schema schema = new SchemaLoader(schemaJson, config).load();
+
+// running the validation
+ValidationFailure result = Validator.forSchema(schema).validate(new JsonParser("[null]").parse());
+System.out.println(result.toJSON());
+
+
+
+Validating in Read or Write context
+
+
+Complete source
+
+
+If you want to take advantage of the "readOnly" and "writeOnly"
+keywords of json schema, you can tell the Validator instance  if the validation happens in read or write context:
+
+
+JsonValue schemaJson = new JsonParser("""
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "readOnly": true,
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "password": {
+            "type": "string",
+            "writeOnly": true
+        }
+    }
+}
+""").parse();
+// map the raw json to a reusable Schema instance
+Schema schema = new SchemaLoader(schemaJson).load();
+
+// creating write-context validator, it will report validation failures
+// for read-only properties that are included in the instance
+var writeContextValidator = Validator.create(schema, ValidatorConfig.builder()
+        .readWriteContext(ReadWriteContext.WRITE)
+        .build()
+);
+
+// creating the json document which will

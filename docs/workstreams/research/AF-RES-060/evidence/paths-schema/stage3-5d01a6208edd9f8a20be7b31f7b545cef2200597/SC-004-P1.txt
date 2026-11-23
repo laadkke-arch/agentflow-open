@@ -1,0 +1,248 @@
+@imhonglu/json-schema
+
+
+English | 한국어
+
+
+Introduction
+
+
+
+
+A library targeting the JSON Schema Draft 2020-12 specification
+
+
+Validated with the pinned JSON Schema Test Suite fixture set; see the repository's conformance tooling for the revision and commands
+
+
+Supports static type inference based on schema definitions
+
+
+
+
+
+
+
+Table of Contents
+
+
+
+
+Features
+
+
+Implementation Status
+
+
+Installation
+
+
+Usage
+
+
+Known Issues
+
+
+API Reference
+
+
+
+
+Features
+
+
+
+
+ TypeScript static type checking support for schema definitions
+
+
+ Smart type inference
+
+
+ Required/optional field inference based on required property
+
+
+ Type inference for fields with default values / function type support
+
+
+ Recursive type inference for nested objects
+
+
+
+
+
+
+ Class-based schema definition support
+
+
+ Custom features
+
+
+ Schema validation message customization
+
+
+ Custom error handling
+
+
+ Validation rule extension support
+
+
+
+
+
+
+
+
+Implementation Status
+
+
+The implementation is not yet fully conformant and the pinned suite includes known expected failures. The repository's conformance tooling is the source of truth for the revision, exclusions, exact baseline, and execution procedure.
+
+
+Installation
+
+
+npm install @imhonglu/json-schema
+
+
+
+Usage
+
+
+Basic Schema Definition
+
+
+// address.ts
+import { createSchemaClass } from "@imhonglu/json-schema";
+
+export class Address extends createSchemaClass({
+  type: "object",
+  properties: {
+    street: { type: "string" },
+    city: { type: "string" },
+    zip: { type: "string" },
+  },
+  // Define street property as required
+  required: ["street"],
+}) {}
+
+// ✅ Type inference result:
+// {
+//   street: string;   // required
+//   city?: string;    // optional
+//   zip?: string;     // optional
+// }
+
+
+
+Nested Schema
+
+
+// person.ts
+import { createSchemaClass } from "@imhonglu/json-schema";
+import { Address } from "./address.js";
+
+export class Person extends createSchemaClass({
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    address: Address, // Nested Address schema
+    createdAt: {
+      type: "string",
+      default: () => new Date().toISOString(),
+    },
+    // String field that allows null
+    deletedAt: {
+      type: ["string", "null"],
+      default: null,
+    },
+  },
+  required: ["name", "createdAt", "deletedAt"],
+}) {}
+
+// ✅ Type inference result:
+// {
+//   name: string;                // required
+//   address?: Address;           // optional
+//   createdAt: string;           // required
+//   deletedAt: string | null;    // required
+// }
+
+
+
+Usage with new
+
+
+import { Person } from "./person.js";
+
+// Create instance with object literal
+const johnDoe = new Person({
+  name: "John Doe",
+  address: {
+    street: "123 Main St",
+    city: "Toronto",
+    zip: "M5H 2N2",
+  },
+});
+
+// ✅ Result:
+// {
+//   name: 'John Doe',
+//   address: Address {
+//     street: '123 Main St',
+//     city: 'Toronto',
+//     zip: 'M5H 2N2'
+//   },
+//   deletedAt: null
+// }
+
+// ✅ Property access
+console.log(johnDoe.name);            // 'John Doe'
+console.log(johnDoe.address?.street); // '123 Main St'
+console.log(johnDoe.deletedAt);       // null
+
+// ✅ Using directly created Address instance
+const maryDoe = new Person({
+  name: "Mary Doe",
+  address: new Address({
+    street: "456 Main St",
+    city: "Toronto",
+    zip: "M5H 2N2",
+  }),
+});
+
+
+
+Parsing with parse
+
+
+The parse method creates a schema instance by parsing a string.
+
+
+const person = Person.parse('{ "name": "John" }'); // Person
+
+
+
+Parsing with safeParse
+
+
+You can safely parse using the safeParse method.
+
+
+const person = Person.safeParse('{ "name": "John" }'); // SafeResult<Person>
+
+if (person.success) {
+  console.log(person.data); // Person
+} else {
+  console.error(person.error); // ValidationFailedError
+}
+
+
+
+Serializing with JSON.stringify
+
+
+The toJSON method is implemented, allowing serialization through JSON.stringify.
+
+
+const person = new

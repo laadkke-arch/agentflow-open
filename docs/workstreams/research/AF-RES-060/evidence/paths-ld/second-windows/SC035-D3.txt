@@ -1,0 +1,140 @@
+yaml-simple
+
+
+
+
+
+
+
+
+A simple YAML processor.
+
+
+Important
+
+
+This project is no longer being maintained.
+A more complete YAML implementation is available at kjson-yaml.
+
+
+Quick Start
+
+
+To parse a YAML file:
+
+
+    val file = File("path.to.file")
+    val yamlDocument = YAMLSimple.processFile(file)
+
+
+
+The result is a YAMLDocument, and the rootNode property contains the root (or only) node of the tree of YAML nodes.
+The tree may be navigated as if it were a JSON structure, using the jsonutil or
+json-pointer libraries or others.
+
+
+For example, to retrieve the description property of the info entry of a Swagger 2.0 YAML file:
+
+
+    val file = File("path.to.swagger.file")
+    val yamlDocument = YAMLSimple.processFile(file)
+    val pointer = JSONPointer("/info/description")
+    val description = pointer.find(yamlDocument.rootNode)
+
+
+
+Implemented Subset
+
+
+This parser does not implement the full YAML specification.
+The currently implemented subset includes:
+
+
+
+
+Block Mappings
+
+
+Block Sequences
+
+
+Block Scalars (literal and folded)
+
+
+Flow Scalars (plain, single quoted and double quoted)
+
+
+Flow Sequences
+
+
+Flow Mappings
+
+
+Comments
+
+
+%YAML directive
+
+
+
+
+Not yet implemented:
+
+
+
+
+Anchors and Aliases
+
+
+Directives other than %YAML
+
+
+Tags
+
+
+Multiple documents in a single file
+
+
+Named floating-point pseudo-values (.inf, .nan)
+
+
+
+
+Also, the parser may not yet meet the specification in all respects, even for the constructs that it does handle.
+
+
+Dependency Specification
+
+
+The latest version of the library is 1.19, and it may be obtained from the Maven Central repository.
+
+
+Maven
+
+
+    <dependency>
+      <groupId>net.pwall.yaml</groupId>
+      <artifactId>yaml-simple</artifactId>
+      <version>1.19</version>
+    </dependency>
+
+
+
+Gradle
+
+
+    implementation 'net.pwall.yaml:yaml-simple:1.19'
+
+
+
+Gradle (kts)
+
+
+    implementation("net.pwall.yaml:yaml-simple:1.19")
+
+
+
+Peter Wall
+
+
+2025-01-26

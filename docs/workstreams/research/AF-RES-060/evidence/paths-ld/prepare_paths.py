@@ -79,6 +79,10 @@ def clean_document(raw: str, suffix: str):
 
 
 def visible_document(raw: str, suffix: str) -> dict:
+    if suffix in {".json", ".txt"}:
+        # The registered titleless JSON/code rule keeps literal whitespace and
+        # punctuation; Markdown interpretation is inappropriate for this input.
+        return {"text": raw, "headings": [], "links": [], "ids": {}}
     tree = clean_document(raw, suffix)
     parts, headings, anchors, ids = [], [], [], {}
     offset, slug_counts = 0, {}

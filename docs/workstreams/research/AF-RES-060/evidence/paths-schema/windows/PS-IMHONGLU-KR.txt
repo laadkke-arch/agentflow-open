@@ -1,0 +1,259 @@
+@imhonglu/json-schema
+
+
+English | 한국어
+
+
+Introduction
+
+
+
+
+JSON Schema Draft 2020-12 사양 구현을 목표로 하는 라이브러리입니다.
+
+
+고정된 JSON Schema Test Suite fixture로 검증합니다. revision과 실행 명령은 저장소의 적합성 도구를 참고합니다.
+
+
+스키마 정의에 기반한 정적 타입 추론을 지원합니다.
+
+
+
+
+
+
+
+Table of Contents
+
+
+
+
+Features
+
+
+Implementation Status
+
+
+Installation
+
+
+Usage
+
+
+Known Issues
+
+
+API Reference
+
+
+
+
+Features
+
+
+
+
+ 스키마 정의 시 TypeScript의 정적 타입 검사 지원
+
+
+ 스마트 타입 추론
+
+
+ required 속성에 따른 필수/선택적 필드 추론
+
+
+ default 값이 있는 필드의 타입 추론 / 함수 타입 지원
+
+
+ 중첩된 객체의 타입 재귀적 추론
+
+
+
+
+
+
+ class 기반의 스키마 정의 지원
+
+
+ 사용자 정의 기능
+
+
+ 스키마 유효성 검사 메시지 커스터마이징
+
+
+ 사용자 정의 에러 핸들링
+
+
+ 검증 규칙 확장 지원
+
+
+
+
+
+
+
+
+Implementation Status
+
+
+아직 사양 전체를 준수하지 않으며 고정된 suite에는 알려진 expected failure가 있습니다. revision, 제외 목록, 정확한 기준선과 실행 절차는 저장소의 적합성 도구를 단일 기준으로 관리합니다.
+
+
+Installation
+
+
+npm install @imhonglu/json-schema
+
+
+
+Usage
+
+
+Basic Schema Definition
+
+
+// address.ts
+import { createSchemaClass } from "@imhonglu/json-schema";
+
+export class Address extends createSchemaClass({
+  type: "object",
+  properties: {
+    street: { type: "string" },
+    city: { type: "string" },
+    zip: { type: "string" },
+  },
+  // street 속성을 필수로 정의
+  required: ["street"],
+}) {}
+
+// ✅ 타입 추론 결과:
+// {
+//   street: string;   // 필수
+//   city?: string;    // 선택
+//   zip?: string;     // 선택
+// }
+
+
+
+Nested Schema
+
+
+// person.ts
+import { createSchemaClass } from "@imhonglu/json-schema";
+import { Address } from "./address.js";
+
+export class Person extends createSchemaClass({
+  type: "object",
+  properties: {
+    name: { type: "string" },
+    address: Address, // 중첩된 Address 스키마
+    createdAt: {
+      type: "string",
+      default: () => new Date().toISOString(),
+    },
+    // null 허용하는 문자열 필드
+    deletedAt: {
+      type: ["string", "null"],
+      default: null,
+    },
+  },
+  required: ["name", "createdAt", "deletedAt"],
+}) {}
+
+// ✅ 타입 추론 결과:
+// {
+//   name: string;                // 필수
+//   address?: Address;           // 선택
+//   createdAt: string;           // 필수
+//   deletedAt: string | null;    // 필수
+// }
+
+
+
+Usage with new
+
+
+import { Person } from "./person.js";
+
+// 객체 리터럴로 인스턴스 생성
+const johnDoe = new Person({
+  name: "John Doe",
+  address: {
+    street: "123 Main St",
+    city: "Toronto",
+    zip: "M5H 2N2",
+  },
+});
+
+// ✅ 결과:
+// {
+//   name: 'John Doe',
+//   address: Address {
+//     street: '123 Main St',
+//     city: 'Toronto',
+//     zip: 'M5H 2N2'
+//   },
+//   deletedAt: null
+// }
+
+// ✅ 속성 접근
+console.log(johnDoe.name);            // 'John Doe'
+console.log(johnDoe.address?.street); // '123 Main St'
+console.log(johnDoe.deletedAt);       // null
+
+// ✅ Address 인스턴스를 직접 생성하여 사용
+const maryDoe = new Person({
+  name: "Mary Doe",
+  address: new Address({
+    street: "456 Main St",
+    city: "Toronto",
+    zip: "M5H 2N2",
+  }),
+});
+
+
+
+Parsing with parse
+
+
+parse 메서드는 문자열을 파싱하여 스키마 인스턴스를 생성합니다.
+
+
+const person = Person.parse('{ "name": "John" }'); // Person
+
+
+
+Parsing with safeParse
+
+
+safeParse 메서드를 통해 안전하게 파싱할 수 있습니다.
+
+
+const person = Person.safeParse('{ "name": "John" }'); // SafeResult<Person>
+
+if (person.success) {
+  console.log(person.data); // Person
+} else {
+  console.error(person.error); // ValidationFailedError
+}
+
+
+
+Serializing with JSON.stringify
+
+
+toJSON 메서드가 구현되어 있어 JSON.stringify를 통해 직렬화할 수 있습니다.
+
+
+const person = new Person({ name: "John" });
+const json = JSON.stringify(person); // '{"name":"John","deletedAt":null}'
+
+
+
+Known Issues
+
+
+인라인 스키마의 타입 추론 한계
+
+
+인라인으로 정의된 하위 스키마의 경우 required

@@ -1,0 +1,116 @@
+json-schema-library
+
+
+
+
+json-schema-library is the most compliant JSON Schema validator for the web, fully supporting all major JSON Schema draft versions. Read Draft Support for more details.
+
+
+
+
+
+
+
+
+
+
+
+json-schema-library provides tools and utilities for working with JSON Schema - enabling creation, validation, and schema exploration. Unlike most validators and editors, which hide the inner workings, this library is designed for developers building custom tools around JSON Schema. It runs in both Node and browser environments, prioritizing flexibility and extensibility over minimal memory footprint or raw performance.
+
+
+
+
+
+
+    Overview · Methods · Customization · Extensions · Changelog
+
+
+
+
+
+Quick start
+
+
+npm install json-schema-library
+
+
+json-schema-library includes a compileSchema function that converts a JSON Schema into a SchemaNode, which gives you easy-to-use methods for working with the schema.
+
+
+import { compileSchema, SchemaNode } from "json-schema-library";
+import myJsonSchema from "./myJsonSchema.json";
+import myData from "./myData.json";
+
+const schema: SchemaNode = compileSchema(myJsonSchema);
+// validate data and collect errors if invalid
+const { valid, errors, annotations } = schema.validate(myData);
+// create data which validates to the compiled JSON Schema
+const defaultData = schema.getData();
+// access a subschema at a specific JSON Pointer location
+const { node, error } = schema.getNode("#/image/title");
+node && console.log(node.schema);
+
+
+
+Per default, compileSchema uses the draft-version referenced in $schema for cross-draft support. In case $schema is omitted or invalid the latest schema (draft-2020-12) will be used. Customizing draft selection is documented in draft customization.
+
+
+const schemaNode = compileSchema({ $schema: "draft-07" });
+console.log(schemaNode.getDraftVersion()); // draft-07
+
+
+
+Overview
+
+
+compileSchema ·
+validate input schema ·
+SchemaNode ·
+Draft Support
+
+
+compileSchema
+
+
+Use compileSchema once to turn a JSON Schema into a tree of SchemaNodes. After that, you'll work with individual nodes in the tree. You can also pass an options object to compileSchema to customize how the nodes are created.
+
+
+type CompileOptions = {
+  // set of drafts to use
+  drafts: Draft[];
+  /** fallback draft version in case no draft_is specified by `schema.$schema` */
+  draft?: string;
+  // a context to share
+  remote: SchemaNode;
+  /** a list of remotes to add, requires a unique $id for each schema. Will be ignored if remote is set */
+  remotes: JsonSchema[];
+  // if format-validations should create errors. Defaults to true
+  formatAssertion: boolean | "meta-schema";
+  /** set to true to throw an Error on errors in input schema. Defaults to false */
+  throwOnInvalidSchema?: boolean;
+  /** set to true to throw an Error when encountering an unresolvable ref  */
+  throwOnInvalidRef?: boolean;
+  // default options for all calls to node.getData()
+  getDataDefaultOptions?: {
+    // add all properties (required and optional) to the generated data
+    addOptionalProps?: boolean;
+    // remove data that does not match input schema. Defaults to false
+    removeInvalidData?: boolean;
+    // set to false to take default values as they are and not extend them. Defaults to true
+    extendDefaults?: boolean;
+    // limits how often a $ref should be followed before aborting. Prevents infinite data-structure. Defaults to 1
+    recursionLimit?: number;
+  };
+};
+
+
+
+With this
+
+
+import { compileSchema, draft04, draft06, draft07, draft2019, draft2020 } from "json-schema-library";
+
+// only draft07 is used for all JSON schema
+compileSchema(mySchema, { drafts: [draft07] });
+
+// the created node

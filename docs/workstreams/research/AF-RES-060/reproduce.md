@@ -53,3 +53,41 @@ python -B -m workbench.session check docs/workstreams/research/AF-RES-060/manife
 ```
 
 검사 시각·대상 HEAD·종료코드·stdout/stderr는 evidence/verification에 저장한다. 이 검사는 경로·계약·의존 최신성의 기계검사이며 연구의 사실성과 충분성을 인증하지 않는다. 고정 RESULT 및 수용원장을 GitHub에서 다시 열어 hash/byte를 대조한 뒤 HANDOFF를 마지막 단독파일 커밋으로 발행한다. 실행하지 못한 원환경 시험이나 원문 결손은 HANDOFF에 최소 입력·명령을 남긴다.
+
+## 6. 최종 원장 재집계 순서
+
+현재 결과를 바꾸지 않고 확인할 때는 아래 read-only 재생 검사를 쓴다. 자체 영수증만 owned_path 아래 기록한다. 네트워크 요청·공급자 실행은 없다.
+
+```bash
+python -B docs/workstreams/research/AF-RES-060/verify_local.py
+```
+
+고정 결과의 별도 checkout에서 산출물을 처음부터 재생할 때는 다음 순서다. 원시 HTTP 전체 cache는 출판하지 않았지만 순위 입력, 독해 창, 문서/창 SHA, 원URL/판, 모든 관측 JSON은 출판했다. 아래 명령은 고정 관측을 다시 **집계**하며 새로운 독립 독해나 구현 실행이 아니다.
+
+```bash
+python -B docs/workstreams/research/AF-RES-060/replay.py
+python -B docs/workstreams/research/AF-RES-060/assemble_sources.py
+python -B docs/workstreams/research/AF-RES-060/analyze_comparisons.py
+python -B docs/workstreams/research/AF-RES-060/summarize_sensitivities.py
+python -B docs/workstreams/research/AF-RES-060/build_acceptance.py
+python -B docs/workstreams/research/AF-RES-060/render_report.py
+python -B docs/workstreams/research/AF-RES-060/verify_local.py
+```
+
+`replay.py`는 slots를 순위 단계 상태로 다시 쓰므로 `analyze_comparisons.py`까지 실행해야 최종 판정이 돌아온다. JSON 집계의 실행 UTC는 달라질 수 있으나 frozen feature/query/match bytes와 실제 분모는 같아야 한다. `assemble_features.py`를 다시 실행해 새 시각의 F1 봉인처럼 만들지 않는다. F1 바이트는 `3ae6f5bab20cf121ecf9197aa38f4f666734d3a5d2a7a53e7022c7d160739dd7`이다.
+
+세 관측 원장은 evidence/paths-schema/observations.json(51경로), paths-ld/observations.json(27), root-paths/observations.json(6)이다. root6 중 JS-4의3은056 인수, JS-6의3은 새 독해다. 전체28쌍/84경로이고 부분3은 JS-6/Ajv의 같은 첫창을 공유한다. strict literal 감도에서는 부분0이다. 전체48비교의18슬롯 중 부분1·미확인17이며 정확도 분모는0이다.
+
+## 7. 비용·출처 계보의 실제 재계산
+
+편집 비용은 features.csv의 행별 `primary_document_actions_attempted`, `logical_windows_read`, `logical_display_words`, `metadata_requests_observed`, `extra_interpretation_display_words`를 합친다. 물리 요청72와 논리 행동78은 다른 값이다. 논리 읽기30,943단어와 고유 저장창28,943단어, 추가 해석1,411단어를 따로 보고한다. Metadata는 최소190이며 정확한 전체 요청수가 아니다.
+
+경로 비용은 각 관측의 documents/cost와 팀 summary에서 같은 응답 재사용을 구분해 합친다. 새 논리행동130+인수5=135, 알려진 지정창 단어51,095+인수2,000=53,095, 인수JSON1창의 단어수는 미확인이다. SC-036 P3의 고유 초과111단어는 두 경로 논리합222단어에 해당한다. 새 본문29요청·metadata6요청이며 F1 캐시를 읽은 것은 새 네트워크0이다. 팀별 고유창 합은 공유 응답/fragment가 겹치므로 전역 고유 독해량으로 더하지 않는다. [cost-audit](evidence/cost-audit.json).
+
+출처는 사건193, 실질 직접독해165, 계보113원저작/신규95다. 같은 저작의 fragment·번역·판·LOC JSON/XML을 합치고, front matter·패키지 metadata만 읽은 창을 substantive quota에서 뺀다. `eligible_for_new_primary_minimum=false`는 같은 연구 안 재사용을 뜻하기도 하므로 무조건 실제독해 제외로 해석하지 않는다. 같은 엔진 wrapper의 글은 별도 저작이더라도 독립 엔진 증거가 아니다. 최종 계보 정정은 [감사](evidence/review/final-audit.md)에 있다.
+
+## 8. 판정 해석과 예산 결손의 재현
+
+JS-6/Ajv C2는 문서의 object.properties.bar.type=string에서 일반 속성명만 id로 바꾼 조건부 전이다. 다른 타입·연산·런타임까지 전이하지 않는다. 이는 표준 정의 또는 일반 준수만으로 두 조건을 확인한 것이 아니며 실제 id 실행은 미실시다. [미실행 fixture/명령](evidence/next-checks/README.md)을 쓸 때도 현재 주판정과 분리한다.
+
+두611/500 초과 경로와 인수 JSON 경계 미확인을 원장에 유지한다. static HTML renderer의 whitespace split은 CSS/JS를 실행한 실제 브라우저 픽셀 표시 측정이 아니다. 동일 응답과 선언된 renderer로 창을 재생할 수 있다는 범위만 주장한다. 추가 독해·코드 실행·새 판 교체가 필요하면 새 사건·새 감도로 기록하며 기존 주표에 끼워 넣지 않는다.
