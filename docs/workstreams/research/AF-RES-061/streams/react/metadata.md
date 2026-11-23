@@ -35,3 +35,8 @@ The first web search returned a long current release listing including 2026 chan
 - [Fixed component manifest](https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/packages/core/package.json)
 
 No implementation prediction, result, source formula or donor section is included in this metadata bundle.
+
+
+## Post-seal provenance update
+
+The earlier unresolved npm mapping is preserved above as a pre-outcome state. After prediction seal `02359364000057f69b00594d8b43571ac72df298`, registry metadata and the published tarball became readable. [runtime-manifest.json](runtime-manifest.json) verifies the registry gitHead, package integrity and installed transpiled JS member bytes. It does not assert byte equality between TypeScript source and compiled JavaScript. Current distribution mapping should use that later receipt.

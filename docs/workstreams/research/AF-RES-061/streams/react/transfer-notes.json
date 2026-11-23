@@ -1,0 +1,67 @@
+{
+  "component": "RS",
+  "version": "10.0.3",
+  "source_commit": "b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a",
+  "records": [
+    {
+      "class": "direct_named_software_inspiration",
+      "source_id": "R050",
+      "source_url": "https://github.com/pmndrs/react-spring/blob/caec34387ffc28c289265f55280a5163a8fe2b8c/readme.md",
+      "named_authors": [
+        "Christopher Chedeau",
+        "Cheng Lou"
+      ],
+      "links": [
+        "https://github.com/animatedjs/animated",
+        "https://github.com/chenglou/react-motion"
+      ],
+      "claimed_transfer": "animated interpolation/performance; react-motion ease of use; bridge imperative/declarative",
+      "limit": "Historical software inspiration statement; no specific numerical integrator or mechanics-paper adoption claimed."
+    },
+    {
+      "class": "direct_named_interaction_rationale",
+      "source_ids": [
+        "R038",
+        "R050"
+      ],
+      "author": "Andy Matuschak",
+      "original_url": "https://twitter.com/andy_matuschak/status/566736015188963328",
+      "source_url": "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/routes/docs.advanced.config.mdx#L205-L212",
+      "limit": "Original tweet and linked talk unavailable through web tool; receiver quotation observed. Not a mechanics source."
+    },
+    {
+      "class": "same_equation_only",
+      "researcher_donor": "MIT18.03SC Damped Harmonic Oscillators",
+      "adoption_status": "미확인",
+      "source_id": "R024",
+      "source_url": "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/packages/core/src/SpringValue.ts#L278-L325",
+      "variables": {
+        "q": "SpringValue position, arbitrary animated value unit",
+        "x": "q-goal displacement",
+        "m": "config.mass, normalized mass parameter",
+        "k": "config.tension after1e-6 conversion in millisecond acceleration",
+        "b": "config.friction after1e-3 conversion on pt/ms velocity",
+        "time": "advance input milliseconds; donor seconds t=dt/1000",
+        "velocity": "lastVelocity/config.velocity pt/ms; donor velocity multiply1000"
+      },
+      "continuous_equation": "m*q_ddot+b*q_dot+k*(q-goal)=0 in seconds under the inspected scaling",
+      "receiver_step": "h=0.001s; u_next=u+h*(-k*(q-goal)-b*u)/m; q_next=q+h*u_next; ceil(dt_ms) steps",
+      "changed_assumptions": [
+        "finite1ms semi-implicit integration rather than exact continuous solution",
+        "ceil(dt) rounds fractional frame intervals upward",
+        "RAF first16.667/subsequent max64ms policy differs from raw advance",
+        "adaptive proximity and speed tests end animation in finite time",
+        "clamp checked before each next substep can permit one emitted overshoot",
+        "final snap sets value but retains lastVelocity unless clamp zeroed it",
+        "stop/cancel, retarget and skipped rendering are receiver state policies"
+      ],
+      "discriminating_evidence": [
+        "raw-outputs.json RS-N/B direct and frame schedules",
+        "RS-X-strong-damping-3000",
+        "RS-X-precision-default",
+        "RS-X-skip-active",
+        "stop-correction.json"
+      ]
+    }
+  ]
+}
