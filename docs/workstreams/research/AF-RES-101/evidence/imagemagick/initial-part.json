@@ -1,0 +1,261 @@
+[
+  {
+    "input_state": "remote_image.path로 지정한 이미지; 원문에 픽셀 입력이나 원 파일 미첨부",
+    "purpose": "Ruby QuickMagick 또는 RMagick으로 이미지의 회색 부분 제거",
+    "required_output": "회색을 제거한 이미지; 인용된 원 방식은 out.png alpha 출력",
+    "requested_step": "기존 ImageMagick 처리식을 Ruby wrapper에서 실행하는 구문",
+    "tool_version": "QuickMagick / RMagick / ImageMagick; 판 미확인",
+    "actual_used_products": [
+      "QuickMagick",
+      "ImageMagick (convert command executed via QuickMagick.exec3)"
+    ],
+    "operation_attempted": "QuickMagick.exec3(command)에 convert 문자열을 전달. +clone부터 threshold 15%까지 그룹 괄호가 빠진 문자열을 실제 시도",
+    "arguments": "colorspace=HCL; channel=G; separate; threshold=15%; alpha=off; compose=CopyOpacity; composite",
+    "reported_output_error": "오류를 얻었다고 보고; 오류 문자열 없음",
+    "allowed_changes": "Ruby의 QuickMagick 또는 RMagick으로 호출을 고치는 것은 허용된 목표",
+    "known_values": "인터넷의 원 ImageMagick 파이프라인을 이미 인용했고 그 안에는 escaped parentheses가 있음",
+    "unknown": "판·오류 내용·원 픽셀·작동한 괄호 포함 호출을 실행해 봤는지·회색 범위의 수치 정의",
+    "history": [
+      {
+        "code": "third_party_suggestion",
+        "subject": "forum t=36051의 괄호 포함 clone/mask/CopyOpacity 파이프라인",
+        "location": "HTML p1 링크와 pre1"
+      },
+      {
+        "code": "attempted",
+        "subject": "괄호 없는 convert 문자열을 QuickMagick.exec3(command)로 실행",
+        "location": "HTML p2와 pre2"
+      },
+      {
+        "code": "failure_reported",
+        "subject": "해당 실제 실행에서 오류",
+        "location": "HTML p3"
+      }
+    ],
+    "evidence_quotes": [
+      "QuickMagick.exec3(command)",
+      "but I got an error"
+    ],
+    "location": "최초 HTML p1/pre1 타인 제안; p2/pre2 실제 시도; p3 오류 보고",
+    "initial_later_sensitive": "원 정상 그룹 구문을 이미 보았음과 그 구문대로 실행했음은 다르다",
+    "case_id": "IM-A1",
+    "question_id": 77774582,
+    "tag": "imagemagick",
+    "stratum": "attempt",
+    "selection_rank": 5,
+    "within_stratum_rank": 1,
+    "source_id": "SO-IM-77774582",
+    "question_url": "https://stackoverflow.com/questions/77774582/remove-all-greyscale-from-image-using-quickmagick",
+    "initial_revision_url": "https://stackoverflow.com/revisions/77774582/1",
+    "initial_revision_guid": "D9008B1B-B36B-404A-B48F-8CFBEF321A39",
+    "created_at": "2024-01-07T19:40:39+00:00",
+    "initial_body_sha256": "b19f72db92348d0b9c9fe237dcf25d148884a31f16a183fbf29122bf1de5eadd",
+    "first_revision_author": {
+      "display_name": "quaysar",
+      "user_id": 10129908
+    },
+    "initial_title": "Remove all greyscale from image using QuickMagick",
+    "current_title": "Remove all greyscale from image using QuickMagick",
+    "initial_tags": [
+      "ruby",
+      "imagemagick",
+      "imagemagick-convert",
+      "rmagick"
+    ],
+    "current_tags": [
+      "ruby",
+      "imagemagick",
+      "imagemagick-convert",
+      "rmagick"
+    ],
+    "title_changed": false,
+    "tags_changed": false,
+    "initial_body_line_count": 9,
+    "sealed_at": "2026-11-23T21:59:14.185029+00:00"
+  },
+  {
+    "input_state": "main image와 coords 배열. crop 두 개를 색 제목/테두리와 합성하는 기존 shell 반복문",
+    "purpose": "convert 명령 내부 조건으로 스크립트를 단순화하며 원 crop/composite 결과 보존",
+    "required_output": "val>300이면 70x50 white patch와 +851+0, 아니면 30x40와 +840+0을 쓰는 합성 출력",
+    "requested_step": "바깥 if/else에서 중복되는 convert 파이프라인을 내부 조건으로 통합",
+    "tool_version": "ImageMagick 7.0.10-61 / Cygwin",
+    "actual_used_products": [
+      "ImageMagick"
+    ],
+    "operation_attempted": "기존 shell if/else를 convert의 연속 인수 사이에 그대로 삽입한 명령",
+    "arguments": "val=300; white patch sizes 70x50 vs 30x40; geometry +851+0 vs +840+0; crop coords[1]/[2]; smush/resize pipeline",
+    "reported_output_error": "내부 if/else 시도는 작동하지 않는다고 명시; stderr·실제 출력 없음",
+    "allowed_changes": "중복 구문을 줄여 단순화; 필수인지 제안인지 모호한 명령 내부 조건 요구",
+    "known_values": "원판, Cygwin, val 조건·두 크기·위치; 기존 바깥 분기 구문",
+    "unknown": "원 이미지/coords 실제 값·실패 stderr·내부 조건 자체가 강한 제약인지·후속 실행",
+    "history": [
+      {
+        "code": "attempted",
+        "subject": "이미 쓰는 crop/merge 스크립트",
+        "location": "HTML p1/pre1"
+      },
+      {
+        "code": "failure_reported",
+        "subject": "convert 인수 사이의 shell if/else 삽입",
+        "location": "HTML 마지막 p와 마지막 pre"
+      }
+    ],
+    "evidence_quotes": [
+      "below attempt doesn't work"
+    ],
+    "location": "최초 HTML p1/pre1 기존 동작, 중간 두 pre의 크기/geometry, 마지막 p/pre 실패 시도",
+    "initial_later_sensitive": "기존 외부 분기를 이미 아는 것과 내부 조건 제안을 새로 아는 것은 분리해야 함",
+    "case_id": "IM-A2",
+    "question_id": 77797007,
+    "tag": "imagemagick",
+    "stratum": "attempt",
+    "selection_rank": 7,
+    "within_stratum_rank": 2,
+    "source_id": "SO-IM-77797007",
+    "question_url": "https://stackoverflow.com/questions/77797007/how-to-add-if-else-control-inside-convert-command",
+    "initial_revision_url": "https://stackoverflow.com/revisions/77797007/1",
+    "initial_revision_guid": "8759C72A-63CB-47FB-B34F-D259D7911185",
+    "created_at": "2024-01-11T00:04:10+00:00",
+    "initial_body_sha256": "761b22ea8ed0e1f6c1ac0cd515c17409226beb11ef8873d6a6a1a847f7128f2d",
+    "first_revision_author": {
+      "display_name": "Rasec Malkic",
+      "user_id": 19506623
+    },
+    "initial_title": "How to add if-else control inside convert command?",
+    "current_title": "How to add if-else control inside convert command?",
+    "initial_tags": [
+      "imagemagick"
+    ],
+    "current_tags": [
+      "imagemagick"
+    ],
+    "title_changed": false,
+    "tags_changed": false,
+    "initial_body_line_count": 83,
+    "sealed_at": "2026-11-23T21:59:14.185029+00:00"
+  },
+  {
+    "input_state": "본문의 qr.png 링크가 가리키는 회색조 이미지 안에 숨은 QR",
+    "purpose": "일반 QR 리더가 읽을 수 있는 결과 이미지로 드러내기",
+    "required_output": "common QR readers가 읽는 QR 이미지",
+    "requested_step": "숨은 QR를 드러내는 영상 처리 단계",
+    "tool_version": "OpenCV 또는 ImageMagick 언급; 판 미확인",
+    "actual_used_products": [],
+    "operation_attempted": "인터넷의 불특정 방법들을 시도했다는 보고만 있음",
+    "arguments": "미확인",
+    "reported_output_error": "어떤 방법도 작동하지 않았다는 일반 보고; 실제 출력·오류 미제시",
+    "allowed_changes": "OpenCV 또는 ImageMagick을 사용할 수 있다는 질문",
+    "known_values": "원 입력 URL, 목표 판독기 종류",
+    "unknown": "실제로 쓴 제품·방법·인수·판·QR payload·판독기·실패 출력",
+    "history": [
+      {
+        "code": "mention_only",
+        "subject": "OpenCV / ImageMagick",
+        "location": "HTML p1 마지막 질문"
+      },
+      {
+        "code": "failure_reported",
+        "subject": "unspecified internet methods",
+        "location": "HTML p1 두 번째 문장",
+        "specific_operation": false
+      }
+    ],
+    "evidence_quotes": [
+      "I tried some methods on internet",
+      "readable from common qr code readers"
+    ],
+    "location": "최초 HTML p1 입력/불특정 시도/도구 언급; p2 목표",
+    "initial_later_sensitive": "특정 호출을 안 썼다는 뜻이 아니라 공개 최초판만으로 식별할 수 없음",
+    "case_id": "IM-U1",
+    "question_id": 77743451,
+    "tag": "imagemagick",
+    "stratum": "unspecified",
+    "selection_rank": 1,
+    "within_stratum_rank": 1,
+    "source_id": "SO-IM-77743451",
+    "question_url": "https://stackoverflow.com/questions/77743451/how-can-i-reveal-hidden-qr-code-on-grayscale-image",
+    "initial_revision_url": "https://stackoverflow.com/revisions/77743451/1",
+    "initial_revision_guid": "A55BC3C9-53F1-4CF8-B0B3-FB23787ADA4B",
+    "created_at": "2024-01-01T21:47:52+00:00",
+    "initial_body_sha256": "07fd9cf40d4e4b8caa8a09994a6a2eca1c33ddebf9d032ffc058254558b7de7b",
+    "first_revision_author": {
+      "display_name": "infinity",
+      "user_id": 12835060
+    },
+    "initial_title": "How can i reveal hidden qr code on grayscale image",
+    "current_title": "How can i reveal hidden qr code on grayscale image",
+    "initial_tags": [
+      "opencv",
+      "image-processing",
+      "imagemagick"
+    ],
+    "current_tags": [
+      "opencv",
+      "image-processing",
+      "imagemagick"
+    ],
+    "title_changed": false,
+    "tags_changed": false,
+    "initial_body_line_count": 4,
+    "sealed_at": "2026-11-23T21:59:14.185029+00:00"
+  },
+  {
+    "input_state": "직사각형 사진을 다시 찍은 사진. 원 평면이 굽었을 수 있고 카메라 각도 왜곡도 있음. 예시 링크 2개",
+    "purpose": "사진의 사진에서 왜곡 보정을 자동화",
+    "required_output": "원 사진의 굽힘 및 카메라 각도에 의한 왜곡을 바로잡은 결과",
+    "requested_step": "자동 de-skew/unwarp 단계",
+    "tool_version": "제목/태그 ImageMagick; 본문 deskew 언급. 판 미확인",
+    "actual_used_products": [],
+    "operation_attempted": "특정 실행 없음; deskew가 flatbed scanner용 같다고 추측",
+    "arguments": "미확인",
+    "reported_output_error": "실행 또는 실패 출력 없음",
+    "allowed_changes": "자동 처리가 목표; 수동 제어점 허용 여부는 미확인",
+    "known_values": "입력은 대체로 직사각형, 평면 굽힘·카메라 각도 둘 다 가능",
+    "unknown": "실제 사용 도구·판·시도·좌표·자동 코너 검출 조건·굽힘 정도",
+    "history": [
+      {
+        "code": "mention_only",
+        "subject": "deskew의 적용범위에 대한 추측",
+        "location": "HTML p4"
+      },
+      {
+        "code": "not_stated",
+        "subject": "actual execution",
+        "location": "최초 본문 전체"
+      }
+    ],
+    "evidence_quotes": [
+      "I don't think deskew applies"
+    ],
+    "location": "최초 HTML p1–p3 입력/목표, p4 언급만, p6/p7 예시 링크",
+    "initial_later_sensitive": "현재 제목은 2D Object지만 최초 제목은 photo of a photo; 본문 후대 차이는 미열람",
+    "case_id": "IM-U2",
+    "question_id": 77776955,
+    "tag": "imagemagick",
+    "stratum": "unspecified",
+    "selection_rank": 6,
+    "within_stratum_rank": 2,
+    "source_id": "SO-IM-77776955",
+    "question_url": "https://stackoverflow.com/questions/77776955/imagemagick-un-skewing-photo-of-a-2d-object",
+    "initial_revision_url": "https://stackoverflow.com/revisions/77776955/1",
+    "initial_revision_guid": "39C45FE0-5F27-4331-AFE5-9F0EFAA0E31D",
+    "created_at": "2024-01-08T06:10:06+00:00",
+    "initial_body_sha256": "e9e2260516ab148b7605edcb7c4c8f5c2dfe396f2804f45115bb8934362179b4",
+    "first_revision_author": {
+      "display_name": "ina",
+      "user_id": 357189
+    },
+    "initial_title": "imagemagick un-skewing photo of a photo",
+    "current_title": "imagemagick un-skewing photo of a 2D Object",
+    "initial_tags": [
+      "imagemagick"
+    ],
+    "current_tags": [
+      "imagemagick"
+    ],
+    "title_changed": true,
+    "tags_changed": false,
+    "initial_body_line_count": 7,
+    "sealed_at": "2026-11-23T21:59:14.185029+00:00"
+  }
+]
