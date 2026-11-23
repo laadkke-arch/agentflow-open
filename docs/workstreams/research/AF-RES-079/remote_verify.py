@@ -22,7 +22,11 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--commit',required=True)
 parser.add_argument('--output')
 parser.add_argument('--brief',action='store_true')
+parser.add_argument('--workers',type=int,default=6,help='Concurrent read-only GETs (1-24)')
+parser.add_argument('--progress',action='store_true')
 args=parser.parse_args()
+if not 1 <= args.workers <= 24:
+    raise SystemExit('workers must be between1 and24')
 if not re.fullmatch(r'[0-9a-f]{40}',args.commit):
     raise SystemExit('exact 40-character SHA required')
 paths=subprocess.check_output(['git','ls-tree','-r','--name-only',args.commit,'--',OWNED],cwd=REPO,text=True).splitlines()
@@ -51,8 +55,12 @@ def verify(path):
     return row
 
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
-    rows=list(pool.map(verify,paths))
+with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
+    rows=[]
+    for i,row in enumerate(pool.map(verify,paths),1):
+        rows.append(row)
+        if args.progress and (i%50==0 or i==len(paths)):
+            print(f'remote verification: {i}/{len(paths)} received; {sum(not r["passed"] for r in rows)} unmatched',file=sys.stderr,flush=True)
 failed=[r['path'] for r in rows if not r['passed']]
 manifest='\n'.join(r['path']+' '+r['git_blob_sha256'] for r in rows)+'\n'
 report={'actor':'root via local Python urllib GET','location':str(REPO),'started_utc':started,'finished_utc':dt.datetime.now(dt.timezone.utc).isoformat(),'repository':'laadkke-arch/agentflow-open','result_commit':args.commit,'owned_path':OWNED,'checked_files':len(rows),'matched_files':sum(r['passed'] for r in rows),'failed_paths':failed,'canonical_manifest_sha256':hashlib.sha256(manifest.encode()).hexdigest(),'exit_code':1 if failed else 0,'command_argv':sys.argv,'files':rows,'limit':'Exact remote bytes and committed scope only; not an additional software compatibility test.'}

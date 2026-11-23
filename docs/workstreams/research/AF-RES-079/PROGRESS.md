@@ -19,3 +19,9 @@
 RESULT의 필수3표/Q1–Q7, SELF_CHECK 세부문항, 실행·미실행 명령의 REPRODUCE 및 수용 JSON을 작성했다. 최종 문서 구조·참조 검산38개는 종료0이다. 공통 검사는 source7a314fc의 깨끗한 checkout에서 최초 Git bundle 부모 이력 누락으로 종료1이었고, 공개 unshallow fetch 후 같은 소스를 재검사해 종료0이었다. 최초 실패·회복 명령·재시도 로그를 모두 보존했다. 별도 개별 session check도 종료0이며, 공통 sessions의 no_active_sessions를 이 개별 검사 대신 인용하지 않는다.
 
 연구 결과의 PARTIAL은 G01 및 대조 역사 native 실행, 미시험 adapter/소비자 계약의 범위 한계다. 모집·자연/대조 원판·20독립원문·두 질문·근거 연결은 충족했다. 남은 전달 단계는 이 결과를 커밋한 정확 SHA에서 원격 bytes를 대조하고, 그 결과 SHA를 적은 HANDOFF.md 하나를 마지막으로 커밋하는 것이다. HANDOFF가 존재하면 그 고정 SHA/검사표를 최신 완료 상태로 읽는다.
+
+## 고정 결과판 원격 재독 완료
+
+결과/수용 묶음 `daf15ec10f66b19637c5e72ab92a3a0c6c1ea7f6`에서 개별 session check와 결과 감사38개가 모두 종료0이었다. 이어2026-11-23 12:36:37–12:45:27 UTC에 원격411파일 모두를 읽어 canonical Git bytes·SHA256과411/411 일치를 확인했다. 실패0·재시도0이며 영수증은 `evidence/resume/remote-result-r1.json`이다. RESULT/SELF_CHECK/REPRODUCE/수용JSON의 GitHub connector 본문 재독4개도 일치했다.
+
+이 영수증을 추가한 마지막 결과판의 재독 요약과 정확 SHA는 HANDOFF에 기록한다. 원격 검사기는 동시 read 수(1–24)와 진행 표시를 선택할 수 있게 했으며 비교 기준은 그대로다. 최종 HANDOFF가 있으면 신규 모집이나 완료 묶음을 반복하지 말고 그 문서의 남은 최소 확인만 이어간다.
