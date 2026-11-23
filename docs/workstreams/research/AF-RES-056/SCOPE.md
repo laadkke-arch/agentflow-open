@@ -47,3 +47,21 @@ root는 JSON Schema 질문/용어, 요구 통합·커밋·판정·보고를 담�
 결측이 있으면 `partial_handoff`로 종료하고 전체충족으로 승격하지 않는다. 표1 16행, 표2 8행을 빈자리 포함 보존한다. 관측0/해당없음/미확인/미실시를 구분한다. 마지막 HANDOFF 단독 커밋 전에 결과·수용원장을 고정 원격 SHA에서 읽고 session check --fetch의 실제 출력·종료코드·UTC를 저장한다.
 
 기록 UTC: 2026-11-23T01:27:56.845168+00:00
+
+## 사전 구체화 A — 질문 내용 확인 뒤, 목록 순위/목적지 확인 전
+
+JSON-LD의 최초1·3위는 script 배치만 묻지 않고 기존 breadcrumb/저자 Q&A 데이터에서 구조화된 내용을 생성하는 실제 변환을 포함한다. 따라서 기존 JSON-LD 문서만 입력이어야 한다는 제한을 추가하지 않는다. HTML/JSP 데이터→JSON-LD 생성과 JSON-LD→필요값 추출을 포함한다. 이는 기존 문서/데이터 변환 경계를 구체화한 것이며 기존 적격 표본의 사후 교체가 아니다. 첫4건을 의도적으로 expand/compact 사례로 고르지 않는다. 최초 태그가 다른 두 질문은 당시 태그 코호트로 소급하지 않는다.
+
+목록 준비는 기본 필터·기본 tooling-type 그룹을 유지하고 Load More를 끝까지 펼친 게시 순서의 첫40을 기준으로 한다. 기본 숨김 obsolete 상태를 유지한다. 초기5개/그룹과 준비한 전체 순서는 따로 기록한다. 목록 준비는 L/V 공통 입력이며 후보 원문 두 동작과 구분한다. 검색필드에는 실제 목록 제목·명시별칭·보이는 기능표제/설명만 사용하고 modal-only notes/description은 제외한다. 언어/지원초안/라이선스는 환경 메타데이터이며 기능구 일치용 필드가 아니다. 목적지는 편집자가 게시한 Source가 있으면 그 URL, 없으면 Homepage의 정확URL이다. row→modal→Source는 현 UI의 클릭수일 수 있으므로 여기의 두 동작은 고정 URL 목록에서의 원문 열람 추상화이며 실제 UI 클릭 효과를 주장하지 않는다.
+
+CLI 최초 push는 인증 사용자 입력이 없어 exit128이었다. 연결된 GitHub 쓰기 도구로 같은 세 파일을 원격 커밋 `628c330941babcb43b636d0a37ecb073b2c9d107`에 게시하고 fetch했다. 로컬/원격 tree 일치를 확인한 뒤 로컬 HEAD를 같은 원격커밋으로 맞췄다. 인증정보나 공통 Git 설정은 수정하지 않았다. 이후 각 묶음도 원격 커밋과 내용 일치를 확인한다.
+
+## 모집·용어 동결 B
+
+80개 메타데이터와 최초판 본문을 읽고 JSON Schema 원순위5/7/8/9, JSON-LD1/3/5/7의 8요구를 동결한다. Schema2는 dropdown/flat submission 요구가 실제로 있으나 validation/annotation 범위 밖으로 제외했다. Schema3은 서로 다른 validator 환경에 대한 예측을 같은 구현의 결합 요구로 바꾸지 않았다. Schema8의 조건은 원문 코드에서 읽었고 prose-only라고 하지 않는다. 별도 문맥 authority_records가 Schema1–9를 다시 읽고 이 경계를 검토했다(선정안을 미리 받은 검토; 외부·블라인드 검토 아님). Schema9 C2는 명시적인 datatype enum으로 구체화하고 모호한 값 존재 문의를 추가 guard로 보존했다. 이전 모호한 C2 초안은 원격 미출판이며 후보 결과는 아직 읽지 않았다.
+
+노출 정정: LD의 최초 API 진단 출력에는 첫 질문 score/answer_count 일부가 노출되었다. 이를 선정에 쓰지 않았으나 전면 비노출이라고 주장하지 않는다. root의 Schema API 진단에는 비선정28번 후속rev3의 본문이 일부 먼저 노출되었고 screening은 revision1로 다시 했다. 답/댓글 원문을 읽어 선정한 것은 없다.
+
+vocabulary.csv의 literal10+11행과 V 허용7행/보류9행 등 총37행을 후보 조회 전에 고정한다. Schema에는 meta-schema, schema references, dereferencing, validation(두 원문 연결), enum의 정의 연결만; JSON-LD에는 framing 한 용어만 추가한다. 기능의 일부 이름이 맞아도 두 조건/guard 지원으로 바꾸지 않는다. 민감도에서 제거할 사전 용어는 `LD-3-V1`의 **framing**이다. 상위3→4는 모든8요구에 같은 방식으로 적용한다.
+
+기본 판독창은 문서 본문의 정확 fragment 절 또는 첫 제목 이하500 whitespace 단어다. GitHub 저장소 URL은 README 렌더링 본문을 첫 문서로 읽으며 파일목록/nav를 기능문서로 세지 않는다. 본문 링크는 문서/사용/API/규격/설치 등의 정보 대상만 먼저2개를 순서대로 추출한다. GitHub header/PR/login/contributor/badge status 링크는 제외한다. 외부링크라서 유리하다는 이유로 세 번째를 선택하지 않는다.
