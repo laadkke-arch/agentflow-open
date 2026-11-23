@@ -55,3 +55,12 @@ python -B "$study/run_fixtures.py" --case L01 --case L02 \
 ```
 
 L01은 저자가 보고한 출력 포맷 비교를 위해 N-Quads 문자열과 RDFJS dataset 반환을 같은 inline 입력·옵션에서 각각 읽는다. 두 출력의 JSON-encoded 구조 해시와 `termType`/값을 본다. L02는 alias 및 해당 값·자료형을 따로 확인한다. npm 설치와 Node 평가의 런타임은 별도이며 14.18.3 재시도의 npm은 24.22.1 엔진으로 실행했다. URL 호출이 발생하면 loader가 즉시 오류를 반환하게 했다.
+
+## 검산과 작업 계약
+
+```sh
+python -B "$study/audit.py" --report --replayed "$scratch/all-1" --replayed "$scratch/all-2"
+python -B -m workbench.session check docs/workstreams/research/AF-RES-068/manifest.json --fetch
+```
+
+검산은 모집·경로 순서와 연결, 창의 원문 위치·SHA, 자료 계보, 문서 판정의 경로 내 위치, 실행의 입력·출력 byte/값 및 표 행 수를 비교한다. 원작성자 당시 런타임과 사람이 본 화면의 동일성은 이 검사에서 미확인이다.
