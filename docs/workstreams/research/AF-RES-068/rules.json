@@ -1,0 +1,38 @@
+{
+  "scope": "AF-RES-068",
+  "selection_inputs": ["rules.json", "mentions.jsonl", "selector-cases.json의 case_id·operation_family·repo·pin", "해당 Git 트리·package manifest·공식 문서 제목·키/옵션/API 선언의 메타데이터"],
+  "A": {"path": "README.md", "line": 1},
+  "B": {
+    "title_order": {
+      "schema_dialects": ["^(json )?schema (language|dialects?)$", "^(json )?schema$", "^getting started$"],
+      "json_validation": ["^(basic )?(data |schema )?(validation|validating data)$", "^(json )?schema$", "^getting started$"],
+      "jtd_validation": ["^(json type definition|jtd)$", "^(basic )?(data )?validation$", "^getting started$"],
+      "expansion": ["^(json[ -]ld )?expan(d|sion)( a document)?$", "^quick examples$", "^examples$"],
+      "compaction": ["^(json[ -]ld )?compac(t|tion)( a document)?$", "^quick examples$", "^examples$"],
+      "rdf_conversion": ["^(rdf (conversion|serialization)|converting (to|from) rdf|to rdf|from rdf)$", "^quick examples$", "^examples$"],
+      "framing": ["^(json[ -]ld )?fram(e|ing)( a document)?$", "^quick examples$", "^examples$"]
+    },
+    "normalization": "정확한 제목을 casefold, Markdown 장식 제거, 공백 하나로 합친 뒤 정규식 전체 일치. sorted pattern index → 파일경로 → 행. 작업 계열은 최초 저자 문장과 입력에서 고정. JSON-LD 넓은 작업 제목이 없으면 예제 총괄 제목까지 허용한다.",
+    "eligible": "공급자의 루트 README와 docs 이하 영어 Markdown/RST 제목. CHANGELOG, 공헌·정책, 번역 및 실험 파일 제외. operation의 개별 API 선언을 B에서 제외.",
+    "fallback": "B_NO_TITLE → A"
+  },
+  "C": {
+    "sort_order": ["body mention lexical offset", "exact public heading", "public declaration", "pinned file path", "source line"],
+    "normalization": "대소문자와 $/@/식별자 철자를 보존한다. 인라인 역따옴표·string/property 구분자만 제거한다. 연결된 수신자는 ajv., ajvInstance., jsonld., jsonld.promises.만 벗긴다. 본문 코드에서 실제 호출/스키마 키/상수 값/형 이름이나 특별 기호, 인라인 코드 이름을 수집한다. 일반 소문자 문장어는 이름임을 표기한 명시적 function/method 문맥에 한한다. 예제에서 package import literal, 모듈 경로, URL, HTML 주석, template prompts는 제외. 임의 접두사, 영어 stem/대소문자 fold, 예제 출력, 임의 별칭을 금지한다.",
+    "eligible": "동일판 공식 JSON Schema/JTD/API/options/TS 문서 제목, Ajv 공개 클래스/API/형의 export, Ajv 스키마 keyword registry 또는 meta-schema property 선언, jsonld.js 공용 엔트리 lib/jsonld.js의 API 할당과 언어 공개 키워드 recognizer의 case. 공용 어휘는 이 구조적 메타데이터에 실제 이름이 있는 토큰에 한한다. 용례·코드 결과는 선택기에 미제공.",
+    "collision": "사용자 wrapper나 데이터 property도 동일 표기일 수 있다. 입력 사용형과 공급자 namespace를 원장에 남기고 환경·동작의 지지를 자동 부여하지 않는다. 승인된 명칭 전이는 별도 판정으로 둔다.",
+    "fallback": "C_NO_EXACT → A; 독립 C 성공 0"
+  },
+  "second_action": {
+    "allowed_label_words": ["example", "examples", "test", "tests", "spec", "specs"],
+    "rule": "첫 500토큰 창에서 끝까지 표시된 링크 라벨의 원문 순 첫 적격 링크. 동일 저장소·동일 SHA로 고정 가능한 문서/시험/공개 코드 파일이어야 한다. repo 밖, 다른 판, 유도 메뉴/이미지, 동일 도착점 제외. 사전 순위와 의미를 다시 평가하지 않는다. 선택 링크가 깨졌거나 접근 불능이면 행동을 1회로 기록하고 종료한다.",
+    "on_missing": "NO_LINK; 열람 수 1"
+  },
+  "display": {
+    "max_actions": 2, "max_tokens": 500, "token_regex": "\\w+|[^\\w\\s]", "starts": "선택 표제 행 또는 공개 선언의 바로 앞 붙은 API JSDoc 시작. 선언 위치·표시 시작 행을 모두 기록.",
+    "exclude": ["image pixels and captions inside image markup", "explicit math delimiters outside code", "collapsed or non-text markup", "link destinations as display text"],
+    "after_cap": "서로 다른 정보를 읽으려고 창 시작을 이동하지 않는다. 링크가 잘렸으면 선택 후보에서 제외한다."
+  },
+  "execution_cases_in_order": ["A01", "A02", "L01", "L02"],
+  "joint": "같은 pinned route 안의 C1, C2, 환경 모두 D 및 엄격 노출. R, T, U는 별도. 비교판도 같은 판 내부에서만 평가하고 실제 환경 검증과 분리."
+}
