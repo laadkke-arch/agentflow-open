@@ -1,0 +1,26 @@
+\documentclass{standalone}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\definecolor{AFBlue}{RGB}{0,94,179}
+\definecolor{AFRed}{RGB}{190,44,48}
+\begin{document}
+\nopagecolor
+\tikzset{->, >=stealth', node distance=3cm, every state/.style={thick, fill=gray!10}, initial text=$ $,}
+\tikzset{AFTrack/.style={draw=AFRed}}
+\tikzset{AFTrack/.style={draw=AFBlue}}
+\begin{tikzpicture}
+    \node[state, initial, accepting] (q1) {$q_1$};
+    \node[state, right of=q1] (q2) {$q_2$};
+    \node[state, right of=q2] (q3) {$q_3$};
+    \node[state, accepting, right of=q3] (q4) {$q_4$};
+    \draw (q1) edge[loop above] node{a} (q1)
+    (q2) edge[above, AFTrack] node{r} (q1)
+    (q2) edge[above] node{a} (q3)
+    (q2) edge[below, bend right] node{b} (q4)
+    (q3) edge[above, bend right] node{a} (q2)
+    (q3) edge[above, bend left] node{b} (q1)
+    (q4) edge[loop above] node{b} (q4)
+    (q4) edge[above] node{a} (q3);
+\end{tikzpicture}
+\end{document}
