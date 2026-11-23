@@ -50,3 +50,10 @@ python -B "$af097_dir/run.py" execute experiment --env-dir "$af097_root/env" --i
 python -B -m workbench.session check docs/workstreams/research/AF-RES-097/manifest.json --fetch
 python -B scripts/cloud_check.py --environment codex-cloud --fetch-contract --require-clean
 ```
+
+원장과 관측을 비교하는 명령이다. 저장소 경로에 출력을 덮어쓰지 않는다. [새 환경에서 재생한 비교](evidence/replay.json)
+
+```sh
+python -B "$af097_dir/audit.py"
+python -B "$af097_dir/audit.py" --replay-dir "$af097_root"
+```

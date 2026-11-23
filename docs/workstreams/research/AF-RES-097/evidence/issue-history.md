@@ -9,3 +9,5 @@
 | #5593 Gist 기원 | Gist는 리비전 2개를 표시한다. 고정 HEAD `7389968dec0ac74f493d28ccd0f5f7b00e7ca8de` ZIP의 주석이 그 SHA를 표시한다. 그 SHA의 `^`로 열린 부모 ZIP은 `e3ff7a8f58fb96a90bd021e9695920dcc52b8f8f`를 표시한다. | 부모에는 `test_convert.py` 358바이트와 `requirements.txt` 27바이트만 있다. 고정 HEAD는 원 PNG 304바이트를 추가했다. Gist의 requirements는 8.3.1을 명시한다. 부모에는 비교할 PNG가 없다. 페이지의 raw 링크에 들어 있는 리비전이 ZIP SHA와 같다. 부모 확인은 093의 고정 구현 또는 Hopper의 동일 입력 주장에 쓰이지 않는다. [Gist](https://gist.github.com/benjaminrigaud/d98a4b54fb409bc8f745d169df0196fc) [부모 ZIP](https://codeload.github.com/gist/d98a4b54fb409bc8f745d169df0196fc/zip/e3ff7a8f58fb96a90bd021e9695920dcc52b8f8f) |
 
 셸에서 `api.github.com` 이슈는 HTTP 403, Gist HTML은 `curl -f` 종료 22, Gist 원격 Git은 128, gist.githubusercontent.com raw는 CONNECT 403·curl 56이었다. 웹 도구의 Gist revisions/raw/ZIP 링크도 제한 응답이었다. 이슈 본문과 공개 HTML의 activity/payload는 GitHub에서 열렸으며 원 PNG는 같은 리비전의 GitHub codeload ZIP에서 확보했다. 별도 접근 실패의 출처와 한계는 자료 원장에도 남긴다.
+
+`gh api graphql`로 두 본문의 `lastEditedAt`/`includesCreatedEdit`/`userContentEdits`와 #5595 댓글 이력을 조회한 명령은 `2026-11-23T19:44:20Z`경 종료 1 (`Post https://api.github.com/graphql: Forbidden`)이었다. 접근 가능한 타임라인과 Gist 두 버전의 바이트 비교 결과를 위에 보존했다.
