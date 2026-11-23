@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from select_passages import ROOT, jsonl, make_segment, originals, read_jsonl, source_data
@@ -127,6 +128,8 @@ def main():
     command.add_argument("--case", choices=["J1", "J2", "J3", "J4", "P1", "P2", "P3", "P4"])
     command.add_argument("--validate-first", type=Path)
     command.add_argument("--marker-cost", action="store_true")
+    command.add_argument("--raw-segment", nargs=3, metavar=("PACKET", "SLOT", "SEGMENT"),
+                         help="Write only the pinned raw UTF-8 bytes of one sealed visible segment.")
     args = parser.parse_args()
     protocol = json.loads((ROOT / "protocol.json").read_bytes())
     cases = {c["case_id"]: c for c in protocol["cases"]}
@@ -135,8 +138,13 @@ def main():
         project(cases[args.case], [packet for packet in packets if packet["case_id"] == args.case], bodies)
     elif args.validate_first:
         rows = parse_first(args.validate_first, {p["packet_id"]: p for p in packets}, cases, bodies)
-        import sys
         sys.stdout.buffer.write(jsonl(rows))
+    elif args.raw_segment:
+        packet_id, slot_number, segment_number = args.raw_segment
+        packet = next(p for p in packets if p["packet_id"] == packet_id)
+        slot = packet["slots"][int(slot_number) - 1]
+        start, end = slot["segments"][int(segment_number) - 1]["utf8"]
+        sys.stdout.buffer.write(bodies[slot["file_id"]][0][start:end])
     else:
         overhead = {w: {"markers": sum(p["metrics"]["segment_boundary_markers"] for p in packets if p["window"] == w)}
                     for w in ("W1", "W2")}

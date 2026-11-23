@@ -1,0 +1,68 @@
+{
+  "version": "jq-1.7",
+  "scope": "Post-lock synthetic diagnostic. Not the original user input or the 1.7.1 pinned corpus version.",
+  "runs": [
+    {
+      "case": "diagnose-original-comma",
+      "started_utc": "2026-11-23T22:18:09.567482+00:00",
+      "finished_utc": "2026-11-23T22:18:09.570857+00:00",
+      "command": [
+        "jq",
+        "-c",
+        "[JOIN(INDEX((input[] | debug(.)), .id); .[]; (.id|tostring); (debug(.) | add))]",
+        "file1.json",
+        "file2.json"
+      ],
+      "input_files": {
+        "file1.json": [
+          {
+            "id": 1,
+            "left": "L"
+          },
+          {
+            "id": 2,
+            "left": "L2"
+          }
+        ],
+        "file2.json": [
+          {
+            "id": 1,
+            "right": "R"
+          }
+        ]
+      },
+      "exit_code": 5,
+      "stdout": "",
+      "stderr": "[\"DEBUG:\",{\"id\":1,\"right\":\"R\"}]\njq: error (at file2.json:1): break\n"
+    },
+    {
+      "case": "join-expr-check-two-arg-index",
+      "started_utc": "2026-11-23T22:18:09.571518+00:00",
+      "finished_utc": "2026-11-23T22:18:09.574640+00:00",
+      "command": [
+        "jq",
+        "-c",
+        "[JOIN(INDEX(input[]; .id); .[]; (.id|tostring); (debug(.) | add))]",
+        "file1.json",
+        "file2.json"
+      ],
+      "input_files": {
+        "file1.json": [
+          {
+            "id": 1,
+            "left": "L"
+          }
+        ],
+        "file2.json": [
+          {
+            "id": 1,
+            "right": "R"
+          }
+        ]
+      },
+      "exit_code": 0,
+      "stdout": "[{\"id\":1,\"left\":\"L\",\"right\":\"R\"}]\n",
+      "stderr": "[\"DEBUG:\",[{\"id\":1,\"left\":\"L\"},{\"id\":1,\"right\":\"R\"}]]\n"
+    }
+  ]
+}
