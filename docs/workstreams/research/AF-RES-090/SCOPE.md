@@ -43,3 +43,13 @@ Python 두 자리, R 두 자리, IIIF/EPUB는 분리 조사하고 주 작성자�
 ## 완료와 제외
 
 필수 표 세 개 → 분모 → 방법/해석 순서를 따른다. 필수 근거가 없으면 PARTIAL. HANDOFF는 마지막 단독 커밋이며 결과 SHA에서 계약·공통 검사와 원격 재열람의 실시 범위를 적는다. main 병합·배포·계정 변경·유료 API·역사적 게시 조사·실행성 주장은 범위 밖이다.
+
+## 실행 뒤 해석과 기록 보완 — 2026-11-23 UTC
+
+원격 묶음 ①은 `973897922e07d0e63a4c68c377422b1a65ce0f27`, ② 후보 봉인은 `c2a3f387cc962abd1ef383e39f750cc23ee5e51a`, ③ 실제 열람·반례·타분야 원장은 `833071b378ab379188c7b62c4a013621a4958bdf`다. 최종 결과/검사/인계 SHA는 HANDOFF에 연결한다.
+
+- R2-next의 이전 broad confirmed는 정적 pre 읽힘만을 뜻했다. 독립 검산 뒤 엄격 SVG/재생 후속축은 `no_explicit_path`, 정적 출력은 `static_output=confirmed`로 분리했다. 원 봉인과 이전 기준은 그대로 두고 `streams/r/evidence/R-coding-adjustment.json` 및 최종 targets.csv의 prior_success_criterion에 이유·UTC·원값을 보존했다. 데이터나 목표 예제로 교체한 것은 아니다.
+- P3의 봉인 원URI는 `/en/1.x/`이고 목표는 그 root의 지원 표다. `#what-does-it-do`는 이후 실제 root 대조에서 확인한 anchor다. 주 경로의 `/1.x/options/` 표를 사후 목표로 바꾸지 않았다. same_version의 legacy1.x는3.3.0과 동일 release가 아니라 별도로 의도한 목적 계열이라는 뜻이다.
+- 주16행은 봉인 링크를 따른 독립 HTTP 읽기다. UI는 메뉴 클릭성·GitHub source/Raw 표시를 확인한 보조 관측으로 `streams/ui/observations.json`에 보존했다. 주 GitHub503 세 건을 이전/UI200으로 치환하지 않았다.
+- 원장 최소량은 적격45자료·18계보다. R의 추가 tree/ref/commit목록5건도 원장에 남겼으나 구성 최소량에서는 제외했다. 선행6파일·실패·미러·재요청도 제외했다.
+- 공통 검사는 소유 경로 안의 임시 복제본 및 TMPDIR에서 원래 검사기를 변경하지 않고 실행한다. 공통 검사기의 .workbench/lab 출력이 원래 checkout의 허용 경로 밖에 생기지 않도록 한 실행 위치 선택이며 검사 조건을 완화하지 않는다.
