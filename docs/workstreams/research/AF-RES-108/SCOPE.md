@@ -39,3 +39,7 @@ CSS 적격의 공통 조건은 WPT 기본 harness 또는 reftest 신호, 외부 
 ## 제공자 문서 찾기
 
 키워드 점수는 문서 선택 뒤에만 계산한다. 제공자 공식 시작 페이지는 SQLite 릴리스의 SQL Language Expressions, Aggregate Functions, SELECT, Window Functions 페이지를 층 순서대로 각각 고정한다. Flexbox 네 층은 컷오프 시 최신 정식 W3C TR CSS Flexible Box Layout Level 1 하나를 공유한다. 각 시작 페이지의 버전 색인에서 컷오프 이하와 날짜 최신을 우선하고, 같은 날짜일 때 URL 바이트 순 첫 공식판을 택한다. SQLite 문서 HTML은 버전 배포 zip의 해당 파일 첫 경로를 사용하고 같은 시점 docsrc와 연결한다. 파일 내부는 큰 절 하나를 잘라 심는 대신 문서의 본문 전체를 한 번 문자열로 만든다. 네 Flexbox 질문의 시작 페이지가 같으므로 HTML과 변환도 한 번이다. POSIX와 SVG는 본 표본의 답을 봉인하고 나서 같은 규칙으로 교정한다.
+
+## 문서 취득 편차
+
+원격 예측을 봉인하기 전 실제 취득 방식과 편차를 고정했다. Cloud 셸은 sqlite.org·w3.org의 원문 HTTP를 거절했다. SQLite 문서 ZIP과 날짜 고정 docsrc 경로는 web 열람도 실패했다. 그래서 SQLite의 게시자 공개 웹 본문 네 개를 같은 순서로 대체하고 서로 겹쳐 받은 전체 행의 지문을 봉인했다. 3.51.1 당시 문서와의 등가성은 미확인이다. W3C 당시판은 게시자 페이지의 전 행을 받았다. 양쪽 영역에서 반환된 HTML 텍스트 뷰를 공통 변환하고 그 뷰의 행·열로 역매핑했다. 원시 HTML 태그 좌표는 미확인이다. 정확한 원문이 확보되면 새 입력군으로 다시 봉인할 수 있다. 현재 예측 커밋을 바꾸지 않는다.
