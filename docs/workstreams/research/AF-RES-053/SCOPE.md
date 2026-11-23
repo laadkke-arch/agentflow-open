@@ -60,3 +60,14 @@
 - `operations.json`은 문서 비교 전 구체화한 최종 후보다. 보조자의 잠정 제안보다 V01은 resolve를 공통으로 고정하고 필드 표현만 비교, V02는 per-cell 정적 title 대신 compile formatter의 가용성을 확인할 후보로 구체화했다. V03은 fixed sample identity predicate 대 source property를 비교한다. L01은 수직 여백 정책, L02는 event MarginV만 변화시킨다. N을 읽고 해당 API가 존재하지 않으면 당시 선택 가능성을 미확인/불가로 표시하고 새 해결책으로 무단 교체하지 않는다.
 - 원문 #7278의 초기 본문에 연결된 asset_data.txt를 확보해 135 nested record 및 schema v4를 확인했다. 초기 예제 링크의 압축 spec은 아직 미복원이다. 첨부의 temporary download query는 공개 영수증에서 삭제했다.
 - 카드 작성 순서는 root의 N→I→D다. 보조자는 분야별 API/예제 후보를 모을 수 있지만 최종 선택·예측은 root가 한다. 같은 모델 내 문헌 조사 보조를 별도 참가자 실험으로 부르지 않는다.
+
+## 단계 ② 원문 창·예측 및 자체 방법 검토 반영
+
+- N/I/D 카드 18행, 사전 예측18행을 준비했다. 실제5요구의 I/D 추가창은 각각 72/68/114/87/87 whitespace 단어로 일치시키고 그림 수는 0/0/0/1/1로 맞췄다. 상한은 각200단어·그림1이다. 단어는 실제 표시 문자열의 공백 분리 단위이며 code/RST/HTML의 표현이 달라 같은 인지부담을 보장하지 않는다. D의 중간 문장 절단과 표지 제거는 donor-card-windows.json에 정확히 남긴다. 저장한 URL·SHA·행·단어위치·hash로 실제 창을 재구성할 수 있다.
+- source 원문 전체·긴 발췌·도판 원본은 재배포하지 않는다. 원문창의 위치·hash와 자체요약만 커밋한다. root는 N, I 원문창 및 style editor 그림을 읽고 그 뒤 D 원문창·CSS/QGIS 그림을 직접 읽었다. 보조자의 전체파일·N/I 개괄 사전노출은 별도 제한이다.
+- 문서 검색의 일반 규칙은 단계①에 있으나 사례별 정확 질의·tie-break 순서는 별도로 사전커밋되지 않았다. 실제 순서는 receiver-review와 search-and-exposure.json에 남겼다. 이는 완전한 사전등록 검색정책 비교가 아니며 특정 원문창의 분석적 판별력으로 한정한다.
+- V01 정상 payload 복원 후 자료·집계·색상이 함께 달라짐을 확인했다. 두 baseline의 차이를 nested의 단독 효과로 세지 않는다. V02의 fieldTitle 실제 API와 usage의 titleFormat 오기는 구분한다. V03의 axis datum.value를 조건에 쓰되 원문10행 한정이고 schema2의 실제 runtime은 미확인이다. 이 구체화는 operation-refinements.json에 전후를 남겼다.
+- 방법 검토 MR1에 따라 L01/L02의 실제 MarginV 값이 고정되지 않은 B를 성공 조작으로 채점하지 않는다. 숫자를 사후 튜닝하는 대신 세 보기 모두 판별불가를 봉인한다. L02 원문 style MarginV=10/event MarginV=0을 구별한다.
+- MR2에 따라 V03은 한 출력의9/1부분집합이며 별개의 두 실행이 아니다. MR4의 동시대API판·요청실제판·후속출력판을 따로 보존한다. MR5에 따라 본문에서 이미 알려진 실패를 후속자료가 반복해도 새 예측검증으로 세지 않는다. 독립 사람검토는 없고 같은모델의 방법 검토 범위만 method-review.md에 남겼다.
+- V02/V03은 조건부 연구기준5.1.0에서 A만을 예측한다. 각 보기에는 같은 A/B 계약과 원문 요구가 공통으로 제공되므로 가용성 조사에서 배운 API를 도너만의 성과로 계수하지 않는다. 두 요구의 N/I/D 선택값은 같다. 나머지는 판별불가이며 알려진 A/B 실패 한쪽만으로 승자를 정하지 않는다.
+- 선택적 보조 재생은 evidence/replay-plan.md에 결과 전에 고정했다. 공개 후속 기록·역사적 작성자판의 대체가 아니며 보조패널로 분리한다.
