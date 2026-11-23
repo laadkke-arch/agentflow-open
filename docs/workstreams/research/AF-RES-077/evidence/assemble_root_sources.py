@@ -65,6 +65,15 @@ DEFINITIONS = [
     ('sigil_guide_opening_and_saving_files', 'SIGIL-USER-GUIDE', 'Sigil user guide authors', 'target_support', 'd101fa2b5dc09ea0d2e1ac987d061c3338745710', 'Opening and Saving Files; complete chapter',
      'EPUB members are organized into standard folders on opening; saving packages the book and may clean source according to preferences. Separate validation is recommended.',
      'A save action or valid ZIP does not establish referential correctness. This raises an expressibility problem for the frozen arbitrary nested-folder move in SG-E; do not silently substitute a modern version.'),
+    ('sqlite_atomic', 'SQLITE-ATOMIC-COMMIT', 'SQLite project documentation authors', 'counterexample', 'official online article snapshot retrieved 2026-11-23; discusses rollback-journal operation and historical implementation details', '§2 assumptions; §3.5–3.7 and §3.10–3.11; §5 multi-file commit; §9 failure conditions',
+     'The rollback-journal design retains old pages before modifications, flushes journals and changes in an explicit order, and coordinates multiple databases through a super-journal. Locking, flush and journal-preservation assumptions bound the guarantee.',
+     'A representation specification such as OCFL does not supply this recovery machinery. This is not evidence of SQLite use or atomicity in Sigil/Shotcut, not a current-platform durability certification, and not a prescription to add a database. Only named sections were read.'),
+    ('blender36_linked', 'BLENDER36-DUPLICATE-LINKED', 'Blender documentation contributors', 'counterexample', 'Blender3.6 manual; page last-updated2025-06-23', 'Duplicate Linked; Examples; whole main page',
+     'Linked objects share mesh data while object transforms are independently copied. A shared animation Action can still drive apparently separate transforms to the same values; a single-user Action changes that relationship.',
+     'This offers an independent shared-data/local-instance distinction and a hidden-sharing counterexample for MS. It is a retrospective analogy, not proof about MuseScore Selection, linked scores or undo. No Blender operation was run; the donation banner is not task instruction.'),
+    ('rfc7089', 'RFC7089-MEMENTO', 'Herbert Van de Sompel; Michael L. Nelson; Robert Sanderson', 'counterexample', 'RFC7089, December2013, Informational', '§1.1 Terminology; §1.3 Purpose; §2.1.1 datetime headers',
+     'An Original Resource and a Memento that encapsulates a prior state are separate resources; a TimeGate/TimeMap exposes available historical representations. Present identification is distinct from stored historical content.',
+     'The protocol locates available prior states; it does not reconstruct an absent former value or provide application command inverses. No archive lookup or claim of recovering original GitHub body revisions was made.'),
 ]
 
 def main():

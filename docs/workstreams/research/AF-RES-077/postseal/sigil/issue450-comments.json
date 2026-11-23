@@ -1,0 +1,450 @@
+{
+  "request_url": "https://api.github.com/repos/Sigil-Ebook/Sigil/issues/450/comments?per_page=100&page=1",
+  "started_utc": "2026-11-23T11:47:56.029Z",
+  "recorded_utc": "2026-11-23T11:48:11.331Z",
+  "count": 49,
+  "complete_page_limit": 100,
+  "comments": [
+    {
+      "id": 520188611,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-10T23:56:37Z",
+      "updated_at": "2019-08-10T23:58:37Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520188611",
+      "body": "That typically only happens if the warning message that splitting files with fragment urls with missing targets might cause problems is ignored. The warning message was specifically added because there are certain conditions that can't be properly accommodated by Sigil's splitting routines. Namely: if there is no element with an id of \"anchor1\" in \"this_file.xhtml\" the warning will pop. If the warnin g is ignored, paths will not be correctly updated.\r\n\r\nIf you don't get a warning message in the situations where this can occur, then you might be using an older version of Sigil that doesn't give the warning."
+    },
+    {
+      "id": 520189313,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T00:12:41Z",
+      "updated_at": "2019-08-11T00:12:41Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520189313",
+      "body": "I am using the newest version of Sigil and have kept up with versions. It’s been happening perhaps most of the time in the last year, perhaps not as long, perhaps longer.\r\n\r\nI get no warning or error message, and all anchors exist. For example, a file may have dozens of footnotes at the end, all of them correct, and anchors are not rewritten after the split. Now, for any file I do split, I check first for such anchors and edit them to `… href=“#…”`, removing the file name, and all behaves as intended."
+    },
+    {
+      "id": 520189615,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T00:20:13Z",
+      "updated_at": "2019-08-11T00:20:13Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520189615",
+      "body": "We'd love to have a reproduceable sample where existing valid/working urls aren't being properly updated when splitting (without being warned of the possibility beforehand). This is the first such report since the the warning message was added. If something is falling through the cracks, we'd love to fix it. But we have to be able reproduce it first."
+    },
+    {
+      "id": 520194612,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T02:23:55Z",
+      "updated_at": "2019-08-11T02:23:55Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520194612",
+      "body": "To be clear, is this what you are describing?\r\n\r\nyou have a single xhtml  say with filename \"file1.xhtml\" and it has an internal link to a target \"#here\" in that same file but the href for the anchor is currently written as \"file1.xhtml#here\" instead of just \"#here\".\r\n\r\nThen when you split this file between the href anchor and the link target, the href does not get properly updated.  \r\n\r\nIs that what you are saying?"
+    },
+    {
+      "id": 520194973,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T02:34:49Z",
+      "updated_at": "2019-08-11T02:34:49Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520194973",
+      "body": "Also from reading the href <a> html spec, when a href is internal to that file, only a fragment identifier is used, not the name of the file (since it is in the same file).\r\n\r\n hrefs like that are technically not correct, but may still work.  So it is a good idea to search for the name of the file inside the file correcting any improperly written local hrefs, before attempting any split.\r\n\r\nIf this is what is going on we should be able to include tests for this in our warning for splitting."
+    },
+    {
+      "id": 520196406,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T03:07:52Z",
+      "updated_at": "2019-08-11T03:07:52Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520196406",
+      "body": "Hello Kevin,\r\n\r\nYes that is correct, anchors internal to the file are named with the file name as you cited. It’s happened perhaps at least 4 or 5 times, always commercial ePubs, often academic titles. Some publishers perhaps have a habit of writing their epubs as such, with all internal files being as such. Thus it would be nice and ideal to automatically correct and handle such cases.\r\n\r\nNot in front of a computer but I will try to create a reproducible case unless you think such would happen as such since such a case isn’t currently handled."
+    },
+    {
+      "id": 520238606,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T15:47:45Z",
+      "updated_at": "2019-08-11T15:48:08Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520238606",
+      "body": "Just to be clear,  using the name of the current file for an internal link local to that file is NOT correct according to the spec.  So please file a bug report with whatever software you have that creates internal links like that.\r\n\r\nWe will work on either improving our warning message to point them out so the user can fix them, or handling them as a special case in the split code."
+    },
+    {
+      "id": 520240119,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T16:09:10Z",
+      "updated_at": "2019-08-11T16:09:10Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520240119",
+      "body": "I tried the following test file \"Section0001.xhtml\"  in an epub and used Sigil split at markers to split the file but it perfectly split and updated the link properly.\r\n\r\n```\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!DOCTYPE html>\r\n\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\r\n<head>\r\n<title></title>\r\n</head>\r\n<body>\r\n<p>&#160;</p>\r\n<p><a href=\"Section0001.xhtml#here\">a link</a></p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<hr class=\"sigil_split_marker\"/>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p>this is a line of text</p>\r\n<p id=\"here\">target of link</p>\r\n</body>\r\n</html>\r\n```\r\n\r\nSo please either edit this test case to make the error happen or create a test case epub that shows the issue so that we can investigate.\r\n\r\nAs it stands, I can not recreate the issue you are seeing.\r\n\r\n\r\n"
+    },
+    {
+      "id": 520241040,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T16:22:00Z",
+      "updated_at": "2019-08-11T16:22:00Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520241040",
+      "body": "I tried the same thing. I even created a back-link from the target id to the origin (with another fragment) and both links were correctly adjusted after the split. I tried with both the \"split at cursor\" and \"split at markers\" method.\r\n\r\nSo if there's something falling through the cracks of our split procedures, it's not this exact scenario. There has to be something else in play.\r\n\r\nSo far, the only way I can get messed up links on a split is by ignoring the warning message about the target of an href not existing and going ahead with the split."
+    },
+    {
+      "id": 520242238,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T16:38:51Z",
+      "updated_at": "2019-08-11T16:38:51Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520242238",
+      "body": "I wonder if the case of the filename could be an issue in play?  Anchor hrefs are fully case sensitive but the filename on a case insensitive platform may then appear different from how it was written in the href.   What platform are you using?\r\n"
+    },
+    {
+      "id": 520249386,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T18:21:24Z",
+      "updated_at": "2019-08-11T18:21:24Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520249386",
+      "body": "I also tried a simple test case with one split marker and wasn’t able to reproduce it.\r\n\r\nI am using macOS. When it happens, it’s when before I add an ePub to my reader, I check for abnormally large files and split them to keep them around 200k or so for performance. My method is to insert multiple split markers. I do have a commercial ePub where it is reproducible. If that is ok, if there’s a way to send it to you without a public link, I’ll pass it on. Or later in the week I can experiment more. "
+    },
+    {
+      "id": 520250363,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T18:36:21Z",
+      "updated_at": "2019-08-11T18:36:21Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520250363",
+      "body": "If the epub's not huge, you should be able to attach it to a comment here (drag and drop). Just post it with the exact steps to reproduce the issue. We'll delete the attachment once we have it."
+    },
+    {
+      "id": 520250495,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T18:38:18Z",
+      "updated_at": "2019-08-11T18:38:18Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520250495",
+      "body": "If you use Mobileread (www.mobileread.com) you can pm (personal mail) either \"KevinH\" or \"DiapDealer\" with a link and we can grab it.  Otherwise there are plugins like the Borkify plugin that can be used to replace all text in an epub but leave the basic tags.  Once borified, you can rename it and zip it up and attach it here.  If you do decide to use borkify, please make sure it borkifies the entire book so no copyright is being impinged.\r\n\r\n"
+    },
+    {
+      "id": 520251170,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T18:49:09Z",
+      "updated_at": "2019-08-11T19:03:34Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520251170",
+      "body": "Here is the ePub:\r\n\r\nlink deleted\r\n\r\nI don’t have much of a chance to be in front of a computer today. Didn’t have a chance to Borkify. Split markers are already inserted so the only step is to split at markers. I also didn’t have a chance to look much at the ePub except to verify that links and splitting are as mentioned and it does pass epubcheck before the split. "
+    },
+    {
+      "id": 520252059,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:02:58Z",
+      "updated_at": "2019-08-11T19:02:58Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520252059",
+      "body": "I grabbed it and can send it to my co-developer, so please feel free to remove the file from your dropbox.\r\n"
+    },
+    {
+      "id": 520252430,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:08:39Z",
+      "updated_at": "2019-08-11T19:08:39Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520252430",
+      "body": "Can we get a specific link that is broken as a result of splitting at marks? There's a lot of links there to try and verify. Also, I'm not seeing any hrefs of the type that were originally discussed: \"filename.xhtml#frag\" all hrefs seem fully relative to the epub's structure rather than simply the name of the current file."
+    },
+    {
+      "id": 520254467,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:38:43Z",
+      "updated_at": "2019-08-11T19:38:43Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520254467",
+      "body": "Never mind. Using Reports, I can see quite a few examples of targets not existing after the split where before, all targets existed."
+    },
+    {
+      "id": 520254553,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:39:54Z",
+      "updated_at": "2019-08-11T19:40:35Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520254553",
+      "body": "I have tracked one down.  Here is the relevant info:\r\n\r\nIn part0008.xhtml\r\n\r\nAt Line 999\r\n```\r\n<p>Brahmā himself divides it into four groups,\r\n<a id=\"n0346\" href=\"../Text/part0008.xhtml#actrade-9780190279172-chapter-1-note-192\">\r\n<sup>*</sup></a> and then each creature goes its own way, its conduct \r\ndictated by its own karma.</p>\r\n```\r\n```\r\nAt Line 1313\r\n<p class=\"note2\" id=\"actrade-9780190279172-chapter-1-note-192\">\r\n<a href=\"../Text/part0008.xhtml#n0346\">*</a> These four groups \r\nare the four social classes.</p>\r\n```\r\nAll split markers occur *before* line 999.\r\nIt splits at lines: 179, 290, 474, 699, 978\r\n\r\nSo it ends up with the following parts:\r\n\r\npart0008      up to line 179\r\npart0008_0001 from line 179 to 290\r\npart0008_0002 from line 290 to 474\r\npart0008_0003 from line 474 to 699\r\npart0008_0004 from line 699 to 978\r\npart0008_0005 from line 978 - end\r\n\r\nAfter splitting the following link was broken (the first broken one I found in the Reports Links)\r\n\r\npart0008_0005.xhtml line 30 id n0346 * part0008.xhtml actrade-9780190279172-chapter-1-note-192\r\n\r\nThat link target does not exist as it should have been updated to part0008_0005.xhtml but because a filename was inserted it never gets updated.\r\n\r\nSo the target file part0008.xhtml exists but needed to be updated to part0008_0005.xhtml but\r\nthat did not happen.\r\n"
+    },
+    {
+      "id": 520254790,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:43:26Z",
+      "updated_at": "2019-08-11T19:47:06Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520254790",
+      "body": "So I think we need to check if internal links use a filename in the href, and if so warn the user to remove them before attempting a split since they are not correct according to the spec.  Otherwise there was no way of telling which of the part0008.xhtml pieces it came from.\r\n\r\nAfter the first split it did not get updated to _0001 and then again for each successive split.\r\n\r\nBy the time it gets to _0005 since part0008 exists, there is no way to tell if that link needs to be updated like an external link or an internal link.\r\n\r\nAlternatively, we could add some code to the gumbo mend routine to fix this on the fly before any splits are done.\r\n\r\nI am thinking a warning alongside a gumbo mend change would be the easiest route here.\r\n\r\n"
+    },
+    {
+      "id": 520255161,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:49:09Z",
+      "updated_at": "2019-08-11T19:49:09Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520255161",
+      "body": "The problem is gumbo/mend does not know the name of its own file as the file contents are passed in, not a path to the file.  So we would have to pass along information on all files in the epub to mend() for it to know what to do.\r\n\r\nI think we just check and warn people that their links are messed up.\r\n"
+    },
+    {
+      "id": 520255446,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:53:35Z",
+      "updated_at": "2019-08-11T19:53:35Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520255446",
+      "body": "Of fix them in the split code before starting the split?  Would that work?\r\n"
+    },
+    {
+      "id": 520255521,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:54:34Z",
+      "updated_at": "2019-08-11T19:54:34Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520255521",
+      "body": "I'm still not quite following. We've already shown that sigil is capable of updating hrefs that have the current filename in them, so why is it breaking here?\r\n\r\nThere's just too many links here with inordinately long fragment/id names. Can we possibly reduce this to a simple test case scenario that I can more easily get my head around?"
+    },
+    {
+      "id": 520255823,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T19:59:22Z",
+      "updated_at": "2019-08-11T19:59:22Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520255823",
+      "body": "I will try adjusting our simple test case above to see if I can create something simpler."
+    },
+    {
+      "id": 520256242,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:04:44Z",
+      "updated_at": "2019-08-11T20:04:44Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520256242",
+      "body": "Just e-mailed it to you.\r\n"
+    },
+    {
+      "id": 520256671,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:11:21Z",
+      "updated_at": "2019-08-11T20:11:21Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520256671",
+      "body": "\r\n[test_split2.epub.zip](https://github.com/Sigil-Ebook/Sigil/files/3490396/test_split2.epub.zip)\r\n"
+    },
+    {
+      "id": 520256702,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:11:39Z",
+      "updated_at": "2019-08-11T20:11:52Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520256702",
+      "body": "An even simpler test case I added above for the record.\r\n"
+    },
+    {
+      "id": 520256769,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:12:47Z",
+      "updated_at": "2019-08-11T20:12:47Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520256769",
+      "body": "Note, that removing the filename from the internal link href's is enough for our updating routines to work properly."
+    },
+    {
+      "id": 520257459,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:22:29Z",
+      "updated_at": "2019-08-11T20:22:29Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520257459",
+      "body": "I think it is breaking because the source to the link is not in the original file and instead in a split off section.  But that is just a guess."
+    },
+    {
+      "id": 520258201,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:33:50Z",
+      "updated_at": "2019-08-11T20:33:50Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520258201",
+      "body": "So it's WHERE the split occurs that's the real factor, here? I ask because splitting _between_ the link and the target results in the href being updated correctly in your test_split2 epub.\r\n\r\nSo it's not enough that the filename is a part of the href. The filename has to be a part an href that's going to be _moved_ to a file that's created by the split operation for there to be an issue."
+    },
+    {
+      "id": 520258575,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:39:45Z",
+      "updated_at": "2019-08-11T20:39:45Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520258575",
+      "body": "If that's the case, it's going to be hard to nail down when exactly to warn a user. If we go with anytime the current filename is included in an href, then we could be warning the user about a split that won't cause any issues."
+    },
+    {
+      "id": 520258721,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:41:58Z",
+      "updated_at": "2019-08-11T20:41:58Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520258721",
+      "body": "But not one that is technically correct.\r\n\r\nThat said, we only look at the anchor id and it exists in the same file as the link to it and then decide not to update anything.  At this point we need to fix these links too.\r\n\r\nI think we may be able to handle these cases in SourceUpdates AnchorUpdates.\r\n\r\nI am going to add some debug statements in anchor updates"
+    },
+    {
+      "id": 520259201,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:49:29Z",
+      "updated_at": "2019-08-11T20:49:29Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520259201",
+      "body": "But they would be technically correct after the split.  :)\r\n\r\nBut I get what you're saying. My only fear is that this technically improper linking is probably more prevalent in commercial code than we think. I like the notion of maybe being able to address it with SourceUpdates AnchorUpdates if possible."
+    },
+    {
+      "id": 520259623,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T20:56:25Z",
+      "updated_at": "2019-08-11T20:58:14Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520259623",
+      "body": "Okay so we fix it there.\r\n\r\nHere is the debug output for our test2_split.epub from the AnchorUpdates.cpp source file:\r\n\r\nDebug: in UpdateAnchorsInOneFile\r\nDebug: in UpdateAnchorsInOneFile\r\nDebug: ID_locations QHash((\"here\", \"Section0001_0001.xhtml\"))\r\nDebug: ID_locations QHash((\"here\", \"Section0001_0001.xhtml\"))\r\nDebug: fragment_id \"here\"\r\nDebug: file_id \"Section0001_0001.xhtml\"\r\nDebug: resource_filename \"Section0001_0001.xhtml\"\r\n\r\nSo since the file_id equals the resource_filename in that routine, it decides to leave that href alone (which would work just fine if the damn href did not have a Section00001.xhtml#here).\r\n\r\nSo we need to add a second test to make sure that if file_id equals resource_filename but does not equal the href part BEFORE the fragment, we still update this link by removing the part before the fragment.\r\n\r\nWhat do you think?\r\n\r\n"
+    },
+    {
+      "id": 520260902,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T21:13:25Z",
+      "updated_at": "2019-08-11T21:13:25Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520260902",
+      "body": "Okay, I pushed the qdebug additions along with a potential fix.  It seems to work but I am very worried that it may have unexpected issues.\r\n\r\nSo we should probably really test this and see if it fixes all cases without breaking anything.\r\n\r\nAnd only then remove the debug output.\r\n"
+    },
+    {
+      "id": 520263009,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T21:37:56Z",
+      "updated_at": "2019-08-11T21:37:56Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520263009",
+      "body": "Thank you very much. If you think there are potential issues, I wonder if another approach may be more robust. Since base hrefs are out of spec, is there any harm to check for such links and correct them upon open and save, such that even without splitting, links are auto-corrected?\r\n\r\nIndeed as Doug mentioned, I think this may be fairly prevalent in commercial EPUBs, at least among some publishers that seem to do this with all their code."
+    },
+    {
+      "id": 520263773,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T21:48:16Z",
+      "updated_at": "2019-08-11T21:48:16Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520263773",
+      "body": "Let's test the potential fix we already have.  If that works with no issues, we should be good to go as the href's themselves seem to work just fine even though not to \"spec\".  I tried the non-spec href's on all browsers I have and they all worked just fine.  So Sigil should handle them too.\r\n\r\nThat said, a plugin could do the \"repair\" quite easily too.\r\n"
+    },
+    {
+      "id": 520264328,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T21:55:45Z",
+      "updated_at": "2019-08-11T21:55:45Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520264328",
+      "body": "I can get some test versions out to some of my testers and tell them to give it a hard workout on splitting/merging.\r\n\r\n@gennaios I'll give you the option to test the potential fix if you like. You can download a Windows installer with the proposed fix from: https://ci.appveyor.com/project/Sigil-Ebook/sigil/builds/26622421/artifacts . Perfectly understandable if you don't want to be a guinea-pig, though."
+    },
+    {
+      "id": 520264481,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T21:57:36Z",
+      "updated_at": "2019-08-11T21:57:36Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520264481",
+      "body": "Oops. Never mind. I forgot you already mentioned you were on a Mac. "
+    },
+    {
+      "id": 520264963,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T22:05:33Z",
+      "updated_at": "2019-08-11T22:05:33Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520264963",
+      "body": " I don’t mind testing it out. I think I should be able to grab the one changed file and patch my install of the current version."
+    },
+    {
+      "id": 520268314,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T22:58:18Z",
+      "updated_at": "2019-08-11T22:58:18Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520268314",
+      "body": "I had thought it might have been a Python file I could quickly replace but had forgotten that it was C++ and requires rebuilding. I have the tools though not all the pre-requisites already setup. If it’s not too much trouble, a test build would be appreciated. Though perhaps you have enough testers so either way."
+    },
+    {
+      "id": 520268487,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T23:01:14Z",
+      "updated_at": "2019-08-11T23:01:14Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520268487",
+      "body": "We do have an appveyor build for macOS that is unsigned and is in tar.xz format.  DiapDealer is that doable?"
+    },
+    {
+      "id": 520268718,
+      "author": "dougmassay",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-11T23:05:25Z",
+      "updated_at": "2019-08-11T23:07:18Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520268718",
+      "body": "Yes. The link is to my personal gdrive, but as long as there's not 100's of people downloading it a day, there's no problem. And even then it's just a matter of waiting until the daily download limit resets. I'll edit this comment with the download link to the correct archive in a moment.\r\n\r\nThe link to the build based on that commit is: https://drive.google.com/open?id=1PPQ-9UqhX9x1_ILUOGkwciPr3zfkR-Ky"
+    },
+    {
+      "id": 520268927,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-11T23:09:26Z",
+      "updated_at": "2019-08-11T23:09:26Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520268927",
+      "body": "Great. Thank you. I’ll try it out over the next few days."
+    },
+    {
+      "id": 520649931,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-13T01:08:18Z",
+      "updated_at": "2019-08-13T01:08:18Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520649931",
+      "body": "Looking through ~150 EPUBs, found 10 that have links as such, EPUB 2 and 3. No issues with splits, but it seems in every case of EPUB2, after re-merging, and sometimes merging with a different file, the NCX isn't updated and lists the no longer existing split files. Unsure if it's related or something else.\r\n\r\nIf you're unable to reproduce, I'll see if I can look at it more closely later in the week though I might not have the chance.\r\n\r\nOther minor issue is that for EPUB3, if there's an .NCX for backwards compatibility, it isn't auto-updated though perhaps that is as intended.\r\n\r\nSome publishers I've found that tend to have such links: Columbia, Hackett, O'Reilly, Oxford, Routledge, and Wiley."
+    },
+    {
+      "id": 520947503,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-13T18:15:23Z",
+      "updated_at": "2019-08-13T18:15:23Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520947503",
+      "body": "Updating the ncx after a merge has never been implemented in Sigil.  I will add that to out todo list.  In those instances the user can (re-) generate the toc to correct the ncx.\r\n\r\nYes under epub3, the ncx is never updated.  Since the ncx is optional, the user can generate an ncx from their nav before a final save using a epub3 specific menu item.\r\n\r\nSo it appears from your test results, the change we made to handle non-spec internal links does not have any bad side effects.\r\n\r\nPlease note, some browsers treat links with filenames (even the current one) as a need to \"load\" the page including either cache or network access.  For internal links without a filename, a simple scrollto id is used.  This is true in both Webkit and WebEngine.\r\n\r\nSo from a performance perspective, not adding a filename for an internal link is a big win.\r\n"
+    },
+    {
+      "id": 520947721,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-13T18:15:52Z",
+      "updated_at": "2019-08-13T18:15:52Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520947721",
+      "body": "So closing this as now fixed in master."
+    },
+    {
+      "id": 520977875,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-13T19:38:11Z",
+      "updated_at": "2019-08-13T19:38:11Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520977875",
+      "body": "> Updating the ncx after a merge has never been implemented in Sigil. I will add that to out todo list. In those instances the user can (re-) generate the toc to correct the ncx.\r\n\r\nGlad it is on the todo list. It is not always possible to regenerate the NCX (from H1–H6 headers). Perhaps more frequent than this issue, in commercial code, I often find either: 1. headers were generated from whatever app they used (InDesign?) and the header entities themselves are normal paragraphs, thus one would need to convert all such paragraphs to headers. 2. headers can be relied upon to be logically correct, meaning H1's can be H2's in code mixed in with other H2s or some other weird combination.\r\n\r\nIn longer EPUBs with .NCXs with dozens or sometimes 200+ entries, it would be nice to someday correctly handle any edits such as merges. Though I don't recall often merging commercial EPUBs, mainly only my own.\r\n\r\nIndeed, performance I imagined would be better when internal links lack a filename. I might look into making a plugin sometime to correct such things.\r\n\r\nThank you again for the help. Indeed it seems to work great w/o issues.\r\n\r\n"
+    },
+    {
+      "id": 521371699,
+      "author": "kevinhendricks",
+      "author_association": "CONTRIBUTOR",
+      "created_at": "2019-08-14T18:50:41Z",
+      "updated_at": "2019-08-14T18:50:41Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-521371699",
+      "body": "FWIW,\r\nJust finished implementing updating of the ncx after a merge.  After simple testing, it appears to work.  This change will appear in our next release.\r\n"
+    },
+    {
+      "id": 521431803,
+      "author": "gennaios",
+      "author_association": "NONE",
+      "created_at": "2019-08-14T21:49:03Z",
+      "updated_at": "2019-08-14T21:49:03Z",
+      "url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-521431803",
+      "body": "Terrific. That helps very much. Thank you. "
+    }
+  ]
+}

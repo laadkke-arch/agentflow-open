@@ -1,0 +1,269 @@
+{
+  "schema": "AF-RES-077-auxiliary-inputs-v1",
+  "classification": "postseal_research_auxiliary_unscored",
+  "sealed_packets_edited": false,
+  "pinned_projects": {
+    "SC": {
+      "project": "mltframework/shotcut",
+      "tag": "v20.09.13",
+      "sha": "0898bdf3fc0f9f3fbf78336bad21d5506e19c118"
+    },
+    "SG": {
+      "project": "Sigil-Ebook/Sigil",
+      "tag": "0.9.17",
+      "sha": "30419827123d533d10ad482b1634dcec05ff0e1b"
+    }
+  },
+  "source_inputs": [
+    {
+      "path": "packets/SC-common.json",
+      "size_bytes": 5300,
+      "sha256": "efe7bcda2e75aa759d476cba554e684bc623bee2254bdded233ab3c9ca9b555b"
+    },
+    {
+      "path": "packets/SG-common.json",
+      "size_bytes": 4776,
+      "sha256": "63ecd7772091f830f37b91761b0d9874ede03359d0094f2e1bd5af75b0d37316"
+    },
+    {
+      "path": "recruitment/shotcut/source__src__util.cpp",
+      "size_bytes": 15372,
+      "sha256": "f9e314f6b97a7f8432280e91c63b09aa55976cc4980bff7478ed5e9c203fb047"
+    },
+    {
+      "path": "recruitment/shotcut/source__src__dialogs__unlinkedfilesdialog.cpp",
+      "size_bytes": 5925,
+      "sha256": "8e1aa74bc1d5478da8d3e8406d1e0602371a9cbd4acdb799d473a916a32fd862"
+    },
+    {
+      "path": "postseal/shotcut/src__mainwindow.cpp",
+      "size_bytes": 188769,
+      "sha256": "4f975430f29dcbe66f4e8ed4dc3e6cf6cbde7b2b90e3d7d18e81f7608427bb5b"
+    }
+  ],
+  "SC-X": {
+    "frozen_case": {
+      "id": "SC-X",
+      "kind": "negative",
+      "initial": {
+        "file_bytes": "3 MiB, first 1 MiB=A, middle 1 MiB=B, last 1 MiB=C",
+        "replacement_bytes": "same length, first=A, middle=D, last=C",
+        "cached_hash": "old sampled hash",
+        "proxy_content": "old revision",
+        "original_path": "same path",
+        "metadata_copy": "old metadata remains"
+      },
+      "actions": [
+        "replace original externally",
+        "reopen existing project without explicitly invalidating metadata",
+        "request proxy-backed preview"
+      ],
+      "observe": [
+        "whether stale content is detected",
+        "whether preview and intended current source differ",
+        "recovery/refusal evidence"
+      ],
+      "condition": "Metadata and sampled edges remain stable while content changes in the unsampled middle. Test is research-authored; not a valid-media GUI fixture yet."
+    },
+    "exact_generator": {
+      "block_bytes": 1048576,
+      "file_bytes": 3145728,
+      "encoding": "one ASCII byte repeated block_bytes times per block",
+      "original_blocks": [
+        "A",
+        "B",
+        "C"
+      ],
+      "replacement_blocks": [
+        "A",
+        "D",
+        "C"
+      ],
+      "same_temporary_path_replaced_sequentially": true,
+      "large_binary_files_retained": false
+    },
+    "hash_recipe": {
+      "algorithm": "MD5",
+      "large_file_threshold_bytes": 2000000,
+      "edge_read_bytes": 1000000,
+      "file_size_in_digest": false,
+      "full_content_comparator": "SHA-256"
+    }
+  },
+  "SC-E": {
+    "frozen_case": {
+      "id": "SC-E",
+      "kind": "boundary",
+      "initial": {
+        "missing": "/old/camA/clip.mp4",
+        "stored_hash": "H_RED",
+        "candidate_order": [
+          {
+            "path": "/new/camB/clip.mp4",
+            "hash": "H_BLUE",
+            "content": "BLUE"
+          },
+          {
+            "path": "/new/camA/clip.mp4",
+            "hash": "H_RED",
+            "content": "RED"
+          }
+        ],
+        "unrelated_producer": "p2 -> /new/camB/clip.mp4"
+      },
+      "actions": [
+        "search replacement directory recursively in stated candidate order",
+        "do not provide human identity confirmation",
+        "enable proxy",
+        "save and reopen"
+      ],
+      "observe": [
+        "selected candidate and warning/refusal",
+        "p1 source/proxy association",
+        "p2 source identity"
+      ],
+      "condition": "Both candidates share basename; their full contents and stored sample hashes differ."
+    },
+    "reverse_order": "supplemental_unscored_counterexample_only",
+    "candidate_hashes": "symbolic frozen input values, not hashes of media files"
+  },
+  "SG": {
+    "wrapper_prefix": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>AF-RES-077 research fragment</title></head><body>",
+    "wrapper_suffix": "</body></html>\n",
+    "fragment_policy": "Exact decoded JSON string inserted unchanged between wrappers; no unescaping, reserialization, or body edits.",
+    "cases": {
+      "SG-N": {
+        "frozen_case": {
+          "id": "SG-N",
+          "kind": "normal",
+          "initial": {
+            "Text/ch1.xhtml": "<p><a href=\"#fn\">ref</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>"
+          },
+          "actions": [
+            "split at marker",
+            "keep first segment Text/ch1.xhtml",
+            "save second segment Text/ch1_1.xhtml",
+            "save and reopen book"
+          ],
+          "observe": [
+            "href target path+fragment",
+            "resolved text FOOTNOTE_A",
+            "chapter contents"
+          ],
+          "condition": "One id in one original chapter; valid unique target."
+        },
+        "document_order": [
+          "Text/ch1.xhtml"
+        ],
+        "documents": [
+          {
+            "document_path": "Text/ch1.xhtml",
+            "fixture": {
+              "path": "fixtures/research/SG-N/original/Text/ch1.xhtml",
+              "size_bytes": 224,
+              "sha256": "e96947d6103f00b6914d06342adcc0a30d014a4c3471479267e2776a39a38ed0"
+            },
+            "original_fragment": "<p><a href=\"#fn\">ref</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>",
+            "fragment_sha256": "368ad5d3b8fa7d35bed244bbb2454ff0b156ef3bc66e9eb4b925dbc99bafe06a"
+          }
+        ]
+      },
+      "SG-E": {
+        "frozen_case": {
+          "id": "SG-E",
+          "kind": "boundary",
+          "initial": {
+            "Text/ch1.xhtml": "<p><a href=\"ch1.xhtml#fn\">self</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>",
+            "Text/ch2.xhtml": "<p id=\"fn\">FOOTNOTE_B</p>",
+            "Text/toc.xhtml": "<a href=\"ch1.xhtml#fn\">A</a><a href=\"ch2.xhtml#fn\">B</a>"
+          },
+          "actions": [
+            "split ch1 at marker",
+            "move its second segment to Text/parts/ch1_tail.xhtml",
+            "leave ch2 unchanged",
+            "save and reopen book"
+          ],
+          "observe": [
+            "self reference resolves FOOTNOTE_A",
+            "toc A resolves FOOTNOTE_A",
+            "toc B resolves FOOTNOTE_B",
+            "relative paths from each reference base"
+          ],
+          "condition": "Same fragment spelling in distinct source documents; path scope is significant."
+        },
+        "document_order": [
+          "Text/ch1.xhtml",
+          "Text/ch2.xhtml",
+          "Text/toc.xhtml"
+        ],
+        "documents": [
+          {
+            "document_path": "Text/ch1.xhtml",
+            "fixture": {
+              "path": "fixtures/research/SG-E/original/Text/ch1.xhtml",
+              "size_bytes": 234,
+              "sha256": "28cb425bfcf1c69b5227f03b8d1a8dbe9b48828c996f71937a791ab1527024c6"
+            },
+            "original_fragment": "<p><a href=\"ch1.xhtml#fn\">self</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>",
+            "fragment_sha256": "eda0d1485477c5ddf70fcf629a6be01bab403860e6fafb220151787183d9e918"
+          },
+          {
+            "document_path": "Text/ch2.xhtml",
+            "fixture": {
+              "path": "fixtures/research/SG-E/original/Text/ch2.xhtml",
+              "size_bytes": 184,
+              "sha256": "e42ce2e0e55eed574e1ea5181b827f746ddae8b11b3950c0ffa9d29e870c9cc8"
+            },
+            "original_fragment": "<p id=\"fn\">FOOTNOTE_B</p>",
+            "fragment_sha256": "6cb98c0b4c76c7b01b880e3b2c9e375b6e7f16f891574b2620e2cfe9ae744b80"
+          },
+          {
+            "document_path": "Text/toc.xhtml",
+            "fixture": {
+              "path": "fixtures/research/SG-E/original/Text/toc.xhtml",
+              "size_bytes": 215,
+              "sha256": "ffa7b2865ab53ba96bb994decd9d94c4865ab22e0bb2c4dda58d9a77499c49d9"
+            },
+            "original_fragment": "<a href=\"ch1.xhtml#fn\">A</a><a href=\"ch2.xhtml#fn\">B</a>",
+            "fragment_sha256": "884e7b247bc99c92beb21737e819fd3033a8d48454230cc47e2b042a8658b01e"
+          }
+        ]
+      },
+      "SG-X": {
+        "frozen_case": {
+          "id": "SG-X",
+          "kind": "negative",
+          "initial": {
+            "Text/ch1.xhtml": "<a href=\"#fn\">ref</a><p id=\"fn\">FIRST</p><!--SPLIT--><p id=\"fn\">SECOND</p>",
+            "provenance": "no trusted pre-edit target choice"
+          },
+          "actions": [
+            "split at marker",
+            "attempt to preserve original reference target"
+          ],
+          "observe": [
+            "ambiguity/refusal",
+            "whether one target is silently guessed",
+            "whether unchanged file bytes/digests alone disambiguate"
+          ],
+          "condition": "Duplicate IDs already exist in the same source document. Unlike SG-E, document scope cannot disambiguate them; no trustworthy chosen target provided."
+        },
+        "document_order": [
+          "Text/ch1.xhtml"
+        ],
+        "documents": [
+          {
+            "document_path": "Text/ch1.xhtml",
+            "fixture": {
+              "path": "fixtures/research/SG-X/original/Text/ch1.xhtml",
+              "size_bytes": 233,
+              "sha256": "b7010d790d3916df2bfb124e7728bc2a32fc025e937b3735a509e4433352d133"
+            },
+            "original_fragment": "<a href=\"#fn\">ref</a><p id=\"fn\">FIRST</p><!--SPLIT--><p id=\"fn\">SECOND</p>",
+            "fragment_sha256": "38c06158bc0ce75acbd88070189c78a6e15d329db42f007160a1cbac9184c822"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+[
+  {
+    "path": "libmscore/element.cpp",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/element.cpp",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "8e888bbe224cd501449a308a94fe685345620991",
+    "sha256": "e8a665195f0a97f0ca8f52403c9047128b24558ac6b141de30d307f8d5834ccc",
+    "retrieved_utc": "2026-11-23T11:27:21.935Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_element_cpp_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 167,
+        "end_line": 201,
+        "text": "Element::Element(const Element& e)\n   : ScoreElement(e)\n      {\n      _parent     = e._parent;\n      _bbox       = e._bbox;\n      _mag        = e._mag;\n      _pos        = e._pos;\n      _offset     = e._offset;\n      _track      = e._track;\n      _flags      = e._flags;\n      _tag        = e._tag;\n      _z          = e._z;\n      _color      = e._color;\n      itemDiscovered = false;\n      }\n\n//---------------------------------------------------------\n//   ~Element\n//---------------------------------------------------------\n\nElement::~Element()\n      {\n      Score::onElementDestruction(this);\n      }\n\n//---------------------------------------------------------\n//   linkedClone\n//---------------------------------------------------------\n\nElement* Element::linkedClone()\n      {\n      Element* e = clone();\n      e->setAutoplace(true);\n      score()->undo(new Link(e, this));\n      return e;"
+      },
+      {
+        "start_line": 287,
+        "end_line": 319,
+        "text": "QColor Element::curColor(bool isVisible, QColor normalColor) const\n      {\n      // the default element color is always interpreted as black in\n      // printing\n      if (score() && score()->printing())\n            return (normalColor == MScore::defaultColor) ? Qt::black : normalColor;\n\n      if (flag(ElementFlag::DROP_TARGET))\n            return MScore::dropColor;\n      bool marked = false;\n      if (isNote()) {\n            //const Note* note = static_cast<const Note*>(this);\n            marked = toNote(this)->mark();\n            }\n      if (selected() || marked ) {\n            QColor originalColor;\n            if (track() == -1)\n                  originalColor = MScore::selectColor[0];\n            else\n                  originalColor = MScore::selectColor[voice()];\n            if (isVisible)\n                  return originalColor;\n            else {\n                  int red = originalColor.red();\n                  int green = originalColor.green();\n                  int blue = originalColor.blue();\n                  float tint = .6f;  // Between 0 and 1. Higher means lighter, lower means darker\n                  return QColor(red + tint * (255 - red), green + tint * (255 - green), blue + tint * (255 - blue));\n                  }\n            }\n      if (!isVisible)\n            return Qt::gray;\n      return normalColor;"
+      },
+      {
+        "start_line": 460,
+        "end_line": 526,
+        "text": "void Element::writeProperties(XmlWriter& xml) const\n      {\n      writeProperty(xml, Pid::AUTOPLACE);\n      // copy paste should not keep links\n      if (_links && (_links->size() > 1) && !xml.clipboardmode()) {\n            if (MScore::debugMode)\n                  xml.tag(\"lid\", _links->lid());\n            Element* me = static_cast<Element*>(_links->mainElement());\n            Q_ASSERT(type() == me->type());\n            Staff* s = staff();\n            if (!s) {\n                  s = score()->staff(xml.curTrack() / VOICES);\n                  if (!s)\n                        qWarning(\"Element::writeProperties: linked element's staff not found (%s)\", name());\n                  }\n            Location loc = Location::positionForElement(this);\n            if (me == this) {\n                  xml.tagE(\"linkedMain\");\n                  xml.setLidLocalIndex(_links->lid(), xml.assignLocalIndex(loc));\n                  }\n            else {\n                  if (s->links()) {\n                        Staff* linkedStaff = toStaff(s->links()->mainElement());\n                        loc.setStaff(linkedStaff->idx());\n                        }\n                  xml.stag(\"linked\");\n                  if (!me->score()->isMaster()) {\n                        if (me->score() == score()) {\n                              xml.tag(\"score\", \"same\");\n                              }\n                        else {\n                              qWarning(\"Element::writeProperties: linked elements belong to different scores but none of them is master score: (%s lid=%d)\", name(), _links->lid());\n                              }\n                        }\n                  Location mainLoc = Location::positionForElement(me);\n                  const int guessedLocalIndex = xml.assignLocalIndex(mainLoc);\n                  if (loc != mainLoc) {\n                        mainLoc.toRelative(loc);\n                        mainLoc.write(xml);\n                        }\n                  const int indexDiff = xml.lidLocalIndex(_links->lid()) - guessedLocalIndex;\n                  xml.tag(\"indexDiff\", indexDiff, 0);\n                  xml.etag(); // </linked>\n                  }\n            }\n      if ((xml.writeTrack() || track() != xml.curTrack())\n         && (track() != -1) && !isBeam()) {\n            // Writing track number for beams is redundant as it is calculated\n            // during layout.\n            int t = track() + xml.trackDiff();\n            xml.tag(\"track\", t);\n            }\n      if (xml.writePosition())\n            xml.tag(Pid::POSITION, rfrac());\n      if (_tag != 0x1) {\n            for (int i = 1; i < MAX_TAGS; i++) {\n                  if (_tag == ((unsigned)1 << i)) {\n                        xml.tag(\"tag\", score()->layerTags()[i]);\n                        break;\n                        }\n                  }\n            }\n      for (Pid pid : { Pid::OFFSET, Pid::COLOR, Pid::VISIBLE, Pid::Z, Pid::PLACEMENT}) {\n            if (propertyFlags(pid) == PropertyFlags::NOSTYLE)\n                  writeProperty(xml, pid);\n            }\n      }"
+      },
+      {
+        "start_line": 550,
+        "end_line": 605,
+        "text": "      else if ((tag == \"linked\") || (tag == \"linkedMain\")) {\n            Staff* s = staff();\n            if (!s) {\n                  s = score()->staff(e.track() / VOICES);\n                  if (!s) {\n                        qWarning(\"Element::readProperties: linked element's staff not found (%s)\", name());\n                        e.skipCurrentElement();\n                        return true;\n                        }\n                  }\n            if (tag == \"linkedMain\") {\n                  _links = new LinkedElements(score());\n                  _links->push_back(this);\n                  e.addLink(s, _links);\n                  e.readNext();\n                  }\n            else {\n                  Staff* ls = s->links() ? toStaff(s->links()->mainElement()) : nullptr;\n                  bool linkedIsMaster = ls ? ls->score()->isMaster() : false;\n                  Location loc = e.location(true);\n                  if (ls)\n                        loc.setStaff(ls->idx());\n                  Location mainLoc = Location::relative();\n                  bool locationRead = false;\n                  int localIndexDiff = 0;\n                  while (e.readNextStartElement()) {\n                        const QStringRef& ntag(e.name());\n\n                        if (ntag == \"score\") {\n                              QString val(e.readElementText());\n                              if (val == \"same\")\n                                    linkedIsMaster = score()->isMaster();\n                              }\n                        else if (ntag == \"location\") {\n                              mainLoc.read(e);\n                              mainLoc.toAbsolute(loc);\n                              locationRead = true;\n                              }\n                        else if (ntag == \"indexDiff\")\n                              localIndexDiff = e.readInt();\n                        else\n                              e.unknown();\n                        }\n                  if (!locationRead)\n                        mainLoc = loc;\n                  LinkedElements* link = e.getLink(linkedIsMaster, mainLoc, localIndexDiff);\n                  if (link) {\n                        ScoreElement* linked = link->mainElement();\n                        if (linked->type() == type())\n                              linkTo(linked);\n                        else\n                              qWarning(\"Element::readProperties: linked elements have different types: %s, %s. Input file corrupted?\", name(), linked->name());\n                        }\n                  if (!_links)\n                        qWarning(\"Element::readProperties: could not link %s at staff %d\", name(), mainLoc.staff() + 1);\n                  }"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/element.h",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/element.h",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "5f4066c72eecc822b60ba49c0876dc6eb03cc27e",
+    "sha256": "2a1f11c0e0487c27a281f19182b55dcab10d35c0269afde9156ee5d3f8b6cd0f",
+    "retrieved_utc": "2026-11-23T11:27:21.935Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_element_h_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 57,
+        "end_line": 65,
+        "text": "enum class ElementFlag {\n      NOTHING                = 0x00000000,\n      DROP_TARGET            = 0x00000001,\n      NOT_SELECTABLE         = 0x00000002,\n      MOVABLE                = 0x00000004,\n      COMPOSITION            = 0x00000008,       // true if element is part of another element\n      HAS_TAG                = 0x00000010,       // true if this is a layered element\n      ON_STAFF               = 0x00000020,\n      SELECTED               = 0x00000040,"
+      },
+      {
+        "start_line": 167,
+        "end_line": 192,
+        "text": "      Element(Score* = 0, ElementFlags = ElementFlag::NOTHING);\n      Element(const Element&);\n      virtual ~Element();\n\n      Element &operator=(const Element&) = delete;\n      //@ create a copy of the element\n      Q_INVOKABLE virtual Ms::Element* clone() const = 0;\n      virtual Element* linkedClone();\n\n      Element* parent() const                 { return _parent;     }\n      void setParent(Element* e)              { _parent = e;        }\n      Measure* findMeasure();\n      const Measure* findMeasure() const;\n      MeasureBase* findMeasureBase();\n      const MeasureBase* findMeasureBase() const;\n\n      virtual bool isElement() const override { return true;        }\n\n      qreal spatium() const;\n\n      inline void setFlag(ElementFlag f, bool v)       { if (v) _flags |= f; else _flags &= ~ElementFlags(f); }\n      inline void setFlag(ElementFlag f, bool v) const { if (v) _flags |= f; else _flags &= ~ElementFlags(f); }\n      inline bool flag(ElementFlag f) const            { return _flags & f; }\n\n      bool selected() const                   { return flag(ElementFlag::SELECTED); }\n      virtual void setSelected(bool f)        { setFlag(ElementFlag::SELECTED, f);  }"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/excerpt.cpp",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/excerpt.cpp",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "ce7ef8dd02eb90c653c4efbdd7068159f7e899c4",
+    "sha256": "a54404df2ea3908425a53c0569d34826311b89642c89ca8535be627aaa9d9d4d",
+    "retrieved_utc": "2026-11-23T11:27:21.936Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_excerpt_cpp_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 129,
+        "end_line": 192,
+        "text": "void Excerpt::createExcerpt(Excerpt* excerpt)\n      {\n      MasterScore* oscore = excerpt->oscore();\n      Score* score        = excerpt->partScore();\n\n      QList<Part*>& parts = excerpt->parts();\n      QList<int> srcStaves;\n\n      // clone layer:\n      for (int i = 0; i < 32; ++i) {\n            score->layerTags()[i] = oscore->layerTags()[i];\n            score->layerTagComments()[i] = oscore->layerTagComments()[i];\n            }\n      score->setCurrentLayer(oscore->currentLayer());\n      score->layer().clear();\n      foreach (const Layer& l, oscore->layer())\n            score->layer().append(l);\n\n      score->setPageNumberOffset(oscore->pageNumberOffset());\n\n      // Set instruments and create linked staffs\n      for (const Part* part : parts) {\n            Part* p = new Part(score);\n            p->setInstrument(*part->instrument());\n            p->setPartName(part->partName());\n\n            for (Staff* staff : *part->staves()) {\n                  Staff* s = new Staff(score);\n                  s->setPart(p);\n//                  s->setStaffType(0, *staff->staffType(0));              // TODO\n                  s->init(staff);\n                  s->setDefaultClefType(staff->defaultClefType());\n                  // the order of staff - s matters as staff should be the first entry in the\n                  // created link list to make primaryStaff() work\n                  // TODO: change implementation, maybe create an explicit \"primary\" flag\n                  score->undo(new Link(s, staff));\n                  p->staves()->append(s);\n                  score->staves().append(s);\n                  srcStaves.append(staff->idx());\n                  }\n            score->appendPart(p);\n            }\n\n      // Fill tracklist (map all tracks of a stave)\n      if (excerpt->tracks().isEmpty()) {\n            QMultiMap<int, int> tracks;\n            for (Staff* s : score->staves()) {\n                  const LinkedElements* ls = s->links();\n                  if (ls == 0)\n                        continue;\n                  for (auto le : *ls) {\n                        Staff* ps = toStaff(le);\n                        if (ps->primaryStaff()) {\n                              for (int i = 0; i < VOICES; i++) {\n                                    tracks.insert(ps->idx() * VOICES + i % VOICES, s->idx() * VOICES + i % VOICES);\n                                    }\n                              break;\n                              }\n                        }\n                  }\n            excerpt->setTracks(tracks);\n            }\n\n      cloneStaves(oscore, score, srcStaves, excerpt->tracks());"
+      },
+      {
+        "start_line": 506,
+        "end_line": 522,
+        "text": "                              //If track is not mapped skip the following\n                              if (trackList.value(srcTrack, -1) == -1)\n                                    continue;\n\n                              //There are probably more destination tracks for the same source\n                              QList<int> t = trackList.values(srcTrack);\n\n                              for (int track : t) {\n                                    //Clone KeySig TimeSig and Clefs if voice 1 of source staff is not mapped to a track\n                                    Element* oef = oseg->element(srcTrack & ~3);\n                                    if (oef && (oef->isTimeSig() || oef->isKeySig()) && oef->tick() == 0\n                                        && !(trackList.size() == (score->excerpt()->parts().size() * VOICES))) {\n                                          Element* ne = oef->linkedClone();\n                                          ne->setTrack(track & ~3);\n                                          ne->setScore(score);\n                                          ns = nm->getSegment(oseg->segmentType(), oseg->tick());\n                                          ns->add(ne);"
+      },
+      {
+        "start_line": 558,
+        "end_line": 566,
+        "text": "                                    if (oe && !oe->generated()) {\n                                          Element* ne;\n                                          ne = oe->linkedClone();\n                                          ne->setTrack(track);\n\n                                          if (!(ne->track() % VOICES) && ne->isRest())\n                                                toRest(ne)->setGap(false);\n\n                                          ne->setScore(score);"
+      },
+      {
+        "start_line": 690,
+        "end_line": 727,
+        "text": "            nmb->linkTo(mb);\n            for (Element* e : mb->el()) {\n                  if (e->isLayoutBreak()) {\n                        LayoutBreak::Type st = toLayoutBreak(e)->layoutBreakType();\n                        if (st == LayoutBreak::Type::PAGE || st == LayoutBreak::Type::LINE)\n                              continue;\n                        }\n                  int track = -1;\n                  if (e->track() != -1) {\n                        // try to map track\n                        track = trackList.value(e->track(), -1);\n                        if (track == -1) {\n                              // even if track not in excerpt, we need to clone system elements\n                              if (e->systemFlag())\n                                    track = 0;\n                              else\n                                    continue;\n                              }\n                        }\n\n                  Element* ne;\n                  // link text - title, subtitle, also repeats (eg, coda/segno)\n                  // measure numbers are not stored in this list, but they should not be cloned anyhow\n                  // layout breaks other than section were skipped above,\n                  // but section breaks do need to be cloned & linked\n                  // other measure-attached elements (?) are cloned but not linked\n                  if (e->isTextBase() || e->isLayoutBreak()) {\n                        ne = e->clone();\n                        ne->setAutoplace(true);\n                        ne->linkTo(e);\n                        }\n                  else\n                        ne = e->clone();\n                  ne->setScore(score);\n                  ne->setTrack(track);\n                  nmb->add(ne);\n                  }\n            nmbl->add(nmb);"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/scoreElement.cpp",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/scoreElement.cpp",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "ea25eb4c0b04145887139d2148f8e8460d05a1be",
+    "sha256": "f0b51c644645c9f7520106a2dfe2ebdc3f2f91a4eb5ad262cef40a750d6be546",
+    "retrieved_utc": "2026-11-23T11:28:07.838Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_scoreElement_cpp_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 141,
+        "end_line": 151,
+        "text": "ScoreElement::ScoreElement(const ScoreElement& se)\n      {\n      _score        = se._score;\n      _elementStyle = se._elementStyle;\n      if (_elementStyle) {\n            size_t n = _elementStyle->size();\n            _propertyFlagsList = new PropertyFlags[n];\n            for (size_t i = 0; i < n; ++i)\n                  _propertyFlagsList[i] = se._propertyFlagsList[i];\n            }\n      _links = 0;"
+      },
+      {
+        "start_line": 507,
+        "end_line": 544,
+        "text": "void ScoreElement::linkTo(ScoreElement* element)\n      {\n      Q_ASSERT(element != this);\n      Q_ASSERT(!_links);\n\n      if (element->links()) {\n            _links = element->_links;\n            Q_ASSERT(_links->contains(element));\n            }\n      else {\n            if (isStaff())\n                  _links = new LinkedElements(score(), -1); // don\u2019t use lid\n            else\n                  _links = new LinkedElements(score());\n            _links->append(element);\n            element->_links = _links;\n            }\n      Q_ASSERT(!_links->contains(this));\n      _links->append(this);\n      }\n\n//---------------------------------------------------------\n//   unlink\n//---------------------------------------------------------\n\nvoid ScoreElement::unlink()\n      {\n      Q_ASSERT(_links);\n      Q_ASSERT(_links->contains(this));\n      _links->removeOne(this);\n\n      // if link list is empty, remove list\n      if (_links->size() <= 1) {\n            if (!_links->empty())\n                  _links->front()->_links = 0;\n            delete _links;\n            }\n      _links = 0; // this element is not linked anymore"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/select.cpp",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/select.cpp",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "b49e7da5a02a253c7bb5b675b2f162d8c00ff9d3",
+    "sha256": "57886872409114ed82b7fc8f7dfca71aeba676f20361b12b6e6fc6ee69ae3c6e",
+    "retrieved_utc": "2026-11-23T11:27:21.937Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_select_cpp_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 296,
+        "end_line": 337,
+        "text": "void Selection::clear()\n      {\n      for (Element* e : _el) {\n            if (e->isSpanner()) {   // TODO: only visible elements should be selectable?\n                  Spanner* sp = toSpanner(e);\n                  for (auto s : sp->spannerSegments())\n                        e->score()->addRefresh(changeSelection(s, false));\n                  }\n            else\n                  e->score()->addRefresh(changeSelection(e, false));\n            }\n      _el.clear();\n      _startSegment  = 0;\n      _endSegment    = 0;\n      _activeSegment = 0;\n      _staffStart    = 0;\n      _staffEnd      = 0;\n      _activeTrack   = 0;\n      setState(SelState::NONE);\n      }\n\n//---------------------------------------------------------\n//   remove\n//---------------------------------------------------------\n\nvoid Selection::remove(Element* el)\n      {\n      const bool removed = _el.removeOne(el);\n      el->setSelected(false);\n      if (removed)\n            updateState();\n      }\n\n//---------------------------------------------------------\n//   add\n//---------------------------------------------------------\n\nvoid Selection::add(Element* el)\n      {\n      _el.append(el);\n      update();\n      }"
+      },
+      {
+        "start_line": 604,
+        "end_line": 608,
+        "text": "void Selection::update()\n      {\n      for (Element* e : _el)\n            e->setSelected(true);\n      updateState();"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/select.h",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/select.h",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "f0b7c3f622ba81fc5cf8bb102a9f7ead94729228",
+    "sha256": "e0b53561aa6d2200baba6727cb6941339dc20e4ea1ad39c4696ad8ba80d577c0",
+    "retrieved_utc": "2026-11-23T11:28:07.839Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_select_h_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 123,
+        "end_line": 152,
+        "text": "class Selection {\n      Score* _score;\n      SelState _state;\n      QList<Element*> _el;          // valid in mode SelState::LIST\n\n      int _staffStart;              // valid if selState is SelState::RANGE\n      int _staffEnd;\n      Segment* _startSegment;\n      Segment* _endSegment;         // next segment after selection\n\n      int _plannedTick1 = -1; // Will be actually selected on updateSelectedElements() call.\n      int _plannedTick2 = -1; // Used by setRangeTicks() to restore proper selection after\n                              // command end in case some changes are expected to segments'\n                              // structure (e.g. MMRests reconstruction).\n\n      Segment* _activeSegment;\n      int _activeTrack;\n\n      QByteArray staffMimeData() const;\n      QByteArray symbolListMimeData() const;\n      SelectionFilter selectionFilter() const;\n      bool canSelect(Element* e) const { return selectionFilter().canSelect(e); }\n      bool canSelectVoice(int track) const { return selectionFilter().canSelectVoice(track); }\n      void appendFiltered(Element* e);\n      void appendChord(Chord* chord);\n\n   public:\n      Selection()                      { _score = 0; _state = SelState::NONE; }\n      Selection(Score*);\n      Score* score() const             { return _score; }"
+      }
+    ]
+  },
+  {
+    "path": "libmscore/undo.cpp",
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/undo.cpp",
+    "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "git_blob_sha": "a177aae8549ae098ff9919abb69fd62c85203095",
+    "sha256": "5358ef19089fcf8d5f51b96cf6bd0b302966ad6e508383971d23a63780f8a3c3",
+    "retrieved_utc": "2026-11-23T11:28:07.839Z",
+    "postseal_reused_utc": "2026-11-23T11:54:08.728076+00:00",
+    "origin_receipt": "../../recruitment/musescore/source_undo_cpp_receipt.json",
+    "work_lineage": "MS-CODEBASE",
+    "network_cost_this_phase": 0,
+    "excerpts": [
+      {
+        "start_line": 143,
+        "end_line": 191,
+        "text": "void UndoCommand::undo(EditData* ed)\n      {\n      int n = childList.size();\n      for (int i = n-1; i >= 0; --i) {\n            qCDebug(undoRedo) << \"<\" << childList[i]->name() << \">\";\n            childList[i]->undo(ed);\n            }\n      flip(ed);\n      }\n\n//---------------------------------------------------------\n//   redo\n//---------------------------------------------------------\n\nvoid UndoCommand::redo(EditData* ed)\n      {\n      int n = childList.size();\n      for (int i = 0; i < n; ++i) {\n            qCDebug(undoRedo) << \"<\" << childList[i]->name() << \">\";\n            childList[i]->redo(ed);\n            }\n      flip(ed);\n      }\n\n//---------------------------------------------------------\n//   unwind\n//---------------------------------------------------------\n\nvoid UndoCommand::unwind()\n      {\n      while (!childList.empty()) {\n            UndoCommand* c = childList.takeLast();\n            qDebug(\"unwind <%s>\", c->name());\n            c->undo(0);\n            delete c;\n            }\n      }\n\n//---------------------------------------------------------\n//   UndoStack\n//---------------------------------------------------------\n\nUndoStack::UndoStack()\n      {\n      curCmd   = 0;\n      curIdx   = 0;\n      cleanState = 0;\n      stateList.push_back(cleanState);\n      nextState = 1;"
+      },
+      {
+        "start_line": 223,
+        "end_line": 245,
+        "text": "void UndoStack::push(UndoCommand* cmd, EditData* ed)\n      {\n      if (!curCmd) {\n            // this can happen for layout() outside of a command (load)\n            if (!ScoreLoad::loading())\n                  qDebug(\"no active command, UndoStack\");\n\n            cmd->redo(ed);\n            delete cmd;\n            return;\n            }\n#ifndef QT_NO_DEBUG\n      if (!strcmp(cmd->name(), \"ChangeProperty\")) {\n            ChangeProperty* cp = static_cast<ChangeProperty*>(cmd);\n            qCDebug(undoRedo, \"<%s> id %d %s\", cmd->name(), int(cp->getId()), propertyName(cp->getId()));\n            }\n      else {\n            qCDebug(undoRedo, \"<%s>\", cmd->name());\n            }\n#endif\n      curCmd->appendChild(cmd);\n      cmd->redo(ed);\n      }"
+      },
+      {
+        "start_line": 319,
+        "end_line": 339,
+        "text": "void UndoStack::endMacro(bool rollback)\n      {\n      if (curCmd == 0) {\n            qWarning(\"not active\");\n            return;\n            }\n      if (rollback)\n            delete curCmd;\n      else {\n            // remove redo stack\n            while (list.size() > curIdx) {\n                  UndoCommand* cmd = list.takeLast();\n                  stateList.pop_back();\n                  cmd->cleanup(false);  // delete elements for which UndoCommand() holds ownership\n                  delete cmd;\n                  }\n            list.append(curCmd);\n            stateList.push_back(nextState++);\n            ++curIdx;\n            }\n      curCmd = 0;"
+      },
+      {
+        "start_line": 372,
+        "end_line": 398,
+        "text": "void UndoStack::undo(EditData* ed)\n      {\n      qCDebug(undoRedo) << \"===\";\n      // Are we currently editing text?\n      if (ed && ed->element && ed->element->isTextBase()) {\n            TextEditData* ted = static_cast<TextEditData*>(ed->getData(ed->element));\n            if (ted && ted->startUndoIdx == curIdx)\n                  // No edits to undo, so do nothing\n                  return;\n            }\n      if (curIdx) {\n            --curIdx;\n            Q_ASSERT(curIdx >= 0);\n            list[curIdx]->undo(ed);\n            }\n      }\n\n//---------------------------------------------------------\n//   redo\n//---------------------------------------------------------\n\nvoid UndoStack::redo(EditData* ed)\n      {\n      qCDebug(undoRedo) << \"===\";\n      if (canRedo())\n            list[curIdx++]->redo(ed);\n      }"
+      },
+      {
+        "start_line": 942,
+        "end_line": 965,
+        "text": "ChangePitch::ChangePitch(Note* _note, int _pitch, int _tpc1, int _tpc2)\n      {\n      note  = _note;\n      pitch = _pitch;\n      tpc1  = _tpc1;\n      tpc2  = _tpc2;\n      }\n\nvoid ChangePitch::flip(EditData*)\n      {\n      int f_pitch = note->pitch();\n      int f_tpc1  = note->tpc1();\n      int f_tpc2  = note->tpc2();\n      // do not change unless necessary\n      if (f_pitch == pitch && f_tpc1 == tpc1 && f_tpc2 == tpc2)\n            return;\n\n      note->setPitch(pitch, tpc1, tpc2);\n      pitch = f_pitch;\n      tpc1  = f_tpc1;\n      tpc2  = f_tpc2;\n\n      note->score()->setLayout(note->tick());\n      }"
+      },
+      {
+        "start_line": 2243,
+        "end_line": 2280,
+        "text": "void LinkUnlink::link()\n      {\n      if (le->size() == 1)\n            le->front()->setLinks(le);\n      mustDelete = false;\n      le->append(e);\n      e->setLinks(le);\n      }\n\nvoid LinkUnlink::unlink()\n      {\n      Q_ASSERT(le->contains(e));\n      le->removeOne(e);\n      if (le->size() == 1) {\n            le->front()->setLinks(0);\n            mustDelete = true;\n            }\n\n      e->setLinks(0);\n      }\n\n//---------------------------------------------------------\n//   Link\n//    link e1 to e2\n//---------------------------------------------------------\n\nLink::Link(ScoreElement* e1, ScoreElement* e2)\n      {\n      Q_ASSERT(e1->links() == 0);\n      le = e2->links();\n      if (!le) {\n            if (e1->isStaff())\n                  le = new LinkedElements(e1->score(), -1);\n            else\n                  le = new LinkedElements(e1->score());\n            le->push_back(e2);\n            }\n      e = e1;"
+      }
+    ]
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "id": "src_build__run_tests.sh",
+  "request": {
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/run_tests.sh"
+  },
+  "retrieved_utc": "2026-11-23T11:48:53.718Z",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "#!/bin/sh\nxvfb-run ctest -j2 --output-on-failure\n\nPROC_RET=$?\n\nif [ \"$PROC_RET\" -ne 0 ]; then\n  killall Xvfb\n  xvfb-run ./mtest\nfi\n\n# Searching for merge conflicts, by searching for the begin/end markers.\n# Searching for the middle marker '=======)\" won't work though as that is\n# used elsewhere too.\n# Haven't found a way without using an intermediate temp file.\nrm -f /tmp/$$ # Cleanup, just in case of an older leftover\nfind ../.. -type f ! -name `basename $0` -print0 |\n  xargs -0r egrep -n '<<<<<<< HEAD|>>>>>>> .*' |\n  tee /tmp/$$\nif [ -s /tmp/$$ ]; then # File not empty\n  PROC_RET=`expr $PROC_RET + 1` # Store the error\n  printf \"\\033[31m\" # Set color to  (doesn't work on Travis though)\n  echo\n  echo \"problem with a merge conflict\"\n  echo\n  printf \"\\033[0m\" # Reset color\nfi\nrm -f /tmp/$$ # Cleanup\n\n#pwd == build.debug/mtest\ncd ../../vtest\nxvfb-run ./gen\ncd -\n\n#make reporthtml\n#REVISION=`git rev-parse --short HEAD`\n#mv report/html $REVISION\n#mv report/*.xml $REVISION\n#chmod 755 $REVISION\n#chmod 644 $REVISION/*\n#zip -r $REVISION.zip $REVISION\n#curl -F zip_file=@$REVISION.zip  http://prereleases.musescore.org/test/index.php\n#echo \"Test results: http://prereleases.musescore.org/test/$REVISION/\"\n\nexit $PROC_RET\n",
+      "title": "run_tests.sh",
+      "modified_date": "2015-08-15T12:30:22Z",
+      "url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/run_tests.sh",
+      "display_url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/run_tests.sh",
+      "display_title": "run_tests.sh",
+      "structuredContent": {
+        "title": "run_tests.sh",
+        "content": "#!/bin/sh\nxvfb-run ctest -j2 --output-on-failure\n\nPROC_RET=$?\n\nif [ \"$PROC_RET\" -ne 0 ]; then\n  killall Xvfb\n  xvfb-run ./mtest\nfi\n\n# Searching for merge conflicts, by searching for the begin/end markers.\n# Searching for the middle marker '=======)\" won't work though as that is\n# used elsewhere too.\n# Haven't found a way without using an intermediate temp file.\nrm -f /tmp/$$ # Cleanup, just in case of an older leftover\nfind ../.. -type f ! -name `basename $0` -print0 |\n  xargs -0r egrep -n '<<<<<<< HEAD|>>>>>>> .*' |\n  tee /tmp/$$\nif [ -s /tmp/$$ ]; then # File not empty\n  PROC_RET=`expr $PROC_RET + 1` # Store the error\n  printf \"\\033[31m\" # Set color to  (doesn't work on Travis though)\n  echo\n  echo \"problem with a merge conflict\"\n  echo\n  printf \"\\033[0m\" # Reset color\nfi\nrm -f /tmp/$$ # Cleanup\n\n#pwd == build.debug/mtest\ncd ../../vtest\nxvfb-run ./gen\ncd -\n\n#make reporthtml\n#REVISION=`git rev-parse --short HEAD`\n#mv report/html $REVISION\n#mv report/*.xml $REVISION\n#chmod 755 $REVISION\n#chmod 644 $REVISION/*\n#zip -r $REVISION.zip $REVISION\n#curl -F zip_file=@$REVISION.zip  http://prereleases.musescore.org/test/index.php\n#echo \"Test results: http://prereleases.musescore.org/test/$REVISION/\"\n\nexit $PROC_RET\n",
+        "display_url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/run_tests.sh"
+      }
+    },
+    "isError": false
+  }
+}

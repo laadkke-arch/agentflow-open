@@ -1,0 +1,1296 @@
+{
+  "task": "AF-RES-077",
+  "phase": "postseal",
+  "prepared_utc": "2026-11-23T11:56:17.842859+00:00",
+  "source_repository": "musescore/MuseScore",
+  "seal_commit_reported_by_root": "7bc2d1f84c04b47711d72e7c110b8f927d97f4ad",
+  "primary_count": 0,
+  "primary_status": "VACANT, unchanged",
+  "request_status": "auxiliary only",
+  "baseline": {
+    "tag": "v3.0.1",
+    "sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+    "role": "contextual pre-request release; reporter affected build unverified"
+  },
+  "independence": {
+    "work_lineages": [
+      "MS-CODEBASE",
+      "MS-REQUEST-4590"
+    ],
+    "new_independent_work_count": 0,
+    "test_files_or_versions_do_not_increment_work_count": true,
+    "A_B_artifacts_opened": false,
+    "root_disclosure": "After the common-case discrimination assessment was sent, root disclosed A/B preference in a follow-up message. This post-seal source report is not an additional independent experimental row."
+  },
+  "adopted_historical_change": {
+    "kind": "actual merged code and merge event, not a test pass",
+    "url": "https://github.com/musescore/MuseScore/pull/4590",
+    "head_sha": "3cfc174c665b01e57ef374fbb990c8f36910019a",
+    "head_parent_sha": "a504e3905fdee1345981cdd5c98a9e1dd0716b4a",
+    "merge_sha": "16851045c9e50eafb016c5cf4f2733f974e841bf",
+    "merged_at": "2019-03-07T09:53:22Z",
+    "merged_by": "anatoly-os",
+    "changed_files": 1,
+    "files": [
+      {
+        "path": "libmscore/element.cpp",
+        "head_blob_sha": "599e162d0cb7a3908a07397aed2b770597fc142c",
+        "additions": 1,
+        "deletions": 0,
+        "patch": "@@ -174,6 +174,7 @@ Element::Element(const Element& e)\n       _offset     = e._offset;\n       _track      = e._track;\n       _flags      = e._flags;\n+      setFlag(ElementFlag::SELECTED, false);\n       _tag        = e._tag;\n       _z          = e._z;\n       _color      = e._color;"
+      }
+    ],
+    "interpretation": "Global Element copy-constructor clearing of SELECTED, after copying all flags; not limited to excerpt creation. Musical track/position/color copy remains in context; patch does not modify link, undo or serialization code.",
+    "added_or_changed_tests": 0
+  },
+  "discussion": {
+    "comments": [
+      {
+        "id": 454652110,
+        "url": "https://github.com/musescore/MuseScore/pull/4590#issuecomment-454652110",
+        "author": "ericfont",
+        "author_association": "CONTRIBUTOR",
+        "created_at": "2019-01-16T04:57:49Z",
+        "updated_at": "2019-01-16T04:57:49Z"
+      },
+      {
+        "id": 454675696,
+        "url": "https://github.com/musescore/MuseScore/pull/4590#issuecomment-454675696",
+        "author": "dmitrio95",
+        "author_association": "CONTRIBUTOR",
+        "created_at": "2019-01-16T07:12:08Z",
+        "updated_at": "2019-01-16T07:12:08Z"
+      },
+      {
+        "id": 454783682,
+        "url": "https://github.com/musescore/MuseScore/pull/4590#issuecomment-454783682",
+        "author": "ericfont",
+        "author_association": "CONTRIBUTOR",
+        "created_at": "2019-01-16T13:45:36Z",
+        "updated_at": "2019-01-16T13:45:36Z"
+      }
+    ],
+    "review_count": 0,
+    "review_comment_count": 0,
+    "contributor_report": "Author links original issue and asks about unintended side effects; dmitrio95 supports avoiding selection inheritance and notes existing explicit clearing; author agrees. These comments are intent/design opinion, not executed regression reports.",
+    "maintainer_test_execution_report_found": false
+  },
+  "request_history": {
+    "request_lineage": "MS-REQUEST-4590",
+    "current_pr_created_at": "2019-01-16T04:54:28Z",
+    "current_pr_updated_at": "2019-03-07T09:53:29Z",
+    "current_body_matches_head_commit_message_after_title": true,
+    "dated_text_corroboration": {
+      "commit_sha": "3cfc174c665b01e57ef374fbb990c8f36910019a",
+      "author_date": "2019-01-16T04:57:06Z",
+      "committer_date": "2019-01-16T04:57:06Z",
+      "claim": "A dated same-author source corroborates current wording; commit dates and current message do not prove the initial PR description."
+    },
+    "first_revision_verified": false,
+    "rest_timeline_body_revision_snapshots": 0,
+    "public_pr_html_edit_history_link_found": false,
+    "public_pr_html_edited_marker_count": 0,
+    "limits": "No first-description snapshot returned. Absence of an edit marker in fetched HTML is not proof of no edits. No login or access bypass attempted.",
+    "original_tracker": {
+      "url": "https://musescore.org/en/node/281441",
+      "link_confirmed_by_comment": "https://github.com/musescore/MuseScore/pull/4590#issuecomment-454652110",
+      "http_status": 403,
+      "author_body_attachment_version": "unknown"
+    }
+  },
+  "evidence_categories": {
+    "original_test_source": {
+      "present": true,
+      "inventory": [
+        {
+          "id": "MS-ORIGINAL-PART-CREATE",
+          "suite": "tst_parts",
+          "functions": [
+            "createPart1",
+            "testPartCreation",
+            "createParts"
+          ],
+          "source": "mtest/libmscore/parts/tst_parts.cpp",
+          "lines": [
+            [
+              135,
+              174
+            ],
+            [
+              241,
+              249
+            ],
+            [
+              362,
+              365
+            ]
+          ],
+          "input_files": [
+            "mtest/libmscore/parts/part-empty.mscx"
+          ],
+          "reference_files": [
+            "mtest/libmscore/parts/part-empty-parts.mscx"
+          ],
+          "assertion": "Save/read comparison before creating parts and saved whole-score comparison after creating Alto and Tenor excerpts.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-VOICE-EXCERPT",
+          "suite": "tst_parts",
+          "functions": [
+            "voicesExcerpt"
+          ],
+          "source": "mtest/libmscore/parts/tst_parts.cpp",
+          "lines": [
+            [
+              180,
+              235
+            ]
+          ],
+          "input_files": [
+            "mtest/libmscore/parts/voices.mscx"
+          ],
+          "reference_files": [
+            "mtest/libmscore/parts/voices-ref.mscx"
+          ],
+          "assertion": "Explicit source/destination tracks Piano 1->0, 2->1, 4->4 and Trombone 11->0; whole-score serialized reference comparison.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-PART-UNDO",
+          "suite": "tst_parts",
+          "functions": [
+            "doAddBreath",
+            "addBreath",
+            "undoAddBreath"
+          ],
+          "source": "mtest/libmscore/parts/tst_parts.cpp",
+          "lines": [
+            [
+              402,
+              444
+            ]
+          ],
+          "input_files": [
+            "mtest/libmscore/parts/part-empty-parts.mscx"
+          ],
+          "reference_files": [
+            "mtest/libmscore/parts/part-breath-add.mscx",
+            "mtest/libmscore/parts/part-breath-uadd.mscx"
+          ],
+          "assertion": "Drop breath inside startCmd/endCmd; add snapshot and undo snapshot assertions. Static references add breath to master and Alto only; Tenor subtree unchanged; undo reference byte-identical to input.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-LINK-UNDO",
+          "suite": "tst_links",
+          "functions": [
+            "test3LinkedSameScore_99796",
+            "test3LinkedParts_99796",
+            "test4LinkedParts_94911",
+            "test5LinkedParts_94911"
+          ],
+          "source": "mtest/libmscore/links/tst_links.cpp",
+          "lines": [
+            [
+              59,
+              152
+            ],
+            [
+              162,
+              233
+            ],
+            [
+              243,
+              356
+            ],
+            [
+              365,
+              454
+            ]
+          ],
+          "input_files": [],
+          "reference_files": [],
+          "assertion": "Programmatic MCursor scores; linked staffs/excerpts; delete/add undo/redo; explicit staff, excerpt and link cardinality assertions.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-VOICE-UNDO",
+          "suite": "tst_exchangevoices",
+          "functions": [
+            "undoChangeVoice"
+          ],
+          "source": "mtest/libmscore/exchangevoices/tst_exchangevoices.cpp",
+          "lines": [
+            [
+              105,
+              135
+            ]
+          ],
+          "input_files": [
+            "mtest/libmscore/exchangevoices/undoChangeVoice.mscx"
+          ],
+          "reference_files": [
+            "mtest/libmscore/exchangevoices/undoChangeVoice01-ref.mscx",
+            "mtest/libmscore/exchangevoices/undoChangeVoice02-ref.mscx"
+          ],
+          "assertion": "Select bottom notes of voice-1 chords, changeVoice(1), compare edit reference, undoStack()->undo, compare undo reference. Linked Piano part appears in real input and both references.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-UNDO-RESET",
+          "suite": "tst_readwriteundoreset",
+          "functions": [
+            "barlines",
+            "undoreset"
+          ],
+          "source": "mtest/libmscore/readwriteundoreset/tst_readwriteundoreset.cpp",
+          "lines": [
+            [
+              25,
+              35
+            ],
+            [
+              65,
+              74
+            ]
+          ],
+          "input_files": [
+            "mtest/libmscore/readwriteundoreset/barlines.mscx"
+          ],
+          "reference_files": [
+            "mtest/libmscore/readwriteundoreset/barlines.mscx"
+          ],
+          "assertion": "Read fixture, reset positions, undo, compare saved score to original fixture. Helper readwrite() is commented out in runtests().",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        },
+        {
+          "id": "MS-ORIGINAL-ELEMENT-TYPE",
+          "suite": "tst_element",
+          "functions": [
+            "testIds"
+          ],
+          "source": "mtest/libmscore/element/tst_element.cpp",
+          "lines": [
+            [
+              38,
+              104
+            ]
+          ],
+          "input_files": [],
+          "reference_files": [],
+          "assertion": "Construct element types and write/read, compare element type only. No selected-clone regression assertion in this inspected suite.",
+          "status": "ORIGINAL_TEST_SOURCE_UNEXECUTED",
+          "work_lineage": "MS-CODEBASE",
+          "independent_work_increment": 0,
+          "historical_execution_receipt_found": false,
+          "researcher_executed": false
+        }
+      ],
+      "counts_as_pass": false
+    },
+    "maintainer_or_contributor_report": {
+      "present": true,
+      "execution_claim_found": false,
+      "counts_as_pass": false
+    },
+    "actual_historical_recorded_execution": {
+      "retrieved": false,
+      "head_combined_status": {
+        "state": "pending",
+        "total_count": 0
+      },
+      "merge_combined_status": {
+        "state": "pending",
+        "total_count": 0
+      },
+      "head_check_runs": 0,
+      "head_actions_runs": 0,
+      "public_checks_page": "Workflow runs completed with no jobs; not evidence of executed tests.",
+      "travis_api_status": 404,
+      "interpretation": "No historical test-result log/receipt retrieved at investigated endpoints. Empty lists and pending aggregate state are not failures or proof that no historical test ever ran."
+    },
+    "new_researcher_application_run": {
+      "executed": false,
+      "reason": "Runtime/build prerequisites unavailable; no installation authorized or attempted.",
+      "environment_receipt": "runtime-availability.json",
+      "static_inspection_only": [
+        "Git blob verification",
+        "XML parsing",
+        "source-reference diffs",
+        "exact per-score subtree comparison"
+      ]
+    },
+    "unexecuted_frozen_cases": {
+      "executed": 0,
+      "total": 3,
+      "pass_count": null,
+      "fail_count": null,
+      "case_assessment": "frozen-case-assessment.json"
+    }
+  },
+  "whole_snapshot_vs_scope": {
+    "original_snapshot_oracle": "MTest::saveCompareScore saves the entire score then calls diff -u --strip-trailing-cr against a reference. This is a test oracle, not evidence that undo itself uses whole-state snapshots.",
+    "command_implementation": "Score::startCmd/endCmd collects UndoMacro children; UndoCommand reverses children on undo. ChangePitch stores Note* plus pitch/tpc1/tpc2 and flips old/current values. LinkUnlink mutates linked membership. UndoStack with curIdx=0 has no undo action.",
+    "scope_observation": {
+      "kind": "new researcher static inspection of original source fixtures, not application execution",
+      "retrieved_utc": "2026-11-23T11:54:08.728076+00:00",
+      "tenor_subtree_identical_in_add_reference": true,
+      "undo_reference_byte_identical_to_input": true,
+      "add_reference_only_difference": "Two Breath elements: master staff1 and Alto excerpt; diff retained. Tenor subtree unchanged.",
+      "voice_excerpt_trackmap": {
+        "Piano": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "Trombone": [
+          [
+            11,
+            0
+          ]
+        ]
+      },
+      "voice_undo_reference_restores_pitch_voice_sequences": true,
+      "voice_undo_reference_byte_identical_to_input": false,
+      "voice_undo_reference_serialization_difference": "Adds eight Tuplet style tags and two Beam geometry blocks; see exact diff.",
+      "fixture_selected_tags": 0,
+      "fixture_undo_tags": 0,
+      "application_test_pass_claim": false
+    },
+    "ui_selection_gap": "Element::writeProperties writes selected durable properties and link metadata but not SELECTED. All ten stored fixtures contain no selected or undo tags. XML equality does not directly check transient selection lists/colors or in-memory pointer identity.",
+    "discrimination_limit": "Sequential frozen pitch edit then undo, with unchanged P2 throughout, allows both correct whole-state restoration and correctly scoped commands. No stale snapshot/intervening unrelated edit is specified.",
+    "no_architecture_preference_claim": true
+  },
+  "frozen_cases": {
+    "input_packet": "../../packets/MS-common.json",
+    "input_sha256": "00b3b8932b88c17b7257141e568d96bb4252db5c6bb0b14141c88c0e95a8554c",
+    "seal_commit_reported_by_root": "7bc2d1f84c04b47711d72e7c110b8f927d97f4ad",
+    "cases": [
+      {
+        "id": "MS-N",
+        "execution_status": "UNEXECUTED",
+        "pass": null,
+        "discrimination": "Both inheriting and clearing a false selected bit agree. Can be a general linked-edit/undo/serialization preservation case when implemented, but no whole-state-vs-scoped discrimination follows from the specified sequential operations.",
+        "missing_operational_details": [
+          "Concrete valid .mscx/constructed score",
+          "Mapping of symbolic m1/u1 to stable musical positions",
+          "Pitch command and tonal-pitch-class handling",
+          "Exact observation checkpoints and assertions"
+        ]
+      },
+      {
+        "id": "MS-E",
+        "execution_status": "UNEXECUTED",
+        "pass": null,
+        "discrimination": "Can distinguish inherited SELECTED from cleared SELECTED only with an in-memory observation immediately after create P1, before undo/reopen. Frozen observe list does not bind that checkpoint. Final-only after reopen may erase the distinguishing UI state. It does not distinguish whole-state restoration from scoped undo when no unrelated edit intervenes.",
+        "missing_operational_details": [
+          "All MS-N details",
+          "Required immediate post-creation selected()/Selection-list/color checkpoint",
+          "Way to retain the initial master selection during part creation"
+        ]
+      },
+      {
+        "id": "MS-X",
+        "execution_status": "UNEXECUTED",
+        "pass": null,
+        "discrimination": "Can reject fabrication of a former pitch when history is explicitly absent. Both snapshot and command designs with no stored history can correctly refuse/no-op; this does not distinguish those mechanisms.",
+        "source_support": "UndoStack initializes curIdx=0; canUndo tests curIdx>0; undo does nothing at zero. Existing score loader creates a new MasterScore and layouts read scores."
+      }
+    ],
+    "executed_count": 0,
+    "total_cases": 3,
+    "pass_count": null,
+    "fail_count": null,
+    "conclusion": "Specifications are not executable test receipts. Conditional discriminating observations exist, but no measured implementation comparison is available. No frozen case establishes preference for whole-state versus scoped rollback.",
+    "independence_note": "Common-case assessment was sent to root before root disclosed A/B preference. A later root message revealed preference; no A/B choice artifacts were opened. This source report is not an independent experimental row."
+  },
+  "source_manifest": "source-manifest.json",
+  "bounded_fixtures": [
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "62e174dea4f92b1bae1743facb53e8a277f2dc9c",
+      "api_listed_blob_sha": "62e174dea4f92b1bae1743facb53e8a277f2dc9c",
+      "blob_matches_api": true,
+      "sha256": "93bf12455ad5137afa556230a07ffc0b2f37def7af961a3cce93fbd80e0027e7",
+      "bytes": 31044,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice01-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice01-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "17605b8c2fe0c7c40d90dc39dd26bcb2ac585d3e",
+      "api_listed_blob_sha": "17605b8c2fe0c7c40d90dc39dd26bcb2ac585d3e",
+      "blob_matches_api": true,
+      "sha256": "58550eb49bba6af4d346ba09521f879f9d53e9d61c9ac5a2d654803a09722075",
+      "bytes": 32605,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice01-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice02-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice02-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "e1c44fabcbb20d9e2e97368069e113dea1c2730e",
+      "api_listed_blob_sha": "e1c44fabcbb20d9e2e97368069e113dea1c2730e",
+      "blob_matches_api": true,
+      "sha256": "4fd04e29eb8fc0466197d68d0c6f2e881cd8577e0e8e02b479965737ea07faa8",
+      "bytes": 31518,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice02-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-breath-add.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-breath-add.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "3e586c06f94482a87b1a24a2493f2ff6291bf3c5",
+      "api_listed_blob_sha": "3e586c06f94482a87b1a24a2493f2ff6291bf3c5",
+      "blob_matches_api": true,
+      "sha256": "14f5f291392fcd0da21a5694d2e720229b9a0c8377931e13284a39e0aeca2bfd",
+      "bytes": 44200,
+      "retrieved_utc": "2026-11-23T11:50:10.806Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-breath-add.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-breath-uadd.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-breath-uadd.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "api_listed_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "blob_matches_api": true,
+      "sha256": "181480e6e1db06b3cf8b2d32f4cee0ec5f24141da39c94e020c14d6af4695c37",
+      "bytes": 43947,
+      "retrieved_utc": "2026-11-23T11:50:10.807Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-breath-uadd.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-empty-parts.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-empty-parts.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "api_listed_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "blob_matches_api": true,
+      "sha256": "181480e6e1db06b3cf8b2d32f4cee0ec5f24141da39c94e020c14d6af4695c37",
+      "bytes": 43947,
+      "retrieved_utc": "2026-11-23T11:50:10.805Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-empty-parts.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-empty.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-empty.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "fe6e409d831a741757628f8af5cc88547de4cc9e",
+      "api_listed_blob_sha": "fe6e409d831a741757628f8af5cc88547de4cc9e",
+      "blob_matches_api": true,
+      "sha256": "2e1517003fd860b97e9e22e13a8a5e5544dbdba0a60f5fa2477f83819bed9751",
+      "bytes": 17271,
+      "retrieved_utc": "2026-11-23T11:50:10.804Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-empty.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/voices-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/voices-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "d26fc444e3f995e5ff549e22d8da85b9354533f2",
+      "api_listed_blob_sha": "d26fc444e3f995e5ff549e22d8da85b9354533f2",
+      "blob_matches_api": true,
+      "sha256": "71cabf6b0d580970998b11f48903973de1d4cc67fef32fb8a99fdb6bc4a1b894",
+      "bytes": 62845,
+      "retrieved_utc": "2026-11-23T11:50:10.804Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__voices-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/voices.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/voices.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "485cfb60f8db0c2146f3f2052adcf3d81a2feb92",
+      "api_listed_blob_sha": "485cfb60f8db0c2146f3f2052adcf3d81a2feb92",
+      "blob_matches_api": true,
+      "sha256": "4b4a94a889ad12b800d30910720322007b726933501fb551212d07e6098eb05d",
+      "bytes": 21557,
+      "retrieved_utc": "2026-11-23T11:50:10.803Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__voices.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/readwriteundoreset/barlines.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/readwriteundoreset/barlines.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "54331600174b6c0f23c6271544dd2cac3b1d4459",
+      "api_listed_blob_sha": "54331600174b6c0f23c6271544dd2cac3b1d4459",
+      "blob_matches_api": true,
+      "sha256": "9c99f8fc621fdb89c7179a2b980cd14be7e1a665a65f26607000020cf680febd",
+      "bytes": 6338,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__readwriteundoreset__barlines.mscx.json"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "MS-POST-pr",
+      "url": "https://api.github.com/repos/musescore/MuseScore/pulls/4590",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/pr.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-pr_files",
+      "url": "https://api.github.com/repos/musescore/MuseScore/pulls/4590/files?per_page=100",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/pr_files.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-issue_comments",
+      "url": "https://api.github.com/repos/musescore/MuseScore/issues/4590/comments?per_page=100",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/issue_comments.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-review_comments",
+      "url": "https://api.github.com/repos/musescore/MuseScore/pulls/4590/comments?per_page=100",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/review_comments.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-reviews",
+      "url": "https://api.github.com/repos/musescore/MuseScore/pulls/4590/reviews?per_page=100",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/reviews.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-timeline",
+      "url": "https://api.github.com/repos/musescore/MuseScore/issues/4590/timeline?per_page=100",
+      "retrieved_utc": "2026-11-23T11:47:47.583Z",
+      "receipt": "receipts/timeline.json",
+      "lineage": "MS-REQUEST-4590",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-head_status",
+      "url": "https://api.github.com/repos/musescore/MuseScore/commits/3cfc174c665b01e57ef374fbb990c8f36910019a/status",
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/head_status.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-merge_status",
+      "url": "https://api.github.com/repos/musescore/MuseScore/commits/16851045c9e50eafb016c5cf4f2733f974e841bf/status",
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/merge_status.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-head_check_runs",
+      "url": "https://api.github.com/repos/musescore/MuseScore/commits/3cfc174c665b01e57ef374fbb990c8f36910019a/check-runs?per_page=100",
+      "retrieved_utc": "2026-11-23T11:48:53.719Z",
+      "receipt": "receipts/head_check_runs.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-head_actions",
+      "url": "https://api.github.com/repos/musescore/MuseScore/actions/runs?head_sha=3cfc174c665b01e57ef374fbb990c8f36910019a&per_page=100",
+      "retrieved_utc": "2026-11-23T11:48:53.720Z",
+      "receipt": "receipts/head_actions.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-head_git_commit",
+      "url": "https://api.github.com/repos/musescore/MuseScore/git/commits/3cfc174c665b01e57ef374fbb990c8f36910019a",
+      "retrieved_utc": "2026-11-23T11:51:30.196Z",
+      "receipt": "receipts/head_git_commit.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "id": "MS-POST-merge_git_commit",
+      "url": "https://api.github.com/repos/musescore/MuseScore/git/commits/16851045c9e50eafb016c5cf4f2733f974e841bf",
+      "retrieved_utc": "2026-11-23T11:51:30.196Z",
+      "receipt": "receipts/merge_git_commit.json",
+      "lineage": "MS-CODEBASE",
+      "network_requests": 1
+    },
+    {
+      "path": ".travis.yml",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/.travis.yml",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "06923aab17e57e0e896419cb5e68e6e9118499fb",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "ceef2833f37d95caf1a752f21397f9ac165411fa5027b9b94a839041c4faed1c",
+      "bytes": 4954,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_.travis.yml.json"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/CMakeLists.txt",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "64379630f1156c1523adbae335cf0686bfbc834d",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "5e2ba43c369d30518ca620f05bc1e8aba719fcd25e16ef003cbb7cfccee0689a",
+      "bytes": 35991,
+      "retrieved_utc": "2026-11-23T11:48:14.838Z",
+      "receipt": "receipts/src_CMakeLists.txt.json"
+    },
+    {
+      "path": "Makefile",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/Makefile",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "c741845aa4677105e3adffe9055c7d771f570f6d",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "fa56447014f4eeb1a71315f5eaa40abc5fca69299656c38e95c22d7f5495da5d",
+      "bytes": 8818,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_Makefile.json"
+    },
+    {
+      "path": "README.md",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/README.md",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "d6d35dcc848cc5f8bebded569b6745e378ce2839",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "39732f5e158b216d7c04a832b8a274ee2a36e4327f32c2dda2c95030ba55624c",
+      "bytes": 5227,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_README.md.json"
+    },
+    {
+      "path": "build/FindQt5.cmake",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/FindQt5.cmake",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "ed49369c61ec5e7ce67e9204508a5344c2735369",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "c2f2b05a160067f211441c354610027e57b622febd2e62e29ba02f72e0153a0b",
+      "bytes": 1416,
+      "retrieved_utc": "2026-11-23T11:50:10.810Z",
+      "receipt": "receipts/src_build__FindQt5.cmake.json"
+    },
+    {
+      "path": "build/run_tests.sh",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/run_tests.sh",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "1ee13df838044498052ce223fe28c89b29fb72fb",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "0c423f5cd59c306ad0345fd8661b61d7f65a8dee07fb4c53860ce1453c560ad2",
+      "bytes": 1226,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_build__run_tests.sh.json"
+    },
+    {
+      "path": "build/travis/job1_Tests/before_script.sh",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/before_script.sh",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "6da2f3239a9635a78dd2c838448493c870a0aa57",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "dbe9e2a0e758165ff280a932cc2ceb2c8f8873d4be63a43b8c5c899d4c2a1759",
+      "bytes": 90,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_build__travis__job1_Tests__before_script.sh.json"
+    },
+    {
+      "path": "build/travis/job1_Tests/environment.sh",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/environment.sh",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "53f52761618d33e3e738fafda32a9915ce89ad9b",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "58f1ee9fc6e7735c8833339c31630a3d53d9d23ad920a4868a5ea2f7f64a2721",
+      "bytes": 1696,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_build__travis__job1_Tests__environment.sh.json"
+    },
+    {
+      "path": "build/travis/job1_Tests/install.sh",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/install.sh",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "b51801c5a934a0ae521246bb0741b62ce80cd07c",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "1a6218a8b44737eb269d3a9b8cc114243a58d2db01986c9d401c7553de99f163",
+      "bytes": 227,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_build__travis__job1_Tests__install.sh.json"
+    },
+    {
+      "path": "build/travis/job1_Tests/run_tests.sh",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/run_tests.sh",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "9e6ed89dadfe1d8cbc3557a8acda3802c6232234",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "eda6dbdf35ef0e2b1f86dfc17f6aaa048d487b320cd3fa48f65dd138199583fc",
+      "bytes": 1871,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_build__travis__job1_Tests__run_tests.sh.json"
+    },
+    {
+      "path": "libmscore/cmd.cpp",
+      "kind": "original_implementation_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/cmd.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "10e90236e8f87a5c48b2afecef1571efcc0cf83f",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "10bf5632ba9badb963c3621cf896ce014ff10e8f518fd90016bd6ceb103b6678",
+      "bytes": 155440,
+      "retrieved_utc": "2026-11-23T11:51:30.192Z",
+      "receipt": "receipts/src_libmscore__cmd.cpp.json"
+    },
+    {
+      "path": "libmscore/score.cpp",
+      "kind": "original_implementation_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/score.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "bda8392e020ef63491a3eb097855d3f089c98aa0",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "6534c9d22c885ab4a5ff824308ab9f61bfa2cdd6236f99628d392c667a54c0a4",
+      "bytes": 158050,
+      "retrieved_utc": "2026-11-23T11:51:30.194Z",
+      "receipt": "receipts/src_libmscore__score.cpp.json"
+    },
+    {
+      "path": "libmscore/undo.h",
+      "kind": "original_implementation_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/undo.h",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "694db58937e0d494134379499ec8305c9c26b070",
+      "api_listed_blob_sha": null,
+      "blob_matches_api": null,
+      "sha256": "19cd3bdeb59381780720321b29a4a2cd1bc1a8fe9d6f1ed44f9b35c494a78b46",
+      "bytes": 35790,
+      "retrieved_utc": "2026-11-23T11:48:53.719Z",
+      "receipt": "receipts/src_libmscore__undo.h.json"
+    },
+    {
+      "path": "mtest/CMakeLists.txt",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/CMakeLists.txt",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "99a4f9d3f80760c55549d99e5bc5872da7250773",
+      "api_listed_blob_sha": "99a4f9d3f80760c55549d99e5bc5872da7250773",
+      "blob_matches_api": true,
+      "sha256": "8aaa2afdeab5c453ca46ff6bead01b316c896c39d7693498e2d30f4ec2b4af75",
+      "bytes": 9507,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_mtest__CMakeLists.txt.json"
+    },
+    {
+      "path": "mtest/README.md",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/README.md",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "3f424158a48c13d3ba57879a2f55c5fdccce0c16",
+      "api_listed_blob_sha": "3f424158a48c13d3ba57879a2f55c5fdccce0c16",
+      "blob_matches_api": true,
+      "sha256": "d921420823c0f1c2cf414267082ae985565fddf9f47da7796bc0635cd436d5ce",
+      "bytes": 3025,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_mtest__README.md.json"
+    },
+    {
+      "path": "mtest/cmake.inc",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/cmake.inc",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "f8e72bcb59c87b1c5b62c17d66d35892c4fce9c6",
+      "api_listed_blob_sha": "f8e72bcb59c87b1c5b62c17d66d35892c4fce9c6",
+      "blob_matches_api": true,
+      "sha256": "1c817bc5a1de1a005f4e696edfc93d53cc4cecc3a36703bdabb1d0f59d38c8dd",
+      "bytes": 2101,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_mtest__cmake.inc.json"
+    },
+    {
+      "path": "mtest/libmscore/element/tst_element.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/element/tst_element.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "fadbea8ad828d7abde9a2cbcb817dfaed472930d",
+      "api_listed_blob_sha": "fadbea8ad828d7abde9a2cbcb817dfaed472930d",
+      "blob_matches_api": true,
+      "sha256": "e581ecf8e9ba794bea1dbc62e90563245233bd23912fe6d35361a7711d13229c",
+      "bytes": 3342,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_mtest__libmscore__element__tst_element.cpp.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/tst_exchangevoices.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/tst_exchangevoices.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "3178531416db38714ac183e79c7e775e41d8ac94",
+      "api_listed_blob_sha": "3178531416db38714ac183e79c7e775e41d8ac94",
+      "blob_matches_api": true,
+      "sha256": "8f998db3335c5b7a05a428be58cd6ace85ed5e4bd7b7e36b8cfc5e56e3338657",
+      "bytes": 3965,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__tst_exchangevoices.cpp.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "62e174dea4f92b1bae1743facb53e8a277f2dc9c",
+      "api_listed_blob_sha": "62e174dea4f92b1bae1743facb53e8a277f2dc9c",
+      "blob_matches_api": true,
+      "sha256": "93bf12455ad5137afa556230a07ffc0b2f37def7af961a3cce93fbd80e0027e7",
+      "bytes": 31044,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice01-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice01-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "17605b8c2fe0c7c40d90dc39dd26bcb2ac585d3e",
+      "api_listed_blob_sha": "17605b8c2fe0c7c40d90dc39dd26bcb2ac585d3e",
+      "blob_matches_api": true,
+      "sha256": "58550eb49bba6af4d346ba09521f879f9d53e9d61c9ac5a2d654803a09722075",
+      "bytes": 32605,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice01-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/exchangevoices/undoChangeVoice02-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/exchangevoices/undoChangeVoice02-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "e1c44fabcbb20d9e2e97368069e113dea1c2730e",
+      "api_listed_blob_sha": "e1c44fabcbb20d9e2e97368069e113dea1c2730e",
+      "blob_matches_api": true,
+      "sha256": "4fd04e29eb8fc0466197d68d0c6f2e881cd8577e0e8e02b479965737ea07faa8",
+      "bytes": 31518,
+      "retrieved_utc": "2026-11-23T11:50:10.809Z",
+      "receipt": "receipts/src_mtest__libmscore__exchangevoices__undoChangeVoice02-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/links/CMakeLists.txt",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/links/CMakeLists.txt",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "ce760c0bafa35934d5b92eaa0feecf87958d524e",
+      "api_listed_blob_sha": "ce760c0bafa35934d5b92eaa0feecf87958d524e",
+      "blob_matches_api": true,
+      "sha256": "4675087e3c88b41a782c33c39c07f852fc5aff32f9e8c79c55ac082621767f35",
+      "bytes": 542,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_mtest__libmscore__links__CMakeLists.txt.json"
+    },
+    {
+      "path": "mtest/libmscore/links/tst_links.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/links/tst_links.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "7fdf70acb4939769227b948c7c8a8e15018042fc",
+      "api_listed_blob_sha": "7fdf70acb4939769227b948c7c8a8e15018042fc",
+      "blob_matches_api": true,
+      "sha256": "07ccb62cd77579ade3b45b2823a762324e17075a6c4aa9ccc0d435e1487f3bba",
+      "bytes": 14454,
+      "retrieved_utc": "2026-11-23T11:48:53.717Z",
+      "receipt": "receipts/src_mtest__libmscore__links__tst_links.cpp.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/CMakeLists.txt",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/CMakeLists.txt",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "d5a3b5b99b6e6b485579102712d2ba386b61b456",
+      "api_listed_blob_sha": "d5a3b5b99b6e6b485579102712d2ba386b61b456",
+      "blob_matches_api": true,
+      "sha256": "82d7f7b3327b5530502f61ac4352adaefcb1615a65c4a6f43226621ad74c27c7",
+      "bytes": 543,
+      "retrieved_utc": "2026-11-23T11:48:53.717Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__CMakeLists.txt.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/README.md",
+      "kind": "original_test_build_documentation",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/README.md",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "5b31a8efa7e2968da83519684f50e23638832992",
+      "api_listed_blob_sha": "5b31a8efa7e2968da83519684f50e23638832992",
+      "blob_matches_api": true,
+      "sha256": "b62a6f51852fb255b5900a6b6d9dba591956bec269b3dde04162771fe6425343",
+      "bytes": 1962,
+      "retrieved_utc": "2026-11-23T11:48:53.717Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__README.md.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-breath-add.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-breath-add.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "3e586c06f94482a87b1a24a2493f2ff6291bf3c5",
+      "api_listed_blob_sha": "3e586c06f94482a87b1a24a2493f2ff6291bf3c5",
+      "blob_matches_api": true,
+      "sha256": "14f5f291392fcd0da21a5694d2e720229b9a0c8377931e13284a39e0aeca2bfd",
+      "bytes": 44200,
+      "retrieved_utc": "2026-11-23T11:50:10.806Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-breath-add.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-breath-uadd.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-breath-uadd.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "api_listed_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "blob_matches_api": true,
+      "sha256": "181480e6e1db06b3cf8b2d32f4cee0ec5f24141da39c94e020c14d6af4695c37",
+      "bytes": 43947,
+      "retrieved_utc": "2026-11-23T11:50:10.807Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-breath-uadd.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-empty-parts.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-empty-parts.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "api_listed_blob_sha": "14b17dba2e20c298e00c4d9c18a8a00a1a12c5a6",
+      "blob_matches_api": true,
+      "sha256": "181480e6e1db06b3cf8b2d32f4cee0ec5f24141da39c94e020c14d6af4695c37",
+      "bytes": 43947,
+      "retrieved_utc": "2026-11-23T11:50:10.805Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-empty-parts.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/part-empty.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/part-empty.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "fe6e409d831a741757628f8af5cc88547de4cc9e",
+      "api_listed_blob_sha": "fe6e409d831a741757628f8af5cc88547de4cc9e",
+      "blob_matches_api": true,
+      "sha256": "2e1517003fd860b97e9e22e13a8a5e5544dbdba0a60f5fa2477f83819bed9751",
+      "bytes": 17271,
+      "retrieved_utc": "2026-11-23T11:50:10.804Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__part-empty.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/tst_parts.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/tst_parts.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "9cf3c38e07d987b1bb269087b88f00f5922cd1e5",
+      "api_listed_blob_sha": "9cf3c38e07d987b1bb269087b88f00f5922cd1e5",
+      "blob_matches_api": true,
+      "sha256": "a5675ff53c518e972e99c73747427f778fbb7a6b3748e026cbe21143c16dba85",
+      "bytes": 31569,
+      "retrieved_utc": "2026-11-23T11:48:53.717Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__tst_parts.cpp.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/voices-ref.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/voices-ref.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "d26fc444e3f995e5ff549e22d8da85b9354533f2",
+      "api_listed_blob_sha": "d26fc444e3f995e5ff549e22d8da85b9354533f2",
+      "blob_matches_api": true,
+      "sha256": "71cabf6b0d580970998b11f48903973de1d4cc67fef32fb8a99fdb6bc4a1b894",
+      "bytes": 62845,
+      "retrieved_utc": "2026-11-23T11:50:10.804Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__voices-ref.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/parts/voices.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/parts/voices.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "485cfb60f8db0c2146f3f2052adcf3d81a2feb92",
+      "api_listed_blob_sha": "485cfb60f8db0c2146f3f2052adcf3d81a2feb92",
+      "blob_matches_api": true,
+      "sha256": "4b4a94a889ad12b800d30910720322007b726933501fb551212d07e6098eb05d",
+      "bytes": 21557,
+      "retrieved_utc": "2026-11-23T11:50:10.803Z",
+      "receipt": "receipts/src_mtest__libmscore__parts__voices.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/readwriteundoreset/barlines.mscx",
+      "kind": "original_test_fixture_or_reference",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/readwriteundoreset/barlines.mscx",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "54331600174b6c0f23c6271544dd2cac3b1d4459",
+      "api_listed_blob_sha": "54331600174b6c0f23c6271544dd2cac3b1d4459",
+      "blob_matches_api": true,
+      "sha256": "9c99f8fc621fdb89c7179a2b980cd14be7e1a665a65f26607000020cf680febd",
+      "bytes": 6338,
+      "retrieved_utc": "2026-11-23T11:50:10.808Z",
+      "receipt": "receipts/src_mtest__libmscore__readwriteundoreset__barlines.mscx.json"
+    },
+    {
+      "path": "mtest/libmscore/readwriteundoreset/tst_readwriteundoreset.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/libmscore/readwriteundoreset/tst_readwriteundoreset.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "a841f11e5d15903ae0ba5c52389eb20553903f01",
+      "api_listed_blob_sha": "a841f11e5d15903ae0ba5c52389eb20553903f01",
+      "blob_matches_api": true,
+      "sha256": "1d923211b2055678cade4000a5009831221d0b2a8f8094fbd114cf06acc43c00",
+      "bytes": 2432,
+      "retrieved_utc": "2026-11-23T11:48:53.718Z",
+      "receipt": "receipts/src_mtest__libmscore__readwriteundoreset__tst_readwriteundoreset.cpp.json"
+    },
+    {
+      "path": "mtest/testutils.cpp",
+      "kind": "original_test_source",
+      "work_lineage": "MS-CODEBASE",
+      "independent_work_count": 0,
+      "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/mtest/testutils.cpp",
+      "commit_sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+      "git_blob_sha": "741e9cd665213cbd8de30fe2151b102956eb41a5",
+      "api_listed_blob_sha": "741e9cd665213cbd8de30fe2151b102956eb41a5",
+      "blob_matches_api": true,
+      "sha256": "067af95dc15d24cce06de1f1ec46290acbefa1e806b9f326ee2d29778f8dc9dc",
+      "bytes": 11284,
+      "retrieved_utc": "2026-11-23T11:48:14.839Z",
+      "receipt": "receipts/src_mtest__testutils.cpp.json"
+    }
+  ],
+  "implementation_excerpts": "baseline-code-excerpts.json",
+  "build_test_handoff": "RUNBOOK.md",
+  "runtime": {
+    "retrieved_utc": "2026-11-23T11:51:28.831876+00:00",
+    "type": "environment availability probe, not a MuseScore test run",
+    "tool_paths": {
+      "cmake": null,
+      "ctest": null,
+      "make": "/usr/bin/make",
+      "g++": "/usr/bin/g++",
+      "qmake": "/usr/bin/qmake",
+      "qmake-qt5": null,
+      "pkg-config": "/usr/bin/pkg-config",
+      "diff": "/usr/bin/diff",
+      "xvfb-run": null,
+      "musescore": null,
+      "mscore": null
+    },
+    "commands": [
+      {
+        "argv": [
+          "pkg-config",
+          "--modversion",
+          "Qt5Core",
+          "Qt5Widgets",
+          "Qt5Test"
+        ],
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Package Qt5Core was not found in the pkg-config search path.\nPerhaps you should add the directory containing `Qt5Core.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'Qt5Core', required by 'virtual:world', not found\nPackage 'Qt5Widgets', required by 'virtual:world', not found\nPackage 'Qt5Test', required by 'virtual:world', not found\n"
+      },
+      {
+        "argv": [
+          "g++",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout": "g++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "qmake",
+          "--version"
+        ],
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "qmake: could not exec '/usr/lib/qt5/bin/qmake': No such file or directory\n",
+        "retrieved_utc": "2026-11-23T11:52:43.927385+00:00"
+      }
+    ],
+    "install_or_build_performed": false,
+    "gui_launched": false
+  },
+  "retrieval_costs": {
+    "external_request_attempts": 58,
+    "github_connector_gets": 54,
+    "public_http_gets": 4,
+    "failed_external_requests": [
+      {
+        "id": "original_issue",
+        "http_status": 403,
+        "state": "unknown source body/author/attachments/affected release"
+      },
+      {
+        "id": "travis_head_builds",
+        "http_status": 404,
+        "state": "historical test receipt unavailable"
+      }
+    ],
+    "paid_resources": 0,
+    "account_changes": 0,
+    "external_messages": 0,
+    "package_installs": 0,
+    "source_checkout_builds": 0,
+    "application_tests_executed": 0
+  },
+  "write_scope": "docs/workstreams/research/AF-RES-077/postseal/musescore/",
+  "git_commits_created": 0
+}

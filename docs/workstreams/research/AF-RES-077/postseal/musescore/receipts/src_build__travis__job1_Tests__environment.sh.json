@@ -1,0 +1,29 @@
+{
+  "id": "src_build__travis__job1_Tests__environment.sh",
+  "request": {
+    "url": "https://raw.githubusercontent.com/musescore/MuseScore/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/environment.sh"
+  },
+  "retrieved_utc": "2026-11-23T11:50:10.809Z",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "#!/bin/bash (This file should be sourced rather than executed.)\n# Sourcing allows environment variables to be used outside the script, but other\n# changes also persist. (If you change directory then remember to change back!)\n\nif [ \"$(basename \"$0\")\" == \"environment.sh\" ]; then\n  echo \"$0 was executed but it should have been sourced.\"\n  exit 1\nfi\n\ninitial_dir=\"${PWD}\"\nset -e # exit on error\nset -x # echo commands\n\n# Set compilers\nexport CC=/usr/bin/gcc-4.9\nexport CXX=/usr/bin/g++-4.9\n\n#install cmake\nCMAKE_URL=\"https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.tar.gz\"\nmkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake\nexport PATH=${PWD}/cmake/bin:${PATH}\n\n# Get Qt\nmkdir qt5 && travis_retry wget -q -O qt5.zip http://utils.musescore.org.s3.amazonaws.com/qt593.zip\nunzip -qq qt5.zip -d qt5\nexport PATH=\"${PWD}/qt5/bin:$PATH\"\nexport QT_PLUGIN_PATH=\"${PWD}/qt5/plugins\"\nexport QML2_IMPORT_PATH=\"${PWD}/qt5/qml\"\n\n# Setup install destination\nmkdir \"$HOME/software\"\nexport PATH=\"$PATH:$HOME/bin:$HOME/software/bin\"\n\n# Prepare for post-install upload of artifacts to S3\nexport TRAVIS_SHORT_COMMIT=\"$(echo $TRAVIS_COMMIT | cut -c 1-8)\"\nexport ARTIFACTS_TARGET_PATHS=\"$TRAVIS_SHORT_COMMIT\"\nexport ARTIFACTS_PERMISSIONS=public-read\nexport TRAVIS_BUILD_DIR=vtest/html\n#compatibility between ruby travis artifact and GO one\nexport ARTIFACTS_KEY=$ARTIFACTS_AWS_ACCESS_KEY_ID\nexport ARTIFACTS_SECRET=$ARTIFACTS_AWS_SECRET_ACCESS_KEY\nartifacts -v || curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash\n\n# IMPORTANT: Must now return shell to it's initial state:\nset +x\nset +e\ncd \"${initial_dir}\"\n",
+      "title": "environment.sh",
+      "modified_date": "2018-09-04T12:35:19Z",
+      "url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/environment.sh",
+      "display_url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/environment.sh",
+      "display_title": "environment.sh",
+      "structuredContent": {
+        "title": "environment.sh",
+        "content": "#!/bin/bash (This file should be sourced rather than executed.)\n# Sourcing allows environment variables to be used outside the script, but other\n# changes also persist. (If you change directory then remember to change back!)\n\nif [ \"$(basename \"$0\")\" == \"environment.sh\" ]; then\n  echo \"$0 was executed but it should have been sourced.\"\n  exit 1\nfi\n\ninitial_dir=\"${PWD}\"\nset -e # exit on error\nset -x # echo commands\n\n# Set compilers\nexport CC=/usr/bin/gcc-4.9\nexport CXX=/usr/bin/g++-4.9\n\n#install cmake\nCMAKE_URL=\"https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.tar.gz\"\nmkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake\nexport PATH=${PWD}/cmake/bin:${PATH}\n\n# Get Qt\nmkdir qt5 && travis_retry wget -q -O qt5.zip http://utils.musescore.org.s3.amazonaws.com/qt593.zip\nunzip -qq qt5.zip -d qt5\nexport PATH=\"${PWD}/qt5/bin:$PATH\"\nexport QT_PLUGIN_PATH=\"${PWD}/qt5/plugins\"\nexport QML2_IMPORT_PATH=\"${PWD}/qt5/qml\"\n\n# Setup install destination\nmkdir \"$HOME/software\"\nexport PATH=\"$PATH:$HOME/bin:$HOME/software/bin\"\n\n# Prepare for post-install upload of artifacts to S3\nexport TRAVIS_SHORT_COMMIT=\"$(echo $TRAVIS_COMMIT | cut -c 1-8)\"\nexport ARTIFACTS_TARGET_PATHS=\"$TRAVIS_SHORT_COMMIT\"\nexport ARTIFACTS_PERMISSIONS=public-read\nexport TRAVIS_BUILD_DIR=vtest/html\n#compatibility between ruby travis artifact and GO one\nexport ARTIFACTS_KEY=$ARTIFACTS_AWS_ACCESS_KEY_ID\nexport ARTIFACTS_SECRET=$ARTIFACTS_AWS_SECRET_ACCESS_KEY\nartifacts -v || curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash\n\n# IMPORTANT: Must now return shell to it's initial state:\nset +x\nset +e\ncd \"${initial_dir}\"\n",
+        "display_url": "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/build/travis/job1_Tests/environment.sh"
+      }
+    },
+    "isError": false
+  }
+}

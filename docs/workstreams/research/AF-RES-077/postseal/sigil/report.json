@@ -1,0 +1,689 @@
+{
+  "id": "AF-RES-077-SIGIL-POSTSEAL",
+  "status": "complete_with_case_applicability_blocker_and_execution_unknowns",
+  "seal_sha": "7bc2d1f84c04b47711d72e7c110b8f927d97f4ad",
+  "started_utc": "2026-11-23T11:47:56.029Z",
+  "recorded_utc": "2026-11-23T11:54:13.421Z",
+  "access_boundary": {
+    "read": [
+      "recruitment/sigil/background.md",
+      "recruitment/sigil/report.md",
+      "packets/SG-common.json",
+      "complete current issue #450 comments",
+      "official pinned source, linked fixture, historical repair source and CI evidence"
+    ],
+    "ab_proposal_choices_read": false,
+    "writes_only": "docs/workstreams/research/AF-RES-077/postseal/sigil/",
+    "frozen_inputs_changed": false,
+    "packet_matches_sealed_bytes": true,
+    "packet_hash_receipt": "integrity.json",
+    "donor_source_read": false
+  },
+  "request": {
+    "url": "https://github.com/Sigil-Ebook/Sigil/issues/450",
+    "author": "gennaios",
+    "created_utc": "2019-08-10T23:45:39Z",
+    "strict_author_version_confirmed_slot": "vacant",
+    "numeric_reporter_version_established": false,
+    "current_body_is_initial_revision": null,
+    "initial_body_revision_status": "unknown; actual edit history not recovered",
+    "fixture_metadata_not_reporter_version": true,
+    "initial_revision_established": false
+  },
+  "snapshot": {
+    "tag": "0.9.17",
+    "sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+    "operational_pin_only": true
+  },
+  "main_findings": [
+    {
+      "id": "SG-F1",
+      "claim": "The later historical failure is the reference and target moving together into a split-off chapter while an own-filename href remains pointed at the original chapter. Splitting between them was reported to work.",
+      "status": "historical maintainer reports supported by source branch and fixture layout",
+      "evidence": [
+        "issuecomment-520240119",
+        "issuecomment-520258201",
+        "issuecomment-520259623",
+        "fixture-inspection-receipt.json",
+        "AnchorUpdates.cpp::UpdateAnchorsInOneFile"
+      ]
+    },
+    {
+      "id": "SG-F2",
+      "claim": "Frozen SG-E's Text/parts/ch1_tail.xhtml move is not expressible as a supported native split/rename operation at the pin. HTML resources use fixed OEBPS/Text plus basename; native rename rejects slash/backslash; importing an externally rearranged EPUB flattens HTML back into the fixed text folder.",
+      "status": "verified static source applicability blocker",
+      "evidence": [
+        "FolderKeeper.cpp::AddContentFileToFolder",
+        "OPFModel.cpp::FORBIDDEN_FILENAME_CHARS",
+        "OPFModel.cpp::FilenameIsValid",
+        "ImportEPUB.cpp::LoadOneFile"
+      ],
+      "unchanged_frozen_case": true
+    },
+    {
+      "id": "SG-F3",
+      "claim": "Frozen <!--SPLIT--> is not a Sigil automatic split-marker token; the source recognizes hr elements with sigil_split_marker or sigilChapterBreak classes. Treating the comment as a manual cursor location requires an explicit harness interpretation.",
+      "status": "verified static source; execution interpretation unknown",
+      "evidence": [
+        "XhtmlDoc.cpp::BREAK_TAG_SEARCH",
+        "MainWindow.cpp::SplitOnSGFSectionMarkers"
+      ]
+    },
+    {
+      "id": "SG-F4",
+      "claim": "The present linked reduced EPUB has ../Section0001.xhtml#here inside OEBPS/Text/Section0001.xhtml, resolving to an absent OEBPS/Section0001.xhtml. Exact bytes are retained and were not repaired.",
+      "status": "executed read-only ZIP/XML/path inspection, not Sigil execution",
+      "evidence": [
+        "fixture-inspection-receipt.json"
+      ],
+      "limit": "No 2019 checksum proves that today's attachment bytes are historically identical."
+    },
+    {
+      "id": "SG-F5",
+      "claim": "No independently retrieved historical anchor-test execution receipt or current Sigil execution result is available. CI configurations contain build/package commands; complete issue comments contain tester assertions and pasted debug output.",
+      "status": "bounded evidence availability result",
+      "evidence": [
+        "postseal-receipts.json",
+        "ci-fetch-receipts.json",
+        "ci-history-fetch-receipt.json",
+        "test-source-inventory.json"
+      ]
+    }
+  ],
+  "frozen_case_assessments": [
+    {
+      "id": "SG-N",
+      "native_applicability": "conditional: action must specify cursor split vs actual marker; snippets need EPUB/XHTML transport; requested output name differs from generated _0001 name but ordinary basename rename is supported",
+      "original_source_prediction": "If a real split is performed between the unique reference and fn target, fn maps to the tail and UpdateAnchorsInOneFile rewrites the reference toward that tail. This exercises the pre-existing different-file branch, not the repaired same-file branch.",
+      "save_reopen": "Export writes all resources and import normalizes fixed-folder links; no end-to-end result observed.",
+      "status": "source prediction only; not executed"
+    },
+    {
+      "id": "SG-E",
+      "native_applicability": "blocked as frozen by nested-folder move Text/parts/ch1_tail.xhtml",
+      "original_source_prediction": "Before that unsupported move, a valid imported split between reference and target uses the existing different-file branch; ch2 is outside the split-derived ID map; canonical external toc links are gated by original filename. Literal in-memory toc hrefs without the import normalization step may not match the ../Text/ch1.xhtml external-update predicate.",
+      "historical_bug_alignment": "Does not place both the own-file reference and its target after the split, unlike the historical reduced case.",
+      "save_reopen": "External ZIP editing is a different operation; reopening invokes fixed-folder import and cannot be silently substituted to rescue this case.",
+      "status": "preserved applicability defect; no pass/fail execution score"
+    },
+    {
+      "id": "SG-X",
+      "native_applicability": "conditional on explicit split harness; same-source duplicate IDs are outside the source's stated uniqueness assumption",
+      "original_source_prediction": "GetIDLocations assigns one filename per ID and overwrites earlier entries. CreateNewSections supplies the original first and split-off sections later, so duplicate fn entries can collapse to the later section. The undefined-fragment warning checks presence, not duplicate uniqueness; no ambiguity/refusal branch is present in the inspected updater.",
+      "expected_observation_limit": "Potential silent choice of SECOND is a static branch prediction, not an executed result. No trusted prior target is established; unchanged bytes or digests alone do not provide that missing intent.",
+      "status": "negative case exposes violated source assumption; no runtime outcome"
+    }
+  ],
+  "fixture": {
+    "author": "kevinhendricks",
+    "comment_url": "https://github.com/Sigil-Ebook/Sigil/issues/450#issuecomment-520256671",
+    "attachment_url": "https://github.com/Sigil-Ebook/Sigil/files/3490396/test_split2.epub.zip",
+    "archive_bytes": 1884,
+    "archive_sha256": "32555ab1fea6b756ed47546397334939dc1660a9edfba00358fcc827fadb0ea6",
+    "epub_bytes": 2060,
+    "epub_sha256": "244dc0107a2cb1ad17ef2bf80c858e90e3b7396a63bb78869ae024206d6aa7df",
+    "source_member": "OEBPS/Text/Section0001.xhtml",
+    "source_sha256": "f4dad5d427f054bd5573dad7ceb6b93b7fd43d6cd0be66d179453c9e4bb91695",
+    "marker_before_both_reference_and_target": true,
+    "metadata_sigil_version": "0.9.17",
+    "exact_producing_commit_unknown": true,
+    "literal_href": "../Section0001.xhtml#here",
+    "target_path_exists_in_archive": false,
+    "automatic_import_repair_inference": "The import source map has OEBPS/Text/Section0001.xhtml; Gumbo computes OEBPS/Section0001.xhtml for this href and leaves an unmatched attribute unchanged. The undefined-fragment gate uses only url.fileName() and ID membership, so it does not establish full-path validity.",
+    "expected_after_repair_from_source_not_observed": {
+      "file": "Section0001_0001.xhtml",
+      "href": "#here",
+      "resolved_text": "target of link"
+    },
+    "original_commercial_sample": "Removed Dropbox link; no attempt to recover deleted/private content",
+    "golden_output_epub_found": false
+  },
+  "historical_outcome": {
+    "comments_complete_count": 49,
+    "test_source_example": "issuecomment-520240119 contains a single-marker case splitting BETWEEN reference and target; maintainers and reporter initially could not reproduce with it.",
+    "debug_artifact": "issuecomment-520259623 contains pasted output showing file_id == resource_filename == Section0001_0001.xhtml; not a signed CI or independent execution receipt.",
+    "tester_assertion": "issuecomment-520649931: reporter examined roughly 150 EPUBs, found ten with these links, and reported no split issues in test build; separate NCX merge concerns remained.",
+    "closure": "issuecomment-520947721 at 2019-08-13T18:15:52Z says fixed in master.",
+    "cautions": [
+      "Statements about own-filename hrefs being non-spec are historical discussion claims, not adopted requirements or a normative finding.",
+      "No reported exact numeric original installed build is established by later comments.",
+      "Tester statements are not executed receipts from this investigation."
+    ]
+  },
+  "repair": {
+    "sha": "ae60e3e63a2f9343b40d316f179b9dfbcb6d838b",
+    "parent": "ed8fbc0823910e5d0bd49c0b41b8a5ffcf69ffe4",
+    "date_utc": "2019-08-11T21:12:00Z",
+    "author": "kevinhendricks",
+    "url": "https://github.com/Sigil-Ebook/Sigil/commit/ae60e3e63a2f9343b40d316f179b9dfbcb6d838b",
+    "message": "debug and maybe fix incorrect local links during split",
+    "discovery": "Bounded AnchorUpdates.cpp commit history 2019-08-10 through 2019-08-15; not a direct cross-linked PR in issue timeline.",
+    "changed_files": [
+      "src/SourceUpdates/AnchorUpdates.cpp"
+    ],
+    "patch_source_verified": true,
+    "behavior": "Adds base_href and an else-if file_id == resource_filename && !base_href.contains(file_id), replacing such hrefs with #fragment; also adds debug output.",
+    "added_automated_tests": false,
+    "scope_limits": [
+      "Uses substring filename check, not a general document-identity/path resolver.",
+      "Does not implement nested chapter folder moves or explicit duplicate-ID ambiguity handling.",
+      "No executed patch validation performed here."
+    ]
+  },
+  "save_reopen": {
+    "source_sequence": [
+      "Anchor setters update resource document/cache; setters do not themselves persist final EPUB.",
+      "ExportEPUB::WriteBook updates version/modification metadata then SaveAllResourcesToDisk, copies book working files into a temp publication and writes a temp EPUB.",
+      "Final target is opened with WriteOnly|Truncate and receives copied temp-archive bytes; no atomic rename is shown.",
+      "ImportEPUB loads content via FolderKeeper's fixed folder placement, builds old-book-path -> ../new-category/basename map, and applies source updates."
+    ],
+    "implication": "A save/reopen observation requires actual execution with a defined import/edit path; successful link-update source inspection alone is insufficient.",
+    "execution_performed": false,
+    "atomic_transaction_claim": false
+  },
+  "tests_and_ci": {
+    "source_scan": "Pinned untruncated tree plus principal CMake and CI files; no first-party automated anchor tests or add_test/enable_testing/ctest registration found in that bounded scope.",
+    "unrelated_test": "docs/testplugin_v014.zip and documented GUI plugin-framework smoke checks are not anchor regression tests.",
+    "ci_sources": [
+      ".travis.yml builds and packages macOS",
+      "appveyor.yml configures/builds Ninja and makes installer; no anchor test script"
+    ],
+    "github_base_status": {
+      "state": "pending",
+      "total_count": 0,
+      "statuses": []
+    },
+    "github_fix_status": {
+      "state": "pending",
+      "total_count": 0,
+      "statuses": []
+    },
+    "github_check_run_counts": {
+      "base": 0,
+      "fix": 0
+    },
+    "appveyor": {
+      "linked_build_id": 26622421,
+      "web_open": "tool inaccessible",
+      "public_html": "HTTP 200 application shell; no build id/commit/results",
+      "unsupported_guess": "GET /api/builds/26622421 returned 405, not historical evidence",
+      "documented_history": "GET /api/projects/Sigil-Ebook/sigil/history?recordsNumber=5&startBuildId=26622422 returned 404",
+      "executed_receipt_obtained": false
+    },
+    "limit": "Missing current historical responses do not prove tests/builds never ran."
+  },
+  "build_commands": {
+    "status": "documented only, not run; no dependencies installed",
+    "prerequisites_from_pinned_linux_doc": [
+      "C++11-capable toolchain; gcc 4.9.x+ recommended",
+      "CMake 3.0+",
+      "Qt 5.9.4+ with QtWebEngine and listed modules",
+      "Python 3.4+ development/runtime components"
+    ],
+    "version_pin_step_added_by_investigator": [
+      "git clone https://github.com/Sigil-Ebook/Sigil.git sigil-src",
+      "git -C sigil-src checkout --detach 30419827123d533d10ad482b1634dcec05ff0e1b",
+      "mkdir sigil-build",
+      "cd sigil-build"
+    ],
+    "exact_linux_source_commands": [
+      "cmake -G \"Unix Makefiles\" -DCMAKE_BUILD_TYPE=Release ../sigil-src",
+      "make -j4"
+    ],
+    "source_url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/docs/Building_on_Linux.md",
+    "automated_anchor_test_command": null,
+    "manual_historical_fixture_step": "Open linked test_split2.epub and invoke split at its actual hr marker; inspect destination href/content. This step is described historically, not executed here, and the fixture's invalid original relative path is retained."
+  },
+  "source_records": [
+    {
+      "id": "SG-POST-CODE-01",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/FolderKeeper.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "1910c090454ab7e26b58e8e84a73178c0b52a895",
+      "section_symbols": [
+        "AddContentFileToFolder (131-204)",
+        "CreateFolderStructure (500-520)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-02",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/FolderKeeper.h",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "cf13ca43eca9c685b3ff0999b331aaa2d7128924",
+      "section_symbols": [
+        "fixed content folders"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-03",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/Resource.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "28f7f3086c7b2bc59759a151af382976c02f79e4",
+      "section_symbols": [
+        "RenameTo (183-199)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-04",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/MainUI/BookBrowser.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "e4918364620488ad48e0ee880b55216a16f34e8c",
+      "section_symbols": [
+        "native book browser resource operations"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-05",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/.travis.yml",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "4ea5db633668796baa009fedbaf2f4f3e7ff8106",
+      "section_symbols": [
+        "script build and packaging commands"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-06",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/appveyor.yml",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "8c30608ea9aa8be0d6d267287e08e6626477bb60",
+      "section_symbols": [
+        "before_build / build_script / after_build"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-07",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/CMakeLists.txt",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "c2e7ee19334de14ee15c50dc880ac2cc1660e0ed",
+      "section_symbols": [
+        "version 0.9.17; included source directories"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-08",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/CMakeLists.txt",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "0c52be07691e8dd49b109add42111d900a795b12",
+      "section_symbols": [
+        "target registration; no matching add_test/enable_testing"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-09",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/docs/Building_on_Linux.md",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "815511ab9fd7a81c4e6d9957f6f13786d89cc967",
+      "section_symbols": [
+        "Building Sigil (109-139)",
+        "Testing plugin framework (152-161)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-10",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/docs/Building_Sigil_On_MacOSX.txt",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "3b41fd8080177f1793f80f8150dd62ba977cfaf1",
+      "section_symbols": [
+        "build commands; plugin-framework manual check"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-11",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/MainUI/MainWindow.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "2f73155dcf5399d4f3535baab5062ff3bce22097",
+      "section_symbols": [
+        "ProceedWithUndefinedUrlFragments (1180-1197)",
+        "SplitOnSGFSectionMarkers (3482-3547)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-12",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/Book.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "43f955c2b4b1dd1d919c8d1b8ecc6586a5210278",
+      "section_symbols": [
+        "CreateNewSections (553-641)",
+        "HasUndefinedURLFragments (1164-1209)",
+        "CreateOneNewSection (1242-1271)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-13",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/Importers/ImportEPUB.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "ceb7648ef342078981f256fe537eedc3c269a2ef",
+      "section_symbols": [
+        "GetBook import (145-194)",
+        "LoadFolderStructure / LoadOneFile (878-923)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-14",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/Exporters/ExportEPUB.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "1e397b63b3b2ad7738cf804cf5238450f7f4d5e3",
+      "section_symbols": [
+        "WriteBook (88-105)",
+        "SaveFolderAsEpubToLocation (120-263)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-15",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/UniversalUpdates.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "6265358b49b43344825f09e2188f1983e06878c6",
+      "section_symbols": [
+        "LoadAndUpdateOneHTMLFile (229-278)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-16",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/PerformHTMLUpdates.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "4e6cd064bbbfa8bb1ac407b68de2754cd6d8dae5",
+      "section_symbols": [
+        "operator()"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-17",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/AnchorUpdates.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "ca3b4ec688b1846814d2af92b63cfe0cb503ae5f",
+      "section_symbols": [
+        "GetIDLocations (68-96)",
+        "UpdateAnchorsInOneFile (100-141)",
+        "UpdateExternalAnchorsInOneFile (144-184)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-18",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/Misc/FilenameDelegate.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "b06b7314d3d0f986d66647df037e43d22760cd95",
+      "section_symbols": [
+        "native filename editor event filter"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-19",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/MainUI/OPFModel.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "68b172253b2ce04cd86dbd6b9f8ad81343cf8309",
+      "section_symbols": [
+        "FORBIDDEN_FILENAME_CHARS (42-44)",
+        "fixed category model (46-81)",
+        "RenameResourceList (330-369)",
+        "FilenameIsValid (590-619)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-20",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/XhtmlDoc.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "aa6ad0d859694567d3dd4783df9c4855a458fbf5",
+      "section_symbols": [
+        "BREAK_TAG_SEARCH (73)",
+        "WellFormedErrorForSource (278-291)",
+        "GetSGFSectionSplits (351-384)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    },
+    {
+      "id": "SG-POST-CODE-21",
+      "lineage": "sigil-codebase-one-lineage",
+      "author_lineage": "Sigil source authors; existing same-work material",
+      "url": "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/Misc/GumboInterface.cpp",
+      "version": "0.9.17",
+      "commit_sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+      "blob_sha": "d491093e99dfce0781451871b01d8a769f1d92a9",
+      "section_symbols": [
+        "perform_source_updates (242-255)",
+        "update_attribute_value (811-832)"
+      ],
+      "verified": "Content read and all 21 computed Git blob hashes match the pinned tree; integrity.json",
+      "recorded_utc": "2026-11-23T11:54:13.421Z",
+      "limits": [
+        "Static inspection only",
+        "No Sigil build or GUI execution performed"
+      ],
+      "cost": "Included in 30 post-seal GitHub read requests"
+    }
+  ],
+  "lineage_notes": [
+    "All Sigil code, maintainer fix, official guide, and maintainer fixture are same-work material, not independent corroborating projects.",
+    "Root's previously read 2019-06-25 guide at d101fa2b... remains same-work context; it was not reread or counted as a new lineage in this pass.",
+    "Requester/tester statements retain gennaios authorship and are not converted into maintainer requirements."
+  ],
+  "unknowns": [
+    "Original request initial body revision",
+    "Original author's exact build SHA/numeric version",
+    "Historical bytes of the presently downloaded attachment",
+    "Actual Sigil GUI/build/runtime outcomes for frozen SG-N/E/X",
+    "Historical executed anchor-test receipt or golden output EPUB",
+    "Installed dependencies and successful historical-source build in current environment",
+    "Behavior of hypothetical out-of-band filesystem intervention; not part of the frozen supported native operation"
+  ],
+  "costs": {
+    "github_read_requests": 30,
+    "web_read_calls": 2,
+    "public_shell_http_requests": 4,
+    "paid_api_calls": 0,
+    "external_mutations": 0,
+    "target_builds_or_tests_executed": 0,
+    "gui_executions": 0,
+    "local_executed_checks": [
+      "ZIP/XML/path inspection",
+      "21 source Git-blob hash verifications",
+      "sealed common-packet byte comparison"
+    ],
+    "failure_count": 3,
+    "failures": [
+      "Web tool could not open linked AppVeyor artifacts page",
+      "Unsupported AppVeyor GET endpoint returned 405",
+      "Documented AppVeyor history lookup returned 404"
+    ],
+    "elapsed_seconds_so_far": 377
+  },
+  "frozen_packet_sha256": "63ecd7772091f830f37b91761b0d9874ede03359d0094f2e1bd5af75b0d37316"
+}
