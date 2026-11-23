@@ -1,0 +1,87 @@
+[
+  {
+    "view": "baseline",
+    "component": "@react-spring/core 10.0.3",
+    "scope": "Common API only; no implementation equations, same-domain example, donor original, assertion or output. Direction is qualitative; numeric relation from parameter names alone is not treated as proof.",
+    "basis_url": [
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/data/fixtures.tsx#L168-L264",
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/routes/docs.advanced.config.mdx#L260-L279",
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/routes/docs.advanced.spring-value.mdx#L66-L72"
+    ],
+    "exposure": "Reader saw 2026 release-note titles about settling, retargeting and cancel changes before scope; no target-version formula, test, output, A example or donor B read. API pitfalls are common API exposure, explicitly permitted.",
+    "read_utc": "2026-11-23T05:10:05Z/2026-11-23T05:10:32Z",
+    "reader": "/root/react_release",
+    "case_id": "RS-N",
+    "input": {
+      "start": 0,
+      "goal": 1,
+      "initial_velocity": 0,
+      "mass": 1,
+      "tension": 100,
+      "friction": 10,
+      "clamp": false,
+      "sample_ms": [
+        16,
+        250
+      ],
+      "crossing_window_ms": [
+        0,
+        3000
+      ],
+      "frame_schedule": "two independent evaluations from same initial state; precise stepping schedule must be declared in observations",
+      "units": "advance dt is milliseconds; value units abstract; initial velocity unit not defined in inspected API table"
+    },
+    "expected_direction": "From 0 toward target 1 (increasing initially); documented springs can overshoot. Whether this numeric mass/tension/friction combination crosses within 3000 ms is 미확인 from common API alone.",
+    "boundary": "Default clamp=false; stopping proximity is documented as precision and restVelocity. Exact threshold interplay and first stopping time are 미확인.",
+    "undetermined": [
+      "exact value/velocity at 16 ms",
+      "exact value/velocity at 250 ms",
+      "crossing within 3000 ms for mass1/tension100/friction10",
+      "integration scheme and time/velocity scaling",
+      "whether a single emitted update briefly exceeds the goal"
+    ],
+    "falsifier": "With the specified start/goal/configuration and no cancellation/duration override, first moving sample decreases below 0; or official same-version API says this positive-tension animation does not target 1. Unknown crossing is not scored as a wrong numeric prediction."
+  },
+  {
+    "view": "baseline",
+    "component": "@react-spring/core 10.0.3",
+    "scope": "Common API only; no implementation equations, same-domain example, donor original, assertion or output. Direction is qualitative; numeric relation from parameter names alone is not treated as proof.",
+    "basis_url": [
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/data/fixtures.tsx#L168-L264",
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/routes/docs.advanced.config.mdx#L260-L279",
+      "https://github.com/pmndrs/react-spring/blob/b6fbb98101f2cf00a6668cffed6d1b4d0012ae3a/docs/app/routes/docs.advanced.spring-value.mdx#L66-L72"
+    ],
+    "exposure": "Reader saw 2026 release-note titles about settling, retargeting and cancel changes before scope; no target-version formula, test, output, A example or donor B read. API pitfalls are common API exposure, explicitly permitted.",
+    "read_utc": "2026-11-23T05:10:05Z/2026-11-23T05:10:32Z",
+    "reader": "/root/react_release",
+    "case_id": "RS-B",
+    "input": {
+      "start": 0,
+      "goal": 1,
+      "initial_velocity": 0,
+      "mass": 1,
+      "tension": 100,
+      "friction": 10,
+      "clamp": true,
+      "sample_ms": [
+        16,
+        250
+      ],
+      "crossing_window_ms": [
+        0,
+        3000
+      ],
+      "boundary_selection": "configData source order: mass,tension,friction,bounce,clamp,precision. clamp is first stopping/cancel/clamp option; bounce precedes it but redirects motion rather than declaring termination. Reference table precedes Pitfalls in document source."
+    },
+    "expected_direction": "Initially toward 1 as baseline; when goal crossing occurs clamp stops further oscillation. Config pitfalls state stopping at the goal value; the table phrases this as stopping once it overshoots.",
+    "boundary": "Lock clamp=true. Predict termination at the first goal-crossing condition and final goal 1, conditional on crossing; continued oscillation after that event is excluded by the documented API. The exact emitted first-crossing sample and crossing time remain 미확인.",
+    "undetermined": [
+      "whether this input reaches crossing by 3000 ms",
+      "first crossing millisecond",
+      "single-update transient overshoot before clamp termination",
+      "exact value/velocity at 16 and 250 ms",
+      "residual internal velocity on stop"
+    ],
+    "falsifier": "Same-version independent output with clamp=true continues to oscillate after first crossing, or terminal value remains beyond goal rather than settling to 1; distinguish this from a transient intermediate sample."
+  }
+]
