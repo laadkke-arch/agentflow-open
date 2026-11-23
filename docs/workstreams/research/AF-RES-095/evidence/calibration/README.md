@@ -1,0 +1,7 @@
+# 판독 교정 및 배포 확인
+
+- 공식 v1.4.553 Linux amd64 tar.gz 118,537,400바이트 SHA-256은 `22b7541b1e1be9746657a447383796ba420e6f0cbc5e7b31c8229ddebc258c90`이다. [공급자 체크섬](https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.553/quarto-1.4.553-checksums.txt)과 일치한다. [번들 경로 발췌](bundle-members.txt)와 [실행 환경](../../environment.json)을 연결했다.
+- CAL-ORIGINAL은 이 단계의 양성 대조용 원본 두 표 렌더다. 12자리의 반복 수에는 산입하지 않는다. 원 표의 벡터 중심 y는 226.080 및 279.206pt, 각각 두께 0.797pt다. 두 번째 표에서 y=324.242, 341.353, 382.375pt의 3선을 찾았고 가운데 선은 0.4982pt다. 벡터와 288 DPI 래스터가 두 표에서 일치했고 16개 셀을 읽었다. Test와 페이지 숫자 1의 구역은 모두 0/0이었다. [원 페이지 데이터](CAL-ORIGINAL/pdf-raw.json) · [실제 Pandoc 인수](CAL-ORIGINAL/pandoc-defaults.yml) · [프로세스 로그](CAL-ORIGINAL/process.txt)
+- CAL-RULER에서 좌측 위 기준 x=[72,144], 중심 y=143.6, 두께 0.8pt의 지정 규칙을 XeTeX로 그렸다. 벡터는 x≈[71.999,143.999], y≈143.598, 0.800pt 1개였고 Poppler는 y 픽셀 [573,576) 1밴드였다. OutsideTitle 987·짧은 밑줄 창 모두 벡터/래스터 0/0. 페이지 위쪽 긴 획을 의도적으로 잘라 본 창은 래스터만 1이고 벡터 종점 조건에서 거절됐다. 본 렌더에서 표 후보 영역은 좌표로 제한하고 두 판독을 합의 조건으로 둔다. [교정 입력](../../fixtures/ruler.tex) · [원 교정 데이터](CAL-RULER/pdf-raw.json) · [좁은 이미지](CAL-RULER/known.png)
+- `template.patched`와 실제 로드된 13 부분의 개별 SHA가 배포본과 모두 일치했다. 빈 부분 3개도 SHA와 길이 0으로 보존했다. [스테이징 지문](CAL-ORIGINAL/pandoc-stage.json) · [기계 판정](calibration.json)
+- 셸 첫 시도에서 기본 사용자 캐시가 읽기 전용이었다. XDG·TEXMF 경로를 작업용으로 지정해 해결했다. 교정 스냅샷의 첫 버전은 길이 0인 템플릿 부분을 기록하지 않아 지문 검사에서 실패했다. 이를 포함하도록 관측 코드를 수정했다. 임시 파일에서 확인한 실제 Qmd Lua reader를 독립 JSON 판독에도 적용했다. 사전 입력·기대 행·렌더 행렬·판정 허용값은 그대로다.
