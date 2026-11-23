@@ -94,9 +94,9 @@ def main():
         },
         "author_intersection": {
             "exoa": {"N": 12, "x": 3, "L": 3, "U": 3,
-                     "t_not_observed_range": [3, 12], "t_extreme_tables": exoa_t_extremes},
+                     "weak_t_envelope_using_only_q_equals_x": [3, 12], "t_extreme_tables": exoa_t_extremes, "table_status": "x=q only, not all publication constraints", "partial_same_clock_t_sensitivity": [11,12], "partial_same_clock_lower_table": table(12,3,11,3)},
             "jdoc": {"N": 12, "x": 1, "L": 1, "U": 1,
-                     "t_not_observed_range": [1, 12], "t_extreme_tables": jdoc_t_extremes},
+                     "weak_t_envelope_using_only_q_equals_x": [1, 12], "t_extreme_tables": jdoc_t_extremes, "table_status": "x=q only, not all publication constraints", "partial_same_clock_t_sensitivity": [10,12], "partial_same_clock_lower_table": table(12,1,10,1)},
             "risk_difference": str(contrast), "risk_difference_pp": float(contrast * 100),
             "task3_risk_difference": str(task3_contrast),
         },

@@ -11,6 +11,7 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 STREAMS = ["baseline-methods", "software", "crossdomain", "root"]
+STREAMS += sorted(p.parent.name for p in (ROOT / "streams").glob("resume-*/sources.jsonl"))
 SLOTS = ["B01", "B02", "S01", "S02", "S03", "S04", "E01", "D01"]
 REQUIRED = ["source_id", "work_id", "자료종류", "원본_URL", "최종_URL", "발행자",
             "확인_UTC", "판_또는_SHA", "쪽_절_행_셀", "관련_Q와_사례_ID", "확인한_내용",
@@ -95,7 +96,7 @@ def main():
             "new_original_papers_selected_slots": {"observed": category["new_paper"], "required": 6,
                 "note": "4 named new leads include Casdoc, whose assigned-comparator eligibility fails at full Methods. Only3 new assigned-comparison studies remain."},
             "all_new_original_papers_read_including_diagnostics": {"observed": category["new_paper"] + category["additional_primary"], "required": 6,
-                "note": "Diagnostic papers are counted as read works, never as replacement sample slots."},
+                "note": "Reading total only:4 selected new papers plus4 diagnostic papers. The latter include different interventions and a reanalysis; they never replace eligible sample slots."},
             "baseline_papers": {"observed": category["baseline_paper"], "required": 2},
             "separate_author_datasets": {"observed": category["author_data"], "required": 4,
                 "note": "Package components, README, CSV, script, questionnaire and tutorials count once per package."},
@@ -104,7 +105,7 @@ def main():
                 "note": "One independently identified DesignPatternDoc implementation repository; exact21-person experiment binary remains unverified. Embedded package materials do not add unique works."},
             "original_methods": {"observed": category["methods"], "required": 4},
             "preregistration_or_direct_replication": {"observed": category["prereg_or_replication"], "required": 2,
-                "note": "Urry2021 direct replication and Bichler2026 replication analysis. The latter reuses E01's115-person subset, not an independent E01 cohort. The2016 author plan is not certified prospectively registered."},
+                "note": "Urry2021 direct replication and Bichler2026 analytical replication of the separate2016/2022 original cohort. Bichler2026 reuses E01's115-person subset, not an independent E01 cohort. The2016 author plan is not certified prospectively registered."},
         },
         "counting_rules": ["Unique work_id, not URL or file count", "Failed opens, metadata-only badges, repository inputs, mirrors and translations excluded", "A package's files are one work", "BM-P01 is an extra substantive protocol reading but not added to the conservative minimum", "Reading quota and sample eligibility are separate"],
         "counted_works": list(works.values()), "full_requirement_status": "부분 충족"
@@ -176,6 +177,10 @@ def main():
                 endpoints[-1]["nominal_or_approximate_duration_seconds"] = 2100
                 endpoints[-1]["clock_limit"] = "Approximately35-minute final test; enforced submission deadline and actual timestamps unverified"
                 endpoints[-1]["missing_or_withdrawal"] = "분석231행 KPost결측0; 원래 배정 후 결측·회기탈락 수는 미확인"
+            if r["endpoint_id"] == "S03-primary":
+                endpoints[-1]["deadline_seconds"] = None
+                endpoints[-1]["nominal_or_approximate_duration_seconds"] = 2400
+                endpoints[-1]["clock_limit"] = "40-minute planned work; optional up-to20-minute extension offered to all13, used by3; not a common hard deadline"
             if r["endpoint_id"] == "DX-E02-immediate-delayed":
                 endpoints[-1]["N_definition"] = "선정8자리 밖 진단: 모집143명; 공개 분석112명;143명 배정표 왼쪽 결합 아님"
                 endpoints[-1]["condition"] = r.get("intervention")
@@ -232,7 +237,7 @@ def main():
                            "lower": pick(r, "L", "difference_lower"), "upper": pick(r, "U", "difference_upper"),
                            "rate_or_difference_interval": r.get("rate_range"),
                            "integer_extreme_tables": pick(r, "unknown_t_endpoint_tables", "extreme_tables"),
-                           "table_meaning": "fixed author x, varying unreported t" if "unknown_t_endpoint_tables" in r else None,
+                           "table_meaning": "x=q only weak conditional t envelope; Table XII same-clock partial-submission sensitivity in details_json; not established full-publication sharp t range" if "unknown_t_endpoint_tables" in r else None,
                            "classification": pick(r, "status", "classification"),
                            "reason": pick(r, "reason", "interpretation"),
                            "sampling_uncertainty": pick(r, "sampling_uncertainty") or "미실시; identification range is not a sampling confidence interval",
