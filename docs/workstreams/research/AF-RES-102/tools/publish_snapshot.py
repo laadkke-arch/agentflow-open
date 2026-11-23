@@ -33,14 +33,18 @@ def main():
         while index < len(changed):
             path = changed[index]
             b = git("show", ":" + path)
-            if len(b) > a.text_budget:
+            try:
+                decoded = b.decode("utf-8")
+            except UnicodeDecodeError:
+                decoded = None
+            if len(b) > a.text_budget or decoded is None:
                 if not batch:
                     print(json.dumps({"large_path": path, "bytes": len(b), "next_index": index + 1}))
                     return
                 break
             if used + len(b) > a.text_budget and batch:
                 break
-            batch.append({"path": path, "mode": "100644", "type": "blob", "content": b.decode("utf-8")})
+            batch.append({"path": path, "mode": "100644", "type": "blob", "content": decoded})
             used += len(b)
             index += 1
         print(json.dumps({"tree_elements": batch, "next_index": index}, ensure_ascii=False))

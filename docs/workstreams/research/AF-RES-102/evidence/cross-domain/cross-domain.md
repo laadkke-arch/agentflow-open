@@ -78,6 +78,6 @@ ZIP의 19멤버가 RECORD의 19행에 모두 대응한다. RECORD 자신의 행�
 
 실패는 [failures.jsonl](failures.jsonl)에 구분했다. 처음 추정한 EPUB Reading Systems의 `20260113` URI는 HTTP 404였다. 공식 발행 이력을 확인하여 실제 20241017판을 열었으며, 실패 응답은 자료 수에 넣지 않았다. 최초 환경에서 `requests` 모듈이 없어 외부 요청 전에 종료한 실행은 표준 라이브러리 `urllib.request`로 대체했다. 이 환경 오류는 외부 자료 부재가 아니다.
 
-읽기 전용 재검산은 `python -B docs/workstreams/research/AF-RES-102/evidence/cross-domain/analyze.py`다. 실행 영수증은 [analysis-receipt.json](analysis-receipt.json)에 있다. 프로그램은 이 디렉터리의 audit 파일을 다시 쓰므로, 원 결과를 보존하려면 별도 체크아웃에서 실행한다. 캐시가 없으면 지정한 EPUB·wheel 및 고정 source 두 개를 다시 받는다. 규격 자체 재열람은 `collect.py fetch --key 새키 --url 위의 고정 규격 주소`로 별도 수행한다. 모든 원 수신 영수증과 원 지문은 커밋에서 다시 읽을 수 있다.
+패키지 미실행 정적 재검산은 `python -B docs/workstreams/research/AF-RES-102/evidence/cross-domain/analyze.py`다. 실행 영수증은 [analysis-receipt.json](analysis-receipt.json)에 있다. 프로그램은 이 디렉터리의 audit 파일을 다시 쓰므로, 원 결과를 보존하려면 별도 체크아웃에서 실행한다. 캐시가 없으면 지정한 EPUB·wheel 및 고정 source 두 개를 다시 받는다. 규격 자체 재열람은 `collect.py fetch --key 새키 --url 위의 고정 규격 주소`로 별도 수행한다. 모든 원 수신 영수증과 원 지문은 커밋에서 다시 읽을 수 있다.
 
 자기 검산 10항목은 모두 통과했다. 이것은 별도 사람/독립 모델의 내용 검토가 아니다. 최초 보조 EPUB 파서의 fragment-only URL 처리 오류를 발견하여 현재 문서를 유지하도록 고쳤고 보조 원장을 다시 만들었다. Trees와 wheel의 선택·결론에는 영향이 없었다.

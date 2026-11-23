@@ -1,6 +1,6 @@
 # AF-RES-102 재현 — 사전 자료와 사후 판독 분리
 
-이 파일의 최종 검사 SHA·영수증은 결과 묶음을 커밋한 뒤 덧붙인다. 아래는 표본/예측을 바꾸지 않고 기존 기록을 다시 읽는 절차다. 인터넷 접근 실패는 부재·미사용·미생성으로 변환하지 않는다.
+아래는 표본/예측을 바꾸지 않고 기록을 다시 읽는 절차다. 정확한 검사 SHA·UTC·종료값은 결과 커밋 후 작성한 검증 영수증과 마지막 HANDOFF를 따른다. 인터넷 접근 실패는 부재·미사용·미생성으로 변환하지 않는다.
 
 ## 1. 입력과 브랜치
 
@@ -62,7 +62,7 @@ sort_key = hashlib.sha256(key.encode("utf-8")).hexdigest()
 
 ## 6. 산술·자료수·검사
 
-`counts.json`은 각 프로젝트×층의 TP/FP/FN/TN/유보/결원과 실제 양성·음성 분모를 담는다. 세 층의 비율을 합산하지 않는다. `sources.jsonl`의 산입 여부·저작 계보·동일 바이트·중복 사유를 먼저 확인하고 범주별 고유 수를 계산한다. 실패 응답·미리보기·자동 경로 목록·상속 098 자료는 신규 자료에 더하지 않는다.
+`counts.json`은 각 프로젝트×층의 TP/FP/FN/TN/유보/결원과 실제 양성·음성 분모를 담는다. 세 층의 비율을 합산하지 않는다. `sources.jsonl`의 산입 여부·저작 계보·동일 바이트·중복 사유를 먼저 확인하고 범주별 고유 수를 계산한다. 실패 응답·미리보기·자동 적격성 스캔만 한 자료·상속 098 자료는 신규 자료에 더하지 않는다. 직접 읽어 발행 범위의 완전성과 포함을 확인한 공식 deployment listing은 별도의 1차 근거다.
 
 작업별 계약 검사와 공통 검사는 결과 commit에서 다음 명령으로 실행한다. 실행일/종료값/범위는 최종 영수증을 확인한다.
 
@@ -72,3 +72,37 @@ python -B scripts/cloud_check.py --environment codex-cloud --fetch-contract --re
 ```
 
 공통 `sessions`가 `no_active_sessions`이면 그 과정의 종료0을 이 manifest의 자동검사 성공으로 표시하지 않는다. 명시적 작업별 check 결과와 실제 자동검사 세션 수를 별도로 보고한다. GitHub에 고정한 결과판의 필수표·대표 증거·이 파일을 다시 연 영수증을 읽고 HANDOFF의 마지막 단독 commit을 확인한다.
+
+## 7. 정확한 체크포인트와 재계산 명령
+
+| 단계 | 원격 commit | 읽기 순서 |
+|---|---|---|
+| ① 판·옛 모집·일반층 | 5f664a87df16f453151ec985e9ad37913e3bda90 | SCOPE, manifest, frame, selected-general, stage1-seal |
+| ② 새 목록·층·예측 봉인 | f1c5d6ff927fd5fbe108565598810ca7e94c5753 | 새 tree 투영, predictions, stage2 노출 일지, prediction-seal |
+| ③ 사후 근거 | be9c4cfa09a59da937d40f71cdf7c675fb42c0fa | 양판 본문·payload·소스·build 검색·보조20씩·교차 분야 |
+| ④ 최종 통합·별도 검토 반영 | 최종 HANDOFF가 지정한 result SHA | root lineage/sources/counts/RESULT/SELF_CHECK와 검토 기록 |
+
+각 commit의 원격 확인 UTC와 변경 파일 지문은 evidence/checkpoints.json에 있다. 현재 파일과 단계3의 source ledger를 혼합해 고유 수를 계산하지 않는다. 단계3은 잠정116, 단계4는 별도 검토로 발견한098 동일저작5개를 뺀111이다. 원천 GG ledger57을 보존한 이유와 최종52의 대응은 source-reconciliation.json에 있다.
+
+아래 검사는 파일을 수정하지 않고 봉인 지문·모집 hash·예측/관측 join·혼동표·자료수·표의 행수·반대 검토 반영을 재계산한다. 네트워크 요청·예제 실행·역사적 생성의 검사는 아니다.
+
+~~~sh
+python -B docs/workstreams/research/AF-RES-102/tools/verify.py
+~~~
+
+다음 두 통합 명령과 프로젝트의 수집/분석 스크립트는 결과 파일을 다시 쓴다. 따라서 보존 중인 봉인 사본에서 바로 실행하지 않는다. 별도 사본에서 입력 SHA를 확인한 뒤 결과를 비교한다. assemble_evidence.py는098 고정 commit이 로컬 Git 객체에 있어야 하며, 네트워크 없이 해당 sources.jsonl을 읽어5개의 계승 중복을 제외한다.
+
+~~~sh
+python -B docs/workstreams/research/AF-RES-102/tools/assemble_evidence.py
+python -B docs/workstreams/research/AF-RES-102/tools/assemble_result.py
+~~~
+
+자료별 수신은 evidence/ggplot2 및 evidence/matplotlib의 수집 스크립트와 receipts URL을 사용한다. 무조건 전체 네트워크 조사를 반복할 필요는 없다. 본문 하나의 사용 판정이 의심되면 그 case_id의 두 HTML 정확 경계, 실제 src/srcset, 최종 payload, 논리 소스만 먼저 다시 연다. G가 의심되면 build-search/generation-search에 기록된 SHA·날짜 창을 입력으로 보존 job과 출력 digest 연결을 찾는다. 현재 재빌드 결과를 그 빈칸에 쓰지 않는다.
+
+원격 고정판 재열람은 아래처럼40자리 결과 SHA를 입력한다. 각 응답을 Git의 같은 commit blob과 비교하며 성공·실패·UTC·HTTP·SHA-256을 출력 파일에 기록한다. 출력 파일 경로는 허용 경로 안이어야 한다.
+
+~~~sh
+python -B docs/workstreams/research/AF-RES-102/tools/readback.py --commit RESULT_SHA --output docs/workstreams/research/AF-RES-102/evidence/validation/readback.json
+~~~
+
+readback의 기본22개 파일은 필수3표, 자기검토, 재현 절차, 모집/예측/관측/자료수, 대표 양프로젝트 audit와 교차 분야 실물 감사, 원 PNG4개와 그 출처 색인을 포함한다. 이는 새 외부 자료 산입이 아니라 저장한 결과가 GitHub에서 같은 바이트로 읽히는지의 검증이다.

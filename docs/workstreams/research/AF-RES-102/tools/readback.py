@@ -20,6 +20,9 @@ DEFAULT_PATHS = [
     "evidence/ggplot2/audit.json", "evidence/matplotlib/audit.json",
     "evidence/cross-domain/audit.json", "evidence/cross-domain/trees-audit.json",
     "evidence/cross-domain/wheel-audit.json",
+    "evidence/representative/index.json",
+    "evidence/representative/GG-G1-old.png", "evidence/representative/GG-G1-new.png",
+    "evidence/representative/MP-C1-old.png", "evidence/representative/MP-C1-new.png",
 ]
 
 

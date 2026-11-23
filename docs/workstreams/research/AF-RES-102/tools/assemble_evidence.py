@@ -4,6 +4,7 @@ import collections
 import csv
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +74,28 @@ def main():
     assert len({r["source_id"] for r in sources}) == len(sources)
     # Cross-ledger byte deduplication is conservative; same-work edition deduplication
     # was performed by each reader and remains explicitly documented per row.
+    inherited_map = {
+        "GG-S3-126": "GG-OLD-WORKFLOW",
+        "GG-S3-143": "DEPLOY-ACTION-4-4-1",
+        "GG-S3-145": "PKGDOWN-2.0.7-build_R",
+        "GG-S3-146": "PKGDOWN-2.0.7-build-github",
+        "GG-S3-147": "PKGDOWN-2.0.7-build-reference_R",
+    }
+    prior_sha = "846aa7b644bda67ef2551c3f4fb1ec6f5de9484d"
+    prior_path = "docs/workstreams/research/AF-RES-098/sources.jsonl"
+    prior_rows = [json.loads(s) for s in subprocess.check_output(["git", "show", f"{prior_sha}:{prior_path}"], cwd=ROOT).decode().splitlines()]
+    prior = {r["id"]: r for r in prior_rows}
+    inherited_exclusions = []
+    for row in sources:
+        if row["source_id"] in inherited_map:
+            before = prior[inherited_map[row["source_id"]]]
+            assert row["countable"]
+            row["countable_before_root_reconciliation"] = True
+            row["countable"] = False
+            same_bytes = row["sha256"] == before["sha256"]
+            row["duplicate_reason"] = "AF-RES-098 inherited same work; " + ("identical payload SHA-256" if same_bytes else "different version of the same authored workflow/rule")
+            row["review_adjustment"] = "evidence/cross-domain/review-stage3.json"
+            inherited_exclusions.append({"source_id": row["source_id"], "prior_source_id": before["id"], "prior_fixed_url": before["fixed_url"], "prior_sha256": before["sha256"], "same_bytes": same_bytes, "reason": row["duplicate_reason"]})
     seen = {}
     reconciled = []
     for row in sources:
@@ -99,6 +122,11 @@ def main():
         "input_ledgers": input_ledgers, "root_mirror_rows": 12, "rows": len(sources),
         "countable": sum(r["countable"] for r in sources), "categories": dict(categories),
         "cross_ledger_same_byte_merges": reconciled, "minima": minima,
+        "review_inherited_exclusions": inherited_exclusions,
+        "reviewed_against": f"https://github.com/laadkke-arch/agentflow-open/blob/{prior_sha}/{prior_path}",
+        "counts_by_origin_after_review": dict(collections.Counter(r["ledger_origin"] for r in sources if r["countable"])),
+        "stage3_snapshot_countable": 116,
+        "correction_note": "Independent review found five inherited ggplot2 build-rule works (two identical-byte). Final count is111. Original project ledger and stage3 commit remain an auditable pre-review snapshot; final root ledger governs the minimum.",
         "policy": "Same work across editions, same-byte payloads, mirrors, inherited 098 work, uninspected automatic scans, failed requests and empty job queries are not new primary materials. Publication/source events remain marked with their common lineage; counts are not independent experiments.",
     })
     write_json("evidence/failure-index.json", {
