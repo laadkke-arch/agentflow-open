@@ -11,6 +11,6 @@ def fetch(url,key,parse_json=False):
   with (D/'http-receipts.jsonl').open('a') as f:f.write(json.dumps(record,ensure_ascii=False)+'\n')
   return json.loads(txt) if parse_json else txt,record
  except Exception as e:
-  record={'key':key,'url':url,'opened_at_utc':t,'completed_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'result':'access_failed','error':str(e)}
+  record={'key':key,'url':url,'opened_at_utc':t,'completed_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'result':'access_failed','error':str(e),'http_status':getattr(e,'code',None),'headers':dict(getattr(e,'headers',{}) or {})}
   with (D/'attempts.jsonl').open('a') as f:f.write(json.dumps(record,ensure_ascii=False)+'\n')
   return None,record
