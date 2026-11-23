@@ -1,0 +1,34 @@
+# AF-RES-071#1 · 인계
+
+## 식별과 고정판
+
+- 상태 **REVIEW_READY**. 수행 주체는 GitHub 연결과 공개 웹을 사용한 Codex Cloud 세션이다. 검토 방식은 자체 검산이다.
+- 저장소 `laadkke-arch/agentflow-open`, 브랜치 `work/research-af-res-071`, 소유 경로 `docs/workstreams/research/AF-RES-071/`.
+- 계획 통합 SHA `320424d87f99e70c42eeb8cb7211467de27f2c2e`, 배정 때 확인한 통합 HEAD `17b9cd4090a924f30ad7a2c8fc24e86b08a0e785`. 의존은 AF-RES-067@ `b55c9248fa56a67b99ec3430734e7c41e16196c9` 하나다. 그 SHA의 HANDOFF·frame·receipts·views·수용 원장에 원산출물 0/8과 실제 비교 0/24가 기록돼 있다. [선행 인계](https://github.com/laadkke-arch/agentflow-open/blob/b55c9248fa56a67b99ec3430734e7c41e16196c9/docs/workstreams/research/AF-RES-067/HANDOFF.md)
+- 결과 SHA `cb4931b38b3d75e98da1291628ec66966507be29`. 측정에 사용한 코드 SHA `1f3499d47eac6f4cfa7b76b0e8fe5cacadbb4575`, 측정과 2회차 검산의 원장 SHA `abfa72b4c9482955ce8af049ff80831284d6eab8`. 이 문서는 결과와 원장 재열람 뒤 작성한 마지막 단독 커밋이다. [결과 표와 Q1~Q7](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/RESULT.md) · [수용 원장](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/evidence/acceptance-evidence.json) · [재현](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/reproduce.md) · [자체 점검](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/SELF_CHECK.md)
+
+## 인계할 판단
+
+- NARA 전사 4개, ECCC 관측소별 발행 보고서 4개에서 요청용 원 조각을 확보했다. 독립 자료 28개에 직접 열린 출처 24개와 ECCC 발행사의 색인 본문 4개가 들어간다. PE 상세의 라이브 응답은 시간 초과했고 해당 본문의 스레드·이름·단위를 발췌했다. 저장한 SHA의 대상은 발췌 및 파생 입력이다. [모집과 출처](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/frame.csv) · [출처 원장](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/sources.jsonl) · [접근 실패](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/search-log.jsonl)
+- 주 변경 22쌍과 전진 보조 4쌍을 직접 실행했다. 주 22쌍의 답 변경 8, 추천 이유 변경 3, 근거 연결 변경 14, 읽기 순서만 변경 2다. 세 보기의 현재 답 계산은 각각 44/44를 맞혔다. 당시 동일 문구 표시는 A1/A2 각각 44/44, A0는 44보류였다. 과거 재계산의 보존·소실 성적은 A0 4/22·0/22, A1 20/22·0/22, A2 22/22·22/22다. 보존 조건에서 A0 주소가 충분했던 4건과, 판이 남아도 과거 설정이 없었던 2건을 보존했다. [사건·실행](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/pairs.csv) · [보기별 판단](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/judgments.csv)
+- 미사용 보조 파일 변경·무시 주석·읽기순서 교환으로 지문과 현재 셀 연결의 차이를 확인했다. A0의 근거 재확인 누락은 20/28, A1의 과잉은 16/16이었다. A2의 이 통제 사례는 모두 맞았고, 조각 한 건을 누락시킨 별도 LOSS01에서는 과거 재계산을 보류했다. [점수 분모](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/scores.csv) · [실행 원장](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/runs.jsonl)
+- 14개 트랜잭션 호출로 실제 예외와 프로세스 중단, 재시도, 중복, 복귀 후 현재·이력 검색을 시험했다. 합격선 중복 행 0, 옛 답 변조 0, 롤백 잔존 행 0을 모두 충족했다. 벤치마크 288회에서 A0/A1/A2 보관 페이로드 중앙값은 162B/995B/3,973B였다. 앱 캐시 상태만 실험했다. 실제 아카이브 전송량, 운영체제 콜드 캐시 및 운영 동시 쓰기는 미측정이다. [트랜잭션](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/evidence/transactions.json) · [비용 원장](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/costs.csv)
+
+## 확인 명령과 결과
+
+| 실행 | 대상과 위치 | 결과 |
+| --- | --- | --- |
+| `python -B -m workbench.session start af-res-071 --allow docs/workstreams/research/AF-RES-071/ --dependency work/research-af-res-067=b55c9248fa56a67b99ec3430734e7c41e16196c9 --output docs/workstreams/research/AF-RES-071/manifest.json --fetch` | Codex Cloud 저장소 루트, 초기 통합 SHA `17b9cd4…` | 종료 0, 작업/통합 SHA와 계약 버전 2 고정. [manifest](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/manifest.json) |
+| `python -B -m workbench.session check docs/workstreams/research/AF-RES-071/manifest.json --fetch` | Codex Cloud 저장소 루트, 결과 `cb4931b38b3d75e98da1291628ec66966507be29`, 2026-11-23 08:58:31 UTC | 종료 0, remote_checked, 39개 범위 내 경로, 범위 이탈/오류 0. 조회된 통합 SHA `76b8c1d15812fbf91b879f8444fd188ae7445802`의 계약 지문은 시작과 일치했다. 067 원격 HEAD도 고정 의존 SHA와 일치했다. |
+| `python -B docs/workstreams/research/AF-RES-071/experiment/run.py --out <빈 임시 디렉터리>` | Codex Cloud, 코드 `1f3499d…`, 봉인 입력 SHA 원장 | 종료 0, 실행 249행, 보기 판단 4,680행, 288 비용 표본. [stdout](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/evidence/run.stdout) |
+| `prepare.py`, `run.py`, `audit.py`, `decisions.py`와 `cmp` | Codex Cloud, 원장 `abfa72b4c9482955ce8af049ff80831284d6eab8`, 새로운 임시 디렉터리 | 모두 종료 0, 짝/입력 지문·판단·점수·추천 역전 행 동일. [재현 명령](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/reproduce.md) |
+| `python -B scripts/cloud_check.py --environment codex-cloud --fetch-contract --require-clean` | GitHub에서 새로 받은 깨끗한 별도 checkout `abfa72b4c9482955ce8af049ff80831284d6eab8` | 종료 0, 공통 55·lab 7/9 및 smoke 통과. 공통 활성 목록은 비어 있어 개별 계약 검사는 위 직접 호출에서 확인했다. [검사 영수증](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/evidence/cloud-check.json) |
+| GitHub `raw.githubusercontent.com` 고정 URL을 `curl -fsSL`로 읽고 `git show <결과 SHA>:<경로> \| cmp` 및 원장 검사 | `cb4931b38b3d75e98da1291628ec66966507be29`의 RESULT, 수용 원장, 표·원장 및 재현 파일 18개. GitHub 파일 도구로도 RESULT 및 수용 원장 확인 | 종료 0, 파일 18개가 Git 객체와 동일했다. 원격으로 받은 데이터로 26×6/3×8 표·Q1~Q7과 ID·열·분모를 다시 확인했다. |
+
+고정 결과 파일 SHA-256은 RESULT.md `4a9cb6640e78d6deaab770ca18dfdae985ba0b7c0b1d8a166d6f78810b2b9e9d`, 수용 원장 `b3ae745c17d698e213ef07010cdb27be718c7cce83f3da2ee25960e120f6fa0c`다.
+
+## 다음 첫 행동
+
+[고정 결과](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/RESULT.md)의 B2 기간 대조와 A3 위치 대조를 먼저 읽고 [재현 절차](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/reproduce.md)로 원장을 재검산한다. 발행기관 원문 대조가 지원되는 환경에서는 같은 4개 Climate ID의 공식 스레드 CSV/HTML을 재취득해 2010-01 기간의 원소·단위·이름을 확인한다. 라이브 원문을 얻으면 그 입력의 지문과 현재 발췌의 지문을 따로 보존한다. 이후 대상은 후보가 더 많은 문서에서 선택 범위를 증명하는 조각과 동시 작성 검증이다.
+
+색인 반영 제안은 `AF-RES-071 · 8객체 / 주22+보조4 / 3보기×2조건 / 과거 재계산과 현재 재확인의 분리 / 재현 가능`이다. [결과·약점 3개](https://github.com/laadkke-arch/agentflow-open/blob/cb4931b38b3d75e98da1291628ec66966507be29/docs/workstreams/research/AF-RES-071/RESULT.md)
