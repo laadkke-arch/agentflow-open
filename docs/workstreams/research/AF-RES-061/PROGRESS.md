@@ -25,3 +25,11 @@
 ## 묶음 ④ 작성·검토 상태
 
 필수8/4행 표·4반환 카드·Q1~Q7자체 반증·37조건 수용 원장을 작성했다. canonical 취득164행/고유 적격31저작, 검색·실패71행을 합쳤다. 같은모델 분담 검토가 source 계보·graph/animation mapping과 report를 확인했고 보고서 출처/분모6건을 수정했다. d3 앵커·CRLF 해시 정정은 별도 영수증에 보존한다. 첫 구조 검사에서 생성될 자기 receipt의 링크2건이 먼저 없어 실패했고 원문을 audit-initial.json에 보존했다. 해당 receipt 생성 후 재검한다. 마지막 원격 재열람·계약 check·HANDOFF는 아직 수행 전이며 아래 후속 커밋/인계가 실제 결과를 기록한다.
+
+## 묶음 ④ 원격 고정·1차 마감 검사
+
+- 결과 묶음 원격 SHA: `941e753f7238f3985a6e2bb4e4d8ce9f7277fd3b`. 첫8행/둘째4행/마지막3행 표,4카드,37수용조건,31고유1차저작을 보존했다.
+- RESULT와 acceptance를 위 SHA의 GitHub에서 다시 열어 준비된 내용과 일치함을 확인했다. `evidence/fixed-result-verification.json`.
+- 지정 `python -B -m workbench.session check docs/workstreams/research/AF-RES-061/manifest.json --fetch`는 실제 종료0/passed, outside/unmerged/errors 모두0. 검사시각06:37:17–06:37:30UTC, integration a388314d32b2679223f9e3e99b78b93eb1678bf5. `evidence/session-check-stage4.json`.
+- 초기 자기receipt 링크2건은 생성 뒤 재검해 구조·봉인·링크34/34 통과. `evidence/audit-initial.json`은 최초 실패를 보존한다.
+- 다음은 이 검사 영수증을 포함한 결과를 커밋하고, 그 고정판을 다시 열어 최종check한 뒤 HANDOFF만 마지막 단독커밋하는 것이다. 연구상 부분 인계 판정은 유지한다.
