@@ -1,0 +1,53 @@
+<p>I have a multi-nested weather dump (Accuweather):
+I am trying to get an indexed response/array ([0,...]) to sort - json and/or bash of the values. But my queries are only getting numbers-space separated. My queries in the two examples are ok in that they are getting to the correct position in the JSON, and the correct values, but just returning numbers.
+The same when querying a string value, with or without quotes (-r).</p>
+<p>Yes, I suppose I could loop through the output, I am just learning jq and know there must be something I am missing in the query to accomplish this. Help please.</p>
+<p>Ex: 1 2 3 4 5 spaces only no '[ ]'</p>
+<h1></h1>
+<p>#Query 1:
+drp=$(cat &quot;$HOME/directory/file&quot; | jq '.DailyForecasts[].Day.RainProbability | .')</p>
+<pre><code>JSON: -- The query above works as far as returns the correct value/integer output, this is a partial of 5 array sets. Just  only returning digits, so: 1 number number number number, not returning in array form .  
+
+  &quot;Day&quot;: {
+    &quot;Icon&quot;: 2,
+    &quot;IconPhrase&quot;: &quot;Mostly sunny&quot;,
+    &quot;HasPrecipitation&quot;: false,
+    &quot;ShortPhrase&quot;: &quot;Mostly sunny and breezy&quot;,
+    &quot;LongPhrase&quot;: &quot;Mostly sunny and breezy&quot;,
+    &quot;PrecipitationProbability&quot;: 1,
+    &quot;ThunderstormProbability&quot;: 0,
+    &quot;RainProbability&quot;: 1,
+    &quot;SnowProbability&quot;: 0,
+    &quot;IceProbability&quot;: 0,
+    &quot;Wind&quot;: {
+      &quot;Speed&quot;: {
+        &quot;Value&quot;: 15,
+        &quot;Unit&quot;: &quot;mi/h&quot;,
+        &quot;UnitType&quot;: 9
+ 
+    ...
+    }   
+</code></pre>
+<h1></h1>
+<p>#Query 2:
+apg=$(cat &quot;$HOME/directory/file&quot; | jq '.DailyForecasts[].AirAndPollen | .[1] | .Value | .')</p>
+<pre><code>I've tried to map, etc, number of ways (ex. going for the grass value here).
+</code></pre>
+<p>JSON: -- Same description as Query 1: returning 5 values not in array form. 12, next iteration, etc.</p>
+<pre><code>&quot;AirAndPollen&quot;: [
+    {
+      &quot;Name&quot;: &quot;AirQuality&quot;,
+      &quot;Value&quot;: 44,
+      &quot;Category&quot;: &quot;Good&quot;,
+      &quot;CategoryValue&quot;: 1,
+      &quot;Type&quot;: &quot;Ozone&quot;
+    },
+    {
+      &quot;Name&quot;: &quot;Grass&quot;,
+      &quot;Value&quot;: 12,
+      &quot;Category&quot;: &quot;Moderate&quot;,
+      &quot;CategoryValue&quot;: 2
+    },
+        ... 
+    ]   
+</code></pre>

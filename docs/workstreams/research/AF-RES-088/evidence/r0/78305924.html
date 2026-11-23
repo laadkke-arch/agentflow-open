@@ -1,0 +1,17 @@
+<p>I'm trying to convert a big one line JSON file to a multiline JSONLINES file. I've tried a bunch of commands and none of them are doing what I expect them to. This is the format of my data (input file: response.json) -</p>
+<pre><code>{&quot;_rid&quot;:&quot;12345&quot;,&quot;Documents&quot;:[{&quot;id&quot;: &quot;id-1&quot;, &quot;name&quot;: &quot;name-1&quot;, &quot;userId&quot;: &quot;userid-1&quot;, &quot;_rid&quot;: &quot;rid-1&quot;},{&quot;id&quot;: &quot;id-2&quot;, &quot;name&quot;: &quot;name-2&quot;, &quot;userId&quot;: &quot;userid-2&quot;, &quot;_rid&quot;: &quot;rid-2&quot;},{&quot;id&quot;: &quot;id-3&quot;, &quot;name&quot;: &quot;name-3&quot;, &quot;userId&quot;: &quot;userid-3&quot;, &quot;_rid&quot;: &quot;rid-3&quot;},....],&quot;_count&quot;:566}
+</code></pre>
+<p>I want to get rid of the unnecessary characters and make each record its own line. I want to get rid of the very first &quot;_rid&quot; but not the ones inside of the individual records. My desired output looks like this -</p>
+<pre><code>{&quot;id&quot;: &quot;id-1&quot;, &quot;name&quot;: &quot;name-1&quot;, &quot;userId&quot;: &quot;userid-1&quot;, &quot;_rid&quot;: &quot;rid-1&quot;}
+{&quot;id&quot;: &quot;id-2&quot;, &quot;name&quot;: &quot;name-2&quot;, &quot;userId&quot;: &quot;userid-2&quot;, &quot;_rid&quot;: &quot;rid-2&quot;}
+{&quot;id&quot;: &quot;id-3&quot;, &quot;name&quot;: &quot;name-3&quot;, &quot;userId&quot;: &quot;userid-3&quot;, &quot;_rid&quot;: &quot;rid-3&quot;}
+....
+</code></pre>
+<p>These are some queries I've tried (I know some of these aren't going to work but I was desperate and tried so many things):</p>
+<pre><code>jq --slurp '.' response.json &gt; output.jsonl
+jq -c '.[]' | jq .&quot;Documents&quot; response.json &gt; output.jsonl
+jq '.[] | select(&quot;Documents&quot;)' response.json &gt; output.jsonl
+jq '.[]' | jq 'select(&quot;Documents&quot;)' response.json &gt; output.jsonl
+jq --slurp --compact-output 'map([ . ])' response.json &gt; output.jsonl
+</code></pre>
+<p>How do I do this using jq commands? Thanks!</p>

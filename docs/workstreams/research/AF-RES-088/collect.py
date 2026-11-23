@@ -5,6 +5,7 @@ R1, but r0_packet emits only earliest body plus metadata. Fetch != semantic read
 """
 import argparse
 import csv
+import gzip
 import hashlib
 import json
 import time
@@ -32,11 +33,18 @@ def append(name, obj):
         f.write(json.dumps(obj, ensure_ascii=False) + '\n')
 
 
+def read_json(path):
+    path = Path(path)
+    if path.exists():
+        return json.loads(path.read_text())
+    return json.loads(gzip.decompress(Path(str(path)+'.gz').read_bytes()))
+
+
 def get(path, params, dest):
     dest = P / dest
     url = API + path + '?' + urllib.parse.urlencode(params)
-    if dest.exists():
-        return json.loads(dest.read_text())
+    if dest.exists() or Path(str(dest)+'.gz').exists():
+        return read_json(dest)
     stamp = utc()
     try:
         with urllib.request.urlopen(url, timeout=50) as r:
@@ -97,8 +105,9 @@ def revisions():
 
 def load_revisions():
     allitems = []
-    for f in sorted((P / 'sealed').glob('revisions_*_page*.json')):
-        allitems += json.loads(f.read_text()).get('items', [])
+    for f in sorted((P / 'sealed').glob('revisions_*_page*.json*')):
+        data=json.loads(gzip.decompress(f.read_bytes())) if f.suffix=='.gz' else json.loads(f.read_text())
+        allitems += data.get('items', [])
     grouped = {}
     for r in allitems:
         key = (r['post_id'], r['revision_guid'], r.get('revision_number'), r.get('creation_date'), digest(json.dumps(r, sort_keys=True)))
