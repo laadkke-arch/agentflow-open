@@ -9,11 +9,11 @@ CACHE = pathlib.Path('/tmp/af098-root')
 
 class Refs(HTMLParser):
     def __init__(self, offset=0):
-        super().__init__(); self.offset=offset; self.elements=[]
+        super().__init__(); self._line_offset=offset; self.elements=[]
     def handle_starttag(self, tag, attrs):
         attrs=dict(attrs)
         if any(k in attrs for k in ['src','srcset','href','data']) or tag in ['script','svg','picture','source']:
-            self.elements.append({'tag':tag,'line':self.getpos()[0]+self.offset,'attrs':attrs})
+            self.elements.append({'tag':tag,'line':self.getpos()[0]+self._line_offset,'attrs':attrs})
 
 def main():
     directory=ROOT/'evidence/calibration'
@@ -59,7 +59,7 @@ def main():
     out={'source_input':'AF-RES-094@082ba3b787edd92d804bf617397743e89d75c5f0','rows':rows,
          'main_denominator_increment':0,'source_minimum_increment':0,
          'generation_event_not_inferred_from_git_date':True,
-         'parser_correction':'The id is on h2, not on its enclosing section div; heading-only parsing was rejected before committing this audit.'}
+         'parser_correction':'The id is on h2, not on its enclosing section div; heading-only parsing was rejected before stage3. Stage4 also changed line offset to a private attribute because HTMLParser.offset is its mutable column counter; reference counts and U judgments were unchanged, absolute attribute lines corrected.'}
     (directory/'audit.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
     (directory/'sources.jsonl').write_text(''.join(json.dumps(x,ensure_ascii=False)+'\n' for x in sources))
     print(json.dumps([{'edition':x['edition'],'lines':x['section_lines'],'img':x['section_img_count'],'U':x['U']} for x in rows]))
