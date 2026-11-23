@@ -54,3 +54,7 @@
 원격 병합 `82e21d89eb592769f6f44ed75c9937400a565641`을 fast-forward로 인수했다. 이 커밋은 원래 흐름③ `b3d7af5a3a55eba78adc6c3bd31db7eaf9de49b1`과 재개③ `866ee7a68eec0f5c7077fec364685d6039d5ca75`를 모두 보존한다. 원판정5파일은 불변이다. 재개 흐름은 이미 작성·별도 검토된 RESULT/SELF_CHECK/재계산기를 끝내고 결과SHA 검사→GitHub 재열람→HANDOFF단독커밋 순서로 완료한다. 두 흐름 자료를 추가 실험 자리나 추가 독립 검증으로 세지 않는다.
 
 최종 sources는 재개160행의 수리판 + 원래흐름143행(ORIGINAL-P3 접두사, 비산입) =303행이다. 최소 개수는 재개에서 원문·한계를 감사한46고유자료만 산입한다. 기존32산입은 다른 보수적 subset이며32+46으로 더하지 않는다. 82e의 세 집계는 해당 고정 Git 커밋에 보존돼 있으며 원래 개별조사 파일도 유지한다. 후속과 밀림의 최종 재현은 assemble_supplement.py, 필수표는 recompute.py를 사용한다. 이전 assemble_evidence.py는 원래③ 재현용이다.
+
+## 원래 흐름의최종canonical인수
+
+`b3f3694b54bb7a85dc7a21e2731841679fc6753c`의RESULT/SELF_CHECK/recompute/46자료계수를최종기준으로인수했다. 원래흐름은이를다시다른집계로덮지않고직접timeline재열람·60entity귀속대조·실행계획·원문반례·검사runner만추가한다. 두집합32/46은28개중복이며합산하지않는다. 초기사전32판정·16쌍은계속불변이다. 최종재현은assemble_supplement.py와recompute.py를사용한다. 이전assemble_evidence.py·원래source-summary는③계수기록이며canonical총량이아니다.

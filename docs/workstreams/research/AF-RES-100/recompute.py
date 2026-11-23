@@ -185,6 +185,14 @@ def main():
     narrative=(ROOT/'REPORT_NOTES.md').read_text()
     assert '<!-- PERSPECTIVES -->' in narrative
     narrative=narrative.replace('<!-- PERSPECTIVES -->',perspectives)
+    narrative=narrative.replace('{{SOURCE_ROWS}}',str(len(sources)))
+    checks_path=ROOT/'evidence/result-checks.json'
+    check_text='실제결과판check/cloud_check는결과를커밋한뒤수행한다. 아직실행을주장하지않는다.'
+    if checks_path.exists():
+      cr=json.loads(checks_path.read_text())
+      check_text='### 실제 결과판 검사\n\n'+table(['검사','실제 대상SHA','종료값','범위·건너뜀'],[[r['label'],r['target_sha'],r['exit_code'],r['scope']] for r in cr['commands']])
+      check_text+='\n[실제명령·UTC·stdout/stderr영수증](evidence/result-checks.json). 이표는실제검사한SHA를명시하며,영수증추가후속커밋을소급해검사했다고하지않는다. 최종GitHub재열람과마지막검사대상은HANDOFF에기록한다.'
+    narrative=narrative.replace('<!-- RESULT_CHECKS -->',check_text)
     result=tables+'\n'+nums+'\n'+narrative
     write_or_check('evidence/derived/metrics.json',json.dumps(metrics,ensure_ascii=False,indent=2)+'\n',a.check)
     write_or_check('evidence/derived/required-tables.md',tables,a.check)
