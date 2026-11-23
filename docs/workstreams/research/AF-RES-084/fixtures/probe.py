@@ -4,30 +4,43 @@ import argparse
 from importlib.metadata import version
 import inspect
 import json
+from pathlib import Path
 import platform
 import shlex
+import subprocess
+import sys
 from typing import Optional
 
 
-def cn01(mode):
-    import click
-    from click.testing import CliRunner
+NAMES_LINE = "probe names = "
 
-    received = []
+
+def cn01_command(mode):
+    import click
+
     if mode == "positive":
         @click.command()
         def app():
-            received.extend(shlex.split(click.prompt("Names")))
+            click.echo(NAMES_LINE + json.dumps(shlex.split(click.prompt("Names"))))
     else:
         @click.command()
         @click.option("--names", multiple=True, prompt="Names")
         def app(names):
-            received.extend(names)
+            click.echo(NAMES_LINE + json.dumps(names))
 
-    result = CliRunner().invoke(app, [], input="foo bar\n", prog_name="probe")
-    return {"cli_exit": result.exit_code, "names": received, "transcript": result.output,
-            "prompt_seen": "Names:" in result.output,
-            "iterable_error": "Value must be an iterable." in result.output}
+    app(args=[], prog_name="probe")
+
+
+def cn01(mode):
+    cmd = [sys.executable, "-I", str(Path(__file__).resolve()), "CN01", mode, "--native-prompt"]
+    run = subprocess.run(cmd, input="foo bar\n", stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT, text=True, timeout=10)
+    transcript = run.stdout
+    lines = [line.split(NAMES_LINE, 1)[1] for line in transcript.splitlines() if NAMES_LINE in line]
+    names = json.loads(lines[0]) if lines else []
+    return {"cli_exit": run.returncode, "names": names, "transcript": transcript,
+            "prompt_seen": "Names:" in transcript,
+            "iterable_error": "Value must be an iterable." in transcript}
 
 
 def an01(mode):
@@ -131,7 +144,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("case", choices=PROBES)
     parser.add_argument("mode", choices=("positive", "boundary"))
+    parser.add_argument("--native-prompt", action="store_true")
     args = parser.parse_args()
+    if args.native_prompt:
+        if args.case != "CN01":
+            parser.error("--native-prompt is only supported by CN01")
+        cn01_command(args.mode)
+        return
     package, probe = PROBES[args.case]
     print(json.dumps({
         "case": args.case, "mode": args.mode, "package": package,

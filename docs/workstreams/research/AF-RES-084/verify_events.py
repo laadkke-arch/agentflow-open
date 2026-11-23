@@ -22,13 +22,17 @@ def body_hashes(body):
 
 
 def event_row(record, target):
-    payload = record.get("payload", {})
-    issue = payload.get("issue", {})
-    repo = record.get("repo", {})
+    if not isinstance(record, dict) or record.get("type") != "IssuesEvent":
+        return None
+    payload = record.get("payload")
+    if not isinstance(payload, dict) or payload.get("action") != "opened":
+        return None
+    issue = payload.get("issue")
+    repo = record.get("repo")
+    if not isinstance(issue, dict) or not isinstance(repo, dict):
+        return None
     if (
-        record.get("type") != "IssuesEvent"
-        or payload.get("action") != "opened"
-        or repo.get("id") != target["repo_id"]
+        repo.get("id") != target["repo_id"]
         or issue.get("id") != target["issue_id"]
         or issue.get("number") != target["number"]
         or issue.get("created_at") != target["created_utc"]
@@ -37,8 +41,10 @@ def event_row(record, target):
 
     event_id = record.get("id")
     event_utc = record.get("created_at")
-    author = issue.get("user", {}).get("login")
-    actor = record.get("actor", {}).get("login")
+    issuer = issue.get("user")
+    emitter = record.get("actor")
+    author = issuer.get("login") if isinstance(issuer, dict) else None
+    actor = emitter.get("login") if isinstance(emitter, dict) else None
     if not isinstance(event_id, (int, str)) or not str(event_id).isdigit():
         return None
     if not isinstance(event_utc, str) or not event_utc.endswith("Z"):
@@ -50,16 +56,15 @@ def event_row(record, target):
         return None
 
     body = issue.get("body")
-    if (author or "").casefold() != target["author"].casefold():
-        body = None
-    if (actor or "").casefold() != target["author"].casefold():
+    identity = target["author"].casefold()
+    if any(not isinstance(login, str) or login.casefold() != identity for login in (author, actor)):
         body = None
     if not isinstance(body, str):
         body = None
     return str(event_id), event_utc, body
 
 
-def select(records, target):
+def select(records, target, *, body_output=None):
     candidates = set()
     for record in records:
         row = event_row(record, target)
@@ -80,6 +85,8 @@ def select(records, target):
             "event_utc": event_utc,
             "candidate_count": 1,
         }
+    if body_output is not None:
+        body_output.write_bytes(body.encode("utf-8"))
     return {
         "status": "verified",
         "event_id": event_id,
@@ -143,6 +150,8 @@ def self_test():
     wrong_actor["actor"]["login"] = "somebody-else"
     assert select([wrong_actor], target)["reason"] == "body-or-author-unverified"
     assert select([{"created_at": target["created_utc"]}], target)["status"] == "unknown"
+    assert select([dict(opened, payload=None), None], target)["status"] == "unknown"
+    assert select([dict(opened, actor=None)], target)["reason"] == "body-or-author-unverified"
     current = {"body": opened["payload"]["issue"]["body"], **positive}
     assert select([current], target)["status"] == "unknown"
     changed = deepcopy(opened)
@@ -162,6 +171,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--case")
+    parser.add_argument("--body-output", type=Path, help="private file for the verified body")
     parser.add_argument("paths", nargs="*", type=Path)
     args = parser.parse_args()
     if args.self_test:
@@ -170,7 +180,8 @@ def main():
     targets = {row["case"]: row for row in json.loads((ROOT / "fixtures/targets.json").read_text())}
     if args.case not in targets or not args.paths:
         parser.error("supply one --case and at least one archive JSONL/gzip file")
-    print(json.dumps(select(read_events(args.paths), targets[args.case]), sort_keys=True))
+    summary = select(read_events(args.paths), targets[args.case], body_output=args.body_output)
+    print(json.dumps(summary, sort_keys=True))
 
 
 if __name__ == "__main__":
