@@ -1,0 +1,118 @@
+{
+  "project": "mltframework/shotcut",
+  "tag": "v20.09.13",
+  "sha": "0898bdf3fc0f9f3fbf78336bad21d5506e19c118",
+  "request_url": "https://github.com/mltframework/shotcut/issues/910",
+  "request_author": "johnnydepup",
+  "request_status": "auxiliary; primary vacant",
+  "author_statement": "Current issue body specifies Shotcut 20.09.13/Windows 10. After external resizing and replacement under the same filename, timeline is black while Source playback works. No author report of moved originals or distinct-folder equal basenames was established.",
+  "version_limit": "Release source is pinned; exact installed binary and first issue revision unverified.",
+  "research_question": "How should a project restore its original/proxy association without silently choosing different media, preserving unaffected producers? The restore/collision cases below are research-authored, not #910 reproduction claims.",
+  "conditions": [
+    {
+      "id": "SC-C1",
+      "provenance": "existing code contract + research preservation condition",
+      "text": "Retain original resource while proxy is active and restore the same intended source when proxy is disabled or project saved/reopened."
+    },
+    {
+      "id": "SC-C2",
+      "provenance": "research extension; not requester statement",
+      "text": "A same-name candidate with different intended media must not silently replace the missing source or alter an unrelated producer."
+    }
+  ],
+  "interface": "ProxyManager::resource reads shotcut:resource for proxy-backed producer. MltXmlChecker::checkForProxy substitutes hash-named proxy and retains original. ProxyManager::filterXML/processProperties restores original in normal saved XML. UnlinkedFilesDialog::lookInDir offers matching hash OR matching filename, with warning on filename-only mismatch. Util::getHash caches shotcut:hash; getFileHash uses file size plus first and last 1 MB for files >2 MB. fixUnlinkedFile updates resource/hash/caption. Pending proxy generation then post-job rename/replace are distinct writes. No runtime outcomes provided.",
+  "symbol_urls": [
+    "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/proxymanager.cpp",
+    "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/mltxmlchecker.cpp",
+    "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/dialogs/unlinkedfilesdialog.cpp",
+    "https://github.com/mltframework/shotcut/blob/0898bdf3fc0f9f3fbf78336bad21d5506e19c118/src/util.cpp"
+  ],
+  "cases": [
+    {
+      "id": "SC-N",
+      "kind": "normal",
+      "initial": {
+        "producers": [
+          {
+            "id": "p1",
+            "original": "/old/camA/clip.mp4",
+            "proxy": "/cache/H1.mp4",
+            "stored_hash": "H1",
+            "source_content": "RED"
+          }
+        ]
+      },
+      "actions": [
+        "disable proxy",
+        "save project",
+        "close and reopen project"
+      ],
+      "observe": [
+        "active resource",
+        "saved XML original resource",
+        "rendered source identity"
+      ],
+      "condition": "Same source exists unchanged; no ambiguous candidate."
+    },
+    {
+      "id": "SC-E",
+      "kind": "boundary",
+      "initial": {
+        "missing": "/old/camA/clip.mp4",
+        "stored_hash": "H_RED",
+        "candidate_order": [
+          {
+            "path": "/new/camB/clip.mp4",
+            "hash": "H_BLUE",
+            "content": "BLUE"
+          },
+          {
+            "path": "/new/camA/clip.mp4",
+            "hash": "H_RED",
+            "content": "RED"
+          }
+        ],
+        "unrelated_producer": "p2 -> /new/camB/clip.mp4"
+      },
+      "actions": [
+        "search replacement directory recursively in stated candidate order",
+        "do not provide human identity confirmation",
+        "enable proxy",
+        "save and reopen"
+      ],
+      "observe": [
+        "selected candidate and warning/refusal",
+        "p1 source/proxy association",
+        "p2 source identity"
+      ],
+      "condition": "Both candidates share basename; their full contents and stored sample hashes differ."
+    },
+    {
+      "id": "SC-X",
+      "kind": "negative",
+      "initial": {
+        "file_bytes": "3 MiB, first 1 MiB=A, middle 1 MiB=B, last 1 MiB=C",
+        "replacement_bytes": "same length, first=A, middle=D, last=C",
+        "cached_hash": "old sampled hash",
+        "proxy_content": "old revision",
+        "original_path": "same path",
+        "metadata_copy": "old metadata remains"
+      },
+      "actions": [
+        "replace original externally",
+        "reopen existing project without explicitly invalidating metadata",
+        "request proxy-backed preview"
+      ],
+      "observe": [
+        "whether stale content is detected",
+        "whether preview and intended current source differ",
+        "recovery/refusal evidence"
+      ],
+      "condition": "Metadata and sampled edges remain stable while content changes in the unsampled middle. Test is research-authored; not a valid-media GUI fixture yet."
+    }
+  ],
+  "brief_id": "SC",
+  "prepared_utc": "2026-11-23T11:33:18.691424+00:00",
+  "outcome_source_access": "none in reader packet",
+  "source_status": "Research auxiliary; not a verified primary sample."
+}

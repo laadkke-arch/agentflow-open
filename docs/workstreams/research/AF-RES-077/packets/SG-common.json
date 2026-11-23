@@ -1,0 +1,94 @@
+{
+  "project": "Sigil-Ebook/Sigil",
+  "tag": "0.9.17",
+  "sha": "30419827123d533d10ad482b1634dcec05ff0e1b",
+  "request_url": "https://github.com/Sigil-Ebook/Sigil/issues/450",
+  "request_author": "gennaios",
+  "request_status": "auxiliary; strict author-version-confirmed primary vacant",
+  "author_statement": "Author reports splitting commercial academic EPUB chapters with valid footnote anchors. Self-file-qualified hrefs can retain the wrong chapter after split; fragment-only links behave differently. Early author comments say all anchors exist and no warning appears. The author says newest version, without numeric build.",
+  "version_limit": "0.9.17 was released before report on same day; operational pin only. Initial body revision and exact installed version unknown.",
+  "research_question": "Preserve the actual internal-link target after splitting/moving a chapter, including fragment names reused by other chapters. The two-chapter duplicate-id case is researcher-authored, not reported by #450.",
+  "conditions": [
+    {
+      "id": "SG-C1",
+      "provenance": "request and early author comments",
+      "text": "An existing link must still reach the same footnote content when splitting separates the reference and target."
+    },
+    {
+      "id": "SG-C2",
+      "provenance": "existing code comment + researcher boundary",
+      "text": "Other chapters using the same fragment name retain their own target; fragment names are not assumed unique across chapters."
+    }
+  ],
+  "interface": "Book::CreateSectionBreakOriginalResource/CreateNewSections updates split-derived files with AnchorUpdates::UpdateAllAnchorsWithIDs, then other chapters through UpdateExternalAnchors with originating filename. GetIDLocations returns QHash<QString,QString> keyed by id over supplied files. Update methods parse hrefs and SetText when changed. SetText updates GUI document or worker cache; SaveToDisk is separate. Single-section path saves a new working resource before anchor reconciliation. No atomic final EPUB transaction or runtime test provided.",
+  "symbol_urls": [
+    "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/BookManipulation/Book.cpp",
+    "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/SourceUpdates/AnchorUpdates.cpp",
+    "https://github.com/Sigil-Ebook/Sigil/blob/30419827123d533d10ad482b1634dcec05ff0e1b/src/ResourceObjects/TextResource.cpp"
+  ],
+  "cases": [
+    {
+      "id": "SG-N",
+      "kind": "normal",
+      "initial": {
+        "Text/ch1.xhtml": "<p><a href=\"#fn\">ref</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>"
+      },
+      "actions": [
+        "split at marker",
+        "keep first segment Text/ch1.xhtml",
+        "save second segment Text/ch1_1.xhtml",
+        "save and reopen book"
+      ],
+      "observe": [
+        "href target path+fragment",
+        "resolved text FOOTNOTE_A",
+        "chapter contents"
+      ],
+      "condition": "One id in one original chapter; valid unique target."
+    },
+    {
+      "id": "SG-E",
+      "kind": "boundary",
+      "initial": {
+        "Text/ch1.xhtml": "<p><a href=\"ch1.xhtml#fn\">self</a></p><!--SPLIT--><p id=\"fn\">FOOTNOTE_A</p>",
+        "Text/ch2.xhtml": "<p id=\"fn\">FOOTNOTE_B</p>",
+        "Text/toc.xhtml": "<a href=\"ch1.xhtml#fn\">A</a><a href=\"ch2.xhtml#fn\">B</a>"
+      },
+      "actions": [
+        "split ch1 at marker",
+        "move its second segment to Text/parts/ch1_tail.xhtml",
+        "leave ch2 unchanged",
+        "save and reopen book"
+      ],
+      "observe": [
+        "self reference resolves FOOTNOTE_A",
+        "toc A resolves FOOTNOTE_A",
+        "toc B resolves FOOTNOTE_B",
+        "relative paths from each reference base"
+      ],
+      "condition": "Same fragment spelling in distinct source documents; path scope is significant."
+    },
+    {
+      "id": "SG-X",
+      "kind": "negative",
+      "initial": {
+        "Text/ch1.xhtml": "<a href=\"#fn\">ref</a><p id=\"fn\">FIRST</p><!--SPLIT--><p id=\"fn\">SECOND</p>",
+        "provenance": "no trusted pre-edit target choice"
+      },
+      "actions": [
+        "split at marker",
+        "attempt to preserve original reference target"
+      ],
+      "observe": [
+        "ambiguity/refusal",
+        "whether one target is silently guessed",
+        "whether unchanged file bytes/digests alone disambiguate"
+      ],
+      "condition": "Duplicate IDs already exist in the same source document. Unlike SG-E, document scope cannot disambiguate them; no trustworthy chosen target provided."
+    }
+  ],
+  "brief_id": "SG",
+  "prepared_utc": "2026-11-23T11:33:18.691424+00:00",
+  "outcome_source_access": "none in reader packet",
+  "source_status": "Research auxiliary; not a verified primary sample."
+}

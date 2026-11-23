@@ -1,0 +1,121 @@
+{
+  "project": "musescore/MuseScore",
+  "tag": "v3.0.1",
+  "sha": "06a66a2206fc5f3c2c33d7ee4123badf496bc4dd",
+  "request_url": "https://github.com/musescore/MuseScore/pull/4590",
+  "request_author": "ericfont",
+  "request_status": "auxiliary; primary vacant",
+  "author_statement": "Current opening description says selected source elements appear selected in newly created parts although those parts have no selection. No author demand concerning undo, reopening, or unaffected voices was established. The linked original tracker was inaccessible.",
+  "version_limit": "v3.0.1 is the contextual released-before-request source, not a verified affected build; first description revision unknown.",
+  "research_question": "Choose how to preserve linked musical identity and local UI scope through part creation, an edit followed by undo, and save/reopen. Undo/reopen/out-of-scope cases are research extensions.",
+  "conditions": [
+    {
+      "id": "MS-C1",
+      "provenance": "current PR opening description",
+      "text": "A new part must not show elements selected merely because source elements were selected when cloned."
+    },
+    {
+      "id": "MS-C2",
+      "provenance": "research extension informed by existing link/track contracts",
+      "text": "Musical link membership and mapped tracks survive; unrelated voice/part content and local layout remain unchanged by the selected operation."
+    }
+  ],
+  "interface": "Element copy constructor copies _flags, track/position/color; SELECTED bit is 0x40. Element::selected/setSelected and curColor expose local selection appearance. Selection stores Score* and element list. Element::linkedClone calls clone(), autoplace and score()->undo(new Link(e,this)). Excerpt::createExcerpt/cloneStaves constructs source/destination track map, skips unmapped tracks with system-element exceptions, and links clones. ScoreElement::linkTo/unlink and LinkUnlink manage membership. Element::writeProperties/readProperties serializes linkedMain/linked/indexDiff. No tests, selected patch, or later resolution provided.",
+  "symbol_urls": [
+    "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/element.cpp",
+    "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/select.cpp",
+    "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/excerpt.cpp",
+    "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/scoreElement.cpp",
+    "https://github.com/musescore/MuseScore/blob/06a66a2206fc5f3c2c33d7ee4123badf496bc4dd/libmscore/undo.cpp"
+  ],
+  "cases": [
+    {
+      "id": "MS-N",
+      "kind": "normal",
+      "initial": {
+        "master_note": {
+          "id": "m1",
+          "pitch": 60,
+          "selected": false,
+          "track": 0
+        },
+        "part_P1": "not yet generated, includes track0",
+        "other_P2": {
+          "note": "u1",
+          "pitch": 67,
+          "layout_offset": 8
+        }
+      },
+      "actions": [
+        "create P1",
+        "change m1 pitch to 62",
+        "undo that pitch change once",
+        "save then reopen"
+      ],
+      "observe": [
+        "m1/P1 pitch",
+        "P1 actual selection list and color",
+        "P2 note/layout",
+        "serialized/reloaded link membership"
+      ],
+      "condition": "Valid source score and unchanged identities."
+    },
+    {
+      "id": "MS-E",
+      "kind": "boundary",
+      "initial": {
+        "master_note": {
+          "id": "m1",
+          "pitch": 60,
+          "selected": true,
+          "track": 0
+        },
+        "master_selection": [
+          "m1"
+        ],
+        "part_P1": "not yet generated, includes track0",
+        "other_P2": {
+          "note": "u1",
+          "pitch": 67,
+          "layout_offset": 8
+        }
+      },
+      "actions": [
+        "create P1 without selecting any P1 object",
+        "change m1 pitch to 62",
+        "undo pitch change once",
+        "save then reopen"
+      ],
+      "observe": [
+        "P1 selected flag versus its empty selection list",
+        "P1/master pitch",
+        "P2 unchanged state",
+        "link membership before/after reopen"
+      ],
+      "condition": "Only initial selected flag differs from MS-N; selection is UI state, not evidence of musical identity."
+    },
+    {
+      "id": "MS-X",
+      "kind": "negative",
+      "initial": {
+        "reopened_file": "contains only current pitch62 and linked members",
+        "earlier_pitch": "not stored in file or accessible undo record",
+        "new_session_undo_stack": "empty"
+      },
+      "actions": [
+        "request undo to the former pitch after reopening",
+        "do not supply an earlier snapshot or command record"
+      ],
+      "observe": [
+        "available undo action/refusal",
+        "whether a former value is fabricated",
+        "preserved current score and links"
+      ],
+      "condition": "The history needed for inversion is absent. Do not assume a previous pitch from this description; output must state what can be established."
+    }
+  ],
+  "brief_id": "MS",
+  "prepared_utc": "2026-11-23T11:33:18.691424+00:00",
+  "outcome_source_access": "none in reader packet",
+  "source_status": "Research auxiliary; not a verified primary sample."
+}
