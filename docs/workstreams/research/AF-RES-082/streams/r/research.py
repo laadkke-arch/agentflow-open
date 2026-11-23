@@ -10,6 +10,7 @@ def fetch(url,key=None):
   req=urllib.request.Request(url,headers={'User-Agent':'AF-RES-082-public-research','Accept':'application/vnd.github+json'})
   with urllib.request.urlopen(req,timeout=40) as r:
    b=r.read(); data=b.decode('utf-8'); meta={'url':url,'final_url':r.geturl(),'opened_at_utc':now,'status':r.status,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'rate_remaining':r.headers.get('X-RateLimit-Remaining'),'data':data}
+ except urllib.error.HTTPError as e: meta={'url':url,'opened_at_utc':now,'status':'failed','http_status':e.code,'error':str(e),'error_body':e.read().decode('utf-8','replace')[:4000],'rate_remaining':e.headers.get('X-RateLimit-Remaining'),'rate_reset':e.headers.get('X-RateLimit-Reset')}
  except Exception as e: meta={'url':url,'opened_at_utc':now,'status':'failed','error':str(e)}
  p.write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n')
  return meta
