@@ -1,0 +1,44 @@
+<p>The primary objective of this activity is to display a summarized response alongside the document source in the LangChain QA bot.</p>
+<p>Within my input JSON data, there are three keys: <code>page_name</code>, <code>page_data</code>, and <code>page_url</code>. I aim to save the content under <code>page_data</code> in the <code>page_content</code> attribute of LangChain's Document class using jq package. Additionally, I intend to store <code>page_name</code> and <code>page_url</code> in the metadata. Could you guide me on how to accomplish this?</p>
+<pre class="lang-py prettyprint-override"><code>    from langchain_community.document_loaders import JSONLoader
+
+    ### data exported from MongoDB database
+
+    json_data = 
+    [
+      {
+        &quot;_id&quot;: {
+          &quot;$oid&quot;: &quot;65ed5d18b251090135c27d98&quot;
+        },
+        &quot;page_name&quot;: &quot;Homepage&quot;,
+        &quot;page_data&quot;: &quot;Content about homepage&quot;,
+        &quot;page_url&quot;: &quot;https://mywebsite.com/homepage&quot;
+      },
+      {
+        &quot;_id&quot;: {
+          &quot;$oid&quot;: &quot;65ed5d2fb251090135c27d99&quot;
+        },
+        &quot;page_name&quot;: &quot;Contact US&quot;,
+        &quot;page_data&quot;: &quot;Content about Contact US&quot;,
+        &quot;page_url&quot;: &quot;https://mywebsite.com/contactus&quot;
+      }
+    ]
+
+    ### LangChain JSON loader Class
+
+    loader = JSONLoader(
+        file_path=&quot;/content/web_data.json&quot;,
+        jq_schema='.[].page_data',
+        text_content=False)
+    
+    docs = loader.load()
+
+    print(docs) --&gt;
+
+    [Document(page_content=&quot;Content about homepage&quot;, metadata={'source': '/content/json_data.json', 'seq_num': 1}),
+     Document(page_content=&quot;Content about Contact US&quot;, metadata={'source': '/content/json_data.json', 'seq_num': 2})]
+</code></pre>
+<p>Final docs should look like this :</p>
+<pre><code>[Document(page_content=&quot;Content about homepage&quot;, metadata={'source': '/content/json_data.json', 'seq_num': 1, 'page_name': 'Homepage',&quot;page_url&quot;: &quot;https://mywebsite.com/homepage&quot;}),
+ Document(page_content=&quot;Content about Contact US&quot;, metadata={'source': '/content/json_data.json', 'seq_num': 2,&quot;page_name&quot;: &quot;Contact US&quot;,&quot;page_url&quot;: &quot;https://mywebsite.com/contactus&quot;})]
+</code></pre>
