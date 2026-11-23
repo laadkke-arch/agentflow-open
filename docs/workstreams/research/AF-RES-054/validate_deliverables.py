@@ -72,6 +72,15 @@ def main():
     assert all(r["target_join_performed"] == "false" for r in tables["joins"])
 
     result = (ROOT / "RESULT.md").read_text()
+    acceptance = json.loads((ROOT / "evidence/acceptance-evidence.json").read_text())
+    assert acceptance["counts"]["read_attempt_rows"] == len(rows)
+    assert acceptance["counts"]["unique_primary_works"] == len(counted)
+    for requirement in acceptance["requirements"]:
+        for source in requirement.get("source_rows", []):
+            assert rows[source["line"] - 1]["source_id"] == source["source_id"]
+        for evidence in requirement.get("evidence", []):
+            if evidence.get("file") == "RESULT.md" and evidence.get("heading"):
+                assert result.splitlines()[evidence["line"] - 1] == evidence["heading"]
     headers = re.findall(r"^## .+$", result, flags=re.M)
     assert headers[0].startswith("## 표 1") and headers[1].startswith("## 표 2")
     first = result.split("## 표 2", 1)[0]
