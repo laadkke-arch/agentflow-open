@@ -1,0 +1,46 @@
+{
+  "about": "Paperless-ngx 관측은 고정판 사용 설명의 문서 계약이다. stage는 이 문서에 없는 설계 제안이다. control·mismatch·conflict는 의도적으로 작성한 판정기 시험 자료이며 제품 실행이 아니다.",
+  "criteria": [
+    {"id":"keep_source","label":"최초 폴더의 동일 경로·내용 유지","required":true,"check":"별도 시험 경로에서 성공·실패·재시도 전후 원본 경로와 내용 해시를 대조한다."},
+    {"id":"retain_content","label":"성공적으로 넘긴 문서의 내용 보관","required":true,"check":"같은 파일을 작업 경로에 넘긴 뒤 서비스에서 취득한 문서 내용과 대조한다."},
+    {"id":"retry_once","label":"재입력해도 보관본 한 개 유지","required":false,"check":"같은 파일을 다시 제출한 후 문서 수를 확인한다."}
+  ],
+  "contexts": {
+    "consume":{"subject":"Paperless-ngx","version":"4973be8499bc61dc4f791a609d0d31e9ac9ccd41","scope":"PDF 소비 성공 뒤","configuration":"최초 폴더를 소비 폴더로 지정"},
+    "stage":{"subject":"수집기 + Paperless-ngx","version":"설계안 1 + 4973be8499bc61dc4f791a609d0d31e9ac9ccd41","scope":"PDF 소비 성공 뒤","configuration":"원본 폴더 읽기 전용, 별도 소비 폴더로 복사"},
+    "toy":{"subject":"합성 수집기","version":"v2","scope":"고정 PDF 1개를 전달한 뒤","configuration":"시험 설정 A"},
+    "old":{"subject":"합성 수집기","version":"v1","scope":"고정 PDF 1개를 전달한 뒤","configuration":"시험 설정 A"}
+  },
+  "candidates": [
+    {"id":"consume","label":"Paperless-ngx · 최초 폴더를 직접 소비","context":"consume"},
+    {"id":"stage","label":"설계 제안 · 별도 복사본 소비","context":"stage"},
+    {"id":"control","label":"합성 대조군 · 필수조건 두 개 모두 지지","context":"toy"},
+    {"id":"mismatch","label":"합성 대조군 · 구판 근거만 존재","context":"toy"},
+    {"id":"conflict","label":"합성 대조군 · 같은 맥락의 상충","context":"toy"}
+  ],
+  "compare":["consume","stage"],
+  "records": {
+    "proposal":"설계 제안. 원본 폴더를 읽기 전용으로 열고 완성된 복사본만 작업 경로에 넘긴다. 실제 파일 경로·권한·해시·작업 상태 확인이 필요하다.",
+    "analogy":"비유. 별도 작업본을 쓰는 다른 시스템과 비슷하다는 설명. 이 설정의 원본 유지 증거는 없다.",
+    "toy-source":"합성 입력 v2. 채점 연습용 같은 맥락의 원본 경로·내용 유지 긍정 관측.",
+    "toy-content":"합성 입력 v2. 채점 연습용 같은 맥락의 보관 내용 일치 관측.",
+    "toy-duplicate":"합성 입력 v2. 동일 문서 재입력 뒤 보관본 두 개라는 선호조건 반증.",
+    "toy-v1":"합성 입력 v1에서만 원본 파일 유지로 기록했다.",
+    "toy-opposite":"합성 입력 v2. 동일 맥락의 다른 기록은 원본 경로에서 파일이 사라졌다고 한다."
+  },
+  "claims": [
+    {"id":"direct-removal","candidate":"consume","criterion":"keep_source","context":"consume","kind":"direct","direction":"refute","locator":"https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/docs/usage.md#L147-L183"},
+    {"id":"direct-archiving","candidate":"consume","criterion":"retain_content","context":"consume","kind":"direct","direction":"support","locator":"https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/docs/usage.md#L147-L183"},
+    {"id":"staged-copy-plan","candidate":"stage","criterion":"keep_source","context":"stage","kind":"proposal","direction":"support","locator":"cases.json#/records/proposal"},
+    {"id":"other-system","candidate":"stage","criterion":"keep_source","context":"stage","kind":"analogy","direction":"support","locator":"cases.json#/records/analogy"},
+    {"id":"consumer-only","candidate":"stage","criterion":"retain_content","context":"consume","kind":"direct","direction":"support","locator":"https://github.com/paperless-ngx/paperless-ngx/blob/4973be8499bc61dc4f791a609d0d31e9ac9ccd41/docs/usage.md#L147-L183"},
+    {"id":"fixture-source","candidate":"control","criterion":"keep_source","context":"toy","kind":"direct","direction":"support","locator":"cases.json#/records/toy-source"},
+    {"id":"fixture-content","candidate":"control","criterion":"retain_content","context":"toy","kind":"direct","direction":"support","locator":"cases.json#/records/toy-content"},
+    {"id":"fixture-duplicate","candidate":"control","criterion":"retry_once","context":"toy","kind":"direct","direction":"refute","locator":"cases.json#/records/toy-duplicate"},
+    {"id":"different-version","candidate":"mismatch","criterion":"keep_source","context":"old","kind":"direct","direction":"support","locator":"cases.json#/records/toy-v1"},
+    {"id":"current-content","candidate":"mismatch","criterion":"retain_content","context":"toy","kind":"direct","direction":"support","locator":"cases.json#/records/toy-content"},
+    {"id":"record-positive","candidate":"conflict","criterion":"keep_source","context":"toy","kind":"direct","direction":"support","locator":"cases.json#/records/toy-source"},
+    {"id":"record-negative","candidate":"conflict","criterion":"keep_source","context":"toy","kind":"direct","direction":"refute","locator":"cases.json#/records/toy-opposite"},
+    {"id":"record-contents","candidate":"conflict","criterion":"retain_content","context":"toy","kind":"direct","direction":"support","locator":"cases.json#/records/toy-content"}
+  ]
+}
