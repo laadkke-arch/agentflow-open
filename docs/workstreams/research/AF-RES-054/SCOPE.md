@@ -45,3 +45,15 @@
 - 사용자 brief와 AF-RES-050 고정 인계·결과에는 기준 연구 및 기존 여덟 연구 수치가 이미 있다. 새 여섯 자리 선정과 독립이며 숨긴 블라인드로 부르지 않는다.
 - 규칙 원격 커밋 전 도구 가용성 확인 과정에서 한 건의 software Zenodo site query를 실행했다. system2가 domain 밖 결과도 반환했다. 검색 결과의 제목/일부 초록이 노출됐고 원논문이나 dataset을 열어 선정하지 않았다. evidence/pilot-query.json에 원결과를 보존한다. 이 검색은 공식 30개 모집틀에 포함하지 않으며 공식 모집은 본 규칙 커밋 뒤 재실행한다. 이 노출 때문에 완전한 사전 무노출이라고 주장하지 않는다.
 - 향후 변경은 UTC, 이전/이후 규칙, 당시 노출자료, 영향 행과 양쪽 결론을 이 절에 추가한다. 결과를 보고 불리한 자리를 교체하지 않는다.
+
+### R1a · 검색 문법 적응, 선정 전 명시
+
+시점: 2026-11-23 UTC, 새 여섯 자리 선정 및 원자료/결과 열람 전. Zenodo API의403/정렬400, OSF 제목 필터의 Boolean문자열 리터럴 처리, 웹검색의 domain/date 필터 무시를 관측했다. 실패나 잘못 해석된 질의를 적격0의 근거로 쓰지 않는다. 사전식 자체와 적격 조건·출판일/ID 정렬은 유지하고 다음 **동치 질의 분해**를 허용한다.
+
+- 소프트웨어 원식의 여섯 conjunction을 왼쪽부터 `API example + user study`, `API example + experiment`, `code example + user study`, `code example + experiment`, `documentation + user study`, `documentation + experiment`로 실행한다. 따옴표·site/domain·날짜는 실제 엔진 문법에 맞춰 기록한다.
+- 교육/설계는 `worked example + task time`, `worked example + completion`, `design example + task time`, `design example + completion`의 네 conjunction이다. 분야 조건은 원래 분야 슬롯에 맞춰 사용한다.
+- native 제공 정렬을 확인하여 유효한 정렬로 재요청할 수 있다. 이것은 결과 부호를 본 후 문턱을 바꾸는 변경이 아니다.
+- linked 학회/기관 원논문 metadata에서 author Zenodo/OSF package를 찾는 역방향도 기록한다. 해당 저작이 원식·연도·개입/대조·사람 수행·공개 표기를 만족해야 같은 셀에 들어간다.
+- **동일 source×domain 전체에서 최대30 metadata**를 유지한다. atom마다30으로 늘리지 않는다. 원순서·중복·domain 밖/연도 밖·상한 초과를 구분한다. 최종 선택은 여전히 dedup 후 원논문 출판일·영구ID순이다.
+- 당시 노출: software 예비 metadata에서 observational learning-resources 및 prompt study 후보를 보았으나 적격/결과는 확정하지 않았다. crossdomain에서는 확대 진단으로 2024 worked-example 논문/OSF 표기를 보았으나 효과 수치는 선정에 쓰지 않았다. 이 진단 후보는 동치 원식을 만족하는지 확인하고 그 유입 경로를 표시해야만 들어갈 수 있다. 완전 무노출 모집이라고 부르지 않는다.
+- 전후 결론: 아직 선정 완료0이므로 교체된 연구0. 이전 broken-query 반환만으로는 빈 자리를 확정하지 않았고, 이후에도 결과 좋은 연구로 채우는 선택은 금지한다. 실제 영향은 frame과 selection에 남긴다.
