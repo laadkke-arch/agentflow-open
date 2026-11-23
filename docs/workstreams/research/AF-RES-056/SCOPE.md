@@ -62,6 +62,14 @@ CLI 최초 push는 인증 사용자 입력이 없어 exit128이었다. 연결된
 
 노출 정정: LD의 최초 API 진단 출력에는 첫 질문 score/answer_count 일부가 노출되었다. 이를 선정에 쓰지 않았으나 전면 비노출이라고 주장하지 않는다. root의 Schema API 진단에는 비선정28번 후속rev3의 본문이 일부 먼저 노출되었고 screening은 revision1로 다시 했다. 답/댓글 원문을 읽어 선정한 것은 없다.
 
-vocabulary.csv의 literal10+11행과 V 허용7행/보류9행 등 총37행을 후보 조회 전에 고정한다. Schema에는 meta-schema, schema references, dereferencing, validation(두 원문 연결), enum의 정의 연결만; JSON-LD에는 framing 한 용어만 추가한다. 기능의 일부 이름이 맞아도 두 조건/guard 지원으로 바꾸지 않는다. 민감도에서 제거할 사전 용어는 `LD-3-V1`의 **framing**이다. 상위3→4는 모든8요구에 같은 방식으로 적용한다.
+vocabulary.csv의 literal20행과 V 허용7행/보류10행 등 총37행을 후보 조회 전에 고정한다. Schema에는 meta-schema, schema references, dereferencing, validation(두 원문 연결), enum의 정의 연결만; JSON-LD에는 framing 한 용어만 추가한다. 기능의 일부 이름이 맞아도 두 조건/guard 지원으로 바꾸지 않는다. 민감도에서 제거할 사전 용어는 `LD-3-V1`의 **framing**이다. 상위3→4는 모든8요구에 같은 방식으로 적용한다.
 
 기본 판독창은 문서 본문의 정확 fragment 절 또는 첫 제목 이하500 whitespace 단어다. GitHub 저장소 URL은 README 렌더링 본문을 첫 문서로 읽으며 파일목록/nav를 기능문서로 세지 않는다. 본문 링크는 문서/사용/API/규격/설치 등의 정보 대상만 먼저2개를 순서대로 추출한다. GitHub header/PR/login/contributor/badge status 링크는 제외한다. 외부링크라서 유리하다는 이유로 세 번째를 선택하지 않는다.
+
+## 목록·상위3 동결 C — 목적지 판정 전
+
+모집/용어 원격 SHA `1f63f0129207904a91ae9e01bb3e48c86415a644`를 먼저 게시한 뒤 catalog 원문 복원 결과를 처음 열었다. 고정 Schema40행 + LD22행을 catalog.csv에 합치고 match_catalogs.py 규칙으로 실제16비교/48자리를 계산했다. JS-4-V의 SC-032(원32) 한 개만 매치했고 다른15비교는 관측 무매치다. 이를 구현 실패/부재로 바꾸지 않는다. 일치어는 사전 JS-V09/10의 validation; 아직 이 후보 원문을 열지 않았다. 본표/단어/검색필드를 이 결과로 확대하지 않는다.
+
+Schema의 Validator 표제와 validation이라는 기능명은 서로 다른 철자다. 결과 후 validator를 추가하면 별도의 사후 진단이어야 하며 주표를 변경하지 않는다. LD의 framing 기능 필드가 없다는 사실도 검색 실패와 별개로 기록한다. 8요구 조건과7개 허용 연결은 유지한다.
+
+원문 경로 계획은 evidence/path-plan.json에 고정했다. SC-032만 직접1동작과 그 창의 첫2 정보 링크 각각을 잇는2동작 시행을 만들 수 있다. 결과가 비어 있는 비교에 가상의 시행을 채우지 않는다.
