@@ -2,6 +2,8 @@ from pathlib import Path
 import csv,json,datetime,hashlib
 from fetch import ROOT
 T=json.loads((ROOT/'cache/stage2-new-edition-tree.bin').read_bytes());M={x['path']:x for x in T['tree']};complete=T.get('truncated') is False
+if not complete:
+ raise RuntimeError('Incomplete publication tree: do not classify missing paths or seal predictions')
 F=[x for x in csv.DictReader(open(ROOT/'frame.csv')) if x['eligible']=='YES'];F.sort(key=lambda x:x['hash_sha256'])
 G=json.load(open(ROOT/'selected-general.json'))['selected'];Gpaths={x['old_section_path'] for x in G}
 O=[]
