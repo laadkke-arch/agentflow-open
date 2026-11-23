@@ -1,0 +1,649 @@
+{
+  "read_by": "pandas_reports agent",
+  "method": "Direct connector fetch; sections were read in returned source. Code/rule excerpts are minimal locators, not a historic execution.",
+  "recorded_source_reads": 11,
+  "metadata_reads": 12,
+  "failed_member_reads": 2,
+  "common_cost_notes": "These are shared reads, not per-case same-run evidence; byte measurements are null for connector responses. Do not equate JS string length with transferred bytes. Candidate wheel reads have direct byte measurements in candidate-member-evidence.json.",
+  "source_reads": [
+    {
+      "source_id": "S-P-L01",
+      "lineage_id": "pytz-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pytz maintainers",
+      "original_url": "https://raw.githubusercontent.com/stub42/pytz/release_2020.5/src/pytz/__init__.py",
+      "fixed_url": "https://raw.githubusercontent.com/stub42/pytz/76ed1585bd17a981f295336cb88233deea8cafdc/src/pytz/__init__.py",
+      "version_or_date": "2020.5 / 2020e; 76ed1585bd17a981f295336cb88233deea8cafdc",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "locator": "L25-L29; L78-L108; L180-L190",
+      "findings": "패키지 self-report는 2020e이고 open_resource는 PYTZ_TZDATADIR을 우선한다. timezone 캐시와 열린 파일은 __version__과 다른 증거다.",
+      "limits": "공식 소스의 가능한 분기이며 N-P2가 당시 이 경로·파일을 열었다는 기록은 아니다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2",
+        "N-P3"
+      ],
+      "count_minimum": true,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 14486,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 25,
+          "to": 29,
+          "code_or_rule_excerpt": "OLSON_VERSION = '2020e'\nVERSION = '2020.5'  # pip compatible version number.\n__version__ = VERSION\n\nOLSEN_VERSION = OLSON_VERSION  # Old releases had this misspelling"
+        },
+        {
+          "from": 78,
+          "to": 108,
+          "code_or_rule_excerpt": "def open_resource(name):\n    \"\"\"Open a resource from the zoneinfo subdir for reading.\n\n    Uses the pkg_resources module if available and no standard file\n    found at the calculated location.\n\n    It is possible to specify different location for zoneinfo\n    subdir by using the PYTZ_TZDATADIR environment variable.\n    \"\"\"\n    name_parts = name.lstrip('/').split('/')\n    for part in name_parts:\n        if part == os.path.pardir or os.path.sep in part:\n            raise ValueError('Bad path segment: %r' % part)\n    zoneinfo_dir = os.environ.get('PYTZ_TZDATADIR', None)\n    if zoneinfo_dir is not None:\n        filename = os.path.join(zoneinfo_dir, *name_parts)\n    else:\n        filename = os.path.join(os.path.dirname(__file__),\n                                'zoneinfo', *name_parts)\n        if not os.path.exists(filename):\n            # http://bugs.launchpad.net/bugs/383171 - we avoid using this\n            # unless absolutely necessary to help when a broken version of\n            # pkg_resources is installed.\n            try:\n                from pkg_resources import resource_stream\n            except ImportError:\n                resource_stream = None\n\n            if resource_stream is not None:\n                return resource_stream(__name__, 'zoneinfo/' + name)\n    return open(filename, 'rb')"
+        },
+        {
+          "from": 180,
+          "to": 190,
+          "code_or_rule_excerpt": "    if zone not in _tzinfo_cache:\n        if zone in all_timezones_set:  # noqa\n            fp = open_resource(zone)\n            try:\n                _tzinfo_cache[zone] = build_tzinfo(zone, fp)\n            finally:\n                fp.close()\n        else:\n            raise UnknownTimeZoneError(zone)\n\n    return _tzinfo_cache[zone]"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L02",
+      "lineage_id": "pytz-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pytz maintainers",
+      "original_url": "https://raw.githubusercontent.com/stub42/pytz/164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f/src/pytz/__init__.py",
+      "fixed_url": "https://raw.githubusercontent.com/stub42/pytz/164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f/src/pytz/__init__.py",
+      "version_or_date": "2020.1 / 2020a; 164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f",
+      "opened_utc": "2026-11-23T05:12:58.172Z",
+      "locator": "L25-L29; L78-L108",
+      "findings": "pytz 2020.1의 공식 자료판 표기는 2020a; 자료 디렉터리 환경변수 우선 분기가 존재한다.",
+      "limits": "동일 프로젝트 개정으로 L01과 계보를 합산한다. 사용자 설치/로드 영수증 아님.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2",
+        "N-P3"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 14112,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 25,
+          "to": 29,
+          "code_or_rule_excerpt": "OLSON_VERSION = '2020a'\nVERSION = '2020.1'  # pip compatible version number.\n__version__ = VERSION\n\nOLSEN_VERSION = OLSON_VERSION  # Old releases had this misspelling"
+        },
+        {
+          "from": 78,
+          "to": 108,
+          "code_or_rule_excerpt": "def open_resource(name):\n    \"\"\"Open a resource from the zoneinfo subdir for reading.\n\n    Uses the pkg_resources module if available and no standard file\n    found at the calculated location.\n\n    It is possible to specify different location for zoneinfo\n    subdir by using the PYTZ_TZDATADIR environment variable.\n    \"\"\"\n    name_parts = name.lstrip('/').split('/')\n    for part in name_parts:\n        if part == os.path.pardir or os.path.sep in part:\n            raise ValueError('Bad path segment: %r' % part)\n    zoneinfo_dir = os.environ.get('PYTZ_TZDATADIR', None)\n    if zoneinfo_dir is not None:\n        filename = os.path.join(zoneinfo_dir, *name_parts)\n    else:\n        filename = os.path.join(os.path.dirname(__file__),\n                                'zoneinfo', *name_parts)\n        if not os.path.exists(filename):\n            # http://bugs.launchpad.net/bugs/383171 - we avoid using this\n            # unless absolutely necessary to help when a broken version of\n            # pkg_resources is installed.\n            try:\n                from pkg_resources import resource_stream\n            except ImportError:\n                resource_stream = None\n\n            if resource_stream is not None:\n                return resource_stream(__name__, 'zoneinfo/' + name)\n    return open(filename, 'rb')"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L03",
+      "lineage_id": "pandas-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pandas maintainers",
+      "original_url": "https://raw.githubusercontent.com/pandas-dev/pandas/3e89b4c4b1580aa890023fc550774e63d499da25/pandas/_libs/tslibs/timezones.pyx",
+      "fixed_url": "https://raw.githubusercontent.com/pandas-dev/pandas/3e89b4c4b1580aa890023fc550774e63d499da25/pandas/_libs/tslibs/timezones.pyx",
+      "version_or_date": "v1.2.0; 3e89b4c4b1580aa890023fc550774e63d499da25",
+      "opened_utc": "2026-11-23T05:12:58.172Z",
+      "locator": "L91-L123; L304-L316",
+      "findings": "일반 지역 문자열은 pytz.timezone, dateutil/ 접두사는 dateutil_gettz, 명시적 수치 오프셋은 고정 tzinfo로 나뉜다.",
+      "limits": "N-P2와 선언판이 일치하는 공식 소스이며 원 프로세스 로드 관측은 아니다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P1",
+        "N-P2",
+        "N-P3"
+      ],
+      "count_minimum": true,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 12247,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 91,
+          "to": 123,
+          "code_or_rule_excerpt": "cpdef inline tzinfo maybe_get_tz(object tz):\n    \"\"\"\n    (Maybe) Construct a timezone object from a string. If tz is a string, use\n    it to construct a timezone object. Otherwise, just return tz.\n    \"\"\"\n    if isinstance(tz, str):\n        if tz == 'tzlocal()':\n            tz = _dateutil_tzlocal()\n        elif tz.startswith('dateutil/'):\n            zone = tz[9:]\n            tz = dateutil_gettz(zone)\n            # On Python 3 on Windows, the filename is not always set correctly.\n            if isinstance(tz, _dateutil_tzfile) and '.tar.gz' in tz._filename:\n                tz._filename = zone\n        elif tz[0] in {'-', '+'}:\n            hours = int(tz[0:3])\n            minutes = int(tz[0] + tz[4:6])\n            tz = timezone(timedelta(hours=hours, minutes=minutes))\n        elif tz[0:4] in {'UTC-', 'UTC+'}:\n            hours = int(tz[3:6])\n            minutes = int(tz[3] + tz[7:9])\n            tz = timezone(timedelta(hours=hours, minutes=minutes))\n        else:\n            tz = pytz.timezone(tz)\n    elif is_integer_object(tz):\n        tz = pytz.FixedOffset(tz / 60)\n    elif isinstance(tz, tzinfo):\n        pass\n    elif tz is None:\n        pass\n    else:\n        raise TypeError(type(tz))\n    return tz"
+        },
+        {
+          "from": 304,
+          "to": 316,
+          "code_or_rule_excerpt": "def infer_tzinfo(datetime start, datetime end):\n    if start is not None and end is not None:\n        tz = start.tzinfo\n        if not tz_compare(tz, end.tzinfo):\n            raise AssertionError(f'Inputs must both have the same timezone, '\n                                 f'{tz} != {end.tzinfo}')\n    elif start is not None:\n        tz = start.tzinfo\n    elif end is not None:\n        tz = end.tzinfo\n    else:\n        tz = None\n    return tz"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L04",
+      "lineage_id": "pandas-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pandas maintainers",
+      "original_url": "https://raw.githubusercontent.com/pandas-dev/pandas/v1.2.0/pandas/util/_print_versions.py",
+      "fixed_url": "https://raw.githubusercontent.com/pandas-dev/pandas/3e89b4c4b1580aa890023fc550774e63d499da25/pandas/util/_print_versions.py",
+      "version_or_date": "v1.2.0; 3e89b4c4b1580aa890023fc550774e63d499da25",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "locator": "L48-L57; L79-L87",
+      "findings": "show_versions는 pytz/dateutil 모듈을 import_optional_dependency로 가져와 버전 속성을 읽는다.",
+      "limits": "환경 출력은 단순 requirements 선언보다 강하지만 날짜 계산 셀과 같은 프로세스인지 및 실제 zone 멤버는 확인하지 못한다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2",
+        "N-P3"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 4299,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 48,
+          "to": 57,
+          "code_or_rule_excerpt": "    \"\"\"\n    Returns dependency information as a JSON serializable dictionary.\n    \"\"\"\n    deps = [\n        \"pandas\",\n        # required\n        \"numpy\",\n        \"pytz\",\n        \"dateutil\",\n        # install / build,"
+        },
+        {
+          "from": 79,
+          "to": 87,
+          "code_or_rule_excerpt": "    deps.extend(list(VERSIONS))\n\n    result: Dict[str, JSONSerializable] = {}\n    for modname in deps:\n        mod = import_optional_dependency(\n            modname, raise_on_missing=False, on_version=\"ignore\"\n        )\n        result[modname] = _get_version(mod) if mod else None\n    return result"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L05",
+      "lineage_id": "pandas-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pandas maintainers",
+      "original_url": "https://raw.githubusercontent.com/pandas-dev/pandas/3e89b4c4b1580aa890023fc550774e63d499da25/pandas/compat/_optional.py",
+      "fixed_url": "https://raw.githubusercontent.com/pandas-dev/pandas/3e89b4c4b1580aa890023fc550774e63d499da25/pandas/compat/_optional.py",
+      "version_or_date": "v1.2.0; 3e89b4c4b1580aa890023fc550774e63d499da25",
+      "opened_utc": "2026-11-23T05:13:16.157Z",
+      "locator": "L49-L57; L100-L110",
+      "findings": "버전값은 __version__/__VERSION__; importlib.import_module을 사용한다.",
+      "limits": "실제 timezone 데이터파일의 해시·경로를 출력하는 함수가 아니다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2",
+        "N-P3"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 3909,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 49,
+          "to": 57,
+          "code_or_rule_excerpt": "def _get_version(module: types.ModuleType) -> str:\n    version = getattr(module, \"__version__\", None)\n    if version is None:\n        # xlrd uses a capitalized attribute name\n        version = getattr(module, \"__VERSION__\", None)\n\n    if version is None:\n        raise ImportError(f\"Can't determine version for {module.__name__}\")\n    return version"
+        },
+        {
+          "from": 100,
+          "to": 110,
+          "code_or_rule_excerpt": "\n    msg = (\n        f\"Missing optional dependency '{install_name}'. {extra} \"\n        f\"Use pip or conda to install {install_name}.\"\n    )\n    try:\n        module = importlib.import_module(name)\n    except ImportError:\n        if raise_on_missing:\n            raise ImportError(msg) from None\n        else:"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L06",
+      "lineage_id": "pandas-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "pandas maintainers",
+      "original_url": "https://raw.githubusercontent.com/pandas-dev/pandas/f2c8480af2f25efdbd803218b9d87980f416563e/pandas/_libs/tslibs/timezones.pyx",
+      "fixed_url": "https://raw.githubusercontent.com/pandas-dev/pandas/f2c8480af2f25efdbd803218b9d87980f416563e/pandas/_libs/tslibs/timezones.pyx",
+      "version_or_date": "v1.2.3; f2c8480af2f25efdbd803218b9d87980f416563e",
+      "opened_utc": "2026-11-23T05:13:16.157Z",
+      "locator": "L304-L316; L319-L350",
+      "findings": "infer_tzinfo는 두 endpoint의 tzinfo가 비교상 다르면 예외를 낸다.",
+      "limits": "N-P3의 11월 traceback는 별도 실행; 3월 환경과 합치지 않는다. 고정 오프셋 비교 실패는 특정 지역 자료판이 쓰였다는 증거가 아니다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P3"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 12247,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 304,
+          "to": 316,
+          "code_or_rule_excerpt": "def infer_tzinfo(datetime start, datetime end):\n    if start is not None and end is not None:\n        tz = start.tzinfo\n        if not tz_compare(tz, end.tzinfo):\n            raise AssertionError(f'Inputs must both have the same timezone, '\n                                 f'{tz} != {end.tzinfo}')\n    elif start is not None:\n        tz = start.tzinfo\n    elif end is not None:\n        tz = end.tzinfo\n    else:\n        tz = None\n    return tz"
+        },
+        {
+          "from": 319,
+          "to": 350,
+          "code_or_rule_excerpt": "cpdef bint tz_compare(tzinfo start, tzinfo end):\n    \"\"\"\n    Compare string representations of timezones\n\n    The same timezone can be represented as different instances of\n    timezones. For example\n    `<DstTzInfo 'Europe/Paris' LMT+0:09:00 STD>` and\n    `<DstTzInfo 'Europe/Paris' CET+1:00:00 STD>` are essentially same\n    timezones but aren't evaluated such, but the string representation\n    for both of these is `'Europe/Paris'`.\n\n    This exists only to add a notion of equality to pytz-style zones\n    that is compatible with the notion of equality expected of tzinfo\n    subclasses.\n\n    Parameters\n    ----------\n    start : tzinfo\n    end : tzinfo\n\n    Returns:\n    -------\n    bool\n    \"\"\"\n    # GH 18523\n    return get_timezone(start) == get_timezone(end)\n\n\ndef tz_standardize(tz: tzinfo):\n    \"\"\"\n    If the passed tz is a pytz timezone object, \"normalize\" it to the a\n    consistent version"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L07",
+      "lineage_id": "dateutil-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "python-dateutil maintainers",
+      "original_url": "https://raw.githubusercontent.com/dateutil/dateutil/2.8.1/dateutil/parser/_parser.py",
+      "fixed_url": "https://raw.githubusercontent.com/dateutil/dateutil/fc9b1625ebc729f01e449879b6b140abd12ae621/dateutil/parser/_parser.py",
+      "version_or_date": "2.8.1; fc9b1625ebc729f01e449879b6b140abd12ae621",
+      "opened_utc": "2026-11-23T05:12:10.715Z",
+      "locator": "L1183-L1221",
+      "findings": "알 수 없는 약어는 UnknownTimezoneWarning을 내고 naive 객체를 반환한다. 분기상 tzinfos/로컬 time.tzname/수치 offset과 분리된다. warning category는 1218행.",
+      "limits": "이 경로·행 번호는 N-P1의 스택과 양립한다. 원 사용판·수정판·전체 후보를 열거하지 않아 정확 버전 확정은 보류한다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P1"
+      ],
+      "count_minimum": true,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 58804,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 1183,
+          "to": 1221,
+          "code_or_rule_excerpt": "    def _build_tzaware(self, naive, res, tzinfos):\n        if (callable(tzinfos) or (tzinfos and res.tzname in tzinfos)):\n            tzinfo = self._build_tzinfo(tzinfos, res.tzname, res.tzoffset)\n            aware = naive.replace(tzinfo=tzinfo)\n            aware = self._assign_tzname(aware, res.tzname)\n\n        elif res.tzname and res.tzname in time.tzname:\n            aware = naive.replace(tzinfo=tz.tzlocal())\n\n            # Handle ambiguous local datetime\n            aware = self._assign_tzname(aware, res.tzname)\n\n            # This is mostly relevant for winter GMT zones parsed in the UK\n            if (aware.tzname() != res.tzname and\n                    res.tzname in self.info.UTCZONE):\n                aware = aware.replace(tzinfo=tz.UTC)\n\n        elif res.tzoffset == 0:\n            aware = naive.replace(tzinfo=tz.UTC)\n\n        elif res.tzoffset:\n            aware = naive.replace(tzinfo=tz.tzoffset(res.tzname, res.tzoffset))\n\n        elif not res.tzname and not res.tzoffset:\n            # i.e. no timezone information was found.\n            aware = naive\n\n        elif res.tzname:\n            # tz-like string was parsed but we don't know what to do\n            # with it\n            warnings.warn(\"tzname {tzname} identified but not understood.  \"\n                          \"Pass `tzinfos` argument in order to correctly \"\n                          \"return a timezone-aware datetime.  In a future \"\n                          \"version, this will raise an \"\n                          \"exception.\".format(tzname=res.tzname),\n                          category=UnknownTimezoneWarning)\n            aware = naive\n\n        return aware"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L08",
+      "lineage_id": "dateutil-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "python-dateutil maintainers",
+      "original_url": "https://raw.githubusercontent.com/dateutil/dateutil/2.7.5/dateutil/parser/_parser.py",
+      "fixed_url": "https://raw.githubusercontent.com/dateutil/dateutil/03fa92bfedbe020724de5dde8864e3a9539162b4/dateutil/parser/_parser.py",
+      "version_or_date": "2.7.5; 03fa92bfedbe020724de5dde8864e3a9539162b4",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "locator": "L1196-L1207",
+      "findings": "같은 알 수 없는 timezone 약어→경고+naive 출력 분기가 있다; warning category는 1204행.",
+      "limits": "출력 하나는 2.7.5/2.8.0/2.8.1을 가르지 못한다. 원 스택의 1218행과는 불일치하나 사용자 소스 변형 가능성과 판 전수열거 결손이 있다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P1"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 57607,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 1196,
+          "to": 1207,
+          "code_or_rule_excerpt": "        elif res.tzname:\n            # tz-like string was parsed but we don't know what to do\n            # with it\n            warnings.warn(\"tzname {tzname} identified but not understood.  \"\n                          \"Pass `tzinfos` argument in order to correctly \"\n                          \"return a timezone-aware datetime.  In a future \"\n                          \"version, this will raise an \"\n                          \"exception.\".format(tzname=res.tzname),\n                          category=UnknownTimezoneWarning)\n            aware = naive\n\n        return aware"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L09",
+      "lineage_id": "dateutil-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "python-dateutil maintainers",
+      "original_url": "https://raw.githubusercontent.com/dateutil/dateutil/2.8.0/dateutil/parser/_parser.py",
+      "fixed_url": "https://raw.githubusercontent.com/dateutil/dateutil/3ebfbe8385363d2f8a9fd9ff1b3857fbd5df7d5e/dateutil/parser/_parser.py",
+      "version_or_date": "2.8.0; 3ebfbe8385363d2f8a9fd9ff1b3857fbd5df7d5e",
+      "opened_utc": "2026-11-23T05:15:22.878Z",
+      "locator": "L1198-L1209",
+      "findings": "같은 경고+naive 반환 분기; warning category는 1206행.",
+      "limits": "동일 경고+naive 출력이 여러 parser 판과 양립한다. tag는 2026-11-23T05:22:06.325Z에 commit으로 추적했으며 N-P1 정확판으로 승인하지 않는다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P1"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 57682,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 1198,
+          "to": 1209,
+          "code_or_rule_excerpt": "        elif res.tzname:\n            # tz-like string was parsed but we don't know what to do\n            # with it\n            warnings.warn(\"tzname {tzname} identified but not understood.  \"\n                          \"Pass `tzinfos` argument in order to correctly \"\n                          \"return a timezone-aware datetime.  In a future \"\n                          \"version, this will raise an \"\n                          \"exception.\".format(tzname=res.tzname),\n                          category=UnknownTimezoneWarning)\n            aware = naive\n\n        return aware"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L10",
+      "lineage_id": "pytz-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "IANA tz contributors as vendored by pytz",
+      "original_url": "https://raw.githubusercontent.com/stub42/pytz/164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f/tz/europe",
+      "fixed_url": "https://raw.githubusercontent.com/stub42/pytz/164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f/tz/europe",
+      "version_or_date": "2020a; 164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f",
+      "opened_utc": "2026-11-23T05:12:58.172Z",
+      "locator": "L574-L575; L1445-L1449; L2810-L2811",
+      "findings": "EU의 3월/10월 전환과 Berlin의 EU 연결은 2020e와 같다. Volgograd 최종 era는 +04로 열린 끝이다.",
+      "limits": "새 사례의 판별 규칙만 읽음. IANA 전체 재조사나 역사 사용자 실행의 재현은 아님.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 175861,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 574,
+          "to": 575,
+          "code_or_rule_excerpt": "Rule\tEU\t1981\tmax\t-\tMar\tlastSun\t 1:00u\t1:00\tS\nRule\tEU\t1996\tmax\t-\tOct\tlastSun\t 1:00u\t0\t-"
+        },
+        {
+          "from": 1445,
+          "to": 1449,
+          "code_or_rule_excerpt": "Zone\tEurope/Berlin\t0:53:28 -\tLMT\t1893 Apr\n\t\t\t1:00\tC-Eur\tCE%sT\t1945 May 24  2:00\n\t\t\t1:00 SovietZone\tCE%sT\t1946\n\t\t\t1:00\tGermany\tCE%sT\t1980\n\t\t\t1:00\tEU\tCE%sT"
+        },
+        {
+          "from": 2810,
+          "to": 2811,
+          "code_or_rule_excerpt": "\t\t\t 3:00\t-\t+03\t2018 Oct 28  2:00s\n\t\t\t 4:00\t-\t+04"
+        }
+      ]
+    },
+    {
+      "source_id": "S-P-L11",
+      "lineage_id": "pytz-versioned-source",
+      "kind": "versioned-official-source",
+      "author": "IANA tz contributors as vendored by pytz",
+      "original_url": "https://raw.githubusercontent.com/stub42/pytz/76ed1585bd17a981f295336cb88233deea8cafdc/tz/europe",
+      "fixed_url": "https://raw.githubusercontent.com/stub42/pytz/76ed1585bd17a981f295336cb88233deea8cafdc/tz/europe",
+      "version_or_date": "2020e; 76ed1585bd17a981f295336cb88233deea8cafdc",
+      "opened_utc": "2026-11-23T05:12:58.172Z",
+      "locator": "L574-L575; L1490-L1494; L2916-L2918",
+      "findings": "Berlin/EU 규칙은 2020a와 같지만 Volgograd +04 era는 2020-12-27 02:00s에 끝나 +03가 된다. 2021-01-01T00Z는 두 후보에 대해 +04/+03로 분리될 것으로 규칙에서 수동 도출한다.",
+      "limits": "새 UTC 관측은 실행하지 않았다. 이 후보 둘 사이의 분리이며 전체 자료판 유일성을 입증하지 않는다.",
+      "questions": [
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q7"
+      ],
+      "case_ids": [
+        "N-P2"
+      ],
+      "count_minimum": false,
+      "category": "official_versioned_source",
+      "read_by": "pandas_reports agent",
+      "status": "connector success; HTTP byte count not exposed",
+      "response_text_characters": 181943,
+      "http_response_bytes": null,
+      "sections": [
+        {
+          "from": 574,
+          "to": 575,
+          "code_or_rule_excerpt": "Rule\tEU\t1981\tmax\t-\tMar\tlastSun\t 1:00u\t1:00\tS\nRule\tEU\t1996\tmax\t-\tOct\tlastSun\t 1:00u\t0\t-"
+        },
+        {
+          "from": 1490,
+          "to": 1494,
+          "code_or_rule_excerpt": "Zone\tEurope/Berlin\t0:53:28 -\tLMT\t1893 Apr\n\t\t\t1:00\tC-Eur\tCE%sT\t1945 May 24  2:00\n\t\t\t1:00 SovietZone\tCE%sT\t1946\n\t\t\t1:00\tGermany\tCE%sT\t1980\n\t\t\t1:00\tEU\tCE%sT"
+        },
+        {
+          "from": 2916,
+          "to": 2918,
+          "code_or_rule_excerpt": "\t\t\t 3:00\t-\t+03\t2018 Oct 28  2:00s\n\t\t\t 4:00\t-\t+04\t2020 Dec 27  2:00s\n\t\t\t 3:00\t-\t+03"
+        }
+      ]
+    }
+  ],
+  "metadata_reads_records": [
+    {
+      "key": "pytz",
+      "url": "https://api.github.com/repos/stub42/pytz/git/ref/tags/release_2020.5",
+      "opened_utc": "2026-11-23T05:12:10.715Z",
+      "status": "connector success",
+      "tag": "refs/tags/release_2020.5",
+      "tag_sha": "09a0e70bd2d0439b7280746b252f69472b7a4297",
+      "object_type": "tag",
+      "object_sha": "09a0e70bd2d0439b7280746b252f69472b7a4297",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "pytz2020_1",
+      "url": "https://api.github.com/repos/stub42/pytz/git/ref/tags/release_2020.1",
+      "opened_utc": "2026-11-23T05:12:10.715Z",
+      "status": "connector success",
+      "tag": "refs/tags/release_2020.1",
+      "tag_sha": "f68877f68624b91b7938ea667536557add2386fb",
+      "object_type": "tag",
+      "object_sha": "f68877f68624b91b7938ea667536557add2386fb",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/ref/tags/2.8.1",
+      "opened_utc": "2026-11-23T05:12:10.715Z",
+      "status": "connector success",
+      "tag": "refs/tags/2.8.1",
+      "tag_sha": "eb976c12e7235b1ec344b6ee812ce66a2e6d0edb",
+      "object_type": "tag",
+      "object_sha": "eb976c12e7235b1ec344b6ee812ce66a2e6d0edb",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "pandas",
+      "url": "https://api.github.com/repos/pandas-dev/pandas/git/ref/tags/v1.2.0",
+      "opened_utc": "2026-11-23T05:12:10.715Z",
+      "status": "connector success",
+      "tag": "refs/tags/v1.2.0",
+      "tag_sha": "6bec8abe01fcd1eacd78a753a34c146b1292b324",
+      "object_type": "tag",
+      "object_sha": "6bec8abe01fcd1eacd78a753a34c146b1292b324",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "pytz-tag",
+      "url": "https://api.github.com/repos/stub42/pytz/git/tags/09a0e70bd2d0439b7280746b252f69472b7a4297",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "status": "connector success",
+      "tag": "release_2020.5",
+      "tag_sha": "09a0e70bd2d0439b7280746b252f69472b7a4297",
+      "object_type": "commit",
+      "object_sha": "76ed1585bd17a981f295336cb88233deea8cafdc",
+      "published_tag_utc": "2020-12-24T21:04:19Z",
+      "verification_report": {
+        "verified": false,
+        "reason": "no_user"
+      },
+      "count_minimum": false
+    },
+    {
+      "key": "pytz2020_1-tag",
+      "url": "https://api.github.com/repos/stub42/pytz/git/tags/f68877f68624b91b7938ea667536557add2386fb",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "status": "connector success",
+      "tag": "release_2020.1",
+      "tag_sha": "f68877f68624b91b7938ea667536557add2386fb",
+      "object_type": "commit",
+      "object_sha": "164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f",
+      "published_tag_utc": "2020-04-28T08:30:08Z",
+      "verification_report": {
+        "verified": false,
+        "reason": "no_user"
+      },
+      "count_minimum": false
+    },
+    {
+      "key": "pandas-tag",
+      "url": "https://api.github.com/repos/pandas-dev/pandas/git/tags/6bec8abe01fcd1eacd78a753a34c146b1292b324",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "status": "connector success",
+      "tag": "v1.2.0",
+      "tag_sha": "6bec8abe01fcd1eacd78a753a34c146b1292b324",
+      "object_type": "commit",
+      "object_sha": "3e89b4c4b1580aa890023fc550774e63d499da25",
+      "published_tag_utc": "2020-12-26T13:47:00Z",
+      "verification_report": {
+        "verified": false,
+        "reason": "unsigned"
+      },
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil-tag",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/tags/eb976c12e7235b1ec344b6ee812ce66a2e6d0edb",
+      "opened_utc": "2026-11-23T05:12:31.064Z",
+      "status": "connector success",
+      "tag": "2.8.1",
+      "tag_sha": "eb976c12e7235b1ec344b6ee812ce66a2e6d0edb",
+      "object_type": "commit",
+      "object_sha": "fc9b1625ebc729f01e449879b6b140abd12ae621",
+      "published_tag_utc": "2019-11-03T05:34:05Z",
+      "verification_report": {
+        "verified": true,
+        "reason": "valid"
+      },
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil-275-tag",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/ref/tags/2.7.5",
+      "opened_utc": "2026-11-23T05:13:16.157Z",
+      "status": "connector success",
+      "tag": "refs/tags/2.7.5",
+      "tag_sha": "03fa92bfedbe020724de5dde8864e3a9539162b4",
+      "object_type": "commit",
+      "object_sha": "03fa92bfedbe020724de5dde8864e3a9539162b4",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil-280-ref",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/ref/tags/2.8.0",
+      "opened_utc": "2026-11-23T05:15:22.878Z",
+      "status": "connector success",
+      "tag": "refs/tags/2.8.0",
+      "tag_sha": "d43f6f6f420d1c2416d21e875c95b7c46b0cbb7d",
+      "object_type": "tag",
+      "object_sha": "d43f6f6f420d1c2416d21e875c95b7c46b0cbb7d",
+      "published_tag_utc": null,
+      "verification_report": null,
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil-280-tag",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/tags/d43f6f6f420d1c2416d21e875c95b7c46b0cbb7d",
+      "opened_utc": "2026-11-23T05:22:06.325Z",
+      "status": "connector success",
+      "tag": "2.8.0",
+      "tag_sha": "d43f6f6f420d1c2416d21e875c95b7c46b0cbb7d",
+      "object_type": "commit",
+      "object_sha": "3ebfbe8385363d2f8a9fd9ff1b3857fbd5df7d5e",
+      "published_tag_utc": "2019-02-05T13:51:28Z",
+      "count_minimum": false
+    },
+    {
+      "key": "dateutil-275-commit",
+      "url": "https://api.github.com/repos/dateutil/dateutil/git/commits/03fa92bfedbe020724de5dde8864e3a9539162b4",
+      "opened_utc": "2026-11-23T05:22:06.325Z",
+      "status": "connector success",
+      "object_type": "commit",
+      "object_sha": "03fa92bfedbe020724de5dde8864e3a9539162b4",
+      "commit_utc": "2018-10-27T18:01:34Z",
+      "count_minimum": false
+    }
+  ],
+  "failed_reads": [
+    {
+      "url": "https://api.github.com/repos/stub42/pytz/contents/src/pytz/zoneinfo/Europe/Berlin?ref=164d6af6dc335c0adf6f7fa97800b6fa6d17cc9f",
+      "opened_utc": "2026-11-23T05:13:16.157Z",
+      "status": 404,
+      "reason": "Compiled zoneinfo member is absent at requested source repository path; used author PyPI wheels instead",
+      "count_minimum": false
+    },
+    {
+      "url": "https://api.github.com/repos/stub42/pytz/contents/src/pytz/zoneinfo/Europe/Berlin?ref=76ed1585bd17a981f295336cb88233deea8cafdc",
+      "opened_utc": "2026-11-23T05:13:16.157Z",
+      "status": 404,
+      "reason": "Compiled zoneinfo member is absent at requested source repository path; used author PyPI wheels instead",
+      "count_minimum": false
+    }
+  ]
+}

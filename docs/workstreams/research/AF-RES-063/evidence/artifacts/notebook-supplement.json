@@ -1,0 +1,90 @@
+{
+  "supplementary_only": true,
+  "reason": "Original 15 CI records retained; notebook is not replacement after observing expired logs",
+  "official_link": "https://github.com/pandas-dev/pandas/blob/d70714d36829f84f9e0e72b0d37aa99a0a332053/doc/source/getting_started/tutorials.rst",
+  "original_author": "Stefanie Molin",
+  "repository": "stefmolin/pandas-workshop",
+  "fixed_sha": "cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d",
+  "publication_history": {
+    "oldest_section1_commit": "b2071e6c072ed2ed70d5f10f9e9b1206d2201532",
+    "oldest_section1_date": "2021-05-20T16:19:40Z",
+    "author_readme_first_delivery": "ODSC Europe 2021"
+  },
+  "files": [
+    {
+      "path": "environment.yml",
+      "sha": "ac09c2586d009656da3de7950f7a7464eae84ccc",
+      "opened_utc": "2026-11-23T05:12:48.977Z",
+      "fixed_url": "https://github.com/stefmolin/pandas-workshop/blob/cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d/environment.yml"
+    },
+    {
+      "path": "notebooks/1-getting_started_with_pandas.ipynb",
+      "sha": "26f49d5e03847e84a0bbca20828cd4c0df425fd3",
+      "opened_utc": "2026-11-23T05:12:49.014Z",
+      "fixed_url": "https://github.com/stefmolin/pandas-workshop/blob/cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d/notebooks/1-getting_started_with_pandas.ipynb"
+    },
+    {
+      "path": "notebooks/2-data_wrangling.ipynb",
+      "sha": "1a1250cf45aab62cad1a129aec51c34092eb20bd",
+      "opened_utc": "2026-11-23T05:12:49.114Z",
+      "fixed_url": "https://github.com/stefmolin/pandas-workshop/blob/cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d/notebooks/2-data_wrangling.ipynb"
+    },
+    {
+      "path": "requirements.txt",
+      "sha": "937869773d353e7b31f34c97069ec62e0e3c9c31",
+      "opened_utc": "2026-11-23T05:12:49.148Z",
+      "fixed_url": "https://github.com/stefmolin/pandas-workshop/blob/cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d/requirements.txt"
+    },
+    {
+      "path": "notebooks/0-check_your_env.ipynb",
+      "sha": "f9f1388df9e3972f354fd766712052f2108b5535",
+      "opened_utc": "2026-11-23T05:12:50.051Z",
+      "fixed_url": "https://github.com/stefmolin/pandas-workshop/blob/cbe8e758d22a6bbf0278fd5c99e96ad5dfdfe35d/notebooks/0-check_your_env.ipynb"
+    }
+  ],
+  "actual_outputs": [
+    {
+      "cell_index_zero_based": 14,
+      "execution_count": 6,
+      "source": "taxis[['pickup', 'dropoff']] = \\\n    taxis[['pickup', 'dropoff']].apply(pd.to_datetime)\ntaxis.dtypes",
+      "output_types": [
+        "execute_result"
+      ],
+      "text_plain": "pickup                   datetime64[ns]\ndropoff                  datetime64[ns]\npassenger_count                   int64\ntrip_distance                   float64\npayment_type                      int64\nfare_amount                     float64\nextra                           float64\nmta_tax                         float64\ntip_amount                      float64\ntolls_amount                    float64\nimprovement_surcharge           float64\ntotal_amount                    float64\ncongestion_surcharge            float64\ndtype: object"
+    },
+    {
+      "cell_index_zero_based": 45,
+      "execution_count": 20,
+      "source": "tsa = pd.read_csv('../data/tsa_passenger_throughput.csv', parse_dates=['Date'])\ntsa.head()",
+      "output_types": [
+        "execute_result"
+      ],
+      "text_plain": "        Date  2021 Traveler Throughput  2020 Traveler Throughput  \\\n0 2021-05-14                 1716561.0                    250467   \n1 2021-05-13                 1743515.0                    234928   \n2 2021-05-12                 1424664.0                    176667   \n3 2021-05-11                 1315493.0                    163205   \n4 2021-05-10                 1657722.0                    215645   \n\n   2019 Traveler Throughput  \n0                   2664549  \n1                   2611324  \n2                   2343675  \n3                   2191387  \n4                   2512315  "
+    },
+    {
+      "cell_index_zero_based": 58,
+      "execution_count": 25,
+      "source": "tsa_melted = tsa_melted.assign(\n    date=lambda x: pd.to_datetime(x.year + x.date.dt.strftime('-%m-%d'))\n)\ntsa_melted.sample(5, random_state=1)",
+      "output_types": [
+        "execute_result"
+      ],
+      "text_plain": "           date  year  travelers\n974  2019-09-12  2019  1879822.0\n435  2020-03-05  2020  2198517.0\n1029 2019-07-19  2019  2727355.0\n680  2020-07-03  2020   718988.0\n867  2019-12-28  2019  2500396.0"
+    },
+    {
+      "cell_index_zero_based": 69,
+      "execution_count": 30,
+      "source": "holidays = pd.read_csv('../data/holidays.csv', parse_dates=True, index_col='date')\nholidays.loc['2019']",
+      "output_types": [
+        "execute_result"
+      ],
+      "text_plain": "                   holiday\ndate                      \n2019-01-01  New Year's Day\n2019-05-27    Memorial Day\n2019-07-04        July 4th\n2019-09-02       Labor Day\n2019-11-28    Thanksgiving\n2019-12-24   Christmas Eve\n2019-12-25   Christmas Day\n2019-12-31  New Year's Eve"
+    }
+  ],
+  "limitations": [
+    "Saved execution_count is a cell locator, not a session UUID or signed execution receipt",
+    "Python3.13.3 is notebook language_info; pandas2.3.0 is environment declaration, no loaded module/recorded pandas version in same output",
+    "No timezone ID/UTC conversion in these cells; offset and timezone edition attribution not applicable",
+    "Original kernel execution clock absent; file commit bounds publication, not exact execution time"
+  ],
+  "retained_output_case": "A-PW1"
+}

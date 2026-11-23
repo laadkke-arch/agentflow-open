@@ -1,0 +1,36 @@
+[
+  {
+    "case_id": "A-P40915",
+    "source_id": "S-P40915",
+    "url": "https://github.com/pandas-dev/pandas/issues/40915",
+    "reporter": "Liam3851",
+    "input": "2021-03-28 01:30 local Europe/London; nonexistent=shift_forward",
+    "reported_output": "03:00+0100; expected02:00+0100",
+    "independent_author_run": "mroeschke comment818427467 on2021-04-13 reproduces03:00, pandas1.3.0.dev0+1297.g7d4757b4de; comment818460553 debug prints2 then3 at _localize_tso",
+    "later_output": "thomie comment3198219419 on2025-08-18 reports02:00 underpandas2.3.1/pytz2025.2",
+    "counterexample": "same input across published reports but different authors/processes; no proof same system upgraded timezone edition or change interval",
+    "required_next": "same-system before/after run keys and install/data fingerprint; otherwise retain separate reports"
+  },
+  {
+    "case_id": "A-P41591",
+    "source_id": "S-P41591",
+    "url": "https://github.com/pandas-dev/pandas/issues/41591",
+    "reporter": "Grillard",
+    "input": "2021-01-01 local midnight; US/Eastern pytz timezone passed directly as tzinfo versus localize",
+    "reported_output": "2021-01-01 00:00-05 versus2020-12-31 23:56-05; reportedpytz2020.1",
+    "independent_author_run": "mroeschke comment845452719 uses localize and reports2021-01-01 00:00-0500",
+    "counterexample": "date crosses midnight with same stated package; input construction and instant differ, no edition change needed",
+    "required_next": "original tzinfo.utcoffset and UTC value before pandas conversion in same process"
+  },
+  {
+    "case_id": "A-P41834",
+    "source_id": "S-P41834",
+    "url": "https://github.com/pandas-dev/pandas/issues/41834",
+    "reporter": "rok",
+    "input": "UTC1900-01-01 versus2000-01-01; Australia/Broken_Hill",
+    "reported_output": "09:26+09:26 in1900;10:30+10:30 in2000",
+    "independent_author_run": "jorisvandenbossche comment861501342 compares pytz1900offset9:26 versus zoneinfo9:30, both2000offset10:30; comment8615182791800offsets9:26 vs9:25:48",
+    "counterexample": "same modern offset across two suppliers does not identify supplier or edition; historical offsets/rounding can differ",
+    "required_next": "same run provider version, actual resource bytes, precise seconds and moment; quoted correct offset is maintainer assessment, not separately proven here"
+  }
+]
