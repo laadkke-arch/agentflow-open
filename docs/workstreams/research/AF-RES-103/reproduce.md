@@ -43,3 +43,14 @@ python -B run.py controls --tools "$af103_tools" --output "$af103_out/controls"
 - 각 슬롯은 새 폴더와 새 임시 TeX/XDG 경로를 쓴다. Chromium 탐색과 HTML만 복사한 이동은 별도 오프라인 컨텍스트다. 루프백 URL에는 해당 폴더의 파일 바이트만 공급한다. 이는 실제 인터넷 요청이 아니다. `browser.json`, `moved.json` 및 image 별 PNG가 판독 범위다.
 
 `runs.jsonl`과 각 `receipt.json`에는 실제 인자·시각·종료값·출력 해시가 있다. 절대 실행 경로와 PDF 생성 시간이 바뀔 수 있다. 의미와 주 산출물 바이트는 별도 기준으로 검산한다.
+
+## 다른 분야와 저장판 검산
+
+~~~bash
+python -B cross_domain.py --output "$af103_out/cross-domain"
+python -B verify.py
+~~~
+
+WPT 시험과 기대 XHT는 고정 원본 사본이다. Chromium에서 reftest-wait의 해제를 확인한 뒤 픽셀을 대조한다. Graphviz는 같은 경로의 고정 DOT를 설치 dot으로 읽고 직접 SVG를 생성한다. [상류와 파생 구분](evidence/source-notices.md) · [SVG 결과](evidence/cross-domain/wpt.json) · [DOT 결과](evidence/cross-domain/graphviz.json)
+
+verify.py는 이 저장판의 evidence/matrix와 controls를 읽어 30자리 및 14개 대조의 파일 무결성, 요소·DOM·반복을 검산한다. PDF 좌표를 원소별로 대조한 뒤 브라우저 화면의 윤곽, 채움 샘플, 화살촉 및 라벨을 확인한다. P의 페이지 이름 순서는 실제 파일의 숫자 접미사를 따른다. [측정값](evidence/verification.json)

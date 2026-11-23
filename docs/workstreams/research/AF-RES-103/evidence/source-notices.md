@@ -1,0 +1,7 @@
+# 사본 출처
+
+- T0은 infcs.ltd가 2025-01-28 올린 공개 질문의 LaTeX다. 첫 코드 블록을 LF와 네 공백으로 복원했다. T1/T3/T4의 변경은 입력 원장에 있다. [원 revision과 작성자](https://stackoverflow.com/revisions/79393445/1) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- T2는 Christian Feuersaenger의 PGFPlots 시험 입력이다. 원 파일의 저작권 설명과 공백까지 보존했다. [고정 시험 파일](https://github.com/pgf-tikz/pgfplots/blob/d8e70d407d4f40a02cfdcc4783e7ff3028d8c5c6/source/latex/pgfplots/pgfplotstest/regressiontests/unittest_3d_0.tex) · [PGFPlots 1.18.1 GPLv3+ 배포 안내](https://ctan.org/ctan-ann/id/mailman.2869.1621410113.4615.ctan-ann%40ctan.org)
+- K는 GPL-2.0-or-later Pandoc Lua 예제에서 파생된 096의 봉인 파일이다. [096 원본과 저작권 표시](https://github.com/laadkke-arch/agentflow-open/blob/1d399f630930d2763459e16509c5224b0cded9a0/docs/workstreams/research/AF-RES-096/evidence/pandoc/p4-raw-tikz.lua)
+- WPT 파일과 기대값의 원 저장판·라이선스가 아래에 있다. [고정 WPT 입력](https://github.com/web-platform-tests/wpt/blob/03d41fe0fe3338c66cb56644b8a1705fe2e7247b/svg/painting/currentcolor-fill-stroke-repaint.html) · [기대값](https://github.com/web-platform-tests/wpt/blob/03d41fe0fe3338c66cb56644b8a1705fe2e7247b/css/reference/ref-filled-green-100px-square.xht) · [BSD-3-Clause](cross-fixtures/WPT-LICENSE.md)
+- Graphviz 원 시험/기대 PostScript는 아래 저장판이다. [clusters.gv](https://gitlab.com/graphviz/graphviz/-/blob/00d9fb4479c21b021e510dfb2633f1058d695db7/tests/graphs/clusters.gv) · [기대 출력](https://gitlab.com/graphviz/graphviz/-/blob/00d9fb4479c21b021e510dfb2633f1058d695db7/tests/nshare/clusters_dot.ps) · [EPL-2.0](cross-fixtures/GRAPHVIZ-LICENSE.txt)

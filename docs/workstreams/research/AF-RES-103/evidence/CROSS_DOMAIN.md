@@ -1,0 +1,10 @@
+# SVG와 DOT의 다른 범위 규칙
+
+| 원 시험·대조 | 기대 | 읽은 실제 출력 | 확인 범위 |
+| --- | --- | --- | --- |
+| WPT currentColor repaint | 부모가 red→green, 100×100 녹색과 빨강 0 | 원 fixture와 기대 XHT PNG의 전체 픽셀 일치. RGB(0,128,0) 10,000, 빨강 0 | 고정 원 입력을 Chromium 156에서 읽고 reftest-wait 해제 후 비교. 공식 WPT 하네스는 미실시. [원 시험](https://github.com/web-platform-tests/wpt/blob/03d41fe0fe3338c66cb56644b8a1705fe2e7247b/svg/painting/currentcolor-fill-stroke-repaint.html#L3-L28) · [기대 화면](cross-domain/wpt-expected.png) · [실제 화면](cross-domain/wpt.png) |
+| 동일 SVG 바이트의 inline과 img | inline 내부는 부모 green, 외부 SVG는 별도 색 문맥 | 두 패널 중심 (50,50)과 (350,50)이 녹색 (0,128,0) 및 검정 (0,0,0). 호스트 img의 computed color는 green. SVG에 green 리터럴을 쓰면 외부도 녹색 | 같은 bytes이고 페이지 호스트도 색 이름이 같아도 표시 차이가 났다. [원 bytes](cross-domain/payload.svg) · [화면](cross-domain/host.png) · [리터럴 대조](cross-domain/literal.png) · [영수증](cross-domain/wpt.json) |
+| Graphviz 공식 clusters | a0–a3 white, b0–b3 기본 lightgrey, 유향 간선 | 앞 노드 a0 white/white, b0 lightgrey/black. 두 영역의 기본 채움 분리와 화살촉 유지 | 2.42.4 직접 렌더와 고정 상류 PostScript의 색 값 대조. 상류 회귀 하네스 미실시. [원 fixture](https://gitlab.com/graphviz/graphviz/-/blob/00d9fb4479c21b021e510dfb2633f1058d695db7/tests/graphs/clusters.gv) · [기대 PS](cross-fixtures/clusters-expected.ps) · [화면](cross-domain/clusters.png) |
+| DOT 범위·평탄화·위치 교환 | 원 scope에서 shared/a0 적, b0 청, outside 검정. 같은 label에서 화살촉 vee/dot/normal | 원 scope 그대로 관측. 전체 정의를 앞에 한 번 모으면 모두 청색과 dot. 블록 교환만 하면 공유 shared가 청색이 되고 세 간선의 고유 범위·촉은 유지 | 세 연구자 fixture는 각 별도 direct dot 출력을 비교. 기존 공유 ID의 최초 생성과 edge 생성 시점 분리. [DOT 언어 규칙](https://gitlab.com/graphviz/graphviz.gitlab.io/-/blob/ea52d54e7570cf6238586a88d11e04f61d76c5d3/content/en/docs/lang.md#L166-179) · [SVG 원형](cross-domain/scope.svg) · [평탄화](cross-domain/flattened.svg) · [교환](cross-domain/swapped.svg) · [영수증](cross-domain/graphviz.json) |
+
+SVG에서는 currentColor와 호스트 문서 경계, DOT에서는 객체 생성 및 배치 시점의 scope가 다르다. TeX의 그룹과 이 둘을 같은 언어 규칙으로 해석할 수는 없다. 둘 다 반환 링크의 조각 바이트에 없는 정보를 함께 확인해야 하는 사례다. [W3C SVG 2 §13.3](https://www.w3.org/TR/2018/CR-SVG2-20181004/painting.html#ColorProperty) · [SVG 참조 방식](https://www.w3.org/TR/2014/WD-svg-integration-20140417/#referencing-modes)
