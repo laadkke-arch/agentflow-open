@@ -164,7 +164,7 @@ for stream, row in raw_sources:
         "external_primary_eligible": bool(eligible), "counts_for_deep_20": counts_for_20,
         "category": category,
         "formal_paper_read": row.get("formal_paper_read", bool(eligible and ("paper" in kind or kind == "independent_human_study") and "correction" not in kind and "search_only" not in kind and "access" not in kind and kind != "author_poster")),
-        "reader": row.get("reader", "/root/" + stream),
+        "reader": row.get("reader", "/root/software_ir" if stream == "software" else "/root/" + stream),
         "stream_record": f"streams/{stream}/sources.jsonl",
     }
     if sid == "RT-VAS-P":

@@ -72,3 +72,9 @@ DOI는 https://doi.org/ 및 doi: 접두부 제거, 소문자, trailing punctuati
 노출: root는054 인수와 검색 실패보고를 읽었으며 새 외부 실험 결과표를 읽지 않았다. A에는SIGIR2020 Measuring Recommendation Explanation Quality 등의 제목/스니펫, B에는관련성 낮은CSUR/CSCW 스니펫이 보였다. 각 검색 원장에 개별 노출을 남긴다. 진단 조사자는 사전지식에서 출발한 논문을 별도층으로 읽고 있으며 primary선정의 효과 방향 기준으로 쓰지 않는다.
 
 R1 시각 정정: 초안의03:23Z는 부정확한 예정 시각이었다. 원격c47d842의 실제commit 시각03:21:18Z로 교정했다(시계 도구 확인03:21:42Z). 검색 규칙은 변경하지 않았다.
+
+## 결과 열람 뒤의 감도·교정 기록
+
+주 모집·선정 순서·종점·이진화 기준은 결과 열람 뒤 바꾸지 않았다. 사후의 별도 진단은 D01 공개 필터 전/후 및 모호키400행 포함/전부제외 감도, 주변수 비식별의 자가 생성 이진/세선택지 표다. 이들은 연구 선정이나 주 표의 결측을 채우지 않는다. `streams/diagnostics/sensitivities-prefilter.json`, `streams/root/independent-calculation.json`, `streams/software/three-choice-diagnostic.json`에 실제/가상·시각·입력을 분리했다.
+
+후속 원문 취득과 동료검토로 A01 외부 qrel 원천, A02 '관련 문서 하나 찾기'와 유일한 정답의 차이, B01 절댓값 WOA, B02 SEM한정 결측 진술, B03 그림 분모, B04 Fig6 전사·BH 집단 범위, D04 조건 원키·무작위화 미확인, LSAT 차이의 반올림/전사 및 원위치·검토자 메타데이터를 교정했다. 읽기·계산 오류의 교정이지 더 좋은 방향의 연구로 교체한 것이 아니다. 변경 전후 확인범위·시각·해시는 `streams/*/review-result.md`, `streams/diagnostics/review-ledgers.md`, `streams/software/methods-sensitivity.json`, 출처 원장의 `interpretation_updates/postread_corrections`를 따른다. 최종 정수·원분모·개입효과 판정은 교정된 파일을 기준으로 재검산한다.

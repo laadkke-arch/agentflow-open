@@ -13,7 +13,7 @@ A01은 SIGIR2020의 검색결과 설명 실험, A02는 IUI Companion2024의 비�
 | 연구·층·배정 단위 | 원과제·조건 N | 같은 후보·순위·권고의 증거 | 설명 차이·원 자극 | 정답 원천 | 최종 응답 원천·연결 수 | 가능한 해석·미확인 |
 |---|---|---|---|---|---|---|
 | A01, SW-F24, 검색, 사람간 조건 | 항공공학 검색·bookmark·4문항 quiz; T/TA/TAB 각각 완료자50이라는 저자집계. 실제 모집/배정N 미확인 | 같은BM25라는 방법 진술; HEAD 코드의 같은 data배열에 bars on/off. Fig1TAB과 Fig5TA 첫2예시 대응. Fig4T는 query와 rank2가 달라 전체동일성 입증불가 | TA=제목+snippet; TAB=추가 term-score bars; T=제목만. [저자PDF Fig1/4/5](https://health-nlp.com/files/pubs/sigir20.pdf), [고정코드](https://github.com/bcbi-edu/p_eickhoff_transparent-ir/tree/4a308f735066b2741d2931cd0e5dc0d372f06429) | 저자 hard-coded quiz key; Cranfield query002의25 graded qrels 회수. relevance 이진화/배포판 대응은 미확인 | 공개5batch: 익명 exit응답ID67 모두 같은 batch의 links·quiz와 id연결. condition 열 없음; 저자 완료자150과 동일 코호트인지 미확인 | 제공 화면의 지각된 신뢰/효율 차이. 정오별 권고수락 효과, 실제 설명열람 효과는 미확인 |
-| A02, SW-F28, 검색, 사람안 과제/화면 | 10개 결과에서 적합 문서 찾기; A–F6화면, 사람N·정오 시행N 미확인 | 같은 신경번역 논문 예시가6화면에 보임. 실제 과제별 candidate/rank 목록과 counterbalance 미확인 | A기본, B번역snippet, C/D오른쪽 원어/번역keyword, E/F아래 원어/번역keyword. [저자포스터](https://www.dl.soc.i.kyoto-u.ac.jp/~tajima/papers/iui24poster.pdf) | query/intent에 대한 relevance. 원채점자·정답키·허용복수정답 미확인 | 개별 선택행/condition별 정오 교차표 미회수; 포스터는 평균시간·클릭수 | 관련문서 선택 과제의 표시 방식 비교. 클릭수는 권고수락과 다른 측정이며 원분모 불명 |
+| A02, SW-F28, 검색, 사람안 과제/화면 | 10개 결과에서 관련 문서 하나 찾기라는 요청(유일 정답이라는 뜻 아님); A–F6화면, 사람N·정오 시행N 미확인 | 같은 신경번역 논문 예시가6화면에 보임. 실제 과제별 candidate/rank 목록과 counterbalance 미확인 | A기본, B번역snippet, C/D오른쪽 원어/번역keyword, E/F아래 원어/번역keyword. [저자포스터](https://www.dl.soc.i.kyoto-u.ac.jp/~tajima/papers/iui24poster.pdf) | query/intent에 대한 relevance. 원채점자·정답키·허용복수정답 미확인 | 개별 선택행/condition별 정오 교차표 미회수; 포스터는 평균시간·클릭수 | 관련문서 선택 과제의 표시 방식 비교. 클릭수는 권고수락과 다른 측정이며 원분모 불명 |
 | A03, 비어 있음 | 배정된 연구 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 분모가 없는 해당 없음 | 고정pool 내 미확인 방법 및 미충원; 관측한 참가자0이 아님 |
 | A04, 비어 있음 | 배정된 연구 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 분모가 없는 해당 없음 | 다른 분야 연구로 대체하지 않음 |
 
@@ -44,6 +44,8 @@ A01 quiz의 코드상 답은4문항 순서대로1/4/2/2이며3개이상을 맞�
 반대로 문서참값은 완전히 사라진 것이 아니다. [Glasgow 원본 Cranfield package](https://ir.dcs.gla.ac.uk/resources/test_collections/cran/cran.tar.gz)의 query002가 과제prompt와 정확히 대응한다. qrels30–54행의25문서는1등급2개,2등급5개,3등급13개,4등급4개,-1등급1개다. README에서1은 완전답변,4는 최소관심이며5무관은 수록하지 않는다고 한다. 같은README는 -1을 정의하지 않는다. 낮은등급이 더좋다는 원래방향을 유지했고, 제3자변환본의 역전점수를 가져오지 않았다. 여러문서가 서로다른 수준으로 적절할 수 있으며, 원시험이 어떤 이진화규칙을 썼는지는 미확인이다. [SW-S34]
 
 공개bookmark 제목143종 중142종은 공백/대소문자정규화만으로 corpus제목 하나에 대응하고1종은 중복제목이다. 이는 문서키 회수의 가능성이지 실제 노출·배포corpus판·본문일치가 입증된 완성join이 아니다. 미등재 qrel이나 정의없는-1을 임의로 객관적오답으로 분류하지 않았다. [`cranfield-audit.json`]
+
+A02 포스터의 “Find a relevant paper”는 관련 문서 하나를 찾으라는 과제 지시다. 열 개 후보 중 관련 문서가 정확히 한 개라는 정답 규칙은 확인되지 않았다. 복수의 적합 후보를 허용하는지와 원래 relevance key는 미확인이다. [SW-S28, 포스터 §3]
 
 원참값도 불완전할 수 있다는 직접 반례로 biomedical citation-span 원논문을 열었다.4명의 전문가가 작성한313annotation중 완전일치는2건이다. 이는 이 연구의 label논쟁이지 A01의오답률 수치가 아니다. [SW-S03, Table1 및 §3]
 
