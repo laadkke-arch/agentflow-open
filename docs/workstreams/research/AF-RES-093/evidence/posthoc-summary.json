@@ -1,0 +1,180 @@
+{
+  "integrated_utc": "2026-11-23T18:15:32.391927+00:00",
+  "seal_sha": "3c50d0bd1d8f3659d86f8cf45fe233595c3d2592",
+  "status": "PARTIAL",
+  "strict_scorable_cases": 1,
+  "planned_cases": 6,
+  "primary_policy": "원 요청에 명시된 판·입력·관찰 목표. 정량 픽셀 artifact를 새 의무로 추가하지 않음. 양후보·판·요구의 비교 가능성에 따라 판정.",
+  "case_decisions": [
+    {
+      "case_id": "I1",
+      "scorable": false,
+      "label": null,
+      "scope": {
+        "version": "1.0.2 (1.0.2+r75+1), Ubuntu 20.04; candidate code e86c870879310bfb4a9abee3e7fd65aef0408fd7",
+        "input": "SVG2 autoflowed text and referenced shape-inside frame; same text is stamped or duplicated",
+        "expected": "텍스트 도구로 한 상자의 크기를 바꿀 때 다른 상자의 크기는 바뀌지 않는다."
+      },
+      "source_ids": [
+        "I-POST-001",
+        "I-POST-004",
+        "I-POST-007",
+        "ADJ-I1-NOTE-508328483",
+        "ADJ-I1-NOTE-508328484"
+      ],
+      "urls": [
+        "https://gitlab.com/inkscape/inkscape/-/issues/2225#note_508328483",
+        "https://gitlab.com/inkscape/inkscape/-/issues/2225#note_508328484"
+      ],
+      "expectation": "텍스트 도구로 한 상자의 크기를 바꿀 때 다른 상자의 크기는 바뀌지 않는다.",
+      "observed": "원 요청자가 다른 상자까지 바뀐다고 보고; nathanal이 shape-inside 속성 처리 차이를 설명한다. / maintainer가 Duplicate는 shape-inside를 별도 취급한다고 설명하고 2019년 MR1275/commit 95f17f34를 인용한다.",
+      "minimal_observation": "1.0.2 e86c870879와 같은 SVG에서 stamp/Ctrl+D 각각을 만든 뒤 텍스트 도구로 한 frame만 resize하고 원본·복제본 각 frame geometry 변경을 함께 기록한다.",
+      "advisory_label": "분리",
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    },
+    {
+      "case_id": "I2",
+      "scorable": false,
+      "label": null,
+      "scope": {
+        "version": "1.0.2 / e86c870879310bfb4a9abee3e7fd65aef0408fd7; original Artix x64, maintainer Linux Mint 20",
+        "input": "원 path 및 동일 목적의 Clone Original LPE 대상",
+        "expected": "원본 path shape를 수정하면 연결된 복제 path에 반영된다."
+      },
+      "source_ids": [
+        "I-POST-002",
+        "I-POST-005",
+        "ADJ-I2-NOTE-511827924"
+      ],
+      "urls": [
+        "https://gitlab.com/inkscape/inkscape/-/issues/2231#note_511827924"
+      ],
+      "expectation": "원본 path shape를 수정하면 연결된 복제 path에 반영된다.",
+      "observed": "nathanal이 exact e86c870879 1.0.2에서 재현; clipboard에만 있는 group ID로 잘못 연결됨을 XML Editor에서 관찰했다. / 사전 구현 설명은 linkeditem을 생성하지만, 열람한 사후 토론에는 이 메뉴 후보의 1.0.2 실행 결과가 없다.",
+      "minimal_observation": "원 1.0.2 동일 path를 대상으로 C1과 C2 각각 연결하고 원본 노드를 같은 방식으로 수정한 뒤 연결 target ID와 두 결과 geometry를 비교한다.",
+      "advisory_label": "유보",
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    },
+    {
+      "case_id": "I3",
+      "scorable": false,
+      "label": null,
+      "scope": {
+        "version": "1.0.2 (1.0.2+r75+1), Kubuntu 20.10",
+        "input": "5개의 캘리그래피 선, sprayed clones, eraser Delete와 selection 상태",
+        "expected": "삭제할 객체를 지우되 crash 없이 원본과 clone의 요청된 생존 관계를 보존한다."
+      },
+      "source_ids": [
+        "I-POST-003",
+        "I-POST-006",
+        "ADJ-I3-NOTE-531299709",
+        "ADJ-I3-NOTE-531299711",
+        "ADJ-I3-NOTE-531299713",
+        "ADJ-I3-NOTE-799848135"
+      ],
+      "urls": [
+        "https://gitlab.com/inkscape/inkscape/-/issues/2283#note_531299709",
+        "https://gitlab.com/inkscape/inkscape/-/issues/2283#note_531299711",
+        "https://gitlab.com/inkscape/inkscape/-/issues/2283#note_531299713",
+        "https://gitlab.com/inkscape/inkscape/-/issues/2283#note_799848135"
+      ],
+      "expectation": "삭제할 객체를 지우되 crash 없이 원본과 clone의 요청된 생존 관계를 보존한다.",
+      "observed": "작성자가 unselected clone 미삭제는 설계임을 수용하고 선택 객체 crash로 문제를 좁혔다. 초기 trunk 수정 주장은 작성자 재시험과 나중 maintainer 정정으로 반박되었다. / 사전 candidate_support.json에서 null.",
+      "minimal_observation": "현재 분석에서 보충하지 않음. 별도 사전 설계가 허용될 때만 동일 목적 두 번째 후보와 선택 상태를 먼저 고정한 뒤 두 결과를 관찰해야 한다.",
+      "advisory_label": "유보",
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    },
+    {
+      "case_id": "P1",
+      "scorable": false,
+      "label": null,
+      "scope": {
+        "version": "Pillow 8.2.0, Windows 10 Pro, Python 3.8.5",
+        "input": "원 in.gif의 P frame, 같은 caption 함수와 white canvas/black text, 두 단계 GIF 저장",
+        "expected": "최종 GIF에서 원 프레임 색과 흰 캔버스·검은 글씨가 유지된다."
+      },
+      "source_ids": [
+        "PIL-R1",
+        "PIL-POST1",
+        "ADJ-P1-BODY",
+        "ADJ-P1-NOTE-820672806"
+      ],
+      "urls": [
+        "https://github.com/python-pillow/Pillow/issues/5406",
+        "https://github.com/python-pillow/Pillow/issues/5406#issuecomment-820672806"
+      ],
+      "expectation": "최종 GIF에서 원 프레임 색과 흰 캔버스·검은 글씨가 유지된다.",
+      "observed": "8.2.0 원 본문이 바로 expand한 caption 파이프라인과 잘못된 최종색을 보고한다. / OP Buster-2002가 이 변경으로 고칠 수 있다고 다음 날 보고했다.",
+      "minimal_observation": "8.2.0·동일 in.gif·같은 font/text/save options에서 C1/C2를 각각 실행해 저장 후 다시 연 결과를 함께 제시하고 필요한 원색/캔버스/글씨가 보존되는지 확인한다. 검증 기준과 실제 실행판이 분명한 작성자 재보고도 가능하다.",
+      "advisory_label": "분리",
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    },
+    {
+      "case_id": "P2",
+      "scorable": false,
+      "label": null,
+      "scope": {
+        "version": "주 연구판 8.3.0 / 51591a80a4e14543ea8cbe93026db5e79354b8c4; 원 요청은 8.3.0 또는 8.3.1",
+        "input": "indexed_with_transparency.png; mode=P, palette.mode=RGB, info['transparency']=0",
+        "expected": "변환 결과의 mode가 RGBA이고 transparency index0의 의미가 유지된다."
+      },
+      "source_ids": [
+        "PIL-R2",
+        "PIL-POST2",
+        "PIL-POST4",
+        "PIL-POST7",
+        "PIL-POST9",
+        "ADJ-P2-BODY",
+        "ADJ-P2-NOTE-876192273"
+      ],
+      "urls": [
+        "https://github.com/python-pillow/Pillow/issues/5593",
+        "https://github.com/python-pillow/Pillow/issues/5593#issuecomment-876192273"
+      ],
+      "expectation": "변환 결과의 mode가 RGBA이고 transparency index0의 의미가 유지된다.",
+      "observed": "원 작성자는 RGB 결과를 보고하고 maintainer radarhere는 팔레트 mode를 기본 변환에 쓰는 regression을 설명한다. / 사전 구현은 explicit RGBA 분기를 지지한다. 열람한 원 이슈와 PR5594에는 해당 원 PNG를 원8.3.0에서 C2로 변환한 관측 결과가 없다.",
+      "minimal_observation": "원 첨부 PNG의 bytes/hash와 8.3.0을 고정하여 img.convert()와 img.convert('RGBA')를 나란히 실행하고 mode 및 transparency index0에 대응하는 alpha를 기록한다.",
+      "advisory_label": "분리",
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    },
+    {
+      "case_id": "P3",
+      "scorable": true,
+      "label": "묶음",
+      "scope": {
+        "version": "8.3.0 (원 요청 8.3.0+ 중 명시 비교가 있는 판)",
+        "input": "p=[0,0,0,255,0,0,0,255,0], Image.new('P',(100,100),1)",
+        "expected": "주어진 RGBRGB 배열을 palette에 설치하고 image.getpalette()[:len(p)] == p를 만족한다. index1의 새 red 순서는 원 작성자가 선호한다.",
+        "scope_excludes": [
+          "모든 설치판에서의 동작 동일성",
+          "8.2.0 blue 출력 보존",
+          "후속 GIF 저장·색 변환의 보존",
+          "임의 palette 전체에 대한 보증"
+        ]
+      },
+      "source_ids": [
+        "PIL-POST3",
+        "ADJ-P3-NOTE-877558030",
+        "ADJ-P3-NOTE-877853085",
+        "ADJ-P3-PUTPALETTE-830"
+      ],
+      "urls": [
+        "https://github.com/python-pillow/Pillow/issues/5595#issuecomment-877558030",
+        "https://github.com/python-pillow/Pillow/issues/5595#issuecomment-877853085",
+        "https://github.com/python-pillow/Pillow/blob/51591a80a4e14543ea8cbe93026db5e79354b8c4/src/PIL/Image.py#L1749-L1776"
+      ],
+      "expectation": "주어진 RGBRGB 배열을 palette에 설치하고 image.getpalette()[:len(p)] == p를 만족한다. index1의 새 red 순서는 원 작성자가 선호한다.",
+      "observed": "원 본문의 assert와 maintainer 877558030 비교표 모두 8.3.0에서 p 그대로의 출력 배열을 제시한다. / 877558030이 같은 p/image의 직접 putpalette 결과를 8.3.0에서 p와 같다고 제시한다. 877853085에서 OP가 직접 배열 전달 경로를 자신의 목적에 맞는 것으로 수용한다.",
+      "minimal_observation": "이 제한 판정에는 추가 관측 불필요. 더 넓은 호환성 주장을 하려면 필요한 판·입력·후속 조작을 별도로 고정하고 비교해야 한다.",
+      "advisory_label": null,
+      "root_decision": "수집자와 A/B 미노출 검토자의 제한범위 판정이 일치함을 채택. 후보·사전판정은 수정하지 않음."
+    }
+  ],
+  "sensitivity": [
+    "P1 작성자 질적 해결보고를 충분한 gold로 허용하면 분리 gold 1건 추가. A/B는 모두 유보여서 확정판정 오류 분모는 변화 없음.",
+    "I1과 P2의 원 코드 및 유지관리자 설명을 gold로 허용하면 분리 예측을 지지하나 후보 설명과 독립된 원판 양결과 대조로 세지 않음.",
+    "P3에서 모든 설치판/8.2 호환까지 필수로 바꾸면 기존 8.3 gold는 적용되지 않음. 모집 후 목표를 확장해 기존 정답을 바꾸지 않음.",
+    "contaminated I3를 별도 제외해도 채점 가능한 사건수 1은 그대로이며 전체 요청분모는 사전 계약대로 6 유지."
+  ],
+  "independence": "별도 검토 에이전트가 A/B 예측을 읽지 않고 원자료로 채점가능성을 검토했다. 외부 독립 실행 또는 사람 평가가 아니다. 유일한 gold는 유지관리자의 게시된 비교이며 후보 구현과 프로젝트 저작군이 겹친다."
+}

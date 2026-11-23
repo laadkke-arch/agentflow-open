@@ -39,6 +39,21 @@ def main():
         assert row["judgment"] in {"묶음", "분리", "유보"}
     for case in CASES:
         assert stripped(indexed[case, "A"]["record"]) == stripped(indexed[case, "B"]["record"]), case
+    field_slots = {}
+    for case in CASES:
+        payload = indexed[case, "B"]["record"]
+        filled, missing = [], []
+        for index, candidate in enumerate(payload["candidates"]):
+            for field in ("next_operation", "reference_target", "preserve_value"):
+                value = None
+                if candidate is not None:
+                    if field in payload:
+                        container = payload[field]
+                        value = container.get(candidate.get("id")) if isinstance(container, dict) else container
+                    else:
+                        value = candidate.get("referent" if field == "reference_target" else field)
+                (filled if value is not None and value != "" else missing).append(f"candidate{index + 1}.{field}")
+        field_slots[case] = {"filled": len(filled), "slots": 6, "missing": missing}
     pre = json.loads((ROOT / "evidence/preseal-summary.json").read_text())
     for relative, expected in pre["fragments"].items():
         assert hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected, relative
@@ -94,15 +109,29 @@ def main():
     assert len({r["source_id"] for r in sources}) == len(sources)
     counted = [r for r in sources if r.get("counted") is True]
     for row in sources:
-        assert row.get("url") and row.get("accessed_utc") and row.get("limitations")
+        assert row.get("url") and row.get("limitations")
+        if row.get("counted") is True:
+            assert row.get("accessed_utc"), row["source_id"]
+        elif not row.get("accessed_utc"):
+            # Do not manufacture precise timestamps for excluded discovery
+            # reads. Require an explicit missing-time reason and a bound.
+            assert row.get("accessed_utc_window") or (row.get("accessed_utc_limit") and row.get("recorded_utc")), row["source_id"]
     # A work lineage may contain distinct help/code/test files. Count the
     # documents and those shared lineages separately, never as independent votes.
     counted_work_ids = [r["work_id"] for r in counted]
     document_ids = [r.get("document_id", r["url"].split("#")[0]) for r in counted]
     assert len(document_ids) == len(set(document_ids)), "counted duplicate document URL"
+    opened_issue_events = sorted({r["event_id"] for r in counted if r["event_id"].startswith(("inkscape-issue-", "pillow-issue-"))})
+    normalized_categories = Counter()
+    for row in counted:
+        category = {"initial_request": "new_requests", "new_request": "new_requests",
+                    "official_versioned": "versioned_official", "official_candidate": "versioned_official"}.get(row["category"], row["category"])
+        normalized_categories[category] += 1
     summary = {
         "request_slots": 6, "method_slots": 12,
         "candidate_pairs": sum(indexed[c, "A"]["record"]["candidates"][1] is not None for c in CASES),
+        "extra_field_slots": {"filled": sum(v["filled"] for v in field_slots.values()), "total": 36, "by_case": field_slots,
+                              "limit": "non-null text only; does not certify intent, observed success, or a true subsequent operation"},
         "missing_candidate2": [c for c in CASES if indexed[c, "A"]["record"]["candidates"][1] is None],
         "frames": frames, "metrics": metrics,
         "changed_judgment": [c for c in CASES if indexed[c, "A"]["judgment"] != indexed[c, "B"]["judgment"]],
@@ -110,6 +139,12 @@ def main():
         "counted_work_lineages": len(set(counted_work_ids)),
         "source_categories": dict(Counter(r["category"] for r in counted)),
         "counted_event_ids": len({r["event_id"] for r in counted}),
+        "event_id_count_limit": "includes specification/implementation/test families; not independent user incidents",
+        "directly_opened_issue_events": opened_issue_events,
+        "directly_opened_issue_event_count": len(opened_issue_events),
+        "identified_regression_issue_without_original_thread": ["tdf116413"],
+        "normalized_source_categories": dict(normalized_categories),
+        "excluded_rows_without_exact_access_utc": sum(not r.get("accessed_utc") for r in sources if not r.get("counted")),
         "zero_denominator_rule": "산출 불가; never interpret 0/0 as zero error",
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
