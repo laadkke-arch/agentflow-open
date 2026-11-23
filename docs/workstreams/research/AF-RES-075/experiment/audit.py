@@ -3,6 +3,7 @@ import argparse
 import collections
 import itertools
 import json
+import re
 from pathlib import Path
 
 from registry import CLAIMS, ENTRYPOINTS, ROOT, STATES, VIEWS, encode, sha, write_json
@@ -206,15 +207,127 @@ def validate(root):
     }
 
 
+def final_bundle(root, checks):
+    from tables import render
+
+    targets = ("RESULT.md", "SELF_CHECK.md", "SCOPE.md", "frame.csv", "pairs.csv",
+               "manifest.json", "inputs/manifest.json", "inputs/rules.json", "sources.jsonl",
+               "runs.jsonl", "scores.csv", "costs.csv", "reproduce.md", "evidence/truth.jsonl",
+               "evidence/input-boundary.json", "evidence/acquisition.json", "evidence/losses.jsonl",
+               "evidence/swap.jsonl", "evidence/projections.jsonl", "evidence/cross-check.json",
+               "evidence/replay-run.json", "evidence/native.jsonl", "evidence/timings.jsonl")
+    result = (root / "RESULT.md").read_text(encoding="utf8")
+    assert result.startswith(render(root)), "Report tables differ from the scored rows"
+    questions = re.findall(r"^## (Q[1-7]) · ", result, re.MULTILINE)
+    assert questions == [f"Q{number}" for number in range(1, 8)]
+    own_checks = (root / "SELF_CHECK.md").read_text(encoding="utf8")
+    assert re.findall(r"^\| (Q[1-7])\.", own_checks, re.MULTILINE) == questions
+    table_parts = re.split(r"^## (?:표 [123] · .*|Q[1-7] · .*|남은 약점과 다음 조사)$",
+                           result, flags=re.MULTILINE)
+    expected = ((16, 7), (288, 7), (18, 6), (3, 3))
+    for part, (data_rows, columns) in zip((*table_parts[1:4], table_parts[-1]),
+                                          expected, strict=True):
+        rows = [line for line in part.splitlines() if line.startswith("| ")]
+        assert len(rows) == data_rows + 2, (data_rows, len(rows))
+        assert all(line.count("|") - 1 == columns for line in rows), (columns, rows[0])
+    frame, frame_columns = csv_rows(root / "frame.csv")
+    release_manifest = json.loads((root / "inputs/manifest.json").read_bytes())["editions"]
+    by_edition = index(release_manifest, ("edition",))
+    assert len(frame) == len(release_manifest) == 4
+    for row in frame:
+        release = by_edition[(row["edition"],)]
+        assert row["sha256"] == release["sha256"] == sha((root / row["copy"]).read_bytes())
+        assert int(row["rows"]) == release["rows"]
+
+    sources = json_lines(root / "sources.jsonl")
+    index(sources, ("id",))
+    required = {"id", "original_id", "source_url", "landed_url", "author_publisher", "edition",
+                "checked_utc", "read_locator", "observed", "questions", "limit_and_counterevidence",
+                "access", "role", "counted", "count_reason"}
+    assert all(required <= source.keys() and source["questions"] for source in sources)
+    counted = [row for row in sources if row["counted"]]
+    assert len(index(counted, ("original_id",))) >= 20
+    assert all(row["access"] == "opened" and row["source_url"].startswith("https://") for row in counted)
+    roles = collections.Counter(row["role"] for row in counted)
+    assert all(roles[role] >= minimum for role, minimum in (
+        ("frame", 2), ("change", 8), ("case", 6), ("external", 4)
+    ))
+
+    local_links = set()
+    lengths = {}
+    for document in (result, own_checks, (root / "reproduce.md").read_text(encoding="utf8")):
+        for address in re.findall(r"\]\(([^\s)]+)\)", document):
+            path, _, fragment = address.partition("#")
+            if path.startswith(("http://", "https://")) or not path:
+                continue
+            local_links.add(address)
+            file = root / path
+            if path == "evidence/acceptance-evidence.json" and not fragment:
+                # The caller creates or compares this generated file after the report check.
+                continue
+            assert file.is_file(), address
+            if fragment.startswith("L"):
+                if file not in lengths:
+                    lengths[file] = len(file.read_bytes().splitlines())
+                nums = [int(number) for number in re.findall(r"L(\d+)", fragment)]
+                assert nums and all(1 <= value <= lengths[file] for value in nums), address
+
+    grades, _ = csv_rows(root / "scores.csv")
+    headline_counts = {
+        stage: dict(collections.Counter(row[stage] for row in grades))
+        for stage in ("display", "historical", "current")
+    }
+    return {
+        "schema": 1, "task": "AF-RES-075", "status": "REVIEW_READY",
+        "executor": "Codex Cloud shell, same author review; independent reference implementation",
+        "independent_reviewer": False, "question_ids": questions,
+        "dimensions": {
+            **{key: checks[key] for key in ("primary_pairs", "claims", "views", "states",
+                                           "primary_judgments", "independent_reads", "swap_judgments",
+                                           "loss_judgments", "leak_canaries_rejected")},
+            "result_tables": {"one": expected[0], "two": expected[1], "three": expected[2],
+                              "weaknesses": expected[3]},
+            "csv_rows_columns": checks["csv_shapes"] | {"frame": (len(frame), frame_columns)},
+            "same_document_and_repo_locators_checked": len(local_links),
+        },
+        "outcomes": headline_counts, "source_ledger": {
+            "rows": len(sources), "counted_distinct_originals": len(counted), "by_role": dict(roles),
+            "failed_attempts": sum(row["access"] == "failed" for row in sources), "minimum": 20,
+        },
+        "replay": {
+            "required_empty_directory_runs": 2,
+            "baseline_and_repeat": "evidence/replay-run.json",
+            "stable_ledger_and_projection_hash_checks": "evidence/cross-check.json",
+            "variable_timing_only": "evidence/timings.jsonl",
+        },
+        "limits": [
+            "Publisher IANA tarballs were inaccessible to shell. IANA release table bodies were read on the web and the frozen bytes match both the maintainer Git tag archive and commit blob.",
+            "Publisher HTTP latency at readback and OS-cold-cache behavior are unmeasured.",
+            "Coverage receipts are trusted at capture; the coordinated-reseal counterexample fails unique and top.",
+            "No third-party reviewer or OS-level capability isolation test.",
+        ],
+        "sha256": {name: sha((root / name).read_bytes()) for name in targets},
+    }
+
+
 if __name__ == "__main__":
     cli = argparse.ArgumentParser()
     cli.add_argument("--root", type=Path, default=ROOT)
     cli.add_argument("--replay", type=Path, action="append", default=[])
     cli.add_argument("--receipt", type=Path)
+    cli.add_argument("--final", action="store_true")
+    cli.add_argument("--write-acceptance", action="store_true")
     args = cli.parse_args()
     report = validate(args.root)
     report["replay_comparisons"] = [replay_compare(args.root, replay) for replay in args.replay]
     if args.receipt:
         write_json(args.receipt, report)
+    if args.final or args.write_acceptance:
+        accepted = final_bundle(args.root, report)
+        acceptance_path = args.root / "evidence/acceptance-evidence.json"
+        if args.write_acceptance:
+            write_json(acceptance_path, accepted)
+        assert encode(accepted) == encode(json.loads(acceptance_path.read_bytes()))
+        print(f"Final tables and {accepted['source_ledger']['counted_distinct_originals']} originals checked")
     print(f"Audited {report['primary_judgments']} main, {report['swap_judgments']} swap, "
           f"{report['loss_judgments']} loss rows; {len(args.replay)} stable replay comparisons")
