@@ -159,7 +159,7 @@ python -B docs/workstreams/research/AF-RES-050/verify_ledgers.py --documents
 python -B -m workbench.session check docs/workstreams/research/AF-RES-050/manifest.json --fetch
 ```
 
-위 목록은 재현 명령이다. 각 명령의 실제 실행/미실행 상태는 receipt를 우선한다. 마지막 session check와 고정 RESULT SHA 원격 재열람은 RESULT 커밋 후 수행하여 HANDOFF에 실제 종료코드와 검증 커밋을 기록한다. 원자료 부재 때문에 사람별 시간–품질 통합분석·작성자 분석 스크립트 재실행은 미실시다. 이를 실행했다고 표시하지 않는다.
+위 목록은 재현 명령이다. 각 명령의 실제 실행/미실행 상태는 receipt를 우선한다. RESULT 커밋5a86c940 이후 session check는 exit0/passed였고, 두 표와 수용 원장은 원격 전체 내용이 일치했다(evidence/session-check.json, remote-reread.json). 검증 커밋의 최종 재열람/check도 HANDOFF에 실제 결과와 함께 기록한다. 원자료 부재 때문에 사람별 시간–품질 통합분석·작성자 분석 스크립트 재실행은 미실시다. 이를 실행했다고 표시하지 않는다.
 
 **다음 첫 행동은 NCQ의 공개 코드북과 시간·제출·최종검사 파일 존재를 정확한 파일/저작 경로에서 다시 확인하는 것이다.** `(experiment,P,T)→condition,problem,period` 대응과 각20대상시행의 timestamp·최종score·중단사유가 최소 입력이다. 확보 전에는 T1/T2조건 효과를 계산하지 않는다. 이어 Strata workbook의 공개 비식별판과 이유별 점수/gold를 확인하고, Schwonke는 후보77/78의 코호트 crosswalk와 export/사후점수 키부터 확인한다. 새 자료가 공개되면 동일 사전 종점으로 조인 전후 행수·탈락 분모를 먼저 감사한 뒤 분석한다. 저자에게 연락하거나 접근 권한을 요청한 작업은 없다.
 

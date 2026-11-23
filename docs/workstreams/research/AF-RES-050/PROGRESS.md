@@ -13,3 +13,5 @@
 ③ 원격 커밋: `9cb61b4f5952c3b3b8b32f6be27239d06d55f404`.63파일. 통합 원장 의미·참조 검사356건 exit0. 원격 tree와 index 일치 확인. 게시 payload의 UTF-16 길이 검사에서 한 번 중단했으나 원격 mutation 전이었으며, Unicode JSON 조립 후 정확한 git tree SHA로 검증하여 게시했다.
 
 ④ RESULT·SELF_CHECK·수용 원장: 두 필수 표는 RESULT1·12줄, 말미3약점은166줄이다. 분담 독립검토의 인용·단위·획득범위 지적을 반영했고 최종 문서/원장364검사 exit0. 고정8군 공동 원자료 비교 가능 관측0/8과 자료 배당17/24를 부분 판정으로 남긴다. 원격 결과판 재열람·session check는 다음 단계에서 실제 수행한다.
+
+④ 원격 결과 커밋: `5a86c940a28ab4d06c45acba20c652e49e8f941b`.9파일. 정확한 SHA에서 RESULT 두 표와 acceptance 전체를 GitHub로 재열람하여 게시 내용과 일치했다. session check --fetch는 실제 exit0/status passed, checked_out5a86c940, 통합 원격2875c1af816d6f376c061fffef20b739fd0af005, outside/unmerged/errors 모두 빈 배열이었다. 최초 통합522ea909·계획판d8c8d029는 manifest에서 유지한다. 검증 영수증을 별도 커밋한 뒤 그 판을 다시 확인하고 HANDOFF만 마지막으로 커밋한다.

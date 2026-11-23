@@ -130,8 +130,8 @@ AC-08은 독립 검토에 따라 탐색 실행4/2의 pass를 자료 확보까지
 | 게이트 | 현재 상태 | 다음 실행/입력 |
 | --- | --- | --- |
 | 최종 문서 검사 | pass;364검사·exit0 | `python -B docs/workstreams/research/AF-RES-050/verify_ledgers.py --documents`; evidence/validation-documents.json에 실제 출력/종료코드 기록 |
-| 고정 결과 원격 재열람 | pending | 고정 결과 SHA의 RESULT 표1·표2와 evidence/acceptance-evidence.json을 각각 원격으로 읽고 일치 확인 |
-| session check | pending | `python -B -m workbench.session check docs/workstreams/research/AF-RES-050/manifest.json --fetch`; stdout/stderr·exit code 보존 |
+| 고정 결과 원격 재열람 | pass;3/3 | 5a86c940a28ab4d06c45acba20c652e49e8f941b의 RESULT 표1·표2와 수용원장 전체 문자 일치; evidence/remote-reread.json |
+| session check | pass;exit0 | `python -B -m workbench.session check docs/workstreams/research/AF-RES-050/manifest.json --fetch`; evidence/session-check.json에 stdout/stderr·exit0 보존 |
 | HANDOFF 마지막 단독 커밋 | pending | 앞 검사가 끝난 뒤 결과 SHA·표 위치·자료수·실행/미실행·부분 요건·다음 행동을 기록하고 단독 커밋 |
 
-현재 pending은 성공으로 선기록하지 않았다. root가 실제 수행한 결과로 이 게이트와 수용 원장을 갱신해야 한다. 이후 원격 확인이 성공해도 자료 배당 미달과 공동 원자료 결손은 남으므로 최종 연구 판정은 partial을 유지한다.
+문서 검사·원격 재열람·session check의 실제 성공을 기록했다. HANDOFF는 마지막 단독 커밋이라는 순서 제약 때문에 이 결과판에서는 pending이며, 후속 HANDOFF와 git 이력으로 완료를 증명한다. 검증 커밋을 최종 결과판으로 다시 원격 열람/check한 영수증도 HANDOFF에 남긴다. 자료 배당 미달과 공동 원자료 결손은 남으므로 연구 판정은 partial을 유지한다.

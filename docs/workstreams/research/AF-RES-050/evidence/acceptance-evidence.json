@@ -1291,14 +1291,20 @@
     {
       "id": "GATE-REMOTE",
       "requirement": "고정 결과 SHA의 두 필수 표와 수용원장 원격 재열람",
-      "status": "pending",
-      "numerator": 0,
+      "status": "pass",
+      "numerator": 3,
       "denominator": 3,
       "unit": "required remote artifact/section rereads",
-      "evidence": [],
-      "unmet_reason": "아직 실행하지 않음. 고정 결과 SHA를 정한 뒤 원격 RESULT의 표1·표2와 acceptance-evidence.json을 실제 열어 일치 확인.",
+      "evidence": [
+        {
+          "file": "evidence/remote-reread.json",
+          "line_start": 1,
+          "locator": "exact full-content comparison; required RESULT tables1/2 and acceptance file"
+        }
+      ],
+      "unmet_reason": null,
       "value_semantics": "counts of reviewed evidence/actions, not treatment-effect estimates",
-      "result_commit": null,
+      "result_commit": "5a86c940a28ab4d06c45acba20c652e49e8f941b",
       "required_targets": [
         "RESULT.md required table1",
         "RESULT.md required table2",
@@ -1308,15 +1314,21 @@
     {
       "id": "GATE-SESSION",
       "requirement": "요청한 session check --fetch 실제 출력·종료코드 기록",
-      "status": "pending",
-      "numerator": 0,
+      "status": "pass",
+      "numerator": 1,
       "denominator": 1,
       "unit": "session check command",
-      "evidence": [],
-      "unmet_reason": "아직 실행하지 않음. 원격 결과 고정 뒤 root가 실행하고 실제 출력·종료코드를 보존.",
+      "evidence": [
+        {
+          "file": "evidence/session-check.json",
+          "line_start": 1,
+          "locator": "full stdout/stderr/exit0; checked_out_commit5a86c940; remote integration2875c1af; outside/unmerged/errors empty"
+        }
+      ],
+      "unmet_reason": null,
       "value_semantics": "counts of reviewed evidence/actions, not treatment-effect estimates",
       "command": "python -B -m workbench.session check docs/workstreams/research/AF-RES-050/manifest.json --fetch",
-      "exit_code": null
+      "exit_code": 0
     },
     {
       "id": "GATE-HANDOFF",
@@ -1326,9 +1338,11 @@
       "denominator": 1,
       "unit": "handoff-only final commit",
       "evidence": [],
-      "unmet_reason": "문서/원격/session 게이트가 pending이므로 아직 작성·최종 커밋 단계가 아님.",
+      "unmet_reason": "RESULT/SELF_CHECK/acceptance, remote reread and session check passed. Handoff is intentionally the next final standalone commit; its completion is certified in descendant HANDOFF.md and git history, not pre-claimed here.",
       "value_semantics": "counts of reviewed evidence/actions, not treatment-effect estimates",
-      "handoff_commit": null
+      "handoff_commit": null,
+      "completion_evidence_location": "HANDOFF.md and final commit changed-path list",
+      "final_fixed_result_reread_location": "HANDOFF.md final verification receipt"
     }
   ],
   "question_checks": [
@@ -2104,8 +2118,6 @@
   "next_first_action": "NCQ 코드북 및 공개 배정·시각·최종검사 export를 확인하여 cohort/P/T를 조건·문제·period에 매핑. 다른 공개 파일의 이름만 바꿔 참가자 원행으로 대체하지 않음.",
   "effect_interpretation": "공동 원자료 추정 가능 군 관측0/8(주표본0/6)은 이번 탐색의 자료 가용성 판정이며 시간/품질 효과가0이라는 통계 추정이 아님.",
   "finalization_gates_pending": [
-    "GATE-REMOTE",
-    "GATE-SESSION",
     "GATE-HANDOFF"
   ],
   "last_revision_at_utc": "2026-11-23T00:49:18.499162+00:00",
@@ -2132,5 +2144,6 @@
       ]
     }
   ],
-  "input_hash_note": "현재 LF line endings의 실제 파일 바이트로 SHA256 갱신; Git 원격 CSV 내용·논리행·판정 수는 불변."
+  "input_hash_note": "현재 LF line endings의 실제 파일 바이트로 SHA256 갱신; Git 원격 CSV 내용·논리행·판정 수는 불변.",
+  "final_result_verification_note": "This evidence snapshot records the first fixed-result reread. HANDOFF records a final reread/check of the verification commit before its own standalone commit."
 }
