@@ -1,0 +1,343 @@
+{
+  "JQ-0001": {
+    "group": "main_official",
+    "cases": [
+      "J1",
+      "J2",
+      "J3",
+      "J4"
+    ],
+    "confirmed": "jq 1.7 매뉴얼은 from_entries의 key/Key/name/Name 및 value/Value 입력과 with_entries의 분해·재조합을 명시한다. 기본 주 도구 매뉴얼에 변환의 핵심이 남는다.",
+    "supports": "J2의 인접 sed 문서가 없어도 이미 변환된 JSON에 대한 핵심 연산은 주 매뉴얼에 존재한다.",
+    "limit": "원 evtx/XML, yq 구현과 전체 Event envelope 또는 사용자 실행 성공을 확인하지 않는다."
+  },
+  "JQ-0075": {
+    "group": "main_official",
+    "cases": [
+      "J2"
+    ],
+    "confirmed": "util.c는 파일 열기, 입력 parser 상태·파일명·행 위치와 slurp 초기화를 구현한다.",
+    "supports": "J2 A3의 input 관련 토큰 일치는 EventData의 Name→content 변환 자체를 입증하지 않는다.",
+    "limit": "C 입력 plumbing이며 원 Windows 로그의 의미와 누락 content 값을 복원하지 못한다."
+  },
+  "JQ-0080": {
+    "group": "upstream_tests",
+    "cases": [
+      "J1",
+      "J2"
+    ],
+    "confirmed": "tests/jq.test의 from_entries fixture는 대소문자 Key/Name/Value 변형에서 a,b,c,d 객체를 예상한다. map/add fixture도 별개로 있다.",
+    "supports": "J2 B는 A4의 독립 상류 시험 근거를 밀어낸다. 같은 연산 설명이 남은 매뉴얼에 있어 주 완결은 유지된다.",
+    "limit": "시험 파일을 읽었으며 실행하지 않았다. 원 Event envelope·결손 content 전체 fixture가 아니다."
+  },
+  "SED-0001": {
+    "group": "adjacent_official",
+    "cases": [
+      "J2"
+    ],
+    "confirmed": "GNU sed 4.9 매뉴얼은 s의 첫 일치와 g 전역 치환, replacement의 escape를 설명한다.",
+    "supports": "JSON 이전의 텍스트 치환 경계와 원 파이프라인의 전체 + 삭제 위험을 확인할 수 있다.",
+    "limit": "실제 sed 구현·판 미확인. + 삭제가 실제 원 로그를 훼손했다는 관측은 없다. content 결손의 TRUE 의미를 만들지 못한다."
+  },
+  "SED-0022": {
+    "group": "upstream_tests",
+    "cases": [
+      "J2"
+    ],
+    "confirmed": "NetBSD에서 유래한 sed bsd.sh는 입력 리다이렉션, -e 및 test_subst에서 전역 치환·escape·역참조를 시험한다.",
+    "supports": "인접 도구의 원 시험을 추가하지만 EventData 객체 재구성의 필수 근거는 아니다.",
+    "limit": "GNU sed 배포판에 포함된 시험이며 이 연구에서 실행하지 않았다. Windows evtx/yq 원 입력을 다루지 않는다."
+  },
+  "JQ-0070": {
+    "group": "main_official",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "main.c는 --argjson에서 이름과 JSON 두 argv 원소를 소비하고 jq_parse 실패 시 invalid JSON을 보고한다.",
+    "supports": "J3 A3는 JSON 수신 경계를 지지하지만 Bash 변수 확장·word splitting의 완전한 설명은 아니다.",
+    "limit": "Bash가 jq 실행 전에 argv를 만드는 규칙은 이 파일의 책임 밖이다."
+  },
+  "JQ-0072": {
+    "group": "main_official",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "parser.c는 구문 오류에 Unix shell quoting issues?라는 힌트를 붙인다. 나머지는 생성된 Bison parser 코드이다.",
+    "supports": "J3 A4의 shell 어휘 중복은 정답 quoting 규칙의 증명이 아니다.",
+    "limit": "명령행 변수·파일명과 리다이렉션의 구체 수정은 제공하지 않는다."
+  },
+  "WT-0021": {
+    "group": "adjacent_official",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "Windows Terminal 고정 schema는 schemes를 SchemeList에 연결하고 색상 scheme 객체 목록 및 name/color 속성을 기술한다.",
+    "supports": "결과 설정의 배열 구조를 별도로 확인하지만 Bash argv 경계의 결손은 유지된다.",
+    "limit": "실제 Terminal 판과 .new 적용 과정이 없고 원 축약 colorscheme를 완전 설정으로 간주할 수 없다."
+  },
+  "WT-0039": {
+    "group": "adjacent_official",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "Suggestions UI/Snippets 설계서는 저장 명령과 sendInput, shell integration, waitForSuccess 등의 제안을 논의한다.",
+    "supports": "J3 B4는 command/shell/JSON 어휘가 겹쳐도 현재 Bash quoting의 실행 명세가 아니다.",
+    "limit": "설계 제안의 내용이다. 안정 제품의 지원 기능이나 원 Bash 실행을 보증하지 않는다."
+  },
+  "JQ-0045": {
+    "group": "main_official",
+    "cases": [
+      "J4"
+    ],
+    "confirmed": "jv.c의 객체 getter는 없는 키에 jv_invalid를 돌려주며 has/set은 저수준 객체 API를 구현한다.",
+    "supports": "J4 A3의 객체 관련 토큰은 AWS volume/tag 결합의 직접 설명이 아니다.",
+    "limit": "C의 jv_invalid와 jq 필터의 null을 동일시하지 않는다. AWS API schema를 설명하지 않는다."
+  },
+  "JQ-0046": {
+    "group": "main_official",
+    "cases": [
+      "J4"
+    ],
+    "confirmed": "jv.h는 배열·객체 연산의 선언과 매크로를 제공한다.",
+    "supports": "J4 A4는 저수준 연산 선언이며 VolName·Iops 요구를 자체로 완결하지 못한다.",
+    "limit": "원 필터 실행 결과나 AWS 필드 의미는 없다."
+  },
+  "AWS-0706": {
+    "group": "adjacent_official",
+    "cases": [
+      "J4"
+    ],
+    "confirmed": "describe-volumes 예제는 Volumes 배열, Iops, 크기, Attachments 및 Tags의 Key/Value를 제시하고 태그 필터와 JMESPath query를 보인다.",
+    "supports": "J4 인접 자료는 원문에 있던 구조를 확인하며 주 매뉴얼의 jq 결합 근거를 대체할 필요는 없다.",
+    "limit": "예제 키는 Name이고 자연 요구는 VolName이다. 원 입력에 없는 Iops 숫자를 이 예제에서 가져올 수 없다. 한 예제 KmsKeyId 문자열 표기가 의심스러워 실행 가능한 JSON fixture로 쓰지 않았다."
+  },
+  "AWS-0248": {
+    "group": "adjacent_official",
+    "cases": [
+      "J4"
+    ],
+    "confirmed": "EMR helptext는 EBS 구성과 릴리스별 volume size/IOPS/throughput 옵션을 설명한다.",
+    "supports": "EBS/IOPS 어휘만 겹치는 EMR 문서가 B4에 들어온다.",
+    "limit": "EC2 describe-volumes 출력 또는 jq Tags 변환의 근거가 아니다."
+  },
+  "PD-0001": {
+    "group": "main_official",
+    "cases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4"
+    ],
+    "confirmed": "Pandoc 3.6 매뉴얼은 reader→AST→writer 구조와 기본 PDF 생성에 LaTeX engine 설치가 필요함을 명시한다. --pdf-engine 및 중간 TeX 확인 절차가 있다.",
+    "supports": "주 도구 문서가 외부 실행기 의존을 직접 설명하는 반례. 인접 자료가 있어야만 외부 의존을 알 수 있다는 주장은 성립하지 않는다.",
+    "limit": "custom Eisvogel/filter/컨테이너의 실제 조합이나 사용자판 2.18/3.1.3의 실행을 입증하지 않는다."
+  },
+  "PD-0227": {
+    "group": "main_official",
+    "cases": [
+      "P1"
+    ],
+    "confirmed": "PowerPoint writer의 이미지 유형 처리에는 Svg와 Emf 확장자 연결이 있다.",
+    "supports": "P1 B는 A3의 출력 형식 인식 근거를 밀어낸다. 이것만으로 include_graphics의 전역 파일 선택 입력 경계는 연결되지 않는다.",
+    "limit": "유형 인식은 원 PowerPoint에서 품질·호환성·렌더링 성공을 뜻하지 않는다. SVG raster fallback을 이 절에서 추정하지 않았다."
+  },
+  "PD-0005": {
+    "group": "main_official",
+    "cases": [
+      "P1"
+    ],
+    "confirmed": "Pandoc EPUB 설명은 Markdown의 로컬 이미지가 전자책에 포함되는 예제를 제공한다.",
+    "supports": "P1 A4의 이미지 어휘 중복은 PowerPoint나 knitr 파일 선택의 근거가 아니다.",
+    "limit": "대상 출력이 EPUB이고 외부 그림의 기본 확장자 설정을 다루지 않는다."
+  },
+  "KN-0024": {
+    "group": "adjacent_official",
+    "cases": [
+      "P1"
+    ],
+    "confirmed": "knitr plot.R의 include_graphics는 path 벡터를 받고 R chunk/inline 사용을 명시한다. auto_pdf는 LaTeX일 때 기존 PDF 대체만 하며 로컬 파일 존재를 검사하고 knit_image_paths/knit_asis 클래스를 반환한다.",
+    "supports": "P1의 전역 선택 helper가 선택 경로를 include_graphics 입력으로 연결할 수 있는 필수 근거. helper-allowed 해석의 B 단독 완결을 지지한다.",
+    "limit": "내장 SVG/EMF 전역 옵션은 입증하지 못한다. helper 정의만으로 기존 knitr::include_graphics 호출은 바뀌지 않으며 호출명 변경이 필요하다. SVG/EMF 실파일·PowerPoint 실행은 미확인."
+  },
+  "KN-0013": {
+    "group": "adjacent_official",
+    "cases": [
+      "P1"
+    ],
+    "confirmed": "hooks-latex.R는 LaTeX includegraphics 출력을 만들 때 knitr.include_graphics.ext 옵션에 따라 확장자를 남기거나 제거한다.",
+    "supports": "출력 markup의 확장자 옵션과 입력 파일 형식 선택은 다른 경계라는 반례.",
+    "limit": "PowerPoint 기본 SVG/EMF 선택 옵션을 제공하지 않는다. 이 옵션만 바꿔서는 C1/C2가 완결되지 않는다."
+  },
+  "PD-0012": {
+    "group": "main_official",
+    "cases": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "confirmed": "Lua filter 문서는 parsing 이후 AST 변환, 외부 JSON filter의 별도 interpreter/library 의존, 내장 Lua의 차이를 설명한다.",
+    "supports": "P2 reader 단계의 import 실패를 일반 사후 AST filter로 해결했다고 할 수 없다. P3의 외부 filter 의존은 주 도구 문서에도 있다.",
+    "limit": "R Markdown의 include_graphics hook 등록이나 CeTZ 패키지 resolver 구현은 이 읽은 절에서 확인하지 못했다."
+  },
+  "PD-0018": {
+    "group": "main_official",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "Pandoc source guide는 src/tests 조직과 metadata/blocks AST를 소개한다.",
+    "supports": "P2 A4는 구현 탐색의 배경이지 Typst package import 해결 근거가 아니다.",
+    "limit": "Typst resolver나 원 test2.typ 결과를 시험하지 않는다."
+  },
+  "CE-0001": {
+    "group": "adjacent_official",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "CeTZ 0.4.0 README는 @preview/cetz:0.4.0과 @local 설치를 설명하며 just test에 tytanic이 PATH에 있어야 함을 명시한다.",
+    "supports": "B에서 라이브러리의 자체 설치·시험 의존을 얻지만 Pandoc loader의 지원을 얻지는 못한다.",
+    "limit": "원 요청은 CeTZ 0.3.4이다. 로컬 vendoring 가능성과 동일 출력은 아직 검증하지 않았다."
+  },
+  "CE-0004": {
+    "group": "adjacent_official",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "bezier.typ는 vector/aabb/wasm 모듈과 ../cetz-core/cetz_core.wasm plugin을 사용하며 곡선 함수를 구현한다.",
+    "supports": "파일을 읽으면 import 문자열 외에 WASM 자원이 필요한 추가 경계를 발견한다. 이것은 완결 이득과 다르다.",
+    "limit": "0.4.0 구현의 요구를 0.3.4 실행 실패 원인으로 단정할 수 없다. Pandoc의 해당 plugin 지원은 미확인."
+  },
+  "PD-0022": {
+    "group": "main_official",
+    "cases": [
+      "P3"
+    ],
+    "confirmed": "CommandLineOptions는 --template FILE, --pdf-engine PROGRAM의 허용 엔진 검사와 --filter PROGRAM/--lua-filter SCRIPTPATH를 등록한다.",
+    "supports": "원 요청의 인수·필터 경계를 주 도구 구현으로 확인할 수 있으나 컨테이너 mount/entrypoint는 별도이다.",
+    "limit": "Docker 이미지의 latest 역사·Eisvogel fork·두 필터 설치를 해결하지 못한다."
+  },
+  "JQ-0117": {
+    "group": "upstream_tests",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "jq shell 시험은 --arg foo 1과 --argjson bar 2를 주고 문자열 1·숫자 2 및 ARGS.named 동일성을 비교한다. 이어 --slurpfile/--rawfile fixture가 있다.",
+    "supports": "원 상류 시험은 argv 값 종류를 검증한다. J3 파일 인수 대안을 후속에서 검토할 단서는 되지만 사전 패킷 밖이므로 주 판정을 올리지 않는다.",
+    "limit": "Bash에서 변수 JSON의 word splitting을 재현한 원 요청 시험이 아니며 실행하지 않았다."
+  },
+  "KN-0133": {
+    "group": "upstream_tests",
+    "cases": [
+      "P1"
+    ],
+    "confirmed": "knitr test-plot.R는 include_graphics의 error=FALSE 호출과 tilde 경로 확장을 검증한다. 별도 tikzDevice 검사는 pdflatex 등 환경 조건으로 제한한다.",
+    "supports": "실제 파일 경계와 빌드 제한을 확인한다. 전역 SVG/EMF 내장 옵션이 시험된다는 증거는 아니다.",
+    "limit": "읽은 원 시험은 실행하지 않았고 helper 선택이나 PowerPoint 결과를 시험하지 않는다."
+  },
+  "CE-0069": {
+    "group": "excluded_empty_fixture",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "파일은 Empty test file라는 주석 한 줄뿐이다.",
+    "supports": "이름이 test여도 유효한 원 시험 근거가 아닐 수 있다.",
+    "limit": "입력·기대값·동작 검증이 없어 최소 원 시험 개수에서 제외한다.",
+    "count": false
+  },
+  "CE-0079": {
+    "group": "supplementary_fixture_helper",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "test helper는 /src/lib.typ에서 CeTZ를 직접 가져와 canvas와 test-case를 구성한다.",
+    "supports": "자체 시험의 로컬 source import는 @preview 원 패키지를 Pandoc이 읽는 경로와 다르다.",
+    "limit": "독립 원 시험 하나로 중복 산입하지 않는다.",
+    "count": false
+  },
+  "CE-0046": {
+    "group": "upstream_tests",
+    "cases": [
+      "P2"
+    ],
+    "confirmed": "CeTZ bezier 원 시험은 /src/lib.typ를 import하여 곡선 끝점 뒤 원을 그리는 회귀 사례 236을 지정한다.",
+    "supports": "실제 fixture가 local source 모듈을 시험하며 Pandoc의 @preview resolver를 시험하지 않는다는 반례.",
+    "limit": "원 CeTZ0.3.4/Pandoc3.1.3 입력과 다르다. 실행·시각적 expected 이미지 비교는 하지 않았다."
+  },
+  "JQ-0002": {
+    "group": "main_official",
+    "cases": [
+      "J1"
+    ],
+    "confirmed": "f_input은 callback 부재 또는 유효하지 않은 무메시지 입력을 break 메시지로 바꾸고 f_debug는 값을 callback에 복사한 뒤 원 값을 반환한다.",
+    "supports": "J1의 진단 probe 및 break 가능한 위치를 지지한다.",
+    "limit": "원 파일·trace가 없으므로 실제 break 원인으로 단정하지 않는다."
+  },
+  "JQ-0004": {
+    "group": "main_official",
+    "cases": [
+      "J1"
+    ],
+    "confirmed": "builtin.jq는 debug(msgs)의 원값 유지와 INDEX/JOIN의 여러 인수 형태 및 join_expr 직전 쌍을 정의한다.",
+    "supports": "J1에서 원 호출의 INDEX 형태를 비교하고 중간값을 관측할 위치를 제시한다.",
+    "limit": "원 두 전체 JSON의 실제 결합 성공을 시험하지 않았다."
+  },
+  "JQ-0007": {
+    "group": "main_official",
+    "cases": [
+      "J4"
+    ],
+    "confirmed": "compile.c는 jq filter의 intermediate representation을 instruction 이중 연결 목록과 block 및 binding 상태로 설명한다.",
+    "supports": "J4의 rank2 구현 파일은 scope/변수 어휘를 포함해도 volume Tags 연산 설명과는 거리가 있다.",
+    "limit": "읽은 도입부는 compiler 구조이며 AWS 입력의 의미는 다루지 않는다."
+  },
+  "JQ-0016": {
+    "group": "excluded_intro_only",
+    "cases": [
+      "J3"
+    ],
+    "confirmed": "IBM Mike Cowlishaw의 decNumber 일반 십진 산술 모듈 저작 계보와 임의 정밀도 산술 도입부를 확인했다.",
+    "supports": "J3의 큰 rank2 파일이 Bash 변수 전달 근거를 곧바로 제공하지 않는다.",
+    "limit": "도입부·저작권만 추가 확인했고 해당 산술 함수 동작은 읽지 않아 최소 자료 개수에서 제외한다.",
+    "count": false,
+    "author": "Mike Cowlishaw / IBM; vendored by jqlang/jq"
+  },
+  "JQ-0090": {
+    "group": "excluded_manual_derived_test",
+    "cases": [
+      "J2"
+    ],
+    "confirmed": "man.test는 없는 .foo 조회의 null 및 배열 .[] 순회에 대한 입력·기대 결과를 포함한다.",
+    "supports": "S 창에서도 J2의 결손 값 일부 근거가 남지만 Name→content 전체 연산이 없다.",
+    "limit": "매뉴얼 예제에서 파생된 시험이므로 독립 상류 시험 최소 개수에 추가하지 않는다. 실행하지 않았다.",
+    "count": false
+  },
+  "PD-0007": {
+    "group": "main_official",
+    "cases": [
+      "P2",
+      "P3"
+    ],
+    "confirmed": "Pandoc FAQ는 standalone 출력, 기본 pdflatex와 중국어에서 xelatex·글꼴 요구를 설명한다.",
+    "supports": "주 도구 FAQ도 외부 엔진·글꼴 실패조건을 설명하지만 Docker/script 통합은 해결하지 않는다.",
+    "limit": "원 P3는 중국어 문제가 아니며 pdflatex 요구를 임의로 xelatex로 교체하지 않았다."
+  },
+  "PD-0024": {
+    "group": "excluded_intro_only",
+    "cases": [
+      "P4"
+    ],
+    "confirmed": "App.Opt의 app 옵션 모듈 선언, defaultOpts/applyDefaults exports와 imports를 읽었다.",
+    "supports": "S 창의 title/metadata 토큰 유무만으로 YAML quoting 해결을 증명할 수 없다.",
+    "limit": "도입부는 옵션 함수의 구현을 보여 주지 않으므로 최소 고유 자료 개수에서는 제외한다.",
+    "count": false
+  },
+  "PD-0031": {
+    "group": "excluded_intro_only",
+    "cases": [
+      "P4"
+    ],
+    "confirmed": "Citeproc 모듈 도입부에 processCitations/getReferences 및 YAML 참고문헌 변환 관련 imports가 있다.",
+    "supports": "bibliography 관련 YAML 어휘는 원 title colon parse 해결의 직접 근거가 아니다.",
+    "limit": "도입부만 추가 확인했으므로 최소 고유 자료 개수에서는 제외한다.",
+    "count": false
+  }
+}

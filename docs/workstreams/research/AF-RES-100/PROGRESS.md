@@ -24,3 +24,11 @@
 ① `e0cb8eaec3cbd9a7e5d40291a5a883f33473ec2f`: 기존 모집·조건·순위·패킷 봉인.
 
 ② `5d81bcbeb5f1248fc1dd2ce2d825cf6467353673`: 32초기판정·별도 근거가용성 감사·16쌍 봉인. 재개 커밋 `54ab626e9a558f0e442d74dad9697b787dec539b`은 e0 위에서 만들었으나 예상HEAD 불일치로 branch에 연결되지 않았다. 그 tree로 원격을 덮어쓰지 않았고, ②에 fast-forward한 뒤 재개 기록만 새 커밋에 싣는다. 상세 `evidence/resume2/concurrency.json`.
+
+## ③ 완료·④ 시작
+
+공개 후속 8건·5답·18댓글(30일)과 수정판을 별도 수집했다. 20 API 요청 실패0이며 사전 판정은 그대로다. 밀려난/추가한24자리와 직접 연 원문36파일의 후속 감사를 보존했다. 통합 source160행 중 최소개수 산입46개: 원 질문8, 주 공식16, 인접 공식10, 독립 상류시험5, 교차분야 공식5+fixture2. 후속 답/댓글 및 중복·빈 시험은 최소개수에서 제외한다.
+
+③에는 `assemble_supplement.py`, `displacement.csv`, `outcomes.csv`, 확장 `sources.jsonl`, `evidence/resume2/{outcomes,crossdomain,semantic-review.*,postseal-access.jsonl,source-audit.md,supplement_annotations.json,failures.jsonl,docker-postseal.json,stage3-validation.json}`을 포함한다. 세 원장 검사는 종료0. ③ 원격 SHA는 다음 묶음 영수증과 최종 인계에 기록한다.
+
+다음 첫 행동은 원격 SHA 확인 후 ④ 필수표·층별 분모·해석 민감도·SELF_CHECK를 원장에서 재계산하는 것이다. 사전 원장·모집·protocol은 바꾸지 않는다. 별도 의미 검토도 주 판정 변경0이다.

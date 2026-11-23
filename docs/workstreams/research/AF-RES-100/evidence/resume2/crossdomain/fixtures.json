@@ -1,0 +1,169 @@
+{
+  "scope": "Q7 cross-domain context only; fixed named families, not recruited questions or reader wins",
+  "counts_as_recruited8": false,
+  "counts_as_primary_win": false,
+  "selection": "Coordinator specified GDAL warp vertical-shift single-band/multi-band and Sphinx inheritance-diagram families before this inspection.",
+  "evidence_counts": {
+    "official_documentation_files": 5,
+    "distinct_upstream_test_programs": 2,
+    "named_crossdomain_families": 2
+  },
+  "families": [
+    {
+      "family_id": "CD-GDAL-WARP-VSHIFT",
+      "domain": "Scientific geospatial raster transformation",
+      "fixed_upstream_version": "GDAL 3.10.0 at 35a44cc570cdf4dbd55611e4bd61da76e56bc221",
+      "adjacent_version": "PROJ 9.5.1 at 41f79ccfe107d3951dac6826f289b55d17cc3b81",
+      "upstream_test_source": "gdal-warp-lib-tests",
+      "upstream_fixture_names": [
+        "gdalwarp_135_grid_gtx",
+        "gdalwarp_135_src_ds"
+      ],
+      "upstream_test_names": [
+        "test_gdalwarp_lib_135",
+        "test_gdalwarp_lib_135j",
+        "test_gdalwarp_lib_135k"
+      ],
+      "primary_document_sufficient_for": "Explaining when automatic vertical raster-value shifting applies, including the single-band requirement and -novshift override.",
+      "boundary_condition": "Actually use a grid with specified location and absence semantics; distinguish a completed process from a completed height correction.",
+      "adjacent_documentation_needed_for": "Exact PROJ resource lookup and @ optional-grid behavior. The primary GDAL page already flags the dependency, so this is narrow completion of the operational contract, not proof that neighboring documentation is universally indispensable.",
+      "documented_or_source_expected": [
+        {
+          "assertion": "one-band 100 with constant +20 fixture grid becomes 120",
+          "basis": "upstream assertion",
+          "source": "gdal-warp-lib-tests",
+          "lines": [
+            1923,
+            1935
+          ]
+        },
+        {
+          "assertion": "optional missing forward/inverse grid leaves 100 unchanged",
+          "basis": "upstream assertions",
+          "source": "gdal-warp-lib-tests",
+          "lines": [
+            2091,
+            2114
+          ]
+        },
+        {
+          "assertion": "automatic two-band case does not apply the height shift",
+          "basis": "document/source implication, study adaptation",
+          "sources": [
+            "gdal-warp-doc",
+            "gdal-warp-source"
+          ]
+        }
+      ],
+      "actual_runtime": {
+        "file": "gdal-runtime.json",
+        "kind": "five-case local adaptation",
+        "gdal": "3.10.3",
+        "proj": "9.6.0",
+        "network": "OFF",
+        "pinned_upstream_suite_executed": false,
+        "version_equivalence_claimed": false
+      },
+      "limitations": [
+        "Synthetic uniform grid does not validate real geoid correctness, grid coverage, datum selection or scientific accuracy.",
+        "Two-band, -novshift and mandatory-missing cases are study-authored variants, not claimed upstream tests.",
+        "No dependency install, paid service, credentials, remote grid acquisition or full upstream test suite."
+      ],
+      "reproduction_commands": [
+        "/usr/bin/python3 -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/run_gdal_fixture.py",
+        "python -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/reproduce_sources.py --source gdal-warp-lib-tests"
+      ],
+      "optional_upstream_command_not_run": {
+        "cwd_requirement": "An already prepared GDAL source tree at the specified pin with test dependencies",
+        "command": "python -m pytest autotest/utilities/test_gdalwarp_lib.py::test_gdalwarp_lib_135 autotest/utilities/test_gdalwarp_lib.py::test_gdalwarp_lib_135j autotest/utilities/test_gdalwarp_lib.py::test_gdalwarp_lib_135k"
+      }
+    },
+    {
+      "family_id": "CD-SPHINX-INHERITANCE-DOT",
+      "domain": "Document generation with a native external executable",
+      "fixed_upstream_version": "Sphinx 8.1.3 at a1510de4777eaa2e569435f95b05f6f3293d7035",
+      "adjacent_document_pin": "Official Graphviz CLI website revision 51d048c433e5a80ab51915876b695c971544fe54 (not a Graphviz binary pin)",
+      "upstream_test_source": "sphinx-inheritance-tests",
+      "upstream_test_names": [
+        "test_inheritance_diagram_png_html",
+        "test_inheritance_diagram_svg_html"
+      ],
+      "fixture_root": "tests/roots/test-ext-inheritance_diagram",
+      "fixture_input_source_ids": [
+        "sphinx-fixture-conf",
+        "sphinx-fixture-index",
+        "sphinx-fixture-classes",
+        "sphinx-fixture-example-__init__-py",
+        "sphinx-fixture-example-sphinx-py",
+        "sphinx-fixture-external-other-py",
+        "sphinx-fixture-subdir-page1-rst",
+        "sphinx-fixture-subdir-page2-rst"
+      ],
+      "primary_document_sufficient_for": "Specifying class inheritance traversal and the caption option on an inheritance-diagram directive.",
+      "boundary_condition": "Produce the PNG/SVG image and corresponding HTML; a loadable Python extension alone does not establish native renderer availability.",
+      "adjacent_documentation_needed_for": "Concrete executable/version and output-format probes such as dot -V and dot -Tsvg, while the exact integration is evidenced by Sphinx's inheritance source and fixture gate.",
+      "documented_or_source_expected": [
+        {
+          "assertion": "PNG img markup and Test Foo! caption, with links resolving",
+          "basis": "upstream assertion",
+          "source": "sphinx-inheritance-tests",
+          "lines": [
+            156,
+            203
+          ]
+        },
+        {
+          "assertion": "SVG object markup and generated SVG links resolving with graphviz_output_format=svg",
+          "basis": "upstream assertion",
+          "source": "sphinx-inheritance-tests",
+          "lines": [
+            206,
+            262
+          ]
+        },
+        {
+          "assertion": "tests skip when configured native dot cannot be started",
+          "basis": "upstream test gate",
+          "source": "sphinx-testing-fixtures",
+          "lines": [
+            224,
+            239
+          ]
+        }
+      ],
+      "actual_runtime": {
+        "file": "graphviz-runtime.json",
+        "kind": "external-renderer-only probe",
+        "dot": "2.42.4",
+        "svg_returncode": 0,
+        "sphinx_fixture_executed": false,
+        "blocker": "Sphinx, docutils and pytest are absent in the inspected Python environments."
+      },
+      "limitations": [
+        "dot -V uses check=False in the upstream gate and does not itself prove format support.",
+        "The local SVG uses a manually supplied graph from the fixture class chain, not Sphinx-generated DOT; captions, HTML, inventory and hyperlinks remain unexecuted.",
+        "The Graphviz documentation revision is later than the pinned Sphinx version; no complete cross-version equivalence is asserted."
+      ],
+      "reproduction_commands": [
+        "python -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/run_graphviz_probe.py",
+        "python -B docs/workstreams/research/AF-RES-100/evidence/resume2/crossdomain/reproduce_sources.py --source sphinx-inheritance-tests"
+      ],
+      "optional_upstream_command_not_run": {
+        "cwd_requirement": "An already prepared Sphinx source tree at the specified pin with test dependencies and a usable dot executable",
+        "command": "python -m pytest tests/test_extensions/test_ext_inheritance_diagram.py::test_inheritance_diagram_png_html tests/test_extensions/test_ext_inheritance_diagram.py::test_inheritance_diagram_svg_html"
+      }
+    }
+  ],
+  "prior_use_disclosures": [
+    {
+      "source_id": "sphinx-testing-fixtures",
+      "path": "sphinx/testing/fixtures.py",
+      "prior_workstream": "AF-RES-096",
+      "role": "reused common test gate",
+      "counted_as_new_minimum_material": false,
+      "counted_as_new_example": false,
+      "basis": "Coordinator disclosure; no AF-RES-096 source reinspection was needed."
+    }
+  ],
+  "independence_limit": "Docs, source and tests share project and author lineage; these are traceable official examples, not independent replications or an estimate of effect size. The common Sphinx test gate was also used in AF-RES-096 and is not counted as new material or a new example."
+}
