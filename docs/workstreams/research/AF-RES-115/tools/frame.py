@@ -10,7 +10,7 @@ import hashlib
 import json
 import re
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -19,7 +19,8 @@ PROJECTS = {
     "E": ("excalidraw/excalidraw", ("excalidraw", "json", "drawing")),
     "M": ("musescore/MuseScore", ("musicxml", "mxl", "mscx", "mscz")),
 }
-QUERY = "is:issue created:2022-01-01..2025-12-31 sort:created-asc"
+START = date(2022, 1, 1)
+END = date(2025, 12, 31)
 EMBEDDED = re.compile(r'<script type="application/json" data-target="react-app\.embeddedData">(.*?)</script>', re.S)
 
 
@@ -31,8 +32,17 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def page_url(repo, page):
-    return f"https://github.com/{repo}/issues?" + urlencode({"q": QUERY, "page": page})
+def page_url(repo, page, first, last):
+    query = f"is:issue created:{first}..{last} sort:created-asc"
+    return f"https://github.com/{repo}/issues?" + urlencode({"q": query, "page": page})
+
+
+def quarters():
+    for year in range(START.year, END.year + 1):
+        for month in (1, 4, 7, 10):
+            first = date(year, month, 1)
+            next_quarter = date(year + 1, 1, 1) if month == 10 else date(year, month + 3, 1)
+            yield first, next_quarter - timedelta(days=1)
 
 
 def fetch(url, attempts=3):
@@ -86,33 +96,37 @@ def collect(project, root):
     pattern = re.compile(r"(?<![A-Za-z0-9])(?:" + "|".join(words) + r")(?![A-Za-z0-9])", re.I)
     issues = {}
     lists = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
-        for page in range(1, 41):
-            url = page_url(repo, page)
-            landed, data, opened = fetch(url)
-            index = payload(data)["issuesIndexContentRoute"]
-            assert index["pageInfo"]["currentPage"] == page
-            items = [x["issue"] for x in index["results"]
-                     if x["itemType"] == "REPO_ISSUES_DASHBOARD_ITEM_TYPE_ISSUE"]
-            lists.append({"role": "issue-list", "project": project, "page": page,
-                          "source_url": url, "landed": landed, "opened": opened,
-                          "numbers": [i["number"] for i in items],
-                          "count_in_query": index["pageInfo"]["totalCount"]})
-            for issue in executor.map(lambda item: cached_issue(directory, item), items):
-                number = issue["number"]
-                # An issue may be displayed twice if the public search changed mid-run.
-                if number in issues:
-                    raise ValueError(f"{repo}: duplicate list issue {number}")
-                issues[number] = issue
-                if "body" in issue:
-                    issue["keyword_matches"] = sorted({m.group().casefold() for m in pattern.finditer(issue["body"])})
-            ordered = sorted(issues.values(), key=lambda x: (x["createdAt"], x.get("databaseId", 0)))
-            matched = [v for v in ordered if v.get("keyword_matches")]
-            print(project, page, len(ordered), len(matched), flush=True)
-            if len(matched) >= 60 and ordered[-1]["createdAt"] > matched[59]["createdAt"]:
-                break
-            if page == index["pageInfo"]["totalPages"]:
-                break
+    ordered, matched = [], []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        for first, last in quarters():
+            for page in range(1, 41):
+                url = page_url(repo, page, first, last)
+                landed, data, opened = fetch(url)
+                index = payload(data)["issuesIndexContentRoute"]
+                pages = index["pageInfo"]
+                if pages["currentPage"] != page or pages["totalCount"] > 1000:
+                    raise ValueError(f"invalid or capped GitHub listing: {url}")
+                items = [x["issue"] for x in index["results"]
+                         if x["itemType"] == "REPO_ISSUES_DASHBOARD_ITEM_TYPE_ISSUE"]
+                lists.append({"role": "issue-list", "project": project, "page": page,
+                              "source_url": url, "landed": landed, "opened": opened,
+                              "numbers": [i["number"] for i in items],
+                              "window": [str(first), str(last)],
+                              "count_in_query": pages["totalCount"]})
+                for issue in executor.map(lambda item: cached_issue(directory, item), items):
+                    number = issue["number"]
+                    if number in issues:
+                        raise ValueError(f"{repo}: duplicate list issue {number}")
+                    issues[number] = issue
+                    if "body" in issue:
+                        issue["keyword_matches"] = sorted({m.group().casefold() for m in pattern.finditer(issue["body"])})
+                ordered = sorted(issues.values(), key=lambda x: (x["createdAt"], x.get("databaseId", 0)))
+                matched = [v for v in ordered if v.get("keyword_matches")]
+                print(project, first, page, len(ordered), len(matched), flush=True)
+                if len(matched) >= 60 and ordered[-1]["createdAt"] > matched[59]["createdAt"]:
+                    return ordered, matched[:60], lists
+                if page >= pages["totalPages"]:
+                    break
     return ordered, matched[:60], lists
 
 
