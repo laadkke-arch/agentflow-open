@@ -27,7 +27,7 @@ def setup_yq(root):
         download(lock["archive"], archive, lock["archive_sha256"])
         release = root / f"yq-{version}"
         release.mkdir()
-        run(["tar", "-xzf", archive, "-C", release, "yq_linux_amd64"], root)
+        run(["tar", "-xzf", archive, "-C", release, "./yq_linux_amd64"], root)
         binary = release / "yq_linux_amd64"
         if file_hash(binary) != lock["binary_sha256"]:
             raise ValueError(f"Mismatched yq {version} archive member")
