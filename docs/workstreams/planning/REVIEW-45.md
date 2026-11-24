@@ -101,7 +101,7 @@
 
 218은 205 중앙 DONE, 고정 SHA의 HANDOFF, 정확한 환경·호출·가변 원본의 전후 값이 담긴 Astropy 양성 영수증을 받아야 착수한다. 쓰기 전파가 관측된 셀이 하나도 없다면 이 파일 영속성 검사의 선행 전제도 성립하지 않는다. 206의 기관 발행값을 인용하는 공차 후속과 207의 결과로 복수행 근거 저장안을 비교하는 후속은 이번 착수 목록에 올리지 않았다. 각각 기관 원행 또는 실제 통과·오판 셀이 나온 뒤에야 다음 질문을 정할 수 있다. [205~207의 요청 시점 인계 상태][control] · [218의 정확한 착수 요건](NEXT_TASKS-45.json)
 
-**마감 뒤 상태 변경.** 21:18:40 UTC의 통합판 `3d8ae63`에는 205·206의 중앙 DONE과 결과 SHA가 기록됐고 207은 RUNNING이었다. 위의 증거 검토와 배정 가능 여부는 요청 시점 `bb14677`에서 동결했다. 다음 누적 검토의 첫 비교점은 `bb14677`이다. 218을 배정할 때에는 새로 기록된 205 인계를 열어 그 안의 Astropy 양성 셀까지 확인해야 한다. [마감 뒤 진행표](https://github.com/laadkke-arch/agentflow-open/blob/3d8ae6326a1cd0ab7771aed68ef7022eb4b4faf1/docs/automation/dot-control.json)
+**마감 뒤 상태 변경.** 21:18:40 UTC의 통합판 `3d8ae63`에서 205·206이 중앙 DONE으로 전환됐고, 21:23:02 UTC의 `75dcc53`에서 207도 DONE으로 전환됐다. 진행표가 가리키는 인계 SHA는 각각 `3853289`, `94e2c0e`, `ded4731`이다. 위의 결과 검토와 배정 가능 여부는 요청 시점 `bb14677`에서 동결했다. 다음 누적 검토자는 `bb14677` 이후의 이 세 인계를 읽으면 된다. 218을 배정할 때에는 205 인계의 Astropy 양성 셀까지 확인해야 한다. [205·206 상태 변경](https://github.com/laadkke-arch/agentflow-open/blob/3d8ae6326a1cd0ab7771aed68ef7022eb4b4faf1/docs/automation/dot-control.json) · [207 상태 변경](https://github.com/laadkke-arch/agentflow-open/blob/75dcc53e8a4f9b1f7af35e817d0e63cbbc7cd9d3/docs/automation/dot-control.json)
 
 ## 다음 판정을 바꿀 약점 세 건
 
