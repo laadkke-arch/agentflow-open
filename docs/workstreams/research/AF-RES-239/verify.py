@@ -136,7 +136,7 @@ def clipping_examples():
         ("duplicate-on-one-edge", [[[0, 0], [1, 0]], [[1, 0], [0, 0]]], "경계만", [0, 1, 0]),
         ("tangent-point-only", [[[-0.5, 0.5], [0.5, -0.5]]], "한 점", [0, 0, 1]),
         ("corner-incidence-no-unique-edge", [[[0, 0], [0.5, 1]]], "N/W→S", [1, 0, 0]),
-        ("outside", [[[-1, -0.5], [2, -0.5]]], "0", [0, 0, 0]),
+        ("outside", [[[-1, -0.5], [2, -0.5]]], "범위 밖", [0, 0, 0]),
     ]
     verified = []
     for name, lines, label, counts in cases:

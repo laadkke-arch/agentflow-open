@@ -142,7 +142,7 @@ def geometry(raw_lines, coordinate_order, quad_rc):
     elif touches:
         label = "한 점"
     else:
-        label = "0"
+        label = "범위 밖" if raw_lines else "0"
     return {"pair_code": label, "edge_pairs": sorted(pairs), "directed_paths": path_labels,
             "through": inside, "boundary_only": boundary, "point_contacts": touches}
 
