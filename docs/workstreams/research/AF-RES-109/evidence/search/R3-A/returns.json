@@ -1,0 +1,101 @@
+{
+  "request_id": "R3",
+  "arm": "A",
+  "input_sha256": "b73e0ba4608fe658b80c8f43f833fe824bfa87ce6d58c8c5c4cc3cd19d6ac98a",
+  "input_hash_status": "Supplied assignment hash recorded; byte boundary for independent recomputation of the exact shared input was not specified",
+  "actual_queries": 2,
+  "actual_explicit_opens": 2,
+  "start_utc": "2026-11-24T01:52:15.046523Z",
+  "end_utc": "2026-11-24T01:57:26.388280Z",
+  "retrieval_end_utc": "2026-11-24T01:54:20.646116527Z",
+  "unknown_costs": {
+    "automatic_engine_reads": null,
+    "token_use": null,
+    "exact_immutable_backend_version": null,
+    "monetary_cost": null,
+    "reason": "These measurements were not provided by the tool outputs. They are unknown, not zero."
+  },
+  "method_notes": [
+    "Method A. Read only the assigned prompt before research; no prior research results or other repository files.",
+    "Only English system2_search_query calls and explicit opens through tools.mcp__codex_apps__search_service_web_run were used for internet retrieval.",
+    "First search sought the project's own password-editing contract; second search sought a concrete partial-secret-update mechanism after the first page exposed the editor/runtime asymmetry.",
+    "Every displayed search result is logged in displayed order. Searches exposed 13 and 12 results respectively; both top fives are complete.",
+    "Two official pages were directly read. Search excerpts alone are not treated as verified candidates.",
+    "Stopped with one query and four open slots unused because further nearby pages would largely repeat the two distinct mechanisms.",
+    "No runtime test, code inspection, source-issue opening, issue-comment inspection, PR/release lookup, API fallback, or shell network retrieval occurred.",
+    "No forbidden issue-resolution exposure was observed; current Vault navigation and a banner were exposed and logged.",
+    "No claim of historical availability, original invention, author unawareness, or verified repair is made.",
+    "New tests T1 and T2 are proposed only."
+  ],
+  "final_candidates": [
+    {
+      "rank": 1,
+      "url": "https://nodered.org/docs/creating-nodes/credentials",
+      "source_ref": "turn756839424view0",
+      "source_id": "R3-A-S1",
+      "title": "Node credentials : Node-RED",
+      "provider": "Node-RED / OpenJS Foundation and contributors",
+      "product_feature": "Separate runtime credential values and editor presence metadata",
+      "version_or_date": "Live undated documentation read 2026-11-24; applicability of this edition to 3.1.3 is unknown",
+      "exact_section": "Node credentials, line 28; Accessing credentials / Runtime use of credentials and Credentials within the Editor, lines 64–81",
+      "form": "same_domain_component",
+      "input_processing_observation": "Directly read: node password values are unavailable in the editor; a boolean indicates their presence. Runtime node code can access credential values. The documented object is a node credential, not a global environment variable.",
+      "what_is_new_vs_baseline": "The supplied baseline already reports the failure and a prior flow-level fix. This page adds an explicit editor/runtime representation boundary to inspect. Whether the author already knew this contract is unknown.",
+      "changed_choice": "Proposed transfer: represent an untouched secret as presence and edit intent, retaining its server-held value. Treat deliberate replacement as a separate operation; do not infer a new secret from a displayed mask.",
+      "minimal_discriminating_input": "PROPOSED T1, not executed: create global SECRET='s-A' (credential) and LABEL='old' (plaintext), with an Inject flow reading SECRET. Keep that flow unchanged while changing LABEL to 'new'; separately repeat with only an Inject-flow edit. Observe editor presence metadata, outgoing credential fields, stored value, and runtime result. Control: explicitly replace SECRET with 's-B'.",
+      "expected_output": "Under the proposed preservation contract, either unrelated edit leaves SECRET='s-A', while the deliberate replacement yields 's-B'. A mask first appearing as secret data at the save boundary supports a serialization hypothesis; an unchanged saved secret with a masked runtime result points elsewhere.",
+      "conditions_supported": [
+        "Official per-node documentation demonstrates that an editor can know a secret exists without possessing its bytes.",
+        "Transfer to global environment editing is a design inference, not a verified Node-RED API guarantee."
+      ],
+      "limitations": "The global-variable implementation, actual requests, persistence, and runtime were not inspected. This source does not identify the defect or its repair.",
+      "counter_evidence": "Per-node credential handling may differ from the global-environment path. The reported runtime output alone does not establish that storage was overwritten.",
+      "historical_availability": "Unknown: no publication date, archived 2024 edition, or version-pinned implementation was read.",
+      "acquisition_event": {
+        "query_event_index": 1,
+        "search_displayed_rank": 1,
+        "search_ref": "turn529144395search0",
+        "open_event_index": 2,
+        "evidence_status": "directly_read"
+      }
+    },
+    {
+      "rank": 2,
+      "url": "https://developer.hashicorp.com/vault/docs/commands/kv/patch",
+      "source_ref": "turn495600473view0",
+      "source_id": "R3-A-S2",
+      "title": "kv patch - Command | Vault | HashiCorp Developer",
+      "provider": "HashiCorp",
+      "product_feature": "KV v2 partial secret updates and alternative read-modify-write mode",
+      "version_or_date": "Page displays Vault v2.x (latest); KV v2 engine; read 2026-11-24; publication date unknown",
+      "exact_section": "kv patch, lines 267–290; Usage / Command options, lines 309–313",
+      "form": "cross_domain_principle",
+      "input_processing_observation": "Directly read: KV patch preserves existing data while applying supplied changes. Full put requires existing values too. The CLI offers server PATCH and a client read-modify-write mode, exposing where the complete secret state is assembled.",
+      "what_is_new_vs_baseline": "Adds an explicit partial-update versus complete-replacement choice for a secret-bearing collection. The supplied post lists a failing UI sequence but does not specify its save semantics. This is absent from that list; author familiarity is unknown.",
+      "changed_choice": "Proposed transfer: inspect whether global-variable saving should merge only changed entries against server-held credentials, keyed by stable variable identity. A redacted editor snapshot cannot supply all original values for a complete replacement.",
+      "minimal_discriminating_input": "PROPOSED T2, not executed: seed a save-boundary fixture with SECRET='s-A' and LABEL='old'. Submit an update containing only EXTRA='new', omitting SECRET. Compare with the current full editor payload. Then deliberately submit SECRET='s-B'. Record exactly whether omitted credentials survive and whether explicit replacements still take effect.",
+      "expected_output": "For the proposed partial-update contract, the first update retains SECRET='s-A' and LABEL='old' and adds EXTRA; the deliberate update yields SECRET='s-B'. If omission loses SECRET, the tested boundary behaves as replacement or requires a different contract. If omission works but the full redacted payload fails, inspect serialization of unchanged secrets.",
+      "conditions_supported": [
+        "Vault documents preservation under partial KV updates and the need for existing values when performing complete replacement.",
+        "The server-patch versus client-read-modify-write distinction makes the location of secret reconstruction explicit."
+      ],
+      "limitations": "This is a mechanism analogy, not a recommendation to deploy Vault or evidence that Node-RED accepts PATCH. Node-RED's collection shape and stable identifiers are unknown.",
+      "counter_evidence": "Documented functionality is KV v2-specific. A merge cannot repair a request that explicitly supplies the mask as a new secret; edit intent still needs correct encoding.",
+      "historical_availability": "Unknown at 2024-01-03. The page's version selector reports no versions of this document before v1.16.x; an example's 2019 timestamp is not a publication or feature-introduction date.",
+      "acquisition_event": {
+        "query_event_index": 3,
+        "search_displayed_rank": 2,
+        "search_ref": "turn149794694search1",
+        "open_event_index": 4,
+        "evidence_status": "directly_read"
+      }
+    }
+  ],
+  "vacancies": [
+    {
+      "rank": 3,
+      "reason": "No third independently useful mechanism was verified. Related search hits mostly repeat credential handling or partial-update semantics; a vacant slot avoids padding."
+    }
+  ],
+  "elapsed_seconds": 311.341757
+}
