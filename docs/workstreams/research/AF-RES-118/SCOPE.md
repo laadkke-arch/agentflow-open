@@ -42,3 +42,7 @@
 ## 이력
 
 이 초안 작성 전 선행 RESULT·인계와 원장의 스키마, 상위 일부 행 및 114 재생 코드를 보았다. 신규 시험 절·입출력은 열지 않았다. 공식 GitHub 재귀 트리 API의 첫 메타데이터 조회 두 건은 셸에서 403을 반환했다. 첫 계약 생성은 작업판 `f8b8f2b`, 통합 핀 `ba55c71`을 반환했다. 빠른 전진 후 같은 이름으로 다시 시작하자 기존 출력 파일로 종료 2였고, 첫 생성본을 임시 이동한 뒤 시작판을 동일하게 고정했다.
+
+### 판독 경로 추가 · 06:53 UTC
+
+Blender 바이너리 입력과 기준 PNG는 GitHub 원문에서 LFS 포인터만 도착했다. GitHub raw 리다이렉트, LFS batch, Blender 공식 forge에서 데이터 접근이 실패했다. 접근 실패한 원 모집 자리를 계속 기록한다. 남은 자리에는 같은 작업판에서 타입을 정하는 테스트 코드와 명시 assertion이 함께 있는 후보를 찾는다. 첫 목록의 compositor Python 검사 다음에 `tests/python/compositing_node_group.py`, `source/blender/blenkernel/intern/cryptomatte_test.cc`, `source/blender/blenkernel/intern/image_test.cc` 순서로 추가한다. 각 파일에서 시험 이름을 정렬하여 먼저 기록한다. 노드 하나의 기능 테스트와 다른 계보의 관련 소켓·파일 출력 시험을 구분한다. 증거가 없는 자리는 공석으로 둔다. 같은 작업판의 구현에서 수치를 새로 고른 대조는 별도 구성층으로만 기록할 수 있다.
