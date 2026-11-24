@@ -1,0 +1,3 @@
+# Timeline pass
+
+8 provisional rows; no established G3. G2 candidates are not final grades until source/condition checks. PR metadata + first-100 issue and review comments fetched after initial seal; review submissions and full off-GitHub discussion not exhausted. Earliest relevant observation in excerpts is not first historical citation. P2 merge date only (time placeholder not evidence); P4 merge date only. R1 exact diff gives link insertion and softened assertion but not an observed API decision. R3 exact diff gives TODO, not approved restriction. No implementation or test executed. Same-day author dates are not exposure times; commit ordering is not full causal chain.
