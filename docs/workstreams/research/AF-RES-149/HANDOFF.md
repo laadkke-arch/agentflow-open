@@ -1,3 +1,36 @@
+# AF-RES-149#1 HANDOFF — 최종 보완 재시도 #2 (S2)
+
+- task_id: AF-RES-149 / 원 attempt 1 이어서, 보완 재시도 #2
+- status: PARTIAL (신규 비교·역사 사건 확인·검산 수행; 원 엄격 완료 기준 미충족)
+- branch: work/research-af-res-149
+- owned_path: docs/workstreams/research/AF-RES-149/
+- resumed_from: f06a999fc72112bd7d8a9ae9e12c4d61cab6d175
+- S2 protocol_commit: b8b5d8e8a3ce8b762c6b33ed8f555b2276674a6f
+- S2 result_commit: ebfd3c4c7d81774ac7d5ff322b4ba683f0e1d062
+- S2 self_check_commit / pre_handoff: 2ae91fc86466e05f621f2b0ff569f5cd5292b4d3
+- handoff_commit: 마지막 단독 HANDOFF 커밋(브랜치 HEAD로 확인)
+- 원 결과·S1 및 모든 기존 원장 동결; 통합 브랜치/중앙 진행표/소유 경로 밖 변경 없음.
+
+## 이번 실행 결과
+
+[RESULT](supplement2/RESULT.md)와 [SELF_CHECK](supplement2/SELF_CHECK.md) 먼저 읽는다.
+
+1. 전문 색인 독립 창 사전등록 2025-10-06~12 / 10-13~19. TWIR #620 8행, #621 11행 용량 확인 후 원순서 첫6씩 모집하여 **B 12/12**. A 12/12. C 10/09 1행뿐, 10/16 목록 접근 불가. 실제25/36; 열림17(제작자13/중간4), 실패8, 공백11(구조5/목록 접근 실패6). 금요일 10/17 첫6의 3 중간/3 실패/0 적격은 감도층만; 동결 창 대체 안 함. 새 엄격 직접/조건부 0/75쌍, 일반 DB 질의까지 허용한 감도층 Seaography R3 1. 원 전문 우위 재현 안 됨. 누적 원32+S1 31+S2 25=88/108, 열림68(44/24), 실패20, 공백20, 73 work_id 라벨/88자리. 엄격 적격3/5쌍(264 실제 요구쌍), 직접0. 원 부족을 새 관측으로 지우지 않음. S2 산입18, 누적76레코드/72 work_id.
+2. 한국어 [공개 등재 이력](supplement2/show_history.jsonl): 3개 2025 과거 날짜 페이지 첫20씩, 명시 Show GN 5/60, 원문5/5(JSilicon, Linux tuning, Chatter, unegg, Ad Astra). Show-only 고정판/전수 분모와 당시 순위·점수 미확인. [시도/출처](supplement2/show_attempts.md). 기존 네 언어 날짜쌍 유지.
+3. 역사 [노출 시도](supplement2/exposure_attempts.jsonl)16행. [ciphernotes #4](https://github.com/rapnuss/cipher-notes/issues/4) 2025-11-23 18:56:26 UTC의 제3자 요청 1건 이상(편입 전); [LWN](https://lwn.net/SubscriberLink/1039374/664ea18bb8a3c1a8/) 2025-10-15 17:00 UTC 공개 댓글 1건 이상(등재일 종료 기준). 종류/기간/모수 다름. Telegram 2015 이미지 요청 제외. 집중 후보6의 정확 누적 audience0/6; 전체 비교 원장0/88(전수 개별 조회 아님), GN0/5. GH Archive WatchEvent 5 repo 쿼리 DNS/웹 실패 0/5 결과; 0노출로 바꾸지 않음. 현재 별/점수·날짜 null 댓글 미산입.
+4. [계약](supplement2/contract_attempts.md) 재시도: DNS·checkout 부재 exit128, workbench 모듈 없음 exit1, cloud_check/check.py 없음 exit2. 공통 본체 통과 미확인. 보조 검산: 원+S1 구조 비용 480 필드, S2 696 필드 불일치0, frame/path 및 source 참조 불일치0. 실제 연구 호출 web26배치126하위 요청/GitHub8개별/shell5행, [호출](supplement2/calls.csv). 웹 그룹 시간만 일부 확보, 개별 대기 미계측. 기록 읽기/쓰기 비용 비교에서 제외.
+5. 주요 원장: [PROTOCOL](supplement2/PROTOCOL.md), [frame](supplement2/frame.csv), [paths](supplement2/paths.jsonl), [sources](supplement2/sources.jsonl), [judgments](supplement2/judgments.csv), [cost](supplement2/cost.csv), [recalculation](supplement2/recalculation.json), [금요일 감도](supplement2/friday_sensitivity.jsonl), [추가 용량점검](supplement2/capacity_screen.md).
+
+## 남은 미충족 및 다음 행동
+
+- A/B/C 모두 6 이상인 독립 두 창을 목록만 먼저 확인한 뒤 별도 사전등록(기존 실험과 S2 수정 금지). 이번 추가 7주 점검 B/C 동시≥6 1, A/B/C 모두 확인0; 신규 비교 시작하지 않음. 개별 대기 및 실제 동일 시간 예산 기록.
+- 한국어 Show 전용 고정 과거 전수 자료, 당시 제작자/제보 및 편입 기록·정확 historical audience, 정확 당시판 실행/독립 가린 판정 미확인. 날짜 고정 이벤트만 산입. 이전 4~6 역사 진단의 제품 판정은 바꾸지 않음.
+- 실제 네트워크·exact checkout 및 manifest로 공통 계약 CLI 실행/exit/output 확인. connector 검산은 대체가 아님.
+
+원 엄격 COMPLETE로 바꾸지 않는다. 아래는 이전 인계 그대로 보존하며 최신 다음 행동은 위 섹션을 따른다.
+
+---
+
 # AF-RES-149#1 HANDOFF — 보충 조사 S1 갱신
 
 - task_id: AF-RES-149 / attempt 1, same owned branch
