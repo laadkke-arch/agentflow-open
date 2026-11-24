@@ -30,6 +30,8 @@ cmp "$AF218_TMP/matrix-out/baseline.fits" "$AF218_DIR/receipts/baseline.fits"
 | [preflight.json](preflight.json) | 네이티브 float64와 big-endian 힙, 별도 FITS 매핑 예비 양성 |
 | [matrix.jsonl](matrix.jsonl) 및 [persistence.csv](../persistence.csv) | 사례별 합성 원파일, writer 원출력(각 경계의 reader 영수증을 포함), 종료 후 reader 원출력 및 그 집계 |
 | [matrix-command.jsonl](matrix-command.jsonl) | 실제 suite 명령의 UTC·종료코드·stdout/stderr |
+| [controls.jsonl](controls.jsonl), [controls.csv](controls.csv), [controls-command.jsonl](controls-command.jsonl) | 별도 FITS 사본 6건의 원출력·집계·명령 |
+| [sqlite-command.jsonl](sqlite-command.jsonl), [signatures.jsonl](signatures.jsonl) | SQLite 공식 사례의 합성 재생과 로드된 Astropy API 서명 |
 
 같은 영수증에서 별도 프로세스로 독립 reader 순서를 확인하고 CSV 분류를 재생한다.
 
@@ -37,6 +39,17 @@ cmp "$AF218_TMP/matrix-out/baseline.fits" "$AF218_DIR/receipts/baseline.fits"
 "$AF218_PY" -E -s -B "$AF218_DIR/probe.py" replay matrix --receipts "$AF218_DIR/receipts" \
   --output "$AF218_TMP/persistence.replay.csv"
 cmp "$AF218_DIR/persistence.csv" "$AF218_TMP/persistence.replay.csv"
+```
+
+FITS 통제와 SQLite 비교는 각자의 임시 폴더에서 실행한다.
+
+```sh
+"$AF218_PY" -E -s -B "$AF218_DIR/probe.py" run controls --work "$AF218_TMP/controls-work" \
+  --output "$AF218_TMP/controls-out" --jobs 4
+"$AF218_PY" -E -s -B "$AF218_DIR/probe.py" replay controls --receipts "$AF218_DIR/receipts" \
+  --output "$AF218_TMP/controls.replay.csv"
+cmp "$AF218_DIR/receipts/controls.csv" "$AF218_TMP/controls.replay.csv"
+"$AF218_PY" -E -s -B "$AF218_DIR/receipts/sqlite_probe.py" --work "$AF218_TMP/sqlite-work"
 ```
 
 205에서 받은 공개 자료 P01–P11은 [출처 원장](../sources.jsonl)에 고정 링크로 보존한다. 여기의 기준 FITS, writer/reader 원출력과 통제는 AF-RES-218에서 생성했다.
