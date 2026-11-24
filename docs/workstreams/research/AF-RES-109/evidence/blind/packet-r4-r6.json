@@ -1,0 +1,887 @@
+{
+  "prepared_utc": "2026-11-24T02:26:17.454891+00:00",
+  "search_seal_sha": "628e33709b0be7a19486f1bfeaef93f42e129394",
+  "method_and_rank_masked": true,
+  "instructions": "Evaluate each variant independently; prior reading claims are not adjudicated truth. No original issue comments or aftereffects may be read.",
+  "items": [
+    {
+      "blind_id": "D13",
+      "request_id": "R4",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3757",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R4-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "node selection hit region",
+      "request_purpose": "겹친 node를 통과해 클릭하면서 필요한 node 삭제도 가능",
+      "condition_1": "일부 node 영역 클릭은 뒤 node로 통과",
+      "condition_2": "drag handle을 통한 이동을 유지하면서 선택/삭제가 가능",
+      "known_baseline": "dragHandle과 selectable=false로 click-through와 dragging은 달성; selection이 없어 delete 불가",
+      "candidate_url": "https://reactflow.dev/api-reference/react-flow",
+      "candidate_sections": [
+        "Common props: nodeDragThreshold; Interaction props: selectNodesOnDrag and elevateNodesOnSelect; Keyboard props: deleteKeyCode; returned lines 565, 688–689, 701–708"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team / official React Flow documentation; site copyright webkid GmbH",
+          "edition": "Live React Flow documentation; exact package version and edition unknown",
+          "published_utc": "None",
+          "exact_section": "Common props; nodeDragThreshold at returned line 565",
+          "confirmed": "['The component reference documents a configurable threshold before node dragging begins.']",
+          "limits": "['Initial return ended before interaction and keyboard sections.']",
+          "counter_observation": "This initial read alone cannot substantiate the eventual drag-selection claim.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team / official React Flow documentation; site copyright webkid GmbH",
+          "edition": "Live React Flow documentation; exact package version and edition unknown",
+          "published_utc": "None",
+          "exact_section": "Interaction props and Keyboard props; returned lines 667–713",
+          "confirmed": "['Current docs expose drag-selection and selection-elevation controls plus deletion of selected elements.']",
+          "limits": "[\"Current docs do not establish behavior of the author's installed version.\"]",
+          "counter_observation": "Selection and stacking can change during the interaction under test.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "Official xyflow React Flow documentation; individual page authors not verified.",
+          "edition": "Live API page, first partial open",
+          "published_utc": "None",
+          "exact_section": "Returned body through line 605, including Viewport props.",
+          "confirmed": "The official API page was retrieved; this initial returned range did not include the relevant keyboard and interaction rows.",
+          "limits": "Only the returned range was read. The same page was reopened in S4.",
+          "counter_observation": "Initial response was insufficient to verify the relevant shortcut behavior.",
+          "unknown": "['Release version', 'January 2024 edition', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team; official React Flow documentation.",
+          "edition": "Same live API page reopened at line 650",
+          "published_utc": "None",
+          "exact_section": "Interaction props and Keyboard props",
+          "confirmed": "Directly read the pinch default, platform-specific zoom activation key, and null shortcut setting.",
+          "limits": "A reopen of S1, not an independent work. Current docs do not prove historical implementation.",
+          "counter_observation": "The pinch property's prose specifies touchscreen input, and the API page does not document internal event precedence.",
+          "unknown": "['Exact release edition', 'January 2024 availability', 'Outcome of the proposed ablation', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_product_documentation_reopen"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D13-V1",
+          "proposed_operation": "A drag can change both position and selected state; subsequent selection can change which overlapping node is visually in front.",
+          "proposed_change": "Decide explicitly whether dragging should also select. Test click-through again after a selection instead of checking only the initial overlap.",
+          "claimed_delta_from_baseline": "Adds two discriminators absent from the post: selection caused by dragging and overlap order changed by selection. The baseline drag handle itself is not new.",
+          "proposed_test_input": "PROPOSED T3: reset overlapping A/B, drag B from its handle beyond the configured threshold with selectNodesOnDrag true and false, record position and selected IDs, then repeat the overlap click and delete action.",
+          "proposed_expected_output": "Proposed acceptance: dragging remains possible in both configurations; default drag selection occurs in the true case. Confirm the false case has no other selection cause. Deletion targets the selected node; recheck overlap after elevation.",
+          "limitations_given_with_candidate": "[\"Does not define a region-specific selection handle.\", \"False-case interaction with application handlers needs execution.\", \"No exact installed version was supplied.\"]",
+          "counter_evidence_given_with_candidate": "A click-only test can miss selection on drag; a one-shot overlap test can miss later stacking changes."
+        }
+      ]
+    },
+    {
+      "blind_id": "D14",
+      "request_id": "R4",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3757",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R4-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "node selection hit region",
+      "request_purpose": "겹친 node를 통과해 클릭하면서 필요한 node 삭제도 가능",
+      "condition_1": "일부 node 영역 클릭은 뒤 node로 통과",
+      "condition_2": "drag handle을 통한 이동을 유지하면서 선택/삭제가 가능",
+      "known_baseline": "dragHandle과 selectable=false로 click-through와 dragging은 달성; selection이 없어 delete 불가",
+      "candidate_url": "https://www.w3.org/TR/css-ui-4/",
+      "candidate_sections": [
+        "6.2 Exclusion from Hit-testing: the pointer-events property; returned lines 825–849",
+        "6.2 Exclusion from Hit-testing; returned lines 825–849"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://www.w3.org/TR/css-ui-4/",
+          "actual_url": "https://www.w3.org/TR/css-ui-4/",
+          "author_lineage": "W3C CSS Working Group; editors Florian Rivoal and Tab Atkins-Bittner.",
+          "edition": "Working Draft dated 2026-01-20; this-version URL exposed in metadata.",
+          "published_utc": "None",
+          "exact_section": "Document metadata, status and initial returned sections; pointer-events body not yet returned.",
+          "confirmed": "['Official draft identity, date, editors and prior-edition links.']",
+          "limits": "['Initial response window did not contain section 6.2.']",
+          "counter_observation": "Working draft status; endorsement and complete browser behavior cannot be inferred.",
+          "unknown": "['Exact publication time, historical implementation support and source-issue resolution.']",
+          "source_kind": "official_standard_working_draft"
+        },
+        {
+          "original_url": "https://www.w3.org/TR/css-ui-4/",
+          "actual_url": "https://www.w3.org/TR/css-ui-4/",
+          "author_lineage": "W3C CSS Working Group; same work as [masked source].",
+          "edition": "Working Draft dated 2026-01-20.",
+          "published_utc": "None",
+          "exact_section": "6.2 Exclusion from Hit-testing; returned lines 825–849.",
+          "confirmed": "['A pointer-excluded box is skipped for targeting; a descendant can override inheritance; descendant events still traverse ancestor listeners; sequential focus is unaffected.']",
+          "limits": "['General hit testing is incompletely specified; React Flow integration remains untested.']",
+          "counter_observation": "Pointer exclusion does not disable all interaction or necessarily suppress text selection.",
+          "unknown": "['Exact 2024 wording and browser support; application-specific drag and selection behavior.']",
+          "source_kind": "official_standard_working_draft_reopen"
+        },
+        {
+          "original_url": "https://www.w3.org/TR/css-ui-4/",
+          "actual_url": "https://www.w3.org/TR/css-ui-4/",
+          "author_lineage": "W3C CSS Working Group; editors Florian Rivoal (on behalf of Bloomberg), Tab Atkins-Bittner (Google)",
+          "edition": "W3C Working Draft dated 20 January 2026",
+          "published_utc": "2026-01-20",
+          "exact_section": "Document title, edition, editors, status, and table of contents",
+          "confirmed": "['Official W3C working draft dated 20 January 2026; editors Florian Rivoal and Tab Atkins-Bittner.', 'The table of contents identifies a hit-testing section.']",
+          "limits": "['Initial returned segment did not contain substantive section 6.2.']",
+          "counter_observation": "The opened edition postdates the request.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_standard_working_draft"
+        },
+        {
+          "original_url": "https://www.w3.org/TR/css-ui-4/",
+          "actual_url": "https://www.w3.org/TR/css-ui-4/",
+          "author_lineage": "W3C CSS Working Group; editors Florian Rivoal (on behalf of Bloomberg), Tab Atkins-Bittner (Google)",
+          "edition": "W3C Working Draft dated 20 January 2026",
+          "published_utc": "2026-01-20",
+          "exact_section": "Same-document table-of-contents click; opening segment returned again",
+          "confirmed": "['The click returned the same W3C work and edition.']",
+          "limits": "['Section anchor did not bring the substantive section into the returned segment.']",
+          "counter_observation": "An anchor click is not an independent source and did not verify the desired mechanism.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_standard_working_draft"
+        },
+        {
+          "original_url": "https://www.w3.org/TR/css-ui-4/",
+          "actual_url": "https://www.w3.org/TR/css-ui-4/",
+          "author_lineage": "W3C CSS Working Group; editors Florian Rivoal (on behalf of Bloomberg), Tab Atkins-Bittner (Google)",
+          "edition": "W3C Working Draft dated 20 January 2026",
+          "published_utc": "2026-01-20",
+          "exact_section": "6.2 Exclusion from Hit-testing; returned lines 825–849",
+          "confirmed": "['Direct standard text supports the hit-test/propagation distinction summarized in candidate 1.']",
+          "limits": "['No execution in React Flow; standard does not define all hit-testing corners.']",
+          "counter_observation": "Excluding the wrong wrapper or inheriting exclusion into the intended child are proposed failure modes.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_standard_working_draft"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D14-V1",
+          "proposed_operation": "Pointer outside an enabled descendant bypasses an excluded front box; a pointer inside the descendant targets it and can propagate to ancestors.",
+          "proposed_change": "Propose excluding the actual outer node box and re-enabling a small child hit area. Check that React Flow honors that styling before adopting it.",
+          "claimed_delta_from_baseline": "The baseline disables node selectability. This suggests restricting the browser hit area while retaining node selectability; it is absent from the supplied post, not proved unknown to its author.",
+          "proposed_test_input": "PROPOSED T1: two overlapping selectable nodes A behind B; B has one enabled child H and a drag handle. Compare a click outside H, a click on H, deletion after selecting B, and a drag from its handle.",
+          "proposed_expected_output": "Proposed acceptance: outside H selects A; H selects B; the configured delete action removes B; dragging its handle moves B. CSS supports target routing, but all React Flow outcomes remain unexecuted.",
+          "limitations_given_with_candidate": "[\"React Flow wrapper styling and handlers are unverified.\", \"CSS hit testing does not itself set application selection or perform deletion.\", \"Actual library version and browser behavior are unknown.\"]",
+          "counter_evidence_given_with_candidate": "The standard explicitly leaves hit-testing corners unresolved. Styling only an inner node body can leave an outer wrapper targetable; this is a proposed failure case."
+        },
+        {
+          "variant_id": "D14-V2",
+          "proposed_operation": "Directly read: CSS skips a none box, allows an auto descendant, and propagates descendant events through ancestors.",
+          "proposed_change": "Keep selection enabled; make the outer node wrapper pointer-transparent and restore targeting on its handle.",
+          "claimed_delta_from_baseline": "Spatial hit regions are absent from the supplied selectable=false plus dragHandle baseline.",
+          "proposed_test_input": "Overlap A above B. A wrapper: pointer-events none; handle: auto. Click body, then handle.",
+          "proposed_expected_output": "Body targets B; handle targets A's descendant and bubbles. React Flow selection remains a proposed integration expectation.",
+          "limitations_given_with_candidate": "DOM rule; React Flow integration and dragging untested.",
+          "counter_evidence_given_with_candidate": "Focus navigation survives; text selection and hit-test corner cases remain qualified."
+        }
+      ]
+    },
+    {
+      "blind_id": "D15",
+      "request_id": "R4",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3757",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R4-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "node selection hit region",
+      "request_purpose": "겹친 node를 통과해 클릭하면서 필요한 node 삭제도 가능",
+      "condition_1": "일부 node 영역 클릭은 뒤 node로 통과",
+      "condition_2": "drag handle을 통한 이동을 유지하면서 선택/삭제가 가능",
+      "known_baseline": "dragHandle과 selectable=false로 click-through와 dragging은 달성; selection이 없어 delete 불가",
+      "candidate_url": "https://reactflow.dev/api-reference/types/delete-elements",
+      "candidate_sections": [
+        "DeleteElements description and payload/result signature; returned lines 514–524"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://reactflow.dev/api-reference/types/delete-elements",
+          "actual_url": "https://reactflow.dev/api-reference/types/delete-elements",
+          "author_lineage": "Official React Flow documentation, maintained by the xyflow team.",
+          "edition": "Live documentation retrieved 2026-11-24; exact revision unknown.",
+          "published_utc": "None",
+          "exact_section": "DeleteElements description and signature; returned lines 514–524.",
+          "confirmed": "['Deletion accepts node/edge objects requiring IDs; the documentation describes child-node and incident-edge cleanup and asynchronous results.']",
+          "limits": "['No runtime verification; exact version and original availability unknown.']",
+          "counter_observation": "An explicit delete control addresses deletion, not the full requested selection-handle interaction.",
+          "unknown": "[\"Filtering inside getElementsToRemove; exact dependency versions; original author's awareness.\"]",
+          "source_kind": "official_product_api_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D15-V1",
+          "proposed_operation": "Directly read: ID-bearing node/edge payloads request deletion; related edges and child nodes are handled.",
+          "proposed_change": "Retain the baseline and offer an explicit delete control using the node ID.",
+          "claimed_delta_from_baseline": "Explicit deletion by identity is absent from the supplied selection-dependent workaround.",
+          "proposed_test_input": "Unselected A: selectable=false, deletable=true; child C; edge A–B. Request deletion of A by ID.",
+          "proposed_expected_output": "With deletion permitted, remove A, C and the incident edge; retain B; inspect the asynchronous result.",
+          "limitations_given_with_candidate": "Does not itself supply a selection handle; UI integration untested.",
+          "counter_evidence_given_with_candidate": "Deletion filtering/veto behavior needs validation; imported helper was not read."
+        }
+      ]
+    },
+    {
+      "blind_id": "D16",
+      "request_id": "R4",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3757",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R4-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "node selection hit region",
+      "request_purpose": "겹친 node를 통과해 클릭하면서 필요한 node 삭제도 가능",
+      "condition_1": "일부 node 영역 클릭은 뒤 node로 통과",
+      "condition_2": "drag handle을 통한 이동을 유지하면서 선택/삭제가 가능",
+      "known_baseline": "dragHandle과 selectable=false로 click-through와 dragging은 달성; selection이 없어 delete 불가",
+      "candidate_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+      "candidate_sections": [
+        "NodeWrapper; returned lines 1823–1943"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://app.unpkg.com/%40xyflow/react%4012.4.2/files/dist/esm/index.mjs",
+          "actual_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+          "author_lineage": "Versioned @xyflow/react package distribution; page links reactflow.dev and xyflow/xyflow. Hosted by UNPKG.",
+          "edition": "@xyflow/react 12.4.2, dist/esm/index.mjs.",
+          "published_utc": "None",
+          "exact_section": "Package identity and initial code window; NodeWrapper not yet returned.",
+          "confirmed": "['Package namespace, versioned URL, primary-project links and distributed JavaScript.']",
+          "limits": "['CDN mirror; tool labels extraction a rewritten summary. No integrity hash or exact source commit verified.']",
+          "counter_observation": "Initial returned section cannot establish the relevant wrapper behavior.",
+          "unknown": "['Publication date, integrity, original-post version and exact backend rendering.']",
+          "source_kind": "primary_package_distribution_mirror"
+        },
+        {
+          "original_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+          "actual_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+          "author_lineage": "xyflow authored package code, distributed by UNPKG; same work as [masked source].",
+          "edition": "@xyflow/react 12.4.2.",
+          "published_utc": "None",
+          "exact_section": "NodeWrapper; returned lines 1823–1943.",
+          "confirmed": "['Drag eligibility enables wrapper pointer events; node.style is spread after that default; click and keyboard selection consult selection eligibility; dragHandle goes to the drag hook.']",
+          "limits": "['Only this package version inspected. No browser execution.']",
+          "counter_observation": "The supplied selectable=false workaround is not equivalent to pointer exclusion when this wrapper remains draggable.",
+          "unknown": "['Original dependency version; CSS overrides; underlying drag-hook behavior.']",
+          "source_kind": "primary_package_distribution_mirror_reopen"
+        },
+        {
+          "original_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+          "actual_url": "https://app.unpkg.com/@xyflow/react@12.4.2/files/dist/esm/index.mjs",
+          "author_lineage": "xyflow authored package code, distributed by UNPKG; same work as [masked source].",
+          "edition": "@xyflow/react 12.4.2.",
+          "published_utc": "None",
+          "exact_section": "useReactFlow deleteElements implementation; returned lines 937–962.",
+          "confirmed": "['Explicit removal payloads are passed to getElementsToRemove; matching nodes/edges become removal changes and deletion callbacks; matched results are returned.']",
+          "limits": "['Imported getElementsToRemove implementation was not read.']",
+          "counter_observation": "The caller does not establish every deletion-filter condition; onBeforeDelete is passed into the helper.",
+          "unknown": "['Helper filtering, exact runtime behavior and historical availability.']",
+          "source_kind": "primary_package_distribution_mirror_reopen"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D16-V1",
+          "proposed_operation": "Directly read: draggable enables wrapper pointer events; node.style overrides the default; click selection checks eligibility.",
+          "proposed_change": "Put pointer exclusion on the wrapper, rather than relying solely on selectable=false or inner-content CSS.",
+          "claimed_delta_from_baseline": "Adds a version-specific failure test; the author's reported workaround remains baseline.",
+          "proposed_test_input": "Overlapping A/B; A draggable=true and selectable=false. Compare no override, inner-only exclusion, and wrapper exclusion.",
+          "proposed_expected_output": "No override leaves wrapper pointerEvents all; wrapper node.style can replace it with none.",
+          "limitations_given_with_candidate": "Mirrored package extraction; browser behavior and original version untested.",
+          "counter_evidence_given_with_candidate": "Selection ineligibility does not imply pointer transparency in this implementation."
+        }
+      ]
+    },
+    {
+      "blind_id": "D17",
+      "request_id": "R4",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3757",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R4-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "node selection hit region",
+      "request_purpose": "겹친 node를 통과해 클릭하면서 필요한 node 삭제도 가능",
+      "condition_1": "일부 node 영역 클릭은 뒤 node로 통과",
+      "condition_2": "drag handle을 통한 이동을 유지하면서 선택/삭제가 가능",
+      "known_baseline": "dragHandle과 selectable=false로 click-through와 dragging은 달성; selection이 없어 delete 불가",
+      "candidate_url": "https://reactflow.dev/learn/customization/utility-classes",
+      "candidate_sections": [
+        "nodrag and nopan; returned lines 418–440"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://reactflow.dev/learn/customization/utility-classes",
+          "actual_url": "https://reactflow.dev/learn/customization/utility-classes",
+          "author_lineage": "xyflow team / official React Flow documentation; site copyright webkid GmbH",
+          "edition": "Live React Flow documentation; exact package version and edition unknown",
+          "published_utc": "None",
+          "exact_section": "nodrag and nopan; returned lines 418–440",
+          "confirmed": "['Official documentation links nodrag to suppression of default drag and node selection.']",
+          "limits": "['No documented event retargeting to a node underneath.']",
+          "counter_observation": "nodrag on the desired drag region would suppress the drag mechanism.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_product_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D17-V1",
+          "proposed_operation": "Interaction with a nodrag element suppresses specified React Flow behaviors; the page does not promise routing that pointer input to an overlapping node.",
+          "proposed_change": "Use nodrag only when suppressing selection/drag is intended. Do not infer a selection handle or click-through mechanism from that class.",
+          "claimed_delta_from_baseline": "Adds a negative control: suppression of front-node selection does not by itself establish click-through. The existing selectable:false workaround remains the author's baseline.",
+          "proposed_test_input": "PROPOSED T2: put a nodrag child in front node B over node A. Click it while recording the pointer target and selected node IDs; compare with T1's hit-test exclusion.",
+          "proposed_expected_output": "Documented expectation: no default B selection or drag from that child. A receiving the event is unknown from this page and must be observed; suppression alone fails the requested click-through condition.",
+          "limitations_given_with_candidate": "[\"No claim that nodrag retargets pointer events.\", \"No demonstrated deletion or child-only selection recipe.\"]",
+          "counter_evidence_given_with_candidate": "Putting nodrag on the intended drag area conflicts with preserving dragging from that area."
+        }
+      ]
+    },
+    {
+      "blind_id": "D18",
+      "request_id": "R5",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3758",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R5-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "multiple edge routing",
+      "request_purpose": "동일 node의 여러 edge 자동 간격 예시/참고 찾기",
+      "condition_1": "같은 node에 여러 edge 연결",
+      "condition_2": "edge 사이 간격을 자동으로 조정",
+      "known_baseline": "multiple edges 시도만 명시; 알려진 layout 도구/수치 없음",
+      "candidate_url": "https://reactflow.dev/api-reference/utils/add-edge",
+      "candidate_sections": [
+        "Notes, lines 551-553."
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://reactflow.dev/api-reference/utils/add-edge",
+          "actual_url": "https://reactflow.dev/api-reference/utils/add-edge",
+          "author_lineage": "xyflow team; official React Flow utility documentation.",
+          "edition": "Current mutable API reference; immutable release and publication date unknown.",
+          "published_utc": "None",
+          "exact_section": "Notes, lines 551-553.",
+          "confirmed": "The utility refuses another edge with an existing source/target and handle combination even when the edge ID differs.",
+          "limits": "This establishes insertion behavior, not curve routing or automatic spacing.",
+          "counter_observation": "Changing only an edge ID cannot solve this duplicate-insertion case.",
+          "unknown": "['Historical behavior on 2024-01-01', \"User's insertion code\", 'Q3-Q6 definitions were not supplied']",
+          "source_kind": "official_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D18-V1",
+          "proposed_operation": "Several edges between the same node pair may fail at insertion before any spacing logic runs; the user's insertion path is unknown.",
+          "proposed_change": "Inspect edge-array cardinality and endpoint handles before debugging geometry. Use distinct valid handles when separate endpoint identities suit the intended graph.",
+          "claimed_delta_from_baseline": "Adds a failure test that separates missing edge data from overlapping rendering; the input supplies no insertion implementation.",
+          "proposed_test_input": "{\"test_id\": \"[masked source]\", \"status\": \"proposed_only\", \"fixture\": \"Start with e1 from A/h1 to B/t1. Call addEdge for e2 with the same endpoints and a different ID. Repeat from the original array with e2 using a valid second source handle h2.\"}",
+          "proposed_expected_output": "Documentation-based expectation: the first call leaves one edge; changing the source-handle identity permits a second edge.",
+          "limitations_given_with_candidate": "No spacing behavior follows from insertion. Controlled edge-state alternatives were not investigated.",
+          "counter_evidence_given_with_candidate": "A different edge ID alone does not bypass this duplicate check."
+        }
+      ]
+    },
+    {
+      "blind_id": "D19",
+      "request_id": "R5",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3758",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R5-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "multiple edge routing",
+      "request_purpose": "동일 node의 여러 edge 자동 간격 예시/참고 찾기",
+      "condition_1": "같은 node에 여러 edge 연결",
+      "condition_2": "edge 사이 간격을 자동으로 조정",
+      "known_baseline": "multiple edges 시도만 명시; 알려진 layout 도구/수치 없음",
+      "candidate_url": "https://eclipse.dev/elk/reference/options/org-eclipse-elk-nodeSize-options.html",
+      "candidate_sections": [
+        "Additional Documentation, lines 21-31, especially PORTS_OVERHANG and UNIFORM_PORT_SPACING."
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://eclipse.dev/elk/reference/options/org-eclipse-elk-nodeSize-options.html",
+          "actual_url": "https://eclipse.dev/elk/reference/options/org-eclipse-elk-nodeSize-options.html",
+          "author_lineage": "Eclipse Layout Kernel project; official option reference.",
+          "edition": "Current mutable option reference; version and publication date unknown.",
+          "published_utc": "None",
+          "exact_section": "Additional Documentation, lines 21-31, especially PORTS_OVERHANG and UNIFORM_PORT_SPACING.",
+          "confirmed": "A uniform-spacing option compensates for gaps made unequal by differently sized labels. Overhang preserves requested port spacing beyond node boundaries when space is insufficient.",
+          "limits": "Behavior depends on a supporting layout and sizing configuration; no running React Flow example was inspected.",
+          "counter_observation": "Without overhang, crowded nodes may violate the requested port gap.",
+          "unknown": "['Availability on 2024-01-01', 'Exact integration code', 'Rendered example images', 'Q3-Q6 definitions were not supplied']",
+          "source_kind": "official_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D19-V1",
+          "proposed_operation": "Automatic endpoint spacing can be delegated to a graph-layout component if node-layout and sizing changes are acceptable; that acceptance is not established.",
+          "proposed_change": "Consider ELK-managed port placement; choose uniform spacing for unequal labels and explicitly choose whether crowded ports may overhang.",
+          "claimed_delta_from_baseline": "Adds a configurable equal-gap policy and an explicit choice for insufficient node space; no layout engine was mentioned in the input.",
+          "proposed_test_input": "{\"test_id\": \"[masked source]\", \"status\": \"proposed_only\", \"fixture\": \"In a supporting ELK configuration, give one node three same-side ports with unequal label sizes. Compare uniform spacing off/on. Separately constrain that side to 40 pixels with three ports requesting 30-pixel gaps; compare overhang off/on.\"}",
+          "proposed_expected_output": "Documentation-based expectations: uniform mode equalizes label-driven gaps; overhang allows requested gaps beyond the boundary. Default crowded placement may reduce gaps.",
+          "limitations_given_with_candidate": "Exact configuration, React Flow coordinate transfer, full edge routing, and historical availability remain unknown. Node layout may change.",
+          "counter_evidence_given_with_candidate": "Automatic layout alone does not guarantee equal spacing or fit within a fixed small node."
+        }
+      ]
+    },
+    {
+      "blind_id": "D20",
+      "request_id": "R5",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3758",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R5-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "multiple edge routing",
+      "request_purpose": "동일 node의 여러 edge 자동 간격 예시/참고 찾기",
+      "condition_1": "같은 node에 여러 edge 연결",
+      "condition_2": "edge 사이 간격을 자동으로 조정",
+      "known_baseline": "multiple edges 시도만 명시; 알려진 layout 도구/수치 없음",
+      "candidate_url": "https://kb.yworks.com/article/313/Routing-multiple-edges-between-two-nodes-in-a-parallel-fashion",
+      "candidate_sections": [
+        "Description; routeParallelEdges; ParallelEdgeCreateEdgeMode; ParallelEdgeMoveSelectionMode"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://kb.yworks.com/article/313/Routing-multiple-edges-between-two-nodes-in-a-parallel-fashion",
+          "actual_url": "https://kb.yworks.com/article/313/Routing-multiple-edges-between-two-nodes-in-a-parallel-fashion",
+          "author_lineage": "yWorks GmbH, official knowledge-base demo article and embedded Java source",
+          "edition": "Article lists yFiles for Java 2.5–2.18; site footer says 2022; no article publication timestamp.",
+          "published_utc": "None",
+          "exact_section": "Description; demo routeParallelEdges (lines 105–122), ParallelEdgeCreateEdgeMode (129–157), ParallelEdgeMoveSelectionMode (164–195); Applies to (213–215).",
+          "confirmed": "The demo reroutes a peer group after edge creation and during node movement. It collects both directions between the node pair, resets affected paths, and temporarily hides unrelated edges. During movement it reroutes edges with exactly one endpoint in the moved selection.",
+          "limits": "Java-specific example using the same component as S2; no new independent routing mechanism. No deletion handler is shown. Node-movement behavior is an optional test, not a supplied user requirement.",
+          "counter_observation": "The example intentionally excludes edges with both endpoints moved from rerouting. Its configured distance does not override the adaptive-distance caveat in S2.",
+          "unknown": "['Publication UTC', 'Article existence on 2024-01-01', 'Deletion behavior', 'Executed behavior in React Flow']",
+          "source_kind": "official_demo_with_source"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D20-V1",
+          "proposed_operation": "Create an edge or move one endpoint -> collect the affected peer group and reroute it -> spacing updates without rerouting unrelated edges.",
+          "proposed_change": "Recompute all peers when group membership changes, and scope movement updates to affected connections.",
+          "claimed_delta_from_baseline": "Provides concrete update triggers and affected-group selection, beyond a static spacing configuration. It uses the same router as candidate 2.",
+          "proposed_test_input": "Proposed T3: A–B has two edges, including a reverse edge; C–D has one bent edge. Add a third A–B edge and compare rerouting only the new edge with rerouting the peer group.",
+          "proposed_expected_output": "The demo reroutes all A–B peers while leaving C–D out of that routing pass. Expected visible spacing and preserved unrelated geometry are unexecuted predictions from the code.",
+          "limitations_given_with_candidate": "Java-specific; same mechanism as candidate 2. Movement is an optional discriminator, not a newly imposed requirement.",
+          "counter_evidence_given_with_candidate": "No deletion update is shown, and edges whose two endpoints move together are excluded from movement rerouting."
+        }
+      ]
+    },
+    {
+      "blind_id": "D21",
+      "request_id": "R5",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3758",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R5-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "multiple edge routing",
+      "request_purpose": "동일 node의 여러 edge 자동 간격 예시/참고 찾기",
+      "condition_1": "같은 node에 여러 edge 연결",
+      "condition_2": "edge 사이 간격을 자동으로 조정",
+      "known_baseline": "multiple edges 시도만 명시; 알려진 layout 도구/수치 없음",
+      "candidate_url": "https://docs.yworks.com/yfiles/doc/api/y/layout/ParallelEdgeLayouter.html",
+      "candidate_sections": [
+        "Concept; setUsingAdaptiveLineDistances; setLineDistance; setJoinEndsEnabled"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://docs.yworks.com/yfiles/doc/api/y/layout/ParallelEdgeLayouter.html",
+          "actual_url": "https://docs.yworks.com/yfiles/doc/api/y/layout/ParallelEdgeLayouter.html",
+          "author_lineage": "yWorks GmbH, official yFiles Java API reference",
+          "edition": "yFiles-2.19 API, page copyright through 2025; not an immutable snapshot.",
+          "published_utc": "None",
+          "exact_section": "Concept and Features (lines 29–47); setDirectedModeEnabled (221–233); setUsingAdaptiveLineDistances (253–265); setLineDistance (272–286); setJoinEndsEnabled (392–402).",
+          "confirmed": "The stage groups edges by node pair, temporarily retains one master route, then derives peer paths. Direction grouping is configurable. Spacing can follow node dimensions or an absolute gap. Adaptive gaps can be smaller than the configured value. Joining ends preserves common attachments while making end segments nonparallel.",
+          "limits": "Applies to multiple edges between the same node pair. Requires a suitable master route. A Java-library API is not a React Flow integration. This and S4 concern the same component.",
+          "counter_observation": "Disabling endpoint joining can leave some endpoints outside node bounds. A configured distance is not an unconditional minimum under adaptive spacing.",
+          "unknown": "['Publication UTC', 'Exact API availability at the request date', 'React Flow adapter effort', 'Measured output or performance']",
+          "source_kind": "official_api_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D21-V1",
+          "proposed_operation": "Edges sharing a node pair -> route one master path and derive peer paths -> automatically separated parallel segments.",
+          "proposed_change": "If spacing means parallel paths between the same pair, group peer edges and decide whether node attachment or a fixed gap governs tight cases.",
+          "claimed_delta_from_baseline": "Adds a group-based routing stage and an explicit fixed-gap versus fit-to-node choice; absent from the input, not proven unknown to its author.",
+          "proposed_test_input": "Proposed T2: two horizontally aligned nodes only eight units high, three peer edges, requested gap twenty; compare adaptive spacing against fixed spacing with unjoined ends.",
+          "proposed_expected_output": "Adaptive routing should keep attachments on node bounds by allowing a smaller gap. Fixed spacing with unjoined ends can miss node bounds. Test geometry and exact paths remain unverified.",
+          "limitations_given_with_candidate": "Narrower than arbitrary fan-out; Java API requires an adapter or independent implementation for React Flow.",
+          "counter_evidence_given_with_candidate": "The requested gap may shrink under adaptation; joined endpoint segments cease to be parallel."
+        }
+      ]
+    },
+    {
+      "blind_id": "D22",
+      "request_id": "R5",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3758",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R5-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "multiple edge routing",
+      "request_purpose": "동일 node의 여러 edge 자동 간격 예시/참고 찾기",
+      "condition_1": "같은 node에 여러 edge 연결",
+      "condition_2": "edge 사이 간격을 자동으로 조정",
+      "known_baseline": "multiple edges 시도만 명시; 알려진 layout 도구/수치 없음",
+      "candidate_url": "https://next.reactflow.dev/learn/customization/handles",
+      "candidate_sections": [
+        "Using multiple handles, lines 410-427; Dynamic handles, lines 471-473.",
+        "Using multiple handles; Dynamic handles; Hiding handles"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://next.reactflow.dev/learn/customization/handles",
+          "actual_url": "https://next.reactflow.dev/learn/customization/handles",
+          "author_lineage": "xyflow team; official React Flow documentation on next.reactflow.dev.",
+          "edition": "Mutable next documentation; page reports last updated 2026-10-08; immutable release unknown.",
+          "published_utc": "None",
+          "exact_section": "Using multiple handles, lines 410-427; Dynamic handles, lines 471-473.",
+          "confirmed": "Distinct handle IDs and endpoint references address separate connection points. CSS can position handles along a side. Changing handle counts or positions requires refreshing node internals.",
+          "limits": "No automatic count-based spacing algorithm is supplied; route separation away from endpoints is not guaranteed.",
+          "counter_observation": "Default handles occupy the center of their side, so several IDs alone do not separate endpoints.",
+          "unknown": "['Original 2024 edition', \"User's installed version\", 'Image geometry', 'Q3-Q6 definitions were not supplied']",
+          "source_kind": "official_documentation"
+        },
+        {
+          "original_url": "https://next.reactflow.dev/learn/customization/handles",
+          "actual_url": "https://next.reactflow.dev/learn/customization/handles",
+          "author_lineage": "xyflow, official React Flow documentation on next.reactflow.dev",
+          "edition": "Current next-site guide retrieved 2026-11-24; immutable edition and target application's version unknown.",
+          "published_utc": "None",
+          "exact_section": "Using multiple handles (lines 74–87 and 208–229); Dynamic handles (273–275); Hiding handles (283–285).",
+          "confirmed": "Handles need distinct identifiers, and edges select them by sourceHandle/targetHandle. Same-side positions are controlled through styling; default centering does not distribute them. Changes to count or position require refreshing node internals. Hidden handles must retain measurable dimensions.",
+          "limits": "Does not provide an automatic edge-count spacing algorithm. The example fans out to different targets. Current next-site content does not establish 2024 behavior.",
+          "counter_observation": "Distinct identifiers alone do not establish distinct geometric positions. The linked hook detail page returned 404 in S3.",
+          "unknown": "['Original publication date', 'Availability of this exact guidance by 2024-01-01', 'Original screenshot geometry', 'Target application version', 'Behavior in an executed example']",
+          "source_kind": "official_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D22-V1",
+          "proposed_operation": "The supplied request asks for automatic separation but provides no code. The image was not inspected; parallel edges and general fan-out remain possible interpretations.",
+          "proposed_change": "Derive handle positions from incident-edge count, give handles stable distinct IDs, reference them from edges, and refresh geometry after changes.",
+          "claimed_delta_from_baseline": "Adds a concrete endpoint-placement mechanism absent from the supplied text. It is not claimed unknown to the author.",
+          "proposed_test_input": "{\"test_id\": \"[masked source]\", \"status\": \"proposed_only\", \"fixture\": \"Two 120-pixel-high nodes; three parallel edges using separate handles on each facing side. Set y=(i+1)*120/(n+1). Add a fourth edge and recompute positions; compare with unchanged default-centered handles.\"}",
+          "proposed_expected_output": "Proposed expectation: endpoint offsets change from 30/60/90 to 24/48/72/96 pixels and edges follow after the internal update. Default-centered handles coincide.",
+          "limitations_given_with_candidate": "Distinct endpoints do not guarantee separated curves over their full length. Ordering, removals, node resizing, and the user's library version remain untested.",
+          "counter_evidence_given_with_candidate": "Unique IDs alone leave multiple handles centered on the same side."
+        },
+        {
+          "variant_id": "D22-V2",
+          "proposed_operation": "Several incident edges -> select individually identified, positioned handles -> edges attach at separate positions on the same node.",
+          "proposed_change": "If spacing means distinct endpoints, compute handle positions from the incident-edge count, preserve handle IDs, and refresh measured geometry after changes.",
+          "claimed_delta_from_baseline": "Adds explicit attachment identity and geometry refresh. Automatic count-based positioning is a proposed application policy, not a documented built-in feature.",
+          "proposed_test_input": "Proposed T1: node A with two same-side source handles at one-third and two-thirds height, linked to B and C; compare against distinct IDs left at default positions, then add a third handle and recompute.",
+          "proposed_expected_output": "Positioned handles produce separated endpoints; identifier changes alone can leave coincident positions. After recomputation and geometry refresh, endpoints should follow the new positions. Exact behavior remains unexecuted.",
+          "limitations_given_with_candidate": "No native automatic-spacing algorithm demonstrated; per-count positioning is our inference. The source example uses different target nodes.",
+          "counter_evidence_given_with_candidate": "Default handle centering and stale geometry can defeat spacing. The detailed hook link failed."
+        }
+      ]
+    },
+    {
+      "blind_id": "D23",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://d3js.org/d3-zoom",
+      "candidate_sections": [
+        "zoom(selection), zoom.filter(filter), zoom.wheelDelta(delta), zoom.scaleExtent(extent); displayed lines 271–278, 328–337, 348–357, 362–370"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://d3js.org/d3-zoom",
+          "actual_url": "https://d3js.org/d3-zoom",
+          "author_lineage": "D3 / Observable",
+          "edition": "Live documentation retrieved 2026-11-24; page navigation displays D3 7.9.2; d3-zoom package edition and publication date unknown.",
+          "published_utc": "None",
+          "exact_section": "zoom(selection), zoom.filter(filter), zoom.wheelDelta(delta), zoom.scaleExtent(extent); displayed lines 271–278, 328–337, 348–357, 362–370",
+          "confirmed": "D3 allows filtering individual initiating events. Its default accepts Control-modified wheels, normalizes delta units, and increases their zoom sensitivity. It also documents removing the wheel listener entirely.",
+          "limits": "No evidence here establishes the reporter's dependency, version, or overrides.",
+          "counter_observation": "At a scale limit D3 may ignore a wheel event; unchanged scale alone does not prove bad classification.",
+          "unknown": "Availability of this exact live documentation and behavior by 2024-01-02 is unknown.",
+          "source_kind": "official_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D23-V1",
+          "proposed_operation": "D3 allows filtering individual initiating events. Its default accepts Control-modified wheels, normalizes delta units, and increases their zoom sensitivity. It also documents removing the wheel listener entirely.",
+          "proposed_change": "Preserve a wheel route for pinch while excluding ordinary scrolling from zoom, instead of disabling all wheel zoom handling.",
+          "claimed_delta_from_baseline": "Adds a selective-filter versus removed-listener test; neither implementation detail is established by the supplied post.",
+          "proposed_test_input": "Proposed D3 harness: at scale 1 with bounds [0.1,4], deliver a cancelable wheel event with ctrlKey=true, deltaY=-50, deltaMode=0. Compare a removed wheel listener against an installed listener whose filter accepts this event.",
+          "proposed_expected_output": "Predicted from the documented formula: removed listener leaves scale at 1; accepting listener with default wheelDelta changes it to 2.",
+          "limitations_given_with_candidate": "No evidence here establishes the reporter's dependency, version, or overrides.",
+          "counter_evidence_given_with_candidate": "At a scale limit D3 may ignore a wheel event; unchanged scale alone does not prove bad classification."
+        }
+      ]
+    },
+    {
+      "blind_id": "D24",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://chromium.googlesource.com/chromium/src/%2B/3b54b6aa8be4525318436d271397fc7d90c21da4/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+      "candidate_sections": [
+        "CreateSyntheticWheelFromTouchpadPinchEvent, lines 22–72; ProcessMouseWheelAck and TryForwardNextEventToRenderer, lines 130–204."
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://chromium.googlesource.com/chromium/src/%2B/3b54b6aa8be4525318436d271397fc7d90c21da4/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+          "actual_url": "https://chromium.googlesource.com/chromium/src/%2B/3b54b6aa8be4525318436d271397fc7d90c21da4/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+          "author_lineage": "Chromium Authors; official repository. Individual function author not verified.",
+          "edition": "Tree 3b54b6aa8be4525318436d271397fc7d90c21da4; blob ed62b51f89293a0fe4f90d89bf7b3cf005df47a6",
+          "published_utc": "None",
+          "exact_section": "CreateSyntheticWheelFromTouchpadPinchEvent; ProcessMouseWheelAck; TryForwardNextEventToRenderer",
+          "confirmed": "Direct code maps pinch scale into Control-modified wheel events and records whether the first update was consumed. Later update cancelability depends on feature state and that first result.",
+          "limits": "Historical tree dated by S6. No proof that the reported Chrome 120/Edge device uses this exact path.",
+          "counter_observation": "The representation overlaps Control-wheel input; the event shape alone does not prove the physical gesture.",
+          "unknown": "[\"Reported hardware's emitted events\", 'Browser version mapping', 'Commit timezone', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_source_code"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D24-V1",
+          "proposed_operation": "Directly read: the encoder adds the Control modifier to wheel events, derives delta from pinch scale, and remembers whether the first update was consumed. This permits a pinch-related wheel modifier without a separate keyboard prerequisite in this function.",
+          "proposed_change": "Proposed: route eligible Control-modified wheel input to zoom before ordinary scroll-panning, without requiring a separately tracked key press. Instrument the first event's cancellation as a separate diagnostic.",
+          "claimed_delta_from_baseline": "An event-level discrimination test, beyond the already-tried zoomOnPinch=true setting. It is absent from the supplied account; author awareness is unknown.",
+          "proposed_test_input": "[masked source]: with panOnScroll=true and zoomOnPinch=true, send otherwise identical cancelable pixel-mode wheel events with deltaY=-10, first ctrlKey=true and then ctrlKey=false, with no preceding keydown. Separately capture a real Windows pinch, ordinary two-finger scroll, and Ctrl+scroll, logging wheel modifiers, key events, cancelability, defaultPrevented, and viewport transform.",
+          "proposed_expected_output": "Proposed routing oracle: the Control-marked event changes zoom; the unmarked event follows the existing pan path. Real-event logs distinguish an absent pinch encoding from a correctly encoded event routed to pan. Synthetic tests alone cannot validate browser default actions or hardware encoding.",
+          "limitations_given_with_candidate": "[\"This 2018 snapshot does not establish Chrome 120 or Edge behavior on the reporter's device.\", \"Physical Ctrl+wheel and encoded pinch may share modifier values.\", \"No Windows hardware capture or application patch was performed.\"]",
+          "counter_evidence_given_with_candidate": "The code's shared wheel representation means ctrlKey is not proof that the physical input was a pinch. Hardware that supplies another event shape may remain unsupported."
+        }
+      ]
+    },
+    {
+      "blind_id": "D25",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://reactflow.dev/api-reference/react-flow",
+      "candidate_sections": [
+        "Interaction props, panOnScroll and zoomOnPinch, lines 682–686; Keyboard props, zoomActivationKeyCode, lines 701–712."
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team / official React Flow documentation; site copyright webkid GmbH",
+          "edition": "Live React Flow documentation; exact package version and edition unknown",
+          "published_utc": "None",
+          "exact_section": "Common props; nodeDragThreshold at returned line 565",
+          "confirmed": "['The component reference documents a configurable threshold before node dragging begins.']",
+          "limits": "['Initial return ended before interaction and keyboard sections.']",
+          "counter_observation": "This initial read alone cannot substantiate the eventual drag-selection claim.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team / official React Flow documentation; site copyright webkid GmbH",
+          "edition": "Live React Flow documentation; exact package version and edition unknown",
+          "published_utc": "None",
+          "exact_section": "Interaction props and Keyboard props; returned lines 667–713",
+          "confirmed": "['Current docs expose drag-selection and selection-elevation controls plus deletion of selected elements.']",
+          "limits": "[\"Current docs do not establish behavior of the author's installed version.\"]",
+          "counter_observation": "Selection and stacking can change during the interaction under test.",
+          "unknown": "['Historical availability on 2024-01-01', \"Actual React Flow version and wrapper behavior in the user's application\", 'Browser execution results', 'Definitions of the requested Q3–Q6 identifiers were not supplied; no definitions invented.']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "Official xyflow React Flow documentation; individual page authors not verified.",
+          "edition": "Live API page, first partial open",
+          "published_utc": "None",
+          "exact_section": "Returned body through line 605, including Viewport props.",
+          "confirmed": "The official API page was retrieved; this initial returned range did not include the relevant keyboard and interaction rows.",
+          "limits": "Only the returned range was read. The same page was reopened in S4.",
+          "counter_observation": "Initial response was insufficient to verify the relevant shortcut behavior.",
+          "unknown": "['Release version', 'January 2024 edition', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_product_documentation"
+        },
+        {
+          "original_url": "https://reactflow.dev/api-reference/react-flow",
+          "actual_url": "https://reactflow.dev/api-reference/react-flow",
+          "author_lineage": "xyflow team; official React Flow documentation.",
+          "edition": "Same live API page reopened at line 650",
+          "published_utc": "None",
+          "exact_section": "Interaction props and Keyboard props",
+          "confirmed": "Directly read the pinch default, platform-specific zoom activation key, and null shortcut setting.",
+          "limits": "A reopen of S1, not an independent work. Current docs do not prove historical implementation.",
+          "counter_observation": "The pinch property's prose specifies touchscreen input, and the API page does not document internal event precedence.",
+          "unknown": "['Exact release edition', 'January 2024 availability', 'Outcome of the proposed ablation', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_product_documentation_reopen"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D25-V1",
+          "proposed_operation": "Directly read: zoomOnPinch defaults true. zoomActivationKeyCode defaults to Meta on macOS and Control elsewhere, and accepts null to disable the shortcut.",
+          "proposed_change": "Proposed diagnostic: compare default zoomActivationKeyCode against null while preserving panOnScroll=true and zoomOnPinch=true, then correlate actual wheel and key events with viewport scale versus translation.",
+          "claimed_delta_from_baseline": "A targeted keyboard-activation ablation using an additional documented prop. Merely re-enabling zoomOnPinch is baseline and is not credited as new.",
+          "proposed_test_input": "[masked source]: on the same Windows/browser/device setup, perform one pinch under each activation setting, plus an explicit Ctrl+scroll control. Keep all other viewport settings fixed.",
+          "proposed_expected_output": "Conditional discriminator: if only the activation setting changes pinch routing, investigate the keyboard-activation interaction; if both variants fail identically, that prop has not isolated the cause. No guaranteed repair or runtime outcome is claimed.",
+          "limitations_given_with_candidate": "[\"Current documentation does not establish this API's January 2024 behavior.\", \"zoomOnPinch wording refers to a touchscreen; touchpad coverage is not established by that row alone.\", \"The documentation does not explain internal routing precedence.\"]",
+          "counter_evidence_given_with_candidate": "Disabling a keyboard shortcut may leave pinch unchanged, and may remove a useful shortcut without fixing the bug. This is a diagnostic comparison, not a recommended permanent fix."
+        }
+      ]
+    },
+    {
+      "blind_id": "D26",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://chromium.googlesource.com/chromium/src/%2B/36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb/chrome/browser/resources/pdf/gesture_detector.ts",
+      "candidate_sections": [
+        "GestureDetector constructor, lines 46–63; onWheel_, lines 143–203."
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://chromium.googlesource.com/chromium/src/%2B/36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb/chrome/browser/resources/pdf/gesture_detector.ts",
+          "actual_url": "https://chromium.googlesource.com/chromium/src/%2B/36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb/chrome/browser/resources/pdf/gesture_detector.ts",
+          "author_lineage": "Chromium Authors; official repository. Individual function author not verified.",
+          "edition": "Revision 36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb; blob 5beb74a61e209a7bc4e554a3fddc5bd73cb95291",
+          "published_utc": "None",
+          "exact_section": "GestureDetector constructor and onWheel_",
+          "confirmed": "Direct code defines a non-passive Control-wheel zoom adapter, cancellation, exponential scaling with clamping, accumulated scale, and a 100 ms idle end timer.",
+          "limits": "No runtime execution. Exact revision date unknown; copyright year is not a publication date.",
+          "counter_observation": "Synthetic pinch and physical Control-wheel share the path; the source does not distinguish them uniquely.",
+          "unknown": "['Windows behavior of this snapshot', 'Compatibility with the target version', 'Q3–Q6 question definitions are not supplied in the prompt']",
+          "source_kind": "official_source_code"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D26-V1",
+          "proposed_operation": "Directly read: a non-passive wheel listener selects Control-modified input, cancels default behavior, converts delta to a clamped exponential scale, and emits start/update/end signals. Both synthetic and ordinary Control-wheel input use this path.",
+          "proposed_change": "Proposed: use one explicit wheel-to-pinch adapter before pan handling, with default-action cancellation and a defined end-of-gesture timer. Its clamping and 100 ms delay are examples to evaluate, not new user requirements.",
+          "claimed_delta_from_baseline": "A concrete input-normalization implementation and gesture-sequence test absent from the supplied configuration report.",
+          "proposed_test_input": "[masked source]: in a handler-level harness, presentation mode off, feed ctrlKey=true, deltaY=-10 at one fixed pointer position at t=0 and t=50 ms; advance beyond t=150 ms. Repeat with ctrlKey=false. Keep ordinary scroll-panning enabled in the target integration.",
+          "proposed_expected_output": "For the cited implementation, the Control-marked pair should produce one start, two updates of approximately 1.10517 each, and one end after the final 100 ms idle period; accumulated scale is approximately 1.22140. The unmarked pair should produce no pinch lifecycle. These are code-derived predictions, not execution results.",
+          "limitations_given_with_candidate": "[\"The source's synthetic-pinch comment specifically mentions Mac; Windows transfer is a proposed test.\", \"The exact revision date and relation to Chrome 120 are unknown.\", \"Application-level routing and listener integration in React Flow were not inspected.\"]",
+          "counter_evidence_given_with_candidate": "The implementation intentionally treats physical Ctrl+wheel and synthetic pinch alike; it does not uniquely classify hardware. The chosen clamp may distort fine-grained scale fidelity if copied unchanged."
+        }
+      ]
+    },
+    {
+      "blind_id": "D27",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://chromium.googlesource.com/chromium/src/%2B/297980d7a0e33b44dce6c727d7016345a80e33fa/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+      "candidate_sections": [
+        "CreateSyntheticWheelFromTouchpadPinchEvent, displayed lines 21–53"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://chromium.googlesource.com/chromium/src/%2B/297980d7a0e33b44dce6c727d7016345a80e33fa/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+          "actual_url": "https://chromium.googlesource.com/chromium/src/%2B/297980d7a0e33b44dce6c727d7016345a80e33fa/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+          "author_lineage": "The Chromium Authors / chromium.googlesource.com",
+          "edition": "Pinned revision 297980d7a0e33b44dce6c727d7016345a80e33fa; blob 4734767deb69253c3d08badb0bd39350157b5cbd; copyright 2018; commit date unknown.",
+          "published_utc": "None",
+          "exact_section": "CreateSyntheticWheelFromTouchpadPinchEvent, displayed lines 21–53",
+          "confirmed": "Directly read code adds the Control modifier, retains pointer coordinates, sets horizontal delta to zero, and maps pinch scale logarithmically to wheel deltas. A comment explicitly mentions compatibility with Windows trackpads.",
+          "limits": "The reporter's driver, event trace, application routing, and Chrome 120 code path remain unknown.",
+          "counter_observation": "Control plus a physical wheel can share this event shape; ctrlKey alone does not prove a pinch occurred.",
+          "unknown": "Exact revision date and availability on 2024-01-02 are unknown; a 2018 copyright line is not publication proof.",
+          "source_kind": "primary_source_code"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D27-V1",
+          "proposed_operation": "Directly read code adds the Control modifier, retains pointer coordinates, sets horizontal delta to zero, and maps pinch scale logarithmically to wheel deltas. A comment explicitly mentions compatibility with Windows trackpads.",
+          "proposed_change": "Route Control-modified wheel input to the zoom path before generic wheel panning; treat OS-specific routing as a hypothesis to test.",
+          "claimed_delta_from_baseline": "Adds a concrete input discriminator to the supplied panOnScroll/zoomOnPinch baseline; author awareness is unknown.",
+          "proposed_test_input": "Proposed: with panOnScroll=true and zoomOnPinch=true, compare two cancelable wheel events having deltaY=-10 and deltaMode=0, differing only in ctrlKey. Also capture one physical Windows pinch to check that the synthesized pair represents its input.",
+          "proposed_expected_output": "Proposed oracle: ctrlKey=false pans; ctrlKey=true increases viewport scale without an additional independent pan. Translation needed to preserve the zoom anchor is allowed.",
+          "limitations_given_with_candidate": "The reporter's driver, event trace, application routing, and Chrome 120 code path remain unknown.",
+          "counter_evidence_given_with_candidate": "Control plus a physical wheel can share this event shape; ctrlKey alone does not prove a pinch occurred."
+        }
+      ]
+    },
+    {
+      "blind_id": "D28",
+      "request_id": "R6",
+      "request_source_url": "https://github.com/xyflow/xyflow/issues/3759",
+      "request_input_cache": "/workspace/scratch/68ab6df4f552/agentflow-open/docs/workstreams/research/AF-RES-109/.cache/R6-input.txt",
+      "original_request_edition_status": "unverified_current_body_only",
+      "request_target": "viewport gesture routing",
+      "request_purpose": "Windows pinch가 scroll 대신 zoom하도록 복구",
+      "condition_1": "Windows Chrome/Edge에서 pinch로 zoom",
+      "condition_2": "panOnScroll=true 구성 유지",
+      "known_baseline": "Figma-like viewport예제; zoomOnPinch=true도 효과없음; Mac에서는 작동한다고 보고",
+      "candidate_url": "https://developer.chrome.com/blog/scrolling-intervention-2/",
+      "candidate_sections": [
+        "The Intervention; Breakage and Guidance; displayed lines 46–64"
+      ],
+      "source_reading_claims": [
+        {
+          "original_url": "https://developer.chrome.com/blog/scrolling-intervention-2/",
+          "actual_url": "https://developer.chrome.com/blog/scrolling-intervention-2/",
+          "author_lineage": "Sahel Sharify / Chrome for Developers",
+          "edition": "Page says last updated 2019-02-07 UTC; covers Chrome 73. Exact publication time unknown.",
+          "published_utc": "None",
+          "exact_section": "The Intervention; Breakage and Guidance; displayed lines 46–64",
+          "confirmed": "Wheel listeners on window, document, and body become passive by default under this intervention. Cancellation is then ignored; the article recommends checking defaultPrevented and explicitly selecting non-passive handling when cancellation is needed.",
+          "limits": "Actual React Flow listener target/options and Edge behavior were not inspected.",
+          "counter_observation": "Successful cancellation would rule against this particular failure mode; it cannot itself repair application panning.",
+          "unknown": "The displayed update date precedes 2024-01-02; no archived edition was verified.",
+          "source_kind": "official_documentation"
+        }
+      ],
+      "proposals_to_judge": [
+        {
+          "variant_id": "D28-V1",
+          "proposed_operation": "Wheel listeners on window, document, and body become passive by default under this intervention. Cancellation is then ignored; the article recommends checking defaultPrevented and explicitly selecting non-passive handling when cancellation is needed.",
+          "proposed_change": "If the relevant listener is passive, register the gesture-owning listener with passive=false and confirm cancellation before diagnosing transform logic.",
+          "claimed_delta_from_baseline": "Adds a cancellation diagnostic independent of setting zoomOnPinch.",
+          "proposed_test_input": "Proposed minimal page: send the same cancelable Control-modified wheel event to a window listener that calls preventDefault, first with default options and then with passive=false. Record defaultPrevented after each call.",
+          "proposed_expected_output": "For the documented intervention, default options leave defaultPrevented false; passive=false makes it true. Check browser and viewport movement separately during a physical gesture.",
+          "limitations_given_with_candidate": "Actual React Flow listener target/options and Edge behavior were not inspected.",
+          "counter_evidence_given_with_candidate": "Successful cancellation would rule against this particular failure mode; it cannot itself repair application panning."
+        }
+      ]
+    }
+  ]
+}
