@@ -1,0 +1,1906 @@
+{
+  "instructions": {
+    "role": "fresh AI semantic evaluator, condition identity and one-line hint masked",
+    "source_seal": "47e8d24ad9c0313f6d1a361882198f42307a0d5d",
+    "definition": "Judge each stage from cumulative views of that masked recipient, never from another recipient view or reference knowledge alone.",
+    "allowed_grades": [
+      "full_supported",
+      "justified_hold",
+      "partial_reconstruction",
+      "label_only",
+      "dangerous_certainty",
+      "unsupported_or_wrong"
+    ],
+    "flags": "full_supported, justified_hold and partial_reconstruction are separately reported booleans; partial evidence plus justified hold is possible.",
+    "full_supported": "Both requested operation and preservation plus material exceptions have actually exposed supporting evidence; correct-looking answer from prior knowledge is not success.",
+    "dangerous_certainty": "Unqualified adoption, preservation guarantee, definitive diagnosis or fix without exposed required evidence. Explicit hypothetical or unverified idea is not this flag.",
+    "label_only": "Correct decision word without sufficient evidence; distinguish justified noncommitment.",
+    "counterexample_found": "Actual exposed exception relevant to this request, not a merely imagined possibility or unrelated manual warning.",
+    "claim_errors": "Record minor citation/scope errors separately, even if final safety judgment remains justified hold.",
+    "masking_limit": "Unedited answer prose may reference a hint or previously supplied label. Such residual exposure must be reported. This is not OS isolation or a human study.",
+    "required_row_keys": [
+      "masked_id",
+      "case_id",
+      "step",
+      "grade",
+      "full_supported",
+      "justified_hold",
+      "partial_reconstruction",
+      "label_only",
+      "dangerous_certainty",
+      "counterexample_found",
+      "counterexample_detail",
+      "evidence_used",
+      "missing_required_evidence",
+      "errors",
+      "rationale_ko"
+    ],
+    "prohibited_reads": "Do not read packets, authoring, inputs, readers, trails, pairs, other evaluator output, hidden mapping or study result. Read only assigned masked input plus this interface; supplied reference is allowed."
+  },
+  "group": "imagemagick",
+  "reference": {
+    "I1": {
+      "case_id": "I1",
+      "original_request_source_id": "issue-6159",
+      "specified_version": "7.1.1-3",
+      "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+      "start_doc_id": "i7113_processing",
+      "O_definition": "lena RGB 영상에 mandril3를 Gray로 바꾼 한 plane을 meta 채널로 추가하여 TIFF를 저장한다.",
+      "P_definition": "기존 RGB 샘플과 보이는 RGB 외관을 유지하고 추가 plane을 불투명도(alpha)로 적용하지 않는다. meta 데이터의 실제 값과 뜻을 함께 보존한다.",
+      "semantic_complete": true,
+      "fixed_corpus_semantic_complete": false,
+      "input_unresolved": false,
+      "historical_runtime_complete": false,
+      "correct_answer": {
+        "disposition": "qualified_supported",
+        "answer_ko": "회색 plane을 meta로 복사하는 의도는 타당하다. 회수한 meta.tif는 RGB photometric=2, SamplesPerPixel=4, ExtraSamples=(0,)인 TIFF이며, 네 번째 plane은 alpha로 표지되지 않았다. 직접 읽은 RGB의 모든 샘플은 lena.png와 동일하고 extra plane은 3–220으로 변한다. 고정 writer도 alpha가 없고 meta만 있을 때 unspecified extra sample을 쓴다. 따라서 첨부 출력이 네 번째 plane을 alpha처럼 그렸다는 이유만으로 RGB 데이터 훼손이나 writer의 alpha 저장 버그를 확정하면 안 된다. 후속 댓글은 ImageMagick display/Photoshop은 올바르게 표시하고 Mac Preview/GraphicConverter는 alpha처럼 표시했다고 보고한다. 이는 당시 작성자·maintainer의 관찰이며 이 reader가 해당 앱을 재현한 결과는 아니다. TIFF의 extra sample 의미를 따르는 표시기에서 확인해야 하며 모든 viewer에서 같은 외관을 강제할 수 있다는 답은 지원되지 않는다.",
+        "commands_unexecuted": [
+          {
+            "command": "magick lena.png \\( mandril3.jpg -colorspace gray \\) -channel-fx '| gray=>meta' meta.tif",
+            "preconditions": "7.1.1-3의 바이너리·delegates로 실행; 두 원입력 SHA는 input-inspection.json 참조; 출력은 별도 작업 디렉터리. 원문 끝의 typographic quote를 ASCII 단일 따옴표로 정상화한 의도상 명령이다.",
+            "claim": "문서와 fixed source로 뒷받침되는 절차, 이 세션의 historical runtime 성공 아님."
+          },
+          {
+            "command": "magick identify -verbose meta.tif",
+            "preconditions": "동일 7.1.1-3 런타임",
+            "claim": "channel/metadata 진단; 원시 TIFF tag 검사와 viewer 확인을 대체하지 않는다."
+          }
+        ]
+      },
+      "required_exceptions": [
+        {
+          "id": "E1",
+          "text": "TIFF ExtraSamples=0은 unspecified, 1은 associated alpha, 2는 unassociated alpha다. 4 samples만으로 RGBA를 결정하지 않는다."
+        },
+        {
+          "id": "E2",
+          "text": "viewer가 unspecified를 alpha로 오해할 수 있다. source-reported app 차이와 locally inspected file facts를 구분한다."
+        },
+        {
+          "id": "E3",
+          "text": "채널 크기·개수, writer 지원, RGB 및 extra plane 값, 색 해석을 각각 확인한다. 동일 RGB만으로 모든 color profile과 표시 환경 보존을 증명하지 않는다."
+        }
+      ],
+      "counter_input_provenance": {
+        "type": "original_reported_output_attachment",
+        "url": "https://github.com/ImageMagick/ImageMagick/files/10959346/meta.tif.zip",
+        "archive_sha256": "fab80ce67c51843376ad36e0205411154369312966da3e51670ce25ef5a61150",
+        "extracted_sha256": "1290cdd5eb69e627a428996b827986a7895689d6cc45b78c088b70cc0d65703a",
+        "locally_inspected": true,
+        "inspection": "input-inspection.json",
+        "original_body_only": "추가 plane이 alpha처럼 보인다는 불만; viewer 이름·ExtraSamples tag는 원 body에 없음.",
+        "later_layer": "댓글과 현재 회수 첨부의 실제 태그를 gold 읽기에서 처음 확인했다."
+      },
+      "minimal_supporting_intervals": [
+        {
+          "interval_id": "I1-O-gray",
+          "doc_id": "i7113_command-line-options",
+          "start": 48327,
+          "end": 49139,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "colorspace",
+          "small_quote": "-colorspace value",
+          "conditionIDs": [
+            "O"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "Gray 선택과 색공간 전환 일반 규칙. JPEG 디코더·양자화까지 포함한 특정 grayscale plane 재현은 이 구간만으로 검증되지 않는다.",
+          "inside_corpus": true,
+          "source_id": "i7113_command-line-options",
+          "version": "7.1.1-3",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/c5d5e7117fb07096158bcad05e1086f0c2fff172/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I1-O-fx",
+          "doc_id": "i7113_command-line-options",
+          "start": 37371,
+          "end": 38025,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "channel-fx",
+          "small_quote": "copy one channel",
+          "conditionIDs": [
+            "O"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "=> 복사와 | 입력 이동의 정의. meta라는 목적 채널의 실제 구현 및 TIFF의 저장 표지는 별도 근거가 필요하다.",
+          "inside_corpus": true,
+          "source_id": "i7113_command-line-options",
+          "version": "7.1.1-3",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/c5d5e7117fb07096158bcad05e1086f0c2fff172/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I1-P-format",
+          "doc_id": "i7113_architecture",
+          "start": 32131,
+          "end": 32434,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "multispectral",
+          "small_quote": "same dimensions",
+          "conditionIDs": [
+            "O",
+            "P",
+            "E1"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "동일 크기 채널과 TIFF multispectral 지원 일반설명. 특정 writer·viewer의 올바른 해석을 보장하지 않는다.",
+          "inside_corpus": true,
+          "source_id": "i7113_architecture",
+          "version": "7.1.1-3",
+          "source_sha256": "7333536d3c2b2ce5bacde67c2c24e443447a90f0ada2d3439b173adc657191db",
+          "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+          "original_url": "https://imagemagick.org/script/architecture.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/c5d5e7117fb07096158bcad05e1086f0c2fff172/www/architecture.html"
+        },
+        {
+          "interval_id": "I1-E-extra-label",
+          "doc_id": "i7113_defines",
+          "start": 33712,
+          "end": 33835,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": null,
+          "small_quote": "associated|unassociated|unspecified",
+          "conditionIDs": [
+            "P",
+            "E1"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "세 지정값의 존재만 제시한다. 0/1/2 의미, unspecified와 transparency의 차이, 원파일 태그는 제시하지 않는다.",
+          "inside_corpus": true,
+          "source_id": "i7113_defines",
+          "version": "7.1.1-3",
+          "source_sha256": "082b26bc57de0ecf23aa8704496c70176807a820f8e4bf58f1863b72edde9ced",
+          "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+          "original_url": "https://imagemagick.org/script/defines.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/c5d5e7117fb07096158bcad05e1086f0c2fff172/www/defines.html"
+        },
+        {
+          "interval_id": "I1-P-channel-description",
+          "doc_id": "i7113_escape",
+          "start": 6334,
+          "end": 6528,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": null,
+          "small_quote": "meta channels",
+          "conditionIDs": [
+            "P"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "전체 채널수와 meta 채널수가 별도라는 설명. 데이터·외관·태그가 실제 보존되었다는 증거는 아니다.",
+          "inside_corpus": true,
+          "source_id": "i7113_escape",
+          "version": "7.1.1-3",
+          "source_sha256": "ff025b655bcde3765301d5f06249474fed0776a6491b229d3b607ffc0c9efb06",
+          "upstream_commit": "c5d5e7117fb07096158bcad05e1086f0c2fff172",
+          "original_url": "https://imagemagick.org/script/escape.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/c5d5e7117fb07096158bcad05e1086f0c2fff172/www/escape.html"
+        }
+      ],
+      "outside_corpus_requirements": [
+        {
+          "requirement_id": "I1-E-tiff-spec",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E1"
+          ],
+          "source_ids": [
+            "TIFF6"
+          ],
+          "required_evidence_ko": "TIFF 6.0 pp.31–32 ExtraSamples의 0/1/2 정의; p.77 associated alpha의 RGB premultiplication 요건.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I1-impl",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "O",
+            "P",
+            "E1"
+          ],
+          "source_ids": [
+            "tiff-7.1.1-3.c"
+          ],
+          "required_evidence_ko": "고정 reader lines1700–1737, writer3622–3655; undefined alpha와 meta를 구분한다.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I1-input",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E1"
+          ],
+          "source_ids": [
+            "meta.tif",
+            "lena.png",
+            "mandril3.jpg"
+          ],
+          "required_evidence_ko": "첨부 파일 IFD와 uncompressed strip 샘플, RGB 전샘플 동일 비교.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I1-viewer",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "E2"
+          ],
+          "source_ids": [
+            "issue-6159-comments"
+          ],
+          "required_evidence_ko": "2023-03-13 댓글의 앱별 차이 보고. 재현은 미실시.",
+          "available_in_reference_layer": true
+        }
+      ],
+      "unknowns": [
+        {
+          "status": "unknown",
+          "item": "당시 7.1.1-3/libtiff/delegate의 새 출력과 두 표시 앱의 역사적 재현",
+          "minimum_next_input": "버전·delegate·OS 기록이 있는 7.1.1-3 런타임, 당시 앱 버전, 회수 입력들. 위 명령 결과의 태그·샘플과 표시를 각각 비교한다."
+        }
+      ],
+      "fixed_corpus_answer_status": "unknown",
+      "reachability_status": "unknown_not_assessed_by_this_reader",
+      "reject_certainties": [
+        "4채널이므로 RGBA다.",
+        "meta 대신 alpha로 저장하면 원 의미가 보존된다.",
+        "-alpha off 하나로 모든 외부 viewer 표시가 고쳐진다.",
+        "같은 RGB 샘플이므로 ICC와 외관까지 항상 동일하다."
+      ],
+      "original_issue_url": "https://github.com/ImageMagick/ImageMagick/issues/6159",
+      "original_body_sha256": "ae9f0bcb25b4776e400e545929c1185cea54fcc7488a9eaf7bf27b323c8ce291"
+    },
+    "I2": {
+      "case_id": "I2",
+      "original_request_source_id": "issue-6187",
+      "specified_version": "7.1.1-4",
+      "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+      "start_doc_id": "i7114_processing",
+      "O_definition": "TIFF의 요청 대상 plane을 grayscale PNG로 추출한다. 선언된 alpha가 있으면 -alpha extract의 대상이 그것이다. 선언이 meta라면 먼저 대상 plane을 확인하고 구분하여 꺼낸다.",
+      "P_definition": "요청자가 alpha라고 부른 공간별 plane 값을 흰색 상수로 대체하지 않고 유지한다. 그 plane이 TIFF상 alpha인지 unspecified extra인지도 정확히 설명한다.",
+      "semantic_complete": true,
+      "fixed_corpus_semantic_complete": false,
+      "input_unresolved": false,
+      "historical_runtime_complete": false,
+      "correct_answer": {
+        "disposition": "qualified_supported_with_semantic_correction",
+        "answer_ko": "회수한 demo.tif의 TIFF 선언은 RGB + unspecified extra sample이다(472×392, 8-bit×4, ExtraSamples=(0,)). 추가 plane은 0–255의 105개 값을 가진다. 7.1.1-4 reader는 이 경우 meta를 만들고 실제 alpha를 활성화하지 않는다. alpha가 없으면 accessor는 opaque를 반환하므로 -alpha extract가 흰 mask를 만드는 흐름과 부합한다. 이는 원하는 plane 데이터가 TIFF에서 없어졌다는 증거가 아니다. 값을 꺼내려면 확인된 meta plane을 직접 grayscale로 분리할 수 있다. 그것이 실제 의도한 transparency mask라는 전제에서 meta를 alpha로 복사한 뒤 -alpha extract를 적용하는 경로도 타당하다. 원 댓글의 성공 확인은 meta=>alpha에 대한 저자 보고이며 이 reader가 7.1.1-4에서 재현한 결과는 아니다. 이전 판에서 성공했다는 원 body만으로 새 판의 일반 alpha extraction 회귀를 확정하지 않는다.",
+        "commands_unexecuted": [
+          {
+            "command": "magick demo.tif -channel-fx 'meta' extract.png",
+            "preconditions": "7.1.1-4, 확인된 한 개 meta plane을 값 자체로 추출; alpha 의미를 강제로 부여하지 않는 분리 경로.",
+            "claim": "고정 ChannelFxImage의 단일채널 추출 및 grayscale 설정에 근거한 미실행 명령."
+          },
+          {
+            "command": "magick demo.tif -channel-fx 'meta=>alpha' -alpha extract extract.png",
+            "preconditions": "7.1.1-4; TIFF unspecified plane이 사용자 의도상의 mask라는 전제.",
+            "claim": "meta=>alpha는 원 댓글에서 보고된 경로, 뒤의 alpha extract는 요청한 grayscale PNG를 위한 문서상 조합. 이 exact 조합의 역사적 실행은 미실시."
+          },
+          {
+            "command": "magick identify -verbose demo.tif",
+            "preconditions": "동일 고정 런타임",
+            "claim": "channel 표시 진단. TIFF tag와 sample 데이터 검사를 병행한다."
+          }
+        ]
+      },
+      "required_exceptions": [
+        {
+          "id": "E1",
+          "text": "extra sample이라는 사실이나 Photoshop의 Alpha1 이름만으로 TIFF transparency라고 판단하지 않는다. 원본의 ExtraSamples=0이 핵심 예외다."
+        },
+        {
+          "id": "E2",
+          "text": "alpha가 없는 상태의 흰 extract는 원래 meta plane이 흰색임을 뜻하지 않는다. -alpha set/opaque는 원값 복구가 아니다."
+        },
+        {
+          "id": "E3",
+          "text": "associated alpha 표지를 강제로 붙이면 RGB premultiplication 의미가 달라진다. associated와 unassociated를 임의 교환하지 않는다. 실제 opacity가 선언된 다른 입력에는 이 meta 전환을 무조건 적용하지 않는다."
+        }
+      ],
+      "counter_input_provenance": {
+        "type": "original_input_attachment",
+        "url": "https://github.com/ImageMagick/ImageMagick/files/11059385/demo.zip",
+        "archive_sha256": "cdcb7260ad3e4c46b3d89e0faf7f1cbe02b85b5c8bf53ce206de1c15677788a9",
+        "extracted_sha256": "79c2a9ccbf36de73a34b9090732cb19107fbc875b76e71020538073a72aac223",
+        "locally_inspected": true,
+        "inspection": "input-inspection.json",
+        "original_body_only": "7.1.0-28/7.1.0에서 성공, 7.1.1-4에서 흰색이라는 보고; 원 body에 TIFF tag 없음.",
+        "later_layer": "현재 회수한 파일의 raw tag/sample과 후속 maintainer 설명·작성자의 성공 댓글은 별도 기준읽기 층."
+      },
+      "minimal_supporting_intervals": [
+        {
+          "interval_id": "I2-O-extract",
+          "doc_id": "i7114_command-line-options",
+          "start": 12856,
+          "end": 13111,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "alpha",
+          "small_quote": "alpha channel values",
+          "conditionIDs": [
+            "O",
+            "P"
+          ],
+          "sufficiency": "conditional_operation_definition",
+          "qualification_ko": "실제로 alpha로 정의된 채널이 있을 때 grayscale mask로 복사한다. extra sample이 alpha인지 먼저 확인해야 한다.",
+          "inside_corpus": true,
+          "source_id": "i7114_command-line-options",
+          "version": "7.1.1-4",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/10ad43dc3e5113fa1969a55583a080c5a6a23f65/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I2-E-set",
+          "doc_id": "i7114_command-line-options",
+          "start": 12351,
+          "end": 12543,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "alpha",
+          "small_quote": "resets the channel to opaque",
+          "conditionIDs": [
+            "E2"
+          ],
+          "sufficiency": "sufficient_for_this_warning_only",
+          "qualification_ko": "-alpha set은 꺼져 있던 alpha를 opaque로 초기화하므로 원 mask를 복구한다는 무조건적 해법이 아니다.",
+          "inside_corpus": true,
+          "source_id": "i7114_command-line-options",
+          "version": "7.1.1-4",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/10ad43dc3e5113fa1969a55583a080c5a6a23f65/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I2-O-fx",
+          "doc_id": "i7114_command-line-options",
+          "start": 37371,
+          "end": 38025,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "channel-fx",
+          "small_quote": "copy one channel",
+          "conditionIDs": [
+            "O",
+            "P"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "알려진 source plane 복사 문법. meta 존재와 의도된 의미는 입력과 구현에서 확인해야 한다.",
+          "inside_corpus": true,
+          "source_id": "i7114_command-line-options",
+          "version": "7.1.1-4",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/10ad43dc3e5113fa1969a55583a080c5a6a23f65/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I2-O-separate",
+          "doc_id": "i7114_command-line-options",
+          "start": 209931,
+          "end": 210036,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "separate",
+          "small_quote": "grayscale image",
+          "conditionIDs": [
+            "O",
+            "P"
+          ],
+          "sufficiency": "conditional_operation_definition",
+          "qualification_ko": "확인한 추가 plane을 grayscale로 꺼내는 별도 방법. 어떤 plane이 요청 대상인지 이 구간은 알 수 없다.",
+          "inside_corpus": true,
+          "source_id": "i7114_command-line-options",
+          "version": "7.1.1-4",
+          "source_sha256": "9f18d4571429df0d8a1de9aa58046061ab750d0551a472c6d7f64ed2b90fa496",
+          "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+          "original_url": "https://imagemagick.org/script/command-line-options.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/10ad43dc3e5113fa1969a55583a080c5a6a23f65/www/command-line-options.html"
+        },
+        {
+          "interval_id": "I2-E-extra-label",
+          "doc_id": "i7114_defines",
+          "start": 33712,
+          "end": 33835,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": null,
+          "small_quote": "associated|unassociated|unspecified",
+          "conditionIDs": [
+            "E1",
+            "E3"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "명칭만으로 associated의 premultiplication 요건이나 TIFF reader의 meta 처리를 확정할 수 없다.",
+          "inside_corpus": true,
+          "source_id": "i7114_defines",
+          "version": "7.1.1-4",
+          "source_sha256": "082b26bc57de0ecf23aa8704496c70176807a820f8e4bf58f1863b72edde9ced",
+          "upstream_commit": "10ad43dc3e5113fa1969a55583a080c5a6a23f65",
+          "original_url": "https://imagemagick.org/script/defines.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/10ad43dc3e5113fa1969a55583a080c5a6a23f65/www/defines.html"
+        }
+      ],
+      "outside_corpus_requirements": [
+        {
+          "requirement_id": "I2-E-tiff-spec",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E1",
+            "E3"
+          ],
+          "source_ids": [
+            "TIFF6"
+          ],
+          "required_evidence_ko": "ExtraSamples와 premultiplication의 규격 정의.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I2-reader",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "O",
+            "P",
+            "E1",
+            "E2"
+          ],
+          "source_ids": [
+            "tiff-7.1.1-4.c",
+            "channel-7.1.1-4.c",
+            "pixel-accessor-7.1.1-4.h",
+            "composite-7.1.1-4.c"
+          ],
+          "required_evidence_ko": "고정 reader1700–1737; ChannelFxImage240–465와 ExtractAlphaChannel1199–1204; GetPixelAlpha54–60; CompositeImage2451,2814–2817.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I2-input",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E1"
+          ],
+          "source_ids": [
+            "demo.tif"
+          ],
+          "required_evidence_ko": "원 파일 tag338=0과 비상수 네 번째 sample plane.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I2-followup",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "E1"
+          ],
+          "source_ids": [
+            "issue-6187-comments"
+          ],
+          "required_evidence_ko": "해법 보고는 자연 원 body와 구분. 작성자의 meta=>alpha 성공 보고는 historical source-reported result.",
+          "available_in_reference_layer": true
+        }
+      ],
+      "unknowns": [
+        {
+          "status": "unknown",
+          "item": "원문의 두 역사적 런타임 비교와 exact grayscale PNG output equality",
+          "minimum_next_input": "7.1.0-28 및 7.1.1-4의 실행 가능 바이너리, delegate/quantum/OS 정보, 같은 SHA의 demo.tif. raw fourth plane과 추출 PNG의 8-bit 값·크기·방향을 비교한다."
+        }
+      ],
+      "fixed_corpus_answer_status": "unknown",
+      "reachability_status": "unknown_not_assessed_by_this_reader",
+      "reject_certainties": [
+        "-alpha extract만 있으면 어떤 4채널 TIFF의 네 번째 plane도 보존한다.",
+        "이전 버전에서 보였으므로 이 파일은 규격상 alpha다.",
+        "-define tiff:alpha=associated를 모든 파일에 적용하면 무해하다.",
+        "흰 PNG는 원 TIFF의 추가 데이터가 흰색 상수였다는 증거다."
+      ],
+      "original_issue_url": "https://github.com/ImageMagick/ImageMagick/issues/6187",
+      "original_body_sha256": "ec9e9a2507ecaf51450b8b1cfaedcd98e4580e20c40c3b2614593ada1bccc579",
+      "input_unresolved_scope": "원 파일 바이트·TIFF tag·sample 값은 확인됨. unspecified plane의 제작자 의도와 RGB premultiplication은 태그만으로 확정하지 않으며 조건부로 남긴다."
+    },
+    "I3": {
+      "case_id": "I3",
+      "original_request_source_id": "issue-6237",
+      "specified_version": "7.1.1-6",
+      "upstream_commit": "b2dd67b1681e23d0e0b9769d81bed23f05129e2a",
+      "start_doc_id": "i7116_processing",
+      "O_definition": "첨부 JP2의 codestream component와 색/채널 표지를 읽어 ImageMagick 영상 표현으로 디코딩한다.",
+      "P_definition": "실제 RGB/gray/auxiliary/IR/opacity component의 값과 뜻을 유지한다. 네 성분이라는 개수에서 RGBA나 네 번째 alpha를 추정하지 않는다.",
+      "semantic_complete": false,
+      "fixed_corpus_semantic_complete": false,
+      "input_unresolved": true,
+      "historical_runtime_complete": false,
+      "correct_answer": {
+        "disposition": "justified_hold",
+        "answer_ko": "4 components는 component 개수이며 RGBA라는 정의가 아니다. JP2의 colr/ICC 색공간, cmap, cdef의 channel type/association과 codestream, 원 배포자의 band 의미를 같이 확인해야 한다. 후속 저자는 네 번째 채널이 near-IR라고 메타데이터를 보고했다고 썼으며 NRW의 공식 제품 이력 FAQ도 RGBI의 네 번째가 near-IR라는 제품군 설명을 제공한다. 그러나 이것은 현재 해당 JP2 파일을 직접 확인한 결과가 아니다. 원첨부 HTTP와 HTTPS, 원 배포 디렉터리가 모두 404라 원 바이트·실제 box 값을 확보하지 못했다. 고정 7.1.1-6 jp2.c는 OpenJPEG color_space==2이면 grayscale로 설정하고 component가 여러 개면 alpha를 켜며, numcomps>3이면 alpha를 켜고 component3을 alpha에 넣는다. 따라서 RGBI를 일반 RGBA처럼 취급할 구현상 위험이 확인된다. 하지만 어느 표지가 파일에서 왔고 어떤 원 plane이 실제로 보존·손실됐는지는 원본과 당시 delegate 없이 확정할 수 없다. 실제 색 손실이라고도, 올바른 grayscale 표현이라고도 단정하지 않고 입력 복원을 요청하는 것이 정당하다.",
+        "commands_unexecuted": [
+          {
+            "command": "magick -version",
+            "preconditions": "7.1.1-6이 설치된 별도 재현 환경",
+            "claim": "버전과 quantum/delegate inventory를 기록한다."
+          },
+          {
+            "command": "magick identify -verbose dop10rgbi_32_280_5652_1_nw_2021.jp2",
+            "preconditions": "원본 JP2 바이트와 SHA가 회복되고 7.1.1-6/OpenJPEG 버전이 고정됨",
+            "claim": "ImageMagick의 해석 결과이며 원본 band 의미의 독립 증거가 아니다."
+          },
+          {
+            "command": "exiftool -G1 -a -s dop10rgbi_32_280_5652_1_nw_2021.jp2",
+            "preconditions": "ExifTool의 기록된 버전과 회복한 원본",
+            "claim": "색공간/채널/GeoJP2 메타데이터 확인; 출력이 cdef/cmap 원시값을 생략하면 해당 JP2 box dump를 추가로 요구한다."
+          },
+          {
+            "command": "opj_dump -i dop10rgbi_32_280_5652_1_nw_2021.jp2",
+            "preconditions": "기록된 OpenJPEG 버전과 원본",
+            "claim": "codestream component·정밀도·geometry 정보를 수집; 이것만으로 publisher의 IR 의미를 확정하지 않는다."
+          }
+        ]
+      },
+      "required_exceptions": [
+        {
+          "id": "E1",
+          "text": "JP2 ihdr NC, colr, cmap, cdef는 서로 다른 역할이다. 네 component와 Grayscale 보고의 병존은 헤더/채널 정의를 확인할 필요를 뜻하며 어느 한 보고를 버릴 근거가 아니다."
+        },
+        {
+          "id": "E2",
+          "text": "RGBI의 I는 제품군에서 near-IR일 수 있다. 그 경우 transparency로 소비하면 채널 의미 보존에 실패한다. 제품군 설명만으로 정확한 이 파일의 바이트를 검증하지 않는다."
+        },
+        {
+          "id": "E3",
+          "text": "고정 reader의 component 수 휴리스틱이 실제 cdef/auxiliary 뜻을 보존한다는 보장이 없다. 색공간을 나중에 sRGB로 바꾸는 명령이 이미 합쳐지거나 빠진 원 plane을 복구한다고 단정하지 않는다."
+        },
+        {
+          "id": "E4",
+          "text": "원본 파일·정확한 delegate·기준 decode가 없으므로 역사적 runtime과 실제 색 손실은 unknown이다. 불가능의 증명으로 바꾸지 않는다."
+        }
+      ],
+      "counter_input_provenance": {
+        "type": "original_file_with_conflicting_reported_metadata",
+        "original_url": "http://www.fmwconcepts.com/misc_tests/dop10rgbi_32_280_5652_1_nw_2021.jp2.zip",
+        "locally_inspected": false,
+        "capture_attempts": [
+          {
+            "url": "http://www.fmwconcepts.com/misc_tests/dop10rgbi_32_280_5652_1_nw_2021.jp2.zip",
+            "status": 404,
+            "receipt": "attachments/i3.jp2.zip.receipt.json"
+          },
+          {
+            "url": "https://www.fmwconcepts.com/misc_tests/dop10rgbi_32_280_5652_1_nw_2021.jp2.zip",
+            "status": 404,
+            "receipt": "attachments/i3-https.jp2.zip.receipt.json"
+          },
+          {
+            "url": "https://www.opengeodata.nrw.de/produkte/geobasis/lusat/dop/dop_jp2_f10/",
+            "status": 404,
+            "receipt": "snapshots/nrw-directory.html.receipt.json"
+          }
+        ],
+        "original_body_only": "gray+alpha, 4 components, Grayscale은 원저자 도구 출력 보고; 색 기대와 RGBA 추론도 원저자가 불확실하다고 했다.",
+        "later_layer": "near-IR 주장과 Pillow/Photoshop/GIMP/GraphicConverter 관찰은 후속 댓글의 주장. 해당 앱을 직접 실행하거나 원본을 열었다고 세지 않는다."
+      },
+      "minimal_supporting_intervals": [
+        {
+          "interval_id": "I3-O-jp2-capability",
+          "doc_id": "i7116_formats",
+          "start": 12648,
+          "end": 12805,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "supported",
+          "small_quote": "JP2 File Format",
+          "conditionIDs": [
+            "O"
+          ],
+          "sufficiency": "capability_only",
+          "qualification_ko": "JP2 읽기/쓰기 지원 표지. 해당 파일 색공간·4개 성분의 의미·보존 여부는 알려주지 않는다.",
+          "inside_corpus": true,
+          "source_id": "i7116_formats",
+          "version": "7.1.1-6",
+          "source_sha256": "a9daf6e47913b6a7e7a50ba6d9376de7ffc99199d8617994c89deb33fc223053",
+          "upstream_commit": "b2dd67b1681e23d0e0b9769d81bed23f05129e2a",
+          "original_url": "https://imagemagick.org/script/formats.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/b2dd67b1681e23d0e0b9769d81bed23f05129e2a/www/formats.html"
+        },
+        {
+          "interval_id": "I3-E-grayscale-representation",
+          "doc_id": "i7116_porting",
+          "start": 12816,
+          "end": 13022,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "grayscale",
+          "small_quote": "only 1 channel",
+          "conditionIDs": [
+            "P",
+            "E1"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "v7 grayscale 표현은 1개 채널이라는 일반설명. 보고된 4개 codestream component의 실제 의미와 decoder 결과는 별도 확인해야 한다.",
+          "inside_corpus": true,
+          "source_id": "i7116_porting",
+          "version": "7.1.1-6",
+          "source_sha256": "8198aeba1803fab3f8390194cf5da518c288079963ccbde6ccfb98f4fed79dea",
+          "upstream_commit": "b2dd67b1681e23d0e0b9769d81bed23f05129e2a",
+          "original_url": "https://imagemagick.org/script/porting.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/b2dd67b1681e23d0e0b9769d81bed23f05129e2a/www/porting.html"
+        },
+        {
+          "interval_id": "I3-E-alpha-definition",
+          "doc_id": "i7116_porting",
+          "start": 11911,
+          "end": 12518,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "alpha",
+          "small_quote": "pixel is opaque",
+          "conditionIDs": [
+            "E1"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "alpha의 coverage 뜻. 4번째 component를 alpha로 간주할 근거가 되지는 않는다.",
+          "inside_corpus": true,
+          "source_id": "i7116_porting",
+          "version": "7.1.1-6",
+          "source_sha256": "8198aeba1803fab3f8390194cf5da518c288079963ccbde6ccfb98f4fed79dea",
+          "upstream_commit": "b2dd67b1681e23d0e0b9769d81bed23f05129e2a",
+          "original_url": "https://imagemagick.org/script/porting.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/b2dd67b1681e23d0e0b9769d81bed23f05129e2a/www/porting.html"
+        },
+        {
+          "interval_id": "I3-P-multispectral",
+          "doc_id": "i7116_architecture",
+          "start": 32189,
+          "end": 32492,
+          "offset_unit": "Unicode code points, zero-based half-open in corpus documents[].text",
+          "anchor": "multispectral",
+          "small_quote": "same dimensions",
+          "conditionIDs": [
+            "P",
+            "E2"
+          ],
+          "sufficiency": "partial",
+          "qualification_ko": "여러 채널을 담을 수 있는 일부 형식의 일반설명. 고정 JP2 reader가 네 채널의 색/IR 의미를 보존한다는 보장은 아니다.",
+          "inside_corpus": true,
+          "source_id": "i7116_architecture",
+          "version": "7.1.1-6",
+          "source_sha256": "7333536d3c2b2ce5bacde67c2c24e443447a90f0ada2d3439b173adc657191db",
+          "upstream_commit": "b2dd67b1681e23d0e0b9769d81bed23f05129e2a",
+          "original_url": "https://imagemagick.org/script/architecture.php",
+          "fixed_source_url": "https://raw.githubusercontent.com/ImageMagick/ImageMagick/b2dd67b1681e23d0e0b9769d81bed23f05129e2a/www/architecture.html"
+        }
+      ],
+      "outside_corpus_requirements": [
+        {
+          "requirement_id": "I3-JP2-standard",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "O",
+            "P",
+            "E1"
+          ],
+          "source_ids": [
+            "T800-2015"
+          ],
+          "required_evidence_ko": "ITU-T T.800 (11/2015), PDF155–159,162–164: ihdr NC, colr EnumCS 16/17/18, cmap, cdef type/association 및 auxiliary channel 요건.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I3-reader",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "O",
+            "P",
+            "E3"
+          ],
+          "source_ids": [
+            "jp2-7.1.1-6.c",
+            "openjpeg-2.5.0.h"
+          ],
+          "required_evidence_ko": "fixed jp2.c429–446,511–545의 선택·매핑. OpenJPEG2.5.0 header의 enum값은 설명용이며 원저자의 실제 linked OpenJPEG 버전은 미확인.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I3-product-context",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E2"
+          ],
+          "source_ids": [
+            "issue-6237-comments",
+            "NRW-history-faq"
+          ],
+          "required_evidence_ko": "NRW FAQ p7 제품군 RGBI/near-IR 설명과 저자의 후속 주장. exact tile 파일 증명은 아니다.",
+          "available_in_reference_layer": true
+        },
+        {
+          "requirement_id": "I3-original-bytes",
+          "inside_corpus": false,
+          "conditionIDs": [
+            "P",
+            "E1",
+            "E2",
+            "E4"
+          ],
+          "source_ids": [],
+          "required_evidence_ko": "동일 원본의 모든 JP2 header box와 codestream, band별 독립 기준 decode 및 publisher metadata. 현재 회수하지 못함.",
+          "available_in_reference_layer": false
+        }
+      ],
+      "unknowns": [
+        {
+          "status": "unknown",
+          "item": "이 JP2의 실제 색/채널 의미 및 고정 런타임에서의 보존 여부",
+          "minimum_next_input": "원첨부의 바이트 또는 동일성이 입증된 원배포본(SHA-256 포함); ihdr/colr/cmap/cdef 및 codestream header dump; 해당 tile/2021 배포본의 band 정의; 7.1.1-6의 linked OpenJPEG 버전과 독립 component decode. 4번째 plane의 IR/opacity 의미를 확인하기 전 RGBA 처방을 하지 않는다."
+        }
+      ],
+      "fixed_corpus_answer_status": "unknown",
+      "reachability_status": "unknown_not_assessed_by_this_reader",
+      "reject_certainties": [
+        "4 components이므로 RGBA다.",
+        "Grayscale이라고 표시됐으니 원파일에 실제 색 데이터가 없다.",
+        "RGBA로 강제 변환하면 IR까지 보존된다.",
+        "-colorspace sRGB를 추가하면 원래 색을 복구한다.",
+        "입력을 구하지 못했으므로 원 소프트웨어에서 불가능하다."
+      ],
+      "original_issue_url": "https://github.com/ImageMagick/ImageMagick/issues/6237",
+      "original_body_sha256": "22f8672707bad02ec9a629158cd23c57f0a5f2031c199f679f9b4e889f04686b"
+    }
+  },
+  "sessions": [
+    {
+      "masked_id": "m2d23b122bd",
+      "case_id": "I1",
+      "common_request": "ImageMagick 7.1.1-3에서 원문의 RGB 영상에 다른 영상을 회색으로 바꾼 값을 meta 채널로 더해 TIFF를 만들려 한다. 그 추가 정보가 알파 채널처럼 표시되어 원래 RGB 외관을 바꾸지 않아야 한다. 원문의 -channel-fx 조작과 저장/표시 조건을 확인해 달라.",
+      "version": "7.1.1-3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7113_processing 7.1.1-3 offset=0]\nAnatomy of the Command-line\n[n17l1] The Anatomy of the Command-line • [n17l2] Input Filename • [n17l3] Command-line Options • [n17l4] Output Filename\nThe ImageMagick command-line [n17l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n17l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "a200cb0fe81dc441f06c1a4ac0490b55dbbb0522ce15edb59f6430973ac313ef",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "-channel BG -fx 0 +channel -alpha Off"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "저장 형식이나 표시 프로그램에 따른 예외 조건은 아직 찾지 못했다.",
+            "operation": "현재 화면에서는 일반 명령행 예제와 -channel BG -fx 0 조작만 확인했다. 요청한 -channel-fx로 회색 값을 meta 채널에 추가하는 방법은 아직 확인하지 못했다.",
+            "preservation": "원래 RGB 외관이 보존되는지와 TIFF에서 추가 채널이 알파로 취급되지 않는지는 이 화면으로 확인할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7113_processing 7.1.1-3 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n17l29] options. The behavior of an option falls into one of these categories:\n[n17l30] Image Setting\n[n17l31] Image Operator\n[n17l32] Image Channel Operator\n[n17l33] Image Sequence Operator\n[n17l34] Image Geometry\n[n17l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n17l36] -adjoin •[n17l37] -affine •[n17l38] -alpha •[n17l39] -antialias •[n17l40] -authenticate •[n17l41] -background •[n17l42] -bias •[n17l43] -black-point-compensation •[n17l44] -blue-primary •[n17l45] -bordercolor •[n17l46] -caption •[n17l47] -channel •[n17l48] -comment •[n17l49] -compress •[n17l50] -debug •[n17l51] -define •[n17l52] -delay •[n17l53] -density •[n17l54] -depth •[n17l55] -direction •[n17l56] -display •[n17l57] -dispose •[n17l58] -dither •[n17l59] -encoding •[n17l60] -endian •[n17l61] -extract •[n17l62] -family •[n17l63] -fill •[n17l64] -filter •[n17l65] -font •[n17l66] -format •[n17l67] -fuzz •[n17l68] -geometry •[n17l69] -gravity •[n17l70] -green-primary •[n17l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "cc24a850c34ddc0339f738a9955604fd7c588225090db1bfddc18b12b2800c89",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Image Channel Operator"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "An image setting stays in effect until it is reset or the command-line terminates."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF 저장 및 표시 시 meta 채널을 알파와 구별하는 조건이나 예외는 현재 화면에 없다.",
+            "operation": "문서는 명령행 옵션을 Image Setting, Image Operator, Image Channel Operator 등으로 구분한다. 현재 보이는 목록에는 -channel이 있으나 요청한 -channel-fx의 구문이나 meta 채널 추가 예제는 아직 없다.",
+            "preservation": "설정이 재설정되거나 명령이 끝날 때까지 유지된다는 일반 설명은 확인했지만, RGB 픽셀과 표시 외관이 유지된다는 근거는 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 18519,
+            "end": 19869,
+            "display_text": "[i7113_processing 7.1.1-3 offset=18519]\nImage Channel Operator\nOperate directly on image channels:\n[n17l202] -channel-fx •[n17l203] -separate \nImage Sequence Operator\nAn image sequence operator differs from a setting in that it affects an image sequence immediately as it appears on the command-line. Choose from these image sequence operators:\n[n17l204] -append •-affinity •[n17l206] -average •[n17l207] -clut •[n17l208] -coalesce •[n17l209] -combine •[n17l210] -compare •[n17l211] -complex •[n17l212] -composite •[n17l213] -copy •[n17l214] -crop •[n17l215] -debug •[n17l216] -deconstruct •[n17l217] -delete •[n17l218] -evaluate-sequence •[n17l219] -fft •[n17l220] -flatten •[n17l221] -fx •[n17l222] -hald-clut •[n17l223] -ift •[n17l224] -identify •[n17l225] -insert •[n17l226] -layers •[n17l227] -limit •[n17l228] -map •[n17l229] -maximum •[n17l230] -minimum •[n17l231] -morph •[n17l232] -mosaic •-optimize •[n17l234] -print •[n17l235] -process •[n17l236] -quiet •[n17l237] -read •[n17l238] -swap •[n17l239] -write \nIn this example, -append appends three images into one:\nmagick mikayla.png picnic.png beach.png -append vacation.png\nImage Geometry\nMany command-line [n17l240] options take a geometry argument to specify such things as the desired width and height of an image and other dimensional quantities. Because users want so many variations on the resulting dimensions, sizes, and \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "9e43bb74bf7ffc897bb358e88536c67597ae1359d8a960ed644e5ab05398b3f2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#channel",
+            "fragment": "channel"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Operate directly on image channels:"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "-channel-fx"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF 저장의 제약과 표시 프로그램의 채널 해석 예외는 아직 확인되지 않았다. 읽은 내용에 관련 예외가 보이지 않았다는 사실은 예외가 없다는 뜻이 아니다.",
+            "operation": "Image Channel Operator 절에서 -channel-fx가 영상 채널에 직접 작용하는 연산자임을 확인했다. 다만 실제 -channel-fx 구문, 다른 영상을 회색으로 변환하는 절차, 그 값을 meta 채널에 더하는 명령은 읽은 화면에 없어 제시할 수 없다.",
+            "preservation": "원래 RGB 외관 보존 여부와 추가 정보가 알파로 표시되지 않는 조건은 확인하지 못했다. 연산자 목록만으로 요청한 보존 성질이 성립한다고 결론내릴 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m4e0831aff7",
+      "case_id": "I3",
+      "common_request": "ImageMagick 7.1.1-6에서 첨부 JP2를 읽을 때 원 영상의 실제 색과 채널 뜻이 유지되는지 확인해 달라. 작성자는 color를 기대하지만 identify는 gray+alpha, ExifTool은 4 components와 Grayscale을 함께 보고한다. 이것이 색 손실인지 파일 정의를 따른 표현인지, 무엇이 미확인인지 구분해 달라.",
+      "version": "7.1.1-6",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7116_processing 7.1.1-6 offset=0]\nAnatomy of the Command-line\n[n157l1] The Anatomy of the Command-line • [n157l2] Input Filename • [n157l3] Command-line Options • [n157l4] Output Filename\nThe ImageMagick command-line [n157l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n157l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll di\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e07aca6e975697b431ff931ff4c30268919034c6f7ee3537636163a8772bb3a2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Anatomy of the Command-line"
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Input Filename"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "JP2의 색 공간이나 채널 정의에 관한 예외와 제한은 아직 찾지 못했다.",
+            "operation": "첫 화면에서 ImageMagick 명령행의 일반 구성과 입력 파일 목차를 확인했다. 첨부 JP2를 읽을 때의 채널 해석 동작은 아직 확인하지 못했다.",
+            "preservation": "원 영상의 실제 색과 채널 뜻이 유지되는지는 이 화면으로 확인할 수 없다. 요청에 적힌 gray+alpha와 4 components, Grayscale 보고는 아직 문서 증거로 검증하지 않았다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 5149,
+            "end": 6499,
+            "display_text": "[i7116_processing 7.1.1-6 offset=5149]\nInput Filename\nImageMagick extends the concept of an input filename to include:\nfilename globbing\nan explicit image format\nusing built-in images and patterns\nSTDIN, STDOUT, and file descriptors\nselecting certain frames from an image\nselecting a region of an image\nforcing an inline image resize\nforcing an inline image crop\nusing filename references\nThese extensions are explained in the next few paragraphs.\nNote, by default, if a command-line option is also a filename (e.g., -quality), it is intrepetted as a filename. Use -define registry:option:pedantic=true to instead interpret it as an option. \nFilename Globbing\nIn Linux shells, certain characters such as the asterisk (*) and question mark (?) automagically cause lists of filenames to be generated based on pattern matches. This feature is known as globbing. ImageMagick supports filename globbing for systems, such as Windows, that does not natively support it. For example, suppose you want to convert 1.jpg, 2.jpg, 3.jpg, 4.jpg, and 5.jpg in your current directory to a GIF animation. You can conveniently refer to all of the JPEG files with this command: \nmagick *.jpg images.gif\nExplicit Image Format\nImages are stored in a myriad of image formats including the better known JPEG, PNG, TIFF and others. ImageMagick must know the format of the image before it can be read and processed\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "b13a97593119ce29ab0a8a140222a5e42f89a71f9ef89ae7920682eb9d89f950",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "an explicit image format"
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "ImageMagick must know the format of the image before it can be read and processed"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "명령행 옵션과 파일명이 겹칠 때의 해석 조건은 보이지만 JP2 색 공간이나 여러 컴포넌트의 의미에 관한 예외는 확인하지 못했다.",
+            "operation": "Input Filename 절에서 파일명에 명시적 이미지 형식을 포함할 수 있고, ImageMagick이 읽고 처리하기 전에 이미지 형식을 알아야 한다는 일반 원칙을 확인했다. JP2의 구체적인 해석 동작은 아직 나오지 않았다.",
+            "preservation": "이 화면은 형식 선택을 설명할 뿐 실제 색이나 채널 뜻의 보존을 확인해 주지 않는다. gray+alpha가 색 손실인지 파일 정의를 따른 것인지는 판단할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 6499,
+            "end": 7849,
+            "display_text": "[i7116_processing 7.1.1-6 offset=6499]\n. Most formats have a signature within the image that uniquely identifies the format. Failing that, ImageMagick leverages the filename extension to determine the format. For example, image.jpg or image.JPG tells ImageMagick it is reading an image in the JPEG format. \nIn some cases the image may not contain a signature and/or the filename does not identify the image format. In these cases an explicit image format must be specified. For example, suppose our image is named image and contains raw red, green, and blue intensity values. ImageMagick has no way to automagically determine the image format so we explicitly set one: \nmagick -size 640x480 -depth 8 rgb:image image.png\nBuilt-in Images and Patterns\nImageMagick has a number of built-in [n157l19] images and [n157l20] patterns. To utilize the checkerboard pattern, for example, use: \nmagick -size 640x480 pattern:checkerboard checkerboard.png\nSTDIN, STDOUT, and file descriptors\nLinux and Windows permit the output of one command to be piped to the input of another. ImageMagick permits image data to be read and written from the standard streams STDIN (standard in) and STDOUT (standard out), respectively, using a pseudo-filename of -. In this example we pipe the output of [n157l22] magick to the [n157l23] display program: \nmagick logo: gif:- | magick display gif:-\nThe second explicit \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e5a777176ac63838e3c05d98dbb76ddda7ac7f066e848667662ffafde5893ae7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Most formats have a signature within the image that uniquely identifies the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Failing that, ImageMagick leverages the filename extension to determine the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "In these cases an explicit image format must be specified."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "문서에서 확인한 예외는 시그니처나 파일명으로 형식을 식별할 수 없을 때 명시적 형식을 지정해야 한다는 조건이다. JP2에서 컴포넌트 수와 색 채널 의미가 어떻게 연결되는지, 이 버전의 제한이나 오류가 있는지는 확인하지 못했다. 이를 해결하기 위한 JP2별 문서나 파일 분석은 현재 열람 근거에 포함되지 않는다.",
+            "operation": "확인한 문서는 대부분의 형식에서 내부 시그니처로 형식을 식별하고, 실패하면 파일 확장자를 이용하며, 둘로도 식별할 수 없으면 형식을 명시해야 한다고 설명한다. 이것은 일반적인 입력 형식 결정 절차이며 첨부 JP2의 실제 디코딩 결과를 입증하지 않는다.",
+            "preservation": "세 번의 열람으로 원 영상의 실제 색과 채널 뜻이 유지되는지는 확인하지 못했다. 요청에 제시된 identify의 gray+alpha와 ExifTool의 4 components 및 Grayscale만을 근거로 색 손실 또는 파일 정의를 따른 표현 중 하나라고 단정할 수 없다. 첨부 파일의 색 공간과 채널 정의, 디코더가 이를 처리한 결과, 원본과의 색 비교가 모두 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m65a1793623",
+      "case_id": "I1",
+      "common_request": "ImageMagick 7.1.1-3에서 원문의 RGB 영상에 다른 영상을 회색으로 바꾼 값을 meta 채널로 더해 TIFF를 만들려 한다. 그 추가 정보가 알파 채널처럼 표시되어 원래 RGB 외관을 바꾸지 않아야 한다. 원문의 -channel-fx 조작과 저장/표시 조건을 확인해 달라.",
+      "version": "7.1.1-3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7113_processing 7.1.1-3 offset=0]\nAnatomy of the Command-line\n[n17l1] The Anatomy of the Command-line • [n17l2] Input Filename • [n17l3] Command-line Options • [n17l4] Output Filename\nThe ImageMagick command-line [n17l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n17l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "a200cb0fe81dc441f06c1a4ac0490b55dbbb0522ce15edb59f6430973ac313ef",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Anatomy of the Command-line"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Command-line Options"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF 저장 조건이나 추가 채널이 알파처럼 표시되는 예외도 아직 보이지 않는다.",
+            "operation": "현재 표시된 시작 문서에는 명령행 구성과 예시가 있으며, 요청한 -channel-fx의 RGB·회색 영상·meta 채널 조작은 아직 확인하지 못했다.",
+            "preservation": "meta 채널을 추가한 뒤 원래 RGB 외관이 유지되는지는 이 화면에서 확인되지 않는다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7113_processing 7.1.1-3 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n17l29] options. The behavior of an option falls into one of these categories:\n[n17l30] Image Setting\n[n17l31] Image Operator\n[n17l32] Image Channel Operator\n[n17l33] Image Sequence Operator\n[n17l34] Image Geometry\n[n17l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n17l36] -adjoin •[n17l37] -affine •[n17l38] -alpha •[n17l39] -antialias •[n17l40] -authenticate •[n17l41] -background •[n17l42] -bias •[n17l43] -black-point-compensation •[n17l44] -blue-primary •[n17l45] -bordercolor •[n17l46] -caption •[n17l47] -channel •[n17l48] -comment •[n17l49] -compress •[n17l50] -debug •[n17l51] -define •[n17l52] -delay •[n17l53] -density •[n17l54] -depth •[n17l55] -direction •[n17l56] -display •[n17l57] -dispose •[n17l58] -dither •[n17l59] -encoding •[n17l60] -endian •[n17l61] -extract •[n17l62] -family •[n17l63] -fill •[n17l64] -filter •[n17l65] -font •[n17l66] -format •[n17l67] -fuzz •[n17l68] -geometry •[n17l69] -gravity •[n17l70] -green-primary •[n17l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "cc24a850c34ddc0339f738a9955604fd7c588225090db1bfddc18b12b2800c89",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Image Channel Operator"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "An image setting stays in effect until it is reset or the command-line terminates."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF의 meta 채널 저장 방식이나 알파 표시 예외에 대한 설명은 아직 확인하지 못했다.",
+            "operation": "명령행 옵션이 Image Setting, Image Operator, Image Channel Operator 등으로 나뉜다는 것은 확인했다. -channel 설정 링크도 보이지만 -channel-fx를 이용한 구체적 조작은 아직 표시되지 않았다.",
+            "preservation": "설정은 후속 처리와 파일 쓰기에 영향을 줄 수 있고 초기화하거나 명령이 끝날 때까지 유지된다고 설명한다. 이는 설정의 지속성에 관한 설명이므로 원래 RGB 외관 보존의 증거로는 부족하다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 18519,
+            "end": 19869,
+            "display_text": "[i7113_processing 7.1.1-3 offset=18519]\nImage Channel Operator\nOperate directly on image channels:\n[n17l202] -channel-fx •[n17l203] -separate \nImage Sequence Operator\nAn image sequence operator differs from a setting in that it affects an image sequence immediately as it appears on the command-line. Choose from these image sequence operators:\n[n17l204] -append •-affinity •[n17l206] -average •[n17l207] -clut •[n17l208] -coalesce •[n17l209] -combine •[n17l210] -compare •[n17l211] -complex •[n17l212] -composite •[n17l213] -copy •[n17l214] -crop •[n17l215] -debug •[n17l216] -deconstruct •[n17l217] -delete •[n17l218] -evaluate-sequence •[n17l219] -fft •[n17l220] -flatten •[n17l221] -fx •[n17l222] -hald-clut •[n17l223] -ift •[n17l224] -identify •[n17l225] -insert •[n17l226] -layers •[n17l227] -limit •[n17l228] -map •[n17l229] -maximum •[n17l230] -minimum •[n17l231] -morph •[n17l232] -mosaic •-optimize •[n17l234] -print •[n17l235] -process •[n17l236] -quiet •[n17l237] -read •[n17l238] -swap •[n17l239] -write \nIn this example, -append appends three images into one:\nmagick mikayla.png picnic.png beach.png -append vacation.png\nImage Geometry\nMany command-line [n17l240] options take a geometry argument to specify such things as the desired width and height of an image and other dimensional quantities. Because users want so many variations on the resulting dimensions, sizes, and \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "9e43bb74bf7ffc897bb358e88536c67597ae1359d8a960ed644e5ab05398b3f2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#channel",
+            "fragment": "channel"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Operate directly on image channels:"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "-channel-fx"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "TIFF 저장 시 meta 채널을 지원하는 조건과 뷰어가 이를 알파로 해석하는지에 관한 조건·예외는 확인하지 못했다.",
+            "operation": "-channel-fx가 영상 채널을 직접 조작하는 Image Channel Operator에 속한다는 점과 해당 설명으로 가는 링크는 확인했다. 그러나 이번에 표시된 구간에는 두 번째 영상을 회색으로 바꾸어 meta 채널에 더하는 구체적 식이나 명령이 없어 요청한 조작 자체는 확인하지 못했다.",
+            "preservation": "원래 RGB 채널 값이나 외관이 보존되는 조건은 표시된 세 구간에서 확인되지 않았다. -channel-fx가 채널 연산자라는 사실만으로 보존을 단정할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m78107a41d1",
+      "case_id": "I2",
+      "common_request": "ImageMagick 7.1.1-4에서 원문의 convert demo.tif -alpha extract extract.png로 TIFF의 알파 채널을 PNG 영상으로 추출하려 한다. 출력이 온통 흰색이 되지 않고 원 알파 채널의 내용이 남아야 한다. 이전 판에서는 되었다는 보고와 함께 입력·채널 해석의 제한을 확인해 달라.",
+      "version": "7.1.1-4",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7114_processing 7.1.1-4 offset=0]\nAnatomy of the Command-line\n[n87l1] The Anatomy of the Command-line • [n87l2] Input Filename • [n87l3] Command-line Options • [n87l4] Output Filename\nThe ImageMagick command-line [n87l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n87l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "8347d0a4891f792a9b240bcc780894fcf05eab4c5dc752dac7b7061af948abe7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "입력 TIFF 및 채널 해석의 제한과 이전 판에서 되었다는 보고는 아직 확인하지 못했다.",
+            "operation": "시작 화면에는 ImageMagick 명령행의 기본 형태와 옵션 목차가 보인다. 요청된 TIFF 알파 추출 명령의 동작 설명은 아직 확인하지 못했다.",
+            "preservation": "원 알파 채널의 내용이 PNG에 남는지, 출력이 흰색으로만 되는 상황을 피할 수 있는지는 현재 화면으로 확인할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7114_processing 7.1.1-4 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n87l29] options. The behavior of an option falls into one of these categories:\n[n87l30] Image Setting\n[n87l31] Image Operator\n[n87l32] Image Channel Operator\n[n87l33] Image Sequence Operator\n[n87l34] Image Geometry\n[n87l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n87l36] -adjoin •[n87l37] -affine •[n87l38] -alpha •[n87l39] -antialias •[n87l40] -authenticate •[n87l41] -background •[n87l42] -bias •[n87l43] -black-point-compensation •[n87l44] -blue-primary •[n87l45] -bordercolor •[n87l46] -caption •[n87l47] -channel •[n87l48] -comment •[n87l49] -compress •[n87l50] -debug •[n87l51] -define •[n87l52] -delay •[n87l53] -density •[n87l54] -depth •[n87l55] -direction •[n87l56] -display •[n87l57] -dispose •[n87l58] -dither •[n87l59] -encoding •[n87l60] -endian •[n87l61] -extract •[n87l62] -family •[n87l63] -fill •[n87l64] -filter •[n87l65] -font •[n87l66] -format •[n87l67] -fuzz •[n87l68] -geometry •[n87l69] -gravity •[n87l70] -green-primary •[n87l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "345a5e57201dca34be9635e93331d27827725389a01e906d603a61c4cf6677de",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "A image setting"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "TIFF 입력이나 채널 해석의 특수 제한, 흰색 결과의 원인, 이전 판의 성공 보고는 아직 확인되지 않는다.",
+            "operation": "Command-line Options 화면에서 -alpha가 Image Setting 목록에 있는 것을 확인했다. 이 화면은 설정이 명령행에서 재설정되거나 명령이 끝날 때까지 유지된다고 설명하지만, extract 동작 자체는 아직 설명하지 않는다.",
+            "preservation": "설정의 지속성과 알파 채널 내용의 보존은 별개다. 이 화면에서는 TIFF의 원 알파 값이 PNG 영상으로 남는지 확인되지 않는다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "not_in_cumulative_visible_intervals",
+              "strict_supported": false
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7114_command-line-options",
+            "start": 11612,
+            "end": 12962,
+            "display_text": "[i7114_command-line-options 7.1.1-4 offset=11612]\n-alpha type\nGives control of the alpha/matte channel of an image.\nUsed to set a flag on an image indicating whether or not to use existing alpha channel data, to create an alpha channel, or to perform other operations on the alpha channel. Choose the argument type from the list below.\nActivate\nEnable the image's transparency channel. Note normally Set should be used instead of this, unless you specifically need to preserve existing (but specifically turned Off) transparency channel. \nAssociate\nassociate the alpha channel with the image.\nDeactivate\nDisables the image's transparency channel. Does not delete or change the existing data, just turns off the use of that data.\nDisassociate\ndisassociate the alpha channel from the image.\nSet\nActivates the alpha/matte channel. If it was previously turned off then it also resets the channel to opaque. If the image already had the alpha channel turned on, it will have no effect.\nOpaque\nEnables the alpha/matte channel and forces it to be fully opaque. \nTransparent\nActivates the alpha/matte channel and forces it to be fully transparent. This effectively creates a fully transparent image the same size as the original and with all its original RGB data still intact, but fully transparent. \nExtract\nCopies the alpha channel values into all the color channels and turns 'Off' the image's transparen\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "13233c6af61671be4ebbbb0a5148b0828a6b2be6c0104e961638794bc57dad45",
+            "arrival_url": "https://imagemagick.org/script/command-line-options.php#alpha",
+            "fragment": "alpha"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Copies the alpha channel values into all the color channels"
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "If it was previously turned off then it also resets the channel to opaque."
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Does not delete or change the existing data, just turns off the use of that data."
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "Set은 알파 채널이 이전에 꺼져 있었다면 채널을 불투명으로 초기화한다고 명시한다. Deactivate는 데이터를 삭제하거나 바꾸지 않고 사용만 끈다고 설명하므로 채널의 존재와 활성 상태를 구별할 필요가 있다. 이 화면만으로 TIFF 입력의 특수 제한이나 이전 판에서 되었다는 보고를 확인할 수는 없다.",
+            "operation": "-alpha 설명에서 Extract는 알파 채널 값을 모든 색상 채널에 복사한다고 확인했다. 따라서 알파 값의 영상화라는 요청의 연산 의미는 뒷받침된다. 다만 요청된 convert demo.tif -alpha extract extract.png를 실행하거나 해당 TIFF를 판독한 결과를 본 것은 아니다. 두 번째 답변의 인용에는 전사 오류가 있었으며 정정 시도는 이미 확정된 답변이라는 이유로 거절되었다.",
+            "preservation": "문서의 Extract 정의는 추출 대상 알파 값이 색상 채널로 복사됨을 보여 준다. 그러나 demo.tif의 원 알파 내용이 실제로 입력 단계에서 해석되었는지, 7.1.1-4에서 PNG가 흰색으로만 나오지 않는지는 확인하지 못했다. 표시된 Extract 문장은 끝부분이 잘려 있다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m83f191fd55",
+      "case_id": "I2",
+      "common_request": "ImageMagick 7.1.1-4에서 원문의 convert demo.tif -alpha extract extract.png로 TIFF의 알파 채널을 PNG 영상으로 추출하려 한다. 출력이 온통 흰색이 되지 않고 원 알파 채널의 내용이 남아야 한다. 이전 판에서는 되었다는 보고와 함께 입력·채널 해석의 제한을 확인해 달라.",
+      "version": "7.1.1-4",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7114_processing 7.1.1-4 offset=0]\nAnatomy of the Command-line\n[n87l1] The Anatomy of the Command-line • [n87l2] Input Filename • [n87l3] Command-line Options • [n87l4] Output Filename\nThe ImageMagick command-line [n87l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n87l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "8347d0a4891f792a9b240bcc780894fcf05eab4c5dc752dac7b7061af948abe7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "이전 판과의 차이 및 TIFF 입력이나 채널 해석의 제한은 아직 발견하지 못했다.",
+            "operation": "현재 화면은 명령행 구성의 개요와 예제를 보여 준다. 요청한 convert demo.tif -alpha extract extract.png의 알파 추출 동작은 아직 확인하지 못했다.",
+            "preservation": "TIFF의 원래 알파 내용이 PNG에 남는지, 출력이 흰색이 되지 않는지는 현재 화면에 근거가 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7114_processing 7.1.1-4 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n87l29] options. The behavior of an option falls into one of these categories:\n[n87l30] Image Setting\n[n87l31] Image Operator\n[n87l32] Image Channel Operator\n[n87l33] Image Sequence Operator\n[n87l34] Image Geometry\n[n87l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n87l36] -adjoin •[n87l37] -affine •[n87l38] -alpha •[n87l39] -antialias •[n87l40] -authenticate •[n87l41] -background •[n87l42] -bias •[n87l43] -black-point-compensation •[n87l44] -blue-primary •[n87l45] -bordercolor •[n87l46] -caption •[n87l47] -channel •[n87l48] -comment •[n87l49] -compress •[n87l50] -debug •[n87l51] -define •[n87l52] -delay •[n87l53] -density •[n87l54] -depth •[n87l55] -direction •[n87l56] -display •[n87l57] -dispose •[n87l58] -dither •[n87l59] -encoding •[n87l60] -endian •[n87l61] -extract •[n87l62] -family •[n87l63] -fill •[n87l64] -filter •[n87l65] -font •[n87l66] -format •[n87l67] -fuzz •[n87l68] -geometry •[n87l69] -gravity •[n87l70] -green-primary •[n87l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "345a5e57201dca34be9635e93331d27827725389a01e906d603a61c4cf6677de",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "An image setting stays in effect until it is reset or the command-line terminates."
+              },
+              {
+                "doc_id": "i7114_processing",
+                "quote": "-alpha"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "이전 판에서는 되었다는 보고와 TIFF 입력·채널 해석의 제한은 현재까지의 화면에 나오지 않았다.",
+            "operation": "-alpha가 Image Setting 목록에 있고, 설정이 이후의 이미지 읽기·처리·쓰기에 영향을 줄 수 있다는 일반 설명은 확인했다. extract 동작 자체의 설명은 아직 보지 못했다.",
+            "preservation": "설정의 지속성에 관한 설명만으로 원 알파 내용의 보존이나 흰색 출력 방지를 확인할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7114_command-line-options",
+            "start": 11612,
+            "end": 12962,
+            "display_text": "[i7114_command-line-options 7.1.1-4 offset=11612]\n-alpha type\nGives control of the alpha/matte channel of an image.\nUsed to set a flag on an image indicating whether or not to use existing alpha channel data, to create an alpha channel, or to perform other operations on the alpha channel. Choose the argument type from the list below.\nActivate\nEnable the image's transparency channel. Note normally Set should be used instead of this, unless you specifically need to preserve existing (but specifically turned Off) transparency channel. \nAssociate\nassociate the alpha channel with the image.\nDeactivate\nDisables the image's transparency channel. Does not delete or change the existing data, just turns off the use of that data.\nDisassociate\ndisassociate the alpha channel from the image.\nSet\nActivates the alpha/matte channel. If it was previously turned off then it also resets the channel to opaque. If the image already had the alpha channel turned on, it will have no effect.\nOpaque\nEnables the alpha/matte channel and forces it to be fully opaque. \nTransparent\nActivates the alpha/matte channel and forces it to be fully transparent. This effectively creates a fully transparent image the same size as the original and with all its original RGB data still intact, but fully transparent. \nExtract\nCopies the alpha channel values into all the color channels and turns 'Off' the image's transparen\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "13233c6af61671be4ebbbb0a5148b0828a6b2be6c0104e961638794bc57dad45",
+            "arrival_url": "https://imagemagick.org/script/command-line-options.php#alpha",
+            "fragment": "alpha"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Copies the alpha channel values into all the color channels"
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Does not delete or change the existing data, just turns off the use of that data."
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "If it was previously turned off then it also resets the channel to opaque."
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "채널 데이터와 사용 여부는 구분된다. Deactivate는 기존 데이터를 바꾸지 않고 사용만 끄며, Set는 꺼져 있던 채널을 활성화할 때 불투명 상태로 초기화한다고 한다. 따라서 채널의 활성 상태에 따른 의미 차이는 확인했지만, 이것이 요청된 흰색 출력의 원인이라는 근거는 없다. TIFF 입력 해석의 구체적 제한과 이전 판에서는 되었다는 보고는 세 번의 화면에서 찾지 못했다.",
+            "operation": "-alpha Extract는 알파 채널 값을 모든 색 채널로 복사하는 동작으로 설명되어 있다. 해당 설명의 다음 부분은 화면 끝에서 잘려 있으므로 그 뒤의 문구는 확인하지 못했다.",
+            "preservation": "문서상 읽힌 알파 값이 색 채널로 복사된다는 점은 확인했다. 그러나 demo.tif의 알파가 실제로 어떻게 읽히는지와 ImageMagick 7.1.1-4에서 extract.png가 온통 흰색이 되지 않고 원래 내용을 유지하는지는 확인되지 않았다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m9c38caec01",
+      "case_id": "I3",
+      "common_request": "ImageMagick 7.1.1-6에서 첨부 JP2를 읽을 때 원 영상의 실제 색과 채널 뜻이 유지되는지 확인해 달라. 작성자는 color를 기대하지만 identify는 gray+alpha, ExifTool은 4 components와 Grayscale을 함께 보고한다. 이것이 색 손실인지 파일 정의를 따른 표현인지, 무엇이 미확인인지 구분해 달라.",
+      "version": "7.1.1-6",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7116_processing 7.1.1-6 offset=0]\nAnatomy of the Command-line\n[n157l1] The Anatomy of the Command-line • [n157l2] Input Filename • [n157l3] Command-line Options • [n157l4] Output Filename\nThe ImageMagick command-line [n157l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n157l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll di\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e07aca6e975697b431ff931ff4c30268919034c6f7ee3537636163a8772bb3a2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "JP2의 색공간 선언, 성분 수, 알파 또는 채널 매핑에 관한 예외는 아직 찾지 못했다.",
+            "operation": "현재 본 것은 ImageMagick 명령행 구성 설명과 일반적인 파일 변환 예시이며, JP2를 읽는 구체적 처리 방식은 아직 확인하지 못했다.",
+            "preservation": "첨부 JP2의 실제 색과 채널 의미가 유지되는지 이 화면으로는 확인할 수 없다. 요청에 나온 identify 및 ExifTool의 표시는 현재 문서에서 검증되지 않았다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 5149,
+            "end": 6499,
+            "display_text": "[i7116_processing 7.1.1-6 offset=5149]\nInput Filename\nImageMagick extends the concept of an input filename to include:\nfilename globbing\nan explicit image format\nusing built-in images and patterns\nSTDIN, STDOUT, and file descriptors\nselecting certain frames from an image\nselecting a region of an image\nforcing an inline image resize\nforcing an inline image crop\nusing filename references\nThese extensions are explained in the next few paragraphs.\nNote, by default, if a command-line option is also a filename (e.g., -quality), it is intrepetted as a filename. Use -define registry:option:pedantic=true to instead interpret it as an option. \nFilename Globbing\nIn Linux shells, certain characters such as the asterisk (*) and question mark (?) automagically cause lists of filenames to be generated based on pattern matches. This feature is known as globbing. ImageMagick supports filename globbing for systems, such as Windows, that does not natively support it. For example, suppose you want to convert 1.jpg, 2.jpg, 3.jpg, 4.jpg, and 5.jpg in your current directory to a GIF animation. You can conveniently refer to all of the JPEG files with this command: \nmagick *.jpg images.gif\nExplicit Image Format\nImages are stored in a myriad of image formats including the better known JPEG, PNG, TIFF and others. ImageMagick must know the format of the image before it can be read and processed\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "b13a97593119ce29ab0a8a140222a5e42f89a71f9ef89ae7920682eb9d89f950",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "ImageMagick must know the format of the image before it can be read and processed"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "파일의 색공간 선언이나 채널 정의에 따라 표시가 달라지는 조건 및 JP2 관련 예외는 아직 찾지 못했다.",
+            "operation": "입력 파일 이름에는 명시적인 영상 형식 지정 등이 포함될 수 있고, ImageMagick은 읽고 처리하기 전에 파일 형식을 알아야 한다는 점을 확인했다. JP2 내부 성분을 어떻게 색 및 알파 채널로 해석하는지는 아직 보이지 않는다.",
+            "preservation": "일반적인 입력 형식 인식 설명만으로는 첨부 JP2의 실제 색이나 채널 의미가 유지된다고 판단할 수 없다. gray+alpha와 4 components 및 Grayscale이라는 보고가 서로 어떤 관계인지 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 6499,
+            "end": 7849,
+            "display_text": "[i7116_processing 7.1.1-6 offset=6499]\n. Most formats have a signature within the image that uniquely identifies the format. Failing that, ImageMagick leverages the filename extension to determine the format. For example, image.jpg or image.JPG tells ImageMagick it is reading an image in the JPEG format. \nIn some cases the image may not contain a signature and/or the filename does not identify the image format. In these cases an explicit image format must be specified. For example, suppose our image is named image and contains raw red, green, and blue intensity values. ImageMagick has no way to automagically determine the image format so we explicitly set one: \nmagick -size 640x480 -depth 8 rgb:image image.png\nBuilt-in Images and Patterns\nImageMagick has a number of built-in [n157l19] images and [n157l20] patterns. To utilize the checkerboard pattern, for example, use: \nmagick -size 640x480 pattern:checkerboard checkerboard.png\nSTDIN, STDOUT, and file descriptors\nLinux and Windows permit the output of one command to be piped to the input of another. ImageMagick permits image data to be read and written from the standard streams STDIN (standard in) and STDOUT (standard out), respectively, using a pseudo-filename of -. In this example we pipe the output of [n157l22] magick to the [n157l23] display program: \nmagick logo: gif:- | magick display gif:-\nThe second explicit \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e5a777176ac63838e3c05d98dbb76ddda7ac7f066e848667662ffafde5893ae7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Most formats have a signature within the image that uniquely identifies the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Failing that, ImageMagick leverages the filename extension to determine the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "In these cases an explicit image format must be specified."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "입력 형식 식별 정보가 없으면 명시적으로 형식을 지정해야 한다는 일반 조건은 확인했다. 이것이 해당 JP2에 적용된다는 증거는 없으며, JP2의 4 components와 Grayscale이 함께 나타나는 이유 및 알파 해석 관련 예외는 찾지 못했다.",
+            "operation": "확인한 문서는 일반적으로 파일 내부 서명으로 형식을 식별하고, 실패하면 파일 확장자를 사용한다고 설명한다. 식별 정보가 없는 원시 RGB 데이터에 형식을 명시하는 예시도 확인했다. 그러나 JP2 디코더가 성분과 색공간 및 알파를 해석하는 과정은 확인하지 못했다.",
+            "preservation": "현재 본 문서만으로는 첨부 JP2에서 색 손실이 발생했는지, 파일 정의에 따른 gray+alpha 표현인지 구분할 수 없다. 작성자의 color 기대와 두 도구의 보고는 요청에 제시된 정보이며, 파일의 실제 색공간 선언, 채널 매핑 및 디코딩 결과를 독립적으로 확인하지 못했다. 실제 색과 채널 뜻의 보존 여부는 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mee804c216c",
+      "case_id": "I3",
+      "common_request": "ImageMagick 7.1.1-6에서 첨부 JP2를 읽을 때 원 영상의 실제 색과 채널 뜻이 유지되는지 확인해 달라. 작성자는 color를 기대하지만 identify는 gray+alpha, ExifTool은 4 components와 Grayscale을 함께 보고한다. 이것이 색 손실인지 파일 정의를 따른 표현인지, 무엇이 미확인인지 구분해 달라.",
+      "version": "7.1.1-6",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7116_processing 7.1.1-6 offset=0]\nAnatomy of the Command-line\n[n157l1] The Anatomy of the Command-line • [n157l2] Input Filename • [n157l3] Command-line Options • [n157l4] Output Filename\nThe ImageMagick command-line [n157l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n157l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll di\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e07aca6e975697b431ff931ff4c30268919034c6f7ee3537636163a8772bb3a2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "JP2의 색공간 정의, 구성요소 수와 채널 의미의 관계, 예외 처리에 대한 설명을 아직 보지 못했다. 색 손실인지 파일 정의를 따른 표현인지 판정할 수 없다.",
+            "operation": "시작 문서에는 ImageMagick 명령으로 입력 영상을 다른 파일로 처리하는 예만 보인다. 첨부 JP2를 읽은 결과나 해당 판의 JP2 처리 동작은 아직 확인하지 못했다.",
+            "preservation": "실제 색과 각 채널의 뜻이 유지되는지는 이 화면으로 확인할 수 없다. 작성자의 color 기대, identify의 gray+alpha 및 ExifTool 보고는 요청에 제시된 상황이며 현재 문서 증거로 검증되지 않았다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 5149,
+            "end": 6499,
+            "display_text": "[i7116_processing 7.1.1-6 offset=5149]\nInput Filename\nImageMagick extends the concept of an input filename to include:\nfilename globbing\nan explicit image format\nusing built-in images and patterns\nSTDIN, STDOUT, and file descriptors\nselecting certain frames from an image\nselecting a region of an image\nforcing an inline image resize\nforcing an inline image crop\nusing filename references\nThese extensions are explained in the next few paragraphs.\nNote, by default, if a command-line option is also a filename (e.g., -quality), it is intrepetted as a filename. Use -define registry:option:pedantic=true to instead interpret it as an option. \nFilename Globbing\nIn Linux shells, certain characters such as the asterisk (*) and question mark (?) automagically cause lists of filenames to be generated based on pattern matches. This feature is known as globbing. ImageMagick supports filename globbing for systems, such as Windows, that does not natively support it. For example, suppose you want to convert 1.jpg, 2.jpg, 3.jpg, 4.jpg, and 5.jpg in your current directory to a GIF animation. You can conveniently refer to all of the JPEG files with this command: \nmagick *.jpg images.gif\nExplicit Image Format\nImages are stored in a myriad of image formats including the better known JPEG, PNG, TIFF and others. ImageMagick must know the format of the image before it can be read and processed\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "b13a97593119ce29ab0a8a140222a5e42f89a71f9ef89ae7920682eb9d89f950",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "an explicit image format"
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "ImageMagick must know the format of the image before it can be read and processed"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "입력 파일명과 명령행 옵션의 해석에 관한 주의는 있지만 이번 색·채널 문제의 예외를 설명하는 근거는 없다. 구성요소 수만으로 색 손실 여부를 판단할 문서 근거도 얻지 못했다.",
+            "operation": "입력 파일 설명은 명시적 이미지 형식 지정 등 입력 방식 확장을 소개하며, 영상을 읽고 처리하기 전에 형식을 알아야 한다고 설명한다. JP2 디코딩이나 실제 첨부 파일을 조사한 결과는 보이지 않는다.",
+            "preservation": "파일 형식 인식에 대한 일반 설명만 확인했다. JP2의 실제 색 보존, 네 구성요소의 역할, gray+alpha 표현의 정확성은 여전히 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7116_processing",
+            "start": 6499,
+            "end": 7849,
+            "display_text": "[i7116_processing 7.1.1-6 offset=6499]\n. Most formats have a signature within the image that uniquely identifies the format. Failing that, ImageMagick leverages the filename extension to determine the format. For example, image.jpg or image.JPG tells ImageMagick it is reading an image in the JPEG format. \nIn some cases the image may not contain a signature and/or the filename does not identify the image format. In these cases an explicit image format must be specified. For example, suppose our image is named image and contains raw red, green, and blue intensity values. ImageMagick has no way to automagically determine the image format so we explicitly set one: \nmagick -size 640x480 -depth 8 rgb:image image.png\nBuilt-in Images and Patterns\nImageMagick has a number of built-in [n157l19] images and [n157l20] patterns. To utilize the checkerboard pattern, for example, use: \nmagick -size 640x480 pattern:checkerboard checkerboard.png\nSTDIN, STDOUT, and file descriptors\nLinux and Windows permit the output of one command to be piped to the input of another. ImageMagick permits image data to be read and written from the standard streams STDIN (standard in) and STDOUT (standard out), respectively, using a pseudo-filename of -. In this example we pipe the output of [n157l22] magick to the [n157l23] display program: \nmagick logo: gif:- | magick display gif:-\nThe second explicit \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "e5a777176ac63838e3c05d98dbb76ddda7ac7f066e848667662ffafde5893ae7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#input",
+            "fragment": "input"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Most formats have a signature within the image that uniquely identifies the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "Failing that, ImageMagick leverages the filename extension to determine the format."
+              },
+              {
+                "doc_id": "i7116_processing",
+                "quote": "In these cases an explicit image format must be specified."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "서명이나 파일명으로 형식을 알 수 없을 때 명시적 형식이 필요하다는 일반 예외만 확인했다. 첨부 JP2의 내부 색공간·채널 정의, 각 구성요소의 실제 의미, 디코더가 그 정의를 처리한 방식 및 원래 기대한 색과의 비교는 모두 미확인이다. 구성요소 수나 작성자의 기대만을 색 보존 또는 색 손실의 증거로 삼을 수 있는 문서 근거를 얻지 못했다.",
+            "operation": "확인한 문서는 ImageMagick이 대개 파일 내부 서명으로 형식을 식별하고, 그렇지 못하면 확장자를 이용하며, 둘로도 식별되지 않는 경우 명시적 형식을 요구한다고 설명한다. 이는 일반적인 입력 형식 식별 절차에 대한 근거이며, 7.1.1-6의 첨부 JP2 색·채널 해석을 검증한 근거는 아니다.",
+            "preservation": "원 영상의 실제 색과 채널 뜻이 유지된다는 결론은 보류한다. 요청에 나온 color 기대, gray+alpha, 4 components와 Grayscale이라는 보고의 관계를 설명하는 문서는 보지 못했다. 따라서 실제 색 손실과 파일 정의를 따른 표현 중 어느 쪽인지 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mfbae60984e",
+      "case_id": "I2",
+      "common_request": "ImageMagick 7.1.1-4에서 원문의 convert demo.tif -alpha extract extract.png로 TIFF의 알파 채널을 PNG 영상으로 추출하려 한다. 출력이 온통 흰색이 되지 않고 원 알파 채널의 내용이 남아야 한다. 이전 판에서는 되었다는 보고와 함께 입력·채널 해석의 제한을 확인해 달라.",
+      "version": "7.1.1-4",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7114_processing 7.1.1-4 offset=0]\nAnatomy of the Command-line\n[n87l1] The Anatomy of the Command-line • [n87l2] Input Filename • [n87l3] Command-line Options • [n87l4] Output Filename\nThe ImageMagick command-line [n87l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n87l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "8347d0a4891f792a9b240bcc780894fcf05eab4c5dc752dac7b7061af948abe7",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "이전 판과의 차이나 TIFF 입력 및 채널 해석의 제한은 현재 보이는 범위에 없다.",
+            "operation": "표시된 시작 문서는 ImageMagick 명령행의 구조와 간단한 변환 예시만 보여 준다. 요청한 TIFF 알파 채널 추출 연산의 정확한 동작은 아직 확인하지 못했다.",
+            "preservation": "원 알파 채널 내용이 PNG에 남는지, 온통 흰색이 되는 조건이 무엇인지는 아직 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7114_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7114_processing 7.1.1-4 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n87l29] options. The behavior of an option falls into one of these categories:\n[n87l30] Image Setting\n[n87l31] Image Operator\n[n87l32] Image Channel Operator\n[n87l33] Image Sequence Operator\n[n87l34] Image Geometry\n[n87l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n87l36] -adjoin •[n87l37] -affine •[n87l38] -alpha •[n87l39] -antialias •[n87l40] -authenticate •[n87l41] -background •[n87l42] -bias •[n87l43] -black-point-compensation •[n87l44] -blue-primary •[n87l45] -bordercolor •[n87l46] -caption •[n87l47] -channel •[n87l48] -comment •[n87l49] -compress •[n87l50] -debug •[n87l51] -define •[n87l52] -delay •[n87l53] -density •[n87l54] -depth •[n87l55] -direction •[n87l56] -display •[n87l57] -dispose •[n87l58] -dither •[n87l59] -encoding •[n87l60] -endian •[n87l61] -extract •[n87l62] -family •[n87l63] -fill •[n87l64] -filter •[n87l65] -font •[n87l66] -format •[n87l67] -fuzz •[n87l68] -geometry •[n87l69] -gravity •[n87l70] -green-primary •[n87l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "345a5e57201dca34be9635e93331d27827725389a01e906d603a61c4cf6677de",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_processing",
+                "quote": "An image setting stays in effect until it is reset or the command-line terminates."
+              },
+              {
+                "doc_id": "i7114_processing",
+                "quote": "-alpha"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "설정은 이후의 입력 읽기, 영상 연산, 출력 쓰기에 영향을 줄 수 있다는 설명이 있다. TIFF 입력의 채널 해석이나 이전 판과의 차이에 대한 구체적인 제한은 아직 찾지 못했다.",
+            "operation": "명령행 옵션의 분류에서 -alpha가 Image Setting 목록에 포함된 것을 확인했다. 아직 extract 모드의 구체적인 연산은 보이지 않았다.",
+            "preservation": "설정이 초기화되거나 명령행이 끝날 때까지 효력을 유지한다는 일반 설명은 확인했으나, TIFF의 원 알파 값이 PNG 영상에 보존되는지는 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7114_command-line-options",
+            "start": 11612,
+            "end": 12962,
+            "display_text": "[i7114_command-line-options 7.1.1-4 offset=11612]\n-alpha type\nGives control of the alpha/matte channel of an image.\nUsed to set a flag on an image indicating whether or not to use existing alpha channel data, to create an alpha channel, or to perform other operations on the alpha channel. Choose the argument type from the list below.\nActivate\nEnable the image's transparency channel. Note normally Set should be used instead of this, unless you specifically need to preserve existing (but specifically turned Off) transparency channel. \nAssociate\nassociate the alpha channel with the image.\nDeactivate\nDisables the image's transparency channel. Does not delete or change the existing data, just turns off the use of that data.\nDisassociate\ndisassociate the alpha channel from the image.\nSet\nActivates the alpha/matte channel. If it was previously turned off then it also resets the channel to opaque. If the image already had the alpha channel turned on, it will have no effect.\nOpaque\nEnables the alpha/matte channel and forces it to be fully opaque. \nTransparent\nActivates the alpha/matte channel and forces it to be fully transparent. This effectively creates a fully transparent image the same size as the original and with all its original RGB data still intact, but fully transparent. \nExtract\nCopies the alpha channel values into all the color channels and turns 'Off' the image's transparen\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "13233c6af61671be4ebbbb0a5148b0828a6b2be6c0104e961638794bc57dad45",
+            "arrival_url": "https://imagemagick.org/script/command-line-options.php#alpha",
+            "fragment": "alpha"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Copies the alpha channel values into all the color channels"
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Note normally Set should be used instead of this, unless you specifically need to preserve existing (but specifically turned Off) transparency channel."
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "If it was previously turned off then it also resets the channel to opaque."
+              },
+              {
+                "doc_id": "i7114_command-line-options",
+                "quote": "Does not delete or change the existing data, just turns off the use of that data."
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "Deactivate는 기존 데이터를 삭제하거나 변경하지 않고 사용만 끈다. 반면 Set의 비활성 채널 초기화와 Opaque의 완전 불투명 강제는 확인했다. TIFF 입력의 추가 채널 해석 제한, ImageMagick 7.1.1-4의 구체적인 문제, 이전 판에서는 되었다는 보고는 이번에 본 문서 범위로 입증되지 않는다. 따라서 Activate를 더하면 해당 TIFF 문제가 해결된다고 단정할 수 없다.",
+            "operation": "-alpha의 Extract는 알파 채널 값을 모든 색상 채널로 복사하는 연산으로 설명된다. 따라서 요청한 -alpha extract가 지향하는 추출 방식은 확인했다. 다만 설명 끝부분이 표시 범위에서 잘려 있어 이어지는 문장을 완전히 읽지는 못했다.",
+            "preservation": "기존 알파 값이 정상적으로 읽혔는지는 별도로 확인해야 한다. 표시된 문서에서는 비활성화된 기존 투명도 채널을 보존할 필요가 있으면 Activate를 사용하라고 설명하고, Set은 이전에 꺼진 채널을 불투명하게 초기화한다고 설명한다. 이 차이는 기존 값 보존에 중요하지만, demo.tif에서 채널이 어떻게 읽히는지와 출력이 흰색으로 되지 않는지는 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 4,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mfbf615ac44",
+      "case_id": "I1",
+      "common_request": "ImageMagick 7.1.1-3에서 원문의 RGB 영상에 다른 영상을 회색으로 바꾼 값을 meta 채널로 더해 TIFF를 만들려 한다. 그 추가 정보가 알파 채널처럼 표시되어 원래 RGB 외관을 바꾸지 않아야 한다. 원문의 -channel-fx 조작과 저장/표시 조건을 확인해 달라.",
+      "version": "7.1.1-3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 0,
+            "end": 1350,
+            "display_text": "[i7113_processing 7.1.1-3 offset=0]\nAnatomy of the Command-line\n[n17l1] The Anatomy of the Command-line • [n17l2] Input Filename • [n17l3] Command-line Options • [n17l4] Output Filename\nThe ImageMagick command-line [n17l5] tools can be as simple as this:\nmagick image.jpg image.png \nOr it can be complex with a plethora of [n17l6] options, as in the following:\nmagick label.gif -alpha Set \\\n  \\( +clone  -shade 110x90 -normalize -negate +clone  -compose Plus -composite \\) \\\n  \\( -clone 0 -shade 110x50 -normalize -channel BG -fx 0 +channel -alpha Off \\) \\\n  -delete 0 +swap  -compose Multiply -composite  button.gif\nThis example command is long enough that the command must be written across several lines, so we formatted it for clarity by inserting backslashes (\\). The backslash is the Linux line-continuation character. In the Windows shell, use a carat character (^) for line-continuation. We use the Linux style on these web pages, as above. Sometimes, however, the lines are wrapped by your browser if the browser window is small enough, but the command-lines, shown in white, are still intended to be typed as one line. Line continuation characters need not be entered. The parentheses that are escaped above using the backslash are not escaped in Windows. There are some other differences between Windows and Linux (involving quotation marks, for instance), but we'll discuss \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "a200cb0fe81dc441f06c1a4ac0490b55dbbb0522ce15edb59f6430973ac313ef",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php",
+            "fragment": ""
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "magick image.jpg image.png"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF 저장 조건이나 표시상의 예외는 아직 찾지 못했다.",
+            "operation": "현재 열람에는 일반적인 magick 명령과 여러 연산을 결합한 예만 보인다. 다른 영상의 회색 값을 meta 채널로 더하는 -channel-fx 조작은 아직 확인하지 못했다.",
+            "preservation": "원래 RGB 외관의 유지 여부와 추가 채널을 알파로 표시하지 않는 조건은 현재 보이는 내용에서 확인되지 않는다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 13552,
+            "end": 14900,
+            "display_text": "[i7113_processing 7.1.1-3 offset=13552]\nCommand-line Options\nYou can direct the behavior of ImageMagick utilities with these command-line [n17l29] options. The behavior of an option falls into one of these categories:\n[n17l30] Image Setting\n[n17l31] Image Operator\n[n17l32] Image Channel Operator\n[n17l33] Image Sequence Operator\n[n17l34] Image Geometry\n[n17l35] Image Stack\nImage Setting\nAn image setting persists as it appears on the command-line and may affect subsequent processing such as reading an image, an image operator, or when writing an image as appropriate. An image setting stays in effect until it is reset or the command-line terminates. The image settings include:\n[n17l36] -adjoin •[n17l37] -affine •[n17l38] -alpha •[n17l39] -antialias •[n17l40] -authenticate •[n17l41] -background •[n17l42] -bias •[n17l43] -black-point-compensation •[n17l44] -blue-primary •[n17l45] -bordercolor •[n17l46] -caption •[n17l47] -channel •[n17l48] -comment •[n17l49] -compress •[n17l50] -debug •[n17l51] -define •[n17l52] -delay •[n17l53] -density •[n17l54] -depth •[n17l55] -direction •[n17l56] -display •[n17l57] -dispose •[n17l58] -dither •[n17l59] -encoding •[n17l60] -endian •[n17l61] -extract •[n17l62] -family •[n17l63] -fill •[n17l64] -filter •[n17l65] -font •[n17l66] -format •[n17l67] -fuzz •[n17l68] -geometry •[n17l69] -gravity •[n17l70] -green-primary •[n17l71] -interlace •\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "cc24a850c34ddc0339f738a9955604fd7c588225090db1bfddc18b12b2800c89",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#option",
+            "fragment": "option"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Image Channel Operator"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "An image setting stays in effect until it is reset or the command-line terminates."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF의 meta 채널 저장 및 알파 표시와 관련된 예외는 아직 확인하지 못했다.",
+            "operation": "명령 옵션은 Image Setting, Image Operator, Image Channel Operator 등의 범주로 나뉜다는 점을 확인했다. 요청한 -channel-fx 조작 자체는 아직 보이지 않는다.",
+            "preservation": "설정은 재설정하거나 명령이 끝날 때까지 효력이 유지될 수 있지만, 이는 RGB 외관이 보존된다는 근거는 아니다. 요청한 보존 조건은 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "i7113_processing",
+            "start": 18519,
+            "end": 19869,
+            "display_text": "[i7113_processing 7.1.1-3 offset=18519]\nImage Channel Operator\nOperate directly on image channels:\n[n17l202] -channel-fx •[n17l203] -separate \nImage Sequence Operator\nAn image sequence operator differs from a setting in that it affects an image sequence immediately as it appears on the command-line. Choose from these image sequence operators:\n[n17l204] -append •-affinity •[n17l206] -average •[n17l207] -clut •[n17l208] -coalesce •[n17l209] -combine •[n17l210] -compare •[n17l211] -complex •[n17l212] -composite •[n17l213] -copy •[n17l214] -crop •[n17l215] -debug •[n17l216] -deconstruct •[n17l217] -delete •[n17l218] -evaluate-sequence •[n17l219] -fft •[n17l220] -flatten •[n17l221] -fx •[n17l222] -hald-clut •[n17l223] -ift •[n17l224] -identify •[n17l225] -insert •[n17l226] -layers •[n17l227] -limit •[n17l228] -map •[n17l229] -maximum •[n17l230] -minimum •[n17l231] -morph •[n17l232] -mosaic •-optimize •[n17l234] -print •[n17l235] -process •[n17l236] -quiet •[n17l237] -read •[n17l238] -swap •[n17l239] -write \nIn this example, -append appends three images into one:\nmagick mikayla.png picnic.png beach.png -append vacation.png\nImage Geometry\nMany command-line [n17l240] options take a geometry argument to specify such things as the desired width and height of an image and other dimensional quantities. Because users want so many variations on the resulting dimensions, sizes, and \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "9e43bb74bf7ffc897bb358e88536c67597ae1359d8a960ed644e5ab05398b3f2",
+            "arrival_url": "https://imagemagick.org/script/command-line-processing.php#channel",
+            "fragment": "channel"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "i7113_processing",
+                "quote": "Operate directly on image channels:"
+              },
+              {
+                "doc_id": "i7113_processing",
+                "quote": "-channel-fx"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "TIFF 저장 시 필요한 조건, 표시 프로그램의 처리 방식 및 관련 예외는 확인되지 않았다. -channel-fx 상세 링크는 마지막 화면에서 발견했지만 허용된 열람 횟수를 모두 사용하여 그 본문을 확인할 수 없다.",
+            "operation": "-channel-fx가 이미지 채널을 직접 조작하는 Image Channel Operator로 분류되어 있다는 점까지 확인했다. 그러나 다른 영상을 회색으로 바꾸고 그 값을 meta 채널에 더하는 구체적인 명령이나 채널 지정식은 열람하지 못했다.",
+            "preservation": "추가 meta 채널이 알파처럼 표시되지 않으며 원래 RGB 외관을 유지한다는 설명은 세 번의 열람에서 확인하지 못했다. 따라서 요청한 외관 보존을 확인했다고 답할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

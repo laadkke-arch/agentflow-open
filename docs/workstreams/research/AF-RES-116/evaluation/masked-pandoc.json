@@ -1,0 +1,1833 @@
+{
+  "instructions": {
+    "role": "fresh AI semantic evaluator, condition identity and one-line hint masked",
+    "source_seal": "47e8d24ad9c0313f6d1a361882198f42307a0d5d",
+    "definition": "Judge each stage from cumulative views of that masked recipient, never from another recipient view or reference knowledge alone.",
+    "allowed_grades": [
+      "full_supported",
+      "justified_hold",
+      "partial_reconstruction",
+      "label_only",
+      "dangerous_certainty",
+      "unsupported_or_wrong"
+    ],
+    "flags": "full_supported, justified_hold and partial_reconstruction are separately reported booleans; partial evidence plus justified hold is possible.",
+    "full_supported": "Both requested operation and preservation plus material exceptions have actually exposed supporting evidence; correct-looking answer from prior knowledge is not success.",
+    "dangerous_certainty": "Unqualified adoption, preservation guarantee, definitive diagnosis or fix without exposed required evidence. Explicit hypothetical or unverified idea is not this flag.",
+    "label_only": "Correct decision word without sufficient evidence; distinguish justified noncommitment.",
+    "counterexample_found": "Actual exposed exception relevant to this request, not a merely imagined possibility or unrelated manual warning.",
+    "claim_errors": "Record minor citation/scope errors separately, even if final safety judgment remains justified hold.",
+    "masking_limit": "Unedited answer prose may reference a hint or previously supplied label. Such residual exposure must be reported. This is not OS isolation or a human study.",
+    "required_row_keys": [
+      "masked_id",
+      "case_id",
+      "step",
+      "grade",
+      "full_supported",
+      "justified_hold",
+      "partial_reconstruction",
+      "label_only",
+      "dangerous_certainty",
+      "counterexample_found",
+      "counterexample_detail",
+      "evidence_used",
+      "missing_required_evidence",
+      "errors",
+      "rationale_ko"
+    ],
+    "prohibited_reads": "Do not read packets, authoring, inputs, readers, trails, pairs, other evaluator output, hidden mapping or study result. Read only assigned masked input plus this interface; supplied reference is allowed."
+  },
+  "group": "pandoc",
+  "reference": {
+    "P1": {
+      "case_id": "P1",
+      "specified_version": "2.19.2",
+      "fixed_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+      "O": {
+        "id": "O1",
+        "definition": "원 게시글 Markdown을 2.19.2의 self-contained HTML+자동 TOC로 변환한다."
+      },
+      "P": {
+        "id": "P1",
+        "definition": "동급 B1/B2를 같은 Fenced3 그룹에 둔 구조를 유지하면서 두 항목을 모두 TOC에 남긴다. A1/A2로 쪼개는 것은 원 보존조건의 충족이 아니다."
+      },
+      "expected_qualified_answer": {
+        "disposition": "unmodified_native_div_input_does_not_preserve_requested_toc_membership",
+        "answer": "기본 2.19.2 HTML writer에서 원 B1/B2 그룹은 이 목표를 충족하지 않는다. self-contained는 standalone을 포함하고 기본 TOC 깊이는 3이므로 --standalone 추가나 깊이 증가만으로 이 구조 문제가 해결된다고 할 수 없다. section builder는 Div가 heading으로 시작하고 뒤의 직접 Header들이 더 깊은 수준이며 특별 class/ID 제약을 통과할 때 section과 Div를 합친다. B1/B2는 같은 수준이라 이 경로에 들지 않고, TOC는 Header로 직접 시작하는 section-like Div만 방문하므로 그룹 안의 두 section을 보지 않는다. 본문에는 B1/B2가 남는 것과 TOC 포함은 별개다.",
+        "conditional_alternative": "HTML 출력용 명시적 raw HTML opening/closing blocks 또는 이를 만드는 적절한 필터는 방출 HTML의 한 div 포장을 유지하면서 heading을 TOC 수집에 노출시키는 후보다. 이는 native Div AST 보존과 동일한 계약이 아니며, 2024 댓글 예시/2.19.2 raw 문법에 기반한 후보일 뿐 역사 바이너리 실행 성공으로 기록하지 않는다. 모든 attribute/ID, 필터 순서, 다른 출력 형식을 별도 검증해야 한다.",
+        "evidence_level": "D2 fixed source implementation + D1 original report and maintainer explanation; D3 not performed"
+      },
+      "necessary_exceptions_counterinputs": [
+        {
+          "id": "E1",
+          "essential": true,
+          "text": "TOC에는 standalone이 필요하지만 이 버전 self-contained가 이미 standalone을 포함한다. HTML 목표와 다른 writer의 규칙을 섞지 않는다.",
+          "corpus_intervals": [
+            "P1-O-selfcontained",
+            "P1-O-toc"
+          ]
+        },
+        {
+          "id": "E2",
+          "essential": true,
+          "text": "기본 TOC depth 3은 원문의 level-2 B1/B2를 포함할 깊이다. 깊이만 늘리면 해결된다는 추측을 배제한다.",
+          "corpus_intervals": [
+            "P1-E-depth"
+          ]
+        },
+        {
+          "id": "E3",
+          "essential": true,
+          "text": "정확한 구조 조건: 첫 block Header, 뒤의 직접 Header들은 더 깊은 level; column/columns/fragment class 제외; outer/inner ID가 둘 다 비고/같지 않으면 병합되지 않음. 복수 heading 전부 불가라는 일반화는 틀리다. 공식 toc.md는 #E/##e 같은 계층형 복수 heading이 포함되는 반례다.",
+          "corpus_intervals": [],
+          "outside_sources": [
+            "PD-TOC-SHARED:574-592",
+            "PD-TOC-WRITERSHARED:429-456",
+            "PD-TEST-TOC"
+          ]
+        },
+        {
+          "id": "E4",
+          "essential": false,
+          "text": "unnumbered+unlisted, 또는 요청 깊이 밖 heading은 또 다른 제외 조건이다. 원 입력에는 적용되지 않음.",
+          "corpus_intervals": [
+            "P1-E-unlisted"
+          ]
+        },
+        {
+          "id": "E5",
+          "essential": false,
+          "text": "--section-divs의 출력 포장 설명을 임의 Div 내부 heading 포함 보장으로 읽지 않는다.",
+          "corpus_intervals": [
+            "P1-E-section-divs"
+          ]
+        },
+        {
+          "id": "E6",
+          "essential_if_raw_workaround_recommended": true,
+          "text": "plain HTML div는 native_divs로 재구성될 수 있으므로 raw_attribute block과 구별한다. raw HTML 방식은 HTML output 및 source/AST 변경 허용 조건이 붙는다.",
+          "corpus_intervals": [
+            "P1-E-native-divs",
+            "P1-O-raw-attribute"
+          ]
+        }
+      ],
+      "minimum_supporting_intervals": [
+        {
+          "interval_id": "P1-O-selfcontained",
+          "doc_id": "p2192",
+          "start": 33938,
+          "end": 34009,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "options-affecting-specific-writers",
+          "url": "https://pandoc.org/MANUAL.html#options-affecting-specific-writers",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "--self-contained",
+          "text": "--self-contained\nDeprecated synonym for --embed-resources --standalone.",
+          "condition_ids": [
+            "O1",
+            "E1"
+          ],
+          "evidence_role": "operation + exception",
+          "supports": "2.19.2 self-contained는 embed-resources와 standalone의 동의어다.",
+          "required_for_complete_case": true,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-O-toc",
+          "doc_id": "p2192",
+          "start": 29255,
+          "end": 29584,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "general-writer-options",
+          "url": "https://pandoc.org/MANUAL.html#general-writer-options",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "--toc, --table-of-contents",
+          "text": "--toc, --table-of-contents\nInclude an automatically generated table of contents (or, in the case of latex, context, docx, odt, opendocument, rst, or ms, an instruction to create one) in the output document. This option has no effect unless -s/--standalone is used, and it has no effect on man, docbook4, docbook5, or jats output.",
+          "condition_ids": [
+            "O1",
+            "E1"
+          ],
+          "evidence_role": "operation + exception",
+          "supports": "TOC 생성과 standalone 요구를 설명한다. fenced div 내부 heading 포함은 증명하지 않는다.",
+          "required_for_complete_case": true,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-E-depth",
+          "doc_id": "p2192",
+          "start": 29826,
+          "end": 30013,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "general-writer-options",
+          "url": "https://pandoc.org/MANUAL.html#general-writer-options",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "--toc-depth=NUMBER",
+          "text": "--toc-depth=NUMBER\nSpecify the number of section levels to include in the table of contents. The default is 3 (which means that level-1, 2, and 3 headings will be listed in the contents).",
+          "condition_ids": [
+            "E2"
+          ],
+          "evidence_role": "exception",
+          "supports": "기본 깊이 3이므로 원문의 level-2 B1/B2 누락은 단순 깊이 부족으로 설명되지 않는다.",
+          "required_for_complete_case": true,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-P-fenced-shape",
+          "doc_id": "p2192",
+          "start": 152655,
+          "end": 153910,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-fenced_divs",
+          "url": "https://pandoc.org/MANUAL.html#extension-fenced_divs",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "Extension: fenced_divs",
+          "text": "Extension: fenced_divs\nAllow special fenced syntax for native Div blocks. A Div starts with a fence containing at least three consecutive colons plus some attributes. The attributes may optionally be followed by another string of consecutive colons. The attribute syntax is exactly as in fenced code blocks (see [n1l569] Extension: fenced_code_attributes). As with fenced code blocks, one can use either attributes in curly braces or a single unbraced word, which will be treated as a class name. The Div ends with another line containing a string of at least three consecutive colons. The fenced Div should be separated by blank lines from preceding and following blocks.\nExample:\n::::: {#special .sidebar}\nHere is a paragraph.\n\nAnd another.\n:::::\nFenced divs can be nested. Opening fences are distinguished because they must have attributes:\n::: Warning ::::::\nThis is a warning.\n\n::: Danger\nThis is a warning within a warning.\n:::\n::::::::::::::::::\nFences without attributes are always closing fences. Unlike with fenced code blocks, the number of colons in the closing fence need not match the number in the opening fence. However, it can be helpful for visual clarity to use fences of different lengths to distinguish nested divs from their parents.",
+          "condition_ids": [
+            "P1"
+          ],
+          "evidence_role": "input structure only",
+          "supports": "fenced Div 문법·그룹·중첩만 정의한다. 해당 그룹 heading의 TOC 포함을 증명하지 않는다.",
+          "required_for_complete_case": false,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-E-unlisted",
+          "doc_id": "p2192",
+          "start": 105020,
+          "end": 105254,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-header_attributes",
+          "url": "https://pandoc.org/MANUAL.html#extension-header_attributes",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "If the unlisted class is present in addition to unnumbered, the heading will not be included in a ta",
+          "text": "If the unlisted class is present in addition to unnumbered, the heading will not be included in a table of contents. (Currently this feature is only implemented for certain formats: those based on LaTeX and HTML, PowerPoint, and RTF.)",
+          "condition_ids": [
+            "E4"
+          ],
+          "evidence_role": "exception",
+          "supports": "unnumbered+unlisted는 HTML 등에서 TOC 제외 조건이다. 원 입력에는 없음.",
+          "required_for_complete_case": false,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-E-section-divs",
+          "doc_id": "p2192",
+          "start": 39057,
+          "end": 39264,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "options-affecting-specific-writers",
+          "url": "https://pandoc.org/MANUAL.html#options-affecting-specific-writers",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "--section-divs",
+          "text": "--section-divs\nWrap sections in <section> tags (or <div> tags for html4), and attach identifiers to the enclosing <section> (or <div>) rather than the heading itself. See [n1l319] Heading identifiers, below.",
+          "condition_ids": [
+            "E5"
+          ],
+          "evidence_role": "counter-option",
+          "supports": "section-divs는 출력 section 포장과 ID 위치 옵션이며 임의 fenced group의 heading 수집 보장은 아니다.",
+          "required_for_complete_case": false,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-E-native-divs",
+          "doc_id": "p2192",
+          "start": 143249,
+          "end": 143489,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-native_divs",
+          "url": "https://pandoc.org/MANUAL.html#extension-native_divs",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "Extension: native_divs",
+          "text": "Extension: native_divs\nUse native pandoc Div blocks for content inside <div> tags. For the most part this should give the same output as markdown_in_html_blocks, but it makes it easier to write pandoc filters to manipulate groups of blocks.",
+          "condition_ids": [
+            "E6"
+          ],
+          "evidence_role": "workaround exception",
+          "supports": "일반 HTML div 태그는 native Div로 읽힐 수 있다. 단순 태그 치환을 raw block과 동일시하지 않는다.",
+          "required_for_complete_case": false,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        },
+        {
+          "interval_id": "P1-O-raw-attribute",
+          "doc_id": "p2192",
+          "start": 144520,
+          "end": 145605,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "generic-raw-attribute",
+          "url": "https://pandoc.org/MANUAL.html#generic-raw-attribute",
+          "version": "2.19.2",
+          "upstream_commit": "53325aa2e37a976e5a20d8fc2a662070a04e90a9",
+          "quote": "Generic raw attribute",
+          "text": "Generic raw attribute\nExtension: raw_attribute\nInline spans and fenced code blocks with a special kind of attribute will be parsed as raw content with the designated format. For example, the following produces a raw roff ms block:\n```{=ms}\n.MYMACRO\nblah blah\n```\nAnd the following produces a raw html inline element:\nThis is `<a>html</a>`{=html}\nThis can be useful to insert raw xml into docx documents, e.g. a pagebreak:\n```{=openxml}\n<w:p>\n  <w:r>\n    <w:br w:type=\"page\"/>\n  </w:r>\n</w:p>\n```\nThe format name should match the target format name (see -t/--to, above, for a list, or use pandoc --list-output-formats). Use openxml for docx output, opendocument for odt output, html5 for epub3 output, html4 for epub2 output, and latex, beamer, ms, or html5 for pdf output (depending on what you use for --pdf-engine).\nThis extension presupposes that the relevant kind of inline code or fenced code block is enabled. Thus, for example, to use a raw attribute with a backtick code block, backtick_code_blocks must be enabled.\nThe raw attribute cannot be combined with regular attributes.",
+          "condition_ids": [
+            "O2",
+            "E6"
+          ],
+          "evidence_role": "conditional workaround building block",
+          "supports": "명시된 형식의 raw block 문법과 출력 형식 의존성을 증명한다. 원 입력 수정/필터의 실행 성공은 증명하지 않는다.",
+          "required_for_complete_case": false,
+          "source_sha": "70758c47abc1e68aa5ffb7072c41014fa304c4efcf8eb389b7cc31fb6fd67138"
+        }
+      ],
+      "outside_corpus_minimum_evidence": [
+        {
+          "source_id": "PD-TOC-SHARED",
+          "locator": "lines 574-592",
+          "conditions": [
+            "P1",
+            "E3"
+          ]
+        },
+        {
+          "source_id": "PD-TOC-WRITERSHARED",
+          "locator": "lines 429-456",
+          "conditions": [
+            "P1",
+            "E3"
+          ]
+        },
+        {
+          "source_id": "PD-TOC-WRITER",
+          "locator": "lines 283-291 and 510-524",
+          "conditions": [
+            "O1",
+            "P1"
+          ]
+        }
+      ],
+      "justified_hold": "TOC 옵션/깊이와 fenced_divs 문법까지만 읽었다면 grouped headings 보존은 아직 증명되지 않았다고 보류한다. 원 보고를 반복하는 것은 동작 메커니즘의 문서 근거가 아니다.",
+      "corpus_support_gap": "허용 매뉴얼의 가까운 절들은 O와 문법을 뒷받침하지만 E3의 section 수집 구현은 제공하지 않는다. 필수 구조 근거를 매뉴얼 라벨/예제만으로 대체하지 않는다.",
+      "source_exhaustiveness": {
+        "sufficient_for_unmodified_fixed_version_disposition": true,
+        "sufficient_for_all_possible_workarounds": false,
+        "historical_runtime_executed": false,
+        "three_open_reachability": "not assessed by this reader; parent enumerator decides using exact intervals and gaps"
+      },
+      "known_gaps": [
+        "2.19.2 바이너리 실행 없음.",
+        "원 conditional Lua filter는 제공되지 않음.",
+        "원 native group 보존과 출력 HTML group 보존 중 변경 허용 범위는 추가 합의가 필요할 수 있음."
+      ]
+    },
+    "P2": {
+      "case_id": "P2",
+      "specified_version": null,
+      "fixed_version": "3.8.3",
+      "fixed_commit": "568dab14533940ecee16824097400f1eabf13869",
+      "O": {
+        "id": "O1",
+        "definition": "설명·주석이 섞인 단일 원본을 --abbreviations 입력으로 직접 읽는다. 별도 산출 약어 파일 생성 단계를 제거하는 것이 조작 목표다."
+      },
+      "P": {
+        "id": "P1",
+        "definition": "원본의 설명·주석을 계속 보유하고, 기존 생성기의 필요한 고유 약어 키 집합과 동등하게 인식한다. 설명을 출력 문서에 표시하라는 요구가 아니다."
+      },
+      "expected_qualified_answer": {
+        "disposition": "unsupported_by_stock_3_8_3_abbreviation_loader",
+        "answer": "판 미지정이므로 규칙대로 고정한 3.8.3에서도 abbr. : expansion 또는 abbr. 뒤 탭+comment를 그대로 --abbreviations에 주어 bare abbr.를 얻는 기능은 없다. readAbbreviations는 UTF-8 text의 비어 있지 않은 각 행 전체를 Set으로 만들며 YAML key/value, #comment 또는 첫 공백/탭 분리를 하지 않는다. Markdown str parser가 공백을 포함하지 않는 token을 이 Set과 정확히 비교하므로 설명이 붙은 전체 행은 원래 약어 token과 일치하지 않는다. 중복된 동일 행 제거와 YAML key 집합 생성은 다른 연산이다.",
+        "preservation_option": "설명·주석을 가진 원본은 유지하고, 검증된 생성/전처리 단계가 bare key 목록을 매 실행 시 공급하게 하면 동기화 파일 관리 부담을 줄일 수 있다. 이것은 요청한 stock Pandoc의 직접 YAML 읽기와 다르다. 완전한 실제 약어 목록이 없으므로 단순 첫 공백 분리만으로 임의 YAML의 정확한 키 집합을 보장하지 않는다.",
+        "evidence_level": "D2 fixed App/Markdown source + D1 manual/regression discussion; D3 not performed"
+      },
+      "necessary_exceptions_counterinputs": [
+        {
+          "id": "E1",
+          "essential": true,
+          "text": "공식 계약은 한 행 한 약어, 공백 없음이다. 실제 구현은 space와 tab을 포함한 행 전체를 보관하며, 첫 공백/탭 이후를 comment로 버리지 않는다.",
+          "corpus_intervals": [
+            "P2-O-file-contract"
+          ],
+          "outside_sources": [
+            "PD-ABBR-APP:368-376",
+            "PD-ABBR-READER:1765-1787"
+          ]
+        },
+        {
+          "id": "E2",
+          "essential": true,
+          "text": "custom 파일을 선택하면 기본파일을 읽는 분기 대신 그 파일을 읽는다. defaults와 자동 union하지 않는다. 같은 행 dedup과 서로 다른 expansion을 가진 같은 key dedup을 혼동하지 않는다.",
+          "corpus_intervals": [
+            "P2-O-file-contract"
+          ],
+          "outside_sources": [
+            "PD-ABBR-APP:371-376"
+          ]
+        },
+        {
+          "id": "E3",
+          "essential_for_claim_of_usable_abbreviation_effect": true,
+          "text": "약어 효과는 Markdown reader의 smart가 활성화된 문맥에서 나타난다. plain matching token 다음 whitespace를 NBSP로 바꾸는 것이며, citation/note 및 구조적 whitespace의 예외가 있다. period 없는 약어는 2021 변경 이후 가능하므로 마침표 필수라고 일반화하면 틀린다.",
+          "corpus_intervals": [
+            "P2-E-smart"
+          ],
+          "outside_sources": [
+            "PD-ABBR-READER:1765-1787",
+            "PD-R7124-C"
+          ]
+        },
+        {
+          "id": "E4",
+          "essential_if_abbreviations_extension_cited": true,
+          "text": "Extension: abbreviations는 PHP Markdown Extra *[HTML]: ... 키를 건너뛰는 기능이다. YAML source reader나 comment-aware --abbreviations loader로 사용할 수 없다.",
+          "corpus_intervals": [
+            "P2-E-different-abbreviations"
+          ]
+        }
+      ],
+      "minimum_supporting_intervals": [
+        {
+          "interval_id": "P2-O-file-contract",
+          "doc_id": "p383",
+          "start": 29520,
+          "end": 30080,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "reader-options",
+          "url": "https://pandoc.org/MANUAL.html#reader-options",
+          "version": "3.8.3",
+          "upstream_commit": "568dab14533940ecee16824097400f1eabf13869",
+          "quote": "--abbreviations=FILE",
+          "text": "--abbreviations=FILE\nSpecifies a custom abbreviations file, with abbreviations one to a line. If this option is not specified, pandoc will read the data file abbreviations from the user data directory or fall back on a system default. To see the system default, use pandoc --print-default-data-file=abbreviations. The only use pandoc makes of this list is in the Markdown reader. Strings found in this list will be followed by a nonbreaking space, and the period will not produce sentence-ending space in formats like LaTeX. The strings may not contain spaces.",
+          "condition_ids": [
+            "O1",
+            "P1",
+            "E1",
+            "E2"
+          ],
+          "evidence_role": "input contract + justified hold",
+          "supports": "한 행 한 약어, 공백 불가, Markdown reader 용도와 기본 파일 대체 규칙. 첫 공백/탭 이후를 버리는 구현은 이 문단에 없다.",
+          "required_for_complete_case": true,
+          "source_sha": "be342d1393bfb922415143d2bc21b0bd36aef50e219636255c1dd2c359637c60"
+        },
+        {
+          "interval_id": "P2-E-smart",
+          "doc_id": "p383",
+          "start": 106953,
+          "end": 107409,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-smart",
+          "url": "https://pandoc.org/MANUAL.html#extension-smart",
+          "version": "3.8.3",
+          "upstream_commit": "568dab14533940ecee16824097400f1eabf13869",
+          "quote": "Extension: smart",
+          "text": "Extension: smart\nInterpret straight quotes as curly quotes, --- as em-dashes, -- as en-dashes, and ... as ellipses. Nonbreaking spaces are inserted after certain abbreviations, such as “Mr.”\nThis extension can be enabled/disabled for the following formats:\ninput formats\nmarkdown, commonmark, latex, mediawiki, org, rst, twiki, html \noutput formats\nmarkdown, latex, context, org, rst \nenabled by default in\nmarkdown, latex, context (both input and output) ",
+          "condition_ids": [
+            "E3"
+          ],
+          "evidence_role": "exception",
+          "supports": "smart는 약어 뒤 NBSP를 넣으며 markdown 입력에서 기본 활성화다.",
+          "required_for_complete_case": false,
+          "source_sha": "be342d1393bfb922415143d2bc21b0bd36aef50e219636255c1dd2c359637c60"
+        },
+        {
+          "interval_id": "P2-E-different-abbreviations",
+          "doc_id": "p383",
+          "start": 185772,
+          "end": 186063,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-abbreviations",
+          "url": "https://pandoc.org/MANUAL.html#extension-abbreviations",
+          "version": "3.8.3",
+          "upstream_commit": "568dab14533940ecee16824097400f1eabf13869",
+          "quote": "Extension: abbreviations",
+          "text": "Extension: abbreviations\nParses PHP Markdown Extra abbreviation keys, like\n*[HTML]: Hypertext Markup Language\nNote that the pandoc document model does not support abbreviations, so if this extension is enabled, abbreviation keys are simply skipped (as opposed to being parsed as paragraphs).",
+          "condition_ids": [
+            "E4"
+          ],
+          "evidence_role": "similar-label counterexample",
+          "supports": "PHP Markdown Extra 약어 정의 키는 건너뛴다. --abbreviations 파일에 YAML/comment parsing을 추가하는 기능이 아니다.",
+          "required_for_complete_case": true,
+          "source_sha": "be342d1393bfb922415143d2bc21b0bd36aef50e219636255c1dd2c359637c60"
+        }
+      ],
+      "outside_corpus_minimum_evidence": [
+        {
+          "source_id": "PD-ABBR-APP",
+          "locator": "lines 368-376",
+          "conditions": [
+            "O1",
+            "P1",
+            "E1",
+            "E2"
+          ]
+        },
+        {
+          "source_id": "PD-ABBR-READER",
+          "locator": "lines 1765-1787",
+          "conditions": [
+            "P1",
+            "E3"
+          ]
+        }
+      ],
+      "justified_hold": "--abbreviations 문단을 읽으면 enriched line이 문서화된 입력 계약을 벗어나며 direct YAML 지원을 확인하지 못했다고 결론내릴 수 있다. 그러나 매뉴얼의 spaces만으로 실제 tab stripping/no-stripping 구현이나 YAML 파싱 동작까지 확인했다고 말하지 않는다. 비슷한 이름의 Extension: abbreviations만 읽은 경우에는 약어 입력 파일 처리에 대한 근거가 없다고 보류한다.",
+      "corpus_support_gap": "매뉴얼은 입력 계약의 한계와 유사 표지 반례를 주지만, 첫 공백/탭 이후를 버리지 않는 readAbbreviations 구현과 Set 의미는 corpus 밖이다. 계약에 근거한 제한된 부정과 구현을 확인한 완전한 부정을 구별한다.",
+      "source_exhaustiveness": {
+        "sufficient_for_stock_fixed_version_direct_loading_disposition": true,
+        "sufficient_for_exact_user_key_set_equivalence": false,
+        "reason": "실제 YAML/약어 전체집합 미제공; code path는 확정했으나 모든 custom parser/전처리의 정확성은 평가하지 않음.",
+        "historical_runtime_executed": false,
+        "three_open_reachability": "not assessed by this reader"
+      },
+      "known_gaps": [
+        "원 작성자가 사용한 Pandoc 판은 불명; 3.8.3은 연구 규칙상 고정판이다.",
+        "실제 YAML, 중복 key 정책, multiline/quoted key, 전체 약어 집합은 미제공.",
+        "3.8.3 실행 없음; source-level inference를 실행 관찰로 승격하지 않음."
+      ]
+    },
+    "P3": {
+      "case_id": "P3",
+      "specified_version": "2.14.0.3",
+      "fixed_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+      "O": {
+        "id": "O1",
+        "definition": "원문이 제시한 표·그림·복수 문단의 페이지 출력을 렌더링한다. 최초 body에는 output format, command, engine이 명시되지 않았다."
+      },
+      "P": {
+        "id": "P1",
+        "definition": "표와 그림을 유지하고 그림이 다음 페이지로 실제 떠도 뒤따르는 텍스트/표가 하단 여백을 침범하지 않아야 한다. 표 제거/그림 대체/그림이 같은 페이지에 남는 대조를 성공 사례로 대체하지 않는다."
+      },
+      "evidence_layers": [
+        {
+          "layer": "sealed_body",
+          "fact": "2.14.0.3, float+table의 overflow 보고와 table 제거/다른 figure로 대체하는 대조; command/output engine 미제공",
+          "source_id": "PD-N8526"
+        },
+        {
+          "layer": "original_attachment_read_after_seal",
+          "fact": "layoutissue.md는 PDF 렌더 지시, Quarto 언급, html/pdf/docx format YAML 및 pipe table을 포함한다. 이것으로 PDF 의도가 추가 확인되지만 정확 Quarto/TeX 엔진·package 판은 정해지지 않는다.",
+          "source_id": "PD-N8526-MD"
+        },
+        {
+          "layer": "later_comments_and_attachment",
+          "fact": "유지관리자 2023-01-05 확인 보고 및 longtable 의심; 작성자의 2023-01-07 첨부는 graphicx+longtable를 쓰는 TeX 재현 입력이다. 같은 자연 이슈 계보이며 새 독립 회귀로 세지 않는다.",
+          "source_ids": [
+            "PD-N8526-C",
+            "PD-N8526-TEX"
+          ]
+        }
+      ],
+      "expected_qualified_answer": {
+        "disposition": "hold_runtime_preservation_guarantee; investigate_LaTeX_longtable_path_conditionally",
+        "answer": "2.14.0.3이라는 Pandoc 판만으로 하단 여백 보존이나 특정 수정의 성공을 보장할 수 없다. 추가 원 첨부는 PDF/Quarto, 후속 첨부는 LaTeX longtable 경로를 가리킨다. 고정 LaTeX writer는 table을 longtable로, 단독 captioned image를 figure로 내보내고 default template은 htbp를 설정한다. 이 경로에서 longtable의 page/output routine과 실제 TeX/package 판을 확인해야 한다. 원 보고를 재현할 command·engine·template·package 환경이 없고 역사 실행도 하지 않았으므로 exact P3 해결 여부는 unknown이다.",
+        "minimum_next_check": "실제 렌더 명령, Quarto/engine/TeX 배포판 및 longtable 버전, 생성된 standalone .tex와 log를 확보한다. 원 첨부에서 그대로 float가 다음 페이지에 놓이는 경우, 추가 문단 제거로 그림이 같은 페이지인 경우, 표 제거, 표를 그림으로 바꾼 경우를 같은 환경에서 비교한다. table 유지+실제 float+여백 보존을 동시에 확인해야 성공이다.",
+        "evidence_level": "D1 original/maintainer reports and upstream independent counterinputs; D2 fixed writer/template and longtable source; D3 not performed"
+      },
+      "necessary_exceptions_counterinputs": [
+        {
+          "id": "E1",
+          "essential": true,
+          "text": "원 body의 엔진 미상을 보존하고, 첨부/후속 확인을 새 층으로 기록한다. PDF는 LaTeX 외 경로도 있으므로 margin/figure 문단을 output-agnostic 보장으로 쓰지 않는다.",
+          "corpus_intervals": [
+            "P3-O-pdf-path",
+            "P3-E-pdf-engine",
+            "P3-E-latex-scope"
+          ]
+        },
+        {
+          "id": "E2",
+          "essential": true,
+          "text": "implicit_figures는 alt+단독 paragraph의 figure 변환이고 output format에 따라 달라진다. float의 위치와 table 이후 page flow의 안전을 증명하지 않는다. 그림을 inline으로 바꾸거나 h 위치에 붙잡는 성공은 요청한 떠도 보존 조건을 시험한 것이 아니다.",
+          "corpus_intervals": [
+            "P3-O-figure"
+          ],
+          "outside_sources": [
+            "PD-LATEX-WRITER:386-403",
+            "PD-LATEX-TEMPLATE:327-340",
+            "LT-R158-C"
+          ]
+        },
+        {
+          "id": "E3",
+          "essential": true,
+          "text": "geometry 설정과 margin 변수 우선순위는 구성 조건이다. 값을 바꾸어 float/page 조합을 피하는 것과 overflow 결함의 해결을 구별한다.",
+          "corpus_intervals": [
+            "P3-P-geometry",
+            "P3-E-margin-override"
+          ],
+          "outside_sources": [
+            "LT-R158",
+            "LT-DTX-416:1308-1347,1413-1437,2041-2113"
+          ]
+        },
+        {
+          "id": "E4",
+          "essential": true,
+          "text": "표를 regular table/tabular로 바꾸면 다중 페이지 table 요구를 잃을 수 있다. longtable는 row 내부 page break와 다중 column의 한계도 있다. 이들은 해결 대안의 제약이며 현재 자연 입력에 모두 존재한다는 뜻은 아니다.",
+          "corpus_intervals": [],
+          "outside_sources": [
+            "PD-N8526-C",
+            "LT-DTX-416:174-184,270-274,582-583,1025-1038"
+          ]
+        },
+        {
+          "id": "E5",
+          "essential": true,
+          "text": "longtable v4.14 변경 또는 #137의 TeX Live 2024 성공은 모든 float 조합/P3 성공을 보장하지 않는다. #158은 수정 이후에도 같은 test가 실패했다고 maintainer가 기록했다. 현재 열린/닫힌 상태만으로 역사 판의 재현을 확정하지 않는다.",
+          "corpus_intervals": [],
+          "outside_sources": [
+            "LT-R158-C",
+            "LT-R137-C"
+          ]
+        }
+      ],
+      "minimum_supporting_intervals": [
+        {
+          "interval_id": "P3-O-pdf-path",
+          "doc_id": "p21403",
+          "start": 7357,
+          "end": 8449,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "creating-a-pdf",
+          "url": "https://pandoc.org/MANUAL.html#creating-a-pdf",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "Creating a PDF",
+          "text": "Creating a PDF\nTo produce a PDF, specify an output file with a .pdf extension:\npandoc test.txt -o test.pdf\nBy default, pandoc will use LaTeX to create the PDF, which requires that a LaTeX engine be installed (see --pdf-engine below). Alternatively, pandoc can use ConTeXt, roff ms, or HTML as an intermediate format. To do this, specify an output file with a .pdf extension, as before, but add the --pdf-engine option or -t context, -t html, or -t ms to the command line. The tool used to generate the PDF from the intermediate format may be specified using --pdf-engine.\nYou can control the PDF style using variables, depending on the intermediate format used: see [n2l146] variables for LaTeX, [n2l147] variables for ConTeXt, [n2l148] variables for wkhtmltopdf, [n2l149] variables for ms. When HTML is used as an intermediate format, the output can be styled using --css.\nTo debug the PDF creation, it can be useful to look at the intermediate representation: instead of -o test.pdf, use for example -s -o test.tex to output the generated LaTeX. You can then test it with pdflatex test.tex.",
+          "condition_ids": [
+            "O1",
+            "E1"
+          ],
+          "evidence_role": "conditional operation",
+          "supports": "PDF 생성, 기본 LaTeX와 대체 중간형식, 생성 TeX를 확인하는 디버깅 방법. 원 body가 PDF라고 말한 증거는 아니다.",
+          "required_for_complete_case": true,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-E-pdf-engine",
+          "doc_id": "p21403",
+          "start": 44118,
+          "end": 44771,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "options-affecting-specific-writers",
+          "url": "https://pandoc.org/MANUAL.html#options-affecting-specific-writers",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "--pdf-engine=PROGRAM",
+          "text": "--pdf-engine=PROGRAM\nUse the specified engine when producing PDF output. Valid values are pdflatex, lualatex, xelatex, latexmk, tectonic, wkhtmltopdf, weasyprint, prince, context, and pdfroff. If the engine is not in your PATH, the full path of the engine may be specified here. If this option is not specified, pandoc uses the following defaults depending on the output format specified using -t/--to:\n-t latex or none: pdflatex (other options: xelatex, lualatex, tectonic, latexmk)\n-t context: context\n-t html: wkhtmltopdf (other options: prince, weasyprint; see print-css.rocks for a good introduction to PDF generation from HTML/CSS.)\n-t ms: pdfroff",
+          "condition_ids": [
+            "E1"
+          ],
+          "evidence_role": "engine exception",
+          "supports": "출력형식별 기본 PDF 엔진이 다르다. --to와 --pdf-engine 미제공을 pdflatex 확정으로 바꾸지 않는다.",
+          "required_for_complete_case": true,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-O-figure",
+          "doc_id": "p21403",
+          "start": 143143,
+          "end": 143960,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-implicit_figures",
+          "url": "https://pandoc.org/MANUAL.html#extension-implicit_figures",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "Extension: implicit_figures",
+          "text": "Extension: implicit_figures\nAn image with nonempty alt text, occurring by itself in a paragraph, will be rendered as a figure with a caption. The image’s alt text will be used as the caption.\n![This is the caption](/url/of/image.png)\nHow this is rendered depends on the output format. Some output formats (e.g. RTF) do not yet support figures. In those formats, you’ll just get an image in a paragraph by itself, with no caption.\nIf you just want a regular inline image, just make sure it is not the only thing in the paragraph. One way to do this is to insert a nonbreaking space after the image:\n![This image won't be a figure](/url/of/image.png)\\\nNote that in reveal.js slide shows, an image in a paragraph by itself that has the stretch class will fill the screen, and the caption and figure tags will be omitted.",
+          "condition_ids": [
+            "O1",
+            "P1",
+            "E2"
+          ],
+          "evidence_role": "figure precondition + limitation",
+          "supports": "단독 이미지+비어있지 않은 alt의 figure/caption 변환, 출력형식별 차이. 다음 페이지 float와 여백 보존은 보장하지 않는다.",
+          "required_for_complete_case": true,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-O-pipe-table",
+          "doc_id": "p21403",
+          "start": 119491,
+          "end": 120059,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "extension-pipe_tables",
+          "url": "https://pandoc.org/MANUAL.html#extension-pipe_tables",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "Extension: pipe_tables",
+          "text": "Extension: pipe_tables\nPipe tables look like this:\n| Right | Left | Default | Center |\n|------:|:-----|---------|:------:|\n|   12  |  12  |    12   |    12  |\n|  123  |  123 |   123   |   123  |\n|    1  |    1 |     1   |     1  |\n\n  : Demonstration of pipe table syntax.\nThe syntax is identical to PHP Markdown Extra tables. The beginning and ending pipe characters are optional, but pipes are required between all columns. The colons indicate column alignment as shown. The header cannot be omitted. To simulate a headerless table, include a header with blank cells.",
+          "condition_ids": [
+            "O1"
+          ],
+          "evidence_role": "operation syntax",
+          "supports": "첨부의 pipe table 형식과 header/alignment 조건. 페이지 flow는 증명하지 않는다.",
+          "required_for_complete_case": false,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-E-latex-scope",
+          "doc_id": "p21403",
+          "start": 73722,
+          "end": 73819,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "variables-for-latex",
+          "url": "https://pandoc.org/MANUAL.html#variables-for-latex",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "Variables for LaTeX",
+          "text": "Variables for LaTeX\nPandoc uses these variables when [n2l518] creating a PDF with a LaTeX engine.",
+          "condition_ids": [
+            "E1"
+          ],
+          "evidence_role": "format scope",
+          "supports": "다음 LaTeX 변수는 LaTeX 엔진 PDF에 적용된다.",
+          "required_for_complete_case": false,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-P-geometry",
+          "doc_id": "p21403",
+          "start": 74868,
+          "end": 75008,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "layout",
+          "url": "https://pandoc.org/MANUAL.html#layout",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "geometry",
+          "text": "geometry\noption for geometry package, e.g. margin=1in; repeat for multiple options:\n---\ngeometry:\n- top=30mm\n- left=20mm\n- heightrounded\n...",
+          "condition_ids": [
+            "P1",
+            "E3"
+          ],
+          "evidence_role": "layout parameter, not preservation proof",
+          "supports": "geometry 여백 설정 문법. float+longtable spill 부재를 보장하지 않는다.",
+          "required_for_complete_case": false,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-E-margin-override",
+          "doc_id": "p21403",
+          "start": 75422,
+          "end": 75549,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "layout",
+          "url": "https://pandoc.org/MANUAL.html#layout",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "margin-left, margin-right, margin-top, margin-bottom",
+          "text": "margin-left, margin-right, margin-top, margin-bottom\nsets margins if geometry is not used (otherwise geometry overrides these) ",
+          "condition_ids": [
+            "E3"
+          ],
+          "evidence_role": "exception",
+          "supports": "geometry가 별도 margin 변수를 덮어쓴다.",
+          "required_for_complete_case": false,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        },
+        {
+          "interval_id": "P3-E-wkhtmltopdf-scope",
+          "doc_id": "p21403",
+          "start": 81174,
+          "end": 81493,
+          "indexing": "Unicode code points; half-open [start,end)",
+          "anchor": "variables-for-wkhtmltopdf",
+          "url": "https://pandoc.org/MANUAL.html#variables-for-wkhtmltopdf",
+          "version": "2.14.0.3",
+          "upstream_commit": "227f675cc46a680d4b8f2fd71e0c4cbb92a3fd0b",
+          "quote": "Variables for wkhtmltopdf",
+          "text": "Variables for wkhtmltopdf\nPandoc uses these variables when [n2l552] creating a PDF with wkhtmltopdf. The --css option also affects the output.\nfooter-html, header-html\nadd information to the header and footer \nmargin-left, margin-right, margin-top, margin-bottom\nset the page margins \npapersize\nsets the PDF paper size ",
+          "condition_ids": [
+            "E1",
+            "E4"
+          ],
+          "evidence_role": "similar-label counterexample",
+          "supports": "같은 margin 이름이라도 wkhtmltopdf 전용 문단은 LaTeX float/longtable 보존 근거가 아니다.",
+          "required_for_complete_case": false,
+          "source_sha": "001be3d1f162f8cb64b420cf9457fdaf518e775455e10c477a6632d988a58cb8"
+        }
+      ],
+      "outside_corpus_minimum_evidence": [
+        {
+          "source_id": "PD-LATEX-TABLE",
+          "locator": "lines 45-77",
+          "conditions": [
+            "O1"
+          ]
+        },
+        {
+          "source_id": "PD-LATEX-WRITER",
+          "locator": "lines 386-403",
+          "conditions": [
+            "O1",
+            "E2"
+          ]
+        },
+        {
+          "source_id": "LT-R158",
+          "locator": "complete minimal example in body",
+          "conditions": [
+            "P1",
+            "E3",
+            "E5"
+          ]
+        },
+        {
+          "source_id": "LT-R158-C",
+          "locator": "2019-09-04 and 2021-09-01 maintainer comments",
+          "conditions": [
+            "E2",
+            "E5"
+          ]
+        }
+      ],
+      "justified_hold": "페이지 output/engine이 빠진 원 요청에서 일반 figure/table 구문이나 geometry 문단만 읽었다면 보존 여부를 확정하지 않는다. LaTeX 분기를 가정해 조건부 조사 방향을 제시할 수 있으나, actual float+table+margin의 성공을 본 것처럼 말하지 않는다.",
+      "corpus_support_gap": "허용 2.14.0.3 manual은 renderer 분기·figure/table 구문·여백 변수를 설명하지만 float+longtable output-routine 반례나 P3 해결 증거를 제공하지 않는다. P의 실현을 보장하는 corpus span은 식별되지 않았다.",
+      "source_exhaustiveness": {
+        "sufficient_for_engine_independent_preservation_decision": false,
+        "sufficient_to_reject_unqualified_guarantee": true,
+        "sufficient_to_identify_conditional_LaTeX_investigation": true,
+        "historical_runtime_executed": false,
+        "three_open_reachability": "not assessed by this reader"
+      },
+      "known_gaps": [
+        "원 실행 명령, 실제 PDF engine 및 engine version, Quarto version, 템플릿, TeX distribution/longtable package version unknown.",
+        "원 Markdown YAML의 format 중 무엇이 실제 사용되었는지는 body에 없음.",
+        "독립 historical rendering을 하지 않았으므로 reported overflow와 suggested remedy의 실행결과 미검증.",
+        "2021 longtable 4.16 source는 비교용 고정 구현이지 원 작성자의 설치 버전으로 확인된 것이 아님."
+      ]
+    }
+  },
+  "sessions": [
+    {
+      "masked_id": "m49472b1a31",
+      "case_id": "P3",
+      "common_request": "Pandoc 2.14.0.3에서 표와 그림이 있는 Markdown 문서를 원문이 설명한 페이지 출력으로 렌더링하려 한다. 그림이 다음 페이지로 떠도 뒤따르는 텍스트와 표가 하단 여백 안에서 흐르도록 해야 한다. 표를 없애거나 다른 그림으로 바꾼 대조와 비교해 필요한 조건과 제한을 확인해 달라.",
+      "version": "2.14.0.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 0,
+            "end": 1334,
+            "display_text": "[p21403 2.14.0.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nJune 20, 2021\n[n2l1] Synopsis\n[n2l2] Description \n[n2l3] Using pandoc\n[n2l4] Specifying formats\n[n2l5] Character encoding\n[n2l6] Creating a PDF\n[n2l7] Reading from the Web\n[n2l8] Options \n[n2l9] General options\n[n2l10] Reader options\n[n2l11] General writer options\n[n2l12] Options affecting specific writers\n[n2l13] Citation rendering\n[n2l14] Math rendering in HTML\n[n2l15] Options for wrapper scripts\n[n2l16] Exit codes\n[n2l17] Default files\n[n2l18] Templates \n[n2l19] Template syntax \n[n2l20] Comments\n[n2l21] Delimiters\n[n2l22] Interpolated variables\n[n2l23] Conditionals\n[n2l24] For loops\n[n2l25] Partials\n[n2l26] Nesting\n[n2l27] Breakable spaces\n[n2l28] Pipes\n[n2l29] Variables \n[n2l30] Metadata variables\n[n2l31] Language variables\n[n2l32] Variables for HTML\n[n2l33] Variables for HTML math\n[n2l34] Variables for HTML slides\n[n2l35] Variables for Beamer slides\n[n2l36] Variables for PowerPoint\n[n2l37] Variables for LaTeX\n[n2l38] Variables for ConTeXt\n[n2l39] Variables for wkhtmltopdf\n[n2l40] Variables for man pages\n[n2l41] Variables for ms\n[n2l42] Variables set automatically\n[n2l43] Extensions \n[n2l44] Typography\n[n2l45] Headings and sections\n[n2l46] Math Input\n[n2l47] Raw HTML/TeX\n[n2l48] Literate Haskell support\n[n2l49] Other extensions\n[n2l50] Pandoc’s Markdown \n[n2l51] Philosophy\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "ccd1c7a77a66c67f85d0711cded2a0e490d3a1c615f2df7ba73cb0c266543b49",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "표를 제거하거나 그림을 교체한 대조 결과와 필요한 조건 및 제한은 아직 찾지 못했다.",
+            "operation": "목차에서 PDF 생성과 LaTeX 및 ConTeXt 변수 항목의 존재만 보았다. Markdown을 페이지 출력으로 렌더링하는 구체적인 명령과 엔진은 아직 확인하지 못했다.",
+            "preservation": "그림이 다음 페이지로 이동할 때 뒤따르는 텍스트와 표가 하단 여백 안에서 흐르는 성질은 목차만으로 확인할 수 없다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 7357,
+            "end": 8707,
+            "display_text": "[p21403 2.14.0.3 offset=7357]\nCreating a PDF\nTo produce a PDF, specify an output file with a .pdf extension:\npandoc test.txt -o test.pdf\nBy default, pandoc will use LaTeX to create the PDF, which requires that a LaTeX engine be installed (see --pdf-engine below). Alternatively, pandoc can use ConTeXt, roff ms, or HTML as an intermediate format. To do this, specify an output file with a .pdf extension, as before, but add the --pdf-engine option or -t context, -t html, or -t ms to the command line. The tool used to generate the PDF from the intermediate format may be specified using --pdf-engine.\nYou can control the PDF style using variables, depending on the intermediate format used: see [n2l146] variables for LaTeX, [n2l147] variables for ConTeXt, [n2l148] variables for wkhtmltopdf, [n2l149] variables for ms. When HTML is used as an intermediate format, the output can be styled using --css.\nTo debug the PDF creation, it can be useful to look at the intermediate representation: instead of -o test.pdf, use for example -s -o test.tex to output the generated LaTeX. You can then test it with pdflatex test.tex.\nWhen using LaTeX, the following packages need to be available (they are included with all recent versions of TeX Live): amsfonts, amsmath, lm, unicode-math, iftex, listings (if the --listings option is used), fancyvrb, longtable, booktabs, graphicx (if the \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "62f192f241b8b519d666eaedddfaf5179b0aa4f1f83634920723af3c4cf5c709",
+            "arrival_url": "https://pandoc.org/MANUAL.html#creating-a-pdf",
+            "fragment": "creating-a-pdf"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p21403",
+                "quote": "pandoc test.txt -o test.pdf"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "By default, pandoc will use LaTeX to create the PDF"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "requires that a LaTeX engine be installed"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "-s -o test.tex to output the generated LaTeX"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "LaTeX 엔진 설치가 기본 경로의 조건이며 다른 중간 형식도 가능하다. 표를 제거하거나 그림을 바꾼 대조, 부동 그림과 표의 상호작용 및 여백을 넘는 예외는 아직 확인하지 못했다.",
+            "operation": "출력 파일의 확장자를 .pdf로 지정하면 PDF를 생성하며, 기본 경로는 설치된 LaTeX 엔진을 사용하는 것까지 확인했다. 예시는 pandoc test.txt -o test.pdf이다. 중간 LaTeX를 출력하여 PDF 생성 문제를 점검하는 방법도 제시되어 있다.",
+            "preservation": "PDF 생성 방법은 확인했지만, 그림이 다음 페이지로 이동해도 후속 텍스트와 표가 하단 여백 안에서 흐른다는 보장은 이 구간에 없다. 원문이 특정 중간 형식을 요구하는지도 아직 확인되지 않았다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 4,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 73722,
+            "end": 75072,
+            "display_text": "[p21403 2.14.0.3 offset=73722]\nVariables for LaTeX\nPandoc uses these variables when [n2l518] creating a PDF with a LaTeX engine.\nLayout\nblock-headings\nmake \\paragraph and \\subparagraph (fourth- and fifth-level headings, or fifth- and sixth-level with book classes) free-standing rather than run-in; requires further formatting to distinguish from \\subsubsection (third- or fourth-level headings). Instead of using this option, KOMA-Script can adjust headings more extensively:\n---\ndocumentclass: scrartcl\nheader-includes: |\n  \\RedeclareSectionCommand[\n    beforeskip=-10pt plus -2pt minus -1pt,\n    afterskip=1sp plus -1sp minus 1sp,\n    font=\\normalfont\\itshape]{paragraph}\n  \\RedeclareSectionCommand[\n    beforeskip=-10pt plus -2pt minus -1pt,\n    afterskip=1sp plus -1sp minus 1sp,\n    font=\\normalfont\\scshape,\n    indent=0pt]{subparagraph}\n...\nclassoption\noption for document class, e.g. oneside; repeat for multiple options:\n---\nclassoption:\n- twocolumn\n- landscape\n...\ndocumentclass\ndocument class: usually one of the standard classes, article, book, and report; the KOMA-Script equivalents, scrartcl, scrbook, and scrreprt, which default to smaller margins; or memoir \ngeometry\noption for geometry package, e.g. margin=1in; repeat for multiple options:\n---\ngeometry:\n- top=30mm\n- left=20mm\n- heightrounded\n...\nhyperrefoptions\noption for hyperref package, e.g. linktoc=all; \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "54046aa18450aa740f3ce96ceac79289b99ce6fab24caedc0cacb9e69af568e2",
+            "arrival_url": "https://pandoc.org/MANUAL.html#variables-for-latex",
+            "fragment": "variables-for-latex"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p21403",
+                "quote": "pandoc test.txt -o test.pdf"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "requires that a LaTeX engine be installed"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "option for geometry package, e.g. margin=1in; repeat for multiple options:"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "the KOMA-Script equivalents, scrartcl, scrbook, and scrreprt, which default to smaller margins"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "기본 PDF 경로에는 LaTeX 엔진 설치가 필요하며 문서 클래스에 따라 기본 여백이 달라질 수 있다. 표를 없앤 대조와 그림을 교체한 대조는 표시된 문서에 나오지 않았으므로 필요한 추가 조건, 문제를 일으키는 조합, 해결 설정을 특정할 근거가 없다.",
+            "operation": "Pandoc 2.14.0.3에서 출력 확장자를 .pdf로 지정하는 PDF 생성 방법과 기본 LaTeX 엔진 경로를 확인했다. LaTeX PDF에는 documentclass 및 geometry 변수를 적용할 수 있고, geometry에 margin=1in 같은 여백 옵션을 전달하는 예가 있다. 중간 LaTeX 출력은 생성 문제를 점검하는 출발점이 될 수 있다.",
+            "preservation": "여백 설정 기능은 확인했으나, 그 설정만으로 다음 페이지로 떠오른 그림 뒤의 텍스트와 표가 하단 여백 안에서 계속 흐른다는 사실은 확인되지 않았다. 이 세 번의 열람으로는 요청된 배치 성질의 보존 여부를 판정할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 4,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m4d11b5dea8",
+      "case_id": "P2",
+      "common_request": "약어와 확장 설명·주석을 담은 하나의 YAML 형식 원본을 Pandoc의 약어 파일로 직접 사용하고 싶다. 원본의 설명·주석을 계속 보유하면서도 필요한 고유 약어 집합은 별도 생성 파일을 쓸 때와 같이 인식해야 한다. 공백이나 탭 뒤 내용을 가진 행에 대해 이 목표가 가능한지와 제한을 확인해 달라.",
+      "version": "3.8.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p383",
+            "start": 0,
+            "end": 1332,
+            "display_text": "[p383 3.8.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\n2025-12-01\n[n3l1] Synopsis\n[n3l2] Description \n[n3l3] Using pandoc\n[n3l4] Specifying formats\n[n3l5] Character encoding\n[n3l6] Creating a PDF\n[n3l7] Reading from the Web\n[n3l8] Options \n[n3l9] General options\n[n3l10] Reader options\n[n3l11] General writer options\n[n3l12] Options affecting specific writers\n[n3l13] Citation rendering\n[n3l14] Math rendering in HTML\n[n3l15] Options for wrapper scripts\n[n3l16] Exit codes\n[n3l17] Defaults files \n[n3l18] General options\n[n3l19] Reader options\n[n3l20] General writer options\n[n3l21] Options affecting specific writers\n[n3l22] Citation rendering\n[n3l23] Math rendering in HTML\n[n3l24] Options for wrapper scripts\n[n3l25] Templates \n[n3l26] Template syntax \n[n3l27] Comments\n[n3l28] Delimiters\n[n3l29] Interpolated variables\n[n3l30] Conditionals\n[n3l31] For loops\n[n3l32] Partials\n[n3l33] Nesting\n[n3l34] Breakable spaces\n[n3l35] Pipes\n[n3l36] Variables \n[n3l37] Metadata variables\n[n3l38] Language variables\n[n3l39] Variables for HTML\n[n3l40] Variables for HTML math\n[n3l41] Variables for HTML slides\n[n3l42] Variables for Beamer slides\n[n3l43] Variables for PowerPoint\n[n3l44] Variables for LaTeX\n[n3l45] Variables for ConTeXt\n[n3l46] Variables for wkhtmltopdf\n[n3l47] Variables for man pages\n[n3l48] Variables for Texinfo\n[n3l49] Variables for Typst\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "6ddd964df1e6c7bb6b8a6b07e8c1ed60916c93637b42fa1edf1d9e9b38ace540",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "공백이나 탭 뒤 내용이 있는 행의 처리와 제한은 아직 확인하지 못했다.",
+            "operation": "현재는 사용 설명서의 목차만 확인했으며 YAML 원본을 약어 파일로 직접 사용하는 동작은 아직 확인하지 못했다.",
+            "preservation": "설명·주석을 원본에 보유하면서 고유 약어 집합을 동일하게 인식하는지는 아직 확인하지 못했다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p383",
+            "start": 22278,
+            "end": 23628,
+            "display_text": "[p383 3.8.3 offset=22278]\nReader options\n--shift-heading-level-by=NUMBER\nShift heading levels by a positive or negative integer. For example, with --shift-heading-level-by=-1, level 2 headings become level 1 headings, and level 3 headings become level 2 headings. Headings cannot have a level less than 1, so a heading that would be shifted below level 1 becomes a regular paragraph. Exception: with a shift of -N, a level-N heading at the beginning of the document replaces the metadata title. --shift-heading-level-by=-1 is a good choice when converting HTML or Markdown documents that use an initial level-1 heading for the document title and level-2+ headings for sections. --shift-heading-level-by=1 may be a good choice for converting Markdown documents that use level-1 headings for sections to HTML, since pandoc uses a level-1 heading to render the document title.\n--base-header-level=NUMBER\nDeprecated. Use --shift-heading-level-by=X instead, where X = NUMBER - 1. Specify the base level for headings (defaults to 1).\n--indented-code-classes=CLASSES\nSpecify classes to use for indented code blocks—for example, perl,numberLines or haskell. Multiple classes may be separated by spaces or commas.\n--default-image-extension=EXTENSION\nSpecify a default extension to use when image paths/URLs have no extension. This allows you to use the same source for formats that req\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "73b90983bfa860ba39096a2d3ef891906758e21f3ec53d5098f09733dc3061ca",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "Reader options"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "현재 표시된 제목 수준 변경의 예외는 약어 파일과 관련이 없으며, 요청한 공백·탭 뒤 내용의 처리 제한은 확인하지 못했다.",
+            "operation": "Reader options 구간에 들어왔지만 현재 보이는 항목은 제목 수준, 들여쓴 코드의 클래스, 기본 이미지 확장자에 관한 것이다. 약어 파일의 지정이나 행 처리 동작은 확인하지 못했다.",
+            "preservation": "YAML 설명·주석을 보유하면서 필요한 고유 약어 집합을 동일하게 인식한다는 근거는 아직 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p383",
+            "start": 23628,
+            "end": 24978,
+            "display_text": "[p383 3.8.3 offset=23628]\nuire different kinds of images. Currently this option only affects the Markdown and LaTeX readers.\n--file-scope[=true|false]\nParse each file individually before combining for multifile documents. This will allow footnotes in different files with the same identifiers to work as expected. If this option is set, footnotes and links will not work across files. Reading binary files (docx, odt, epub) implies --file-scope.\nIf two or more files are processed using --file-scope, prefixes based on the filenames will be added to identifiers in order to disambiguate them, and internal links will be adjusted accordingly. For example, a header with identifier foo in subdir/file1.txt will have its identifier changed to subdir__file1.txt__foo.\n-F PROGRAM, --filter=PROGRAM\nSpecify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written. The executable should read JSON from stdin and write JSON to stdout. The JSON must be formatted like pandoc’s own JSON input and output. The name of the output format will be passed to the filter as the first argument. Hence,\npandoc --filter ./caps.py -t latex\nis equivalent to\npandoc -t json | ./caps.py latex | pandoc -f json -t latex\nThe latter form may be useful for debugging filters.\nFilters may be written in any language. Text.Pandoc.JSON exp\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "392680739456e9d86e35b9cd0dcf7045c0b8b4eedec0a113d605a82f1a8dc735",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "Parse each file individually before combining for multifile documents."
+              },
+              {
+                "doc_id": "p383",
+                "quote": "-F PROGRAM, --filter=PROGRAM"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "공백이나 탭 뒤 내용이 있는 행의 처리 규칙과 예외를 보지 못했으므로 이 목표가 가능하거나 불가능하다고 단정할 수 없다.",
+            "operation": "세 번의 열람에서 목차와 Reader options의 일부만 확인했다. 마지막 구간은 여러 파일의 개별 파싱과 필터 실행을 설명하며, YAML 형식 원본을 약어 파일로 직접 사용하는 동작에 대한 근거는 얻지 못했다.",
+            "preservation": "원본의 확장 설명·주석을 계속 보유할 수 있는지, 별도 생성 파일과 같은 고유 약어 집합을 인식하는지 모두 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m74c2c7a9a5",
+      "case_id": "P2",
+      "common_request": "약어와 확장 설명·주석을 담은 하나의 YAML 형식 원본을 Pandoc의 약어 파일로 직접 사용하고 싶다. 원본의 설명·주석을 계속 보유하면서도 필요한 고유 약어 집합은 별도 생성 파일을 쓸 때와 같이 인식해야 한다. 공백이나 탭 뒤 내용을 가진 행에 대해 이 목표가 가능한지와 제한을 확인해 달라.",
+      "version": "3.8.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p383",
+            "start": 0,
+            "end": 1332,
+            "display_text": "[p383 3.8.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\n2025-12-01\n[n3l1] Synopsis\n[n3l2] Description \n[n3l3] Using pandoc\n[n3l4] Specifying formats\n[n3l5] Character encoding\n[n3l6] Creating a PDF\n[n3l7] Reading from the Web\n[n3l8] Options \n[n3l9] General options\n[n3l10] Reader options\n[n3l11] General writer options\n[n3l12] Options affecting specific writers\n[n3l13] Citation rendering\n[n3l14] Math rendering in HTML\n[n3l15] Options for wrapper scripts\n[n3l16] Exit codes\n[n3l17] Defaults files \n[n3l18] General options\n[n3l19] Reader options\n[n3l20] General writer options\n[n3l21] Options affecting specific writers\n[n3l22] Citation rendering\n[n3l23] Math rendering in HTML\n[n3l24] Options for wrapper scripts\n[n3l25] Templates \n[n3l26] Template syntax \n[n3l27] Comments\n[n3l28] Delimiters\n[n3l29] Interpolated variables\n[n3l30] Conditionals\n[n3l31] For loops\n[n3l32] Partials\n[n3l33] Nesting\n[n3l34] Breakable spaces\n[n3l35] Pipes\n[n3l36] Variables \n[n3l37] Metadata variables\n[n3l38] Language variables\n[n3l39] Variables for HTML\n[n3l40] Variables for HTML math\n[n3l41] Variables for HTML slides\n[n3l42] Variables for Beamer slides\n[n3l43] Variables for PowerPoint\n[n3l44] Variables for LaTeX\n[n3l45] Variables for ConTeXt\n[n3l46] Variables for wkhtmltopdf\n[n3l47] Variables for man pages\n[n3l48] Variables for Texinfo\n[n3l49] Variables for Typst\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "6ddd964df1e6c7bb6b8a6b07e8c1ed60916c93637b42fa1edf1d9e9b38ace540",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "공백이나 탭 뒤 내용이 있는 행의 처리와 제한에 대한 본문 증거는 아직 없다.",
+            "operation": "현재는 Pandoc 안내서의 목차만 보았으므로 YAML 원본을 약어 파일로 직접 지정할 수 있는지 확인하지 못했다.",
+            "preservation": "설명·주석을 원본에 보유하면서 필요한 고유 약어 집합이 그대로 인식되는지는 아직 확인되지 않았다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p383",
+            "start": 22278,
+            "end": 23628,
+            "display_text": "[p383 3.8.3 offset=22278]\nReader options\n--shift-heading-level-by=NUMBER\nShift heading levels by a positive or negative integer. For example, with --shift-heading-level-by=-1, level 2 headings become level 1 headings, and level 3 headings become level 2 headings. Headings cannot have a level less than 1, so a heading that would be shifted below level 1 becomes a regular paragraph. Exception: with a shift of -N, a level-N heading at the beginning of the document replaces the metadata title. --shift-heading-level-by=-1 is a good choice when converting HTML or Markdown documents that use an initial level-1 heading for the document title and level-2+ headings for sections. --shift-heading-level-by=1 may be a good choice for converting Markdown documents that use level-1 headings for sections to HTML, since pandoc uses a level-1 heading to render the document title.\n--base-header-level=NUMBER\nDeprecated. Use --shift-heading-level-by=X instead, where X = NUMBER - 1. Specify the base level for headings (defaults to 1).\n--indented-code-classes=CLASSES\nSpecify classes to use for indented code blocks—for example, perl,numberLines or haskell. Multiple classes may be separated by spaces or commas.\n--default-image-extension=EXTENSION\nSpecify a default extension to use when image paths/URLs have no extension. This allows you to use the same source for formats that req\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "73b90983bfa860ba39096a2d3ef891906758e21f3ec53d5098f09733dc3061ca",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "Reader options"
+              },
+              {
+                "doc_id": "p383",
+                "quote": "--default-image-extension=EXTENSION"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "공백·탭 뒤 내용이나 YAML 행의 제한에 관한 설명은 아직 보이지 않는다.",
+            "operation": "Reader options 본문에 도착했으나 현재 보이는 것은 제목 수준, 들여쓴 코드, 기본 이미지 확장자 옵션이다. 약어 파일을 지정하는 방법은 아직 확인하지 못했다.",
+            "preservation": "YAML 원본의 설명·주석을 유지한 채 필요한 고유 약어 집합을 동일하게 인식한다는 증거는 아직 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p383",
+            "start": 23628,
+            "end": 24978,
+            "display_text": "[p383 3.8.3 offset=23628]\nuire different kinds of images. Currently this option only affects the Markdown and LaTeX readers.\n--file-scope[=true|false]\nParse each file individually before combining for multifile documents. This will allow footnotes in different files with the same identifiers to work as expected. If this option is set, footnotes and links will not work across files. Reading binary files (docx, odt, epub) implies --file-scope.\nIf two or more files are processed using --file-scope, prefixes based on the filenames will be added to identifiers in order to disambiguate them, and internal links will be adjusted accordingly. For example, a header with identifier foo in subdir/file1.txt will have its identifier changed to subdir__file1.txt__foo.\n-F PROGRAM, --filter=PROGRAM\nSpecify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written. The executable should read JSON from stdin and write JSON to stdout. The JSON must be formatted like pandoc’s own JSON input and output. The name of the output format will be passed to the filter as the first argument. Hence,\npandoc --filter ./caps.py -t latex\nis equivalent to\npandoc -t json | ./caps.py latex | pandoc -f json -t latex\nThe latter form may be useful for debugging filters.\nFilters may be written in any language. Text.Pandoc.JSON exp\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "392680739456e9d86e35b9cd0dcf7045c0b8b4eedec0a113d605a82f1a8dc735",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "--file-scope[=true|false]"
+              },
+              {
+                "doc_id": "p383",
+                "quote": "-F PROGRAM, --filter=PROGRAM"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "공백 또는 탭 뒤 내용이 있는 행의 처리, 주석 행의 처리, YAML 구문에 따른 제한을 보지 못했다. 따라서 가능 또는 불가능이라고 단정할 근거가 없다.",
+            "operation": "세 번의 열람에서 목차와 Reader options의 앞부분을 확인했지만 약어 파일 옵션의 본문에는 도달하지 못했다. 마지막 구간은 파일별 해석과 필터 사용을 설명하므로 YAML 원본을 약어 파일로 직접 사용하는 방법이나 가능 여부를 이 자료만으로 판정할 수 없다.",
+            "preservation": "설명·주석을 원본에 계속 보유하면서 별도 생성 파일과 같은 고유 약어 집합을 인식하는지는 확인되지 않았다. 요청이나 안내 문구 자체를 이를 보장하는 증거로 삼지 않는다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m8dc9700467",
+      "case_id": "P2",
+      "common_request": "약어와 확장 설명·주석을 담은 하나의 YAML 형식 원본을 Pandoc의 약어 파일로 직접 사용하고 싶다. 원본의 설명·주석을 계속 보유하면서도 필요한 고유 약어 집합은 별도 생성 파일을 쓸 때와 같이 인식해야 한다. 공백이나 탭 뒤 내용을 가진 행에 대해 이 목표가 가능한지와 제한을 확인해 달라.",
+      "version": "3.8.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p383",
+            "start": 0,
+            "end": 1332,
+            "display_text": "[p383 3.8.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\n2025-12-01\n[n3l1] Synopsis\n[n3l2] Description \n[n3l3] Using pandoc\n[n3l4] Specifying formats\n[n3l5] Character encoding\n[n3l6] Creating a PDF\n[n3l7] Reading from the Web\n[n3l8] Options \n[n3l9] General options\n[n3l10] Reader options\n[n3l11] General writer options\n[n3l12] Options affecting specific writers\n[n3l13] Citation rendering\n[n3l14] Math rendering in HTML\n[n3l15] Options for wrapper scripts\n[n3l16] Exit codes\n[n3l17] Defaults files \n[n3l18] General options\n[n3l19] Reader options\n[n3l20] General writer options\n[n3l21] Options affecting specific writers\n[n3l22] Citation rendering\n[n3l23] Math rendering in HTML\n[n3l24] Options for wrapper scripts\n[n3l25] Templates \n[n3l26] Template syntax \n[n3l27] Comments\n[n3l28] Delimiters\n[n3l29] Interpolated variables\n[n3l30] Conditionals\n[n3l31] For loops\n[n3l32] Partials\n[n3l33] Nesting\n[n3l34] Breakable spaces\n[n3l35] Pipes\n[n3l36] Variables \n[n3l37] Metadata variables\n[n3l38] Language variables\n[n3l39] Variables for HTML\n[n3l40] Variables for HTML math\n[n3l41] Variables for HTML slides\n[n3l42] Variables for Beamer slides\n[n3l43] Variables for PowerPoint\n[n3l44] Variables for LaTeX\n[n3l45] Variables for ConTeXt\n[n3l46] Variables for wkhtmltopdf\n[n3l47] Variables for man pages\n[n3l48] Variables for Texinfo\n[n3l49] Variables for Typst\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "6ddd964df1e6c7bb6b8a6b07e8c1ed60916c93637b42fa1edf1d9e9b38ace540",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "공백이나 탭 뒤 내용의 처리 및 적용 제한은 현재 목차에 나오지 않아 확인하지 못했다.",
+            "operation": "현재 표시된 내용은 Pandoc 사용자 안내서의 목차뿐이다. 약어 파일로 YAML 원본을 직접 사용할 수 있는지는 아직 확인하지 못했다.",
+            "preservation": "설명과 주석이 든 원본을 보유하면서 필요한 고유 약어 집합을 동일하게 인식하는지는 확인되지 않았다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p383",
+            "start": 22278,
+            "end": 23628,
+            "display_text": "[p383 3.8.3 offset=22278]\nReader options\n--shift-heading-level-by=NUMBER\nShift heading levels by a positive or negative integer. For example, with --shift-heading-level-by=-1, level 2 headings become level 1 headings, and level 3 headings become level 2 headings. Headings cannot have a level less than 1, so a heading that would be shifted below level 1 becomes a regular paragraph. Exception: with a shift of -N, a level-N heading at the beginning of the document replaces the metadata title. --shift-heading-level-by=-1 is a good choice when converting HTML or Markdown documents that use an initial level-1 heading for the document title and level-2+ headings for sections. --shift-heading-level-by=1 may be a good choice for converting Markdown documents that use level-1 headings for sections to HTML, since pandoc uses a level-1 heading to render the document title.\n--base-header-level=NUMBER\nDeprecated. Use --shift-heading-level-by=X instead, where X = NUMBER - 1. Specify the base level for headings (defaults to 1).\n--indented-code-classes=CLASSES\nSpecify classes to use for indented code blocks—for example, perl,numberLines or haskell. Multiple classes may be separated by spaces or commas.\n--default-image-extension=EXTENSION\nSpecify a default extension to use when image paths/URLs have no extension. This allows you to use the same source for formats that req\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "73b90983bfa860ba39096a2d3ef891906758e21f3ec53d5098f09733dc3061ca",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "Reader options"
+              },
+              {
+                "doc_id": "p383",
+                "quote": "--shift-heading-level-by=NUMBER"
+              },
+              {
+                "doc_id": "p383",
+                "quote": "--default-image-extension=EXTENSION"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "현재 구간에는 약어 행의 공백·탭 뒤 내용 처리나 YAML 관련 제한이 표시되지 않았다. 제목 수준 조정의 예외를 약어 처리의 예외로 해석할 수는 없다.",
+            "operation": "Reader options의 시작 구간을 읽었으며 제목 수준, 들여쓴 코드 블록의 클래스, 이미지 기본 확장자 설정이 표시되었다. 약어 파일 지정이나 YAML 원본 직접 사용을 뒷받침하는 설명은 아직 보지 못했다.",
+            "preservation": "원본의 설명·주석을 보유한 채 별도 생성 파일과 같은 고유 약어 집합을 인식하는지는 여전히 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p383",
+            "start": 23628,
+            "end": 24978,
+            "display_text": "[p383 3.8.3 offset=23628]\nuire different kinds of images. Currently this option only affects the Markdown and LaTeX readers.\n--file-scope[=true|false]\nParse each file individually before combining for multifile documents. This will allow footnotes in different files with the same identifiers to work as expected. If this option is set, footnotes and links will not work across files. Reading binary files (docx, odt, epub) implies --file-scope.\nIf two or more files are processed using --file-scope, prefixes based on the filenames will be added to identifiers in order to disambiguate them, and internal links will be adjusted accordingly. For example, a header with identifier foo in subdir/file1.txt will have its identifier changed to subdir__file1.txt__foo.\n-F PROGRAM, --filter=PROGRAM\nSpecify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written. The executable should read JSON from stdin and write JSON to stdout. The JSON must be formatted like pandoc’s own JSON input and output. The name of the output format will be passed to the filter as the first argument. Hence,\npandoc --filter ./caps.py -t latex\nis equivalent to\npandoc -t json | ./caps.py latex | pandoc -f json -t latex\nThe latter form may be useful for debugging filters.\nFilters may be written in any language. Text.Pandoc.JSON exp\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "392680739456e9d86e35b9cd0dcf7045c0b8b4eedec0a113d605a82f1a8dc735",
+            "arrival_url": "https://pandoc.org/MANUAL.html#reader-options",
+            "fragment": "reader-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p383",
+                "quote": "--file-scope[=true|false]"
+              },
+              {
+                "doc_id": "p383",
+                "quote": "Parse each file individually before combining for multifile documents."
+              },
+              {
+                "doc_id": "p383",
+                "quote": "-F PROGRAM, --filter=PROGRAM"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "공백 또는 탭 뒤 내용이 있는 약어 행의 처리와 그 예외·제한은 열람한 범위에서 발견하지 못했다. 표시된 file-scope 및 filter 설명을 약어 규칙으로 적용할 근거도 없다.",
+            "operation": "세 번의 열람으로 목차와 Reader options의 앞부분을 확인했다. 마지막 구간은 여러 입력 파일의 개별 파싱과 필터 프로그램을 설명한다. 약어 파일 옵션이나 YAML 원본 직접 사용 규칙은 표시되지 않았으므로 요청한 작업의 가능 여부를 판정할 근거가 부족하다.",
+            "preservation": "설명·주석을 원본에 보유하면서 별도 생성 파일과 동일한 고유 약어 집합을 인식하는지는 확인하지 못했다. 요청과 안내 문구만으로 가능하다고 결론내리지 않는다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m9069e49aff",
+      "case_id": "P3",
+      "common_request": "Pandoc 2.14.0.3에서 표와 그림이 있는 Markdown 문서를 원문이 설명한 페이지 출력으로 렌더링하려 한다. 그림이 다음 페이지로 떠도 뒤따르는 텍스트와 표가 하단 여백 안에서 흐르도록 해야 한다. 표를 없애거나 다른 그림으로 바꾼 대조와 비교해 필요한 조건과 제한을 확인해 달라.",
+      "version": "2.14.0.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 0,
+            "end": 1334,
+            "display_text": "[p21403 2.14.0.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nJune 20, 2021\n[n2l1] Synopsis\n[n2l2] Description \n[n2l3] Using pandoc\n[n2l4] Specifying formats\n[n2l5] Character encoding\n[n2l6] Creating a PDF\n[n2l7] Reading from the Web\n[n2l8] Options \n[n2l9] General options\n[n2l10] Reader options\n[n2l11] General writer options\n[n2l12] Options affecting specific writers\n[n2l13] Citation rendering\n[n2l14] Math rendering in HTML\n[n2l15] Options for wrapper scripts\n[n2l16] Exit codes\n[n2l17] Default files\n[n2l18] Templates \n[n2l19] Template syntax \n[n2l20] Comments\n[n2l21] Delimiters\n[n2l22] Interpolated variables\n[n2l23] Conditionals\n[n2l24] For loops\n[n2l25] Partials\n[n2l26] Nesting\n[n2l27] Breakable spaces\n[n2l28] Pipes\n[n2l29] Variables \n[n2l30] Metadata variables\n[n2l31] Language variables\n[n2l32] Variables for HTML\n[n2l33] Variables for HTML math\n[n2l34] Variables for HTML slides\n[n2l35] Variables for Beamer slides\n[n2l36] Variables for PowerPoint\n[n2l37] Variables for LaTeX\n[n2l38] Variables for ConTeXt\n[n2l39] Variables for wkhtmltopdf\n[n2l40] Variables for man pages\n[n2l41] Variables for ms\n[n2l42] Variables set automatically\n[n2l43] Extensions \n[n2l44] Typography\n[n2l45] Headings and sections\n[n2l46] Math Input\n[n2l47] Raw HTML/TeX\n[n2l48] Literate Haskell support\n[n2l49] Other extensions\n[n2l50] Pandoc’s Markdown \n[n2l51] Philosophy\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "ccd1c7a77a66c67f85d0711cded2a0e490d3a1c615f2df7ba73cb0c266543b49",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "표를 제거하거나 다른 그림으로 바꾼 대조 사례 및 그에 따른 조건·제한은 목차에서 확인할 수 없다.",
+            "operation": "현재는 Pandoc 2.14.0.3 안내서의 목차만 보았다. 페이지 출력 생성 절차와 표·그림 배치 동작은 아직 확인하지 못했다.",
+            "preservation": "그림이 다음 페이지로 이동한 뒤에도 후속 텍스트와 표가 하단 여백 안에 남는지는 확인되지 않았다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 7357,
+            "end": 8707,
+            "display_text": "[p21403 2.14.0.3 offset=7357]\nCreating a PDF\nTo produce a PDF, specify an output file with a .pdf extension:\npandoc test.txt -o test.pdf\nBy default, pandoc will use LaTeX to create the PDF, which requires that a LaTeX engine be installed (see --pdf-engine below). Alternatively, pandoc can use ConTeXt, roff ms, or HTML as an intermediate format. To do this, specify an output file with a .pdf extension, as before, but add the --pdf-engine option or -t context, -t html, or -t ms to the command line. The tool used to generate the PDF from the intermediate format may be specified using --pdf-engine.\nYou can control the PDF style using variables, depending on the intermediate format used: see [n2l146] variables for LaTeX, [n2l147] variables for ConTeXt, [n2l148] variables for wkhtmltopdf, [n2l149] variables for ms. When HTML is used as an intermediate format, the output can be styled using --css.\nTo debug the PDF creation, it can be useful to look at the intermediate representation: instead of -o test.pdf, use for example -s -o test.tex to output the generated LaTeX. You can then test it with pdflatex test.tex.\nWhen using LaTeX, the following packages need to be available (they are included with all recent versions of TeX Live): amsfonts, amsmath, lm, unicode-math, iftex, listings (if the --listings option is used), fancyvrb, longtable, booktabs, graphicx (if the \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "62f192f241b8b519d666eaedddfaf5179b0aa4f1f83634920723af3c4cf5c709",
+            "arrival_url": "https://pandoc.org/MANUAL.html#creating-a-pdf",
+            "fragment": "creating-a-pdf"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p21403",
+                "quote": "To produce a PDF, specify an output file with a .pdf extension:"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "By default, pandoc will use LaTeX to create the PDF, which requires that a LaTeX engine be installed"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "To debug the PDF creation, it can be useful to look at the intermediate representation"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "LaTeX 경로에는 엔진 설치가 필요하다. 표 제거 및 그림 교체 대조의 결과나 예외는 보지 못했다. 생성된 LaTeX 중간 표현을 출력하여 조사하는 방법은 안내되어 있다.",
+            "operation": "PDF 생성은 출력 파일을 .pdf 확장자로 지정하는 방식이며, 기본 경로는 LaTeX 엔진을 사용한다. ConTeXt, roff ms, HTML 중간 형식도 선택할 수 있으므로 실제 사용하는 출력 경로를 특정해야 한다.",
+            "preservation": "PDF 스타일을 중간 형식별 변수로 조절할 수 있다는 설명은 확인했지만, 그림이 다음 페이지로 떠도 후속 텍스트와 표의 하단 여백이 보존된다는 보장은 아직 찾지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 73722,
+            "end": 75072,
+            "display_text": "[p21403 2.14.0.3 offset=73722]\nVariables for LaTeX\nPandoc uses these variables when [n2l518] creating a PDF with a LaTeX engine.\nLayout\nblock-headings\nmake \\paragraph and \\subparagraph (fourth- and fifth-level headings, or fifth- and sixth-level with book classes) free-standing rather than run-in; requires further formatting to distinguish from \\subsubsection (third- or fourth-level headings). Instead of using this option, KOMA-Script can adjust headings more extensively:\n---\ndocumentclass: scrartcl\nheader-includes: |\n  \\RedeclareSectionCommand[\n    beforeskip=-10pt plus -2pt minus -1pt,\n    afterskip=1sp plus -1sp minus 1sp,\n    font=\\normalfont\\itshape]{paragraph}\n  \\RedeclareSectionCommand[\n    beforeskip=-10pt plus -2pt minus -1pt,\n    afterskip=1sp plus -1sp minus 1sp,\n    font=\\normalfont\\scshape,\n    indent=0pt]{subparagraph}\n...\nclassoption\noption for document class, e.g. oneside; repeat for multiple options:\n---\nclassoption:\n- twocolumn\n- landscape\n...\ndocumentclass\ndocument class: usually one of the standard classes, article, book, and report; the KOMA-Script equivalents, scrartcl, scrbook, and scrreprt, which default to smaller margins; or memoir \ngeometry\noption for geometry package, e.g. margin=1in; repeat for multiple options:\n---\ngeometry:\n- top=30mm\n- left=20mm\n- heightrounded\n...\nhyperrefoptions\noption for hyperref package, e.g. linktoc=all; \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "54046aa18450aa740f3ce96ceac79289b99ce6fab24caedc0cacb9e69af568e2",
+            "arrival_url": "https://pandoc.org/MANUAL.html#variables-for-latex",
+            "fragment": "variables-for-latex"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p21403",
+                "quote": "Pandoc uses these variables when"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "creating a PDF with a LaTeX engine."
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "option for geometry package, e.g. margin=1in; repeat for multiple options:"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "which default to smaller margins"
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "문서 클래스에 따라 기본 여백이 다를 수 있으며 KOMA-Script 클래스는 더 작은 여백을 기본값으로 쓴다는 설명을 확인했다. 표를 없앤 대조나 다른 그림으로 바꾼 대조는 보지 못했으므로 문제 발생 조건, 원인, 제한 및 해결책은 미확인이다.",
+            "operation": "Pandoc 2.14.0.3 안내서에서 .pdf 출력과 기본 LaTeX 생성 경로를 확인했다. LaTeX 경로에서는 documentclass 및 geometry 변수가 문서 클래스와 페이지 여백 설정을 제어한다. 예시에는 geometry의 margin=1in 또는 top=30mm, left=20mm, heightrounded가 나온다.",
+            "preservation": "여백을 설정하는 수단은 확인했으나, 그림이 다음 페이지로 이동한 뒤에도 후속 텍스트와 표가 하단 여백 안에서 흐른다는 동작은 확인하지 못했다. geometry 설정만으로 해당 보존 성질을 보장한다고 답할 근거가 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 4,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "m9265b55d23",
+      "case_id": "P3",
+      "common_request": "Pandoc 2.14.0.3에서 표와 그림이 있는 Markdown 문서를 원문이 설명한 페이지 출력으로 렌더링하려 한다. 그림이 다음 페이지로 떠도 뒤따르는 텍스트와 표가 하단 여백 안에서 흐르도록 해야 한다. 표를 없애거나 다른 그림으로 바꾼 대조와 비교해 필요한 조건과 제한을 확인해 달라.",
+      "version": "2.14.0.3",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 0,
+            "end": 1334,
+            "display_text": "[p21403 2.14.0.3 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nJune 20, 2021\n[n2l1] Synopsis\n[n2l2] Description \n[n2l3] Using pandoc\n[n2l4] Specifying formats\n[n2l5] Character encoding\n[n2l6] Creating a PDF\n[n2l7] Reading from the Web\n[n2l8] Options \n[n2l9] General options\n[n2l10] Reader options\n[n2l11] General writer options\n[n2l12] Options affecting specific writers\n[n2l13] Citation rendering\n[n2l14] Math rendering in HTML\n[n2l15] Options for wrapper scripts\n[n2l16] Exit codes\n[n2l17] Default files\n[n2l18] Templates \n[n2l19] Template syntax \n[n2l20] Comments\n[n2l21] Delimiters\n[n2l22] Interpolated variables\n[n2l23] Conditionals\n[n2l24] For loops\n[n2l25] Partials\n[n2l26] Nesting\n[n2l27] Breakable spaces\n[n2l28] Pipes\n[n2l29] Variables \n[n2l30] Metadata variables\n[n2l31] Language variables\n[n2l32] Variables for HTML\n[n2l33] Variables for HTML math\n[n2l34] Variables for HTML slides\n[n2l35] Variables for Beamer slides\n[n2l36] Variables for PowerPoint\n[n2l37] Variables for LaTeX\n[n2l38] Variables for ConTeXt\n[n2l39] Variables for wkhtmltopdf\n[n2l40] Variables for man pages\n[n2l41] Variables for ms\n[n2l42] Variables set automatically\n[n2l43] Extensions \n[n2l44] Typography\n[n2l45] Headings and sections\n[n2l46] Math Input\n[n2l47] Raw HTML/TeX\n[n2l48] Literate Haskell support\n[n2l49] Other extensions\n[n2l50] Pandoc’s Markdown \n[n2l51] Philosophy\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "ccd1c7a77a66c67f85d0711cded2a0e490d3a1c615f2df7ba73cb0c266543b49",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "표를 없애거나 다른 그림으로 바꾼 경우의 대조와 제한은 이 목차 구간에 보이지 않는다.",
+            "operation": "현재 본 화면은 Pandoc 사용자 안내서의 목차이며, Markdown 문서를 원하는 페이지 출력으로 렌더링하는 구체적인 조작은 아직 확인하지 못했다.",
+            "preservation": "그림이 다음 페이지로 이동한 뒤 텍스트와 표가 하단 여백 안에서 흐르는 성질은 아직 확인하지 못했다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 1334,
+            "end": 2648,
+            "display_text": "[p21403 2.14.0.3 offset=1334]\n[n2l52] Paragraphs\n[n2l53] Headings \n[n2l54] Setext-style headings\n[n2l55] ATX-style headings\n[n2l56] Heading identifiers\n[n2l57] Block quotations\n[n2l58] Verbatim (code) blocks \n[n2l59] Indented code blocks\n[n2l60] Fenced code blocks\n[n2l61] Line blocks\n[n2l62] Lists \n[n2l63] Bullet lists\n[n2l64] Block content in list items\n[n2l65] Ordered lists\n[n2l66] Definition lists\n[n2l67] Numbered example lists\n[n2l68] Ending a list\n[n2l69] Horizontal rules\n[n2l70] Tables\n[n2l71] Metadata blocks\n[n2l72] Backslash escapes\n[n2l73] Inline formatting \n[n2l74] Emphasis\n[n2l75] Strikeout\n[n2l76] Superscripts and subscripts\n[n2l77] Verbatim\n[n2l78] Small caps\n[n2l79] Math\n[n2l80] Raw HTML \n[n2l81] Generic raw attribute\n[n2l82] LaTeX macros\n[n2l83] Links \n[n2l84] Automatic links\n[n2l85] Inline links\n[n2l86] Reference links\n[n2l87] Internal links\n[n2l88] Images\n[n2l89] Divs and Spans\n[n2l90] Footnotes\n[n2l91] Citation syntax\n[n2l92] Non-default extensions\n[n2l93] Markdown variants\n[n2l94] Citations \n[n2l95] Specifying bibliographic data \n[n2l96] Capitalization in titles\n[n2l97] Conference Papers, Published vs. Unpublished\n[n2l98] Specifying a citation style\n[n2l99] Citations in note styles\n[n2l100] Raw content in a style\n[n2l101] Placement of the bibliography\n[n2l102] Including uncited items in the bibliography\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "fb772c86dfe5e9eb255d3609419e557376547611f56e78da267e8ee780dd2aff",
+            "arrival_url": "https://pandoc.org/MANUAL.html#toc-paragraphs",
+            "fragment": "toc-paragraphs"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "표를 제거하거나 다른 그림으로 대체한 대조 결과 및 예외 조건은 아직 확인되지 않았다.",
+            "operation": "목차의 Images와 Tables 항목을 확인했지만, 아직 그림이나 표의 출력 설정 본문을 읽지 않아 필요한 렌더링 조작은 확인하지 못했다.",
+            "preservation": "후속 텍스트와 표가 하단 여백 안에서 흐르는지에 대한 근거는 여전히 없다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p21403",
+            "start": 142936,
+            "end": 144286,
+            "display_text": "[p21403 2.14.0.3 offset=142936]\nImages\nA link immediately preceded by a ! will be treated as an image. The link text will be used as the image’s alt text:\n![la lune](lalune.jpg \"Voyage to the moon\")\n\n![movie reel]\n\n[movie reel]: movie.gif\nExtension: implicit_figures\nAn image with nonempty alt text, occurring by itself in a paragraph, will be rendered as a figure with a caption. The image’s alt text will be used as the caption.\n![This is the caption](/url/of/image.png)\nHow this is rendered depends on the output format. Some output formats (e.g. RTF) do not yet support figures. In those formats, you’ll just get an image in a paragraph by itself, with no caption.\nIf you just want a regular inline image, just make sure it is not the only thing in the paragraph. One way to do this is to insert a nonbreaking space after the image:\n![This image won't be a figure](/url/of/image.png)\\\nNote that in reveal.js slide shows, an image in a paragraph by itself that has the stretch class will fill the screen, and the caption and figure tags will be omitted.\nExtension: link_attributes\nAttributes can be set on links and images:\nAn inline ![image](foo.jpg){#id .class width=30 height=20px}\nand a reference ![image][ref] with attributes.\n\n[ref]: foo.jpg \"optional title\" {#id .class key=val key2=\"val 2\"}\n(This syntax is compatible with PHP Markdown Extra when only #id and .class are \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "263a5de13292451c5faafd95ebf4a7bbb34192868e3c5c5890d4118dd36986e0",
+            "arrival_url": "https://pandoc.org/MANUAL.html#images",
+            "fragment": "images"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p21403",
+                "quote": "nonempty alt text"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "occurring by itself in a paragraph"
+              },
+              {
+                "doc_id": "p21403",
+                "quote": "Some output formats (e.g. RTF) do not yet support figures."
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "렌더링은 출력 형식에 따라 달라지며, RTF 같은 일부 형식은 figure를 지원하지 않아 캡션 없이 그림만 단독 문단으로 출력된다고 확인했다. 표를 없애거나 다른 그림으로 바꾼 대조 결과와 하단 여백 문제의 제한 조건은 보지 못했다.",
+            "operation": "Images 본문에서 implicit_figures 확장의 조건을 일부 확인했다. 대체 텍스트가 비어 있지 않은 그림이 문단에 단독으로 있으면 캡션을 가진 figure로 렌더링되며, 대체 텍스트가 캡션으로 쓰인다. 일반 인라인 그림을 원하면 문단의 유일한 요소가 되지 않게 하라고 설명한다. 그러나 요청한 페이지 출력 방식의 구체적인 명령이나 그림을 다음 페이지로 이동시키는 조작은 확인하지 못했다.",
+            "preservation": "이 본문은 그림의 figure 처리 조건을 설명하지만, 그림이 다음 페이지로 떠도 뒤따르는 텍스트와 표가 하단 여백 안에서 흐른다는 보장은 제공하지 않는다. 따라서 그 보존 성질은 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mb4d116e1d4",
+      "case_id": "P1",
+      "common_request": "Pandoc 2.19.2에서 원문의 Markdown을 --self-contained --toc로 HTML로 만들 때, 같은 fenced div 안에 있는 B1·B2 하위 제목도 각각의 div에 있는 A1·A2처럼 목차에 남아야 한다. 원래 그룹 구조를 유지하면서 이 목표를 충족하는지와 예외를 확인해 달라.",
+      "version": "2.19.2",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 0,
+            "end": 1340,
+            "display_text": "[p2192 2.19.2 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nAugust 22, 2022\n[n1l1] Synopsis\n[n1l2] Description \n[n1l3] Using pandoc\n[n1l4] Specifying formats\n[n1l5] Character encoding\n[n1l6] Creating a PDF\n[n1l7] Reading from the Web\n[n1l8] Options \n[n1l9] General options\n[n1l10] Reader options\n[n1l11] General writer options\n[n1l12] Options affecting specific writers\n[n1l13] Citation rendering\n[n1l14] Math rendering in HTML\n[n1l15] Options for wrapper scripts\n[n1l16] Exit codes\n[n1l17] Defaults files \n[n1l18] General options\n[n1l19] Reader options\n[n1l20] General writer options\n[n1l21] Options affecting specific writers\n[n1l22] Citation rendering\n[n1l23] Math rendering in HTML\n[n1l24] Options for wrapper scripts\n[n1l25] Templates \n[n1l26] Template syntax \n[n1l27] Comments\n[n1l28] Delimiters\n[n1l29] Interpolated variables\n[n1l30] Conditionals\n[n1l31] For loops\n[n1l32] Partials\n[n1l33] Nesting\n[n1l34] Breakable spaces\n[n1l35] Pipes\n[n1l36] Variables \n[n1l37] Metadata variables\n[n1l38] Language variables\n[n1l39] Variables for HTML\n[n1l40] Variables for HTML math\n[n1l41] Variables for HTML slides\n[n1l42] Variables for Beamer slides\n[n1l43] Variables for PowerPoint\n[n1l44] Variables for LaTeX\n[n1l45] Variables for ConTeXt\n[n1l46] Variables for wkhtmltopdf\n[n1l47] Variables for man pages\n[n1l48] Variables for ms\n[n1l49] Variables set automatically\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "91d248026143ff0fef46be1e78be29eeb56a77181a96211bc2ae6b0d916f3b34",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "적용 조건과 예외를 설명하는 본문을 아직 읽지 못했다.",
+            "operation": "현재 보이는 것은 Pandoc 2.19.2 사용자 안내의 목차뿐이다. fenced div 안의 B1·B2 하위 제목을 HTML 목차에 남기기 위한 조작은 아직 확인하지 못했다.",
+            "preservation": "원래 그룹 구조를 유지하면서 목표를 충족할 수 있는지는 아직 확인하지 못했다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 1340,
+            "end": 2666,
+            "display_text": "[p2192 2.19.2 offset=1340]\n[n1l50] Extensions \n[n1l51] Typography\n[n1l52] Headings and sections\n[n1l53] Math Input\n[n1l54] Raw HTML/TeX\n[n1l55] Literate Haskell support\n[n1l56] Other extensions\n[n1l57] Pandoc’s Markdown \n[n1l58] Philosophy\n[n1l59] Paragraphs\n[n1l60] Headings \n[n1l61] Setext-style headings\n[n1l62] ATX-style headings\n[n1l63] Heading identifiers\n[n1l64] Block quotations\n[n1l65] Verbatim (code) blocks \n[n1l66] Indented code blocks\n[n1l67] Fenced code blocks\n[n1l68] Line blocks\n[n1l69] Lists \n[n1l70] Bullet lists\n[n1l71] Block content in list items\n[n1l72] Ordered lists\n[n1l73] Definition lists\n[n1l74] Numbered example lists\n[n1l75] Ending a list\n[n1l76] Horizontal rules\n[n1l77] Tables\n[n1l78] Metadata blocks\n[n1l79] Backslash escapes\n[n1l80] Inline formatting \n[n1l81] Emphasis\n[n1l82] Highlighting\n[n1l83] Strikeout\n[n1l84] Superscripts and subscripts\n[n1l85] Verbatim\n[n1l86] Underline\n[n1l87] Small caps\n[n1l88] Math\n[n1l89] Raw HTML \n[n1l90] Generic raw attribute\n[n1l91] LaTeX macros\n[n1l92] Links \n[n1l93] Automatic links\n[n1l94] Inline links\n[n1l95] Reference links\n[n1l96] Internal links\n[n1l97] Images\n[n1l98] Divs and Spans\n[n1l99] Footnotes\n[n1l100] Citation syntax\n[n1l101] Non-default extensions\n[n1l102] Markdown variants\n[n1l103] Citations \n[n1l104] Specifying bibliographic data \n[n1l105] Capitalization in titles\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "44b5a576ae5d1b4fa52f82ca3146fffb14d4110adffd78ac05873c7e140efd36",
+            "arrival_url": "https://pandoc.org/MANUAL.html#toc-extensions",
+            "fragment": "toc-extensions"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "Divs and Spans"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "목차만으로는 예외나 제한을 판단할 수 없다.",
+            "operation": "목차에서 Divs and Spans 항목을 찾았다. 다만 아직 해당 본문을 읽지 않았으므로 --self-contained --toc를 사용하는 HTML 변환에서 제목을 목차에 남기는 조작은 확인하지 못했다.",
+            "preservation": "동일한 fenced div 안의 B1·B2를 유지하는 그룹 구조와 목차 포함의 양립 여부는 아직 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 152394,
+            "end": 153744,
+            "display_text": "[p2192 2.19.2 offset=152394]\nDivs and Spans\nUsing the native_divs and native_spans extensions (see [n1l568] above), HTML syntax can be used as part of markdown to create native Div and Span elements in the pandoc AST (as opposed to raw HTML). However, there is also nicer syntax available:\nExtension: fenced_divs\nAllow special fenced syntax for native Div blocks. A Div starts with a fence containing at least three consecutive colons plus some attributes. The attributes may optionally be followed by another string of consecutive colons. The attribute syntax is exactly as in fenced code blocks (see [n1l569] Extension: fenced_code_attributes). As with fenced code blocks, one can use either attributes in curly braces or a single unbraced word, which will be treated as a class name. The Div ends with another line containing a string of at least three consecutive colons. The fenced Div should be separated by blank lines from preceding and following blocks.\nExample:\n::::: {#special .sidebar}\nHere is a paragraph.\n\nAnd another.\n:::::\nFenced divs can be nested. Opening fences are distinguished because they must have attributes:\n::: Warning ::::::\nThis is a warning.\n\n::: Danger\nThis is a warning within a warning.\n:::\n::::::::::::::::::\nFences without attributes are always closing fences. Unlike with fenced code blocks, the number of colons in the closing fence need not \n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "971755e5cafaa658e8a6553aa2d2bc410a27fee2f1e73dcc6b32b133a2ea2190",
+            "arrival_url": "https://pandoc.org/MANUAL.html#divs-and-spans",
+            "fragment": "divs-and-spans"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "Allow special fenced syntax for native Div blocks."
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Fenced divs can be nested."
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Fences without attributes are always closing fences."
+              }
+            ],
+            "disposition": "부분 확인",
+            "exceptions": "문법상 여는 울타리에는 속성이 필요하고 속성이 없는 울타리는 항상 닫는 울타리라는 조건을 확인했다. 제목의 목차 포함에 관한 예외는 보이지 않았으며, 예외가 없다는 뜻은 아니다.",
+            "operation": "fenced_divs 확장은 속성을 붙인 콜론 울타리로 native Div 블록을 만들며, 여는 울타리에 연속 콜론이 최소 세 개 필요하다는 문법은 확인했다. 그러나 이 표시 구간에는 --self-contained --toc로 HTML을 만들 때 같은 Div 안의 B1·B2 제목을 목차에 모두 남기게 하는 조작이 없다. 요청한 변환 방법의 성공 여부는 확인하지 못했다.",
+            "preservation": "본문은 fenced div의 중첩이 가능하다고 명시하므로 Div 그룹을 표현하는 문법이 있음을 확인했다. 다만 기존 그룹을 유지하면서 A1·A2와 같이 B1·B2도 목차에 포함되는지는 이 근거만으로 확인할 수 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 3,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mbf8820cdbb",
+      "case_id": "P1",
+      "common_request": "Pandoc 2.19.2에서 원문의 Markdown을 --self-contained --toc로 HTML로 만들 때, 같은 fenced div 안에 있는 B1·B2 하위 제목도 각각의 div에 있는 A1·A2처럼 목차에 남아야 한다. 원래 그룹 구조를 유지하면서 이 목표를 충족하는지와 예외를 확인해 달라.",
+      "version": "2.19.2",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 0,
+            "end": 1340,
+            "display_text": "[p2192 2.19.2 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nAugust 22, 2022\n[n1l1] Synopsis\n[n1l2] Description \n[n1l3] Using pandoc\n[n1l4] Specifying formats\n[n1l5] Character encoding\n[n1l6] Creating a PDF\n[n1l7] Reading from the Web\n[n1l8] Options \n[n1l9] General options\n[n1l10] Reader options\n[n1l11] General writer options\n[n1l12] Options affecting specific writers\n[n1l13] Citation rendering\n[n1l14] Math rendering in HTML\n[n1l15] Options for wrapper scripts\n[n1l16] Exit codes\n[n1l17] Defaults files \n[n1l18] General options\n[n1l19] Reader options\n[n1l20] General writer options\n[n1l21] Options affecting specific writers\n[n1l22] Citation rendering\n[n1l23] Math rendering in HTML\n[n1l24] Options for wrapper scripts\n[n1l25] Templates \n[n1l26] Template syntax \n[n1l27] Comments\n[n1l28] Delimiters\n[n1l29] Interpolated variables\n[n1l30] Conditionals\n[n1l31] For loops\n[n1l32] Partials\n[n1l33] Nesting\n[n1l34] Breakable spaces\n[n1l35] Pipes\n[n1l36] Variables \n[n1l37] Metadata variables\n[n1l38] Language variables\n[n1l39] Variables for HTML\n[n1l40] Variables for HTML math\n[n1l41] Variables for HTML slides\n[n1l42] Variables for Beamer slides\n[n1l43] Variables for PowerPoint\n[n1l44] Variables for LaTeX\n[n1l45] Variables for ConTeXt\n[n1l46] Variables for wkhtmltopdf\n[n1l47] Variables for man pages\n[n1l48] Variables for ms\n[n1l49] Variables set automatically\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "91d248026143ff0fef46be1e78be29eeb56a77181a96211bc2ae6b0d916f3b34",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "하위 제목 누락이나 구조 보존의 예외에 관한 본문을 아직 읽지 못했다.",
+            "operation": "현재 표시된 것은 Pandoc 2.19.2 사용 설명서의 목차뿐이어서, --self-contained --toc 변환에서 B1·B2를 목차에 남기는 조작은 아직 확인하지 못했다.",
+            "preservation": "같은 fenced div의 원래 그룹 구조를 유지할 수 있는지는 아직 확인하지 못했다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 25200,
+            "end": 26550,
+            "display_text": "[p2192 2.19.2 offset=25200]\nGeneral writer options\n-s, --standalone\nProduce output with an appropriate header and footer (e.g. a standalone HTML, LaTeX, TEI, or RTF file, not a fragment). This option is set automatically for pdf, epub, epub3, fb2, docx, and odt output. For native output, this option causes metadata to be included; otherwise, metadata is suppressed.\n--template=FILE|URL\nUse the specified file as a custom template for the generated document. Implies --standalone. See [n1l313] Templates, below, for a description of template syntax. If no extension is specified, an extension corresponding to the writer will be added, so that --template=special looks for special.html for HTML output. If the template is not found, pandoc will search for it in the templates subdirectory of the user data directory (see --data-dir). If this option is not used, a default template appropriate for the output format will be used (see -D/--print-default-template).\n-V KEY[=VAL], --variable=KEY[:VAL]\nSet the template variable KEY to the value VAL when rendering the document in standalone mode. If no VAL is specified, the key will be given the value true.\n--sandbox\nRun pandoc in a sandbox, limiting IO operations in readers and writers to reading the files specified on the command line. Note that this option does not limit IO operations by filters or in the production of PDF\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "96ab9c1d24a29b5edbd0d6207bff77faafee0b9fb433d62425341517b037ee7b",
+            "arrival_url": "https://pandoc.org/MANUAL.html#general-writer-options",
+            "fragment": "general-writer-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "-s, --standalone"
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Produce output with an appropriate header and footer"
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "--standalone의 형식별 자동 설정은 설명되어 있지만, 요청한 div 내부 제목과 목차의 예외는 아직 확인하지 못했다.",
+            "operation": "표시된 일반 writer 옵션에서 --standalone이 적절한 머리말과 꼬리말을 가진 독립 문서를 생성한다는 점은 확인했다. 그러나 --toc나 B1·B2의 포함 조건은 아직 표시되지 않아 목표를 충족하는 조작은 확인하지 못했다.",
+            "preservation": "현재 본문은 독립 출력과 템플릿을 다루며 fenced div의 그룹 보존을 설명하지 않는다. 원래 그룹 구조가 유지되는지는 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 26550,
+            "end": 27900,
+            "display_text": "[p2192 2.19.2 offset=26550]\n documents. But it does offer security against, for example, disclosure of files through the use of include directives. Anyone using pandoc on untrusted user input should use this option.\nNote: some readers and writers (e.g., docx) need access to data files. If these are stored on the file system, then pandoc will not be able to find them when run in --sandbox mode and will raise an error. For these applications, we recommend using a pandoc binary compiled with the embed_data_files option, which causes the data files to be baked into the binary instead of being stored on the file system.\n-D FORMAT, --print-default-template=FORMAT\nPrint the system default template for an output FORMAT. (See -t for a list of possible FORMATs.) Templates in the user data directory are ignored. This option may be used with -o/--output to redirect output to a file, but -o/--output must come before --print-default-template on the command line.\nNote that some of the default templates use partials, for example styles.html. To print the partials, use --print-default-data-file: for example, --print-default-data-file=templates/styles.html.\n--print-default-data-file=FILE\nPrint a system default data file. Files in the user data directory are ignored. This option may be used with -o/--output to redirect output to a file, but -o/--output must come before --pri\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "b4f0bb4c967122d581346338d1d8d02c76bcab82202900f708f024073c12768f",
+            "arrival_url": "https://pandoc.org/MANUAL.html#general-writer-options",
+            "fragment": "general-writer-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "-D FORMAT, --print-default-template=FORMAT"
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Print the system default template for an output FORMAT."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "이번 구간은 --sandbox의 데이터 파일 접근 예외와 템플릿 출력 명령을 설명한다. 이는 요청한 목차 동작의 예외를 입증하지 않으며, 같은 div 안의 여러 제목에 적용되는 예외는 여전히 미확인이다.",
+            "operation": "3회 열람 안에서 --toc 또는 fenced div 내부 하위 제목 처리 설명에 도달하지 못했다. 현재 확인한 것은 --standalone과 기본 템플릿을 출력하는 옵션이며, B1·B2를 A1·A2처럼 목차에 남기는 변경 방법은 확인하지 못했다.",
+            "preservation": "원래 fenced div의 그룹 구조를 유지하면서 목표를 달성할 수 있는지는 표시된 문서만으로 판단할 수 없다. 가능하다고 단정하거나 구조를 바꾸는 조작을 권할 근거가 없다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "masked_id": "mf42fdc5c08",
+      "case_id": "P1",
+      "common_request": "Pandoc 2.19.2에서 원문의 Markdown을 --self-contained --toc로 HTML로 만들 때, 같은 fenced div 안에 있는 B1·B2 하위 제목도 각각의 div에 있는 A1·A2처럼 목차에 남아야 한다. 원래 그룹 구조를 유지하면서 이 목표를 충족하는지와 예외를 확인해 달라.",
+      "version": "2.19.2",
+      "stages": [
+        {
+          "step": 1,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 0,
+            "end": 1340,
+            "display_text": "[p2192 2.19.2 offset=0]\nPandoc User’s Guide\nJohn MacFarlane\nAugust 22, 2022\n[n1l1] Synopsis\n[n1l2] Description \n[n1l3] Using pandoc\n[n1l4] Specifying formats\n[n1l5] Character encoding\n[n1l6] Creating a PDF\n[n1l7] Reading from the Web\n[n1l8] Options \n[n1l9] General options\n[n1l10] Reader options\n[n1l11] General writer options\n[n1l12] Options affecting specific writers\n[n1l13] Citation rendering\n[n1l14] Math rendering in HTML\n[n1l15] Options for wrapper scripts\n[n1l16] Exit codes\n[n1l17] Defaults files \n[n1l18] General options\n[n1l19] Reader options\n[n1l20] General writer options\n[n1l21] Options affecting specific writers\n[n1l22] Citation rendering\n[n1l23] Math rendering in HTML\n[n1l24] Options for wrapper scripts\n[n1l25] Templates \n[n1l26] Template syntax \n[n1l27] Comments\n[n1l28] Delimiters\n[n1l29] Interpolated variables\n[n1l30] Conditionals\n[n1l31] For loops\n[n1l32] Partials\n[n1l33] Nesting\n[n1l34] Breakable spaces\n[n1l35] Pipes\n[n1l36] Variables \n[n1l37] Metadata variables\n[n1l38] Language variables\n[n1l39] Variables for HTML\n[n1l40] Variables for HTML math\n[n1l41] Variables for HTML slides\n[n1l42] Variables for Beamer slides\n[n1l43] Variables for PowerPoint\n[n1l44] Variables for LaTeX\n[n1l45] Variables for ConTeXt\n[n1l46] Variables for wkhtmltopdf\n[n1l47] Variables for man pages\n[n1l48] Variables for ms\n[n1l49] Variables set automatically\n\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "91d248026143ff0fef46be1e78be29eeb56a77181a96211bc2ae6b0d916f3b34",
+            "arrival_url": "https://pandoc.org/MANUAL.html#title-block-header",
+            "fragment": "title-block-header"
+          },
+          "answer_original": {
+            "citations": [],
+            "disposition": "보류",
+            "exceptions": "예외에 대한 본문을 아직 읽지 못했다.",
+            "operation": "현재 본 화면은 Pandoc 2.19.2 사용 설명서의 목차이므로 --self-contained --toc 변환의 실제 동작은 아직 확인하지 못했다.",
+            "preservation": "같은 fenced div 안의 B1·B2가 목차에 남는지와 원래 그룹 구조가 유지되는지는 아직 확인되지 않았다."
+          },
+          "citation_checks": []
+        },
+        {
+          "step": 2,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 25200,
+            "end": 26550,
+            "display_text": "[p2192 2.19.2 offset=25200]\nGeneral writer options\n-s, --standalone\nProduce output with an appropriate header and footer (e.g. a standalone HTML, LaTeX, TEI, or RTF file, not a fragment). This option is set automatically for pdf, epub, epub3, fb2, docx, and odt output. For native output, this option causes metadata to be included; otherwise, metadata is suppressed.\n--template=FILE|URL\nUse the specified file as a custom template for the generated document. Implies --standalone. See [n1l313] Templates, below, for a description of template syntax. If no extension is specified, an extension corresponding to the writer will be added, so that --template=special looks for special.html for HTML output. If the template is not found, pandoc will search for it in the templates subdirectory of the user data directory (see --data-dir). If this option is not used, a default template appropriate for the output format will be used (see -D/--print-default-template).\n-V KEY[=VAL], --variable=KEY[:VAL]\nSet the template variable KEY to the value VAL when rendering the document in standalone mode. If no VAL is specified, the key will be given the value true.\n--sandbox\nRun pandoc in a sandbox, limiting IO operations in readers and writers to reading the files specified on the command line. Note that this option does not limit IO operations by filters or in the production of PDF\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "96ab9c1d24a29b5edbd0d6207bff77faafee0b9fb433d62425341517b037ee7b",
+            "arrival_url": "https://pandoc.org/MANUAL.html#general-writer-options",
+            "fragment": "general-writer-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "Produce output with an appropriate header and footer"
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Implies --standalone."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "목차 또는 div 관련 예외는 현재 화면에서 찾지 못했다.",
+            "operation": "일반 출력 옵션에서 --standalone은 머리말과 꼬리말을 갖춘 독립 문서를 만들며 --template은 이를 함의한다는 점을 확인했다. 요청한 --self-contained --toc 조합의 동작은 아직 확인하지 못했다.",
+            "preservation": "표시된 내용에는 fenced div 내부의 제목이나 그룹 구조 유지에 관한 설명이 없어서 B1·B2 보존 여부는 미확인이다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "visible": {
+            "doc_id": "p2192",
+            "start": 26550,
+            "end": 27900,
+            "display_text": "[p2192 2.19.2 offset=26550]\n documents. But it does offer security against, for example, disclosure of files through the use of include directives. Anyone using pandoc on untrusted user input should use this option.\nNote: some readers and writers (e.g., docx) need access to data files. If these are stored on the file system, then pandoc will not be able to find them when run in --sandbox mode and will raise an error. For these applications, we recommend using a pandoc binary compiled with the embed_data_files option, which causes the data files to be baked into the binary instead of being stored on the file system.\n-D FORMAT, --print-default-template=FORMAT\nPrint the system default template for an output FORMAT. (See -t for a list of possible FORMATs.) Templates in the user data directory are ignored. This option may be used with -o/--output to redirect output to a file, but -o/--output must come before --print-default-template on the command line.\nNote that some of the default templates use partials, for example styles.html. To print the partials, use --print-default-data-file: for example, --print-default-data-file=templates/styles.html.\n--print-default-data-file=FILE\nPrint a system default data file. Files in the user data directory are ignored. This option may be used with -o/--output to redirect output to a file, but -o/--output must come before --pri\n[next] 다음 구간 | [again] 재열람 | [back] 직전 열람(있으면)\n",
+            "display_sha256": "b4f0bb4c967122d581346338d1d8d02c76bcab82202900f708f024073c12768f",
+            "arrival_url": "https://pandoc.org/MANUAL.html#general-writer-options",
+            "fragment": "general-writer-options"
+          },
+          "answer_original": {
+            "citations": [
+              {
+                "doc_id": "p2192",
+                "quote": "Produce output with an appropriate header and footer"
+              },
+              {
+                "doc_id": "p2192",
+                "quote": "Print the system default template for an output FORMAT."
+              }
+            ],
+            "disposition": "보류",
+            "exceptions": "목차와 fenced div의 관계에 관한 예외는 확인하지 못했다. 화면에 보인 sandbox 관련 주의사항은 요청한 목차 동작의 예외를 입증하지 않는다.",
+            "operation": "세 번 열람한 범위에서는 독립 문서 출력과 템플릿 출력 등의 옵션만 확인했다. --self-contained --toc의 설명에 도달하지 못했으므로 요청한 변환이 목표를 충족한다고 결론 내릴 수 없다.",
+            "preservation": "같은 fenced div 안의 B1·B2와 각각의 div 안의 A1·A2가 목차에서 동일하게 유지되는지, 원래 그룹 구조를 보존할 수 있는지는 확인하지 못했다."
+          },
+          "citation_checks": [
+            {
+              "citation_index": 1,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            },
+            {
+              "citation_index": 2,
+              "match_status": "exact_visible_source",
+              "strict_supported": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

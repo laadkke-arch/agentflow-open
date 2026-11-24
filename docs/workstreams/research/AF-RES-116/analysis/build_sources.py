@@ -23,10 +23,19 @@ def main():
             ('gold-work/imagemagick/sources-imagemagick.jsonl','imagemagick_reference'),
             ('analogies/sources-analogies.jsonl','cross_domain'),
             ('evidence/root-source-reads.jsonl','root_verification')]
+    for optional,role in [('evidence/recipient-source-reads.jsonl','recipient_reopen'),
+                          ('evidence/resume-primary-rereads.jsonl','resume_primary_reread')]:
+        if (OWN/optional).exists():inputs.append((optional,role))
     rows=[];input_hashes={}
     aliases={'pandoc-manual':'pandoc-manual-all-versions',
              'imagemagick-user-manual-all-versions':'im-manual',
-             'eisenhower_finding_aid':'eisenhower_guide'}
+             'eisenhower_finding_aid':'eisenhower_finding',
+             'natural-pandoc-8518':'https://github.com/jgm/pandoc/issues/8518',
+             'natural-pandoc-8522':'https://github.com/jgm/pandoc/issues/8522',
+             'natural-pandoc-8526':'https://github.com/jgm/pandoc/issues/8526',
+             'im-issue-6159':'https://github.com/ImageMagick/ImageMagick/issues/6159',
+             'im-issue-6187':'https://github.com/ImageMagick/ImageMagick/issues/6187',
+             'im-issue-6237':'https://github.com/ImageMagick/ImageMagick/issues/6237'}
     for name,origin in inputs:
         p=OWN/name;input_hashes[name]=hashlib.sha256(p.read_bytes()).hexdigest()
         for original in read_jsonl(p):

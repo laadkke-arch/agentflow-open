@@ -9,7 +9,7 @@ if len(sys.argv)==1:
     items=[{'path':p,'sha':git('rev-parse',':'+p).decode().strip(),'bytes':int(git('cat-file','-s',':'+p))} for p in paths]
     print(json.dumps({'parent':git('rev-parse','HEAD').decode().strip(),'base_tree':git('rev-parse','HEAD^{tree}').decode().strip(),'paths':paths,'items':items}))
 elif sys.argv[1]=='--chunk':
-    p=sys.argv[2];offset=int(sys.argv[3]);size=48000
+    p=sys.argv[2];offset=int(sys.argv[3]);size=int(sys.argv[4]) if len(sys.argv)>4 else 48000
     if not p.startswith(OWNED) or '..' in Path(p).parts:raise SystemExit('outside ownership')
     b=git('show',':'+p)
     print(json.dumps({'path':p,'offset':offset,'total':len(b),'content':base64.b64encode(b[offset:offset+size]).decode()}))
