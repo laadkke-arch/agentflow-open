@@ -1,0 +1,184 @@
+[
+  {
+    "test_id": "POST-IMG-OTSU-HIST",
+    "request_id": "R4",
+    "source_ids": [
+      "M-IMG-OTSU"
+    ],
+    "status": "constructed_prediction_not_executed",
+    "phase": "postseal_verification",
+    "input": {
+      "values": [
+        1,
+        1,
+        9,
+        9
+      ],
+      "representations": [
+        [
+          4
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          1,
+          2,
+          2
+        ]
+      ],
+      "histogram": {
+        "1": 2,
+        "9": 2
+      },
+      "footprint_note": "This is the global histogram criterion, not a claim that different local footprints preserve identical neighborhoods."
+    },
+    "choice_1": "Infer allowed ndarray dimensions from the histogram mathematics.",
+    "choice_2": "Keep the public rank.otsu 2D/3D contract; validate ndim before local kernel dispatch.",
+    "predicted_outputs": {
+      "histogram_criterion": "For every representation, each k=1…8 splits class masses 1/2 and means1,9; between-class variance=16. Paper supplies no ndarray rejection policy.",
+      "requested_interface": "The original requested behavior rejects 1D and accepts supported2D/3D inputs; exact current output and error text require fixed-version execution."
+    },
+    "preserved_condition": "Original request requires ordinary2D/3D behavior unchanged.",
+    "source_observed": "Otsu Eq1–19 uses histogram counts and nonempty classes, not array axes.",
+    "limitation": "Shape invariance of the global criterion does not imply local-rank API equality. Existing1D test comes from original issue; this analogy is a postseal caution, not new A/B test credit.",
+    "would_change_judgment": "A fixed target implementation or explicit contract that directly derives valid ndarray dimensions from the cited original method, rather than a local kernel interface limitation."
+  },
+  {
+    "test_id": "POST-IMG-SPARSE",
+    "request_id": "R5",
+    "source_ids": [
+      "M-IMG-GIL",
+      "M-IMG-PYE"
+    ],
+    "status": "constructed_prediction_not_executed",
+    "phase": "postseal_verification",
+    "input": {
+      "signal": [
+        1,
+        100,
+        2
+      ],
+      "output_position": 1,
+      "required_offsets": [
+        -1,
+        1
+      ],
+      "requested_footprint": [
+        1,
+        0,
+        1
+      ]
+    },
+    "choice_1": "Preserve the two specified footprint sites.",
+    "choice_2": "Replace footprint with a contiguous width3 max-window for the fast line algorithm.",
+    "predicted_outputs": {
+      "preserved_sparse_footprint": 2,
+      "contiguous_width3": 100
+    },
+    "preserved_condition": "Only intended footprint sites may influence output.",
+    "source_observed": "Gil–Kimmel defines contiguous p-element windows; Pye–Bangham uses flat line segments. Neither claims the same support for holes.",
+    "limitation": "Pure maximum arithmetic, not target skimage execution; no boundary is involved so it isolates footprint support from border mode.",
+    "would_change_judgment": "An exact support-preserving decomposition with a proof or matched regression for [1,0,1], including its origin and boundary convention."
+  },
+  {
+    "test_id": "POST-IMG-BOUNDARY",
+    "request_id": "R5",
+    "source_ids": [
+      "M-IMG-GIL",
+      "M-IMG-PYE"
+    ],
+    "status": "baseline_test_reused_for_contrast_not_executed",
+    "phase": "postseal_verification",
+    "input": {
+      "uint8_image": [
+        [
+          7
+        ]
+      ],
+      "footprint": [
+        [
+          1,
+          0,
+          1
+        ]
+      ],
+      "target_position": [
+        0,
+        0
+      ]
+    },
+    "choice_1": "Excluded outside support contributes uint8 bottom0 to max.",
+    "choice_2": "Reflect7 into the selected sites or interpret the common doc maximum literally.",
+    "predicted_outputs": {
+      "neutral0": 0,
+      "reflect": 7,
+      "literal_dtype_maximum": 255
+    },
+    "preserved_condition": "Outside sites do not add evidence to the requested support.",
+    "source_observed": "Gil–Kimmel explicitly does not define border outputs. Pye–Bangham Eq24 chooses −∞ outside partial components before max recombination.",
+    "limitation": "This was already a common-baseline distinction; postseal papers do not create a new second-hop decision. Pye component combination is an analogy, not the target API border specification.",
+    "would_change_judgment": "Fixed target code or native execution shows another support/domain convention or a dtype conversion that changes these predictions."
+  },
+  {
+    "test_id": "POST-IMG-CAUSAL",
+    "request_id": "R5",
+    "source_ids": [
+      "M-IMG-PYE"
+    ],
+    "status": "constructed_prediction_not_executed",
+    "phase": "postseal_verification",
+    "input": {
+      "discrete_signal": [
+        0,
+        10,
+        0
+      ],
+      "padding_value": 0,
+      "window_width": 3,
+      "time_observed": 0
+    },
+    "choice_1": "Trailing window includes only past/current samples.",
+    "choice_2": "Center the width3 window at current sample without adding availability delay.",
+    "predicted_outputs": {
+      "trailing_at_time0": 0,
+      "centered_at_time0": 10
+    },
+    "preserved_condition": "An online output at time0 must not depend on unarrived time1.",
+    "source_observed": "Pye–Bangham Eq1 deliberately defines delayed inputs and notes that a shifted output gives the usual centered form.",
+    "limitation": "This acoustic/time-direction caution is a constructed cross-context test, not an external-field primary allocation and not an original issue requirement.",
+    "would_change_judgment": "The consuming application explicitly permits one-sample latency or offline access, making centered lookahead valid."
+  },
+  {
+    "test_id": "POST-IMG-ORIENTATION",
+    "request_id": "R5",
+    "source_ids": [
+      "V-IMG-SOILLE"
+    ],
+    "status": "constructed_prediction_not_executed",
+    "phase": "postseal_verification",
+    "input": {
+      "x_values": {
+        "-1": 2,
+        "0": 4,
+        "1": 9
+      },
+      "footprint_offsets": [
+        0,
+        1
+      ],
+      "target_position": 0
+    },
+    "choice_1": "Use max f(x+b).",
+    "choice_2": "Reflect B and use max f(x-b).",
+    "predicted_outputs": {
+      "unreflected": 9,
+      "reflected": 4
+    },
+    "preserved_condition": "Preserve intended footprint orientation separately from border padding.",
+    "source_observed": "Soille §2.2/Table1 distinguishes two dilation conventions; for symmetric B they coincide.",
+    "limitation": "Survey supports terminology audit, not a new method-proposer quota or original-hop discovery. This is an interior example, so border mode cannot explain the difference.",
+    "would_change_judgment": "The selected footprint is symmetric or the interface explicitly applies the compensating reflection."
+  }
+]

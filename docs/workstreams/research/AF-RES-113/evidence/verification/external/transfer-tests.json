@@ -1,0 +1,333 @@
+{
+  "phase": "postseal_verification",
+  "prejudgment_commit": "0b6287e5359257004900ef4b8e30f7abb7306024",
+  "rule": "These are postseal constructed comparisons, not hop discoveries, adopted changes, or target-library executions.",
+  "classification_rules": {
+    "same_field_other_implementation": "same donor task with distinct software only if author text/code shows it; shared words alone insufficient",
+    "different_field_same_principle": "explicit object/relation/invariant mapping and failing-input test; historical lineage remains separately unverified",
+    "background_citation": "citation names subject but supplies no target-preserving operational relation in read text",
+    "coincidental_similarity": "shared vocabulary/shape without preserved relation or without compatible domain constraints; reject as transfer"
+  },
+  "rows": [
+    {
+      "transfer_id": "EXT-T1",
+      "request_ids": [
+        "R1"
+      ],
+      "source_ids": [
+        "EXT-ACOUST-FARINA2000"
+      ],
+      "donor_field": "acoustical_measurement",
+      "recipient_field": "audio_streaming",
+      "lineage_class": "adjacent_field_principle_only",
+      "lineage_evidence": "원저자의 선형/순환 역합성 설명. librosa.stream으로의 직접 구현 계보는 확인하지 않음.",
+      "donor_objects": "입력 자극, 지연 임펄스응답, 분석 주기",
+      "recipient_objects": "decoded samples, processing block, downstream frame history",
+      "relation_to_preserve": "물리적 지연과 전역 시간 순서",
+      "existing_choice": "공통절에서 center=False 및 블록 overlap을 이미 고려",
+      "transferred_unit_or_responsibility": "블록 밖 꼬리를 순환 시작으로 합치지 않는지 별도 검사",
+      "minimal_input": {
+        "response": [
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "period": 4
+      },
+      "predicted_outputs": {
+        "circular_fold": [
+          1,
+          0,
+          0,
+          0
+        ],
+        "linear_first_four": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "linear_late_sample_index4": 1
+      },
+      "source_observations": "§2는 짧은 주기에서 늦은 꼬리가 처음으로 접히는 현상을 설명한다. 이 배열은 원저자 실험 입력이 아니다.",
+      "counterexample": "MKV가 decoder에서 열리지 않으면 어떤 downstream 경계 규칙도 원 오류를 고치지 못한다.",
+      "accept_reject": "시간 경계 검산으로만 조건부 적용; 디코더 해법으로 기각",
+      "test_kind": "constructed_after_seal",
+      "execution": "arithmetic_only_checked",
+      "actual_target_output": null,
+      "next_observation": "같은 MKV를 decode한 신호와 downstream의 전체/블록 결과를 비교",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": [
+        "R1-COMMON-PADDING"
+      ]
+    },
+    {
+      "transfer_id": "EXT-T2",
+      "request_ids": [
+        "R1"
+      ],
+      "source_ids": [
+        "EXT-ACOUST-FARINA2000",
+        "EXT-ACOUST-FARINA2007",
+        "EXT-ACOUST-MUELLER-MIRROR"
+      ],
+      "donor_field": "acoustical_measurement",
+      "recipient_field": "audio_streaming",
+      "lineage_class": "same_broad_field_different_task",
+      "lineage_evidence": "2007저작은2000저작을 직접인용하고 시계 불일치의 실제 실패를 추가한다. stream과 직접 계보는 미확인.",
+      "donor_objects": "재생/녹음 표본 시계와 sweep 역필터",
+      "recipient_objects": "표본 timestamp, native_sr, requested_sr",
+      "relation_to_preserve": "각 값이 나타내는 물리적 시각과 위상",
+      "existing_choice": "공통 R1은 native_sr와 sr를 명시적으로 구별",
+      "transferred_unit_or_responsibility": "상수 표본율 환산과 불규칙 시간축 복구를 구별",
+      "minimal_input": {
+        "frequency_Hz": 125,
+        "actual_times_seconds": [
+          0,
+          0.001,
+          0.003
+        ],
+        "assumed_times_seconds": [
+          0,
+          0.001,
+          0.002
+        ]
+      },
+      "predicted_outputs": {
+        "correct_third_sine_sample": 0.7071067811865476,
+        "uniform_assumption_third_sample": 1.0,
+        "phase_error_degrees": 45.0
+      },
+      "source_observations": "2007 §3.4의 CD/녹음기 시간축 skew; Müller §2.4의±0.5표본 jitter는 제한된 형태의 비균일 시간 실험이다. 위 3점 입력은 작업자 구성.",
+      "counterexample": "일정비율의 시계보정은 유실표본의 원시각을 알아내지 못한다. R1의 실제 file decode가 규칙표본이면 이 반례는 그 입력에 해당하지 않는다.",
+      "accept_reject": "좌표 계약의 경계조건으로 적용; 임의 timestamp 복구 보장과 MKV 해법은 기각",
+      "test_kind": "constructed_after_seal",
+      "execution": "arithmetic_only_checked",
+      "actual_target_output": null,
+      "next_observation": "원 MKV의 native rate와 실제 timestamp/decoder 출력 샘플 수",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": [
+        "R1-COMMON-SR"
+      ]
+    },
+    {
+      "transfer_id": "EXT-T3",
+      "request_ids": [
+        "R1",
+        "R5"
+      ],
+      "source_ids": [
+        "EXT-MAP-OGC11",
+        "EXT-MAP-GDAL33"
+      ],
+      "donor_field": "geospatial_sampling",
+      "recipient_field": "audio_alignment_and_morphology",
+      "lineage_class": "different_field_same_formal_coordinate_relation",
+      "lineage_evidence": "OGC raster→model 정의와 GDAL→GeoTIFF 직접 계보. audio 또는 skimage 구현으로의 역사적 전이는 미확인.",
+      "donor_objects": "point sample, pixel cell, tiepoint, affine spacing",
+      "recipient_objects": "array index, frame onset or footprint position",
+      "relation_to_preserve": "동일물리위치를 가리키는지, 값과 위치 계약을 분리하는지",
+      "existing_choice": "공통절의 block/frame 정렬 및 footprint 방향을 이미 고려",
+      "transferred_unit_or_responsibility": "인덱스 기준점 변환 책임을 명시",
+      "minimal_input": {
+        "raster_shape": [
+          2,
+          2
+        ],
+        "values": [
+          [
+            7,
+            9
+          ],
+          [
+            11,
+            13
+          ]
+        ],
+        "raster_type": "PixelIsPoint",
+        "tiepoint_index": [
+          0,
+          0
+        ],
+        "tiepoint_model": [
+          100,
+          200
+        ],
+        "signed_spacing": [
+          10,
+          -10
+        ]
+      },
+      "predicted_outputs": {
+        "correct_GDAL_corner": [
+          95,
+          205
+        ],
+        "correct_first_point": [
+          100,
+          200
+        ],
+        "first_center_if_tiepoint_wrongly_used_as_corner": [
+          105,
+          195
+        ]
+      },
+      "source_observations": "OGC B.2.2의 corner/center와 RFC33의 half-pixel 변환. 위 숫자 입력은 작업자 구성.",
+      "counterexample": "좌표를5m옮겨도 dilation의 outside값은 결정되지 않는다. 전역 affine spacing이 없는 불규칙 표본에는 고정 반칸 보정이 불충분하다.",
+      "accept_reject": "좌표 정렬 검산으로 적용; neutral border값의 근거로는 기각",
+      "test_kind": "constructed_after_seal",
+      "execution": "arithmetic_only_checked",
+      "actual_target_output": null,
+      "next_observation": "값과 physical origin이 알려진 GeoTIFF/음향 frame을 같은 위치로 왕복 변환",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": [
+        "R1-COMMON-PADDING",
+        "R5-C1"
+      ]
+    },
+    {
+      "transfer_id": "EXT-T4",
+      "request_ids": [
+        "R5"
+      ],
+      "source_ids": [
+        "EXT-MAP-GDAL33"
+      ],
+      "donor_field": "geospatial_sampling",
+      "recipient_field": "API_compatibility",
+      "lineage_class": "cross_application_change_management",
+      "lineage_evidence": "RFC33가 specification re-reading과 legacy output compatibility를 명시한 자연 설계 기록. 원 R5와 직접 계보 미확인.",
+      "donor_objects": "legacy Point-tagged files, corrected reader, compatibility option",
+      "recipient_objects": "old default boundary behavior, new neutral option, caller expectation",
+      "relation_to_preserve": "명시된 보존조건과 기존 데이터의 생산 이력",
+      "existing_choice": "R5원글이 경계mode설정 또는중립기본값을 이미 제안",
+      "transferred_unit_or_responsibility": "수학적으로 옳은 변환과 기존 결과 호환성의 책임 분리",
+      "minimal_input": {
+        "type": "legacy PixelIsPoint file",
+        "producer": "old GDAL",
+        "stored_tiepoint": [
+          100,
+          200
+        ],
+        "spacing": [
+          10,
+          -10
+        ]
+      },
+      "predicted_outputs": {
+        "legacy_interpreted_corner": [
+          100,
+          200
+        ],
+        "corrected_interpreted_corner": [
+          95,
+          205
+        ]
+      },
+      "source_observations": "RFC CompatibilityIssues는 과거생성파일의 half-pixel 변화와 과거복사시 read/write오류상쇄를 설명한다. 위좌표는 구성.",
+      "counterexample": "파일의 생산 이력/원래의도없이 새표준해석이사용자가보존하려던위치를회복한다고단정할수없다.",
+      "accept_reject": "반환답에 버전/보존조건을 동봉할 근거; R5경계패치의 직접 채택 증거는 아님",
+      "test_kind": "constructed_after_seal",
+      "execution": "not_executed_historical_GDAL_required",
+      "actual_target_output": null,
+      "next_observation": "의도된첫표본위치를아는옛GDAL생성파일과GTIFF_POINT_GEO_IGNORE설정별왕복",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": []
+    },
+    {
+      "transfer_id": "EXT-T5",
+      "request_ids": [
+        "R1",
+        "R5"
+      ],
+      "source_ids": [
+        "EXT-MAP-OGC11",
+        "EXT-ACOUST-FARINA2000"
+      ],
+      "donor_field": "geospatial_sampling",
+      "recipient_field": "causal_audio_processing",
+      "lineage_class": "superficial_similarity_rejected",
+      "lineage_evidence": "좌우/상하 raster 이웃을 시간의 과거/미래와 동등하게 취급한다는 직접 저자 근거가 없음.",
+      "donor_objects": "symmetric spatial neighborhood",
+      "recipient_objects": "time-ordered samples available online",
+      "relation_to_preserve": "가정상 현재시점까지의입력만사용하는 인과성",
+      "existing_choice": "R1에는 tokenizer의 causal 요구가 명시되지 않음",
+      "transferred_unit_or_responsibility": "centered spatial filter를 temporal causal filter로 옮기려는 제안을 보류",
+      "minimal_input": {
+        "samples": [
+          0,
+          9,
+          0
+        ],
+        "query_index": 0,
+        "online_only_past_available": true
+      },
+      "predicted_outputs": {
+        "centered_radius1_max_using_future": 9,
+        "past_only_radius1_max": 0
+      },
+      "source_observations": "원전은 공간좌표/시간응답의다른대상을정의한다. 위 max연산과online조건은 원전에없는구성반례.",
+      "counterexample": "offline processing에서미래표본사용이허용되면인과성반론이사라진다. 경계패딩과창시작정렬을혼동하면안된다.",
+      "accept_reject": "원요청에없는인과조건을추가하는전이는기각; 요구확인후재검토",
+      "test_kind": "constructed_after_seal",
+      "execution": "logical_prediction_not_library_run",
+      "actual_target_output": null,
+      "next_observation": "원tokenizer의lookahead/latency계약",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": []
+    },
+    {
+      "transfer_id": "EXT-T6",
+      "request_ids": [
+        "R1"
+      ],
+      "source_ids": [
+        "EXT-ACOUST-FARINA2000",
+        "EXT-ACOUST-FARINA2007"
+      ],
+      "donor_field": "acoustical_measurement",
+      "recipient_field": "chunk_and_window_design",
+      "lineage_class": "adjacent_field_conditional_separation",
+      "lineage_evidence": "Farina2000의조화차수시간간격식과비중첩조건; stream의수치선택으로직접이어지는계보없음.",
+      "donor_objects": "log sweep duration and harmonic-response support",
+      "recipient_objects": "processing window and retained context",
+      "relation_to_preserve": "구분하려는이벤트의지지구간이겹치지않음",
+      "existing_choice": "기존R1공통절에블록/프레임/홉관계가이미있음",
+      "transferred_unit_or_responsibility": "원전의작동조건을명시해야단일숫자예제를이식가능",
+      "minimal_input": {
+        "frequency_ratio": 1000,
+        "harmonic_order": 2,
+        "response_support_seconds": 0.2,
+        "sweep_durations_seconds": [
+          1,
+          5
+        ]
+      },
+      "predicted_outputs": {
+        "T1_delay_seconds": 0.10034333188799373,
+        "T1_supports_overlap": true,
+        "T5_delay_seconds": 0.5017166594399687,
+        "T5_second_vs_linear_supports_overlap": false
+      },
+      "source_observations": "식의N=2간격과응답비중첩조건은원전; .2s사각지지와1s/5s선택은구성. 2007충격잡음사례는긴측정이항상안전하지않음을보임.",
+      "counterexample": "높은조화차수사이간격은더작고,긴sweep에는잡음사건위험이있다. 이시험은원MKV오류를해결하지않는다.",
+      "accept_reject": "분리조건검산의예로만유지;stream의권장블록길이로직접반환하지않음",
+      "test_kind": "constructed_after_seal",
+      "execution": "arithmetic_only_checked",
+      "actual_target_output": null,
+      "next_observation": "분리대상의실제시간지지·소음사건과원신호",
+      "eligible_new_target_decision": false,
+      "discovery_credit": false,
+      "baseline_overlap": [
+        "R1-COMMON-PADDING"
+      ]
+    }
+  ]
+}
