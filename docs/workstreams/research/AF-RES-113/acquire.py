@@ -7,6 +7,7 @@ hashes, source locations, and the researcher's original analysis.
 from __future__ import annotations
 
 import argparse
+import copy
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -74,7 +75,7 @@ def node_text(node):
     White space inside a fragment collapses to one space. Headerlink widgets,
     scripts, styles, nav/footer and hidden nodes are removed, never reordered.
     """
-    node = html.fromstring(html.tostring(node))
+    node = copy.deepcopy(node)
     for x in node.xpath('.//script|.//style|.//nav|.//footer|.//*[@hidden]|.//*[contains(concat(" ",normalize-space(@class)," ")," headerlink ")]'):
         x.drop_tree()
     fragments = []
@@ -86,7 +87,7 @@ def node_text(node):
 
 
 def parse(raw, url, symbol=None):
-    doc = html.fromstring(raw, base_url=url)
+    doc = html.fromstring(raw, base_url=url, parser=html.HTMLParser(encoding="utf-8", huge_tree=True))
     if symbol:
         nodes = doc.xpath('//*[@id=$symbol]', symbol=symbol)
         if not nodes:

@@ -50,3 +50,9 @@
 모집규칙 → 모집·공통 기준 → 두 경로와 사전 판정 → 원전·반례 → RESULT·원장·재현/검산 → 고정 결과 SHA 검사 영수증 → 마지막 HANDOFF 단독 커밋 순으로 원격 저장한다. 각 commit 뒤 고정 SHA에서 대표 파일을 재열람하고 무엇을 먼저 보았는지 기록한다. 규칙 수정은 이 v1을 보존하며 사유·시각·새 판을 추가한다.
 
 필수 RESULT와 최종 답은 지정된 세 표부터 시작한다. SELF_CHECK에 Q1–Q7 답/원문/반증/원래·실제 분모/다음 관측을 채운다. 원장 재구성 검산, 명시 manifest `check --fetch`, 해당 공통 검사를 고정 결과 SHA에서 실행한다. 연구 조건 미달/빈자리는 PARTIAL로 인계한다. RESULT와 HANDOFF는 정확히3행 약점·다음 자료·판단 변경 조건 표로 끝낸다.
+
+## 추출 구현 보정 v1.1 — 2026-11-24, 세 응답 취득 뒤·경로 판독 전
+
+첫 추출에서 R5-A의 12,877,300-byte HTML 안 Plotly script가 lxml 기본 text buffer 한도를 초과했다. parser error log에 `ERR_RESOURCE_LIMIT`가 있었고 주본문이2261자에서 잘렸다. R3-B는 HTTP가 UTF-8을 선언했지만 byte 자동해석이 일부 문자를 잘못 디코딩했다. 같은 응답 byte를 재사용하여 모든 경로에 UTF-8/`huge_tree=True`와 node deep-copy를 똑같이 적용했다. URL·링크선택·본문 시작·DOM순서·3000 Unicode codepoint·그림0 규칙은 바꾸지 않았다. 새 네트워크 요청은0이다. R4-A 지문은 같고 R5-A의 처음2261자는 새3000자의 정확한 접두사다. R3-B 최초/보정 지문은 모두 `evidence/hops/extraction-correction.json`에 남긴다.
+
+root는 최초 잘린/오해석된 접두사도 보았으므로 그 누적 노출을 기록한다. 이후 별도 경로 판독자는 보정된 동일 규칙의 접두사만 받는다. 공통 시작 절의 네 지문이 이 보정으로 변하지 않는지도 검사한다. 원 v1은 최초 원격 봉인 `de98a81eb36893e2f8c094a18a35677fde96ff51`에 보존된다. Nature의 본문은 구독 안내로 제한되어 초록+preview만 읽었으며, 초록 도달을 방법 본문 독해로 세지 않는다. 자동 cookie redirect의 일회성 code 값은 공개 영수증에서 지우고 실제 도착 경로·error와 redaction 사유를 유지한다.
