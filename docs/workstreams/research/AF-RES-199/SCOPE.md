@@ -1,0 +1,8 @@
+# AF-RES-199 범위 및 선등록
+- 시작 c860f8240ab7b7077e2d5b63e438ddd83ff69a27; 계획 050278651b11a2a3a49d45baebf41c707c06b700 대비 ahead 4/behind 0, 변경은 dot-control.json만(GitHub compare). 계획판과 동일 질문. 배정 브랜치 신규 생성. UTC 2026-11-24~25(정확 열람 시각 미측정).
+- AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, RESEARCH_BRIEF, INDEX 읽음. 큰 dot-control 본문은 fetch_file 빈 문자열, blob 4839b0345e1e644c20452df6282ecef0af76c456 파싱으로 199 RUNNING/1/191 의존, 191 DONE/result_commit 19ae6c6d17cc8adecec948d7103b7d3e81e428b6 확인. 그 SHA HANDOFF 및 RESULT 읽음. 191의 '원전과 선택의 직접 인과 구별'만 재사용. CSS/JND, 195/196, 동시 작업 제외.
+- 고정: Reinhard et al. 2002 DOI 10.1145/566654.566575; Reinhard & Devlin 2005 PMID 15631125; pfstmo reinhard02(배포판 버전은 직접 확인 후 고정); OpenCV 4.10.0. HDR→표시 범위만.
+- 모집: A 4(두 논문+독립 저자 부속 2), B 7(고정 소비자 선언/코드/배포), C 5(독립 입력·결과·원해설), D 4(인화 기록), E 2(근접 대안 저자 원문), 총 22. 동일 저작의 재게시/축소, 미열람, 검색 스니펫 제외. 출처·계보·사건 따로 센다. 문서마다 한 분류만 산입. 초기 링크와 실제 검색 대체 후보를 frame에 보존.
+- 먼저 근접 문서, 다음 원논문, 이후 구현·그림·인화·대안 확인. 완전 블라인드 아님: 작업 지시 자체가 2002 인화/2005 시각 모델 구분을 노출했고 일반 지식으로 key 및 local adaptation 차이를 알고 있음. 사전 예측은 반증 가능한 분석 가설이지 신규 발견/성공률 측정 아님.
+- 6자리 선등록: P1 pfstmo 노출/key, P2 국소/전역/scale 선택, P3 색/빛 적응; O1 OpenCV intensity/밝기, O2 local/global light_adapt, O3 color_adapt. 오매칭 H0: 동일 Reinhard 이름이면 pfstmo key=intensity, scales=light_adapt, 색 적응은 동일 옵션, 그리고 두 논문의 local 동일 공간 이웃 처리. 반증: 코드에서 전역 정규화와 photoreceptor 분모/적응 혼합, 공간 필터/스케일 존재 여부, 옵션 부재 확인. 원전 없이도 호출을 선택하는 경우(예: API 기본 인자나 man page 구문)는 별도 대조.
+- 저자 진술, 식/정적 코드, 그림 설명, 관찰자 측정, 설계 추론 분리. 우월성은 별도 실측 없으면 미확인. 실행·새 벤치 제외; 미실행 명령 인계. 로컬 checkout/workbench manifest 실행 안 됨; connector 읽기/커밋 경로만 사용, owned_path 밖 무변경.
