@@ -4,7 +4,7 @@ import argparse
 from collections import Counter
 import csv
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_EVEN, ROUND_HALF_UP
 from hashlib import sha256
 from html.parser import HTMLParser
 import json
@@ -13,6 +13,7 @@ import re
 import subprocess
 import sys
 from urllib.parse import urljoin
+import warnings
 import zipfile
 
 HERE = Path(__file__).resolve().parent
@@ -440,6 +441,119 @@ def compare_output(inputs, work, files, official, x05, version):
     return points
 
 
+
+def check_control(name, passed, **observations):
+    log("control", name=name, verdict="pass" if passed else "fail", **observations)
+    if not passed:
+        raise ValueError(f"control {name} failed")
+
+
+def run_controls(inputs, work, files, x05, version, negative):
+    fixture = files["X16"]
+    schema = inputs["columns"]["forward_output"]
+    baseline = read_fixture("X16 control baseline", fixture, schema, "forward_output", version)
+    lines = fixture.decode("utf-8").splitlines()
+
+    def load_variant(name, variant):
+        return read_fixture(name, ("\n".join(variant) + "\n").encode(),
+                            schema, "forward_output", version)
+
+    reordered = load_variant("control reorder", [lines[0], *reversed(lines[1:])])
+    ordinal_would_fail = sum(a != b for a, b in zip(baseline, reordered))
+    joined_matches = sum(equal_numeric(baseline[point], reordered[point]) for point in IDS)
+    check_control("row_reordering", joined_matches == 40 and ordinal_would_fail == 40,
+                  id_matches=joined_matches, ordinal_mismatches=ordinal_would_fail)
+
+    for name, point, columns, replacements, expected_changed in (
+        ("east_north_swap", "TP02", (1, 2), ("11572.405", "170370.718"), [1, 2]),
+        ("metres_as_millimetres", "TP02", (1, 2, 3), ("170370718.000","11572405.000","71264.000"), [1, 2, 3]),
+        ("plus_0_001_m", "TP02", (3,), ("71.265",), [3]),
+        ("same_height_other_datum", "TP01", (4,), ("1",), [4]),
+    ):
+        variant = lines.copy()
+        index = next(i for i,line in enumerate(variant) if line.startswith(point + ","))
+        fields = variant[index].split(",")
+        for column, value in zip(columns, replacements):
+            fields[column] = value
+        variant[index] = ",".join(fields)
+        tested = load_variant(name, variant)[point]
+        original = baseline[point]
+        changed = [i for i, (a,b) in enumerate(zip(original.tokens,tested.tokens), 1)
+                   if Decimal(a) != Decimal(b)]
+        check_control(name, changed == expected_changed, point=point,
+                      original=original.tokens, mutated=tested.tokens, changed_columns=changed)
+
+    variant = [line.replace("TP03,", "TP02,", 1) if line.startswith("TP03,") else line for line in lines]
+    try:
+        load_variant("control duplicate/missing", variant)
+    except ValueError as error:
+        check_control("duplicate_id", str(error).endswith("invalid point keys"), rejected=str(error))
+    else:
+        check_control("duplicate_id", False)
+
+    geographic = read_fixture("X15 control baseline", files["X15"], inputs["columns"]["forward_input"],
+                              "forward_input", version)
+    original_lat, original_lon = geographic["TP02"].tokens[:2]
+    article_lat, article_lon = x05["geographic"]["TP02"].tokens[:2]
+    same_value = Decimal(original_lat) == Decimal(article_lat) and original_lat != article_lat
+    rounded_lon = Decimal(original_lon).quantize(Decimal("0.0000000001"), rounding=ROUND_HALF_UP)
+    same_display = rounded_lon == Decimal(article_lon) != Decimal(original_lon)
+    check_control("text_decimal_and_display", same_value and same_display,
+                  X15=[original_lat, original_lon], X05=[article_lat, article_lon],
+                  rounded_lon=str(rounded_lon), longitude_delta_degree=signed(article_lon,original_lon))
+
+    reverse_output = read_fixture("X21 control baseline", files["X21"], inputs["columns"]["reverse_output"],
+                                  "reverse_output", version)
+    height = Decimal(reverse_output["TP31"].tokens[2])
+    up = height.quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
+    even = height.quantize(Decimal("0.001"), rounding=ROUND_HALF_EVEN)
+    check_control("reverse_height_direction_and_tie", up == Decimal("100.001") and even == Decimal("100.000"),
+                  source="X21: L154 RESULT", raw=str(height), half_up=str(up), half_even=str(even))
+
+    first = ("9414290", "MLLW", "1983–2001", Decimal("0.000"))
+    second = ("8454000", "MLLW", "1983–2001", Decimal("0.000"))
+    check_control("tidal_station_zero", first[-1] == second[-1] and first[:3] != second[:3],
+                  source_ids=["C02","C03"], same_number=True, first_station=first[0], second_station=second[0],
+                  NAVD88_difference_m=signed("0.754","-0.018"))
+    indicated, uncertainty = map(Decimal, ("40.01", "1.2"))
+    lower, upper = map(Decimal, ("39.50", "40.50"))
+    simple = lower <= indicated <= upper
+    guarded = lower <= indicated - uncertainty and indicated + uncertainty <= upper
+    check_control("calibration_decision_rule", simple and not guarded, source="C04 A6047713 p.1–2",
+                  indication_psi=str(indicated), uncertainty_psi=str(uncertainty), limits_psi=[str(lower), str(upper)],
+                  interval_psi=[str(indicated-uncertainty),str(indicated+uncertainty)],
+                  stated_rule_accepts=simple, conceptual_guarded_rule_accepts=guarded)
+
+    folder = work / "controls"
+    folder.mkdir(exist_ok=True)
+    html = folder / "archive-with-html-body.zip"
+    html.write_text("<!doctype html><title>Not a downloadable ZIP</title>\n",encoding="utf-8")
+    _, found, digest, status = inspect_archive(html,inputs["archive"])
+    check_control("html_body_under_zip_name", not found and status=="not_zip", sha256=digest,
+                  archive_status=status, control_body_is_synthetic=True)
+    duplicate = folder / "archive-with-duplicate-entry.zip"
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        with zipfile.ZipFile(duplicate,"w") as archive:
+            name = inputs["archive"]["required_members"]["forward_output"]
+            archive.writestr(zipfile.ZipInfo(name), fixture)
+            archive.writestr(zipfile.ZipInfo(name), fixture)
+    members, found, digest, status = inspect_archive(duplicate,inputs["archive"])
+    check_control("duplicate_zip_entry", not found and len(members)==2 and status=="wrong_or_ambiguous_layout",
+                  sha256=digest, entries=len(members), archive_status=status)
+    if negative:
+        members, found, digest, status = inspect_archive(negative,inputs["archive"])
+        check_control("downloaded_repository_zip_wrong_edition",
+                      not found and digest==inputs["negative_archive"]["sha256"] and status=="wrong_or_ambiguous_layout",
+                      sha256=digest, entries=len(members), archive_status=status)
+        duplicate_copy = folder / "same-repository-zip-bytes.zip"
+        duplicate_copy.write_bytes(negative.read_bytes())
+        hashes = {sha(path.read_bytes()) for path in (negative, duplicate_copy)}
+        check_control("two_archive_names_one_payload", len(hashes)==1, file_count=2, distinct_sha256=len(hashes))
+        output_csv(folder/"wrong-zip-members.csv", MEMBER_FIELDS,
+                   (dict(archive_status=status,**member) for member in members))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work", type=Path, required=True, help="temporary inputs and generated results")
@@ -448,6 +562,8 @@ def main():
     parser.add_argument("--download-x05", action="store_true")
     parser.add_argument("--archive", type=Path, help="a supplied ZIP is official only when its SHA matches the pin")
     parser.add_argument("--x05", type=Path, help="full HTML or CSV transcript from the rendered source")
+    parser.add_argument("--controls", action="store_true", help="run mutation and alternative ZIP controls")
+    parser.add_argument("--negative-archive", type=Path, help="local copy of the pinned wrong-package control")
     args = parser.parse_args()
     work = args.work
     work.mkdir(parents=True, exist_ok=True)
@@ -478,6 +594,8 @@ def main():
     log("publisher_status", status=archive_status, official_file_roles=sorted(official),
         publisher_sha256=archive_hash, historic_sha256=config["historical_188_sha256"])
     x05_input = args.x05 or HERE / inputs["x05"]["receipt_selected"]
+    if args.x05 is None and sha(x05_input.read_bytes()) != inputs["x05"]["receipt_selected_sha256"]:
+        raise ValueError("X05 selected transcript differs from its pin")
     if args.download_x05:
         html = work/"X05.html"
         if curl_get(inputs["x05"]["url"],html) is not None:
@@ -486,6 +604,13 @@ def main():
                "OSTN15-OSGM15-replicas:unverified-publisher-build")
     x05 = article_data(x05_input,set(inputs["fixed_slots"].values())|set(inputs["supplemental_ids"]),version)
     points = compare_output(inputs,work,files,official,x05,version)
+    if args.controls:
+        negative = args.negative_archive
+        if negative is None and args.fetch_comparators:
+            negative = work / inputs["negative_archive"]["local_name"]
+            if curl_get(inputs["negative_archive"]["url"],negative) is None:
+                raise ValueError("negative archive fetch failed")
+        run_controls(inputs,work,files,x05,version,negative)
     log("summary", fixed_slots=6, fixed_unique=4, conflict_ids=2,
         publisher_slots=sum(p["official_status"]=="direct" for p in points[:6]),
         compared_to_188_slots=sum(p["versus_188_raw"]=="true" for p in points[:6]),
