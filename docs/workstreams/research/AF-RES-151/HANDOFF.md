@@ -1,26 +1,27 @@
-# AF-RES-151#1 HANDOFF — PARTIAL
+# AF-RES-151#1 HANDOFF — PARTIAL (후속 실측·재판독 완료, 엄격 미충족 명시)
 
-## 원격 결과 및 범위
+## 기준 및 결과
 - 저장소 laadkke-arch/agentflow-open; 브랜치 work/research-af-res-151; 허용 경로 docs/workstreams/research/AF-RES-151/.
-- 계획 통합판 ecdf28ee7a4f2004aeeffc8b9c17fff5bc8a0e19; 실제 시작 통합판 898409b64886fba63e0d2c4ffe43b12ab656375e. 기존 작업 브랜치에서 재개. 040/044 고정 선행 인계 9bff55706d5b1a939e39185bda9cf6f22bea246b 및 6c8c025284215c7749921619cb09c89643886276; 새 원장에 산입하지 않음.
-- **최종 결과판 SHA: 5f565c8b65fa638cb1955f71c703f666e8299d73**. [RESULT.md](https://github.com/laadkke-arch/agentflow-open/blob/5f565c8b65fa638cb1955f71c703f666e8299d73/docs/workstreams/research/AF-RES-151/RESULT.md), [SELF_CHECK.md](https://github.com/laadkke-arch/agentflow-open/blob/5f565c8b65fa638cb1955f71c703f666e8299d73/docs/workstreams/research/AF-RES-151/SELF_CHECK.md), [audit.json](https://github.com/laadkke-arch/agentflow-open/blob/5f565c8b65fa638cb1955f71c703f666e8299d73/docs/workstreams/research/AF-RES-151/audit.json). 결과 blob d362c3935cc9e0f1afc0f7a85bb10ad477ad68a6, 자체 점검 blob d23db3a704d10f7c0470eaf609d29312a5292983, audit blob ee8fef5c4b8ed0fe3210faf51054c4315118f96e; 해당 SHA에서 직접 재열람 및 blob 일치. 통합 시작점 대비 GitHub compare 10 commits, 변경 10파일 전부 허용 경로. 중앙 진행표/통합/공통 인계함 미수정.
-- 이 HANDOFF는 결과 SHA 확인 후 단독 마지막 커밋. 자신의 커밋 SHA는 실제 GitHub metadata에서 확인.
+- 기준 인계 1b1ebb24347000f60acbe4ad2e9aa8c94ba416b9에서 재개. 이전 SCOPE/원장/비교/감사 파일 8개 그대로. 이전 인계는 해당 SHA에서 열람 가능.
+- **후속 결과 SHA 659102892a691c5cfab1a27e80904fe94799724f**. [RESULT.md](https://github.com/laadkke-arch/agentflow-open/blob/659102892a691c5cfab1a27e80904fe94799724f/docs/workstreams/research/AF-RES-151/RESULT.md), [SELF_CHECK.md](https://github.com/laadkke-arch/agentflow-open/blob/659102892a691c5cfab1a27e80904fe94799724f/docs/workstreams/research/AF-RES-151/SELF_CHECK.md), [후속 검산](https://github.com/laadkke-arch/agentflow-open/blob/659102892a691c5cfab1a27e80904fe94799724f/docs/workstreams/research/AF-RES-151/followup/final-verification.json). 결과 blob 6fe3154c7f4f2b409c9c158722a1c7d5e1fcf82e, 자체 점검 blob 494f1c7b6eb73860fcc964760ccd60639bbc47bd; 고정 SHA에서 직접 읽어 확인. 기준 이후 24 변경 경로 모두 허용 범위; 기존 원장 변경 없음. 중앙 색인/공통 파일 변경 없음.
+- 아래 인계는 결과 검증 후 단독 커밋. 자신의 SHA는 GitHub commit metadata로 확인.
 
-| 묶음 | 원격 커밋 (각 작성 파일 재열람 일치) |
+| 단계 | 고정 커밋 |
 | --- | --- |
-| ① SCOPE | f9d628a4b94fe8508079f28cf1d1b901938d973b |
-| ② sources / requests / frame | 148526b734c575e6315390574171fc42ef18484f / 8da38bc93afcaa79f4a4368576e9e4147bfc6627 / da4ab95fc3ca8eaa9dd40ca8335324a59aecab53 |
-| ③ pairs / decisions | 502ac708fa28df138b155cfeac20290e687792da / 68d0484ffb9482bb9140eda51f4a4696b26cb2ed |
-| ④ OPTIONS / audit | 5d14f4c134677c9d6abc32318f763ef467d60b36 / 02e4b9317efa7058f5ab980b4f135645472697a5 |
-| ⑤ RESULT / SELF_CHECK | 5f67218ff9e29bb626add0144de1c528c3893769 / 5f565c8b65fa638cb1955f71c703f666e8299d73 |
-| 마지막 인계 | HANDOFF.md만 추가; parent는 위 최종 결과 SHA |
+| 자연 표본 사전등록 / N1 색인 / N1 판독 | 17f6990dd1094868a2166454efdadd5c9fbb1027 / 3ac89a8c350e8f58624f2b5b137619e424e0948b / c49dcba6463f22688df2f98f8019570562065bf4 |
+| N2 사전등록 / 색인 / 선별 / 쌍 봉인 | 704252de135e00c0eefc283424fdbb00332dc1f3 / c218add3c55dbf38c8d750c145e86566c5910acf / a2159dfd53fe27160b2f91105d349be5d66706d3 / 36d91d4243bb928d47ac7a2a59d316ea5aab6ca4 |
+| 가림 packet / 가림 자기 판독 / 공개·확장 공개 | 06353d7029175588ed595840745bc8bd90689af6 / 6592b0d1d22f959db84e919354d89c59c830c5fb / 979c483253d45eac447f19d40a740805eb0de4fb / e083e61045475a45359575bea259811280a85a10 |
+| 후속 원문 / 추가 원문 / 인기도·운영 metadata | 9eb58503281f2f84b0261bd9f0f239eb3ae5ca01 / 127455fe3e33ed4defe2b44e156c672c7a45933b / cafa1d0a93d15af466b561a3e69939d22110eb25 |
+| 자연 쌍 / 선별 / 중간 검산 / 고정 원장 재계산 | dca4e582060787bd47b3fe0497c149c6242dd3c0 / 4e2111266b1860a8a5a50d29b827271f94ba27ad / b49ed23567d1b7b8242161a22d27357e249fadc2 / d737cd5254b9db4959053318709266612663b621 |
+| 실제 OCR 코드·receipt / Git·Go 코드·receipt | e816351c398f5421f0660418158e6d67022959af / 127e4f76d90cbe44fc944c5159abac51d9e893ad / eb3febb7bef38e23878473eddc7c72a1e8c257fe / c28e0c0b80e8995f3356e23b38f708aa16552fe5 |
+| 결과 / 자체 점검 | d52c68cdf27c455b59f2c5f5a79d85caaeed83ca / 659102892a691c5cfab1a27e80904fe94799724f |
 
-## 판정 및 미충족
-원장37행, 고유 산입27(요구6/6, 제작자10/8, 운영7/6, 타분야4/4), 영어·독일어/15호스트, 발행 주체 표기24(독립 발행 주체 수 미확인). 6 저자 요구, 12 고유 쌍, 실제 다른 요구의 대조6행(목표4). 주48 atom 중 합집합 확인41, 96 후보-atom 셀 중 U32; 대조26 atom 중 확인22, U15/52. 단순 A 활성/보관40/41, B41/41, C 활성24/41·보관41/41. A 제외 12슬롯 역검토에서 유일 확인 atom 손실1(K03 Mac), 11/12 부분 atom 손실 없음; K11은 동일 atom인데 OS 별 선택지 다름. 대조 A 선택 변경6/6, 엄격 양방향 우위 반전0/6. 사용자 실제 선택 변화 아님. 대조의 복원 문서 슬롯10, 실제 재취득 비용/시간 미측정. 과거 목록 재노출 시 명시 위배 A3/6·B3/7·C1/4, B/C 저장 전체를 그대로 노출하면 3/12(구성 계산).
-- **PARTIAL**: 자연층 0/6(원 모집단·원순서 미확인), 쌍 고정 전 공급자/인기 정보 선노출, 가림-공개 실험 0/12, 독립 판독0. Q4 낮은 인지도 양방향 반례·미완성 예제·정비/장애 기록 충분성 미충족. Q3 실제 실행·판 호환·정확도, R3 정렬/RO_EN, R6 실제 OS/라우팅, 실제 선택/채택/재검토 시간·비용 미확인. 운영 결정 이유와 후속 수정 diff 미확인 부분 남음. 원자료의 수적 하한 충족을 연구 완료로 보지 않는다.
-- 실제 확인: GitHub fixed SHA 원장 재열람 JS 108 판단행 집합 계산, 수치 차이0/108, 근거 ID 누락0, 코드 길이/문서 상한/고유12 검증. 첫 JS 검산은 URL 생성자 미지원 ReferenceError(쓰기 전); split("/")로 정정 후 성공. 독립 의미 판독, 원문 재방문/실행 성공이 아니다. GitHub compare는 경로 확인이지 session check가 아니다. 실제 쉘 Git DNS 실패는 SCOPE에 기록. manifest/start/check/CI 미실시, native 모델 선택 미확인. 실제 재계산 방법과 동등 Python 명령·재현 입력은 SELF_CHECK에 기록.
+## 이번에 관측한 것
+- 원 N0 Stack Exchange DNS/web 실패는 0/6 유지. 대체 자연 N1 7 반환 5 적격, N2 독립 사전등록 색인 30 반환·최초8 심사 6 적격(6 저자)/2 제외/22 quota. #9324 증상→과업 추론을 제외하는 민감도는 5/6. N2 후보 쌍 6 및 18 판단행 별도, 기존 12쌍 6대조 108행 및 기존 27 원자료 유지. 신규 후속 출처26행 counted20, N1/N2 사용자 적격 11건 별도; 합산 독립 원문 수는 단정하지 않음.
+- 가림 자기 재판독 12/12 후 공개 12/12, 확장 별 비교 가능 6/12, 공개로 인한 변화0/12; 초기 대비 축약 근거에 따른 3셀 변경. 동일 연구자 사전 지식 선노출, 독립 판독 0. 작은 구현 D-Bus 기능·빌드 수정·사용자 장애/회복 원문, Vosk 예제 장애 및 조건별 사용자 보고 직접 확인. 저인지도=품질의 인과 주장 금지.
+- 실제 Linux 합성 입력 3프로브: Tesseract PNG→TXT/PDF 성공 및 PDF 직접입력 실패, 정확 token4/7, 정확 영어 중심4/4 25px 이내, RO 3/3 diacritic 소실. Git collision 최소4→5자, Go generate 실패에도 asset 기존 시 build 성공, asset 제거 시 실패. 실제 역사 제품/사용자 원본 입력 아님.
+- N2 확인합집합 11/18, 후보셀 S15/U20/X1; A 활성/보관9/11, B11/11, C 활성0/11 보관11/11. A 6 제외 슬롯 중 N2-01 및 N2-06 유일 atom 2개 손실. 동률 및 unknown 민감도 재계산; 자연 18행 수치 차이0·근거 ID 누락0·가림 코드 연결 차이0. 기존 보충 분모와 합산 금지. 
+- CineLog upstream #76 비자유 plugin 문제와 수정 제안, source 공개 댓글, completed 및 F-Droid 복귀 확인. DAO 수정 diff 미확보. Awesome PR #3919/#3901 직접 확인 open/merged=false. F-Droid D10 추가 실제 대체 fork·복귀 확인.
 
-## 재개 첫 행동
-X1의 고정 Stack Exchange API URL(2023 offline 태그 creation asc; sources.jsonl, SCOPE.md)을 승인된 HTTP 환경에서 실제 열고 원응답·순서·거절을 봉인. 기존 자연 결측을 뒤집어 쓰지 말고 별도 전향 판본으로 시작. 공급자·stars를 보기 전 최초6 독립 요구 및 쌍, 동일 예산, 코드 규칙을 봉인하고 독립 판독자에게 무명 packet 제공. 다음 실제 R3 원 PDF/루마니아어 팩·고정판 또는 R6 OS·샘플 오디오 확보, Q4 작은 예제 실제 동작과 장애/정비 원문 확인. 해당 명령/입력 SELF_CHECK 참조. 저장소 계약은 승인된 Git checkout에서 SCOPE의 exact start 명령(고정 의존 SHA 및 허용 경로), 이후 `python -B -m workbench.session check docs/workstreams/research/AF-RES-151/manifest.json --fetch`; 여기서는 미실시.
-
-색인 제안(중앙 색인 수정 금지): AF-RES-151 | PARTIAL | 고유27, 보충6요구·12쌍·6대조; A40/B41/C활성24·보관41 / 확인41; 엄격반전0/6, 자연/가림 미충족 | docs/workstreams/research/AF-RES-151/RESULT.md | 5f565c8b65fa638cb1955f71c703f666e8299d73
+## 미충족 및 재개
+PARTIAL은 완료가 아니다. 대체 자연 6/6과 자기 가림 12/12, 실행 3개는 실제 달성; 원 N0 모집단·순서 접근 불가, 대체 #9324 엄격 민감도5/6, 독립 가림 판독자 부재, 사용자 실제 입력/완전 계약·엄격 반전0/6, 실제 채택/재취득 노동과 CineLog 수정 diff 미확인. 실제 shell Git DNS 실패로 checkout/manifest start/check/CI 미실시. 다음은 원 X1 승인 HTTP 환경, 무명 packet 독립 판독, 원 PDF/고정판 및 실제 OS/라우팅/사용 입력, operation diff와 비용 측정. `followup/ocr_probe.py` 및 `followup/natural_probe.py`와 receipts로 좁은 프로브 재현 가능(환경 차이 기록). 변경 범위 GitHub compare 검증은 session check 대체 아님. 정확한 이전 start/check 조건은 SCOPE와 SELF_CHECK의 기준판 명령 참조.
