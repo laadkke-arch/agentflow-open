@@ -5,11 +5,12 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict
 import csv
+import json
 from itertools import combinations
 from pathlib import Path
 import re
 
-from run import (BREEZY, GIT_METHODS, HERE, compact, digest, encode, load_cases, load_jsonl,
+from run import (BREEZY, HERE, challenge_cases, compact, digest, encode, load_cases, load_jsonl,
                  normalize_hunks, save_json, select_hunks)
 
 
@@ -69,6 +70,12 @@ def reads(path, cases):
             if digest(encode(row[stream])) != row[f'{stream}_sha256']:
                 raise ValueError(f"invalid {stream} fingerprint: {path.name}:{line}")
         scenario = cases[row['case']]
+        source_sides = ('b', 'a') if row['direction'] == 'reverse' else ('a', 'b')
+        for side, source in zip(('a', 'b'), source_sides, strict=True):
+            for receipt_key, expected_key in (('input_sha256', 'lf_sha256'),
+                                              ('original_elements_sha256', 'original_elements_sha256')):
+                if row[receipt_key][side] != scenario[source][expected_key]:
+                    raise ValueError(f"{row['id']}: incorrect {side} input fingerprint")
         row['receipt_ref'] = f'receipts/{path.name}#L{line}'
         row['hunk_bytes'] = row['hunk_normalized'] = None
         row['headers'] = []
@@ -195,7 +202,7 @@ def primary_table(rows, checks, ties, anchors=None, assessments=None):
         version = '0.2.13' if method == BREEZY else '2.43.0'
         fingerprint = f"`{r['input_sha256']['a'][:10]}…`/`{r['input_sha256']['b'][:10]}…`"
         values = ' · '.join(f'`{h}`' for h in r['headers']) or '0 hunk'
-        values += f"; +{len(r['inserted_b'])}/−{len(r['deleted_a'])}, exit {r['exit_code']}"
+        values += f" · +{len(r['inserted_b'])}/−{len(r['deleted_a'])}, exit {r['exit_code']}"
         counterpart = rows[r['ordinal'] - 1 + 32]
         link = f"[1]({r['receipt_ref']}) · [2]({counterpart['receipt_ref']})"
         units = checks.get(r['id'], [])
@@ -207,7 +214,8 @@ def primary_table(rows, checks, ties, anchors=None, assessments=None):
         result.append(f'| {case} · {METHOD_LABELS[method]} | {version} {fingerprint} | {anchor} | {values} | {link} | {diff} |')
     result += ['', '표 1의 한 행은 기준 정방향 입력과 방법 한 조합이다. 영수증 두 개는 반복 1·2다. '
                '지문은 A/B LF SHA-256 앞 10자리이며 전체 값은 [inputs.json](inputs.json)에 있다. '
-               'Breezy blocks는 0-based이며 끝의 길이 0은 sentinel이다. Git exit 1은 차이 있음이다. '
+               '표의 앵커와 pre 좌표는 1-based다. 원영수증의 Breezy blocks는 0-based이며 길이 0은 sentinel이다. '
+               'Git exit 1은 차이 있음이다. '
                '동률은 같은 입력의 hunk 구간·본문이 일치한 다른 방법이다.', '']
     return '\n'.join(result)
 
@@ -217,6 +225,7 @@ def main():
     parser.add_argument('--git-source', type=Path, required=True)
     parser.add_argument('--receipts', type=Path, default=HERE/'receipts')
     parser.add_argument('--output', type=Path, default=HERE)
+    parser.add_argument('--final', action='store_true')
     args = parser.parse_args()
     cases = load_cases()
     base = reads(args.receipts/'base.jsonl', cases)
@@ -225,9 +234,40 @@ def main():
         raise ValueError('incomplete receipt slots')
     checks = fixture_checks(base, args.git_source)
     ties = equal_methods(base)
-    write_matrix(args.output/'matrix.csv', base + controls, cases, checks, ties)
+    anchors, assessments = {}, {}
+    rows = base + controls
+    if args.final:
+        from observe import diagnostic_links
+        diagnostics = diagnostic_links(args.receipts, cases)
+        for (phase, _), value in diagnostics.items():
+            if phase != 'base':
+                continue
+            diag = value['row']
+            trace = value['trace']
+            branch = trace['branch']
+            root_text = compact(trace['root_selection'])
+            pre_text = compact(trace['pre_pairs'])
+            if diag['method'] == 'myers':
+                evidence = f'{branch}, pre {pre_text}'
+            elif trace['root_selection']:
+                evidence = f'{branch} {root_text}'
+            else:
+                evidence = f'{branch}, root 0'
+                if trace['pre_pairs']:
+                    evidence += f', pre {pre_text}'
+            anchors[diag['case'], diag['method']] = f"[{evidence}]({diag['receipt_ref']})"
+        with (HERE/'predictions-comparison.csv').open(encoding='utf-8', newline='') as file:
+            for item in csv.DictReader(file):
+                if item['stage'] != 'I-prediction':
+                    continue
+                for method, note in json.loads(item['method_comparison_notes_json']).items():
+                    assessments[item['case'],method] = note
+        cases = challenge_cases(cases)
+        rows.extend(reads(args.receipts/'challenges.jsonl', cases))
+        rows.extend(value['row'] for value in diagnostics.values())
+    write_matrix(args.output/'matrix.csv', rows, cases, checks, ties, assessments)
     save_json(args.output/'receipts/public-crosschecks.json', checks)
-    print(primary_table(base, checks, ties))
+    print(primary_table(base, checks, ties, anchors, assessments))
 
 
 if __name__ == '__main__':

@@ -288,8 +288,16 @@ def source_identity(source, pin, env, allow_patch=False):
     status = capture(['/usr/bin/git', '-C', source, 'status', '--porcelain', '--untracked-files=no'], source, env)
     if status['exit_code'] != 0 or (status['stdout'] and not allow_patch):
         raise RuntimeError(f'Unexpected tracked changes: {source} [{status["stdout"]} {status["stderr"]}]')
-    return {'tag': tag, 'tag_object': tagged_object, 'commit': commit,
-            'identity_receipt': receipt, 'tracked_status_receipt': status}
+    identity = {'tag': tag, 'tag_object': tagged_object, 'commit': commit,
+                'identity_receipt': receipt, 'tracked_status_receipt': status}
+    if allow_patch:
+        patch = capture(['/usr/bin/git','-C',source,'diff','--no-ext-diff','--no-textconv',
+                         '--no-color','HEAD','--'], source, env)
+        actual = encode(patch['stdout'])
+        if patch['exit_code'] != 0 or actual != (HERE/'git-trace.patch').read_bytes():
+            raise RuntimeError('diagnostic checkout does not match the exact trace patch')
+        identity['trace_patch_sha256'] = digest(actual)
+    return identity
 
 
 def environment(args):
