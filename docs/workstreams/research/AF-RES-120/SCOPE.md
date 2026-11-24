@@ -6,3 +6,6 @@ GitHub issue search, repo별 is:issue created:2023-01-01..2025-12-31 in:body. jq
 A 기능군 첫 주소, B 같은 판 기능 정의 첫 절, C B+별도 공식 테스트/예제 고정 링크. 제목 A/B '공식 기능 문서', C 둘째 '공식 추가 자료'. 입력/목차/시험 인덱스만 제작자에 허용, 추가 노출 명시. 원문 스냅샷 유니코드 코드포인트, 앵커 시작 1500자 반열림 구간, 다음 면 +1500, 링크/앵커 이동은 실제 보이는 본문/목차에 명시된 것만; 원 시작 링크 재방문 및 C 둘째 링크 선택 허용, 매번 1회, 총3회, 링크 메뉴 별도 최대 500자 (잘림 명시). URL/구간/지문 고정 전 독자 실험 금지. 원문 접근 및 정확 anchor 입증 없으면 미확인, 전 경로 확인 없이 불가 금지. 기준은 동작·보존·필수 예외 모두 노출되고 올바른 판정. 부분/보류/위험 확정 분리. 독립 문맥 없으면 수신/가림/효과 미확인; 결정론적 증인만 별도. 교정 두 건 + 가능한 음성, 자연층과 분리. 비용 제작 열람 및 알려진 문자/수신 열람 및 노출량 구분.
 ## 실행
 web/connector로 읽기와 원격 커밋 가능. 저장소 인증 셸/독자 위임 도구 확인되지 않음. manifest는 수동 기록이지 CLI 출력 아님. 계획 명령: python -B -m workbench.session start af-res-120 --allow docs/workstreams/research/AF-RES-120/ --dependency work/research-af-res-116=23b14602ad6d400be6e00966815812a6b36cb0e6 --output docs/workstreams/research/AF-RES-120/manifest.json --fetch. 실제 CLI 검사 미실시. 변경은 이후 커밋에서 기록.
+
+## 후속 제약·수정
+고정 GitHub YAML/RST/시험 파일 Unicode 1500자 패널. 시작 링크+다음 면+재방문; literal URL/Markdown anchor 발견 시 미확장 표기. HTML 실측 아님. #3139 C 제목 '공식 시험'은 계약과 다르지만 답값 없음, 최초 봉인 유지. K1/K2 및 음성은 원자료를 먼저 본 구성. #3214는 문서 계약 기회 후보; 원저자 환경/실행·엄격 기회 별도. 독립 독자 없음. 대형 route/ledger 동시 작성 서버 연결 종료와 20회 이상 tool call 제한으로 자료 원장부터 커밋. 최초 원장 시간은 실제 개별 클릭보다 늦은 행 있음.
