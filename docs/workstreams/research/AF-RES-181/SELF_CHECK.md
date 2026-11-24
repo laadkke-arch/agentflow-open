@@ -1,0 +1,16 @@
+# AF-RES-181 자기점검 (독립 검토 아님)
+| Q | 답/근거 | 반증 탐색 | 결과/미충족 |
+|---|---|---|---|
+| Q1 | 설계상 3 different people per source; D01 D03 D04 D13 D14 | roster replacement와 FINISHED filtering, tree D19, raw F01/F02, HF F03/F05/F06 | 배정표 부재 확정 아님; 24 예정 중 processed 1; 실제 순위 0; PARTIAL |
+| Q2 | unit/item/FLORES/lang/subject/output join; D01 D03 D04 D18 | 동일인 same source 3조건인지 Table6 및 App B 확인; 29.2 output contrast | same person paired 아님; raw triplet 0; ITA 0 |
+| Q3 | ms→s, visits/pauses D03 D05 D16 D17 D18 | edit vs event 경고, empty event, long E4 pause, mtime | 5 processed aggregate rows; raw t 0; active/elapsed unknown |
+| Q4 | automatic/own questionnaire ≠ independent final quality D01 D03 D06 D10 D11 D12 D14 | output example 29.2; tree D19; final evaluation scope | same-output independent quality table 0; reviewer time unknown |
+| Q5 | D01 D08 D05 D18 global filter and missing status | ITA/TUR zero trigger but 31/32 global, 13.2 discrepancy; PE>HT actual row search exact keys no results F03/F05/F06 | 17×18=306; not new reanalysis. Actual opposing PE time row unlocated |
+| Q6 | T01 T04 T05 T06 M01 M02 M03 M04 roles and quality/time tradeoffs | two-pass residual errors, same dev different issues, 27 imputations | separate comparators; transcription original reports only, SW actual task CSV but no reviewer QA/time raw; strict unmet |
+| Q7 | bounds B01–09; D01 D03 D18 M03 | median speed vs paired threshold; missing role can cancel | actual matched difference and total labor uncomputed; illustration only |
+
+## 직접 열람/실제 분모
+- ledger 36 unique source_id, direct 26 unique work_id, failed 6, metadata 2, abstract 2. Direct count by designation: 4 design (D01 D02 D03 D16), 8 analysis/definition (D04 D05 D06 D08 D09 D10 D11 D12), supplement 5 (D07 D13 D14 D15 D17), 1 work processed only D18, transcription 4 (T01 T04 T05 T06), software 4 (M01–04). DTA PDF screenshot failed but text section read, noted.
+- Minimum 22 aggregate direct count achieved; work/output 8 required vs fixed release work/output files 0 (processed viewer 1 separate, thus strict shortage 8; even counting it shortage 7). Definitions 8/4, design 4/4. Transcription 4 reports, 0 raw work/QA time ledgers; software 4 documents/files incl one task CSV, 0 separate reviewer QA/time tables; strict requirement of original report/work/inspection materials remains unmet.
+- 8 candidate slots (ITA 4 TUR 4), exact rank verified 0/8; 24 expected person-doc entries + 2 replaced/not-main rows; 1 observed processed mapping, 23 condition maps missing, raw 24/24 missing. Complete slots 0/8. E1–5 observed rows, 1 independent participant/doc cluster, 0 raw events, 0 same-input condition triplets, 0 independent QA joins. Main selected segment denominator unknown; full study reported 7740 before, 7434 after.
+- No new participant or private data; only anonymous keys and aggregates. No new builds, model reruns, product edits. GitHub readback by SHA for groups 1–4: SCOPE 351a14d1…, frame 425edfe7…, effort/assignments b383a928…, sources/bounds 497fc9d4…; ledger counts and 5 row event sum/word sum checked via JS on fetched content, not external replication. 2 failed offset URLs appended after group 4; source counts updated. Group 5/6 verify separately. All output references/units in tables refer to ledger. Handoff follows self-check, unresolved status PARTIAL.
