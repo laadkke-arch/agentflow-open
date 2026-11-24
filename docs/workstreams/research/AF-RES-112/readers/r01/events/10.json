@@ -1,0 +1,26 @@
+{
+  "type": "judgment",
+  "step": 3,
+  "disposition": "조건부",
+  "answer": "기본 Path2D.tscn은 points가 빈 Curve2D 하위 리소스를 Path2D에 연결하며, Path2D.gd 스크립트도 연결한다. 읽은 씬에는 resource_local_to_scene 설정이 명시되어 있지 않다. 이것은 저장된 최초 점 데이터가 비어 있다는 근거이지, 재생성마다 점이 비어 있거나 이전 점을 유지한다는 실행 근거는 아니다. 따라서 생성 호출만 바꾸는 통제 비교용 출발점으로 조건부 사용 가능하다.",
+  "citations": [
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Path2D.tscn",
+      "locator": "행 3–12",
+      "supports": "Curve2D 하위 리소스의 points가 빈 배열이고 노드의 curve 및 외부 스크립트가 연결되어 있으며, 보이는 씬 전체에 resource_local_to_scene 명시가 없다."
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "행 7–18 및 21–29",
+      "supports": "제거·재생성·점 추가 흐름은 있으나 load 기준군이나 재생성 직후 점 목록 기록은 보이지 않는다."
+    }
+  ],
+  "counterexample": "Path2D.gd가 점을 초기화하거나 다른 인스턴스가 같은 Curve2D를 보유하면 예상한 점 상태 관계가 달라질 수 있다. 두 비교군에서 localToScene 선택 또는 점 삭제 동작이 달라지면 요청한 비교가 아니다.",
+  "unknown": "미열람 Path2D.gd의 동작, 다른 씬 인스턴스 및 리소스 참조, 런타임의 resource_local_to_scene 값, Godot 3.4.2.stable·Windows 10에서의 실행 결과, load 적용군의 점 목록.",
+  "prior_knowledge": "노드 해제와 리소스 수명이 반드시 같지는 않으며 참조와 리소스 공유 설정이 중요하다는 것은 기존 지식이다. 이번 원문 판독에서는 실제 해제 시점이나 load/preload의 리소스 재사용을 검증하지 않았다.",
+  "next_action": "추가 개봉 없이 조건부 최종 판단을 저장한다.",
+  "reason": "3개봉 상한에 도달했다. 남은 파일이나 엔진 문서를 추측하지 않고 현재 근거와 미확인 조건을 구분해야 한다.",
+  "session": "r01",
+  "at_utc": "2026-11-24T02:06:33.060Z"
+}
+

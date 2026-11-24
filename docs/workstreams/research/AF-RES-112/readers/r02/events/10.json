@@ -1,0 +1,26 @@
+{
+  "type": "judgment",
+  "step": 3,
+  "disposition": "조건부",
+  "answer": "Path2D.tscn은 Curve2D 서브리소스의 저장된 points를 빈 배열로 선언하고 Path2D.curve에 연결한다. 이 파일에는 resource_local_to_scene 값을 명시한 줄이 없다. 그러나 저장된 빈 점 목록은 새 런타임 인스턴스가 반드시 빈 목록을 얻는다는 실행 증거가 아니다. Scene.gd는 preload를 사용하고 다른 씬을 선택하는 토글도 제공하므로, 원래 씬·곡선 설정을 고정한 채 생성 함수만 바꾸고 점 목록을 별도 관찰한다는 조건에서 예제를 비교 기반으로 사용할 수 있다.",
+  "citations": [
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Path2D.tscn",
+      "locator": "L1-L12",
+      "supports": "Curve2D의 저장된 points는 빈 PoolVector2Array이며, Path2D가 이 서브리소스와 Path2D.gd 스크립트를 참조하고 resource_local_to_scene의 명시적 할당은 보이지 않는다."
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "L13-L29, L42-L49",
+      "supports": "preload로 선택한 씬을 생성하고 설정만 출력한 뒤 점을 추가하며, 씬 선택 토글과 점 초기화 기능이 있다."
+    }
+  ],
+  "counterexample": "씬 파일의 빈 points만으로 재생성 때 항상 비어 있다고 결론내리거나, LocalPath2D.tscn으로 바꾸어 나온 결과를 생성 함수 차이로 해석하면 원문이 뒷받침하지 않는 결론이 된다.",
+  "unknown": "실제 새 인스턴스의 점 목록, 이전 Curve2D 객체와의 동일성, 리소스의 유효 설정과 캐시·잔존 참조, Path2D.gd 및 LocalPath2D.tscn 내용, 대상 환경의 재현 결과는 확인하지 못했다.",
+  "prior_knowledge": "저장된 초기 상태와 런타임 객체 상태를 구별해야 한다는 일반 원칙을 적용했다. 특정 Godot 기본값이나 캐시 동작을 이 원문에서 확인한 사실로 사용하지 않았다.",
+  "next_action": "3회 개봉 한도에 도달했으므로 종료하며, 필요한 비교 조건과 확인하지 못한 결과를 최종 기록한다.",
+  "reason": "3회 개봉을 모두 사용했다. 실행 결과를 추정하거나 보이지 않은 다른 파일을 열지 않는다.",
+  "session": "r02",
+  "at_utc": "2026-11-24T02:07:04.552Z"
+}
+

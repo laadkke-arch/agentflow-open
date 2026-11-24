@@ -1,0 +1,26 @@
+{
+  "type": "judgment",
+  "step": 2,
+  "disposition": "조건부",
+  "answer": "main.gd는 export(Resource) thing에 대해 _ready에서 유효성과 g1/g2/g3를 출력하고, idle_frame을 한 번 기다린 뒤 s1(0), s2(0), s3('0')을 호출하며, 다음 idle_frame 뒤 현재 씬 경로로 change_scene을 호출한다. 재진입 시 같은 _ready의 첫 출력으로 비교하도록 작성된 예제이지만 실제 실행 결과는 없다. 변경 직후 출력은 g1/g2/g2로 g3가 빠져 있다.",
+  "citations": [
+    {
+      "url": "https://github.com/godotengine/godot/files/7944151/test.zip",
+      "locator": "test/main.gd L2-L20",
+      "supports": "export(Resource) 선언, 첫 값 출력, 한 프레임 대기, 세 setter 호출, 변경 후 g2 중복 출력"
+    },
+    {
+      "url": "https://github.com/godotengine/godot/files/7944151/test.zip",
+      "locator": "test/main.gd L22-L31",
+      "supports": "stop 메타데이터 검사와 설정 및 현재 씬 파일을 change_scene으로 다시 여는 코드"
+    }
+  ],
+  "counterexample": "setter/getter가 서로 다른 속성을 다루거나 thing이 씬에 내장된 Resource가 아니라면 요청한 비교를 그대로 만족하지 못한다. is_instance_valid는 동일 인스턴스 여부를 기록하지 않는다.",
+  "unknown": "Resource의 초기 속성과 setter/getter 구현, 내장 설정, 정확한 실행판, 재로드 뒤 실제 값과 인스턴스 동일성",
+  "prior_knowledge": "GDScript 코드의 제어 흐름을 해석했으며 Resource 캐시 또는 복원 동작에 관한 기존 지식으로 결과를 추정하지 않았다.",
+  "next_action": "step 1의 링크 2를 클릭하여 test/main.tscn을 읽는다.",
+  "reason": "남은 한 개봉으로 요청의 핵심 보존 조건인 씬 내장 Resource, 직렬화된 초기값과 리소스 설정을 확인한다.",
+  "session": "r06",
+  "at_utc": "2026-11-24T02:10:21.832Z"
+}
+

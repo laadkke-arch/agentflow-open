@@ -1,0 +1,33 @@
+{
+  "type": "final",
+  "opens": 3,
+  "codepoints": 1168,
+  "utf8_bytes": 1192,
+  "disposition": "조건부",
+  "answer": "조건부 사용. 이 ZIP의 main.tscn은 A_Thing.gd가 연결된 Resource를 씬 내부 SubResource로 저장하고 thing에 연결하며, 초기 직렬화 값 arr=[1.0], dict={\"0\":1.0}, strr=\"1\"을 보여 준다. main.gd는 _ready 첫 진입에서 유효성과 g1/g2/g3를 출력하고, idle_frame 이후 s1(0)·s2(0)·s3('0')을 호출한 뒤 다음 idle_frame 후 현재 씬 filename으로 change_scene을 호출한다. 이는 요청의 내장 방식과 변경·재시작 순서를 확인하는 실험 출발점으로 맞는다. 그러나 변경 직후 출력은 g1/g2/g2이므로 g3 변경 관측을 보완해야 하며, is_instance_valid만으로 Resource 동일성은 판별할 수 없다. A_Thing.gd에서 exported 선언과 속성 대응을 확인하고, 정확한 대상 실행판·Resource 설정 아래 처음 연 씬의 값과 재진입 첫 출력, Resource 인스턴스 식별을 대조해야 목적이 충족된다. 읽은 원문만으로 재시작 때 초기값이 복원되는지 이전 실행값이 남는지 결론내릴 수 없고 실제 실행하지 않았다.",
+  "citations": [
+    {
+      "url": "https://github.com/godotengine/godot/files/7944151/test.zip",
+      "locator": "test/main.tscn lines 3–16",
+      "supports": "Resource가 A_Thing.gd를 참조한 SubResource로 씬에 내장되고, arr=[1.0], dict={\"0\":1.0}, strr=\"1\"로 직렬화되어 thing에 연결된다."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/files/7944151/test.zip",
+      "locator": "test/main.gd lines 3–20",
+      "supports": "export(Resource) thing, 최초 g1/g2/g3 출력, 프레임 대기와 setter 변경, 변경 직후 g2 중복 출력."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/files/7944151/test.zip",
+      "locator": "test/main.gd lines 22–31",
+      "supports": "트리 메타데이터 stop 조건과 현재 filename으로 change_scene을 호출하는 재시작 구조."
+    }
+  ],
+  "counterexample": "Godot 4.0alpha1에서 그대로 실행된다는 증거가 없고, getter/setter의 대상이 예상과 다르면 초기 직렬화 값과 출력의 비교 자체가 성립하지 않는다. 또한 Resource 값이 같다는 결과만으로 같은 인스턴스인지 새 인스턴스인지 구별할 수 없다.",
+  "unknown": "A_Thing.gd와 project.godot은 열지 않았다. Resource 내부 exported 여부·메서드 구현, 정확한 엔진판, resource_local_to_scene의 실제 적용 상태, 정상 입력과 경계 입력의 실행 로그 및 인스턴스 상태 복원 결과는 미확인이다. 씬 본문에 resource_local_to_scene 지정은 보이지 않는다.",
+  "prior_knowledge": "엔진의 캐시·복제·기본설정에 관한 기존 지식은 판단 근거로 쓰지 않았다. 원문은 실험 구조만 뒷받침하며 실제 재시작 결과를 제공하지 않는다.",
+  "stop_reason": "허용된 3회 개봉을 모두 사용했다(디렉터리, main.gd, main.tscn). 총 1,168자를 읽었으며 더 열거나 실행하지 않고 확인 범위와 미확인 조건을 분리해 종료한다.",
+  "early_stop_positions": 0,
+  "session": "r05",
+  "at_utc": "2026-11-24T02:09:19.567Z"
+}
+

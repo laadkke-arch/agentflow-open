@@ -1,0 +1,33 @@
+{
+  "type": "final",
+  "opens": 3,
+  "codepoints": 2569,
+  "utf8_bytes": 2629,
+  "disposition": "조건부",
+  "answer": "조건부 사용. 본문에서 확인한 예제는 localToScene=false로 시작하고 Path2D.tscn을 preload해 instance()로 생성하며, 제거 버튼은 queue_free 후 path2d를 null로 바꾼다. 점 입력 시 인스턴스가 없으면 다시 생성한 뒤 Curve2D에 점을 추가한다. 기본 씬의 저장된 Curve2D points는 빈 배열이며 별도 Path2D.gd가 붙어 있다. 따라서 반복 생성·제거 비교의 골격은 적합하다. 그러나 현재 읽은 코드에는 load 기준군, 재생성 직후 점 목록 측정, 대상 Godot·OS의 실행 기록이 없다. 저장 데이터가 비었다는 이유로 매번 빈 곡선으로 시작한다고도, preload만 이전 점을 보존한다고도 결론낼 수 없다. 사용 조건은 같은 Path2D.tscn과 Curve2D 설정을 유지하고 localToScene 토글·ClearPoints를 고정한 채, 동일 생성 위치에서 preload와 load만 바꾸어 비교하는 것이다. 점 추가 전후 및 제거 완료 후 재생성 직후의 점 개수·좌표와 Curve2D 식별자를 기록해야 한다. Path2D.gd의 초기화, resource_local_to_scene 실제 값, PackedScene·Curve2D에 남은 참조, 다른 인스턴스의 공유 여부와 queue_free 완료 시점도 추가 확인해야 한다. 실행은 하지 않았다.",
+  "citations": [
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "행 3–18",
+      "supports": "기본 분기와 제거·preload·instance 생성 흐름, resource_local_to_scene 출력."
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "행 21–29 및 42–49",
+      "supports": "점 추가 시 자동 생성, Curve2D 점 변경, 로컬 씬 토글과 별도 clear_points 기능."
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Path2D.tscn",
+      "locator": "행 3–12",
+      "supports": "기본 씬의 빈 Curve2D 점 데이터와 연결된 외부 스크립트; 명시적인 resource_local_to_scene 설정은 보이지 않음."
+    }
+  ],
+  "counterexample": "load 쪽에서도 살아 있는 참조로 같은 리소스가 재사용되는 경우나 스크립트가 점을 재설정하는 경우에는 preload/load에 단순 대응하는 점 보존 결론이 성립하지 않을 수 있다. LocalPath2D.tscn으로 선택을 바꾸는 비교는 원래 씬·설정을 유지한다는 조건을 어긴다.",
+  "unknown": "Path2D.gd와 나머지 씬의 실제 동작, 리소스 참조 상태와 기본 설정의 런타임 해석, 두 생성 방식의 점 목록 관측값, 지정된 Godot 3.4.2.stable·Windows 10 재현 여부.",
+  "prior_knowledge": "리소스 공유·참조 수명, 지연된 노드 제거와 리소스 해제의 구분, 식별자·점 목록을 통한 비교 방법은 기존 지식에 따른 검증 제안이다. load의 캐시 동작이나 preload의 점 보존을 이번 원문에서 확인한 사실로 취급하지 않았다.",
+  "stop_reason": "허용된 3개봉을 모두 사용했다. 총 노출 2569자로 문자 상한 이내이며 추가 파일이나 외부 자료를 읽지 않고 근거의 범위에서 결론을 확정했다.",
+  "early_stop_positions": 0,
+  "session": "r01",
+  "at_utc": "2026-11-24T02:06:33.975Z"
+}
+

@@ -1,0 +1,26 @@
+{
+  "type": "judgment",
+  "step": 2,
+  "disposition": "조건부",
+  "answer": "Scene.gd에는 Path2D를 queue_free한 뒤 보관 변수를 null로 만들고, 다음 점 입력 시 씬을 다시 인스턴스화하는 코드가 있다. 다만 생성 호출은 두 분기 모두 preload이며, localToScene 값에 따라 LocalPath2D.tscn과 Path2D.tscn을 선택한다. 따라서 현재 코드는 동일 씬·설정을 유지한 load/preload 대조 자체를 제공하지 않는다. localToScene을 고정하고 같은 씬 경로의 호출만 바꾸는 비교 기반으로는 조건부 사용 가능하다. 새 Curve2D의 실제 점 상태는 관찰되지 않았다.",
+  "citations": [
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "L3-L18",
+      "supports": "localToScene 초기값 false, queue_free 및 null 처리, 두 preload 경로 분기, instance와 resource_local_to_scene 출력"
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "L21-L29, L42-L49",
+      "supports": "path2d 부재 시 다시 생성한 후 점 추가, localToScene 토글과 별도 clear_points 조작"
+    }
+  ],
+  "counterexample": "localToScene 토글을 load/preload 차이로 해석하거나, 한 비교군에서만 clear_points를 호출하면 보존 조건을 만족하지 않는다. queue_free 호출과 실제 제거 사이의 시간도 현재 읽은 코드만으로 확인되지 않는다.",
+  "unknown": "Path2D.tscn의 초기 Curve2D 점·설정, LocalPath2D.tscn과의 전체 차이, Curve2D의 다른 참조 및 실제 해제 시점, Godot 3.4.2.stable 및 Windows 10에서의 결과는 미확인이다.",
+  "prior_knowledge": "원문 실행 결과를 추정하지 않았다. 비교에서 씬·설정·초기 상태와 관찰 시점을 동일하게 해야 한다는 일반 실험 원칙만 사용했다.",
+  "next_action": "첫 개봉의 링크 3(Path2D.tscn)를 읽는다.",
+  "reason": "초기 분기의 씬에 선언된 Curve2D와 점 상태를 확인하면 재생성 관찰의 기준과 보존해야 할 설정을 구체화할 수 있다.",
+  "session": "r02",
+  "at_utc": "2026-11-24T02:06:00.379Z"
+}
+

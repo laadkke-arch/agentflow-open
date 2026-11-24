@@ -1,0 +1,38 @@
+{
+  "type": "exposure",
+  "step": 2,
+  "action": "click",
+  "requested_url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+  "arrival_url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+  "arrival_confirmed": true,
+  "fragment": "",
+  "fragment_resolution": "unverified",
+  "source_ref": null,
+  "transport": "GitHub connector source view",
+  "transport_url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+  "source_blob_sha": "e439ac9b619949c728bf26b839342b5de90ff4b3",
+  "archive_metadata": null,
+  "archive_entry": null,
+  "source_view_start": {
+    "line": 1,
+    "column": 0
+  },
+  "source_view_end": {
+    "line": 50,
+    "column": 0
+  },
+  "capture_codepoint_start": 0,
+  "capture_codepoint_end": 1169,
+  "exposed_codepoints": 1169,
+  "exposed_utf8_bytes": 1169,
+  "cumulative_codepoints": 2312,
+  "cumulative_utf8_bytes": 2372,
+  "visible_link_ids": [],
+  "source_service_call": true,
+  "reexposure_possible": false,
+  "error": null,
+  "exposed_text": "extends Node2D\n\nvar path2d: Path2D\nvar mouseDown = false\nvar localToScene = false\n\nfunc _on_RemovePath2DButton_pressed():\n\tif path2d and is_instance_valid(path2d):\n\t\tpath2d.queue_free()\n\t\tpath2d = null\n\tpass\n\nfunc addPath2D():\n\tvar Path2DScene = preload(\"res://LocalPath2D.tscn\") if localToScene else preload(\"res://Path2D.tscn\")\n\tvar path2d = Path2DScene.instance()\n\tadd_child(path2d)\n\tself.path2d = path2d\n\tprint(\"resource_local_to_scene: \", path2d.get_curve().resource_local_to_scene)\n\tpass\n\nfunc addPoint(point: Vector2):\n\tif !path2d:\n\t\taddPath2D()\n\tvar curve = path2d.get_curve()\n\tvar prev_point = curve.get_point_position(curve.get_point_count() - 1)\n\tif prev_point == point:\n\t\treturn\n\tpath2d.get_curve().add_point(point)\n\tpath2d.update()\n\tpass\n\nfunc _unhandled_input(event):\n\tif event is InputEventMouseButton:\n\t\tmouseDown = event.is_pressed()\n\t\taddPoint(event.position)\n\telif event is InputEventMouseMotion:\n\t\tif mouseDown:\n\t\t\taddPoint(event.position)\n\tpass\n\n\nfunc _on_LocalToSceneToggleCheckButton_toggled(button_pressed):\n\tlocalToScene = button_pressed\n\n\nfunc _on_ClearPointsButton_pressed():\n\tif path2d:\n\t\tpath2d.get_curve().clear_points()\n\t\tpath2d.update()\n",
+  "session": "r02",
+  "at_utc": "2026-11-24T02:05:30.092Z"
+}
+

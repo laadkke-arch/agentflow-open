@@ -1,0 +1,26 @@
+{
+  "type": "judgment",
+  "step": 2,
+  "disposition": "조건부",
+  "answer": "Scene.gd는 Path2D를 queue_free한 후 참조를 null로 만들고, 점 입력 시 preload된 씬을 instance()로 재생성하는 구조를 보여 준다. localToScene은 처음 false이며, 두 씬 중 하나를 고르는 분기와 resource_local_to_scene 출력도 있다. 따라서 preload 쪽 비교 예제의 출발점으로는 사용할 수 있지만, 읽은 코드에는 load 기준군이나 재생성 직후의 점 목록 비교가 없어 요청한 결과를 바로 입증하지는 못한다.",
+  "citations": [
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "행 3–18",
+      "supports": "localToScene 기본값, queue_free와 참조 해제, preload 선택과 인스턴스 생성, resource_local_to_scene 출력."
+    },
+    {
+      "url": "https://github.com/StrikeForceZero/godot-path2d-clean-room/blob/master/Scene.gd",
+      "locator": "행 21–29 및 42–49",
+      "supports": "점 추가 시 인스턴스 생성, 기존 마지막 점 조회, 로컬 씬 선택 토글 및 별도 점 삭제 기능."
+    }
+  ],
+  "counterexample": "load 비교 시 다른 씬을 선택하거나 ClearPoints 기능을 실행하면 생성 호출만 변경한다는 보존 조건을 만족하지 않는다. 새 인스턴스 생성 코드만으로 새 Curve2D 점 목록이 비어 있다고 단정할 수 없다.",
+  "unknown": "Path2D.tscn의 Curve2D 초기 점과 리소스 설정, Path2D.gd의 초기화 동작, load 기준군의 실행 결과, 새 인스턴스 점 목록 및 리소스 참조 관계.",
+  "prior_knowledge": "리소스의 참조·공유 여부와 초기화 코드가 점 상태에 영향을 줄 수 있다는 것은 기존 지식에 따른 확인 항목이며, 현재 원문으로 확인한 실행 결과가 아니다.",
+  "next_action": "1회차 링크 3의 Path2D.tscn을 읽는다.",
+  "reason": "localToScene=false인 기본 분기에서 쓰는 씬의 원래 Curve2D 설정과 점 상태를 확인하는 것이 보존 조건 판단에 가장 직접적이다.",
+  "session": "r01",
+  "at_utc": "2026-11-24T02:05:39.809Z"
+}
+
