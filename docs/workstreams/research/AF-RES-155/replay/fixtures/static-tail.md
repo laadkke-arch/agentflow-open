@@ -1,0 +1,5 @@
+````
+hello
+````
+
+Next paragraph survives.

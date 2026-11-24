@@ -1,0 +1,5 @@
+````
+{{ markdownCodeBlockSayingHello }}
+````
+
+Next paragraph survives.
