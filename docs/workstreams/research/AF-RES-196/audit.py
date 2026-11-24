@@ -192,6 +192,15 @@ def recover(bundle, staged, control=""):
         else:
             requested = f"mirror/{mirror_key(pointer)}"
             raw = staged.read(requested, "source")
+            if raw is None and control == "basename_naive":
+                name = requested.rsplit("/", 1)[-1]
+                replacements = [p for p in staged.handles if p.startswith("mirror/") and p.rsplit("/", 1)[-1] == name]
+                if len(replacements) != 1:
+                    raise ValueError("basename control requires exactly one decoy")
+                replacement = replacements[0]
+                _, owner, repo, revision, path = replacement.split("/", 4)
+                pointer = {"repo": f"{owner}/{repo}", "revision": revision, "path": path, "line_ranges": []}
+                raw = staged.read(replacement, "source")
             if raw is None:
                 return result
             result["source_mode"] = "mirror_file"
@@ -205,10 +214,14 @@ def recover(bundle, staged, control=""):
         actual_hash = window_sha256(parts)
         result["observed_sha256"] = actual_hash
         expected_hash = result["stored_sha256"]
+        if control == "basename_naive":
+            expected_hash = None
         if expected_hash and expected_hash != actual_hash:
             result.update(source_status="hash_mismatch", hash_status="mismatch")
             return result
         result["hash_status"] = "match" if expected_hash else "no_stored_hash"
+        if control == "basename_naive":
+            result["hash_status"] = "ignored_for_basename_control"
         result["source_fields"] = source_fields(kind, parts)
         result["source_status"] = "reopened"
     except (ValueError, KeyError, StopIteration) as exc:
@@ -383,6 +396,146 @@ def run_main(args):
             "mirror_files": mirrored}, started, ["matrix.csv", "costs.csv", "receipts/core.jsonl"]
 
 
+def mutate_excerpt(raw):
+    bundle = json.loads(raw)
+    parts = [base64.b64decode(value) for value in bundle["excerpt_base64"]]
+    original = parts[1]
+    changed = original.replace(b"2026-", b"2025-", 1)
+    difference = sum(a != b for a, b in zip(original, changed, strict=True))
+    if difference != 1:
+        raise ValueError("control must change exactly one date byte")
+    parts[1] = changed
+    bundle["excerpt_base64"][1] = base64.b64encode(changed).decode("ascii")
+    evidence = {"part_index": 1, "different_bytes": difference,
+                "original_part_sha256": sha256(original), "changed_part_sha256": sha256(changed),
+                "original_window_sha256": bundle["excerpt_sha256"], "changed_window_sha256": window_sha256(parts)}
+    update_hash = {**bundle, "excerpt_sha256": evidence["changed_window_sha256"]}
+    return json_bytes(bundle), json_bytes(update_hash), evidence
+
+
+def stage_thin_mirror(target, original, keys):
+    for key in keys:
+        dest = target / key
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(original / key, dest)
+    return target
+
+
+def compare_public(frozen):
+    views = {}
+    for view in read_json(frozen)["views"]:
+        projection = view["projection"]
+        if sha256(json_bytes(projection)) != view["projection_sha256"]:
+            raise ValueError(f"public projection differs for {projection['source_id']}")
+        views[projection["source_id"]] = projection
+    target = {"product": "2197", "lot": "LL-198", "issue_date": "2024-07-17",
+              "absorbed_energy_j": "19.1", "expanded_uncertainty_j": "0.2"}
+    nist = []
+    for source_id in ("P02", "P01", "P03"):
+        view = views[source_id]
+        states = {key: mark(view["fields"].get(key), value) for key, value in target.items()}
+        nist.append({"source_id": source_id, "url": view["url"], "locator": view["locator"],
+                     "values": view["fields"], "comparison_to_2024_certificate": states})
+    expected = [
+        ["match", "unconfirmed", "unconfirmed", "unconfirmed", "unconfirmed"],
+        ["match"] * 5,
+        ["match", "wrong", "wrong", "wrong", "wrong"],
+    ]
+    if [list(row["comparison_to_2024_certificate"].values()) for row in nist] != expected:
+        raise ValueError("NIST product/lot field comparison differed from the sealed example")
+
+    payload = b"AF-RES-196 reference bytes\n"
+    path = "data/quoted-source.txt"
+    manifest = {"path": path, "sha256": sha256(payload)}
+    fetch = {"url": "https://example.invalid/quoted-source.txt", "length_bytes": len(payload), "path": path}
+    bagit = []
+    for name, value in (("fetch_only", None), ("payload_present", payload), ("payload_changed", b"X" + payload[1:])):
+        with tempfile.TemporaryDirectory(prefix="af-res-196-bag-") as tmp:
+            root = Path(tmp)
+            (root / "data").mkdir()
+            (root / "manifest-sha256.txt").write_text(f"{manifest['sha256']}  {path}\n", encoding="utf-8")
+            (root / "fetch.txt").write_text(f"{fetch['url']} {fetch['length_bytes']} {path}\n", encoding="utf-8")
+            if value is not None:
+                (root / path).write_bytes(value)
+            try:
+                observed = sha256((root / path).read_bytes())
+            except FileNotFoundError:
+                observed = None
+        bagit.append({"fixture": name, "payload_present": observed is not None, "payload_sha256": observed,
+                      "manifest_comparison": mark(observed, manifest["sha256"])})
+    if [row["manifest_comparison"] for row in bagit] != ["unconfirmed", "match", "wrong"]:
+        raise ValueError("BagIt role illustration failed")
+    return {"frozen_projection_sha256": sha256(frozen.read_bytes()),
+            "nist_scope": "five fields from captured views, not raw PDF or a calibration",
+            "nist": nist, "bagit_scope": "local role illustration, not a BagIt conformance check",
+            "bagit_sources": ["B01", "B02", "B03"], "manifest": manifest, "fetch": fetch, "bagit": bagit}
+
+
+def run_controls(args):
+    started = now()
+    inputs = read_json(args.inputs)
+    cases = {case["case_id"]: case for case in read_json(args.gold)["cases"]}
+    bundles = load_bundles(args, cases)
+    verify_mirror(args.mirror, inputs)
+    original, decoy = cases["O1"]["mirror_key"], cases["O2"]["mirror_key"]
+    if original == decoy or Path(original).name != Path(decoy).name:
+        raise ValueError("not a different-path same-basename pair")
+    changed, changed_both, mutation = mutate_excerpt(bundles["O1", "C"])
+    url_only = json_bytes({"url": cases["H1"]["url"]})
+    receipts = args.out / "receipts"
+    with (args.out / "matrix.csv").open(encoding="utf-8", newline="") as handle:
+        matrix = [row for row in csv.DictReader(handle) if row["group"] == "main"]
+    with (args.out / "costs.csv").open(encoding="utf-8", newline="") as handle:
+        costs = [row for row in csv.DictReader(handle) if row["group"] == "main"]
+    if len(matrix) != inputs["planned_cells"] or len(costs) != 24:
+        raise ValueError("controls require the complete primary matrix")
+
+    with tempfile.TemporaryDirectory(prefix="af-res-196-control-mirrors-") as tmp:
+        scratch = Path(tmp)
+        both = stage_thin_mirror(scratch / "both", args.mirror, [original, decoy])
+        wrong = stage_thin_mirror(scratch / "wrong-path", args.mirror, [decoy])
+        url_mirror = stage_thin_mirror(scratch / "earl", args.mirror, [cases["H1"]["mirror_key"]])
+        b = bundles["O1", "B"]
+        controls = [
+            ("basename_correct", "O1", "B", "control_mirror", b, both, "recovered", "match"),
+            ("basename_missing", "O1", "B", "control_mirror", b, wrong, "withheld", "not_compared"),
+            ("basename_naive", "O1", "B", "control_mirror", b, wrong, "wrong", "ignored_for_basename_control"),
+            ("one_byte", "O1", "C", "bundle_only", changed, None, "withheld", "mismatch"),
+            ("both_changed", "O1", "C", "bundle_only", changed_both, None, "wrong", "match"),
+            ("url_mirror", "H1", "URL_only", "control_mirror", url_only, url_mirror, "withheld", "no_stored_hash"),
+            ("url_bundle", "H1", "URL_only", "bundle_only", url_only, None, "withheld", "not_compared"),
+        ]
+        packages = receipts / "control-bundles"
+        packages.mkdir(exist_ok=True)
+        with (receipts / "controls.jsonl").open("wb") as log:
+            for i, (key, case_id, scheme, availability, blob, mirror, expected, expected_hash) in enumerate(controls, 1):
+                path = packages / f"{key}.json"
+                path.write_bytes(blob)
+                result = execute_trial(blob, mirror, key)
+                result["fixture"] = {"name": key, "expected_outcome": expected, "expected_hash_status": expected_hash,
+                                     "package": f"receipts/control-bundles/{path.name}"}
+                if key in {"one_byte", "both_changed"}:
+                    result["fixture"]["mutation"] = mutation
+                case = cases[case_id]
+                row, cost = result_rows("control", case, scheme, availability, blob, result, log,
+                                        "receipts/controls.jsonl", i)
+                if row["outcome"] != expected or row["hash_status"] != expected_hash:
+                    raise ValueError(f"unexpected control outcome for {key}: {row['outcome']}")
+                if key == "url_mirror" and (row["original_window"], row["sentence"]) != ("match", "unconfirmed"):
+                    raise ValueError("URL-only mirror must recover evidence and keep the old wording unconfirmed")
+                row["reason"] = key
+                matrix.append(row)
+                costs.append(cost)
+    csv_write(args.out / "matrix.csv", MATRIX_FIELDS, matrix)
+    csv_write(args.out / "costs.csv", COST_FIELDS, costs)
+    public = compare_public(args.inputs.parent / inputs["public_projection"])
+    (receipts / "public-comparison.json").write_bytes(json_bytes(public))
+    summary = {"controls": len(controls), "expected_controls_observed": len(controls),
+               "nist_views_compared": len(public["nist"]), "bagit_role_fixtures": len(public["bagit"])}
+    return summary, started, ["matrix.csv", "costs.csv", "receipts/controls.jsonl", "receipts/public-comparison.json",
+                              *(f"receipts/control-bundles/{key}.json" for key, *_ in controls)]
+
+
 def record_run(args, phase, summary, started, outputs):
     version = subprocess.run(["dpkg-query", "-W", "-f=${Version}", "libseccomp2"],
                              capture_output=True, text=True, check=False)
@@ -391,6 +544,8 @@ def record_run(args, phase, summary, started, outputs):
                    "platform": platform.platform(), "libseccomp2_package": version.stdout or None}
     inputs = {"inputs.json": args.inputs, "gold.json": args.gold, "audit.py": HERE,
               "make_bundles.py": HERE.with_name("make_bundles.py"), "package-manifest.json": manifest_path}
+    if phase == "controls":
+        inputs["public-freeze.json"] = args.inputs.parent / read_json(args.inputs)["public_projection"]
     record = {"phase": phase, "started_utc": started, "finished_utc": now(), "exit_code": 0,
               "working_directory": str(Path.cwd()), "argv": [sys.executable, *sys.orig_argv[1:]],
               "environment": environment, "summary": summary,
@@ -405,15 +560,20 @@ def main():
     subs = parser.add_subparsers(dest="command", required=True)
     child = subs.add_parser("worker", help=argparse.SUPPRESS)
     child.add_argument("control")
-    run = subs.add_parser("run")
-    for name in ("inputs", "gold", "mirror", "bundles", "out"):
-        run.add_argument(f"--{name}", type=Path, required=True)
+    for command in ("run", "controls"):
+        run = subs.add_parser(command)
+        for name in ("inputs", "gold", "mirror", "bundles", "out"):
+            run.add_argument(f"--{name}", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "worker":
         worker(args.control)
         return
-    summary, started, outputs = run_main(args)
-    record_run(args, "core", summary, started, outputs)
+    if args.command == "run":
+        summary, started, outputs = run_main(args)
+        record_run(args, "core", summary, started, outputs)
+    else:
+        summary, started, outputs = run_controls(args)
+        record_run(args, "controls", summary, started, outputs)
 
 
 if __name__ == "__main__":
