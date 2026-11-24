@@ -1,0 +1,90 @@
+# AF-RES-161 — 잘못 합친 참조의 취소, 독립 수정과 인용 계보 (PARTIAL)
+
+## 표 1 — 사건·표본층과 거래 조인
+
+| 사건·표본층 | 원래 인용과 객체 ID | 병합·독립 편집·복구판 URL | 같은 거래임을 확인한 키 | 첫 결측 |
+|---|---|---|---|---|
+| C1 교정 | [#6371](https://github.com/internetarchive/openlibrary/issues/6371), OL14863262W | [24/26 diff](https://openlibrary.org/works/OL14863262W/Tales_of_Soldiers_and_Civilians_18_stories?_compare=Compare&b=26&a=24&m=diff) 차단, 25 포함 JSON B04–06 차단 | 없음; 같은 글의 C2와 결합 금지 | 병합판 ID 및 역할/시각, 거래 구성원 (I6371,I6371C,B02–06) |
+| C2 교정 | [거래 42049802](https://openlibrary.org/recentchanges/2010/11/26/merge-authors/42049802?page=1) | 거래 URL의 2010-11-26 외 전부 미확인 | 구성원 없음 | 거래 본문 B01,B07–08; C1 join 미확인 |
+| C3 교정 별도 | [#6371 추가 댓글](https://github.com/internetarchive/openlibrary/issues/6371#issuecomment-1087842020), 43308762 | revision 미확인 | 별도 거래 ID만 보고 | 구성원 및 판 I6371C |
+| OL 자연 1 | [#3431](https://github.com/internetarchive/openlibrary/issues/3431), OL42906A | [v5→6](https://openlibrary.org/authors/OL42906A?_compare=Comparer&b=6&a=5&m=diff) 차단; v4→5 병합 및 v6 봇 수정 보고 | 객체 ID만 | v4 실제 값, 복구판 I3431,C,B09 |
+| OL 자연 2 | [#3474](https://github.com/internetarchive/openlibrary/issues/3474), OL27769174M | [v2→3](https://openlibrary.org/books/OL27769174M/Through_the_Magic_Door?_compare=Compare&b=3&a=2&m=diff) 차단 | edition ID만 | 기존 work ID 실제 값, 복구 I3474C,B10 |
+| OL 자연 4 | [#4427](https://github.com/internetarchive/openlibrary/issues/4427), OL1914022W | [v28/29 history](https://openlibrary.org/works/OL1914022W/The_Pillars_of_the_Earth?m=history) 차단 | staging cache 문제, undo와 다른 메커니즘 | 값·수정 방식 I4427C,B11 |
+| OL 자연 8-A/B | [#5206](https://github.com/internetarchive/openlibrary/issues/5206), OL471576W 및 OL15336690W | [history](https://openlibrary.org/works/OL471576W?m=history) 차단; [YAML 재작성 보고](https://github.com/internetarchive/openlibrary/issues/5206#issuecomment-895846390) | 두 객체 별도; 2021-04-14 v18 보고 | 병합 전판, 실제 dump, 복구판 I5206C,B12 |
+| OL 자연 9,10,11 | [#5243](https://github.com/internetarchive/openlibrary/issues/5243), [#5506](https://github.com/internetarchive/openlibrary/issues/5506), [#5664](https://github.com/internetarchive/openlibrary/issues/5664) | [45578827](https://openlibrary.org/recentchanges/2012/01/26/merge-authors/45578827), [39673431](https://openlibrary.org/recentchanges/2010/06/03/merge-authors/39673431), [47986246](https://openlibrary.org/recentchanges/2014/04/04/merge-authors/47986246) 차단; 51816992 후속 병합 보고 | 45578827은 #5664에도 반복; 다른 두 거래는 별도 | 구성원과 저장된 복구판 I5243C,I5506C,I5664C,B13–15 |
+| OL 자연 12,13,16 | [#5753](https://github.com/internetarchive/openlibrary/issues/5753), [#5776](https://github.com/internetarchive/openlibrary/issues/5776), [#6271](https://github.com/internetarchive/openlibrary/issues/6271) | [OL14918267W v2](https://openlibrary.org/works/OL14918267W?v=2), [OL36791W v1](https://openlibrary.org/works/OL36791W?v=1), [OL9265227W](https://openlibrary.org/works/OL9265227W?m=history) 차단 | 객체 ID와 보고만 | 실제 revision 흐름 I5753C,I5776C,I6271C,B16–18 |
+| WD-S1 보충 | [토론](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2021/11#How_do_I_delete_a_redirect?), Q16575483→Q78089383 대신 Q31086271 | [원장](https://www.wikidata.org/w/index.php?title=Q16575483&action=history) 차단, 수동 재작성 및 helper undo 보고 | QID와 보고만 | revision ID W01,B19–22 |
+| WD-KG-A 2019 보강 | [기관 고정판 986442520](https://www.wikidata.org/w/index.php?oldid=986442520&title=Q59165607), Q59165607 ← Q55296215 | [merge 1038289881](https://www.wikidata.org/w/index.php?diff=1038289881&oldid=986442520&title=Q59165607&type=revision) → [다음 편집=undo 1048159568](https://www.wikidata.org/w/index.php?diff=next&oldid=1038289881&title=Q59165607) | merge 요약의 source QID, undo가 merge revision 명시, 같은 receiver QID | source Q55296215 복구판, 외부 인용 D01,D02,D02N,D02P,W03 |
+| WD-KG-B 2019 보강 | [건물 936463156](https://www.wikidata.org/w/index.php?oldid=936463156&title=Q314104), Q314104 | [bot 1039041773](https://www.wikidata.org/w/index.php?diff=1039041773&oldid=936463156&title=Q314104&type=revision) → [undo 1048159950](https://www.wikidata.org/w/index.php?oldid=1048159950&title=Q314104) | P910 Q55296215→Q59165607→Q55296215, undo 요약, 같은 QID | 외부 소비자 및 전체 incoming links D03,D04,D03P,D04P,W03 |
+| WD-S3/S4 보충 | [Q65788404](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2023/12#Mass_wrong_merge_to_revert); [Q18674739/Q5380480](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2023/12#Incorrect_merge_of_a_semi-protected_item) | [Q65788404 history](https://www.wikidata.org/w/index.php?title=Q65788404&action=history) 차단, [Q5380480 history](https://www.wikidata.org/w/index.php?title=Q5380480&action=history) 차단 | 후속 링크·속성 추가/잘못된 class 병합 각각 보고 | 구체 값, 복구판 W05,W06,B24–26 |
+| WD-S5/S6 보충 | [Q97445914/Q21968294](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2023/04#Mistaken_merge); [Q113782860/Q136525378](https://www.wikidata.org/wiki/Wikidata:Administrators%27_noticeboard/Archive/2025/10#Request_to_undelete_Q113782860_(Aglaia_McClintock)) | 8분 내 복구 및 13분 내 방향 반전 보고, [Q97445914 history](https://www.wikidata.org/w/index.php?title=Q97445914&action=history) 차단 | QID와 보고만; S6은 동일 개체 방향 문제 | revision/수정 모드 W07,W08,B27 |
+
+단위: 모집 보고 자리와 실제 객체별 이력은 구별. 교정 1보고/3 예시(필수 C1/C2 조인 1건, 직접 판독 0/1, 결측 1); OL 16 자연 자리 중 보고 본문 16/16, 관련 후보(중복 제외) 10자리, 기타 6자리(무관 4, 결정 1, 중복 1); 연속 원판 0/16(모집 자리 분모, 결측 또는 비적격 16). WD 자연 최초 8+조건부 8 자리 원순위 미복원 16/16, 실제 사건 분모 미정. 2019 보강의 편집 이력 2개/1 사건은 자연 자리 대체 아님. 상세 [frame.csv](frame.csv), [transactions.csv](transactions.csv); 21 거래/객체 후보행(그룹으로 묶인 표 포함), 직접 원장 2행. 19행 미확인 또는 보고 수준. W02는 집단 보고, 개별 객체 특정 안 되어 표본 원장에 집계하지 않음.
+
+## 표 2 — 실제 필드와 복구 범위
+
+| 사건·필드 | 병합 전 값 | 복구 직전 값·별도 편집 근거 | 복구 후 값·판 URL | 의도·실제 보존 또는 손실 | 미확인 |
+|---|---|---|---|---|---|
+| C1 title/description/covers/subjects (4행) | 미확인 | 미확인; 작성 이후 다른 편집 보고 | 미확인, 4필드 손실 [보고](https://github.com/internetarchive/openlibrary/issues/6371) / [24↔26](https://openlibrary.org/works/OL14863262W/Tales_of_Soldiers_and_Civilians_18_stories?_compare=Compare&b=26&a=24&m=diff) | 저자만 고치려는 의도; 무관 필드 손실 보고 I6371 | 원값·판별 역할·누가 언제 썼는지 B02–06 |
+| C1 authors, key (2행) | 미확인 | 미확인 | 미확인 [diff](https://openlibrary.org/works/OL14863262W/Tales_of_Soldiers_and_Civilians_18_stories?_compare=Compare&b=26&a=24&m=diff) | 대상 및 안정 필드 판정 보류 | B02–06 |
+| OL-3431 VIAF/Wikidata IDs | 미확인 | v6 bot 추가 보고 [#3431](https://github.com/internetarchive/openlibrary/issues/3431) | correct IDs 주장, 정확 값 미확인 | 후속 수정 존재 보고; 유효 독립 근거인지 미확인 | I3431C,B09 |
+| OL-3474 edition works | v2 보통 화면 옛 ID 미표시 | v2/v3 diff에 두 ID 보인다고 보고 | restore 제안, 결과 불명 [#3474](https://github.com/internetarchive/openlibrary/issues/3474) | 판/표시 경로의 차이, 직접 값 없음 | I3474C,B10 |
+| OL-5206-B works/title/authors | 미확인 | 댓글의 v4 dump: OL13715125M works=/works/OL15336690W, title=Old Mortality; OL16315267M title=Old mortality; 두 authors=/authors/OL75235A | [재작성 보고](https://github.com/internetarchive/openlibrary/issues/5206#issuecomment-895846390), 실제 후판 불명 | 원문에서 복사된 값만 보고; 보존 판단 불가 | I5206C; 원 dump와 후판 |
+| OL-5664 authors | 미확인 | OL20613011M의 /authors/OL5993248A가 후속 merge로 redirect라는 [오류 보고](https://github.com/internetarchive/openlibrary/issues/5664#issuecomment-2229035022) | 저장 실패 보고 | Undo All 의도, type 검증 차단 | I5664C,B15; 실제 저장 성공/손실 미확인 |
+| WD-S1 redirect | 미확인 | Q78089383 잘못된 redirect; 속성 수동 재작성 | [helper undo 보고](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2021/11#How_do_I_delete_a_redirect?) | 값 작성과 redirect 제거 다른 단계 | W01,B19–22 |
+| KG-A aliases/en 추가 멤버 | Category:Kammergericht 없음 | [1038289881](https://www.wikidata.org/w/index.php?diff=1038289881&oldid=986442520&title=Q59165607&type=revision)에 있음; 별도 편집 없음 [next](https://www.wikidata.org/w/index.php?diff=next&oldid=1038289881&title=Q59165607) | [1048159568](https://www.wikidata.org/w/index.php?diff=1048159568&oldid=1038289881&title=Q59165607&type=revision)에서 없음 | 대상 제거 직접 확인 D01,D02 | 다른 객체의 복구 |
+| KG-A P31 추가 멤버 | Wikimedia category 없음 | merge에서 생김 | [undo](https://www.wikidata.org/w/index.php?diff=1048159568&oldid=1038289881&title=Q59165607&type=revision) 제거 | 대상 제거 직접 확인 | 다른 P31 전체 동치 아님 |
+| KG-A description/en, country (2행) | highest regular court of the state of Berlin; Germany [986442520](https://www.wikidata.org/w/index.php?oldid=986442520&title=Q59165607) | 동일; 병합 후 별도 판 없음 | [undo diff](https://www.wikidata.org/w/index.php?diff=1048159568&oldid=1038289881&title=Q59165607&type=revision)에서 동일 | 기존 무관/안정 필드 2행 보존 | 후속 독립 수정 보존 실험 아님 |
+| KG-B P910 | Q55296215 | [1039041773](https://www.wikidata.org/w/index.php?diff=1039041773&oldid=936463156&title=Q314104&type=revision) Q59165607로 bot 변경; merge 의존 | [1048159950](https://www.wikidata.org/w/index.php?oldid=1048159950&title=Q314104) Q55296215 | 하류 대상 수정 복구 직접 확인 | 모든 incoming links 미확인 |
+| KG-B location P276, height (2행) | Heinrich-von-Kleist-Park; 22 m [936463156](https://www.wikidata.org/w/index.php?oldid=936463156&title=Q314104) | 동일; P276 수정은 병합 전 2019-05-08 | [1048159950](https://www.wikidata.org/w/index.php?oldid=1048159950&title=Q314104) 동일 | 기존 무관/안정 2행 보존 | 병합 뒤 독립 수정 아님 D03P,D04P |
+| WD-S3 링크/속성 | 미확인 | [후속 추가 보고](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2023/12#Mass_wrong_merge_to_revert) Q65788404; 첫 계열 관련 | 미확인 | 보고 수준 독립 유효 후보, 복구 미입증 | W05,B24 |
+
+단위: [fields.csv](fields.csv) 22 필드행(복수 객체/값이 한 행에 묶인 곳 표시), 실제 전/직전/후 값이 이어진 대상 3 + 무관/안정 4 = 7행, 나머지 15행 불완전. 실제 직접 손실 0/7(선택 필드 한정), 손실 보고 4행 별도. 병합 후 유효 독립 무관 편집을 직접 확인한 사례 0; 수신자 및 하류 next-edit 구간 2개에서 개재 판 없음(해당 구간만), 병합 의존 bot 변경 1개. 따라서 독립 편집 보존율 계산 불가(분모 0). 계획된 자연층 판독 부족 32자리(OL 16 원판/비적격, WD 16 원순위 미복원). 원판 접근 못한 사례에 '수정 없음' 판정 금지.
+
+## 표 3 — 인용 의도와 원문 반환
+
+| 인용자가 하려는 일 | 한 주소로 가능한 답 | 복구판을 더해 달라진 답 | 실제 반환할 원문·조건문 | 뒤집힐 증거 |
+|---|---|---|---|---|
+| KG-A 병합 전 기관의 당시 영어 설명 확인 | [986442520](https://www.wikidata.org/w/index.php?oldid=986442520&title=Q59165607) 하나로 해당 값 확인 | [1048159568 diff](https://www.wikidata.org/w/index.php?diff=1048159568&oldid=1038289881&title=Q59165607&type=revision)는 정정 과정 설명에만 필요 | 원문 한 개 D02P; 당시 description만 묻는 조건 | 고정 URL이 다른 판 또는 필드 미표시 |
+| KG-A 오병합·취소 근거 확인 | [986442520](https://www.wikidata.org/w/index.php?oldid=986442520&title=Q59165607)만으로 취소 불명 | [merge diff](https://www.wikidata.org/w/index.php?diff=1038289881&oldid=986442520&title=Q59165607&type=revision) 및 [undo diff](https://www.wikidata.org/w/index.php?diff=1048159568&oldid=1038289881&title=Q59165607&type=revision)에 대상 값과 행위 요약 | 옛 고정판+변경 이력 D01,D02; source 복구 확인 못함 표시 | undo 뒤 동일 필드 재오류 또는 다른 객체 |
+| KG-B 건물의 과거 연결과 복구된 연결 확인 | [936463156](https://www.wikidata.org/w/index.php?oldid=936463156&title=Q314104)는 당시 값만 | [1039041773 diff](https://www.wikidata.org/w/index.php?diff=1039041773&oldid=936463156&title=Q314104&type=revision)와 [1048159950](https://www.wikidata.org/w/index.php?oldid=1048159950&title=Q314104)에서 target 중간 변경/복구 | 옛 URL+복구 revision D03,D04; 10:36~10:37 구간 불일치 | 별도 intervening edit나 다른 P910 의미 |
+| C1 옛 인용으로 작품의 현재 저자/설명 찾기 | [24/26 diff](https://openlibrary.org/works/OL14863262W/Tales_of_Soldiers_and_Civilians_18_stories?_compare=Compare&b=26&a=24&m=diff) 차단 | 실제 복구판 미확보, 추가 URL로도 판정 불가 | 둘 다 근거 링크로 확정 보류; [#6371](https://github.com/internetarchive/openlibrary/issues/6371)는 손실 보고로만 반환 I6371,B02–06 | 24–26 원판, transaction join 및 현판 |
+| OL-3474 예전 edition의 work 관계 찾기 | 일반 v2 링크는 기존 ID 미표시라고 보고 | [v2/v3 diff](https://openlibrary.org/books/OL27769174M/Through_the_Magic_Door?_compare=Compare&b=3&a=2&m=diff)에서 보인다고 보고되나 직접 차단 | [#3474](https://github.com/internetarchive/openlibrary/issues/3474) 설명만; 판 근거 보류 I3474C,B10 | 두 revision 실제 works 값 |
+| WD-S1 옛 QID가 현재 올바른 항목 가리키는지 | 옛 QID [Q16575483](https://www.wikidata.org/wiki/Q16575483)만으로 당시 redirect 의미 보장 안 됨 | 실제 undo revision 미확보 | [보고](https://www.wikidata.org/wiki/Wikidata:Project_chat/Archive/2021/11#How_do_I_delete_a_redirect?)만 조건부; 옛/복구판 모두 신원 근거 보류 W01,B19–22 | source·recipient revision과 sitelink 조인 |
+| L01 옛 표목에서 새 주제 찾기 | 옛 표목 한 개로 분리된 두 의미 불명 | [결정문](https://www.loc.gov/aba/pcc/saco/cpsoed/psd-211115.html)으로 rename과 split 관계 확인 | 결정문과 목적별 후보 둘; LCCN 매핑은 보류 L01 | 실제 authority ID/서지 매핑 |
+| J01 옛 지명의 현 공식 이름 찾기 | 옛 문자열은 동명이 지형 구별 불가 | [결정문](https://www.doi.gov/pressreleases/interior-department-completes-vote-remove-derogatory-names-five-locations)의 특정 locale 명시 시 새 이름 알 수 있음 | 결정문+Feature ID 확인 조건 J01,J03; ID 확인 전 동일 지물 단정 금지 | GNIS ID/좌표의 실제 변경 |
+
+단위: [citations.csv](citations.csv) 8 목적별 비교(예정 고정 8, 판독 가능한 직접 고정판 사례 3 목적/2 계보, 결정문 조건부 2, 실제 근거 보류 3). 사용자/외부 인용 소비 행동 직접 관측 0; 이 표는 반환 정책의 판단 예시이지 사용성 실험 결과가 아니다. 내부 링크 KG-B는 직접값을 확인했으나 외부 서지와 같은 절을 대조한 사례 0.
+
+## Q1–Q7 답
+
+**Q1 — 미확인.** I6371 최초 글 2022-04-04은 42049802의 다른 사람 병합 문제와 OL14863262W 24/26 무관 필드 손실을 예로 들었다. 4월 4일 추가 댓글의 43308762도 별도 예시. 9월 22일 [댓글 1255415276](https://github.com/internetarchive/openlibrary/issues/6371#issuecomment-1255415276)은 기록된 각 객체의 merge revision 직전으로 돌리는 일반 동작을 설명하지만 이 작품의 transaction ID를 제공하지 않는다. 2023-11-20 [댓글 1819300277](https://github.com/internetarchive/openlibrary/issues/6371#issuecomment-1819300277)은 역 JSON diff 적용을 제안한다. 같은 글/도메인/저자만으로 조인하지 않는다. C1↔C2 직접 조인 지지·반박 모두 못 함; 필요한 것은 B01의 구성원에 OL14863262W와 revision이 있는지 및 B02–06의 edit summary/time.
+
+**Q2 — 부분 답.** OL 보고 4필드 손실은 주장, 값 미확인. I3431의 후속 봇 ID 작성은 독립 프로세스이나 유효 근거인지는 모른다. W05에는 2022 오병합 뒤 첫 계열에 관한 새 링크/속성이 추가됐다는 2023년 보고가 있다. B24 차단으로 유효 후속 값과 이후 복구 검증 불가. 직접 WD-KG-A: 986442520→1038289881→1048159568, next edit 직행; WD-KG-B 936463156→1039041773→1048159950. 하류 봇 편집은 병합에 의존하며, 같은 item의 중간 독립 편집과 다르다. 실제 무관 독립 수정이 보존된 예는 미확인.
+
+**Q3 — 의도와 역할 분리.** OL #6371 문제 제기자는 무관 정보가 지워지지 않는 저자 복구를 원함. 2022 설명자는 원판 rollback 범위를 설명, 2023 제안자는 역 diff를 권고; 원 실제 병합/후속 편집/복구 주체 역할은 식별 불가. WD-KG-A는 병합 편집자, 복구 편집자 구별; 후자의 요약은 기관·건물·카테고리를 동일시하지 않는다는 목적을 명시. KG-B는 bot이 P910을 바꾸고 편집자가 bot revision을 undo. W01 편집자와 helper는 별개; 정확 revision은 모름.
+
+**Q4 — 실제 모드와 제안.** KG-A/B는 Undo 편집 요약과 값 직접 확인. 전체판 restore 실행 여부와 모든 필드 동치는 미확인. OL #6371의 전체 과거판 복원은 설명자 보고이고, #5206의 YAML 수동 수정은 당사자 보고. #5664는 후속 redirect 때문에 type validation 실패: 전체 복구 요청이 성공하지 않는 경우. #6271은 revert 뒤 표시 오류를 보고. #5753/5776의 성공 방식과 무관 필드는 모름. 역 diff 제안을 구현된 선택 복구로 서술하지 않는다.
+
+**Q5 — 부분 답.** 직접 하류 Q314104의 P910은 이전 Q55296215가 병합 뒤 Q59165607로 바뀌고 수동 undo 후 다시 돌아왔다. 이 링크는 같은 건물 객체 안의 주제 범주 속성이며 외부 서지 인용은 아니다. 2019 [T237899](https://phabricator.wikimedia.org/T237899) Commons P6243 문제 보고 W04와 I5206C의 복사된 edition dump는 외부/연결 서지 후보이나 고정 원판 대조 없음. #5999는 읽기 기록/평가의 source→target rewrite에서 역원 잃음을 제기. URL HTTP 성공만으로 동일 개체/판/절인지 보증 못 함. 동일 고정판의 당시 description 요청은 한 링크로 충분(D02P), 현재 정정 경로 요청은 추가 링크 필요. 실제 외부 인용자가 동일 URL에서 다른 판으로 이동한 경우의 고정 전후 대조는 미확인.
+
+**Q6 — 비교 원리와 조건.** [L01](https://www.loc.gov/aba/pcc/saco/cpsoed/psd-211115.html) 2021-11-15 표목 개명과 분리 공지, 파생 용어·scope note·지시·subdivision도 함께 개정. [L02](https://www.loc.gov/aba/pcc/saco/cpsoed/psd-210419.html) 2021-04-19 기존 표목 취소 후 Nazi concentration camps/Internment camps 두 표목으로 대체, 이전 용어는 후자의 UF, 전자는 좁은 관계. 단일 문자열 대체가 의미를 보존하지 못한다. [J02](https://www.doi.gov/pressreleases/interior-department-completes-removal-sq-federal-use) 2022-09-08 약 650 지명 교체 결정, [J01](https://www.doi.gov/pressreleases/interior-department-completes-vote-remove-derogatory-names-five-locations) 2023-01-12 별도 검토 7개 중 5개 새 이름, 2개 대상 제외. 각각 다른 공식 결정, 같은 프로그램. [J03](https://www.usgs.gov/us-board-on-geographic-names/guidance-name-proposals) 규범은 기존 공식 이름과 Feature ID를 요구한다. 전거/지리 사례의 실제 번호 continuity는 개별 ID 원판 부재로 미확인; 개명·분할과 동일성은 분리해야 함. 권한 있는 LC/BGN은 표목/지명에 정정 결정을 내리지만 downstream 레코드/지도 수정은 별개. 일반 링크에는 영구 ID 발행자/물리적 대상/관할 규약이 없을 수 있고, 옛 URL이 재할당·폐기될 수 있다. 따라서 이름이 바뀌면 항상 동일 객체로 처리하거나 분리 공지를 자동 전파하는 가정 금지. 지리의 실제 분할은 아직 미확인.
+
+**Q7 — 반환 조건 및 두 반례.** 표3의 한 고정판, 옛 URL+정정 revision, 두 판 모두 보류를 목적별로 사용. 무손실 경쟁 설명: KG-A next edit가 곧 undo, 후속 독립 수정 없음. 선택 필드에 손실 없음이 직접 관측됐다. 이 경우 전체 pre-merge snapshot 복원도 *해당 객체*의 후속 편집을 잃지 않을 조건(추론); 실제 전체 restore로 모든 필드 무손실인 사건은 확인 못했다. W07의 빠른 undo와 W08 방향 반전은 보고일 뿐. 부분 복구 뒤 오류 반례: KG-A undo 후 KG-B P910이 별도 undo 직전까지 잘못된 값을 갖는 실제 sequence. W01 수동 속성 작성 후 redirect 잔존 및 #6271의 오류는 당사자 보고. 서로 다른 필드뿐 아니라 관련 객체까지 경계를 지정해야 한다. 양방향 검색 기록 [COUNTEREXAMPLES.md](COUNTEREXAMPLES.md).
+
+## 대안과 전환 조건 (설계 가설, 실행하지 않음)
+
+1. 전체판 복원: 동일 객체가 병합 뒤 변경되지 않았고 참조 무결성이 확보되면 단순. 객체별 next revision 확인과 예상 current revision 비교가 전제; 하류 rewrite 및 외부 인용은 별도. 후속 편집 또는 최신 타입 불일치가 있다면 보류.
+2. field/edge 단위 역수정: 병합 이벤트가 실제 생성한 관계/값과 근거 ID를 보존하고, 현재값과 기대값이 일치하는 경로에서만 역연산. 다른 사람의 이후 근거는 제자리에 둠. 동일 필드의 이후 독립 수정, 병합 후 생긴 연쇄 의존성은 자동 overwrite 금지; conflict로 남기고 사람이 재판독. #6371 2023 제안과 맞지만 운영 검증 아님.
+3. 인용/현재 해결 경로 분리: 원문 주소·판·절·목적·관측일을 변경하지 않고 정정 event/판과 효력·scope를 별도로 추가. 단일 URL이 충분한 고정된 질문에는 불필요한 부가정보 없이 한 링크, 지금 관계를 묻는 경우에는 옛 판+정정/근거, 조인 불명은 양쪽 보류. 내부 incoming links/외부 citation의 재검토 목록 유지. #5999의 lossy rewrite나 KG-B의 실제 봇 변경에 대응. 전체판/역수정과 조합 가능; 원본 자체가 삭제되거나 영구판이 없으면 해당 확인 수준으로 낮춘다.
+4. 뒤늦은 설명의 독립성은 작성자만으로 판정하지 않는다. merge-induced bot 값, 타당한 별도 주장, 같은 필드 충돌을 분리. rollback/undo 완료와 그 밖의 영향 검토 완료를 다른 상태로 표시한다.
+
+## 모집·자료 하한 및 상태
+
+[frame.csv](frame.csv)의 OL 두 검색 15+24−5=34 고유, 첫 8에 연속판 0이라 다음 8. WD 검색 form을 열었지만 결과 정렬/순위를 가져오지 못했고 archive 대체 원전은 보강층으로만 보존했다. 2020–25 보고일과 2010/2019 등 거래일을 구별했다. [sources.jsonl](sources.jsonl) 총 84행, 26 산입 고유 저작(보수적 추가 보강 W05–W08 등 제외), history 2/8, report 15/6, guidance 5/4, library 2/2, geographic 2/2. 2 history는 서로 다른 객체의 edit 원전이며 계보 1개; 사건 단위로 엄격히 합치면 history 1/8, 전체 25. 최소 6개 history 더 필요(사건 기준 7). 다른 자료가 22 이상이어도 필수 하위분모 미달. 자연층 완전 관측 0이며 WD 접근 불가를 양성 0으로 해석하지 않음. 실행/빌드·대량 replay·외부 수정 없음. [SELF_CHECK](SELF_CHECK.md)의 재계산 및 공개 재개 입력을 따를 것.
+
+| 불일치·약점 | 영향을 받는 판단 | 다음 조사와 자료 | 결론을 뒤집을 관측 |
+|---|---|---|---|
+| C1/C2 조인 키와 OL 실제 값 부재 | #6371에서 한 거래의 저자 복구와 무관 필드 손실을 함께 입증했다는 주장 보류 | 42049802 모든 구성원, OL14863262W 24/25/26 고정 JSON·history (B01–08) | 같은 transaction의 work ID/revision과 복구 요약 일치 또는 다른 transaction이 명시됨 |
+| 자연 WD 원순위 미복원, 역사 원전 2/8, 보강에 유효 독립 후속 편집의 보존 비교 없음 | 선택 복구가 독립 편집을 지킨다는 운영 일반화·빈도·실제 전체 무손실 판정 보류 | Phabricator 원 검색 순서, OL 첫 16, W05 Q65788404의 merge/후속/undo 판 | 동일 원장에 다른 편집자의 유효 필드 값이 남거나 사라진 네 시점 및 실제 restore 모드 |
+| 하류 KG-B는 확인했지만 외부 고정 서지와 지리 ID 전후 미확인 | URL만으로 같은 대상/판/절을 안내하는 정책과 다른 분야 전이 범위 제한 | W04 Commons 원판 P6243, I5206C 실제 edition dump, LCCN 및 GNIS Feature ID 전후 | 외부 인용의 전후 동일 대상 또는 대상 변경, 정정판과 함께 확인 가능 |
