@@ -32,7 +32,7 @@ https://api.github.com/search/issues?q=repo%3Ascikit-image%2Fscikit-image+is%3Ai
 
 원글을 다시 읽을 때는 `/repos/{owner}/{repo}/issues/{number}`의 body만 추출하고 UTF-8 SHA256을 requests.jsonl과 대조한다. `updated_at`은 원문 최초판을 입증하지 않는다. 해시가 달라졌으면 현재판 재현 실패를 기록하고 새 봉인을 만든다.
 
-## 3. 문서판과 네 공통 절
+## 3. 문서판과 공통 절: v1 네 개, v2 다섯 개
 
 계획일 전 cutoff는 `2026-11-24T00:00:00Z`다. 공식 releases에서 draft/prerelease를 제외하고 published_at이cutoff이전인 최신 stable을 선택했다. 태그 ref를 실제 commit까지 해제했다.
 
@@ -41,11 +41,11 @@ https://api.github.com/search/issues?q=repo%3Ascikit-image%2Fscikit-image+is%3Ai
 | librosa |1.0.1 /9caf46a4ecaeb8ea24bb541231065c9f761174ae |https://librosa.org/doc/1.0.1/api/index.html |
 | scikit-image |0.26.0 /ee0a7a3ebd9ac8c2602f40e55bc015a3c8a81ae8 |https://scikit-image.org/docs/0.26.x/api/api.html |
 
-R1 stream, R3 recurrence_matrix, R4 rank.otsu, R5 dilation의 각 `dt#symbol`을 포함하는 부모 `dl.py.function` 전체가 공통 절이다. R2는 요청된 librosa public symbol이 없고, R6은 복합 roundtrip 시험의 단일 API 대응을 보류했으므로 원래 공석을 유지한다. 이를 나중에 참고문헌이 있는 함수로 바꾸지 않는다.
+R1 stream, R3 recurrence_matrix, R4 rank.otsu, R5 dilation의 각 `dt#symbol`을 포함하는 부모 `dl.py.function` 전체가 공통 절이다. R2는 요청된 librosa public symbol이 없다. R6은 v1에서 대응을 보류했으나 literal-first 규칙의 잘못된 적용을 v2에서 lch2lab로 정정했다. 원봉인은 그대로 보존했다. v2 공통절1262자와 기존 packet receipt를 함께 읽는다. 참고문헌이 있는 다른 함수를 대신 고른 정정이 아니다.
 
 Inline Examples·Notes·대역폭 항목의 참고문헌은 공통 노출이며 새 추가 링크 성과로 세지 않는다. `evidence/common/*-common.json`에는 실제 DOM 순서의 전체 href·제외 이유·원 docstring 대응을 저장했다. 배포 HTML에 생성되는 gallery 링크가 있으므로 소스 docstring만으로 gallery 존재 여부를 판단하지 않는다.
 
-`acquire.py` の取得・抽出例:
+`acquire.py` 취득·추출 예:
 
 ```sh
 python -B docs/workstreams/research/AF-RES-113/acquire.py REPLAY-R1 https://librosa.org/doc/1.0.1/api/generated/librosa.stream.html --symbol librosa.stream
@@ -65,7 +65,7 @@ python -B docs/workstreams/research/AF-RES-113/acquire.py REPLAY-R4 https://scik
 | R3 |독립 예제 href없음 |Wang DOI, DOM10. 선행 Zelnik-Manor 인용에는 외부href없음 |
 | R4 |Rank filters, DOM4 |Wikipedia 설명은 원저작이 아니므로 공석 |
 | R5 |Cornea inpainting, DOM8 |원저작 href없음 |
-| R6 |공통 시작 공석 |공통 시작 공석 |
+| R6 |v2 lch2lab: inline만, 독립 링크 공석 |v2: 명시된 원저작 href 공석 |
 
 추가 링크는 원문 main/article의 첫3000 Unicode codepoints, 그림0, 코드·표·caption도 문자예산에 포함한다. `node_text`는 각 text fragment 안의 연속 whitespace를 한 공백으로 줄이고 비어 있지 않은 fragment를 LF로 연결한다. script/style/nav/footer/hidden/headerlink는 제외한다. 이미지의 실제 픽셀은 열지 않는다. UTF-8·huge_tree와deep-copy를 쓰며 예산 밖 method 절로 건너뛰지 않는다.
 
@@ -94,3 +94,7 @@ python -B scripts/cloud_check.py --environment codex-cloud --fetch-contract --re
 ```
 
 TMPDIR은 **검사checkout의docs밖**에 두어 임시복사 재귀를 피한다. 공통검사 통과는 원프로젝트 알고리즘·MKV·S390x 실행 성공이 아니다. 명시manifest1개와자동세션발견수도별도로 기록한다. 검사 뒤 영수증·HANDOFF 변경은 검사한 결과 SHA에 소급 포함하지 않는다. 결과판 원장·RESULT·재현코드의byte동일성을 다시 대조한다.
+
+## 즉시 인계와 복구 범위
+
+2026-11-24 05:02 UTC 전후 임시 작업공간 초기화 뒤 원격 d50b27c5b082dbf24f6cb5508dbf9914fc1f12c6에서 복구했다. 원문 캐시 손실은 지문으로 복원했다고 주장하지 않는다. R6-v2는 원글/공통절을 재취득해 두 packet의 동일 지문을 확인했다. 사용자의 즉시 결과·HANDOFF 커밋 지시에 따라 미실시 검사는 명령과 입력 SHA를 acceptance-evidence.json에 남긴다.

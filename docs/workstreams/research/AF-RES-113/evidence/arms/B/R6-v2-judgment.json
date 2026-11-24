@@ -1,0 +1,132 @@
+{
+  "workstream": "AF-RES-113",
+  "request_id": "R6",
+  "slot_id": "R6-B",
+  "route": "B",
+  "version": "v2_mapping_correction",
+  "document_status": "reconstructed document after workspace recovery; same reader reread",
+  "reader_kind": "same automatic reader; supplementary-context reread; not a fresh-context reader",
+  "strict_fresh_reader": false,
+  "human_experiment": false,
+  "independent_developer_adoption_observed": false,
+  "judgment_changed_from_prior_v2": false,
+  "start_utc": "2026-11-24T05:14:56.433899+00:00",
+  "end_utc": "2026-11-24T05:15:26.915945+00:00",
+  "input_sha256": "d68a2548fd2345d80fd3e5cde5da112aa10e8fd12bfde6a38a425d102d77774a",
+  "expected_prior_input_sha256_matched": true,
+  "files_read_this_reconstruction": [
+    "/workspace/scratch/7e9d1ab33296/agentflow-open/docs/workstreams/research/AF-RES-113/evidence/arms/B/R6-v2-packet.json"
+  ],
+  "files_written_this_reconstruction": [
+    "/workspace/scratch/7e9d1ab33296/agentflow-open/docs/workstreams/research/AF-RES-113/evidence/arms/B/R6-v2-judgment.json",
+    "/workspace/scratch/7e9d1ab33296/agentflow-open/docs/workstreams/research/AF-RES-113/evidence/arms/B/R6-v2-judgment.md"
+  ],
+  "receipt_or_recovery_report_read_this_reconstruction": false,
+  "exposure": {
+    "packet_utf8_bytes": 9582,
+    "packet_unicode_codepoints": 9422,
+    "raw_byte_range_read_end_exclusive": [
+      0,
+      9582
+    ],
+    "full_raw_packet_displayed_and_read": true,
+    "all_keys_read": [
+      "request_id",
+      "route",
+      "version",
+      "previous_packet_context",
+      "issue_current_body",
+      "issue_body_sha256",
+      "common_text",
+      "common_sha256",
+      "common_url",
+      "baseline",
+      "assigned_slot",
+      "additional_text",
+      "additional_figures",
+      "instruction"
+    ],
+    "source_text_read": [
+      "complete original issue_current_body",
+      "complete common_text, signature through inline example",
+      "complete corrected baseline",
+      "complete assigned_slot metadata",
+      "explicit additional_text null and empty figures"
+    ],
+    "common_codepoints": 1262,
+    "common_sha256": "c0e416d28e5b41d3d8af10671d1607f3618329d6a4f7687b0eae2ed00c623c6a",
+    "issue_body_sha256": "1c16fffabfba06b3b4acf08823182a8d78b4414162e4d21fb450c39410771a20",
+    "figures_seen": 0,
+    "display_truncation": false
+  },
+  "external_opens": 0,
+  "additional_searches": 0,
+  "executed": 0,
+  "git_operations": 0,
+  "cross_route_exposure": false,
+  "processing_scope": "Only Python packet reads, SHA256 checks, and these two document writes. No target project or test was executed. No other file was read during reconstruction.",
+  "original_target": "Restore the S390x float16/float32 Lab-to-LCh-to-Lab roundtrip without changing the original dtype and decimal=4/7 assertions.",
+  "mapping_correction": {
+    "target_symbol": "skimage.color.lch2lab",
+    "basis": "Supplied literal-first-goal-operation rule in lch2lab(lab2lch(lab)).",
+    "assessment": "Accept the v2 correction; the initial ambiguous-start hold was overconservative. This maps the starting API but does not identify the defective function or assign NumPy/scikit-image responsibility."
+  },
+  "old_approach": "Original colorwheel -> img_as_float -> astype(dtype) -> rgb2lab -> lch2lab(lab2lch(lab)) test; original opening reports float16/float32 errors on S390x with NumPy 1.24.1 and reports NumPy 1.23/little-endian builds succeeding.",
+  "common_section_adds": [
+    "CIE-LCh cylindrical to CIE-LAB Cartesian conversion meaning.",
+    "channel_axis defaults to -1 and identifies the channel dimension.",
+    "Same-shape ndarray output and ValueError for fewer than three channels.",
+    "Documented L*, C and hue domains; hue is an angle around 0 to 2*pi, with the Notes writing (0, 2*pi).",
+    "An astronaut rgb2lab -> lab2lch -> lch2lab example; the roundtrip pattern itself was already in the opening."
+  ],
+  "common_limits": [
+    "No output dtype guarantee, decimal=4/7 numerical error bound, S390x behavior, corrected implementation or numeric output.",
+    "Shape and axis contracts cannot substitute for the numerical regression assertions.",
+    "The common API version is 0.26.0; the original report is 0.19.3. Neither implementation was inspected or run."
+  ],
+  "changed_unit_order_responsibility": {
+    "research_unit": "Common API start now mapped to lch2lab.",
+    "new_extra_supported_implementation_change": null,
+    "algorithm_order_change": null,
+    "bug_responsibility_reassignment": null
+  },
+  "preserved_conditions": [
+    "Keep original colorwheel input and dtype parameterization [float16,float32,float64].",
+    "Keep float_dtype=_supported_float_type(dtype); assert lab.dtype == float_dtype, which applies to lab after rgb2lab.",
+    "Keep decimal=4 if float_dtype==np.float32 else 7 and assert_array_almost_equal(lab2,lab,decimal=decimal).",
+    "Keep the S390x reproduction context; do not replace it with the common astronaut example or a shape-only check."
+  ],
+  "discriminating_input": {
+    "origin": "Original issue, already known; no newly invented test in this reconstruction.",
+    "input": "rgb=img_as_float(data.colorwheel()).astype(dtype=dtype,copy=False); lab=rgb2lab(rgb); lab2=lch2lab(lab2lch(lab)); use original dtype and roundtrip assertions.",
+    "minimality": "No smaller failing pixel array is supplied. Actual colorwheel data and linked build log were not opened.",
+    "new_test": false,
+    "executed": 0
+  },
+  "observed_vs_predicted": {
+    "source_observation": "Opening reports 6/411810 mismatched elements, max absolute difference 5117.8477, max relative difference 118.42903 for the supplied float16 traceback, and says float32 gives the same output. These are author-reported values, not this reader measurements.",
+    "fresh_runtime_observation": null,
+    "predicted_corrected_numeric_output": null,
+    "two_old_vs_fixed_outputs_justified": false,
+    "reason": "No source-supported repair is supplied. Passing the preserved assertions is the acceptance condition, not a prediction that an unspecified repair works."
+  },
+  "additional_hop": {
+    "status": "vacant_link",
+    "text": null,
+    "characters": 0,
+    "images": 0,
+    "new_choices": 0,
+    "new_tests": 0,
+    "new_implementation_decision": null,
+    "new_discriminating_test": null,
+    "classification": "unavailable",
+    "eligible_novelty_count": 0
+  },
+  "new_extra": false,
+  "new_choices": 0,
+  "new_tests": 0,
+  "eligible_novelty_count": 0,
+  "counterexample_or_limitation": "An implementation can satisfy the documented shape/channel-axis contract while still producing the reported numerical error. Thus common contract support does not demonstrate a preserving repair. Platform/version association does not establish the causal mechanism.",
+  "baseline_disagreement": "No substantive disagreement with corrected v2 baseline. Initial unmapped start was corrected to lch2lab; zero extra novelty is unchanged, with vacant_link rather than the original vacant_start reason.",
+  "reconstruction_note": "This document restates the same reader prior v2 conclusion from the recovered packet, whose full SHA256 matches the previously recorded value. It is not represented as a byte-for-byte recovery of the prior judgment file. No other route, root analysis, implementation, external source, receipt, or recovery report was read in this reconstruction."
+}

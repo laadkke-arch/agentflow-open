@@ -44,7 +44,9 @@ A5 첫 3000자는 시간축 median/variance 설명이다. 사후 뒤 절에는 d
 
 R2의 현재 댓글에서 원 작성자 bmcfee는 2024-04-03 mir_eval에 NaN 지원 PR을 냈고 librosa의 예정 feature에서 뺀다고 말한다. 모집 당시에는 보지 않았다. 원래 요청된 librosa public symbol이 없다는 공석은 유지한다. 이 발언은 역사적 후속 의향의 증거이며 해당 PR의 실제 변경 및 본 연구 링크의 채택은 미확인이다. [COMMENT-2034816835]
 
-R6은 단일 API 대응을 보류한 보수적 판정이다. 첫 목표를 lab2lch로 특정할 수 있다는 다른 판독이 나올 수 있으며 그 경우 사전 등록한 새 판에서 문서 대응을 다시 해야 한다. 후속 지식으로 이번 자리를 채우면 원래 분모가 바뀐다. 원 s390x 하드웨어/NumPy1.24.1 환경은 제공되지 않았고 roundtrip 숫자 결과를 재실행하지 않았다. 읽은 댓글은 bot의 dormant 안내뿐이다. [REQ-R6; baselines.csv R6; COMMENT-1636965647]
+R6 초기 단일 API 보류는 v2에서 정정됐다. 원글의 목표 조작을 literal 순서로 읽으면 outer lch2lab가 먼저다. 고정 공식 공통절1262자를 읽고 A/B 모두 적격 추가 링크 없음으로 대사했다. dtype assertion은 rgb2lab 뒤 lab.dtype이며 lab2.dtype가 아니다. s390x/NumPy1.24.1의 수치 회귀는 실행하지 않았다. [evidence/corrections/R6-v2.json; R6-correction-read.json]
+
+사후 공개 recurrence_matrix의 width guard를 확인하니 처음 제안한 3점 public 입력은 실행 전 거부되는 무효 후보였다. 이를 보존하고 기각한다. 위 3×3 CSR의 helper 실행과 혼동하지 않는다. 후속5점 후보는 아직 미실행이다. [V-R3-PUBLIC-GUARD]
 
 ## 실행과 미실시
 
