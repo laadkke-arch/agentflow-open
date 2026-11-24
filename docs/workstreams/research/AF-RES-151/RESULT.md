@@ -124,10 +124,65 @@ A 제외 슬롯 6 역검토: 4/6 현 요구 확인 유일 atom 손실0, N2-01 �
 - [D10](https://f-droid.org/en/2024/10/24/twif.html) Conversations Classic 일시 제외 및 수정 시 재포함 정책; DSub2000 방치 원본 대체 fork 편입, Audio Recorder 3년 뒤 복귀 원문. 일시 제외 뒤 실제 해당 앱 재편입 미확인. Awesome PR [#3919](https://github.com/sindresorhus/awesome/pull/3919), [#3901](https://github.com/sindresorhus/awesome/pull/3901) 직접 metadata: 양쪽 open/merged=false/closed_at=null, merged_at=null; mergeable은 편입 승인 아님. 과거에 열려 있던 결론을 임의 닫지 않음.
 - 영구 제외보다 조건별 H 재심사: 버전/라이선스 변경, 신규 입력과 플랫폼, 실패 재현 또는 실제 재포함 시 다시 열기. 실제 복구 비용 및 제품 채택은 기록 없으므로 단가/사용자 피해 추정 금지.
 
+## 최종 보완 재시도 #2 — 2026-11-24 UTC
+
+기준 HANDOFF 9686988e51e1e6635bb652918e9b9480f4e9b770. 위 내용은 그 당시 결과로 유지한다. 이번에는 원자료 복구 경로·공개 원본 계약·실제 운영 diff·원사용자 기록을 새 `retry2/` 원장에 추가했다. 기존 표, 원장, 과거 판정(보충 12쌍/6 대조 108행, N2 6쌍/18행)은 변경하지 않았다. 신규 증거 21행은 같은 사건과 버전 및 기존 원문의 중복 가능성이 있어 기존 27 원자료 하한에 단순 합산하지 않는다.
+
+### Q2/Q6 원 자연 N0과 대체 N2 엄격층의 별도 검증
+
+- [원 API](https://api.stackexchange.com/2.3/questions?site=softwarerecs&tagged=offline&fromdate=1672531200&todate=1704067199&order=asc&sort=creation&pagesize=30&filter=withbody): 동일 query 웹 접근 불가, 실제 curl exit6 DNS 실패, 0바이트 header, JSON 없음. Wayback exact CDX와 wildcard, 사이트 검색/태그, SEDE(403)도 시도했으나 고정 원응답·원순서 복구 못함. [API 원문](https://api.stackexchange.com/docs/questions)의 creation_date ASC 및 tagged AND는 확인했으나 결과값 아님. [공개 데이터 덤프 목록](https://archive.org/download/stackexchange)에서 2024-04-06 23:29, softwarerecs.stackexchange.com.7z 50.2M 항목 확인; binary 다운로드/직접 열기 실패, curl exit6 archive.org DNS. 파일 존재 목록과 실제 Posts.xml 접근을 구별. 이 덤프에서 PostTypeId=1, CreationDate 동일 UTC 범위, 정확 태그 offline, ASC, 처음 30개를 복구할 수 있는 경로는 있지만 데이터 수정·삭제·태그 변경·동일 초 tie 순서로 API와 같다고 확정 불가. 따라서 **원 N0 0/6 관측, 실제 반환 수/전체 분모 미확인**. 원 검색 순서를 검색 엔진 결과로 대체하지 않았다. [접근 원장](retry2/n0-recovery.jsonl), [정확한 복구·검증 절차](retry2/N0_RECOVERY.md).
+- 별도 대체 자연 N1 5/6, N2 완화 6/6(30 반환, 최초 8 심사, 2 제외, 22 quota) 그대로. 엄격 N2는 #9324의 UPnP 증상→과업 추론을 제외한 5/6. #9329를 사후 열어도 quota 뒤이므로 빈칸을 채우지 않는다. 독립 가림 판독자도 구하지 못했으므로 0명이다.
+- [검산](retry2/verification.json): 기존 고정 natural-pairs.jsonl 및 natural-decisions.csv를 읽고 집합을 직접 계산, 완화 18행·엄격 15행 모두 수치 차이0. 완화 atom18(확인11), 셀 S15/U20/X1; 엄격 atom15(확인10), 셀 S13/U16/X1. 기존 가림/공개도 재집계: 각12, 비교가능 별6, 변화0; 같은 연구자 선노출 자기 판독. 산술 재계산은 독립 의미 판독이 아니다.
+
+| 선별 방법 | 완화 N2 6쌍 활성/확인, 보관/확인 | 엄격 N2 5쌍 활성/확인, 보관/확인 | 엄격 숨김/10, 유일 atom 손실 |
+| --- | --- | --- | --- |
+| A 단순 대표 | 9/11, 9/11 | 8/10, 8/10 | 5/10, 2 |
+| B 근거 다양성 | 11/11, 11/11 | 10/10, 10/10 | 3/10, 0 |
+| C 조건부 보류 | 0/11, 11/11 | 0/10, 10/10 | 10/10, 0 |
+
+엄격층에서도 A 유일 근거 손실 N2-01 offline transfer와 N2-06 metered 감지 각각1. B는 부분 계약 보존, C는 전체 미충족 보류; 완전 충족 후보 분모0, 회수율 산출불가. N0과 대체 N1/N2 및 보충층의 효과 합산 금지. 신규 도구 후보나 역사적 판정을 뒤집어 쓰지 않았다.
+
+### Q3/Q5 공개 원본 계약 및 실제 사용자 변경 선택
+
+| 원요구 / 공개 입력 | 실제 실행 또는 선택 | 확인 범위/한계 |
+| --- | --- | --- |
+| [N2-02 #9313](https://github.com/syncthing/syncthing/issues/9313), 원질문자가 지정한 [86a08eb](https://github.com/syncthing/syncthing/tree/86a08eb87df2aa6cf1ab631120a0b918617a98b3), [공급자 원 fixture](https://github.com/syncthing/syncthing/blob/86a08eb87df2aa6cf1ab631120a0b918617a98b3/lib/protocol/deviceid_test.go) | 네 Go 파일 Git blob 일치 후 실제 Linux Go 1.23.2: upstream test 6 PASS, 연구자 fixture test 1 PASS, protobuf 생성 타입 필요한 1 test 제외. Node v22.16.0에 실제 JS/HTML 식 옮겨 실행: 7/6/6/5/6 → 실제 병합 diff 적용 후 7/7/7/7/7, 두 명령 exit0. | 공개 제작자 test input, 원질문자의 비공개 실제 device ID 아님. 로컬 stdlib shim, Node 함수 발췌 하니스, 전체 API/브라우저·제품 빌드 아님. [실행 receipt·해시](retry2/PUBLIC_CONTRACT.md), [재현 스크립트](retry2/contract-repro.sh) |
+| [동일 저자 KeyWeeUsr PR #9314](https://github.com/syncthing/syncthing/pull/9314) | 실제 원사용자가 직접 수정 선택, 2024-01-02T16:31:58Z merged=true. [병합 diff](https://github.com/syncthing/syncthing/commit/2abfefc18cb3020b68a113d7099950e98709b22b), 6파일 +12/-6, 표현 길이 7 통일·Go↔JS xref. 원 issue completed 1초 뒤. | upstream 실제 수용 확인; 출시/현장 만족 및 사용자 장치 재현 미확인. 선택 방식은 기존 Git/Kubernetes analog 양쪽 중 선택 아님. |
+| [R3 원질문자 Cornelius](https://softwarerecs.stackexchange.com/questions/3412/free-ocr-software-that-makes-a-pdf-searchable-with-searchable-text-at-the-right) | gscan2pdf 정렬 실패, Lios export crash; 2014-06-30 PDF-XChange Viewer 사용 경험을 답변에 반영했다고 보고, 2016-12-15 Wine 1.8에서 문제없이 동작했다고 보고. 자기 답변 Tesseract 3.03 PDF 출력도 확인. | 명시적 실사용 시험/동작 보고, 지속 사용·최종 계약 완전 충족 아님. 공개 원 PDF 첨부는 보이는 원문에서 미확보. PDF-XChange Viewer는 고정 K05/K06 쌍에 없음; 후보 교체/반전 산입 금지. |
+
+따라서 이전의 합성 Git 충돌 실험에서 실제 원질문자 연결 공개 계약 검증으로 확장되었다. 이전 OCR/R6 원 입력·실제 라우팅은 여전히 미확인, 보충 대조의 엄격 양방향 우위 반전0/6을 그대로 둔다.
+
+### Q1/Q7 CineLog 복구 diff와 노동 근거
+
+| 직접 관측 | 고정 원문 | 결론 / 범위 |
+| --- | --- | --- |
+| 2024-03-25T09:34:12Z 삭제/비활성화 commit O1 | [d03c57f](https://github.com/f-droid/fdroiddata/commit/d03c57fdbd836fff73375503227fca3acdbf32e5) | metadata/com.ulicae.cinelog.yml 23 disable 항목 추가, AutoUpdateMode Version→None, +24/-1. 사유 greendao non-FOSS. |
+| 2024-06-05 GPL 공개 준비 | [39cef8f](https://github.com/greenrobot/greenDAO-plugin/commit/39cef8f3c52e0e38966849ca924593abcdd757b6), [03ca816](https://github.com/greenrobot/greenDAO-plugin/commit/03ca8160d722522b43c565a6347462097f9df2e0) | LICENSE/README GPLv3-or-later, 37 파일 source header. [공급자 공개 공지](https://github.com/greenrobot/greenDAO/issues/412#issuecomment-2162441305), [CineLog #76 6/12 공개 댓글](https://github.com/Alcidauk/CineLog/issues/76#issuecomment-2162514417). |
+| 2024-06-12T09:17:58Z 복구 commit O2 | [f44e807](https://github.com/f-droid/fdroiddata/commit/f44e807fd64387e04b7b29649d5483ee1fa81e31) | 23 과거 disabled 항목 삭제, 새 2.0.0 code40 단일 build pinned bfa57ec, AutoUpdateMode Version 복원. +4/-197. 이전 버전 전체 재활성화 아님. |
+| 실제 복구 대상 코드 | [v1.5.3 old](https://github.com/Alcidauk/CineLog/blob/bde45b00d9090ae0b2ca8f98eec6867b63511c86/build.gradle), [v2.0.0 restored](https://github.com/Alcidauk/CineLog/blob/bfa57ec60fef4307fc02c518cf1d2188fbbd411c/build.gradle), [restored app](https://github.com/Alcidauk/CineLog/blob/bfa57ec60fef4307fc02c518cf1d2188fbbd411c/app/build.gradle) | 2024-03-25 11:52:06Z release commit. 양쪽 greendao-gradle-plugin 3.3.0, apply plugin, runtime greenDAO 3.2.2, schema9 동일. |
+| 실제 별개 Room 마이그레이션 노동 증거 | [0d26253](https://github.com/Alcidauk/CineLog/commit/0d262531ddc441f893ebc22e8bc9387ecf848dc8), [c894818](https://github.com/Alcidauk/CineLog/commit/c894818921ee6f2ac68212f49e8c7e9e9c9085cf), [6979c34](https://github.com/Alcidauk/CineLog/commit/6979c34632848d97c44de6afe8ab43058f668ac0) | 4/9 Room DB interface 시작 21파일 +1026/-25, 5/13 DAO type 1파일 +2/-2, 5/15 service/DAO split 24파일 +335/-167. 선택한 실제 patch 세 건, 전체 작업량 아님. |
+
+**정정/강화:** 앞판의 '수정 diff 미확보'를 위 신규 증거로 보완. 6/12 복구 대상 bfa57ec는 4/9·5월 Room 변경 이전이고 plugin을 그대로 참조한다. 따라서 DAO 교체가 해당 복구의 직접 원인이라는 해석은 복구 대상 코드와 불일치한다. 실제 근거는 플러그인 소스/GPL 공개와 카탈로그 조건 변경으로 복구되었다는 쪽을 강하게 지지한다. [D2](https://f-droid.org/en/2024/04/04/twif.html)→[D3](https://f-droid.org/en/2024/06/20/twif.html) 보고 및 [upstream #76](https://github.com/Alcidauk/CineLog/issues/76) 댓글 5개(3/28 이행 의사, 5/29 생성 코드 제안, 5/30 DAO 재작성 및 교체 동의, 6/12 source published), issue completed 6/20. GitHub F-Droid mirror에서 실제 commit patch를 읽었으며 원 GitLab·빌드 로그/3.3.0 binary source 대응/설치 재현은 미확인. 단독 인과를 무조건 단정하지 않는다.
+
+복구 노동: 비활성화→복구 metadata commit 간 6,824,626초 = 78일 23시간 43분 46초(달력 경과, 실제 작업 시간/장애 지속시간 아님). 실제 운영 diff 2건, 공급자 license diff 2건, 선택 Room diff 3건, upstream 댓글5, 각각 파일/줄 변화는 [고정 diff 원장](retry2/operations-diffs.json) 및 [검산](retry2/verification.json). 개인별 투입시간/사용자 손실/재취득 금액은 null. 다수 수정 비용이 들어갈 수 있는 증거를 확보했으나 마이그레이션 비용을 해당 복구에 귀속하거나 diff 줄수를 시간으로 바꾸지 않는다.
+
+### Q5/Q7 원사용자 선택/실제 비용의 증거 수준
+
+[원사용자 결정 원장 11행](retry2/user-decisions.jsonl)에서 기존 보충 R1~R6을 재열람: R3 1/6 시험 및 동작 보고, 나머지 5/6 보이는 기록에서 원질문자 선택 미확인. 답변자의 Vosk/aTrain/Cuneiform/Tesseract 등 실사용 사례를 질문자 선택으로 합산하지 않는다.
+
+| 원문 | 실제 확인한 단계 | 아직 확인하지 못한 단계 |
+| --- | --- | --- |
+| [N2-02 #9313](https://github.com/syncthing/syncthing/issues/9313) / [#9314](https://github.com/syncthing/syncthing/pull/9314) | 원사용자 수정 선택과 실제 병합 | 배포/사용 후 만족 |
+| [N2-03 #9315](https://github.com/syncthing/syncthing/issues/9315), [maintainer 거절](https://github.com/syncthing/syncthing/issues/9315#issuecomment-1874416290) | 생성 파일 commit 요청을 not_planned로 닫음; protobuf에는 그 원칙 채택, GUI는 ~5 MB 매번 전체 변경이라는 관리자의 추정 비용 때문에 거절, 사전 생성 안내; 원질문자가 감사 답변 | 원질문자 실제 빌드 완료 및 측정된 저장/노동 비용 |
+| [N2-06 #9328](https://github.com/syncthing/syncthing/issues/9328), [연관 #8394](https://github.com/syncthing/syncthing/issues/8394) | 원질문자가 WiFi 때 원격 장치 pause/unpause 수동 선택, 잊어서 비용 발생 보고. NetworkManager flag 사용, 요청 not_planned·연관 미해결 | 자동 통합 동작/비용 액수 |
+| [N1 #9028](https://github.com/laurent22/joplin/issues/9028) | 원질문자가 task_state running flag 수동 해제 후 restart 성공 보고 | 제품 patch 및 실제 복구 노동/중단시간 |
+| [quota 이후 #9329](https://github.com/syncthing/syncthing/issues/9329) | 원질문자 send-only PC/receive-only phone 사용, 95% 동작 자기보고, 임시 send-and-receive 전환 | 자기보고 분모/원래 요구 새 기능 및 현장 검증; N2 자연 분모 산입 금지 |
+
+이것은 실제 채택/우회/거절 근거를 구별한 것으로 후보 추천의 사용자 효용 전체를 입증하지 않는다. 원래 fixed pair를 새 수정안으로 교체하지 않는다. 최신 증거와 한계는 [retry2/sources.jsonl](retry2/sources.jsonl)에서 직접 추적할 수 있다. 전체 상태 PARTIAL.
 
 ## 가장 중요한 불일치·약점
 | 불일치·약점 | 어떤 결정에 영향을 주는가 | 다음 조사와 구할 자료 | 판단이 뒤집힐 관측 |
 | --- | --- | --- | --- |
-| 대체 자연 N2 6/6(엄격 과업 명시 5/6), 원 N0 0/6, N1 5/6; 색인 순서 및 저자 소속 미감사 | A/B/C 일반 성능, 표본 선택 편향 | exact X1 API 응답·원순서 및 독립 도메인 표본 | 추가 자연층에서 B의 순이익 소멸 또는 일관된 큰 이득 |
-| 가림→확장 공개 12/12 자기 판독, 비교별 6/12, 독립 0; 작은 구현 장애와 동작 사례는 사용자 보고 | Q4 인기·부품 가치의 독립 추론 | 독립 판독자에 동일 가림 packet, 고정판별 앱/SDK 실행 | 독립 판독 및 동작 결과가 유일 기능 판정을 변경 |
-| 대표 프로브 3개 합성, R3 원 PDF/RO 정렬과 R6 라우팅 미확인, 엄격 반전0/6·실제 재취득 노동·CineLog 수정 diff 미확인 | 보류/영구 제외·실제 비용/추천 판단 | 원 입력/환경, 수정 diff, 실측 복구 노동 및 실제 사용 | 양방향 엄격 우위, 실제 대체/복원 비용 또는 보관 고비용 관측 |
+| 원 N0 exact API/고정 원응답 0/6, 아카이브 목록만 확보; 대체 N1 5/6, N2 엄격5/6·완화6/6 별도 | 모집단 대표성과 A/B/C 일반화 | 승인 네트워크에서 원 query 및 역사 snapshot 원바이트/순서 보존, dump tie/수정 차이 분리 | 추가 자연층에서 B의 순이익 소멸 또는 일관된 큰 이득 |
+| 가림/공개 12/12 동일 연구자, 별 비교6/12, 독립 판독0; 공개 Syncthing fixture 좁은 실측 성공, 실제 사용자 R3 PDF 및 R6 라우팅 미확인 | Q3/Q4 기능 계약 및 독립 판독, Q5 엄격 양방향 반전0/6 | 독립 무명 packet 판독, 원 PDF·사용 허가된 audio·실제 OS/버전/제품 통합 및 반복 입력 | 독립 판독과 실제 입력에서 유일 기능 판정 변경/엄격 양방향 반전 |
+| CineLog 복구 diff·license·Room 별개 노동 확인 및 원사용자 선택 일부 확인; 실제 사람 시간/금액·F-Droid 재빌드/배포·장기 채택 미확인 | 복구비/보류 대 영구 제외, 추천 비용 효용 | 승인된 F-Droid 빌드 로그 및 binary/source 대응, 실제 시간·비용 장부, 사용자 후속 배포·현장 기록 | 복구 비용·실제 대체/선택 손익이 반대 방향이거나 검증된 빌드가 실패 |
