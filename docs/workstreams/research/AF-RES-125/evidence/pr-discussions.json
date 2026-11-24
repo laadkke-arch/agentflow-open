@@ -1,0 +1,1922 @@
+[
+  {
+    "repo": "scikit-learn/scikit-learn",
+    "n": 19372,
+    "pr": {
+      "url": "https://github.com/scikit-learn/scikit-learn/pull/19372",
+      "number": 19372,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "#### Reference Issues/PRs \r\nTowards #14216 \r\n#### What does this implement/fix? Explain your changes.\r\nReplaced assert_raises with the pytest context manager.\r\n#### Any other comments?\r\nPair programming partner @marenwestermann ",
+      "title": "TST replace assert_raises with the pytest.raises context manager in dummy module",
+      "base": "main",
+      "base_sha": "28fa8972d32cd84d65e55e1d401ebc090de28678",
+      "head": "pytest-raises-test_dummy",
+      "head_sha": "24c3497a5d49f45fd40b451a6ed91c301c0f1b9e",
+      "head_repo_id": null,
+      "head_repo_full_name": null,
+      "merge_commit_sha": "bd67f12b07c3532436dc61d09a8461fba69ac7b4",
+      "user": {
+        "login": "isaacknjama",
+        "name": "isaacknjama",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/41724425?v=4",
+        "id": 41724425
+      },
+      "requested_reviewers": [
+        {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        }
+      ],
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-02-06T10:05:36Z",
+      "updated_at": "2021-02-07T11:14:41Z",
+      "closed_at": "2021-02-07T11:04:57Z",
+      "merged_at": "2021-02-07T11:04:57Z",
+      "commits": 2,
+      "changed_files": 1,
+      "additions": 28,
+      "deletions": 15,
+      "display_url": "https://github.com/scikit-learn/scikit-learn/pull/19372",
+      "display_title": "TST replace assert_raises with the pytest.raises context manager in dummy module"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#issuecomment-774440290",
+        "body": "#DataUmbrella sprint",
+        "created_at": "2021-02-06T10:06:08Z",
+        "user": {
+          "login": "reshamas",
+          "name": "reshamas",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2507232?v=4",
+          "id": 2507232
+        },
+        "id": 774440290
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#discussion_r571403925",
+        "body": "```suggestion\r\n    with pytest.raises(TypeError):\r\n```",
+        "created_at": "2021-02-06T10:34:36Z",
+        "user": {
+          "login": "lorentzenchr",
+          "name": "lorentzenchr",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/15324633?v=4",
+          "id": 15324633
+        },
+        "id": 571403925
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#discussion_r571406850",
+        "body": "Optionally, the whole test could be parameterizes as:\r\n```python\r\n@pytest.mark.parametrize(\r\n    \"quantile, error\",\r\n    [\r\n        (\"default\", ValueError),\r\n        (None, ValueError),\r\n        # TODO: Fill in the futher cases here\r\n    ],\r\n)\r\ndef test_quantile_invalid(quantile, error):\r\n    X = [[0]] * 5  # ignored\r\n    y = [0] * 5  # ignored\r\n\r\n    if quantile == \"default\":\r\n        est = DummyRegressor(strategy=\"quantile\")\r\n    else:\r\n        est = DummyRegressor(strategy=\"quantile\", quantile=quantile)\r\n    with pytest.raises(ValueError):\r\n        est.fit(X, y)\r\n```",
+        "created_at": "2021-02-06T10:51:03Z",
+        "user": {
+          "login": "lorentzenchr",
+          "name": "lorentzenchr",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/15324633?v=4",
+          "id": 15324633
+        },
+        "id": 571406850
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#pullrequestreview-584855749",
+        "body": "",
+        "created_at": "2021-02-06T10:51:25Z",
+        "user": {
+          "login": "lorentzenchr",
+          "name": "lorentzenchr",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/15324633?v=4",
+          "id": 15324633
+        },
+        "id": 584855749
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#discussion_r571416023",
+        "body": "I am not sure parametrization helps with readability in this case.",
+        "created_at": "2021-02-06T11:14:09Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 571416023
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#pullrequestreview-584867542",
+        "body": "",
+        "created_at": "2021-02-06T11:14:09Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 584867542
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#pullrequestreview-584880491",
+        "body": "LGTM. @icky254 Thank you for your contribution.",
+        "created_at": "2021-02-06T12:27:42Z",
+        "user": {
+          "login": "lorentzenchr",
+          "name": "lorentzenchr",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/15324633?v=4",
+          "id": 15324633
+        },
+        "id": 584880491
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19372#issuecomment-774654904",
+        "body": "Thanks @icky254 Good to be merged.",
+        "created_at": "2021-02-07T11:05:10Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 774654904
+      }
+    ]
+  },
+  {
+    "repo": "scikit-learn/scikit-learn",
+    "n": 18930,
+    "pr": {
+      "url": "https://github.com/scikit-learn/scikit-learn/pull/18930",
+      "number": 18930,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "#### What does this implement/fix? Explain your changes.\r\nThis pull request modifies tests to use 'minkoski' metrics when 'wminkowski' is called when scipy version is >= 1.6.\r\nThis remove some DeprecationWarnings in the [nightly build](https://dev.azure.com/scikit-learn/scikit-learn/_build/results?buildId=24450&view=logs&j=dfe99b15-50db-5d7b-b1e9-4105c42527cf&t=ef785ae2-496b-5b02-9f0e-07a6c3ab3081).\r\n\r\n#### Any other comments?\r\n- I'm under the impression that the minkoski metrics is already called with a 'w' argument\r\nhttps://github.com/scikit-learn/scikit-learn/blob/eaa45c86f74c41828a92db4d4da2eee643cbda02/sklearn/metrics/tests/test_pairwise.py#L236\r\n- Should I raise a sklearn DeprecationWarning for 'wminkowski' metric (called in `sklearn/metrics/pairwise.py`) or we can rely on the scipy one? Thanks! ",
+      "title": "TST Fix scipy DeprecationWarning from wminkowski in nightly",
+      "base": "master",
+      "base_sha": "4773f3e39d788e734378f32064cf2e5629fbc7aa",
+      "head": "scipy-wminkowski",
+      "head_sha": "b0fe75aaac3b0faaf1f52e7c6bd74c535e78f86a",
+      "head_repo_id": 178013228,
+      "head_repo_full_name": "cmarmo/scikit-learn",
+      "merge_commit_sha": "b7a48a0d7d70ac5c789755e8aeeb8ec4d57dbb30",
+      "user": {
+        "login": "cmarmo",
+        "name": "cmarmo",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+        "id": 1662261
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2020-11-27T11:02:15Z",
+      "updated_at": "2021-01-10T17:34:51Z",
+      "closed_at": "2021-01-02T14:19:33Z",
+      "merged_at": "2021-01-02T14:19:33Z",
+      "commits": 12,
+      "changed_files": 1,
+      "additions": 42,
+      "deletions": 3,
+      "display_url": "https://github.com/scikit-learn/scikit-learn/pull/18930",
+      "display_title": "TST Fix scipy DeprecationWarning from wminkowski in nightly"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r531670924",
+        "body": "If think we should avoid comparing version strings directly because the lexicographical order does not always match the version order (when their are double digits components).\r\n\r\n```python\r\nfrom sklearn.utils.fixes import sp_version, parse_version\r\n\r\nsp_version >= parse_version(\"1.6.0\")\r\n```",
+        "created_at": "2020-11-27T15:47:06Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 531670924
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r531672191",
+        "body": "left over debug print?",
+        "created_at": "2020-11-27T15:49:47Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 531672191
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r531673412",
+        "body": "This import should probably be protected under because we will probably get an ImportError in the future (not 1.6 but in 1.8 or similar).\r\n\r\n```python\r\ntry:\r\n    from scipy.spatial.distance import wminkowski\r\nexcept Import Error:\r\n    # In scipy 1.6.0, wminkowski is deprecated and minkowski\r\n    # should be used instead.\r\n    from scipy.spatial.distance import minkowski as wminkowski\r\n```",
+        "created_at": "2020-11-27T15:52:16Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 531673412
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-540067798",
+        "body": "",
+        "created_at": "2020-11-27T15:54:44Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 540067798
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#issuecomment-734897472",
+        "body": "> Should I raise a sklearn DeprecationWarning for 'wminkowski' metric (called in sklearn/metrics/pairwise.py) or we can rely on the scipy one? Thanks!\r\n\r\nI think we can rely on scipy one for simplicity. Maybe we could upgrade the test to also check `minkowski` with the `w` parameter in versions before 1.6.\r\n\r\nI am running scipy 1.5 and this `w` parameter is already present.",
+        "created_at": "2020-11-27T16:00:22Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 734897472
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#issuecomment-735948293",
+        "body": "The second part of my comment was not addressed:\r\n\r\n> Maybe we could upgrade the test to also check minkowski with the w parameter in versions before 1.6. I am running scipy 1.5 and this w parameter is already present.\r\n\r\nCan you give it a try?\r\n\r\nThe oldest version of scipy we support (0.19.1 as defined in `sklearn._min_dependencies`) does not have the `w` parameter for the `minkowski` function but scipy 1.0 and later do. So we could just skip this particular test parametrization for `sp_version < parse_version(\"1.0\")` using an explicit call to `pytest.skip` such as: `pytest.skip(\"minkowski does not accept the w parameter prior to scipy 1.0\")`.",
+        "created_at": "2020-11-30T18:04:08Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 735948293
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#issuecomment-735953792",
+        "body": "I'm sorry @ogrisel, I was having a blind spot on the `w`. I see now that the arguments are not defined for minkowsky, they are only for wminkowsky. I will add the test ASAP.",
+        "created_at": "2020-11-30T18:14:08Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 735953792
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-552713417",
+        "body": "LGTM!",
+        "created_at": "2020-12-15T17:46:30Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 552713417
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#issuecomment-745455906",
+        "body": "We can ignore the coverage failure because all the cases cannot be tested prior to the scipy 1.6 release but the code looks correct. And even if it is not, the nightly builds will catch it quickly after the merge of this PR.",
+        "created_at": "2020-12-15T17:47:51Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 745455906
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545352213",
+        "body": "As for coverage, the `ImportError` will not trigger until scipy 1.8 is released and `wminkowski` is removed.\r\n\r\n(This is a comment: no changes required here)",
+        "created_at": "2020-12-17T19:36:49Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 545352213
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545353960",
+        "body": "In this case, we can skip because `minkowski` is tested explicitly and this would be testing it again.",
+        "created_at": "2020-12-17T19:39:37Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 545353960
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545355052",
+        "body": "We can include the skip here:\r\n\r\n```suggestion\r\n         pytest.param(pairwise_distances, minkowski, _minkowski_kwds,\r\n         \t\t\t  marks=pytest.mark.skipif(sp_version < parse_version(\"1.0\")),\r\n         \t\t\t  reason=\"minkoski does not accept ...\"),\r\n```",
+        "created_at": "2020-12-17T19:41:33Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 545355052
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-554926301",
+        "body": "Thank you for the PR @cmarmo !",
+        "created_at": "2020-12-17T19:42:17Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 554926301
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545781662",
+        "body": "I guess this kind of parametrization should be applied to the 'minkowsi' case too, right?",
+        "created_at": "2020-12-18T11:49:01Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 545781662
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-555422167",
+        "body": "",
+        "created_at": "2020-12-18T11:49:01Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 555422167
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545786100",
+        "body": "I'm not sure to understand correctly: I have then skipped the wminkowski and 'wminkowski' test for scipy >=1.6.0, Is that what you meant? Thanks!",
+        "created_at": "2020-12-18T11:58:09Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 545786100
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-555427862",
+        "body": "",
+        "created_at": "2020-12-18T11:58:09Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 555427862
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#discussion_r545878433",
+        "body": "> I have then skipped the wminkowski and 'wminkowski' test for scipy >=1.6.0, Is that what you meant?\r\n\r\nYes this is what I meant.\r\n\r\nI think we can skip here because this PR adds `metric = 'minkowski'` to `pytest.mark.parameterize`, so `metric = 'minkowski'` will get tested when it gets to that test case.",
+        "created_at": "2020-12-18T14:48:08Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 545878433
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-555554620",
+        "body": "",
+        "created_at": "2020-12-18T14:48:09Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 555554620
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#pullrequestreview-560638179",
+        "body": "LGTM",
+        "created_at": "2021-01-02T14:17:46Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 560638179
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/18930#issuecomment-753479202",
+        "body": "Currently, the nightly build is not able to run without https://github.com/scikit-learn/scikit-learn/pull/19062 merged",
+        "created_at": "2021-01-02T14:21:24Z",
+        "user": {
+          "login": "thomasjpfan",
+          "name": "thomasjpfan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/5402633?v=4",
+          "id": 5402633
+        },
+        "id": 753479202
+      }
+    ]
+  },
+  {
+    "repo": "scikit-learn/scikit-learn",
+    "n": 19237,
+    "pr": {
+      "url": "https://github.com/scikit-learn/scikit-learn/pull/19237",
+      "number": 19237,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "replacing instances of `master` with `main` when it comes to `scikit-learn/scikit-learn` repo\r\n\r\ntowards #17595 ",
+      "title": "MNT replace master with main",
+      "base": "main",
+      "base_sha": "8ea176ae0ca535cdbfad7413322bbc3e54979e4d",
+      "head": "master-to-main",
+      "head_sha": "9cdd691ba43b7c97b1c663e70b4c52b08f1c4ad9",
+      "head_repo_id": 43740145,
+      "head_repo_full_name": "adrinjalali/scikit-learn",
+      "merge_commit_sha": "468c3f40577da8d7b3699400ad86f36e5bb5ab60",
+      "user": {
+        "login": "adrinjalali",
+        "name": "adrinjalali",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+        "id": 1663864
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-01-22T10:50:54Z",
+      "updated_at": "2021-01-22T14:19:54Z",
+      "closed_at": "2021-01-22T14:19:49Z",
+      "merged_at": "2021-01-22T14:19:49Z",
+      "commits": 3,
+      "changed_files": 29,
+      "additions": 150,
+      "deletions": 151,
+      "display_url": "https://github.com/scikit-learn/scikit-learn/pull/19237",
+      "display_title": "MNT replace master with main"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562551082",
+        "body": "This look weird changes?",
+        "created_at": "2021-01-22T10:54:00Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 562551082
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574152834",
+        "body": "",
+        "created_at": "2021-01-22T10:54:01Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?u=d9704641f89c00ce86f8207e59aedb554109d7fa&v=4",
+          "id": 7454015
+        },
+        "id": 574152834
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562554718",
+        "body": "the change is the whitespace at the end of the line, it's done automatically with the git hooks we have.",
+        "created_at": "2021-01-22T11:00:33Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 562554718
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574157452",
+        "body": "",
+        "created_at": "2021-01-22T11:00:33Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?u=2132af831e026483c371aa2a4cd4378a345fcf4b&v=4",
+          "id": 1663864
+        },
+        "id": 574157452
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765324502",
+        "body": "Oh I thought that it removed the entire `<body>`, I misread.\n\nOn Fri, 22 Jan 2021 at 12:00, Adrin Jalali <notifications@github.com> wrote:\n\n> *@adrinjalali* commented on this pull request.\n> ------------------------------\n>\n> In doc/themes/scikit-learn/static/img/scikit-learn-logo.svg\n> <https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562554718>\n> :\n>\n> > @@ -1044,7 +1044,6 @@\n>        Something went wrong with that request. Please try again.\n>      </div>\n>\n> -\n> +\n>    </body>\n>\n> the change is the whitespace at the end of the line, it's done\n> automatically with the git hooks we have.\n>\n> —\n> You are receiving this because you commented.\n> Reply to this email directly, view it on GitHub\n> <https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562554718>,\n> or unsubscribe\n> <https://github.com/notifications/unsubscribe-auth/ABY32PYWU4MYMXMZWSXTTDTS3FLGDANCNFSM4WOJRVWQ>\n> .\n>\n\n\n-- \nGuillaume Lemaitre\nScikit-learn @ Inria Foundation\nhttps://glemaitre.github.io/\n",
+        "created_at": "2021-01-22T11:02:00Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 765324502
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765328733",
+        "body": "@adrinjalali the renaming closed ~40 PRs.  Some of them were recent and approved.\r\nI think it's due to that ``xxxxxx wants to merge 1 commit into scikit-learn:master from unknown repository``.\r\nI don't know what's going on. Does it mean the author deleted his fork after making the PR ?",
+        "created_at": "2021-01-22T11:10:25Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 765328733
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562560607",
+        "body": "Are you sure about this change. I don't see any code below using this variable (is sphinx defining `master_doc`)",
+        "created_at": "2021-01-22T11:11:40Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 562560607
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574165044",
+        "body": "",
+        "created_at": "2021-01-22T11:11:40Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?u=d9704641f89c00ce86f8207e59aedb554109d7fa&v=4",
+          "id": 7454015
+        },
+        "id": 574165044
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765329440",
+        "body": "Yes, people tend to delete their forks or local branches and then it's lost. I'm not sure what we'd do with those even if this change hadn't closed them",
+        "created_at": "2021-01-22T11:11:54Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 765329440
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562560997",
+        "body": "it's used in a different file if I remember correctly",
+        "created_at": "2021-01-22T11:12:20Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 562560997
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574165536",
+        "body": "",
+        "created_at": "2021-01-22T11:12:20Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?u=2132af831e026483c371aa2a4cd4378a345fcf4b&v=4",
+          "id": 1663864
+        },
+        "id": 574165536
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562561156",
+        "body": "@glemaitre here for instance",
+        "created_at": "2021-01-22T11:12:43Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 562561156
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574165756",
+        "body": "",
+        "created_at": "2021-01-22T11:12:43Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?u=2132af831e026483c371aa2a4cd4378a345fcf4b&v=4",
+          "id": 1663864
+        },
+        "id": 574165756
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562561537",
+        "body": "```suggestion\r\nlike at `imbalanced-learn`.\r\n```",
+        "created_at": "2021-01-22T11:13:29Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 562561537
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574166251",
+        "body": "",
+        "created_at": "2021-01-22T11:13:30Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?u=d9704641f89c00ce86f8207e59aedb554109d7fa&v=4",
+          "id": 7454015
+        },
+        "id": 574166251
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562561821",
+        "body": "Ah this might be where the variable is `main_doc` is used",
+        "created_at": "2021-01-22T11:14:02Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 562561821
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574166602",
+        "body": "",
+        "created_at": "2021-01-22T11:14:02Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?u=d9704641f89c00ce86f8207e59aedb554109d7fa&v=4",
+          "id": 7454015
+        },
+        "id": 574166602
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574167176",
+        "body": "LGTM",
+        "created_at": "2021-01-22T11:14:46Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?u=d9704641f89c00ce86f8207e59aedb554109d7fa&v=4",
+          "id": 7454015
+        },
+        "id": 574167176
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562562209",
+        "body": "lol, not related to this PR, but sure.",
+        "created_at": "2021-01-22T11:14:49Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 562562209
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574167220",
+        "body": "",
+        "created_at": "2021-01-22T11:14:49Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?u=2132af831e026483c371aa2a4cd4378a345fcf4b&v=4",
+          "id": 1663864
+        },
+        "id": 574167220
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765333404",
+        "body": "> @adrinjalali the renaming closed ~40 PRs. Some of them were recent and approved.\r\nI think it's due to that xxxxxx wants to merge 1 commit into scikit-learn:master from unknown repository.\r\nI don't know what's going on. Does it mean the author deleted his fork after making the PR ?\r\n\r\n`unknown repository` means that it has been deleted from the user account (I recall something similar with @reshamas).\r\nWhat would be interesting is to track these PRs and to put them at stalled if they are something to be addressed.",
+        "created_at": "2021-01-22T11:19:45Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 765333404
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#discussion_r562564794",
+        "body": "I think asv will still default to master :(\r\n```suggestion\r\n    // List of branches to benchmark. If not provided, defaults to \"master\r\n```\r\nIt should not matter since we always specify the branch we want to benchmark",
+        "created_at": "2021-01-22T11:19:55Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 562564794
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#pullrequestreview-574170702",
+        "body": "",
+        "created_at": "2021-01-22T11:25:30Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 574170702
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765336257",
+        "body": "@reshamas 's docs also need to be updated for the sprint.\r\n\r\n@amueller may want to re-record his tutorial :see_no_evil: ",
+        "created_at": "2021-01-22T11:26:05Z",
+        "user": {
+          "login": "adrinjalali",
+          "name": "adrinjalali",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1663864?v=4",
+          "id": 1663864
+        },
+        "id": 765336257
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765345570",
+        "body": "> What would be interesting is to track these PRs and to put them at stalled if they are something to be addressed.\r\n\r\nI'm quickly checking them: a vast majority was already labeled as stalled... or need decision... it seems that github decided...",
+        "created_at": "2021-01-22T11:47:40Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 765345570
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19237#issuecomment-765411427",
+        "body": "OK so we will be merging once the CIs are green.",
+        "created_at": "2021-01-22T13:51:41Z",
+        "user": {
+          "login": "glemaitre",
+          "name": "glemaitre",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/7454015?v=4",
+          "id": 7454015
+        },
+        "id": 765411427
+      }
+    ]
+  },
+  {
+    "repo": "matplotlib/matplotlib",
+    "n": 19359,
+    "pr": {
+      "url": "https://github.com/matplotlib/matplotlib/pull/19359",
+      "number": 19359,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "Replaced use of `pyplot` calls with their OO equivalents in a few examples.  Presumably they were missed in previous attempts to do this.  In turn, I do not guarantee that I haven't missed some either :smile:",
+      "title": "Replace use of pyplot with OO api in some examples",
+      "base": "master",
+      "base_sha": "1eef019109b64ee4085732544cb5e310e69451ab",
+      "head": "examples_oo_api",
+      "head_sha": "8abc8bcfc6fdad1fa611f682cabeee1e01aa1aed",
+      "head_repo_id": 1937664,
+      "head_repo_full_name": "ianthomas23/matplotlib",
+      "merge_commit_sha": "07aa92b15195381e9c3ee07f62ba7602caa5a46f",
+      "user": {
+        "login": "ianthomas23",
+        "name": "ianthomas23",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/580326?v=4",
+        "id": 580326
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-01-25T17:07:33Z",
+      "updated_at": "2021-01-26T00:08:06Z",
+      "closed_at": "2021-01-26T00:07:54Z",
+      "merged_at": "2021-01-26T00:07:54Z",
+      "commits": 2,
+      "changed_files": 7,
+      "additions": 64,
+      "deletions": 63,
+      "display_url": "https://github.com/matplotlib/matplotlib/pull/19359",
+      "display_title": "Replace use of pyplot with OO api in some examples"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19359#pullrequestreview-575904575",
+        "body": "",
+        "created_at": "2021-01-25T23:58:43Z",
+        "user": {
+          "login": "timhoffm",
+          "name": "timhoffm",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2836374?u=d4ea2abeb067df79113b233ded7670bd1920aa79&v=4",
+          "id": 2836374
+        },
+        "id": 575904575
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19359#issuecomment-767193002",
+        "body": "Doc build failure is unrelated to the PR.",
+        "created_at": "2021-01-26T00:07:40Z",
+        "user": {
+          "login": "timhoffm",
+          "name": "timhoffm",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+          "id": 2836374
+        },
+        "id": 767193002
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19359#issuecomment-767193148",
+        "body": "Thanks @ianthomas23!",
+        "created_at": "2021-01-26T00:08:06Z",
+        "user": {
+          "login": "timhoffm",
+          "name": "timhoffm",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+          "id": 2836374
+        },
+        "id": 767193148
+      }
+    ]
+  },
+  {
+    "repo": "matplotlib/matplotlib",
+    "n": 19500,
+    "pr": {
+      "url": "https://github.com/matplotlib/matplotlib/pull/19500",
+      "number": 19500,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "We now require numpy 1.16 (per setup.py and NEP29).\r\n\r\n## PR Summary\r\n\r\n## PR Checklist\r\n\r\n<!-- Please mark any checkboxes that do not apply to this PR as [N/A]. -->\r\n\r\n- [ ] Has pytest style unit tests (and `pytest` passes).\r\n- [ ] Is [Flake 8](https://flake8.pycqa.org/en/latest/) compliant (run `flake8` on changed files to check).\r\n- [ ] New features are documented, with examples if plot related.\r\n- [ ] Documentation is sphinx and numpydoc compliant (the docs should [build](https://matplotlib.org/devel/documenting_mpl.html#building-the-docs) without error).\r\n- [ ] Conforms to Matplotlib style conventions (install `flake8-docstrings` and run `flake8 --docstring-convention=all`).\r\n- [ ] New features have an entry in `doc/users/next_whats_new/` (follow instructions in README.rst there).\r\n- [ ] API changes documented in `doc/api/next_api_changes/` (follow instructions in README.rst there).\r\n\r\n<!--\r\nThank you so much for your PR!  To help us review your contribution, please\r\nconsider the following points:\r\n\r\n- A development guide is available at https://matplotlib.org/devdocs/devel/index.html.\r\n\r\n- Help with git and github is available at\r\n  https://matplotlib.org/devel/gitwash/development_workflow.html.\r\n\r\n- Do not create the PR out of master, but out of a separate branch.\r\n\r\n- The PR title should summarize the changes, for example \"Raise ValueError on\r\n  non-numeric input to set_xlim\".  Avoid non-descriptive titles such as\r\n  \"Addresses issue #8576\".\r\n\r\n- The summary should provide at least 1-2 sentences describing the pull request\r\n  in detail (Why is this change required?  What problem does it solve?) and\r\n  link to any relevant issues.\r\n\r\n- If you are contributing fixes to docstrings, please pay attention to\r\n  http://matplotlib.org/devel/documenting_mpl.html#formatting.  In particular,\r\n  note the difference between using single backquotes, double backquotes, and\r\n  asterisks in the markup.\r\n\r\nWe understand that PRs can sometimes be overwhelming, especially as the\r\nreviews start coming in.  Please let us know if the reviews are unclear or\r\nthe recommended next step seems overly demanding, if you would like help in\r\naddressing a reviewer's comments, or if you have been waiting too long to hear\r\nback on your PR.\r\n-->\r\n",
+      "title": "Remove workaround for numpy<1.16, and update version check.",
+      "base": "master",
+      "base_sha": "92b4bc3c1b1063c2e7044a596af0b18fe70f2667",
+      "head": "np116",
+      "head_sha": "7558cabeb54298ee89f1de74bec9ce7fe778c8b8",
+      "head_repo_id": 7439715,
+      "head_repo_full_name": "anntzer/matplotlib",
+      "merge_commit_sha": "d235b026365c1b64817e28700993132c7d0ec486",
+      "user": {
+        "login": "anntzer",
+        "name": "anntzer",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/1322974?v=4",
+        "id": 1322974
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-02-11T18:52:47Z",
+      "updated_at": "2021-02-16T08:41:33Z",
+      "closed_at": "2021-02-16T07:58:04Z",
+      "merged_at": "2021-02-16T07:58:04Z",
+      "commits": 3,
+      "changed_files": 3,
+      "additions": 9,
+      "deletions": 10,
+      "display_url": "https://github.com/matplotlib/matplotlib/pull/19500",
+      "display_title": "Remove workaround for numpy<1.16, and update version check."
+    },
+    "comments": [
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19500#pullrequestreview-588950849",
+        "body": "",
+        "created_at": "2021-02-11T20:19:34Z",
+        "user": {
+          "login": "QuLogic",
+          "name": "QuLogic",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+          "id": 302469
+        },
+        "id": 588950849
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19500#issuecomment-779530922",
+        "body": "Apparently I missed these in  60b03f1571c775f60bbd701d3381357a31eaf8bb / https://github.com/matplotlib/matplotlib/pull/17662 and there is already an API note change included in that PR (which I noted after I helpfully pushed a commit to this branch to add one :facepalm: ).\r\n\r\nAlso pushed a commit bumping the run-time version of pyparsing and dateutil.  ",
+        "created_at": "2021-02-16T01:50:20Z",
+        "user": {
+          "login": "tacaswell",
+          "name": "tacaswell",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/199813?v=4",
+          "id": 199813
+        },
+        "id": 779530922
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19500#issuecomment-779533792",
+        "body": "> Also pushed a commit bumping the run-time version of pyparsing and dateutil.\n\nAre these based on\n\n\n> We will only bump these dependencies as we need new features or the old versions no longer support our minimum NumPy or Python.\n\n?",
+        "created_at": "2021-02-16T02:00:36Z",
+        "user": {
+          "login": "timhoffm",
+          "name": "timhoffm",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+          "id": 2836374
+        },
+        "id": 779533792
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19500#issuecomment-779568394",
+        "body": "Yes, the setup.py versions of dateutil and pyparsing were both bumped in #17662 (to the oldest version that did not have deprecation warnings on py36 (I think importing without warnings is a defend-able definition of \"support\" because otherwise we would have to protect their imports to keep our tests passing).  See dd61ed19d05edcf9a919c73e657c512dc8f6d265 and cfccfb8203d2bf4c6243872850975d493e773161 for details.",
+        "created_at": "2021-02-16T04:11:46Z",
+        "user": {
+          "login": "tacaswell",
+          "name": "tacaswell",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/199813?v=4",
+          "id": 199813
+        },
+        "id": 779568394
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19500#pullrequestreview-590959547",
+        "body": "",
+        "created_at": "2021-02-16T07:57:48Z",
+        "user": {
+          "login": "timhoffm",
+          "name": "timhoffm",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/2836374?u=d4ea2abeb067df79113b233ded7670bd1920aa79&v=4",
+          "id": 2836374
+        },
+        "id": 590959547
+      }
+    ]
+  },
+  {
+    "repo": "matplotlib/matplotlib",
+    "n": 20003,
+    "pr": {
+      "url": "https://github.com/matplotlib/matplotlib/pull/20003",
+      "number": 20003,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "## PR Summary\r\n\r\n## PR Checklist\r\n\r\n- [x] Has pytest style unit tests (and `pytest` passes).\r\n- [x] Is [Flake 8](https://flake8.pycqa.org/en/latest/) compliant (run `flake8` on changed files to check).\r\n- [x] New features are documented, with examples if plot related.\r\n- [x] Documentation is sphinx and numpydoc compliant (the docs should [build](https://matplotlib.org/devel/documenting_mpl.html#building-the-docs) without error).\r\n- [x] Conforms to Matplotlib style conventions (install `flake8-docstrings` and run `flake8 --docstring-convention=all`).\r\n- [n/a] New features have an entry in `doc/users/next_whats_new/` (follow instructions in README.rst there).\r\n- [x] API changes documented in `doc/api/next_api_changes/` (follow instructions in README.rst there).",
+      "title": "Bump minimum NumPy to 1.17",
+      "base": "master",
+      "base_sha": "36cbe2a12a1f49ab2c347a84415491c4bd31d599",
+      "head": "np117",
+      "head_sha": "aa500f5f2b901cdef8a5d38aae8792a294c6b348",
+      "head_repo_id": 21548241,
+      "head_repo_full_name": "QuLogic/matplotlib",
+      "merge_commit_sha": "d7c70bbe50c760901794f74f3570189d262b3b77",
+      "user": {
+        "login": "QuLogic",
+        "name": "QuLogic",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+        "id": 302469
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-04-16T23:29:58Z",
+      "updated_at": "2021-05-03T19:51:34Z",
+      "closed_at": "2021-05-01T11:39:11Z",
+      "merged_at": "2021-05-01T11:39:11Z",
+      "commits": 1,
+      "changed_files": 9,
+      "additions": 27,
+      "deletions": 10,
+      "display_url": "https://github.com/matplotlib/matplotlib/pull/20003",
+      "display_title": "Bump minimum NumPy to 1.17"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/20003#pullrequestreview-638198134",
+        "body": "",
+        "created_at": "2021-04-17T04:52:11Z",
+        "user": {
+          "login": "jklymak",
+          "name": "jklymak",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1562854?u=d668aa96947283763b2be0c2589dfb9e1671b159&v=4",
+          "id": 1562854
+        },
+        "id": 638198134
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/20003#issuecomment-821799865",
+        "body": "It looks like the python38-min doc build failure might be real due to a numpy installation issue. I've restarted it to see if it fails again.",
+        "created_at": "2021-04-17T10:06:18Z",
+        "user": {
+          "login": "dstansby",
+          "name": "dstansby",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6197628?v=4",
+          "id": 6197628
+        },
+        "id": 821799865
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/20003#issuecomment-821801152",
+        "body": "Still failing, so I'm guessing we might want to bump to something between 1.17.1 and 1.17.5",
+        "created_at": "2021-04-17T10:17:53Z",
+        "user": {
+          "login": "dstansby",
+          "name": "dstansby",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6197628?v=4",
+          "id": 6197628
+        },
+        "id": 821801152
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/20003#issuecomment-822794029",
+        "body": "Yes, the oldest NumPy 1.17 with Python 3.8 wheels is 1.17.3.",
+        "created_at": "2021-04-19T21:21:56Z",
+        "user": {
+          "login": "QuLogic",
+          "name": "QuLogic",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+          "id": 302469
+        },
+        "id": 822794029
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/20003#pullrequestreview-649780804",
+        "body": "",
+        "created_at": "2021-05-01T11:37:50Z",
+        "user": {
+          "login": "jkseppan",
+          "name": "jkseppan",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/92814?u=c2c57e6d69c96eaba01736229de839cc3ece7427&v=4",
+          "id": 92814
+        },
+        "id": 649780804
+      }
+    ]
+  },
+  {
+    "repo": "matplotlib/matplotlib",
+    "n": 19948,
+    "pr": {
+      "url": "https://github.com/matplotlib/matplotlib/pull/19948",
+      "number": 19948,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "Fixes https://github.com/matplotlib/matplotlib/issues/19936",
+      "title": "Allow numpy arrays to be used as elinewidth",
+      "base": "master",
+      "base_sha": "5288e0c139ebec9e0b4650fea8c70fc15feb7cb1",
+      "head": "elinewidth",
+      "head_sha": "a392168686d95effa001bb4076e9b28db2db67e0",
+      "head_repo_id": 74355158,
+      "head_repo_full_name": "dstansby/matplotlib",
+      "merge_commit_sha": "3a316b9965806288a98878fb0fa9e14689cfdc82",
+      "user": {
+        "login": "dstansby",
+        "name": "dstansby",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/6197628?v=4",
+        "id": 6197628
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-04-12T14:57:41Z",
+      "updated_at": "2021-04-12T20:01:02Z",
+      "closed_at": "2021-04-12T19:06:13Z",
+      "merged_at": "2021-04-12T19:06:12Z",
+      "commits": 1,
+      "changed_files": 2,
+      "additions": 8,
+      "deletions": 1,
+      "display_url": "https://github.com/matplotlib/matplotlib/pull/19948",
+      "display_title": "Allow numpy arrays to be used as elinewidth"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19948#pullrequestreview-633744538",
+        "body": "",
+        "created_at": "2021-04-12T16:31:07Z",
+        "user": {
+          "login": "jklymak",
+          "name": "jklymak",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1562854?u=d668aa96947283763b2be0c2589dfb9e1671b159&v=4",
+          "id": 1562854
+        },
+        "id": 633744538
+      },
+      {
+        "url": "https://github.com/matplotlib/matplotlib/pull/19948#pullrequestreview-633875429",
+        "body": "",
+        "created_at": "2021-04-12T19:05:41Z",
+        "user": {
+          "login": "anntzer",
+          "name": "anntzer",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1322974?v=4",
+          "id": 1322974
+        },
+        "id": 633875429
+      }
+    ]
+  },
+  {
+    "repo": "scikit-learn/scikit-learn",
+    "n": 19607,
+    "pr": {
+      "url": "https://github.com/scikit-learn/scikit-learn/pull/19607",
+      "number": 19607,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "#### Reference Issues/PRs\r\nWorking on the MiniBatch implementation of the Non-negative Matrix Factorization class (#16948), it has been suggested that a reformat of both standard NMF and the in progress MiniBatch implementation would improve the maintainability of the code. This pull request applies this reformatting using #14985 and #18975 as models.\r\n\r\n#### What does this implement/fix? Explain your changes.\r\nMake `non_negative_factorization` call `NMF` instead of the opposite.\r\n\r\n#### Any other comments?\r\nI had to add a tag to the `NMF` class to avoid the `n_features_in` common test: but I'm not sure this was the right way to make the test pass. \r\nping @TomDLT and @jeremiedbb : thanks!\r\n",
+      "title": "RFC Make non_negative_factorization call NMF instead of the opposite",
+      "base": "main",
+      "base_sha": "ad7c316d9d05b937aba98d6601db99b4dadf2e52",
+      "head": "nmf-reformat",
+      "head_sha": "7b739c3259c44e7fad054f5d4109c50c1bcba74c",
+      "head_repo_id": 178013228,
+      "head_repo_full_name": "cmarmo/scikit-learn",
+      "merge_commit_sha": "15fd026963be233d37752f322b5dd484c58e09a8",
+      "user": {
+        "login": "cmarmo",
+        "name": "cmarmo",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+        "id": 1662261
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2021-03-03T15:23:05Z",
+      "updated_at": "2021-03-15T07:59:53Z",
+      "closed_at": "2021-03-12T23:02:29Z",
+      "merged_at": "2021-03-12T23:02:29Z",
+      "commits": 18,
+      "changed_files": 1,
+      "additions": 132,
+      "deletions": 85,
+      "display_url": "https://github.com/scikit-learn/scikit-learn/pull/19607",
+      "display_title": "RFC Make non_negative_factorization call NMF instead of the opposite"
+    },
+    "comments": [
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586513980",
+        "body": "This was the correct way to validate X",
+        "created_at": "2021-03-03T15:29:52Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586513980
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586515378",
+        "body": "I would move all these param validation in a dedicated private method, ``_check_params``, to make the code more readable and more reusable by MiniBatchNMF",
+        "created_at": "2021-03-03T15:31:30Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586515378
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586517081",
+        "body": "I would move this in a dedicated private method, ``_initialize_W_H`` for the same reasons.\r\nOr maybe split it into ``_initialize_W`` and ``_initialize_H`` such that we can call both in fit and only the first one in transform.",
+        "created_at": "2021-03-03T15:33:40Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586517081
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586522122",
+        "body": "This is unecessary, let's just use the attributes everywhere",
+        "created_at": "2021-03-03T15:39:27Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586522122
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586523270",
+        "body": "no need to move this\r\nEdit: you already fixed it",
+        "created_at": "2021-03-03T15:40:42Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586523270
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586526417",
+        "body": "update_H is an argument of ``non_negative_factorization`` to distinguish between fit and transform: at transform you don't update H. We don't need it in the class. In the fit we do update H and in the tranform we don't.\r\n\r\nActually you need to update the code of ``transform`` because it still calls the function.\r\n\r\nAlso I think that we should deprecate ``update_H`` in the function since it was there for private purpose only. wdyt @TomDLT ?",
+        "created_at": "2021-03-03T15:44:27Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586526417
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586528741",
+        "body": "restoring the right validation should fix this.",
+        "created_at": "2021-03-03T15:46:56Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586528741
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603022466",
+        "body": "I made a first quick pass",
+        "created_at": "2021-03-03T15:50:14Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 603022466
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586627211",
+        "body": "Yes, sorry I wasn't meant to delete those lines.",
+        "created_at": "2021-03-03T17:29:29Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 586627211
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603159866",
+        "body": "",
+        "created_at": "2021-03-03T17:29:29Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 603159866
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586628829",
+        "body": "`n_components` is managed differently though: the  `test_estimators[NMF()-check_estimators_overwrite_params]` fails otherwise.",
+        "created_at": "2021-03-03T17:31:37Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 586628829
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603162004",
+        "body": "",
+        "created_at": "2021-03-03T17:31:37Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 603162004
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586645759",
+        "body": "Yes, the ones that we want to modify require to pass through an auxilliary variable.",
+        "created_at": "2021-03-03T17:54:07Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586645759
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603183085",
+        "body": "",
+        "created_at": "2021-03-03T17:54:07Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 603183085
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586651248",
+        "body": "I agree we should not have `update_H` in the class.\r\n\r\nTo implement `update_H=False` in the function, we would need to either:\r\n- create an NMF instance, fill the attributes normally added during the fit, and call transform\r\n- or directly call the private solver functions\r\n\r\nIt makes the design a bit wonky, so I agree we could deprecate this parameter in the function.",
+        "created_at": "2021-03-03T18:01:40Z",
+        "user": {
+          "login": "TomDLT",
+          "name": "TomDLT",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/11065596?v=4",
+          "id": 11065596
+        },
+        "id": 586651248
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603190057",
+        "body": "",
+        "created_at": "2021-03-03T18:01:40Z",
+        "user": {
+          "login": "TomDLT",
+          "name": "TomDLT",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/11065596?u=fc91ff73562f65ceb1ad3fe2db9331384ef6fca4&v=4",
+          "id": 11065596
+        },
+        "id": 603190057
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586817928",
+        "body": "If the purpose of having the function version is to give users control of such thing, then removing it for the sake of a code cleanup might be throwing out the baby with the bath water. Is it not more appropriate to create a private class underlying NMF but also facilitating this need through the availability of extra parameters or controls?",
+        "created_at": "2021-03-03T21:48:23Z",
+        "user": {
+          "login": "jnothman",
+          "name": "jnothman",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/78827?v=4",
+          "id": 78827
+        },
+        "id": 586817928
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603382601",
+        "body": "",
+        "created_at": "2021-03-03T21:48:24Z",
+        "user": {
+          "login": "jnothman",
+          "name": "jnothman",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/78827?u=17334e24ba35d41cad10bc633e981ea82a2016e6&v=4",
+          "id": 78827
+        },
+        "id": 603382601
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586824961",
+        "body": "Fair point, it would remove a functionality, which is using the NMF `transform` without the `fit` first. I am not sure this is not something we generally want to support in scikit-learn estimators, so if we want to keep this use-case, I think we should keep the current organization and not do the proposed refactoring.",
+        "created_at": "2021-03-03T22:00:15Z",
+        "user": {
+          "login": "TomDLT",
+          "name": "TomDLT",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/11065596?v=4",
+          "id": 11065596
+        },
+        "id": 586824961
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603391277",
+        "body": "",
+        "created_at": "2021-03-03T22:00:16Z",
+        "user": {
+          "login": "TomDLT",
+          "name": "TomDLT",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/11065596?u=fc91ff73562f65ceb1ad3fe2db9331384ef6fca4&v=4",
+          "id": 11065596
+        },
+        "id": 603391277
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586912411",
+        "body": "Perhaps the question is then not just whether update_H should be in the class, but whether it's useful to a subset of users, or whether it was only there for the convenience of the developer.",
+        "created_at": "2021-03-04T00:18:28Z",
+        "user": {
+          "login": "jnothman",
+          "name": "jnothman",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/78827?v=4",
+          "id": 78827
+        },
+        "id": 586912411
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603513530",
+        "body": "",
+        "created_at": "2021-03-04T00:18:28Z",
+        "user": {
+          "login": "jnothman",
+          "name": "jnothman",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/78827?u=17334e24ba35d41cad10bc633e981ea82a2016e6&v=4",
+          "id": 78827
+        },
+        "id": 603513530
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r586916017",
+        "body": "My intuition is that this use case is not a non-negative matrix factorization use case but an ElasticNet problem with positivity constraint on the coefs which can actually be done (``ElasticNet(positive=True)``).\r\n\r\nEDIT: only true with the beta_divergence=2, so there might still be a need, although I still think it's not a matrix factorization problem then.",
+        "created_at": "2021-03-04T00:27:28Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 586916017
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603529338",
+        "body": "",
+        "created_at": "2021-03-04T00:27:28Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 603529338
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r587382150",
+        "body": "If we want to keep this possibility we could add a ``H`` parameter to the transform method such that if it's not None, we allow to transform without having calling fit.",
+        "created_at": "2021-03-04T11:18:21Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 587382150
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-603985840",
+        "body": "",
+        "created_at": "2021-03-04T11:18:21Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 603985840
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#issuecomment-796664532",
+        "body": "Hello everyone I need some help about `n_features_in_`\r\nI have a number of tests failing with the error\r\n```\r\nE           AttributeError: 'NMF' object has no attribute 'n_components_'\r\n```\r\nfrom the lines\r\nhttps://github.com/cmarmo/scikit-learn/blob/d4eeb7861947cb352080f13993dcbfb5a5ca1ef7/sklearn/decomposition/_nmf.py#L1394-L1396\r\n\r\nI put here a snippet having the same problem\r\n```py\r\nimport numpy as np\r\nfrom sklearn.decomposition import non_negative_factorization\r\n\r\nrng = np.random.RandomState(0)\r\nX = rng.random_sample((20, 15))\r\nH = rng.random_sample((15, 15))\r\nW = rng.random_sample((20, 15))\r\n\r\nnon_negative_factorization(X, H=H, update_H=False)\r\n```\r\nApparently the `check_is_fitted(self)` function thinks the estimator is fitted because `attrs` contains `'n_features_in_'`, see\r\nhttps://github.com/scikit-learn/scikit-learn/blob/4beb0c27fc0439c12dad244fe4063e96f8983a52/sklearn/utils/validation.py#L1040\r\n(I have temporarily added a `print(attrs)` to check). Is that an expected behavior? Thanks!",
+        "created_at": "2021-03-11T11:20:16Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 796664532
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#issuecomment-796746714",
+        "body": "> Hello everyone I need some help about n_features_in_\r\n\r\nLet's forget the idea of being able to call transform without fit. It makes the code too complicated. That way this PR is completely transparent to the user and doesn't change the API at all. I directly pushed this.",
+        "created_at": "2021-03-11T13:46:56Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 796746714
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592375401",
+        "body": "The latest changes in the PR keep the behavior of update_H. The public API and functionalities aren't modified at all. I'll resolve the conversation now.",
+        "created_at": "2021-03-11T13:50:54Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 592375401
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-609779634",
+        "body": "",
+        "created_at": "2021-03-11T13:50:54Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 609779634
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592457247",
+        "body": "This function should be a method of the class. Same remark for _check_w_h",
+        "created_at": "2021-03-11T15:27:38Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 592457247
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-609889611",
+        "body": "",
+        "created_at": "2021-03-11T15:31:39Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 609889611
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592547624",
+        "body": "Knowing that MiniBatchNMF will follow why not leaving _check_w_h and _check_params outside the class as they could be reused? This is the same for eg _check_init, am I wrong?",
+        "created_at": "2021-03-11T17:14:46Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 592547624
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610009771",
+        "body": "",
+        "created_at": "2021-03-11T17:14:46Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 610009771
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592549088",
+        "body": "MiniBatchNMF will inherit from NMF so it will have access to these methods",
+        "created_at": "2021-03-11T17:16:44Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 592549088
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610011732",
+        "body": "",
+        "created_at": "2021-03-11T17:16:44Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 610011732
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592551644",
+        "body": "I think that _check_init and some others should also be methods of the class but I didn't say it to not make the diff too big",
+        "created_at": "2021-03-11T17:19:56Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 592551644
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610014928",
+        "body": "",
+        "created_at": "2021-03-11T17:19:56Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 610014928
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592556927",
+        "body": "I find very confusing as a non-expert reader the idea of putting some functions in the class and some other not: I can't see the reason to make a difference. I'm happy to learn if there is one, but could we put all the functions in the same place if not? Thanks.",
+        "created_at": "2021-03-11T17:26:57Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 592556927
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610021803",
+        "body": "",
+        "created_at": "2021-03-11T17:26:57Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 610021803
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r592571787",
+        "body": "To me the functions meant to validate class parameters should definitely be methods. They're not and never will be used outside of the class. For the functions that \"do the math\" I don't think it's mandatory. We can imagine them being used somewhere else, and leaving them as functions makes them a bit easier to unit test.\r\n\r\nI'd rather have the new functions be put in the right place right away. The other ones can be moved in this PR or later. For my part I find it more confusing to introduce new code in a place that I think it should not be.",
+        "created_at": "2021-03-11T17:47:29Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 592571787
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610041149",
+        "body": "",
+        "created_at": "2021-03-11T17:47:29Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 610041149
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r593082301",
+        "body": "Now that it's a method we can use the attributes instead of passing them as arguments.",
+        "created_at": "2021-03-12T10:50:58Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 593082301
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r593083469",
+        "body": "I would put that in _check_params and define a new attribute self._n_components to store it",
+        "created_at": "2021-03-12T10:53:00Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 593083469
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610665262",
+        "body": "thanks @cmarmo. I just have one last remark",
+        "created_at": "2021-03-12T10:54:19Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 610665262
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r593252353",
+        "body": "Should I pass X to the method then? Or n_features?",
+        "created_at": "2021-03-12T15:21:37Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?v=4",
+          "id": 1662261
+        },
+        "id": 593252353
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610889351",
+        "body": "",
+        "created_at": "2021-03-12T15:21:37Z",
+        "user": {
+          "login": "cmarmo",
+          "name": "cmarmo",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/1662261?u=9f4dd33bc0960a68f257fbb159dfea792f6d3635&v=4",
+          "id": 1662261
+        },
+        "id": 610889351
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r593253343",
+        "body": "I'd say X but no strong opinion",
+        "created_at": "2021-03-12T15:23:06Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 593253343
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#pullrequestreview-610890755",
+        "body": "",
+        "created_at": "2021-03-12T15:23:06Z",
+        "user": {
+          "login": "jeremiedbb",
+          "name": "jeremiedbb",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/34657725?v=4",
+          "id": 34657725
+        },
+        "id": 610890755
+      },
+      {
+        "url": "https://github.com/scikit-learn/scikit-learn/pull/19607#discussion_r593337412",
+        "body": "Just to clarify, this change was not really needed because it was already the default value for the `update_H` param in master and the goal is just to make the test more explicit, right?\r\n\r\nI assume this PR should not change the behavior of the public methods and therefore this test would not need this to pass.",
+        "created_at": "2021-03-12T17:23:20Z",
+        "user": {
+          "login": "ogrisel",
+          "name": "ogrisel",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/89061?v=4",
+          "id": 89061
+        },
+        "id": 593337412
+      }
+    ]
+  }
+]
