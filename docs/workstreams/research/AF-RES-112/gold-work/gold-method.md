@@ -11,3 +11,7 @@ The original request threads count in the recruiter's public-request allocation,
 Downloaded third-party source and runtime caches live under ignored examples/. The committed deliverable keeps explicit original URLs, zip hashes, file manifests, commands, observations, and the researcher's scripts. No automatic crawler or external model API was used. Full ZIP textual source files were printed to the gold model and read. Engine code and Truck Town were read only in the exact symbol/file sections recorded in sources.jsonl, not claimed as whole-repository review.
 
 Preserve runtime stderr: G2 original returns OS exit 0 even when its GDScript assertion fails. Runtime checks are separate from repository acceptance gates.
+
+## Seal timing deviation
+
+Safe cases and inputs existed locally before gold started. Their remote sealing commit 9d0fd50637c911b003ba421361cf35230e150c30 was made after the gold read had started; this is a prospective remote-seal timing deviation reported by root. Gold did not read packet B or receiver answers. The separate gold seal follows this read; no maincase was chosen from gold outcomes.
