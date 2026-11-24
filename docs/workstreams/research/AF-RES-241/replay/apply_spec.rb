@@ -144,4 +144,74 @@ RSpec.describe "AF-RES-241 Apply", type: :system, with_cache: true do
       end
     end
   end
+
+  if only.match?("C-A1-DUP")
+    it "C-A1-DUP" do
+      capture("C-A1-DUP", two_distinct_reference_targets: true) do
+        origin = apply_fixture("A1")
+        @second_reference.update!(name: @reference.name)
+        @trace[:resource] = { first_reference: @reference.id, second_reference: @second_reference.id }
+        origin_targets = nil
+        [@reference.id, @second_reference.id].each_with_index do |id, index|
+          visit origin
+          start = snapshot("origin_#{index + 1}")
+          candidates = start["summaryLinks"].select do |link|
+            link["hidden"].any? { |span| span["raw"].strip == "name for Morgan Example" }
+          end
+          expect(candidates.size).to eq(2)
+          names = candidates.map { |item| item.dig("ax", "cdpNode", "name", "value") }
+          expect(names.uniq.size).to eq(1)
+          expect(candidates.map { |item| item["rawHref"] }.uniq.size).to eq(2)
+          origin_targets ||= candidates
+          target = candidates.fetch(index)
+          activate_by_tab(target)
+          edit = snapshot("edit_#{index + 1}")
+          @trace[:tabStepsByTarget] ||= []
+          @trace[:tabStepsByTarget] << @trace[:tabSteps]
+          expect(URI(edit["url"]).path).to end_with("/name/edit/#{id}")
+        end
+        @trace[:originTargets] = origin_targets
+      end
+    end
+  end
+
+  if only.match?("C-A3-MID")
+    it "C-A3-MID" do
+      capture("C-A3-MID", changed_by_operator: 0, intermediate_submit: true) do
+        origin = apply_fixture("A3")
+        apply_models("before")
+        run_target(origin, "address")
+        step = submit("address_fields")
+        apply_models("after_unchanged_uk")
+        next_back = step["backLinks"].find { |item| item["visibleText"] == "Back" }
+        raise "No public Back from address form" unless next_back
+
+        browser.find_elements(tag_name: "a").fetch(next_back.fetch("documentOrdinal") - 1).click
+        @trace[:nav] << { method: "app back", href: next_back["rawHref"], landed: page.current_url }
+        type = snapshot("type_again")
+        final_back = type["backLinks"].find { |item| item["visibleText"] == "Back" }
+        raise "No public Back from address type form" unless final_back
+
+        browser.find_elements(tag_name: "a").fetch(final_back.fetch("documentOrdinal") - 1).click
+        @trace[:nav] << { method: "app back", href: final_back["rawHref"], landed: page.current_url }
+        snapshot("return")
+        apply_models("after")
+      end
+    end
+  end
+
+  if only.match?("C-A3-HISTORY")
+    it "C-A3-HISTORY" do
+      capture("C-A3-HISTORY", history_control: true) do
+        origin = apply_fixture("A3")
+        apply_models("before")
+        run_target(origin, "phone number")
+        first_url = page.current_url
+        page.go_back
+        @trace[:nav] << { method: "browser Back", from: first_url, landed: page.current_url }
+        snapshot("return")
+        apply_models("after")
+      end
+    end
+  end
 end

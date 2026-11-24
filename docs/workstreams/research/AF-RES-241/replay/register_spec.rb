@@ -19,6 +19,8 @@ RSpec.describe "AF-RES-241 Register", type: :feature, js: true do
       date_of_birth: Date.new(1991, 2, 24), course_education_phase: :secondary,
       course_subject_one: CourseSubjects::MATHEMATICS, course_subject_two: nil, course_subject_three: nil,
       course_allocation_subject: maths.allocation_subject, course_age_range: [11, 16], course_uuid: nil,
+      training_initiative: :no_initiative, applying_for_bursary: false,
+      applying_for_grant: false, applying_for_scholarship: false,
       study_mode: :full_time, itt_start_date: Date.new(2026, 9, 1), itt_end_date: Date.new(2027, 7, 31),
     )
     origin = trainee_check_details_path(@trainee)

@@ -78,3 +78,17 @@ docker exec af241-app bundle exec rspec \
 `AF241_ONLY`로 ID 정규식을 주면 독립 초기 상태의 일부만 실행한다. 예를 들어 Apply의 양성·오류는 `-e AF241_ONLY='^A3-1-(POS|ERR)$'`를 docker exec에 추가한다. 테스트가 0 exit로 끝나도 모델 차이, 양식 에러 및 실제 복귀 URL은 JSON에서 별도로 판정한다.
 
 `harness.rb`는 정상 렌더링된 페이지에서 DOM 원문(anchor/control outerHTML, href, input, label, focus 및 summary row)과 Chrome Accessibility.getFullAXTree의 주요 role raw nodes를 보존한다. AX 원본 node는 ordinal과 backendDOMNodeId로 대상 링크의 live DOM과 연결한다. 스냅샷은 필드·관련 role 중심이며 HTML 페이지 전체나 AT 녹음은 포함하지 않는다. 명시적인 Tab/Enter는 링크에만 적용했고 양식 값에는 일반 WebDriver 입력을 사용했다. GOV.UK radio는 연결된 label을 활성화한다. 다른 테스트/프로덕션과 포트 및 데이터베이스를 공유하지 않는다.
+
+## 반례·깨끗한 재생
+
+```bash
+docker exec -e AF241_RAILS_PORT=14841 -e AF241_CAPTURE_DIR=/af241-scratch/out \
+  -e AF241_ONLY='^C-A[13]-' af241-app \
+  bundle exec rspec /af241-scratch/apply_spec.rb --format documentation --order defined
+docker exec -e AF241_RAILS_PORT=14842 -e AF241_CAPTURE_DIR=/af241-scratch/out \
+  af241-reg bundle exec rspec /af241-scratch/feedback_spec.rb --format documentation --order defined
+```
+
+양성·오류 재생에는 위 Apply 컨테이너 명령의 새 이름 `af241-app-clean`과 `-e TEST_ENV_NUMBER=_af241_clean`, `-e REDIS_URL=redis://redis:6379/2`를 적용했다. `bundle exec rails db:prepare`로 만든 독립 DB는 `bat_apply_test_af241_clean`이었다. Apply용 host relay·container relay의 포트와 소켓을 각각 `14843`, `apply-clean.sock`으로 분리하고 같은 host ChromeDriver·새 브라우저 세션을 사용했다. `AF241_RAILS_PORT=14843`과 `AF241_ONLY='^A3-1-(POS|ERR)$'`로 양성·오류 두 예제를 순서대로 실행했다. [두 재생과 대조의 stdout/stderr/exit](../receipts/controls/)
+
+Register의 후속 Course details 양식에서 일부 input name은 렌더마다 달라진다. 첫 단계 실제 이름은 raw receipt에 그대로 남겼고, 시험의 날짜 재입력은 공개 폼의 안정적인 input ID와 UI 입력을 사용했다. 날짜 미입력으로 발생한 첫 검증 영수증은 [초기 시도](../receipts/attempts/R1-1-S.json)에 있다.

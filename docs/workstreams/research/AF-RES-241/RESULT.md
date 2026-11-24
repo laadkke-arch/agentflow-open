@@ -21,10 +21,17 @@
 
 | 반례·기존 시험 | 소스의 단언 | 실제 관측 단계 | 추천 문구에 넣을 구별값 | 남은 한계 |
 | --- | --- | --- | --- | --- |
-| A2 기존 course/pattern | 정확한 리뷰에서 course Change 후 다른 course 선택과 review 경로의 텍스트를 기대 | upstream RSpec 1 example 안의 해당 기대 통과. 브라우저 여정은 별도 A2-1 | course 이름·코드, 해당 choice, option 연동 여부 | upstream RackTest의 AX/초점 미측정 |
+| A2 기존 course 기대 | 정확한 리뷰에서 course Change 후 다른 course 선택과 review 경로의 텍스트를 기대 | upstream RSpec 1 example 안의 해당 기대 통과. 브라우저 여정은 별도 A2-1 | course 이름·코드, 해당 choice, option 연동 여부 | upstream RackTest의 AX/초점 미측정 |
 | A2 기존 study mode | 변경 후 multi-site 질문과 최종 review, single-site는 곧바로 review 기대 | 위 같은 RSpec example에서 두 분기 통과. 브라우저 A2-2는 multi-site | 현재 mode, 필요한 site 재선택, review 복귀 | 독립 기존 시험 파일 두 개로 세지 않음 |
 | Apply address | 주소 컨트롤러는 return-to가 있으면 review, 주소 edit view의 Form action은 query 없이 helper 호출 | GET은 query 포함, 저장 제출은 query 없이 residency로, 기존 yes 저장 후 review | 처음 위치 유형, 실제 주소, 후속 거주 확인 | UK/yes 조건 |
 | Register route | route 변경 시 course·funding·placement 상태 및 draft progress 초기화 | 훈련 경로 저장 직후 여러 필드 비움. 기존 코스 값 재입력 뒤 같은 URL에 접힌 course section | 훈련 경로, 코스 재확인 및 지원금 초기화, 복귀 시 펼침 여부 | 다른 route/모집학년과 Publish 분기 미측정 |
 | Register phase | phase 전환 시 과목·연령 초기화, course form에서 재입력 | secondary→primary 뒤 과목·연령·지원금 관련 값이 변하고 원 URL의 코스 섹션은 펼쳐짐 | 교육 단계 및 후속 과목·연령 | 서로 무관한 필드 전체에 대한 일반화 금지 |
 
-표 2의 한 행은 한 기대 또는 한 반례다. 기존 A2 기대 2개는 같은 upstream example의 두 동작이다. 추가 대조와 그 영수증은 반례 확인 묶음에서 보강한다.
+| Apply 동일 referee 이름 | A01은 name을 suffix로 사용 | 동일 name 링크 두 개의 원 AX 문자열까지 동일. Tab/Enter로 reference 11, 12를 각각 열었다. [C-A1-DUP](receipts/controls/C-A1-DUP.json) | 이름 충돌 시 구별 가능한 reference 인스턴스 | 한 합성 중복 쌍 |
+| Register 피드백 상태·의견 | R23의 각 suffix가 new_feedback_path 공유 | 두 이름이 /feedback의 동일 네 의미 필드 및 BODY에 도달. 각 값만 세션 임시 저장 후 /feedback/check. [만족도](receipts/controls/C-R-F1.json), [의견](receipts/controls/C-R-F2.json) | 의도한 행과 공유 입력 그룹, 초점, 임시 저장·최종 제출의 차이 | 텍스트 input의 생성 이름은 렌더별로 다름. FeedbackItem 0→0 |
+| Apply 주소 중간 Back | 첫 UK Continue가 address_type/country를 저장 | 입력을 바꾸지 않아도 GB→빈 문자열. 두 번 앱 Back으로 review에 돌아와도 빈 값 유지. [C-A3-MID](receipts/controls/C-A3-MID.json) | 중간 제출 여부와 Back이 보존하는 단계 | A3-2-B는 첫 폼에서 바로 Back한 별개 여정 |
+| Apply 브라우저 Back | 전화 편집의 app Back href가 review | C-A3-HISTORY에서 브라우저 Back도 review·BODY·모델 동일. [원영수증](receipts/controls/C-A3-HISTORY.json) | 앱 Back href와 브라우저 history 방법 | 한 직행 여정·한 브라우저에서만 관측 |
+| 깨끗한 Apply 양성·오류 | 유효값은 저장·복귀, 잘못된 값은 edit | 새 컨테이너·DB. 양성은 번호 변경·review·BODY, 잘못된 번호는 기존 값 유지·edit·error summary DIV focus. [양성](receipts/controls/A3-1-POS.json), [오류](receipts/controls/A3-1-ERR.json) | 저장 성공과 오류 초점 | 전화만 재생 |
+| 도서관 예약 표시 | 제목 그룹 내 edition과 holding의 자료 단위가 별개 | AUK 2012와 Penguin 2009 eBook에 같은 예약 문구, 두 서지 ID. Sovereign 2012 New ed는 같은 연도인데 Check out. [공개 읽기 기록](receipts/controls/library.json) | edition·publisher·포맷, 실제 action 및 대상을 확인한 수준 | 서지/표시 2/2, 실제 holding·예약 0/2 확인 |
+
+표 2의 한 행은 한 기대 또는 한 반례다. 기존 A2 기대 2개는 같은 upstream example의 두 동작이다. [controls.csv](controls.csv)는 별도 원영수증과 실제 실행 단위를 연결한다.
