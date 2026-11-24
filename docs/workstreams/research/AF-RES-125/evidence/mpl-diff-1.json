@@ -1,0 +1,377 @@
+[
+  {
+    "n": 19359,
+    "sha": "07aa92b15195381e9c3ee07f62ba7602caa5a46f",
+    "url": "https://github.com/matplotlib/matplotlib/commit/07aa92b15195381e9c3ee07f62ba7602caa5a46f",
+    "files": [
+      {
+        "filename": "examples/event_handling/trifinder_event_demo.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/psd_demo.py"
+      },
+      {
+        "filename": "examples/misc/custom_projection.py"
+      },
+      {
+        "filename": "examples/scales/symlog_demo.py"
+      },
+      {
+        "filename": "examples/shapes_and_collections/ellipse_demo.py"
+      },
+      {
+        "filename": "examples/text_labels_and_annotations/multiline.py"
+      },
+      {
+        "filename": "examples/userdemo/simple_legend01.py"
+      }
+    ],
+    "author": {
+      "login": "ianthomas23",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/580326?v=4",
+      "id": 580326
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Replace use of pyplot with OO api in some examples (#19359)\n\n* Replace use of pyplot with OO api in some examples\r\n\r\n* flake8 fix",
+    "diff_length": 6540,
+    "diff_excerpt": "@@ -29,7 +29,7 @@ def on_mouse_move(event):\n     else:\n         tri = trifinder(event.xdata, event.ydata)\n     update_polygon(tri)\n-    plt.title('In triangle %i' % tri)\n+    ax.set_title(f'In triangle {tri}')\n     event.canvas.draw()\n \n \n@@ -52,10 +52,10 @@ def on_mouse_move(event):\n trifinder = triang.get_trifinder()\n \n # Setup plot and callbacks.\n-plt.subplot(aspect='equal')\n-plt.triplot(triang, 'bo-')\n+fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})\n+ax.triplot(triang, 'bo-')\n polygon = Polygon([[0, 0], [0, 0]], facecolor='y')  # dummy data for (xs, ys)\n update_polygon(-1)\n-plt.gca().add_patch(polygon)\n-plt.gcf().canvas.mpl_connect('motion_notify_event', on_mouse_move)\n+ax.add_patch(polygon)\n+fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)\n plt.show()\n@@ -26,10 +26,9 @@\n cnse = cnse[:len(t)]\n s = 0.1 * np.sin(2 * np.pi * t) + cnse\n \n-plt.subplot(211)\n-plt.plot(t, s)\n-plt.subplot(212)\n-plt.psd(s, 512, 1 / dt)\n+fig, (ax0, ax1) = plt.subplots(2, 1)\n+ax0.plot(t, s)\n+ax1.psd(s, 512, 1 / dt)\n \n plt.show()\n \n@@ -72,7 +71,7 @@\n ax2.psd(y, NFFT=len(t), pad_to=len(t), Fs=fs)\n ax2.psd(y, NFFT=len(t), pad_to=len(t) * 2, Fs=fs)\n ax2.psd(y, NFFT=len(t), pad_to=len(t) * 4, Fs=fs)\n-plt.title('zero padding')\n+ax2.set_title('zero padding')\n \n # Plot the PSD with different block sizes, Zero pad to the length of the\n # original data sequence.\n@@ -81,7 +80,7 @@\n ax3.psd(y, NFFT=len(t) // 2, pad_to=len(t), Fs=fs)\n ax3.psd(y, NFFT=len(t) // 4, pad_to=len(t), Fs=fs)\n ax3.set_ylabel('')\n-plt.title('block size')\n+ax3.set_title('block size')\n \n # Plot the PSD with different amounts of overlap between blocks\n ax4 = fig.add_subplot(gs[1, 2], sharex=ax2, sharey=ax2)\n@@ -91,7 +90,7 @@\n ax4.psd(y, NFFT=len(t) // 2, pad_to=len(t),\n         noverlap=int(0.2 * len(t) / 2.), Fs=fs)\n ax4.set_ylabel('')\n-plt.title('overlap')\n+ax4.set_title('overlap')\n \n plt.show()\n \n@@ -443,8 +443,8 @@ def _get_core_transform(self, resolution):\n if __name__ == '__main__':\n     import matplotlib.pyplot as plt\n     # Now make a simple example using the custom projection.\n-    plt.subplot(projection=\"custom_hammer\")\n-    p = plt.plot([-1, 1, 1], [-1, -1, 1], \"o-\")\n-    plt.grid(True)\n+    fig, ax = plt.subplots(subplot_kw={'projection': 'custom_hammer'})\n+    ax.plot([-1, 1, 1], [-1, -1, 1], \"o-\")\n+    ax.grid()\n \n     plt.show()\n@@ -1,3 +1,4 @@\n+\n \"\"\"\n ===========\n Symlog Demo\n@@ -12,24 +13,23 @@\n x = np.arange(-50.0, 50.0, dt)\n y = np.arange(0, 100.0, dt)\n \n-plt.subplot(311)\n-plt.plot(x, y)\n-plt.xscale('symlog')\n-plt.ylabel('symlogx')\n-plt.grid(True)\n-plt.gca().xaxis.grid(True, which='minor')  # minor grid on too\n-\n-plt.subplot(312)\n-plt.plot(y, x)\n-plt.yscale('symlog')\n-plt.ylabel('symlogy')\n-\n-plt.subplot(313)\n-plt.plot(x, np.sin(x / 3.0))\n-plt.xscale('symlog')\n-plt.yscale('symlog', linthresh=0.015)\n-plt.grid(True)\n-plt.ylabel('symlog both')\n-\n-plt.tight_layout()\n+fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)\n+\n+ax0.plot(x, y)\n+ax0.set_xscale('symlog')\n+ax0.set_ylabel('symlogx')\n+ax0.grid()\n+ax0.xaxis.grid(which='minor')  # minor grid on too\n+\n+ax1.plot(y, x)\n+ax1.set_yscale('symlog')\n+ax1.set_ylabel('symlogy')\n+\n+ax2.plot(x, np.sin(x / 3.0))\n+ax2.set_xscale('symlog')\n+ax2.set_yscale('symlog', linthresh=0.015)\n+ax2.grid()\n+ax2.set_ylabel('symlog both')\n+\n+fig.tight_layout()\n plt.show()\n@@ -49,14 +49,14 @@\n angle_step = 45  # degrees\n angles = np.arange(0, 180, angle_step)\n \n-ax = plt.subplot(aspect='equal')\n+fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})\n \n for angle in angles:\n     ellipse = Ellipse((0, 0), 4, 2, angle=angle, alpha=0.1)\n     ax.add_artist(ellipse)\n \n-plt.xlim(-2.2, 2.2)\n-plt.ylim(-2.2, 2.2)\n+ax.set_xlim(-2.2, 2.2)\n+ax.set_ylim(-2.2, 2.2)\n \n plt.show()\n \n@@ -7,39 +7,39 @@\n import matplotlib.pyplot as plt\n import numpy as np\n \n-plt.figure(figsize=(7, 4))\n-ax = plt.subplot(121)\n-ax.set_aspect(1)\n-plt.plot(np.arange(10))\n-plt.xlabel('this is a xlabel\\n(with newlines!)')\n-plt.ylabel('this is vertical\\ntest', multialignment='center')\n-plt.text(2, 7, 'this is\\nyet another test',\n+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(7, 4))\n+\n+ax0.set_aspect(1)\n+ax0.plot(np.arange(10))\n+ax0.set_xlabel('this is a xlabel\\n(with newlines!)')\n+ax0.set_ylabel('this is vertical\\ntest', multialignment='center')\n+ax0.text(2, 7, 'this is\\nyet another test',\n          rotation=45,\n          horizontalalignment='center',\n          verticalalignment='top',\n          multialignment='center')\n \n-plt.grid(True)\n+ax0.grid()\n \n-plt.subplot(122)\n \n-plt.text(0.29, 0.4, \"Mat\\nTTp\\n123\", size=18,\n+ax1.text(0.29, 0.4, \"Mat\\nTTp\\n123\", size=18,\n          va=\"baseline\", ha=\"right\", multialignment=\"left\",\n          bbox=dict(fc=\"none\"))\n \n-plt.text(0.34, 0.4, \"Mag\\nTTT\\n123\", size=18,\n+ax1.text(0.34, 0.4, \"Mag\\nTTT\\n123\", size=18,\n          va=\"baseline\", ha=\"left\", multialignment=\"left\",\n          bbox=dict(fc=\"none\"))\n \n-plt.text(0.95, 0.4, \"Mag\\nTTT$^{A^A}$\\n123\", size=18,\n+ax1.text(0.95, 0.4, \"Mag\\nTTT$^{A^A}$\\n123\", size=18,\n          va=\"baseline\", ha=\"right\", multialignment=\"left\",\n          bbox=dict(fc=\"none\"))\n \n-plt.xticks([0.2, 0.4, 0.6, 0.8, 1.],\n-           [\"Jan\\n2009\", \"Feb\\n2009\", \"Mar\\n2009\", \"Apr\\n2009\", \"May\\n2009\"])\n+ax1.set_xticks([0.2, 0.4, 0.6, 0.8, 1.])\n+ax1.set_xticklabels([\"Jan\\n2009\", \"Feb\\n2009\", \"Mar\\n2009\", \"Apr\\n2009\",\n+                     \"May\\n2009\"])\n \n-plt.axhline(0.4)\n-plt.title(\"test line spacing for multiline text\")\n+ax1.axhline(0.4)\n+ax1.set_title(\"test line spacing for multiline text\")\n \n-plt.subplots_adjust(bottom=0.25, top=0.75)\n+fig.subplots_adjust(bottom=0.25, top=0.75)\n plt.show()\n@@ -7,18 +7,20 @@\n import matplotlib.pyplot as plt\n \n \n-plt.subplot(211)\n-plt.plot([1, 2, 3], label=\"test1\")\n-plt.plot([3, 2, 1], label=\"test2\")\n+fig = plt.figure()\n+\n+ax = fig.add_subplot(211)\n+ax.plot([1, 2, 3], label=\"test1\")\n+ax.plot([3, 2, 1], label=\"test2\")\n # Place a legend above this subplot, expanding itself to\n # fully use the given bounding box.\n-plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',\n+ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',\n            ncol=2, mode=\"expand\", borderaxespad=0.)\n \n-plt.subplot(223)\n-plt.plot([1, 2, 3], label=\"test1\")\n-plt.plot([3, 2, 1], label=\"test2\")\n+ax = fig.add_subplot(223)\n+ax.plot([1, 2, 3], label=\"test1\")\n+ax.plot([3, 2, 1], label=\"test2\")\n # Place a legend to the right of this smaller subplot.\n-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)\n+ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)\n \n plt.show()",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19371,
+    "sha": "7cfdbe121f6e82e33e10e79996f3d51974b39429",
+    "url": "https://github.com/matplotlib/matplotlib/commit/7cfdbe121f6e82e33e10e79996f3d51974b39429",
+    "files": [
+      {
+        "filename": "lib/matplotlib/tests/test_axes.py"
+      }
+    ],
+    "author": {
+      "login": "dstansby",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/6197628?v=4",
+      "id": 6197628
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19371 from QuLogic/fix-np120\n\nFix specgram test on NumPy 1.20.",
+    "diff_length": 379,
+    "diff_excerpt": "@@ -4452,7 +4452,7 @@ def test_specgram_angle():\n \n def test_specgram_fs_none():\n     \"\"\"Test axes.specgram when Fs is None, should not throw error.\"\"\"\n-    spec, freqs, t, im = plt.specgram(np.ones(300), Fs=None)\n+    spec, freqs, t, im = plt.specgram(np.ones(300), Fs=None, scale='linear')\n     xmin, xmax, freq0, freq1 = im.get_extent()\n     assert xmin == 32 and xmax == 96\n ",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19377,
+    "sha": "d262e5353fce86e99ef96279cc08a3c76b1d7c8a",
+    "url": "https://github.com/matplotlib/matplotlib/commit/d262e5353fce86e99ef96279cc08a3c76b1d7c8a",
+    "files": [
+      {
+        "filename": "lib/matplotlib/tests/test_axes.py"
+      }
+    ],
+    "author": {
+      "login": "jklymak",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1562854?v=4",
+      "id": 1562854
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19377 from meeseeksmachine/auto-backport-of-pr-19371-on-v3.3.x\n\nBackport PR #19371 on branch v3.3.x (Fix specgram test on NumPy 1.20.)",
+    "diff_length": 379,
+    "diff_excerpt": "@@ -4152,7 +4152,7 @@ def test_specgram_angle():\n \n def test_specgram_fs_none():\n     \"\"\"Test axes.specgram when Fs is None, should not throw error.\"\"\"\n-    spec, freqs, t, im = plt.specgram(np.ones(300), Fs=None)\n+    spec, freqs, t, im = plt.specgram(np.ones(300), Fs=None, scale='linear')\n     xmin, xmax, freq0, freq1 = im.get_extent()\n     assert xmin == 32 and xmax == 96\n ",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19435,
+    "sha": "3d349f271d11bedf8c608d432f468ee30abe159f",
+    "url": "https://github.com/matplotlib/matplotlib/commit/3d349f271d11bedf8c608d432f468ee30abe159f",
+    "files": [
+      {
+        "filename": "lib/matplotlib/backends/backend_gtk3.py"
+      }
+    ],
+    "author": {
+      "login": "timhoffm",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+      "id": 2836374
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19435 from anntzer/gtkd\n\nReplace gtk3 deprecated APIs that have simple replacements.",
+    "diff_length": 1399,
+    "diff_excerpt": "@@ -125,7 +125,6 @@ def __init__(self, figure):\n \n         self.set_events(self.__class__.event_mask)\n \n-        self.set_double_buffered(True)\n         self.set_can_focus(True)\n \n         renderer_init = _api.deprecate_method_override(\n@@ -181,7 +180,7 @@ def key_release_event(self, widget, event):\n \n     def motion_notify_event(self, widget, event):\n         if event.is_hint:\n-            t, x, y, state = event.window.get_pointer()\n+            t, x, y, state = event.window.get_device_position(event.device)\n         else:\n             x, y = event.x, event.y\n \n@@ -339,20 +338,16 @@ def __init__(self, canvas, num):\n \n         self.toolbar = self._get_toolbar()\n \n-        def add_widget(child):\n-            child.show()\n-            self.vbox.pack_end(child, False, False, 0)\n-            size_request = child.size_request()\n-            return size_request.height\n-\n         if self.toolmanager:\n             backend_tools.add_tools_to_manager(self.toolmanager)\n             if self.toolbar:\n                 backend_tools.add_tools_to_container(self.toolbar)\n \n         if self.toolbar is not None:\n             self.toolbar.show()\n-            h += add_widget(self.toolbar)\n+            self.vbox.pack_end(self.toolbar, False, False, 0)\n+            min_size, nat_size = self.toolbar.get_preferred_size()\n+            h += nat_size.height\n \n         self.window.set_default_size(w, h)\n ",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19500,
+    "sha": "d235b026365c1b64817e28700993132c7d0ec486",
+    "url": "https://github.com/matplotlib/matplotlib/commit/d235b026365c1b64817e28700993132c7d0ec486",
+    "files": [
+      {
+        "filename": "doc/api/next_api_changes/development/19500-AL.rst"
+      },
+      {
+        "filename": "lib/matplotlib/__init__.py"
+      },
+      {
+        "filename": "lib/matplotlib/transforms.py"
+      }
+    ],
+    "author": {
+      "login": "timhoffm",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+      "id": 2836374
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19500 from anntzer/np116",
+    "diff_length": 1409,
+    "diff_excerpt": "@@ -0,0 +1,2 @@\n+Matplotlib now requires numpy>=1.16\n+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n@@ -143,10 +143,10 @@ def _check_versions():\n \n     for modname, minver in [\n             (\"cycler\", \"0.10\"),\n-            (\"dateutil\", \"2.1\"),\n+            (\"dateutil\", \"2.7\"),\n             (\"kiwisolver\", \"1.0.1\"),\n-            (\"numpy\", \"1.15\"),\n-            (\"pyparsing\", \"2.0.1\"),\n+            (\"numpy\", \"1.16\"),\n+            (\"pyparsing\", \"2.2.1\"),\n     ]:\n         module = importlib.import_module(modname)\n         if LooseVersion(module.__version__) < minver:\n@@ -677,13 +677,10 @@ def union(bboxes):\n         \"\"\"Return a `Bbox` that contains all of the given *bboxes*.\"\"\"\n         if not len(bboxes):\n             raise ValueError(\"'bboxes' cannot be empty\")\n-        # needed for 1.14.4 < numpy_version < 1.16\n-        # can remove once we are at numpy >= 1.16\n-        with np.errstate(invalid='ignore'):\n-            x0 = np.min([bbox.xmin for bbox in bboxes])\n-            x1 = np.max([bbox.xmax for bbox in bboxes])\n-            y0 = np.min([bbox.ymin for bbox in bboxes])\n-            y1 = np.max([bbox.ymax for bbox in bboxes])\n+        x0 = np.min([bbox.xmin for bbox in bboxes])\n+        x1 = np.max([bbox.xmax for bbox in bboxes])\n+        y0 = np.min([bbox.ymin for bbox in bboxes])\n+        y1 = np.max([bbox.ymax for bbox in bboxes])\n         return Bbox([[x0, y0], [x1, y1]])\n \n     @staticmethod",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19545,
+    "sha": "b257bb61748bf47a28fbd7e8c2dac29c583d0dab",
+    "url": "https://github.com/matplotlib/matplotlib/commit/b257bb61748bf47a28fbd7e8c2dac29c583d0dab",
+    "files": [
+      {
+        "filename": "examples/user_interfaces/README.txt"
+      },
+      {
+        "filename": "tutorials/introductory/sample_plots.py"
+      },
+      {
+        "filename": "tutorials/introductory/usage.py"
+      }
+    ],
+    "author": {
+      "login": "timhoffm",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+      "id": 2836374
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19545 from anntzer/pygtk\n\nReplace references to pygtk by pygobject in docs.",
+    "diff_length": 2021,
+    "diff_excerpt": "@@ -5,7 +5,7 @@ Embedding Matplotlib in graphical user interfaces\n \n You can embed Matplotlib directly into a user interface application by\n following the embedding_in_SOMEGUI.py examples here. Currently\n-matplotlib supports wxpython, pygtk, tkinter and pyqt4/5.\n+Matplotlib supports PyQt/PySide, PyGObject, Tkinter, and wxPython.\n \n When embedding Matplotlib in a GUI, you must use the Matplotlib API\n directly rather than the pylab/pyplot proceedural interface, so take a\n@@ -385,7 +385,7 @@\n EEG GUI\n =======\n \n-You can embed Matplotlib into pygtk, wx, Tk, or Qt applications.\n+You can embed Matplotlib into Qt, GTK, Tk, or wxWidgets applications.\n Here is a screenshot of an EEG viewer called `pbrain\n <https://github.com/nipy/pbrain>`__.\n \n@@ -271,7 +271,7 @@ def my_plotter(ax, data1, data2, param_dict):\n # plotting windows pop up when they type commands.  Some people run\n # `Jupyter <https://jupyter.org>`_ notebooks and draw inline plots for\n # quick data analysis. Others embed Matplotlib into graphical user\n-# interfaces like wxpython or pygtk to build rich applications.  Some\n+# interfaces like PyQt or PyGObject to build rich applications.  Some\n # people use Matplotlib in batch scripts to generate postscript images\n # from numerical simulations, and still others run web application\n # servers to dynamically serve up graphs.\n@@ -281,8 +281,8 @@ def my_plotter(ax, data1, data2, param_dict):\n # \"frontend\" is the user facing code, i.e., the plotting code, whereas the\n # \"backend\" does all the hard work behind-the-scenes to make the figure.\n # There are two types of backends: user interface backends (for use in\n-# pygtk, wxpython, tkinter, qt4, qt5, or macosx; also referred to as\n-# \"interactive backends\") and hardcopy backends to make image files\n+# PyQt/PySide, PyGObject, Tkinter, wxPython, or macOS/Cocoa); also referred to\n+# as \"interactive backends\") and hardcopy backends to make image files\n # (PNG, SVG, PDF, PS; also referred to as \"non-interactive backends\").\n #\n # Selecting a backend",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19549,
+    "sha": "126cd95cc206ff1320856a2bb8ffc7514f129e82",
+    "url": "https://github.com/matplotlib/matplotlib/commit/126cd95cc206ff1320856a2bb8ffc7514f129e82",
+    "files": [
+      {
+        "filename": "examples/user_interfaces/README.txt"
+      },
+      {
+        "filename": "tutorials/introductory/sample_plots.py"
+      },
+      {
+        "filename": "tutorials/introductory/usage.py"
+      }
+    ],
+    "author": {
+      "login": "jklymak",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1562854?v=4",
+      "id": 1562854
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19549 from meeseeksmachine/auto-backport-of-pr-19545-on-v3.4.x\n\nBackport PR #19545 on branch v3.4.x (Replace references to pygtk by pygobject in docs.)",
+    "diff_length": 2021,
+    "diff_excerpt": "@@ -5,7 +5,7 @@ Embedding Matplotlib in graphical user interfaces\n \n You can embed Matplotlib directly into a user interface application by\n following the embedding_in_SOMEGUI.py examples here. Currently\n-matplotlib supports wxpython, pygtk, tkinter and pyqt4/5.\n+Matplotlib supports PyQt/PySide, PyGObject, Tkinter, and wxPython.\n \n When embedding Matplotlib in a GUI, you must use the Matplotlib API\n directly rather than the pylab/pyplot proceedural interface, so take a\n@@ -385,7 +385,7 @@\n EEG GUI\n =======\n \n-You can embed Matplotlib into pygtk, wx, Tk, or Qt applications.\n+You can embed Matplotlib into Qt, GTK, Tk, or wxWidgets applications.\n Here is a screenshot of an EEG viewer called `pbrain\n <https://github.com/nipy/pbrain>`__.\n \n@@ -271,7 +271,7 @@ def my_plotter(ax, data1, data2, param_dict):\n # plotting windows pop up when they type commands.  Some people run\n # `Jupyter <https://jupyter.org>`_ notebooks and draw inline plots for\n # quick data analysis. Others embed Matplotlib into graphical user\n-# interfaces like wxpython or pygtk to build rich applications.  Some\n+# interfaces like PyQt or PyGObject to build rich applications.  Some\n # people use Matplotlib in batch scripts to generate postscript images\n # from numerical simulations, and still others run web application\n # servers to dynamically serve up graphs.\n@@ -281,8 +281,8 @@ def my_plotter(ax, data1, data2, param_dict):\n # \"frontend\" is the user facing code, i.e., the plotting code, whereas the\n # \"backend\" does all the hard work behind-the-scenes to make the figure.\n # There are two types of backends: user interface backends (for use in\n-# pygtk, wxpython, tkinter, qt4, qt5, or macosx; also referred to as\n-# \"interactive backends\") and hardcopy backends to make image files\n+# PyQt/PySide, PyGObject, Tkinter, wxPython, or macOS/Cocoa); also referred to\n+# as \"interactive backends\") and hardcopy backends to make image files\n # (PNG, SVG, PDF, PS; also referred to as \"non-interactive backends\").\n #\n # Selecting a backend",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19649,
+    "sha": "71c9f09a4f6f1b5c380ac60084a7efb12c6e2d97",
+    "url": "https://github.com/matplotlib/matplotlib/commit/71c9f09a4f6f1b5c380ac60084a7efb12c6e2d97",
+    "files": [
+      {
+        "filename": "lib/matplotlib/cm.py"
+      }
+    ],
+    "author": {
+      "login": "anntzer",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1322974?v=4",
+      "id": 1322974
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19649 from timhoffm/globals\n\nUse globals() instead of locals() for adding colormaps as names to cm module",
+    "diff_length": 292,
+    "diff_excerpt": "@@ -92,7 +92,7 @@ def _warn_deprecated(self):\n \n \n _cmap_registry = _gen_cmap_registry()\n-locals().update(_cmap_registry)\n+globals().update(_cmap_registry)\n # This is no longer considered public API\n cmap_d = _DeprecatedCmapDictWrapper(_cmap_registry)\n __builtin_cmaps = tuple(_cmap_registry)",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19652,
+    "sha": "59b32afde60e46407b60c766b878c840a9bfa490",
+    "url": "https://github.com/matplotlib/matplotlib/commit/59b32afde60e46407b60c766b878c840a9bfa490",
+    "files": [
+      {
+        "filename": "lib/matplotlib/cm.py"
+      }
+    ],
+    "author": {
+      "login": "dstansby",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/6197628?v=4",
+      "id": 6197628
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19652 from meeseeksmachine/auto-backport-of-pr-19649-on-v3.4.x\n\nBackport PR #19649 on branch v3.4.x (Use globals() instead of locals() for adding colormaps as names to cm module)",
+    "diff_length": 292,
+    "diff_excerpt": "@@ -92,7 +92,7 @@ def _warn_deprecated(self):\n \n \n _cmap_registry = _gen_cmap_registry()\n-locals().update(_cmap_registry)\n+globals().update(_cmap_registry)\n # This is no longer considered public API\n cmap_d = _DeprecatedCmapDictWrapper(_cmap_registry)\n __builtin_cmaps = tuple(_cmap_registry)",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19893,
+    "sha": "48ed60f7f406c9c9e32320126b8298470f273a8d",
+    "url": "https://github.com/matplotlib/matplotlib/commit/48ed60f7f406c9c9e32320126b8298470f273a8d",
+    "files": [
+      {
+        "filename": "doc/faq/howto_faq.rst"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19893 from timhoffm/doc-howto-dates\n\nRemove Howto: Plot numpy.datetime64 values",
+    "diff_length": 640,
+    "diff_excerpt": "@@ -7,21 +7,6 @@ How-to\n .. contents::\n    :backlinks: none\n \n-.. _howto-datetime64:\n-\n-Plot `numpy.datetime64` values\n-------------------------------\n-\n-As of Matplotlib 2.2, `numpy.datetime64` objects are handled the same way\n-as `datetime.datetime` objects.\n-\n-If you prefer the pandas converters and locators, you can register them.  This\n-is done automatically when calling a pandas plot function and may be\n-unnecessary when using pandas instead of Matplotlib directly. ::\n-\n-  from pandas.plotting import register_matplotlib_converters\n-  register_matplotlib_converters()\n-\n .. _howto-figure-empty:\n \n Check whether a figure is empty",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19896,
+    "sha": "0bf8a098a1912be90541e12694953cc06006e887",
+    "url": "https://github.com/matplotlib/matplotlib/commit/0bf8a098a1912be90541e12694953cc06006e887",
+    "files": [
+      {
+        "filename": "doc/faq/howto_faq.rst"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19896 from meeseeksmachine/auto-backport-of-pr-19893-on-v3.4.x\n\nBackport PR #19893 on branch v3.4.x (Remove Howto: Plot numpy.datetime64 values)",
+    "diff_length": 640,
+    "diff_excerpt": "@@ -7,21 +7,6 @@ How-to\n .. contents::\n    :backlinks: none\n \n-.. _howto-datetime64:\n-\n-Plot `numpy.datetime64` values\n-------------------------------\n-\n-As of Matplotlib 2.2, `numpy.datetime64` objects are handled the same way\n-as `datetime.datetime` objects.\n-\n-If you prefer the pandas converters and locators, you can register them.  This\n-is done automatically when calling a pandas plot function and may be\n-unnecessary when using pandas instead of Matplotlib directly. ::\n-\n-  from pandas.plotting import register_matplotlib_converters\n-  register_matplotlib_converters()\n-\n .. _howto-figure-empty:\n \n Check whether a figure is empty",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 19948,
+    "sha": "3a316b9965806288a98878fb0fa9e14689cfdc82",
+    "url": "https://github.com/matplotlib/matplotlib/commit/3a316b9965806288a98878fb0fa9e14689cfdc82",
+    "files": [
+      {
+        "filename": "lib/matplotlib/axes/_axes.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_axes.py"
+      }
+    ],
+    "author": {
+      "login": "anntzer",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1322974?v=4",
+      "id": 1322974
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19948 from dstansby/elinewidth\n\nAllow numpy arrays to be used as elinewidth",
+    "diff_length": 956,
+    "diff_excerpt": "@@ -3374,7 +3374,7 @@ def errorbar(self, x, y, yerr=None, xerr=None,\n         # Make the style dict for the line collections (the bars).\n         eb_lines_style = {**base_style, 'color': ecolor}\n \n-        if elinewidth:\n+        if elinewidth is not None:\n             eb_lines_style['linewidth'] = elinewidth\n         elif 'linewidth' in kwargs:\n             eb_lines_style['linewidth'] = kwargs['linewidth']\n@@ -3542,6 +3542,13 @@ def test_errorbar_every(fig_test, fig_ref):\n                     capsize=4, c='C1', fmt='none')\n \n \n+@pytest.mark.parametrize('elinewidth', [[1, 2, 3],\n+                                        np.array([1, 2, 3]),\n+                                        1])\n+def test_errorbar_linewidth_type(elinewidth):\n+    plt.errorbar([1, 2, 3], [1, 2, 3], yerr=[1, 2, 3], elinewidth=elinewidth)\n+\n+\n @image_comparison(['hist_stacked_stepfilled', 'hist_stacked_stepfilled'])\n def test_hist_stacked_stepfilled():\n     # make some data",
+    "parent": "not exposed by connector"
+  }
+]
