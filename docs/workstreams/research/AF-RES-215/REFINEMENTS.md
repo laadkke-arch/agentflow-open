@@ -28,3 +28,5 @@
 1. S02 실제 비식별 fixture + reception false/true; read 없는 항목의 값 및 재import 전후 확인.
 2. GUID 동일·feed 서로 다른 2개, redirect alias URL과 proxy URL을 세 쌍 비교, 동일 URL로 기존 category가 있는 경우; 건수뿐 아니라 feed_id/guid/link/star/read/labels 비교.
 3. starred.json에서 explicit star 제거/label 존재, filename 변경, canonical-only, articles wrapper 등 1개씩 변화; 1.29.1과 역사판 차이를 재현. 원본 삭제 금지. 실제 실행은 이번 작업 범위 밖.
+
+5차 재확인: Z03 L0–53만 읽은 상태 excluded → 2026-11-24 L54–67 실제 mapping 직접 열어 included, RDF/RIS note/attachment/collection 차이 확인. X02/X03 HTTP 재시도도 HTTPS timeout; 실패 상태 유지. F01 L237–242 재열람: subscriptions.xml은 파일명상 OPML dispatch에 해당(내용 조건); 4차 판단을 더 좁힘. frame의 12개 slot을 assessed_not_run 상태로 기록하고 migrations에 여섯 관측 열 추가(실행 아님).
