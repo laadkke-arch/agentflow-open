@@ -1,0 +1,17 @@
+# AF-RES-231 — 사전 범위 봉인
+
+## 고정 입력
+- 착수 통합 SHA 610bcdf35a3dc04bc7f55ce1ecf0a339d9d881e6; 계획판 914dbfa789ebec97063ed97130ea2a71c2e9f503. GitHub compare ahead 6/behind 0, 변경 파일은 docs/automation/dot-control.json 단독(308 additions/9 deletions). 계획판 tasks 227개, 마지막 AF-RES-229; AF-RES-231 없음. 최신 tasks 240개, AF-RES-231 RUNNING/attempt1, depends_on AF-RES-220, 사용자 brief와 범위 일치. 이전 계획의 과제가 아니라 이후 추가된 배정이다.
+- AGENTS.md, STATE.md, docs/DOT_AUTOMATION.md, docs/RESEARCH_WORKFLOW.md 읽음. control은 contents API 빈 본문이어서 blob SHA 71109adf1dc9cdc9b8b46464861f0af7a55b23ed 및 계획 blob cd433e3a0cd825fa9fd07a5c71d111491d494fef 직접 읽고 JSON 판독.
+- AF-RES-220 중앙 DONE/result 5df1c4816f3401629d6a247d8f0ed8bb7c0cad37; 자체 HANDOFF PARTIAL, 결과판 7364e529addc20042f45ca68b7012e6ffa1b1988. HANDOFF/RESULT/pairs/receipts INDEX/paths 확인. 8/8 GitHub REST, 21/40 위치, 자기 제외 개선0/동률4(실제 해결 기준 역시 개선0), API 버전 및 초기 revision 등 미확인. 원순위와 DuckDB 질의 재실행 안 함. 227–229 중간 결과 제외.
+- 지정 브랜치 work/research-af-res-231, 이 폴더만 쓰며 dot-control 수정 금지. 역할 웹 조사/설계, SQL 실행은 Codex 인계.
+
+## 모집·봉인·노출 순서
+1. Stack Exchange API 2.3 /search/advanced, site=dba, tagged=postgresql;greatest-n-per-group, fromdate=1325376000, todate=1735689599 (UTC), sort=creation, order=asc, pagesize=100, page=1; has_more=true이면 page=2에서 최초 20개까지. 120 경계 같은 생성시각이 있으면 같은 시각 전체를 확보하여 ID 오름차순으로 정렬하고 120에서 자른다(추가 수집은 경계 확인 전용). API 배열 원순서와 정규화 순서를 모두 보존. 기본 query 목록은 닫힌 질문으로 사전 필터링하지 않는다. 명시 필터로 question_id, creation_date, title, tags, body, closed_date, closed_reason, closed_details.original_questions, last_edit_date, accepted_answer_id 및 wrapper fields를 요청하되 가능한 경우 body/duplicate target은 표집 단계의 판독자 노출에서 제외하고 분리 영수증으로 보관한다. 필터 생성 응답과 버전 보존. 정상 빈 배열과 HTTP/접근 실패 구분. 해당 기간 전체 중 최초 120의 분모만 평가. 적격 조건: 두 태그, 기간, closed_reason=duplicate, 원행(그룹별 latest/max) 요구. 적격 첫 4를 선택; 부족하면 공석 유지. #138641은 별도 접근 보정, 겹치면 중복 산입 안 함.
+2. 원질문 첫 revision(가능하면)과 current body를 비교. 그룹 키/최대 기준/NULL/보조키/필요 열/동률 명시 여부 추출. 동률 미기재는 유일 승자/공동 전부/임의 1행 중 가능한 계약 집합 유지. 본문 표현 2~4 단어를 A에 정해 별도 커밋 후 A relevance 상위 5 호출; 정답 SQL 용어·도착지 제목·ID를 넣지 않는다. B는 원질문의 closed_details.original_questions 배열 첫 대상. 원배열 및 첫 대상이 자기인 경우도 기록, B 자기면 유효 외부 후보 없음으로 표시하고 다음 대상으로 건너뛰지 않는다. 실제 편집자가 과거에 이동한 경로라고 가정 금지. 검색 질의는 동일 site/tag, sort=relevance, order=desc, pagesize=5, page=1; 기간은 모집 제한이지 검색 제한이므로 검색에는 날짜 제한을 추가하지 않는다(brief에 없는 결정, 명시).
+3. A raw top5에서 자기 ID 제외 첫 결과만. B 첫 duplicate ID만. A/B 각 1 질문+1 답, 채택답 우선, 없으면 전체 답 메타데이터에서 score desc, creation_date asc, answer_id asc. 답 본문은 선택 이후 단 하나만 열람, 답 목록 메타데이터는 선택 비용이며 답 본문 열람으로 세지 않되 API 호출 수 별도 보고. AB/BA/AB/BA 순서. 두 조건 동일 답이면 공유 방문을 명시하고 논리적 1+1 예산으로 양쪽 표시. 실제 관측/예정/결측 별도. 원격 실패나 선택 필드 미노출이면 PARTIAL; 수동 검색을 순위 대신 사용 금지.
+4. 판정: 직접 충족(원계약과 SQL 지지), 조건부(명시 전제·수정 필요 또는 미기재 계약의 일부), 불일치(확인된 요구 위배), 미확인(근거 부재/실패). 두 조건 모두 실제 질문+답 관측되어 판정 가능한 쌍만 개선/동률/악화; 결측은 0 아님. 동률 불명일 때 계약별 민감도 따로. 자기, 재게재, 동일 도착 분리. 질의 및 계약이 봉인되기 전에 도착 답을 열지 않는다.
+5. 문서상 통제: 두 그룹, 동일 최대 timestamp 두 행(서로 다른 id/payload), NULL, 비동률 과거 행. DISTINCT ON/ROW_NUMBER(순서 미완전) 한 행은 동률에서 임의; id 추가는 명시적 단독 승자 계약일 때만 적합. RANK=1(날짜만, NULL 정렬 지정)은 공동 승자 반환. 날짜 DESC 기본 NULLS FIRST 반례; NULL 제외와 NULLS LAST는 all-NULL 그룹에서 다르다. 이 가설은 PostgreSQL 16 원문으로 검증할 예정이며 아직 실행/관측 아님. id 방향 반전으로 단독 승자 내용은 바뀌어도 순위 계약은 동일할 수 있음.
+6. 공식 높이뛰기 공동 1위 및 jump-off 각각 별개 사건, SQL 계약을 소급 결정하지 않는 비유. 근거 직접 원저작 22개 이상 및 지정 분류별 하한; 보조 원문은 첫 답 점수와 독립. 개별 UTC 불가 시 실제 확인 시간창 명시. 독립 검토와 자체 점검 분리.
+
+이 커밋 시점 외부 DBA 질문·답·검색 응답·공식 SQL/스포츠 자료 미열람. 이후 모집 원응답에 대상 링크가 함께 있으면 비가림 사실을 보고하고 질의 봉인 전 도착 답 본문은 열지 않는다. 질문별 계약/질의 봉인은 모집 성공 후 별도 수행한다.
