@@ -20,3 +20,12 @@
 - C는 같은 공개 지도 사양과 지도 원전을 받아, 등록 순서에 따른 차이를 예측한다. B가 커밋된 뒤에만 공식 Translate Features 예제, #9625의 응답과 현재·당시 API, 상호작용의 고정 소스를 읽는다.
 
 본 규칙의 B 추가 입력은 시작 선택·목록, down 후보와 불확실성, 보존값의 세 묶음이다. 클릭, 임계 미만, 높은 허용오차, 전달을 바꾼 구현은 본행의 확정 전제를 깨뜨릴 수 있다. 같은 작업자가 A/B/C를 기록한다. 이 비교는 입력을 제한한 규칙 비교이고 사람의 독립 판독이나 클릭 선호 시험은 미실행이다. 차트의 101 CSS px와 월 범주를 지도 수치에 쓰지 않는다. [셀별 봉인](predictions.csv)
+
+## 본행 실행 전 고정한 입력과 반환 후보
+
+`predictions.csv`의 여덟 행에 A와 C를 추가했다. A의 판정은 보이는 피처의 편집과 빈 화면의 탐색이 각각 성공한다는 추측이다. C는 역순 전달, `handleDownEvent`가 여는 시퀀스와 `stopDown`이 막는 전달을 구별한다. T를 먼저 호출하면 선택된 hit에서 T만 down을 처리한다. P를 먼저 호출하면 P가 true를 돌려 시퀀스를 열면서도 down을 전달하므로 해당 hit에서 T도 등록된다. 보통 드래그 입력의 최종 상태 범주만 예측하고 두 처리기가 동시에 열린 경우의 좌표량은 로그로 확인한다. [지도 원전](evidence/map-sources.md) · [봉인 행렬](plan.json)
+
+- 같은 CSS viewport 720×460, 지도 rect (24,20,640,400), DPR 1과 EPSG:3857, 해상도 2 투영 단위/CSS px, 회전 0 rad, view center (0,0)을 쓴다. 피처의 초기 지도 좌표는 (-128,80), 표시 반지름은 16 CSS px다. 중앙과 배경의 map pixel은 (256,160)과 (256,260)이다.
+- 경계 대조의 map pixel (274,160)은 중심에서 18px 떨어진다. 0과 6 CSS px는 같은 좌표에서 비교한다. 드래그는 map pixel에서 (+36,+20)으로 끝난다. 1px 첫 이동 뒤 최대 축 차이가 3px를 넘어가는 (+4,+2)에서 첫 pointerdrag를 예상한다. 픽셀은 화면 오른쪽/아래가 양수, 투영 좌표는 동쪽/북쪽이 양수다. 좌표와 pixel의 비교 여유는 각각 1e-6, 해상도·회전 1e-9다.
+- Select는 기본 singleClick, `style: null`이다. 컬렉션을 직접 seed한 사실을 실제 사용자 선택이나 필터 적용으로 세지 않는다. Translate와 DragPan은 동일한 주 버튼·modifier 조건을 쓴다. 기본 interaction과 kinetic을 넣지 않고 초기 애니메이션도 없다. View의 제약 정착 가능성을 실제 로그에서 확인한다. CSS 조작 후 브라우저 렌더 두 프레임을 기다린다. [fixture](fixture/map.js) · [재생](replay/drive.mjs)
+- 우선 절의 기준은 A의 피처/탐색에 Translate/DragPan, B의 center 확정에 DragPan과 보존 조건, B 보류에 #9625와 수신자 확인이다. C와 후속 판독에서는 geometry만이면 Translate, center만이면 DragPan, 둘 다면 Map의 전달 절, 둘 다 유지면 이동 문턱·활성 조건을 먼저 돌려준다. 편집 의도인데 피처가 미적격이면 Select·Translate filter를 조합 후보로 붙인다. 선택/층/필터의 판이 갈리면 해당 버전의 옵션 절과 조건을 함께 반환한다.
