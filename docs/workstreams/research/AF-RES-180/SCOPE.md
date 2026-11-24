@@ -7,3 +7,8 @@
 - Q1~7: 원작성자/요구/예상/실제/환경 → 당시 운영 규칙 → 변경 diff/배포 → 역할·같은 조작 대조 → 반응 대상과 결과 분리 → 분야 비교 → 표현. 원제보자=동일 계정/원 issue, 수정자=PR/commit actor, 검증자=다른 계정의 실행보고, 봇=자동 라벨/요청. 역할 겹침 허용하되 독립 검증 아님. 단순 verified는 workflow 표시; 요청/👍/감사/close는 시험 완료 아님. 구체 재시험 조건 일치 확인 없이 '해결' 금지. 동일 조건 통과, 부분 통과, 다른 조건/문제, 명시 거부, 무응답(창 완독 후), 미열람 구별. 증거가 반대면 좁은 범위/시각으로 표현.
 - 최소 원자료 22: 이슈 thread 8, PR/테스트 5, 당시 규칙 3, 배포/검증 2, 심사/공공 원문 4. 동일 스레드의 timeline/comment/reaction은 1; 접근 실패와 미리보기 제외. 독립 관측은 서로 다른 실행보고를 따로 세고 같은 보고의 bot/label 복제는 합침. 직접 재실행 없음. GitHub connector 사용; 실제 checkout/manifest/check 미실시 시 HANDOFF 명령.
 - 절차: ① 이 파일 → ② frame/sources/issues → ③ confirmations/claims → ④ 반례·비교 → ⑤ RESULT/SELF_CHECK → ⑥ HANDOFF. 소유 경로만, 중앙 미수정.
+
+## 모집 검증과 보정
+- ② 고정 이후 raw GitHub state=all 목록 두 개에서 동일 첫 30개 및 milestone 246/262 closed를 확인. 1.86 실제 이름 December / January 2024. 번호는 각각 엄격히 오름차순, created 정렬 대리의 한계 남음. 60/60 화면 모집, 자연 8, 보강 4. 경계 사례 #173563은 파일 Finder 경로 탐색, #132428은 편집기 찾기 UI로 포함. #127958은 현재 bug 라벨이 있으나 본문 feature request였음을 보존. 원래 모집일 역사적 라벨 snapshot 불명.
+- ④ 보정: ③ confirmations.csv 생성 코드의 열 인덱스 오류로 match_scope/first_window가 잘못 덮어써졌음. 이 커밋에서 59행 match_scope 복원, timeline event_id로 UTC 정확히 맞춤, first/final 30일 UTC 플래그 재계산. issues.csv final close는 timeline 사건 UTC 우선(일부 API closed_at과 1초 차이). 원제보자 댓글 없음은 100 미만 timeline page에서만 관측; 삭제/비공개/매체는 미확인.
+- 태그 비교 8건은 merge base==fix SHA, behind=0; 포함의 증거만. 연구자가 재실행한 것 아님. 학술·공공은 보조 전이 사례로 자연/보강 분모에 합치지 않음. 시민의 편지 원본과 최종 동일 동작은 공개되지 않아 추정하지 않음.
