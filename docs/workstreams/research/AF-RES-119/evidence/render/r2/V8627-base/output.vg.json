@@ -1,0 +1,164 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "background": "white",
+  "padding": 5,
+  "width": 400,
+  "style": "cell",
+  "data": [
+    {
+      "name": "data-a0c335f62c40d1d8f5553cee100c90e7",
+      "values": [
+        {"values": 4, "names": "A", "group": "Z"},
+        {"values": 2, "names": "B", "group": "Z"},
+        {"values": 1, "names": "C", "group": "Y"},
+        {"values": 5, "names": "D", "group": "Z"},
+        {"values": 3, "names": "E", "group": "Y"}
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "data-a0c335f62c40d1d8f5553cee100c90e7",
+      "transform": [
+        {
+          "type": "stack",
+          "groupby": ["names"],
+          "field": "values",
+          "sort": {"field": ["group"], "order": ["ascending"]},
+          "as": ["values_start", "values_end"],
+          "offset": "zero"
+        },
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"values\"]) && isFinite(+datum[\"values\"])"
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "data-a0c335f62c40d1d8f5553cee100c90e7",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"values\"]) && isFinite(+datum[\"values\"])"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {"name": "y_step", "value": 20},
+    {
+      "name": "height",
+      "update": "bandspace(domain('y').length, 0.1, 0.05) * y_step"
+    }
+  ],
+  "marks": [
+    {
+      "name": "layer_0_marks",
+      "type": "rect",
+      "style": ["bar"],
+      "from": {"data": "data_1"},
+      "encode": {
+        "update": {
+          "fill": {"scale": "color", "field": "group"},
+          "ariaRoleDescription": {"value": "bar"},
+          "description": {
+            "signal": "\"group: \" + (isValid(datum[\"group\"]) ? datum[\"group\"] : \"\"+datum[\"group\"]) + \"; values: \" + (format(datum[\"values\"], \"\")) + \"; names: \" + (isValid(datum[\"names\"]) ? datum[\"names\"] : \"\"+datum[\"names\"])"
+          },
+          "x": {"scale": "x", "field": "values_end"},
+          "x2": {"scale": "x", "field": "values_start"},
+          "y": {"scale": "y", "field": "names"},
+          "height": {"scale": "y", "band": 1}
+        }
+      }
+    },
+    {
+      "name": "layer_1_marks",
+      "type": "text",
+      "style": ["text"],
+      "from": {"data": "data_2"},
+      "encode": {
+        "update": {
+          "dx": {"value": -9},
+          "dy": {"value": 0},
+          "fill": {"value": "black"},
+          "description": {
+            "signal": "\"values: \" + (format(datum[\"values\"], \".0f\")) + \"; names: \" + (isValid(datum[\"names\"]) ? datum[\"names\"] : \"\"+datum[\"names\"])"
+          },
+          "x": {"scale": "x", "field": "values"},
+          "y": {"scale": "y", "field": "names", "band": 0.5},
+          "text": {"signal": "format(datum[\"values\"], \".0f\")"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"}
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domain": {
+        "fields": [
+          {"data": "data_1", "field": "values_start"},
+          {"data": "data_1", "field": "values_end"},
+          {"data": "data_2", "field": "values"}
+        ]
+      },
+      "range": [0, {"signal": "width"}],
+      "nice": true,
+      "zero": true
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {
+        "data": "data-a0c335f62c40d1d8f5553cee100c90e7",
+        "field": "names",
+        "sort": true
+      },
+      "range": {"step": {"signal": "y_step"}},
+      "paddingInner": 0.1,
+      "paddingOuter": 0.05
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {"data": "data_1", "field": "group", "sort": true},
+      "range": "category"
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "gridScale": "y",
+      "grid": true,
+      "tickCount": {"signal": "ceil(width/40)"},
+      "domain": false,
+      "labels": false,
+      "aria": false,
+      "maxExtent": 0,
+      "minExtent": 0,
+      "ticks": false,
+      "zindex": 0
+    },
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "grid": false,
+      "title": "values",
+      "labelFlush": true,
+      "labelOverlap": true,
+      "tickCount": {"signal": "ceil(width/40)"},
+      "zindex": 0
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "grid": false,
+      "title": "names",
+      "zindex": 0
+    }
+  ],
+  "legends": [{"fill": "color", "symbolType": "square", "title": "group"}]
+}
