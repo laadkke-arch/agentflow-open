@@ -1,0 +1,32 @@
+# AF-RES-159 자가 검산
+
+결과판에서 수행하는 확인이다. 한 연구자가 소스 판독·B/C 작성·사전 판정·채점을 맡았다. 다른 독자의 응답이나 별도 검토자는 없었다. 검사 영수증은 인계에서 결과판 SHA와 연결한다.
+
+## 결론에서 실제 자료로
+
+| 질문과 판단 | 출처 URL·정확한 위치 | 원장·영수증의 연결 | 한계 및 판정을 바꿀 관측 |
+|---|---|---|---|
+| Q1. 2025년 마감판 GIMP 3.0.6 및 Inkscape 1.4.3. 두 판의 주 도메인 ko/de PO는 모두 존재 | GIMP 공지 L18–22와 소스 목록 L17–18, GIMP tag Meson L1–8·85–101 및 LINGUAS L18,47. Inkscape 공지 L23–33, Git tag L0–2, CMake L41–44, .gitmodules L13–17 및 gitlink | R01–14, PO-G-ko/de, PO-I-ko/de. tar·PO·MO hashes는 [release-inputs](evidence/release-inputs.md). [GIMP 소스 목록](https://download.gimp.org/gimp/v3.0/) [Inkscape gitlink](https://gitlab.com/api/v4/projects/inkscape%2Finkscape/repository/tree?ref=0d15f7504220b00925bc3cb3673fcf44610a17d5&per_page=100) | GIMP 공식 dist에 필요한 po가 빠졌거나 한 바이트라도 다르면 태그 결과와 발행 소스에 다른 조건을 적용한다. upstream binary MO 4자리 미확인 |
+| Q2. 실제 12 자연 짝 + 4 단일 대조 확보 | GIMP po/POTFILES.in의 고정 목록, Inkscape translations 커밋 POT와 po/CMakeLists L24–56. 각 코드 앵커는 calls의 anchor_url | [모집 28그룹](frame.csv), [다중 및 plural 원장](evidence/source-frame.jsonl), [extract](evidence/extraction.json), R14·SRC 행에서 case id 역조회. [GIMP 목록](https://github.com/GNOME/gimp/blob/a77e8fd05d3d08a58650531a3700100f6a3216b7/po/POTFILES.in) [Inkscape POT](https://gitlab.com/inkscape/translations/-/blob/dd0592f12a5da07802a96b53293bbe12acdf45ff/inkscape.pot) | 첫 6 뒤 후보 12개의 실제 적격성 검산은 계획 범위 바깥이다. 재추출에서 지금의 첫 6보다 앞선 별개 발행 키가 나타나면 표본이 바뀐다 |
+| Q3. 소스 근거에서 실제 속성·상태·동작을 구분. 공유 핸들러와 공유 키도 별개로 있음 | G01 gradient-editor L810–873, G03 view-commands L585–601 및 L1100–1118, I03 SPGroup L307–315 및 액션 L33–38·175–178, G15 window-commands L64–100 | 28 주장 id별 [calls](calls.csv)의 binding_chain → sources SRC 코드 파일별 역참조. [G01](https://github.com/GNOME/gimp/blob/a77e8fd05d3d08a58650531a3700100f6a3216b7/app/actions/gradient-editor-actions.c#L810) [I03](https://gitlab.com/inkscape/inkscape/-/blob/0d15f7504220b00925bc3cb3673fcf44610a17d5/src/actions/actions-selection-object.cpp#L33) [보충 G15](evidence/counterexamples.md) | 28/28 코드 근거와 0/28 직접 창 확인. 실제 액션 경로가 다른 설치판·UI를 찾으면 반환 링크가 달라질 수 있다 |
+| Q4. 일반 A/C 다중 48/48, 실제 위치 유일 46/48, B 48/48, 키 42/48. 대조 A 8/8 | G06b layer-options-dialog L196–222의 공용 enum과 204·214행, I02a font-variants L192·199·444–485, I05a object-attributes L467–486와 다른 높이 바인딩 | 같은 A의 두 payload를 바이트 대조했다. [봉인판](https://github.com/laadkke-arch/agentflow-open/blob/8000ac5d54c7564bb5cec61566e13ea8d78980f1/docs/workstreams/research/AF-RES-159/predictions.csv) [팩트와 판단 연결](evidence/scores.csv) [G06b 소스](https://github.com/GNOME/gimp/blob/a77e8fd05d3d08a58650531a3700100f6a3216b7/app/dialogs/layer-options-dialog.c#L196) | 후보에 실제 역할을 제공하는 조건에서의 결정성이다. 같은 역할을 가리키는 여러 사용자 표현이나 도달 불가 URL은 독립 판독 필요 |
+| Q5. GNU CLI와 GLib ABI가 같은 UTF-8. 54 active·2 fuzzy fallback, W1/W2 같은 지문 | PO key 위치 네 파일의 PO 원장. GIMP ko L10820/L13411 fuzzy, I03 de L21644/L9526. GLib dpgettext2 L31–47과 GTK Builder L83–98 | [runs](runs.jsonl)의 W1/W2·po_url·argv·stdout_hex·stderr·MO hash. Debian Inkscape digest와 재컴파일 비교 [release-inputs](evidence/release-inputs.md). [GIMP ko](https://github.com/GNOME/gimp/blob/a77e8fd05d3d08a58650531a3700100f6a3216b7/po/ko.po#L10820) [Inkscape de](https://gitlab.com/inkscape/translations/-/blob/dd0592f12a5da07802a96b53293bbe12acdf45ff/de.po#L9526) | 원 운영 환경의 gettext 빌드판과 원 발행자의 MO 지문을 확인하면 패키지 수준 추론을 갱신할 수 있다 |
+| Q6. 같은 번역·다른 기능, 같은 핸들러·다른 번역. C의 우연 일치와 실제 오승인 가능 | G15 dock-actions L50–53와 view-actions L157–160의 same handler, G35 한국어 L13343/L21173의 빈 msgstr, I03 C 툴바 L281의 다른 action | [보충 입력](evidence/supplement.csv) [보충 12×2 실조회](evidence/supplement-runs.jsonl) [무관 이웃](evidence/neighbor-sensitivity.csv) [틀린 문맥과 대조](evidence/counterexamples.md). G15·G35의 PO 및 SRC 행으로 역참조 | 같은 유일 판정 모델의 통제된 오류다. 무관 토큰이 실제로 소비 관계에 연결된다면 C의 자격을 재판정해야 한다 |
+| Q7. 부가 필드가 식별하는 축이 서로 다르다. 기존 주소 하나면 충분한 경우도 있다 | GNBC IACFT·IAFIG, HAAVF·HADOP·HAYJL Name/Key/Generic term/Map. MoMA 80220 L64–80, Met 438008 L68–76, PMA 51306 L40–48, Rodin L36–45·65–78 | GE01–GE05, AR01–AR04의 원레코드와 [대조 표](evidence/cross-domain.md). [Lake Louise 정착지](https://geonames.nrcan.gc.ca/search-place-names/unique?id=IACFT) [Met Water Lilies](https://www.metmuseum.org/art/collection/search/438008) | 분간 가능한 근거와 사람이 질문을 덜 하는 효과는 각각 확인해야 한다. 실제 추가 질문·시간·만족도 자료는 공석 |
+
+## 원장에서 결론으로
+
+- 모집 원장이 처음 두 명시 문맥과 UTF-8 순서를 고정한다. 제품별 자연 후보 창 12, 선정 6, 순서 밖 6, 선택 창의 적격 실패 0. 단일 대조 첫 2 각각. 자연 A a/b는 각 언어에서 24 비교 모두 바이트 동일하다. 예측은 조회 전에 커밋했고 각 묶음의 원격 대표 파일을 SHA로 열었다. [봉인·원격 대조 영수증](evidence/remote-receipts.tsv)
+- 주 실험 28호출의 앵커·기능 근거·언어 확인 자리가 있다. PO의 두 fuzzy는 코드 공석으로 계산하지 않았다. 동일 마크업이 번역 키와 같아도 위치는 나눈다. 자연 각 쌍의 2언어 비교 24개에서 동일 19/차이 5. 차이 5 중 유효한 두 번역의 차이 3, fuzzy fallback의 차이 2.
+- plural 제외는 제품당 38행으로 멀티 및 단일과 겹쳐 세지 않았다. Inkscape POT에서는 참조가 생성 경로뿐인 단수 키가 1,233개다. 예를 들어 POT L2291의 Palette `10% Gray`는 generated palettes.h를 가리킨다. 이 집합을 실제 위젯 수로 쓰지 않았다. gimp enum 생성 데이터의 소비는 실제 등록 옆에서 별도로 확인했다. 주 조회의 원문 반환은 fuzzy 2와 무문맥 44(키 없음 38, obsolete 6) 등 mode별 수치다. Inkscape ko의 obsolete 무문맥 `Group` L52369는 현재 명시 문맥의 동작을 채점하는 활성 바인딩이 아니다. 전체 카탈로그의 empty·fuzzy·obsolete·plural 통계는 compile 행에 있다.
+- 예측 280, 채점 280. A의 48 다중과 대조 8 유일이 C에서 그대로다. C byte는 56개 모두 같은 B 예산 이내다. 허용된 비용은 문자열 순수 UTF-8 및 전체 payload UTF-8로 각각 검산했다. 내장된 명사·동사 단서를 직접 키로 오해하지 않았다. I03의 세 문구는 본 구현 링크 목표에서 한 액션으로 두고 정확한 원문 위치는 보존했다.
+- W1과 W2 각각 328 조회 및 보충 12. 각 본 실행의 모드는 문맥/무문맥 각 56, 다른 실재 문맥 48, 없는 문맥과 초기 도메인 각 56, Debian MO 문맥/무문맥 각 28이다. 사용한 GNU 및 GLib 출력의 일치와 입력·출력 및 MO 지문을 독립해서 비교했다. 단계 재생은 사람의 읽기 시간을 재는 실험이 아니다.
+- [sources.jsonl](sources.jsonl) 136열람 행 중 123 성공, 13 실패 기록. UI 9, 계약 4, 배포·호환 7, 지명 5, 문화 4는 총 29개 고유 work_id다. 실패와 같은 MR의 diff, 같은 GNBC 엔티티의 JSON, 같은 발행의 언어별 파일, GNU 매뉴얼의 Debian 사본은 다시 세지 않았다. Lake Louise 양쪽을 하나의 지명 결정으로 보수적으로 묶더라도 지명 사례 둘과 총 하한을 충족한다.
+- Inkscape의 실제 소비 근거 22 파일과 CMakeLists/.gitmodules 2 파일을 17:26:28 UTC에 publisher-signed tar와 GitLab 고정 태그 스냅샷에서 바이트로 재대조했다. 차이 0, 종료 0. GIMP 원전은 태그 미러에서 파일 해시를 재검산했다. 원 발행 dist 파일 자체의 접근 실패는 모집에서 적격한 자연 짝이 없다는 판단과 무관하다.
+
+## 어떤 관측이 내 결론을 뒤집는가
+
+- B가 항상 필요하다는 가설은 실제 앵커가 충분한 46자리에서 깨진다. G06b의 공용 enum과 I02a의 공용 번역 키를 따라 실제 별개 소비자를 찾아 직접 키만으로 충분하다는 더 강한 가설도 버렸다.
+- 번역이 다르면 기능도 다르다는 가설을 깨기 위해 모집 전체의 초과 항목에서 번역이 다른 곳을 찾고 GIMP G15의 두 실제 handler 참조를 열었다. 반대 방향은 I03-ko 및 G01/G05를 확인했다. GNU 출력이 같아도 wrong-live에서 틀린 키가 통과했다.
+- 같은 파일 C의 무관성을 코드 관계로 읽고, 파일 문자열을 단독 단서로 채택할 때의 취약성은 예산을 다시 맞춘 뒤 C 교환으로 확인했다. 실제 사용자에게서 같은 위치와 토큰으로 독립된 판별 성능이 확보되면 이 범위를 갱신할 수 있다.
+- 질문 감소에 필요한 증거는 문제 출발점에 출처가 있었는지와 실제 질의 횟수·오판이다. 고정 번역과 원레코드 자료만으로는 그 관측을 만들 수 없다.
