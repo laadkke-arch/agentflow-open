@@ -24,3 +24,10 @@
 - SELF_CHECK와 reproduce 완성. 결과 검토가 도달/전구간 구분, 기록관 원자료 귀속, unknown과불가 구분, 링크오류를 찾아 정정했으며 원 성공정의·판정·패킷·원답은 유지했다.
 - 결과 전 점검에서33봉인입력·18경로54문서면·9209전경로·50mode·125평가인용·표 재구성이 통과했다. 이는 dirty 작업트리 사전 점검이며 최종 검사는 원격 결과 SHA 고정 뒤 수행한다.
 - 다음: 결과 원격 커밋 → 해당SHA 원격 재열람·대표원문 재열람 → session --fetch·cloud_check·작업검사 → acceptance 증거 커밋 → HANDOFF 단독 커밋.
+
+## 결과 검사 완료
+
+- 고정 결과 SHA: `31cc131279e606c9d691524525cbdbdf7dc7b44a`. 원격 결과4파일/대표원자료4건을 재열람·대조했다.
+- 고정 SHA의 깨끗한 별도 checkout에서12명령 모두 exit0. 명시 manifest --fetch는 remote_checked 통과. 공통 check-all registry는 active session0으로 not-executed이며 별도 manifest검사를 대신하지 않는다.
+- 전수재생9209경로·54표시·50기준mode·125평가인용, 표54/18행 및위험검사13개 통과. P3/I3와 초기원격봉인시각 한계는 유지해 PARTIAL.
+- 남은 마지막 순서: 검사 증거 원격 커밋·재열람 → HANDOFF만 단독 커밋.
