@@ -1,0 +1,76 @@
+{
+  "actor": "Codex Cloud",
+  "checked_utc": "2026-11-24T08:31:27+00:00",
+  "command": [
+    "/tmp/af122/torch-venv/bin/python",
+    "-B",
+    "/tmp/af122/role-boundary.py"
+  ],
+  "source": "import json\nimport torch\nfrom torch.utils.data import BatchSampler, DataLoader\n\ngroups = list(BatchSampler(range(10), 3, False))\nidentity = list(DataLoader(list(range(10)), batch_sampler=groups, collate_fn=list))\nnonidentity = list(DataLoader(list(range(10, 20)), batch_sampler=groups, collate_fn=list))\nassert identity == groups and nonidentity != groups\nprint(json.dumps({\n    \"torch_commit\": torch.version.git_version,\n    \"grouped_indices\": groups,\n    \"identity_values\": identity,\n    \"offset_values\": nonidentity,\n}))\n",
+  "source_sha256": "9ba84b16869b27e36099969d112c95c23486f89af831810a851487737b0db452",
+  "stdout": {
+    "torch_commit": "a8d6afb511a69687bbb2b7e88a3cf67917e1697e",
+    "grouped_indices": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7,
+        8
+      ],
+      [
+        9
+      ]
+    ],
+    "identity_values": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7,
+        8
+      ],
+      [
+        9
+      ]
+    ],
+    "offset_values": [
+      [
+        10,
+        11,
+        12
+      ],
+      [
+        13,
+        14,
+        15
+      ],
+      [
+        16,
+        17,
+        18
+      ],
+      [
+        19
+      ]
+    ]
+  },
+  "stderr": "",
+  "exit": 0
+}

@@ -16,6 +16,22 @@ python -B -m workbench.session check "$af122_path/manifest.json" --fetch
 
 두 독립 디렉터리에 필요한 파일만 복사하는 실험은 [재생 영수증](evidence/replay-receipt.json)을 따른다. 출력에는 조사 8·표시 3 각각의 빈자리, 별칭 전환·심벌 가림을 별도로 비교한 순위 이동 및 실제 어절 비교 수가 있다. 세 채점표를 만들 때에만 이 결과를 고정 기준과 합친다.
 
+두 실행 경로의 준비와 표 재집계를 확인하는 명령이다.
+
+```bash
+af122_a=$(mktemp -d /tmp/af122-replay-a.XXXXXX)
+af122_b=$(mktemp -d /tmp/af122-replay-b.XXXXXX)
+for af122_run in "$af122_a" "$af122_b"; do
+  mkdir -p "$af122_run/evidence"
+  cp "$af122_path"/{prepare.py,replay.py,catalog.csv,aliases.csv} "$af122_run/"
+  cp "$af122_path"/evidence/{query-inputs.jsonl,controls-query-inputs.jsonl} "$af122_run/evidence/"
+  (cd "$af122_run" && PYTHONHASHSEED=0 python -B replay.py --out out)
+done
+diff -rq "$af122_a/out" "$af122_b/out"
+python -B "$af122_path/summarize.py" --out /tmp/af122-aggregate
+cmp "$af122_path/evidence/metrics.json" /tmp/af122-aggregate/metrics.json
+```
+
 ## 원문에서 투영 재구축
 
 `prepare.py`는 `{"request_id":"O5952","body":"..."}` 형식 JSONL을 읽는다. 각 인용 URL에서 [requests.jsonl](requests.jsonl)의 opening 1·웹 텍스트 줄 범위와 위치를 확인한다. 도구 발췌의 줄 번호 접두사를 제거한 LF 문자열을 `body`에 넣고 실제 사용한 해시부터 대조한다. 도구나 배포 후 편집에 따라 발췌·앵커 문자열·행 번호가 바뀔 수 있다. 현재 공개 원문 모두의 재구축에는 그 발췌판을 다시 읽을 수 있어야 한다. 저장소의 투영은 고정 영어 어절과 별칭 검사에 필요한 최소 어절·위치만 보존한다. 정답 및 응답 글은 입력하지 않는다. 같은 사례의 구성 query를 [controls.jsonl](evidence/controls.jsonl)의 `request_id`, `body`에서 읽을 수 있다.
