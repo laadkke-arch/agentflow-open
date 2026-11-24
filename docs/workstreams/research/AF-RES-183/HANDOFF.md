@@ -24,7 +24,7 @@ php -v; php -m; composer --version
 composer install --no-interaction --no-scripts
 if test -f composer.lock; then sha256sum composer.lock; fi
 vendor/bin/phpunit tests/MoneyTest.php
-php -r 'require "vendor/autoload.php"; $j=json_decode(file_get_contents(getenv("INPUTS")),true); foreach($j["inputs"] as $c){$m=new Money\\Money($c["amount_minor"],new Money\\Currency("USD")); $v=array_map(fn($x)=>(int)$x->getAmount(),$m->allocate($c["weights"])); echo json_encode(["id"=>$c["id"],"ordered_ids"=>$c["ordered_recipients"],"vector"=>$v,"sum"=>array_sum($v)]),PHP_EOL;}'
+php -r 'require "vendor/autoload.php"; $j=json_decode(file_get_contents(getenv("INPUTS")),true); foreach($j["inputs"] as $c){$m=new Money\Money($c["amount_minor"],new Money\Currency("USD")); $v=array_map(fn($x)=>(int)$x->getAmount(),$m->allocate($c["weights"])); echo json_encode(["id"=>$c["id"],"ordered_ids"=>$c["ordered_recipients"],"vector"=>$v,"sum"=>array_sum($v)]),PHP_EOL;}'
 git clone https://github.com/dinerojs/dinero.js.git "$TMP/dinero"
 cd "$TMP/dinero"
 git checkout --detach 13965e2298c8f0aa5fbbd4b1bdcba449e2b9f8d1
