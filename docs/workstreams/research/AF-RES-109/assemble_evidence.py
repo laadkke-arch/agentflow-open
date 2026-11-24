@@ -99,6 +99,11 @@ def main():
             updates.append(dict(candidate_id=cid,field='unqualified_full_fit',earlier='blind yes/yes under same-pair reading',final='conditional, original topology unresolved',basis='counterchecks.csv:R5; blind review itself scopes the same-pair interpretation',changed_by='root after blind review'))
         if rid=='R6':
             c['root_interpretation']+=' All final R6 judgments postdate the reader outcome exposure; descriptive provisional counts only.'
+        historical_reconciliation=''
+        if cid=='R6-B-1':
+            historical_reconciliation='Original-search R6-B-S6 directly records tree 3b54b6aa dated 2018-10-12 (timezone absent). The blind reader later failed to reacquire that metadata. Preserve both observations: source snapshot predates request, first introduction and reporter deployment remain unknown.'
+            c['root_interpretation']+=' '+historical_reconciliation
+            updates.append(dict(candidate_id=cid,field='historical_evidence_reconciliation',earlier='blind reread failed; exact revision date unknown to that reader',final=historical_reconciliation,basis='R6-B-S6; evidence/audit/final-ledger-review.md',changed_by='root after final ledger audit'))
         if cid=='R2-B-3':
             updates.append(dict(candidate_id=cid,field='accepted_comparator',earlier='search arm claims operative source read',final='hold; independent operative-source acquisition failed; implementation/test flags0',basis='BLIND13-S05; evidence/blind/r1-r3/review.md',changed_by='blind_r1_r3'))
         choice=dict(candidate_id=cid,request_id=rid,arm=c['arm'],returned_rank=c['returned_rank'],
@@ -116,6 +121,7 @@ def main():
                     new_test_flag=j['new_test_count'],choice_key=j.get('choice_key') or '',test_key=j.get('test_key') or '',
                     current_eligibility='provisional_exposed_reader' if rid=='R6' else 'conditional_source_based',
                     historical_status=historical_status,historical_basis=value(hist),
+                    root_historical_reconciliation=historical_reconciliation,
                     common_prefix_status=prefix,strict_comparison_eligible=False,
                     method_rank_blind=True,original_discussion_blind=(rid!='R6'),
                     natural_input=True,test_input_kind='researcher_proposed_synthetic_or_diagnostic',
