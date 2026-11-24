@@ -1,0 +1,11 @@
+# 반례·정정 (봉인 뒤 분석)
+## C1. 원점과 첫 소리
+같은 track 분리라도 합성 A [0,4)s / B [2,5)s의 44.1kHz 출력은 trim off면 B 첫 clip 앞 88200 frames blank, on이면 B 132300 frames, A 176400 frames. 파일 시작과 최초 nonzero sample은 다름; 첫 clip 내부에 0.5초의 기록된 무음이 있으면 trim on이어도 최초 소리는 22050 frames 이후라는 기대. 공통 시작 0과 공통 끝은 독립이다 (E01, E02). F01은 정렬 복구, F03은 손실 버그, F05는 100–105s clip의 105s 출력이 불필요하여 반대 설정. F02 #5/#8도 별도 사람이 trim 선택. R01의 2.3.3 기본 padding 설명과 F03 재현이 상충하며 R02 2.4.0 bug 2345 수정 목록이 이를 뒷받침한다. F06에서는 원래 녹음부터 offbeat였으므로 원점 질문으로 해결 불가. 모든 합성 길이는 수학·코드 기대, 실행 관측 아님.
+## C2. label 경계와 content selection
+Top label point 1s,3s; 아래 region 2–4s; project end 5s; label mode에서는 top 2 files, 선택 lower label alone 무관. top/bottom 순서만 바꾸면 1 file 예상. 3.4.2 E02 labels selectedOnly=false → E07 PCM → E06 Mixer → E04 all audible wave tracks (solo/mute filter), **위치 제한 없음**. M01의 top label 위 tracks 혼합 설명 및 C3402 타인의 2022 설명과 충돌한다. 따라서 3.4.2 PCM에서 아래쪽 audio track도 소리가 섞일 것으로 코드상 예측. M03 current selection muted 설명도 E04와 충돌; 실제 버전/파일 검사 전 확정하지 않음. E08 header 주석도 조건 방향이 혼동됨. top label의 선택은 **경계의 출처**, mute/solo와 selectedOnly는 **내용 선택**이다. 오래된 매뉴얼 주장과 현재 코드의 명시적 충돌을 보존한다. 
+## C3. 이름·태그 
+F04 PDF V05는 위쪽 dialog Tracks 선택/Labels disabled, Using Label/Track Name, 아래 속성 Title Jessy Schram - Big Deal, contributing artists The Jive Aces, album도 The Jive Aces ..., duration 00:06:15, bitrate 122kbps. 제목과 파일 표시명은 일치해 보이나 artist/album이 다르다. 실제 파일 또는 원래 artist 정답이 없어 carryover를 확정 못 함. 같은 PCM, 같은 range/codec, title/artist만 변경할 때 파일 해시가 달라져도 decoded PCM이 같을 수 있다. Tag 편집→파일명/분리 방식 변경은 불필요. E02의 title capture→filename sanitize/dedupe가 이름 동등성을 보장하지 않는다. X01 clip plugin 중복명/오배정 제보는 native 분리 지원 증거가 아님.
+## 화면과 기본값
+V01 제작자 그림의 include-before-first-label checked는 저장 상태/예시일 뿐 default 증거 아님. E01/E02 default false 및 I4811 동일 작성자의 fixed 진술과 양립. V02 point/V03 region 화면은 숫자 경계보다 형태 증거. V04 3.5.0 화면은 Entire Project selected, Multiple Files/Current Selection 별도. 3.4.2 E02 auto per-track channel과 3.5.0 E03 UI channel 선택은 판 차이다.
+## 다른 분야의 반례
+A01 stem의 동기 유지와 A03 trim silence(-90dB)/padding profile은 별 축이다. 시간 범위에 맞춰도 profile 변경 시 손상 가능; 실제 조합은 검증 필요. A04 region bounce에서는 처리 제외라도 region gain/fade 유지 설명. Inkscape K01/K03/K04의 Page/Selection/ID는 600×600 page vs bbox 100×80 at 120,120 예제와 합성 겹침 객체에서 좌표와 내용 경계가 다름; --export-id-only와 crop을 구별. 투명 여백은 오디오 무음의 비유일 뿐 channel 수, sample rate, stereo pan과 대응하지 않는다.
