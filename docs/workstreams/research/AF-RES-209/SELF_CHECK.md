@@ -1,0 +1,14 @@
+# SELF_CHECK — AF-RES-209
+- 자체 검토자: 이 작업 작성자 1명(비맹검), 별도 독립 검토자 0명. 이전 질의/정답 매뉴얼 사전 노출 SCOPE 기록. 런타임 모델/실행환경의 정확한 내부 이름은 검증하지 못함.
+- 기준·의존: 최신 start 87ffc1539bcf33da0fccf45eb15982a02d93e409, baseline bb146773bbffba5e724e8c842951e2c25198c2da, +5/-0 only dot-control; 198 result 05ae34bd0a160ce9ce52658616fad6f0273ea883, 중앙 DONE vs 198 자체 PARTIAL 구분. 205–207/LosslessCut/FFmpeg/GDAL 재검색 금지 준수. 
+- Stage1 SCOPE 47773aacc4957539115c547cef399641ea166a7a, UTC 21:29:00Z; stage2 655b7fd65e7bb9d88eedf132782fecb1f471c2ef 21:31:42Z; stage3 94c4fb5e1d099eb6483617e3e5c3dda1b79301ff 21:32:13Z; stage4 a8dde3b65f06434f61edec3829834f337465f6b3 21:33:00Z. All 2026-11-24 UTC.
+- stage3 고정 ref로 SCOPE/sources/queries/paths/matches를 다시 읽어 JSONL 37행, open 34, included 33, 15 lineage, category issue4 maker7 consumer5 reply4 institution3 supplement10 확인. 37=33+1 excluded duplicate+3 fail. 댓글은 별개 저작이나 계보 공유; 사건 4. stage4 D02 같은 work_id 추가 판독 구간만 수정, 수 변화 없음. 계획 대비 필수 유형 4/4,7/7,5/5,4/3,3/3. 
+- 검색 분모: 개별 8/8, 응답 노출 위치 24/24, 첫 결과 실제 열람 8/8, 네이티브 원순위 0/8, 검색별 정확 UTC 0/8, 링크 follow 시도 5 중 0 성공 (F01/F02 각각 두 번, F03 한 번), 모든 쌍 동일 최대 예산 2. URL/요약/receipt 재조회 위치 보존, raw snippet 원문 미보존. 응답 나열 위치 존재하므로 별도 엔진 전체 반복 미실시, native rank 결손으로 PARTIAL. 쌍별 응답순 0/1/1/2 개선/악화/동률/판정불가.
+- Q1 S01–04: explicit vs inferred; #847 crop, #774 ambiguous, no invented constraints; original revisions/fixtures missing.
+- Q2 SCOPE/queries: A+one token B, AB BA AB BA, original language same; source exposure recorded; exact region/time missing.
+- Q3 paths: 24 position rows (8×3), native rank unresolved. 2/3 not opened and not counted solely from snippets. 
+- Q4 first opens 8; 403 real failures, auxiliary M05/M06 not substituted. MWG/T84 PDF screenshots read; original search ref order not infer from suffix.
+- Q5 M01–07, D01–06, R01–08: DCT/metadata/pixels; edge cases and PrintConv actual reports; D02 2–8 plus absent-tag and repeat assertions source read; not run. Normal tag1 and double rotation expected cases not observed by us.
+- Q6 I01–04; actual LOC documented pair 0/90 exact same ID, service information and rotation constraints; not binary download/master hash. AIC/Rijks case boundaries recorded.
+- Q7 matches: original A sufficient for 847 case-specific development answer, B loses version-specific first; 265 same; 774 EXIF hypothesis; 703 both incomplete. No observed user task success.
+- User-requested own photo transformation/new benchmark/user experiment not done (scope). Codex commands/expected outcomes in handoff. Need final result SHA reopening with counts, table/ledger/counterexamples compare, owned_path diff before final handoff.
