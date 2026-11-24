@@ -25,8 +25,8 @@
 | 질문 | 확인한 원근거와 수치 | 반증·미확인 |
 | --- | --- | --- |
 | Q1 | A18·A19·R14·R15, 실제 lock 및 선택 소스 61/61 일치. 두 Rails DB/route와 공개 mock 로그인 성공. [지문](environment.json) | 초기 APK HTTP 403 및 Selenium 저장 공간 부족. 호스트 엔진으로 복구. Node 선언과 이미지 버전 다름. 두 실제 운영판·다른 역할은 미확인 |
-| Q2 | A01·A03·A04·R03, W01–W03. 공존 4/4, 대상 DOM/AX 16/16. raw AX U+00A0, description 없음 16/16. [원행](journeys.csv) | A1 동일 이름 ID 11/12에 AX 원문 동일. 키보드 좌석과 브라우저 이름을 발화로 일반화하지 않음 |
-| Q3 | A24·A07·R18, 실제 href→첫 편집 16/16, 필드 16/16. [A3-2](receipts/journeys/A3-2-S.json) · [R1-1](receipts/journeys/R1-1-S.json) | A3 첫 id는 address_type이고, Register Course 첫 id는 training_route. BODY는 필드 초점이 아니며 다른 화면·엔진의 자동 초점은 미확인 |
+| Q2 | A01·A03·A04·R03, W01–W03. 공존 4/4, 대상 DOM/AX 16/16. raw AX U+00A0, description 없음 16/16. [원행](journeys.csv) | A1 동일 이름 ID 11/12에 AX 원문 동일. 키보드 탐색과 브라우저 이름을 발화로 일반화하지 않음 |
+| Q3 | A24·A07·R18, 실제 href→첫 편집 16/16, 필드 16/16. [A3-2](receipts/journeys/A3-2-S.json) · [R1-1](receipts/journeys/R1-1-S.json) | A3 주소의 첫 입력은 address_type이고 Register Course의 첫 입력은 training_route. BODY는 필드 초점이 아니며 다른 화면·엔진의 자동 초점은 미확인 |
 | Q4 | A08–A11·A25–A27·R08–R10·R19·R22. S 8개 intent 모두 반영, 전후와 중간 관측. [모델 차이](journeys.csv) | option FK, 보이지 않은 빈 line4, 지원금 초기화와 과목/연령을 포함. R1-1의 재입력 뒤에도 섹션 접힘. A2 cache 인스턴스 직접 조회 미확인 |
 | Q5 | A12·A26·R21. B 8/8의 정상 앱 Back에서 모델·요약값 보존, 브라우저 Back 대조 1/1. [중간 대조](receipts/controls/C-A3-MID.json) | UK를 그대로 계속한 뒤 Back에서 GB 보존에 실패. 이후 페이지 및 비UK 분기까지 일반화 미실시 |
 | Q6 | A16·A29 기존 2가지 기대/1 example, R23–R28 양식 대조 2/2, 양성·오류 재생 2/2. [기존 stdout](receipts/controls/apply-a2-spec.stdout) · [공유 폼](receipts/controls/C-R-F1.json) · [깨끗한 재생](receipts/controls/apply-clean-final.stdout) | 동일 목적지에서 form name 일부는 렌더마다 바뀌고 스타일 때문에 radio 자동 선택·날짜 입력의 초기 시험 위치가 틀렸다. 실제 앱 답과 하네스 실패를 분리 |
