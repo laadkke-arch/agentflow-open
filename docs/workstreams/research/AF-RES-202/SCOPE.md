@@ -1,0 +1,7 @@
+# AF-RES-202 범위·판정 규칙
+- 계획 050278651b11a2a3a49d45baebf41c707c06b700; 시작 c860f8240ab7b7077e2d5b63e438ddd83ff69a27 (compare API ahead 4 / behind 0, changed only docs/automation/dot-control.json). 배정 브랜치 새로 생성. control blob 4839b0345e1e644c20452df6282ecef0af76c456은 contents UTF-8 반환 빈 값이었으나 git/blobs API 원문 JSON으로 AF-RES-202 RUNNING, depends_on 188/193, owned path 확인. AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, RESEARCH_BRIEF, INDEX 읽음.
+- 188 a0fcb2d1229e01639b27d34f8cb336fca7cf3cfc 및 193 2beb6cb6a1857942c41670458ae32f4895777366의 HANDOFF/RESULT 열람. 작업자 PARTIAL과 중앙 완료를 구별. 188의 후보 자산 vs 선택된 연산, 193의 설치 OR vs 목적 충족 분리만 전이한다.
+- Tesseract 5.3.0; 각 모델 저장소 공개 태그 확인 뒤 고정, eng/ara 각각 OEM 0/1 = 12 자리. 모델 저장소 README 일반 계약, 고정 파일 메타데이터, 실제 컴포넌트 목록, 실행/당사자 관측 별도. 파일 존재는 지원 및 로드 증명이 아니다.
+- 원사건 프레임: tesseract-ocr/tesseract + tessdata issues, is:issue created:2020-01-01..2025-12-31, open/closed 모두; 원작성자가 language, OEM 또는 명시 모드, 원 오류 문자열을 제공하는 사건을 날짜 오름차순(동일시 URL 정렬) 첫 3. 언어는 eng/ara 우선이 아니라 조건에 맞는 언어 전체; 다른 언어는 모델 셀에 전이 금지. 단어 검색은 후보 발견용, 전체 목록과 대조하지 못하면 편의 보강. 동일 사건 원댓글은 문헌 수에만, 사건 중복 금지.
+- 최소 A 6 고정 모델 파일 레코드, B 5 제작자 정확판 모드/구성/부속 문서, C 4 원제보/후속/로그, D 3 배포/구성 덤프, E 4 철자 사전 원자료 =22. 검색 미리보기·중복·접근 실패 제외. 직접 열린 메타데이터는 A로만; 구성표 직접 판독으로 승격 금지. 미판독/실제 로드/제보 적격 확인 결손은 PARTIAL.
+- 선노출: 과제 제목·선행 결과·일반 Tesseract 지식에 노출, 독립 블라인드 선별 아님. 아직 개별 원사건 결과·모델 파일 컴포넌트 미확인. OCR 이미지처리/재학습 실행/벤치마크/언어 정확도 순위/타 동시 과제/영국좌표·Debian 메일·번역 인시 제외. 신규 실행·설치·계정/권한 변경 없음. 링크 추천은 가설이며 최종 DB/순위 선택 안 함.
