@@ -37,3 +37,14 @@ read 상태 토큰 미기재는 `absent`, 실제 수신 0은 `0`, 명시적 안�
 | 상태 변경 뒤 재수입 | 원형 반복과 달리 값 차이가 나타날 수 있다. 명시 read·별표와 누락 read가 다시 계산되고, 태그는 추가/유지 중 어떤 동작인지 DB로 분리할 예정이다 | 변경한 상태가 모두 보존되거나 다른 키의 행이 생김 |
 
 S02의 서로 다른 피드 두 항목이 교차 GUID 통제의 쌍이다. 양성 재생은 S02 reception true 초회. 음성 재생은 중립 파일명에서 행을 못 읽으면 그 실행을 반복하고, 이름이 허용되면 실제 차이가 나온 교차 GUID나 unsupported boolean 대조를 택한다. 후자의 선택은 앞의 통제 결과에 종속된다.
+
+## 고정 원문을 읽은 뒤, 첫 수신 전에 추가한 예측
+
+초기 예상은 첫 커밋에 남아 있다. 여기서는 어떤 분기가 실제 DB 값으로 나타날지 시험 전에 구체화한다.
+
+- R05의 중립 `.json`도 같은 `importJson`을 호출한다. S03은 모두 explicit star여서 세 이름에서 같은 2개가 들어올 것으로 수정한다. 이름 효과를 드러내기 위해 S03의 무라벨 /items/1에서 star 범주만 뺀 복제본을 `starred.json`, `transfer.json`, `starred-staging/transfer.json`으로 각각 넣는다. CLI가 전체 경로를 검사하므로 예상 favorite는 1, 0, 1이다. 숫자 `starred` 시간과 루트 목록 ID는 보존한다.
+- R05의 첫 pass에서 같은 GUID의 마지막 피드가 배정되고, 둘째 pass에서는 첫 항목의 내용 뒤로 같은 GUID가 건너뛰어진다. 예상은 S02 /items/0의 내용·링크가 /items/1 피드에 저장되고 /items/1의 Design/art는 연결되지 않는 것이다. 보강 통제에서는 같은 변형의 /items/0와 /items/1..2를 순서대로 별개 파일로 받아, 같은 DB의 다른 두 피드에 GUID가 공존하는지 판별한다.
+- 링크 통제는 /items/0의 canonical URL만 새 값으로 바꾼다. 별도 canonical-only 복제는 같은 새 canonical을 유지하고 alternate를 빈 배열로 해 예상 link가 빈 문자열인지 확인한다. R05와 A02의 링크 우선순위가 다르다.
+- reception=true에 /items/1의 `user/1000000001/state/com.google/unread` 범주 추가와 `read:false` 필드 추가를 독립 시행한다. 예상 read는 각각 0과 1이다. F01–F02는 발신 `read:false`나 explicit unread 범주 출력을 규정하지 않는다.
+- R09·R20으로부터 첫 임시 entry의 양수 lastSeen이 동일 파일 재수입 후 0으로 대입될 가능성을 추가 검사한다. 사용자 변경 통제는 정상 DAO로 S02 /items/0와 /items/1의 read를 뒤집고 /items/0 별표를 끈 뒤 /items/1의 Design을 떼고 수신 쪽에서만 LocalOnly 태그를 붙인다. 원 바이트 재수입 후 플래그·Design 복귀와 LocalOnly 잔류를 예상한다.
+- C1–C5의 하위 실행은 각기 해당 가설을 분리한다. 원형 8회 외에 통제 14회(12개 시작점), 다른 빈 컨테이너에서 양성 1·음성 1회가 예정 분모다. 음성 후보는 초기 규칙에 따라 파일명이 적재를 막는지 먼저 대조한 후 선택한다.
