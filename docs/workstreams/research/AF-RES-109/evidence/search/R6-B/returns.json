@@ -1,0 +1,178 @@
+{
+  "request_id": "R6",
+  "arm": "B",
+  "input_sha256": "12887f1a139112b86eb8d21f2ecaab2e6ca4c7d61e71328fb06fb5bb037b0244",
+  "actual_queries": 2,
+  "actual_explicit_opens": 6,
+  "start_utc": "2026-11-24T02:08:16.440Z",
+  "end_utc": "2026-11-24T02:15:16.584Z",
+  "unknown_costs": {
+    "automatic_engine_reads": null,
+    "token_usage": null,
+    "monetary_cost": null,
+    "exact_immutable_backend_version": null
+  },
+  "method_notes": [
+    "Method B decomposition preceded searching: physical gesture -> browser event representation -> handler classification -> viewport scale or translation. Preserved Windows, Chrome/Edge, panOnScroll=true, and the already-default zoomOnPinch=true.",
+    "Used only system2_search_query, in English. Query 1 was target-domain; query 2 was relational, with neither a target-product name nor a donor-field name.",
+    "Stopped after two queries once three directly read candidates were available. The third allowed query was unused; six explicit-open slots were consumed including one failed fetch, one reopen, and one click.",
+    "Search top five and all additional displayed results were retained in their original displayed order: 18 results for query 1 and 25 for query 2.",
+    "Original issue appeared automatically in query 1 rank 6 with later-comment material. It was not opened. That contamination is logged and was not used as supporting evidence.",
+    "A separate later Windows pinch issue and a 2026 release snippet were also exposed automatically and were not opened.",
+    "No original issue page, linked same-issue PR, comments, status, releases, or later resolution was deliberately inspected.",
+    "All tests are proposed and unexecuted. No root cause or repair is established.",
+    "Source summaries are paraphrased; no extended direct quotations are retained. Raw tool responses were kept in functions store only, not copied into the output.",
+    "The supplied input digest was verified against the natural-input body without its trailing newline.",
+    "Displayed model label comes from the assignment; exact backend model/version and all unprovided usage/cost data remain unknown.",
+    "The bootstrap read of the assigned prompt preceded instrumentation; its exact before/after timestamps were not captured. Every subsequent web acquisition action has actual wall-clock timestamps.",
+    "Question labels Q3–Q6 are retained literally because their definitions are not supplied."
+  ],
+  "final_candidates": [
+    {
+      "rank": 1,
+      "url": "https://chromium.googlesource.com/chromium/src/%2B/3b54b6aa8be4525318436d271397fc7d90c21da4/content/browser/renderer_host/input/touchpad_pinch_event_queue.cc",
+      "source_ref": "turn319586021view0",
+      "source_id": "R6-B-S5",
+      "title": "Chromium touchpad pinch event queue",
+      "provider": "The Chromium Authors / official Chromium Gitiles",
+      "product_feature": "Touchpad pinch converted into synthetic wheel input; cancellation policy across a gesture.",
+      "version_or_date": "Immutable tree 3b54b6aa8be4525318436d271397fc7d90c21da4; tree commit dated 2018-10-12. Blob ed62b51f89293a0fe4f90d89bf7b3cf005df47a6.",
+      "exact_section": "CreateSyntheticWheelFromTouchpadPinchEvent, lines 22–72; ProcessMouseWheelAck and TryForwardNextEventToRenderer, lines 130–204.",
+      "form": "same_domain_component",
+      "input_processing_observation": "Directly read: the encoder adds the Control modifier to wheel events, derives delta from pinch scale, and remembers whether the first update was consumed. This permits a pinch-related wheel modifier without a separate keyboard prerequisite in this function.",
+      "what_is_new_vs_baseline": "An event-level discrimination test, beyond the already-tried zoomOnPinch=true setting. It is absent from the supplied account; author awareness is unknown.",
+      "changed_choice": "Proposed: route eligible Control-modified wheel input to zoom before ordinary scroll-panning, without requiring a separately tracked key press. Instrument the first event's cancellation as a separate diagnostic.",
+      "minimal_discriminating_input": "R6-B-T1: with panOnScroll=true and zoomOnPinch=true, send otherwise identical cancelable pixel-mode wheel events with deltaY=-10, first ctrlKey=true and then ctrlKey=false, with no preceding keydown. Separately capture a real Windows pinch, ordinary two-finger scroll, and Ctrl+scroll, logging wheel modifiers, key events, cancelability, defaultPrevented, and viewport transform.",
+      "expected_output": "Proposed routing oracle: the Control-marked event changes zoom; the unmarked event follows the existing pan path. Real-event logs distinguish an absent pinch encoding from a correctly encoded event routed to pan. Synthetic tests alone cannot validate browser default actions or hardware encoding.",
+      "conditions_supported": [
+        "Browser gesture-to-wheel encoding",
+        "Windows compatibility is explicitly discussed in code",
+        "Pinch-versus-scroll classification under the supplied panOnScroll condition is a proposed transfer"
+      ],
+      "limitations": [
+        "This 2018 snapshot does not establish Chrome 120 or Edge behavior on the reporter's device.",
+        "Physical Ctrl+wheel and encoded pinch may share modifier values.",
+        "No Windows hardware capture or application patch was performed."
+      ],
+      "counter_evidence": "The code's shared wheel representation means ctrlKey is not proof that the physical input was a pinch. Hardware that supplies another event shape may remain unsupported.",
+      "historical_availability": {
+        "status": "confirmed_before_request_for_this_snapshot",
+        "evidence_source_id": "R6-B-S6",
+        "evidence_ref": "turn188869498view0",
+        "displayed_commit_date": "2018-10-12 20:54:35",
+        "published_utc": null,
+        "limits": "Timezone is not exposed. The commit dates this tree, not the gesture implementation's first introduction or deployment in a browser release."
+      },
+      "acquisition_event": {
+        "query_event_index": 2,
+        "query_displayed_rank": 6,
+        "open_event_index": 7,
+        "directly_read": true,
+        "snippet_only": false
+      },
+      "test_status": "proposed_not_executed"
+    },
+    {
+      "rank": 2,
+      "url": "https://chromium.googlesource.com/chromium/src/%2B/36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb/chrome/browser/resources/pdf/gesture_detector.ts",
+      "source_ref": "turn195292822view0",
+      "source_id": "R6-B-S3",
+      "title": "Chromium PDF viewer GestureDetector",
+      "provider": "The Chromium Authors / official Chromium Gitiles",
+      "product_feature": "An application-side consumer normalizes Control-wheel events into pinch lifecycle events.",
+      "version_or_date": "Immutable revision 36321190fa6fb1f7b2e2ebd5ee1d635b91f060bb; blob 5beb74a61e209a7bc4e554a3fddc5bd73cb95291; exact revision date unknown.",
+      "exact_section": "GestureDetector constructor, lines 46–63; onWheel_, lines 143–203.",
+      "form": "same_domain_component",
+      "input_processing_observation": "Directly read: a non-passive wheel listener selects Control-modified input, cancels default behavior, converts delta to a clamped exponential scale, and emits start/update/end signals. Both synthetic and ordinary Control-wheel input use this path.",
+      "what_is_new_vs_baseline": "A concrete input-normalization implementation and gesture-sequence test absent from the supplied configuration report.",
+      "changed_choice": "Proposed: use one explicit wheel-to-pinch adapter before pan handling, with default-action cancellation and a defined end-of-gesture timer. Its clamping and 100 ms delay are examples to evaluate, not new user requirements.",
+      "minimal_discriminating_input": "R6-B-T2: in a handler-level harness, presentation mode off, feed ctrlKey=true, deltaY=-10 at one fixed pointer position at t=0 and t=50 ms; advance beyond t=150 ms. Repeat with ctrlKey=false. Keep ordinary scroll-panning enabled in the target integration.",
+      "expected_output": "For the cited implementation, the Control-marked pair should produce one start, two updates of approximately 1.10517 each, and one end after the final 100 ms idle period; accumulated scale is approximately 1.22140. The unmarked pair should produce no pinch lifecycle. These are code-derived predictions, not execution results.",
+      "conditions_supported": [
+        "Browser wheel input",
+        "Application-owned viewport zoom",
+        "Avoiding simultaneous browser-native zoom",
+        "A normal wheel path remains separable"
+      ],
+      "limitations": [
+        "The source's synthetic-pinch comment specifically mentions Mac; Windows transfer is a proposed test.",
+        "The exact revision date and relation to Chrome 120 are unknown.",
+        "Application-level routing and listener integration in React Flow were not inspected."
+      ],
+      "counter_evidence": "The implementation intentionally treats physical Ctrl+wheel and synthetic pinch alike; it does not uniquely classify hardware. The chosen clamp may distort fine-grained scale fidelity if copied unchanged.",
+      "historical_availability": {
+        "status": "unknown",
+        "published_utc": null,
+        "limits": "Copyright year 2016 is visible but does not date this exact file edition. No release or source-history investigation was performed."
+      },
+      "acquisition_event": {
+        "query_event_index": 2,
+        "query_displayed_rank": 9,
+        "open_event_index": 5,
+        "directly_read": true,
+        "snippet_only": false
+      },
+      "test_status": "proposed_not_executed"
+    },
+    {
+      "rank": 3,
+      "url": "https://reactflow.dev/api-reference/react-flow",
+      "source_ref": "turn534075182view0",
+      "source_id": "R6-B-S4",
+      "title": "React Flow component API: keyboard and interaction controls",
+      "provider": "xyflow / official React Flow documentation",
+      "product_feature": "Independent configuration of pinch zoom and keyboard zoom activation.",
+      "version_or_date": "Live documentation read 2026-11-24; no pinned release or January 2024 edition established.",
+      "exact_section": "Interaction props, panOnScroll and zoomOnPinch, lines 682–686; Keyboard props, zoomActivationKeyCode, lines 701–712.",
+      "form": "product",
+      "input_processing_observation": "Directly read: zoomOnPinch defaults true. zoomActivationKeyCode defaults to Meta on macOS and Control elsewhere, and accepts null to disable the shortcut.",
+      "what_is_new_vs_baseline": "A targeted keyboard-activation ablation using an additional documented prop. Merely re-enabling zoomOnPinch is baseline and is not credited as new.",
+      "changed_choice": "Proposed diagnostic: compare default zoomActivationKeyCode against null while preserving panOnScroll=true and zoomOnPinch=true, then correlate actual wheel and key events with viewport scale versus translation.",
+      "minimal_discriminating_input": "R6-B-T3: on the same Windows/browser/device setup, perform one pinch under each activation setting, plus an explicit Ctrl+scroll control. Keep all other viewport settings fixed.",
+      "expected_output": "Conditional discriminator: if only the activation setting changes pinch routing, investigate the keyboard-activation interaction; if both variants fail identically, that prop has not isolated the cause. No guaranteed repair or runtime outcome is claimed.",
+      "conditions_supported": [
+        "Same target product",
+        "The supplied pan and pinch properties",
+        "A documented platform-specific modifier default"
+      ],
+      "limitations": [
+        "Current documentation does not establish this API's January 2024 behavior.",
+        "zoomOnPinch wording refers to a touchscreen; touchpad coverage is not established by that row alone.",
+        "The documentation does not explain internal routing precedence."
+      ],
+      "counter_evidence": "Disabling a keyboard shortcut may leave pinch unchanged, and may remove a useful shortcut without fixing the bug. This is a diagnostic comparison, not a recommended permanent fix.",
+      "historical_availability": {
+        "status": "unknown",
+        "published_utc": null,
+        "limits": "Live documentation was not historically pinned."
+      },
+      "acquisition_event": {
+        "query_event_index": 1,
+        "query_displayed_rank": 1,
+        "open_event_indices": [
+          3,
+          6
+        ],
+        "directly_read": true,
+        "snippet_only": false
+      },
+      "test_status": "proposed_not_executed"
+    }
+  ],
+  "vacancies": [],
+  "counts": {
+    "successful_open_actions": 5,
+    "failed_open_actions": 1,
+    "reopen_actions": 1,
+    "click_actions": 1,
+    "unique_primary_works": 3,
+    "total_search_results_exposed": 43,
+    "executed_tests": 0
+  },
+  "model": {
+    "inherited": true,
+    "displayed_parent_label": "GPT-6 Astra Pro",
+    "exact_immutable_backend_version": null
+  },
+  "elapsed_seconds": 420.144
+}

@@ -6,6 +6,7 @@ from pathlib import Path
 import csv
 import hashlib
 import json
+from datetime import datetime
 
 ROOT = Path(__file__).resolve().parent
 
@@ -95,9 +96,15 @@ def collect():
                 "output_hashes": {f.name: hashlib.sha256(f.read_bytes()).hexdigest()
                                   for f in path.iterdir() if f.is_file()},
             })
+    for event in events:
+        event["merged_sort_utc"] = (event.get("ended_utc") if event["event_type"] == "stop"
+                                    else event.get("started_utc"))
+        event["merged_sort_note"] = "wall-clock metadata; concurrent actions are not a proven sequential exposure order"
+    events.sort(key=lambda row: (datetime.fromisoformat(row["merged_sort_utc"].replace("Z", "+00:00")),
+                                 row["request_id"], row["arm"], row["event_index"]))
     dump_jsonl(ROOT / "search.jsonl", events)
     with (ROOT / "candidates.csv").open("w", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(slots[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(slots[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(slots)
     dump_jsonl(ROOT / "evidence" / "search-sources-unadjudicated.jsonl", source_rows)
