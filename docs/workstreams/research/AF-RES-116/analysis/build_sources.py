@@ -24,7 +24,8 @@ def main():
             ('analogies/sources-analogies.jsonl','cross_domain'),
             ('evidence/root-source-reads.jsonl','root_verification')]
     for optional,role in [('evidence/recipient-source-reads.jsonl','recipient_reopen'),
-                          ('evidence/resume-primary-rereads.jsonl','resume_primary_reread')]:
+                          ('evidence/resume-primary-rereads.jsonl','resume_primary_reread'),
+                          ('evidence/audit/source-reads.jsonl','source_audit_reopen')]:
         if (OWN/optional).exists():inputs.append((optional,role))
     rows=[];input_hashes={}
     aliases={'pandoc-manual':'pandoc-manual-all-versions',
@@ -40,6 +41,17 @@ def main():
         p=OWN/name;input_hashes[name]=hashlib.sha256(p.read_bytes()).hexdigest()
         for original in read_jsonl(p):
             r=dict(original);r['ledger_origin']=origin
+            if origin=='source_audit_reopen':
+                prior=next((q for q in rows if q.get('work_id')==r.get('work_id')), {})
+                r.setdefault('lineage','Repeated primary-source inspection or access attempt in source/protocol audit; no new unique credit')
+                r.setdefault('author',prior.get('author','jgm/pandoc maintainers (release metadata)'))
+                r.setdefault('version',prior.get('version'))
+                r.setdefault('questions',prior.get('questions',['Q1','Q3','Q6']))
+                r.setdefault('ledger_rows',['evidence/audit/audit.md',r['source_id']])
+                r['unique_counted']=False
+                r['primary']=bool(prior.get('primary',False))
+                r.setdefault('counter_observation','Failed routes and alternate archived reads are distinguished by status; no extra work credit')
+                r.setdefault('unknown','See individual limitations and source/protocol audit')
             if r['source_id']=='TIFF6':
                 r['original_unique_counted']=r['unique_counted']
                 r['unique_counted']=False

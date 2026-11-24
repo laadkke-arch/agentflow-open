@@ -1,0 +1,453 @@
+{
+  "task": "AF-RES-116",
+  "audit": "sources_recruitment_chronology_versions",
+  "reviewer": "/root/source_protocol_audit",
+  "created_utc": "2026-11-24T05:33:18.622416+00:00",
+  "sealed_input_commit": "8b57d241d88cb6c5ddf3454d2b28fa3fb46fd473",
+  "scope_gate_assessment": "source_allocation_recruitment_fixed_versions_pass_with_stated_qualifications",
+  "original_case_reconstruction_status": "PARTIAL",
+  "overall_outcome_assessed": false,
+  "outcome_files_read": false,
+  "packet_access": "case_id/document_version/start_doc_id projection only; filename-only immutability diff",
+  "counts_at_seal": {
+    "source_rows": 195,
+    "distinct_original_urls": 139,
+    "conservatively_counted_primary_works": 37,
+    "required_classification_counted_works": 34,
+    "allocation": {
+      "natural_request": 6,
+      "screening_only": 3,
+      "definition": 9,
+      "regression": 6,
+      "cross_domain_supplement": 13
+    }
+  },
+  "quota_minimum": {
+    "natural_request": 6,
+    "definition": 8,
+    "regression": 6,
+    "cross_domain_supplement": 4
+  },
+  "independent_checks": {
+    "checker": "evidence/audit/check_sources.py",
+    "receipt": "evidence/audit/checks.json",
+    "result": "PASS",
+    "frame_rows_reconstructed": 100,
+    "selected_original_hashes_verified": 6,
+    "reference_archives_verified": 12,
+    "reference_archive_members_verified": 258,
+    "counted_reference_snapshot_hashes_verified": 14,
+    "sealed_packet_version_projections_verified": 18,
+    "nine_eligibility_bodies_manually_read": true,
+    "source_builder_check_before_later_reopens": "PASS",
+    "analogies_check_after_cache_restore": "PASS; no write option used"
+  },
+  "issues": [
+    {
+      "id": "A01",
+      "severity": "low",
+      "kind": "same_work_normalization",
+      "status": "resolved_in_integration_readback_verified",
+      "finding": "Seven alias groups split counted originals from uncounted repeated sources.",
+      "evidence": [
+        {
+          "path": "sources.jsonl",
+          "baseline_rows": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            64,
+            65,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            93,
+            94,
+            95,
+            96,
+            152,
+            170
+          ]
+        },
+        {
+          "path": "analysis/build_sources.py",
+          "locator": "aliases"
+        },
+        {
+          "path": "evidence/audit-resolutions.json",
+          "locator": "changes"
+        }
+      ],
+      "quota_effect": 0,
+      "completion_impact": "No unique-work inflation; resolved consistency issue.",
+      "minimal_resolution": "Normalize six natural-issue aliases and Eisenhower finding alias; rebuild without changing credited flags.",
+      "resolution_checks": {
+        "canonical_pairs_checked": 7,
+        "counted_works_unchanged": 37,
+        "original_row_changes_confined_to_work_id": true
+      }
+    },
+    {
+      "id": "A02",
+      "severity": "low",
+      "kind": "chronology_qualification",
+      "status": "explicitly_qualified_by_integration",
+      "finding": "Cross-domain substantive reading starts 03:57:08Z, before main protocol commit 03:59:40Z.",
+      "evidence": [
+        {
+          "path": "analogies/sources-analogies.jsonl",
+          "rows": [
+            3,
+            9,
+            16,
+            18,
+            19,
+            25,
+            32
+          ]
+        },
+        {
+          "path": "analogies/metrics-analogies.json",
+          "locator": "source_check_time_window_utc"
+        },
+        {
+          "path": "evidence/audit-resolutions.json",
+          "locator": "chronology_qualification"
+        }
+      ],
+      "quota_effect": 0,
+      "completion_impact": "Does not invalidate natural sample or quotas; prohibits calling all source collection preregistered.",
+      "minimal_resolution": "Identify the cross-domain layer as exploratory, preserve true timestamps and separation from natural outcomes."
+    },
+    {
+      "id": "A03",
+      "severity": "medium",
+      "kind": "provenance_limit",
+      "status": "qualified_unverified_original_remote_time",
+      "finding": "Stored commit/read order is consistent, but original pre-read remote update time has no independently timestamped raw connector receipt in the preserved evidence.",
+      "evidence": [
+        {
+          "path": "evidence/seals.jsonl",
+          "rows": [
+            1,
+            3,
+            4
+          ]
+        },
+        {
+          "path": "recruitment/receipts.json",
+          "locator": "started_utc"
+        },
+        {
+          "path": "recruitment/audit/screening.json",
+          "locator": "rows[].body_read_utc"
+        },
+        {
+          "path": "evidence/audit-resolutions.json",
+          "locator": "chronology_qualification.original_remote_update_raw_receipt_retained"
+        }
+      ],
+      "quota_effect": 0,
+      "completion_impact": "If independently timestamped remote-before-read proof is a strict DONE gate, that gate remains unverified. No observed order contradiction.",
+      "minimal_resolution": "Preserve original raw receipt if available; otherwise qualify the audit as commit/read consistency and immutability, without independently re-proven remote update timing."
+    },
+    {
+      "id": "A04",
+      "severity": "material",
+      "kind": "missing_original_input",
+      "status": "open_explicit_unknown",
+      "finding": "I3 original JP2 bytes and exact channel/color metadata remain unavailable after reported 404 retrievals.",
+      "evidence": [
+        {
+          "path": "gold-work/imagemagick/gold.json",
+          "locator": "cases[I3].counter_input_provenance.capture_attempts; input_unresolved; unknowns"
+        },
+        {
+          "path": "gold-work/imagemagick/target-spans.json",
+          "locator": "required_unavailable_input"
+        },
+        {
+          "path": "gold-work/imagemagick/gold-notes.md",
+          "locator": "I3 original attachment retrieval"
+        }
+      ],
+      "quota_effect": 0,
+      "completion_impact": "Original request is recruited, but complete reconstruction of all original-case facts remains PARTIAL.",
+      "minimal_resolution": "Recover authenticated same-file bytes/hash and inspect JP2 boxes/codestream plus exact tile/band definition, or retain unknown and PARTIAL scope."
+    },
+    {
+      "id": "A05",
+      "severity": "material",
+      "kind": "unspecified_original_environment",
+      "status": "open_explicit_unknown",
+      "finding": "P3 original command, output engine/version, template and package environment are not established by the original body.",
+      "evidence": [
+        {
+          "path": "cases.json",
+          "locator": "cases[P3].uncertainty"
+        },
+        {
+          "path": "gold-work/pandoc/gold.json",
+          "locator": "cases[P3].known_gaps"
+        }
+      ],
+      "quota_effect": 0,
+      "completion_impact": "Fixed Pandoc version is correct, but complete original rendering reconstruction remains PARTIAL.",
+      "minimal_resolution": "Recover original invocation/renderer/template/package identities, or preserve unresolved branch; do not treat comparison longtable source as the original installed version."
+    }
+  ],
+  "integration_readback": {
+    "original_rows_compared": 195,
+    "changed_original_rows": 24,
+    "only_changed_field": "work_id",
+    "changes": [
+      {
+        "source_id": "PD-N8518",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8518",
+            "after": "https://github.com/jgm/pandoc/issues/8518"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8518-C",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8518",
+            "after": "https://github.com/jgm/pandoc/issues/8518"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8522",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8522",
+            "after": "https://github.com/jgm/pandoc/issues/8522"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8522-C",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8522",
+            "after": "https://github.com/jgm/pandoc/issues/8522"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526-C",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8518-IMAGE",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8518",
+            "after": "https://github.com/jgm/pandoc/issues/8518"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526-MD",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526-TEX",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526-IMAGE",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "PD-N8526-IMAGE2",
+        "changed_fields": {
+          "work_id": {
+            "before": "natural-pandoc-8526",
+            "after": "https://github.com/jgm/pandoc/issues/8526"
+          }
+        }
+      },
+      {
+        "source_id": "demo.tif",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6187",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6187"
+          }
+        }
+      },
+      {
+        "source_id": "demo.zip",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6187",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6187"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6159",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6159-comments",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6187",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6187",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6187"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6187-comments",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6187",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6187"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6237",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6237",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6237"
+          }
+        }
+      },
+      {
+        "source_id": "issue-6237-comments",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6237",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6237"
+          }
+        }
+      },
+      {
+        "source_id": "lena.png",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "mandril3.jpg",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "meta.tif",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "meta.tif.zip",
+        "changed_fields": {
+          "work_id": {
+            "before": "im-issue-6159",
+            "after": "https://github.com/ImageMagick/ImageMagick/issues/6159"
+          }
+        }
+      },
+      {
+        "source_id": "ROOT-AN-02",
+        "changed_fields": {
+          "work_id": {
+            "before": "eisenhower_guide",
+            "after": "eisenhower_finding"
+          }
+        }
+      }
+    ],
+    "new_noncounting_rows": "Not semantically inspected; excluded from this sealed-input audit.",
+    "counted_work_invariant": 37
+  },
+  "audit_source_reads": {
+    "path": "evidence/audit/source-reads.jsonl",
+    "rows": 24,
+    "new_unique_credit": 0
+  },
+  "limitations": [
+    "Stored chronological consistency is not independent proof of original remote-upload timestamps.",
+    "Existing read records document the original readers; audit directly re-read the nine eligibility bodies and selected primary reference excerpts/pages, not every source in full.",
+    "Implementation families are operational work units within one software project, not separately authored publications.",
+    "No A/B/C answer, exposure outcome, causal effect, human time-saving or adoption claim is evaluated."
+  ],
+  "reviewer_context": "Separate AI audit actor supplied the parent audit task; retained spawn receipt does not independently certify context isolation."
+}
