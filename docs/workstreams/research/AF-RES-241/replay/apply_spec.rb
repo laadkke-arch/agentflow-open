@@ -26,8 +26,8 @@ RSpec.describe "AF-RES-241 Apply", type: :system, with_cache: true do
     when "A2"
       @form = @current_candidate.current_application || create(:application_form, candidate: @current_candidate)
       provider = create(:provider, name: "AF241 Training Provider", code: "R24", selectable_school: true)
-      @course = create(:course, :open, :with_both_study_modes, name: "AF241 Mathematics", code: "T241", provider:)
-      @other_course = create(:course, :open, name: "AF241 English", code: "T242", provider:, study_mode: :full_time)
+      @course = create(:course, :open, :with_both_study_modes, name: "AF241 Mathematics", code: "T241", provider:, funding_type: "fee")
+      @other_course = create(:course, :open, name: "AF241 English", code: "T242", provider:, study_mode: :full_time, funding_type: "fee")
       original_site = create(:site, provider:, name: "AF241 Original Site")
       additional_site = create(:site, provider:, name: "AF241 Additional Site")
       full_time = course_option_for_provider(provider:, course: @course, site: original_site, study_mode: "full_time")

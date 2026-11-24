@@ -96,6 +96,7 @@ module Af241Harness
     }
     Capybara.current_driver = :af241_chromium
     I18n.locale = :en
+    srand(241)
     Faker::Config.random = Random.new(241)
     @trace[:browser] = {
       name: browser.capabilities.browser_name,

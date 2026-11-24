@@ -92,3 +92,16 @@ docker exec -e AF241_RAILS_PORT=14842 -e AF241_CAPTURE_DIR=/af241-scratch/out \
 양성·오류 재생에는 위 Apply 컨테이너 명령의 새 이름 `af241-app-clean`과 `-e TEST_ENV_NUMBER=_af241_clean`, `-e REDIS_URL=redis://redis:6379/2`를 적용했다. `bundle exec rails db:prepare`로 만든 독립 DB는 `bat_apply_test_af241_clean`이었다. Apply용 host relay·container relay의 포트와 소켓을 각각 `14843`, `apply-clean.sock`으로 분리하고 같은 host ChromeDriver·새 브라우저 세션을 사용했다. `AF241_RAILS_PORT=14843`과 `AF241_ONLY='^A3-1-(POS|ERR)$'`로 양성·오류 두 예제를 순서대로 실행했다. [두 재생과 대조의 stdout/stderr/exit](../receipts/controls/)
 
 Register의 후속 Course details 양식에서 일부 input name은 렌더마다 달라진다. 첫 단계 실제 이름은 raw receipt에 그대로 남겼고, 시험의 날짜 재입력은 공개 폼의 안정적인 input ID와 UI 입력을 사용했다. 날짜 미입력으로 발생한 첫 검증 영수증은 [초기 시도](../receipts/attempts/R1-1-S.json)에 있다.
+
+최종 입력의 기본 재생은 각각 12, 4 예제였다. [Apply 원출력](../receipts/attempts/apply-fixed.stdout)과 [Register 원출력](../receipts/attempts/register-fixed.stdout)의 로그 및 같은 접두사의 exit가 최종 journeys 스냅샷과 대응한다.
+
+최종 replay script가 고정된 뒤 같은 clean 컨테이너에서 `docker exec -e TEST_ENV_NUMBER=_af241_final af241-app-clean bundle exec rails db:prepare`로 별도 DB를 새로 만들었다. 이전 명령에 `-e TEST_ENV_NUMBER=_af241_final`을 추가해 같은 양성·오류를 다시 실행했다. [최종 clean 재생](../receipts/controls/apply-clean-final.stdout)과 [DB 준비](../receipts/controls/apply-clean-final-db.stdout)에 결과가 있다.
+
+저장된 영수증에서 표 입력을 재생하고 일치 여부를 확인한다.
+
+```bash
+af241_csv=$(mktemp)
+python summarize.py "$af241_csv"
+cmp ../journeys.csv "$af241_csv"
+python validate.py
+```

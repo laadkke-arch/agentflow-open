@@ -9,14 +9,17 @@ RSpec.describe "AF-RES-241 Register", type: :feature, js: true do
     given_i_am_authenticated(user: user)
     provider = current_user.organisation
     maths = SubjectSpecialism.find_by(name: CourseSubjects::MATHEMATICS) ||
-      create(:subject_specialism, name: CourseSubjects::MATHEMATICS)
+      create(:subject_specialism, name: CourseSubjects::MATHEMATICS,
+             allocation_subject: create(:allocation_subject, name: "Mathematics"))
     SubjectSpecialism.find_by(name: CourseSubjects::PRIMARY_TEACHING) ||
-      create(:subject_specialism, name: CourseSubjects::PRIMARY_TEACHING)
+      create(:subject_specialism, name: CourseSubjects::PRIMARY_TEACHING,
+             allocation_subject: create(:allocation_subject, name: "Primary teaching"))
     @trainee = create(
       :trainee, :draft, :with_apply_application, :provider_led_postgrad, provider: provider,
       apply_application: create(:apply_application, accredited_body_code: provider.code),
       first_names: "Fixture", middle_names: nil, last_name: "Trainee", email: "trainee-af241@example.test",
-      date_of_birth: Date.new(1991, 2, 24), course_education_phase: :secondary,
+      sex: :sex_not_provided, nationalities: [create(:nationality, :british)],
+      provider_trainee_id: "AF241-LOCAL", date_of_birth: Date.new(1991, 2, 24), course_education_phase: :secondary,
       course_subject_one: CourseSubjects::MATHEMATICS, course_subject_two: nil, course_subject_three: nil,
       course_allocation_subject: maths.allocation_subject, course_age_range: [11, 16], course_uuid: nil,
       training_initiative: :no_initiative, applying_for_bursary: false,
