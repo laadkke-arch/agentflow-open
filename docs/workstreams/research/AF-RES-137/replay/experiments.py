@@ -140,8 +140,8 @@ def image_case(path, spec, repeat, original):
         repeated = richardson_lucy(example["astro_noisy"], example["psf"], num_iter=spec["num_iter"])
         assert np.array_equal(repeated, native)
         rows.append({
-            "case": "unmodified-gallery", "input": "released astronaut example and seeded Poisson",
-            "ast_extraction": False, "input_max": float(example["astro_noisy"].max()),
+            "case": "unmodified-gallery", "input": "released astronaut example and unseeded Poisson",
+            "ast_extraction": False, "rng_seed": None, "input_max": float(example["astro_noisy"].max()),
             "output": summarize(native), "repeat_count": repeat, "repeat_equal": True,
         })
     for axis, input_image in (("control", control), ("boundary", image)):

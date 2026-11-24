@@ -141,7 +141,9 @@ def verify_runs(p):
     assert sparse_modes["default"]["star"]["sum"] == 10
     assert sparse_modes["matrix-array-delta"]["at_linf"] == 0
     native, *rows = image["rows"]
-    assert native["case"] == "unmodified-gallery"
+    assert native["case"] == "unmodified-gallery" and native["rng_seed"] is None
+    assert native["output"]["shape"] == [512, 512]
+    assert native["output"]["maximum"] == 1.0 and native["repeat_equal"]
     assert rows == preimage["rows"]
     boundary = {str((r["normalize"], r["clip"])): r["output"]["maximum"]
                 for r in rows if r["case"] == "boundary"}
