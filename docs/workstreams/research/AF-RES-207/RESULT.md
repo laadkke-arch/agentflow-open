@@ -11,17 +11,17 @@
 
 | 문장·A/B 또는 통제 | 수치·단위 | 행집합·분모 | 오승인·보류·정답 | 재현 영수증 |
 | --- | --- | --- | --- | --- |
-| S1 A, B | 100,306 ms 양쪽 | D03 L50의 한 행 · 25단어·1인 | A/B 정답 | [A L1](receipts/core.jsonl#L1) · [B L2](receipts/core.jsonl#L2) |
-| S2 A, B | 560,332 ms 양쪽 | D03 L51의 한 행 · 27단어·1인 | A/B 정답 | [A L3](receipts/core.jsonl#L3) · [B L4](receipts/core.jsonl#L4) |
-| M1 A, B | 648,615 ms 양쪽 | D03 L2–6의 다섯 행 · 111단어·1인 | A/B 정답 | [A L5](receipts/core.jsonl#L5) · [B L6](receipts/core.jsonl#L6) |
-| M2 A, B | 605,126 ms 양쪽 | D03 L7–11의 다섯 행 · 111단어·1인 | A/B 정답 | [A L7](receipts/core.jsonl#L7) · [B L8](receipts/core.jsonl#L8) |
-| W1 A, B | 총노동 미확인 | D02 L2–4, 번역자 보조 15행 · 검수 연결 0행 | A/B 합리적 보류 | [A L9](receipts/core.jsonl#L9) · [B L10](receipts/core.jsonl#L10) |
-| W2 A, B | 총노동 미확인 | D02 L5–7, 번역자 보조 9행 · 검수 연결 0행 | A/B 합리적 보류 | [A L11](receipts/core.jsonl#L11) · [B L12](receipts/core.jsonl#L12) |
+| S1 A, B | 100,306 ms 양쪽 | D03 [L50](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L50)의 한 행 · 25단어·1인 | A/B 정답 | [A L1](receipts/core.jsonl#L1) · [B L2](receipts/core.jsonl#L2) |
+| S2 A, B | 560,332 ms 양쪽 | D03 [L51](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L51)의 한 행 · 27단어·1인 | A/B 정답 | [A L3](receipts/core.jsonl#L3) · [B L4](receipts/core.jsonl#L4) |
+| M1 A, B | 648,615 ms 양쪽 | D03 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6)의 다섯 행 · 111단어·1인 | A/B 정답 | [A L5](receipts/core.jsonl#L5) · [B L6](receipts/core.jsonl#L6) |
+| M2 A, B | 605,126 ms 양쪽 | D03 [L7–11](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L7-L11)의 다섯 행 · 111단어·1인 | A/B 정답 | [A L7](receipts/core.jsonl#L7) · [B L8](receipts/core.jsonl#L8) |
+| W1 A, B | 총노동 미확인 | D02 [L2–4](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L2-L4), 번역자 보조 15행 · 검수 연결 0행 | A/B 합리적 보류 | [A L9](receipts/core.jsonl#L9) · [B L10](receipts/core.jsonl#L10) |
+| W2 A, B | 총노동 미확인 | D02 [L5–7](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L5-L7), 번역자 보조 9행 · 검수 연결 0행 | A/B 합리적 보류 | [A L11](receipts/core.jsonl#L11) · [B L12](receipts/core.jsonl#L12) |
 
-| C1 같은 합계의 행 교체 | 후보 648,615 ms 양쪽 | FLORES 209 대신 생성 FLORES 900000209. 후보 5행·111단어·1인, 실재 기준 5행 중 1행 다름 | A 오승인 · B 원문 코호트 불일치로 합리적 보류. D03 L2–6, D04 L2–6 | [A L1](receipts/controls.jsonl#L1) · [B L2](receipts/controls.jsonl#L2) |
-| C2 ms를 초로 표기 | 원행 648,615 ms, 표시 648,615초 | 실재 D03 L2–6 그대로, 5행·111단어·1인 | A/B 단위 불일치 보류 | [A L3](receipts/controls.jsonl#L3) · [B L4](receipts/controls.jsonl#L4) |
-| C3 누락을 0으로 채움 | 543,630 ms 후보, 적격 총합 미확인 | 후보 5행·111단어의 마지막 키가 같은 생성 0. 완료 실측 4행, 실재 기준 5행·648,615 ms. D03 L2–6 및 D07 B06 | A/B 완료 관측 누락 보류. B는 원파일 계보 충돌도 검출 | [A L5](receipts/controls.jsonl#L5) · [B L6](receipts/controls.jsonl#L6) |
-| C4 같은 참여자 관측 복제 | 후보 798,595 ms 양쪽 | FLORES 205의 별칭 1개를 더한 6행·136단어·1인. 실재 기준 5행·111단어·1인. D03 L2–6 | A 오승인 · B 원문 단위 중복으로 합리적 보류 | [A L7](receipts/controls.jsonl#L7) · [B L8](receipts/controls.jsonl#L8) |
+| C1 같은 합계의 행 교체 | 후보 648,615 ms 양쪽 | FLORES 209 대신 생성 FLORES 900000209. 후보 5행·111단어·1인, 실재 기준 5행 중 1행 다름 | A 오승인 · B 원문 코호트 불일치로 합리적 보류. D03 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6) · D04 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/receipts/03-pairs.csv#L2-L6) | [A L1](receipts/controls.jsonl#L1) · [B L2](receipts/controls.jsonl#L2) |
+| C2 ms를 초로 표기 | 원행 648,615 ms, 표시 648,615초 | 실재 D03 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6) 그대로, 5행·111단어·1인 | A/B 단위 불일치 보류 | [A L3](receipts/controls.jsonl#L3) · [B L4](receipts/controls.jsonl#L4) |
+| C3 누락을 0으로 채움 | 543,630 ms 후보, 적격 총합 미확인 | 후보 5행·111단어의 마지막 키가 같은 생성 0. 완료 실측 4행, 실재 기준 5행·648,615 ms. D03 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6) · D07 [L7](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/bounds.csv#L7) | A/B 완료 관측 누락 보류. B는 원파일 계보 충돌도 검출 | [A L5](receipts/controls.jsonl#L5) · [B L6](receipts/controls.jsonl#L6) |
+| C4 같은 참여자 관측 복제 | 후보 798,595 ms 양쪽 | FLORES 205의 별칭 1개를 더한 6행·136단어·1인. 실재 기준 5행·111단어·1인. D03 [L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6) | A 오승인 · B 원문 단위 중복으로 합리적 보류 | [A L7](receipts/controls.jsonl#L7) · [B L8](receipts/controls.jsonl#L8) |
 
 | 인용 목적 | 충분했던 필드 | 추가 직렬화 바이트 | 근거 URL·적용 한계 | 최소 반례 |
 | --- | --- | --- | --- | --- |
@@ -29,4 +29,71 @@
 | 고정 합계 확인 | A의 모든 구성 원행을 덮는 정확한 위치와 원행 스키마 | M1 +397 B, M2 +398 B | D03 [L2–11](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L11). 고정된 완전 인용과 이 판독기의 스키마 전제에서 확인. | C1에서 숫자·단위·분모가 같고 행만 바뀌었다. [통제 L1–2](receipts/controls.jsonl#L1-L2) |
 | 총노동 비교 보류 | 배정의 QA 미연결 표지와 분절의 검수 시간 공백 | W1 +355 B, W2 +355 B | D07 [B15](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/bounds.csv#L16). 보류 근거만 확인. | 독립 QA 자료가 연결되는 새 관측은 다시 판정한다. |
 
+| 오행·복제 승인 방지 | 시험한 조합은 B의 선택·그룹·결측 규칙과 고정 배정·원문 키 투영이다. | M1 +397 B. 다섯 필드 전체의 비용이다. | D02 [배정 L2](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L2) · D04 [원문 코호트 L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/receipts/03-pairs.csv#L2-L6). 별도 권위 자료가 고정돼 있다. | C1의 값·크기는 같고 행만 다르다. C4의 같은 참여자는 원문 단위를 한 번 더 센다. [통제 L1–8](receipts/controls.jsonl#L1-L8) |
+
 주표본 12셀에서 A/B 각각 수치 4건 정답, 비교 2건 합리적 보류였다. 네 분리 통제에서 A의 오승인 2건을 B가 모두 보류했다. Eurostat 2024 국제 철도 DK+PT의 MIO_PKM 387+17과 LT+RO의 THS_PAS 104+300은 각각 숫자 404다. 단위와 보고국·셀 키가 다르다. [Eurostat API E06](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/rail_pa_typepas?lang=en&time=2024) · [고정 좌표 검산](receipts/context.stdout.json)
+
+추가 필드에서 관측한 이점은 숫자의 재계산보다 어떤 행을 인용할지 검증하는 데 있었다. 모든 구성 행이 정확히 인용된 두 실재 합계는 A로도 복원됐다. 그 인용이 잘못된 행으로 바뀌고 다시 봉인되자, 값을 포함한 숫자 분모를 맞춘 C1도 A를 통과했다. B는 별도 코호트에 따라 C1과 C4를 보류했다. 이 판단에는 고정 소스의 신뢰할 수 있는 배정·원문 단위 목록과 그 목록을 사용하는 판독 방식이 함께 필요했다. [채점표](matrix.csv) · [통제 L1–8](receipts/controls.jsonl#L1-L8)
+
+## Q1 · 두 고정 입력의 자격
+
+195의 중앙 결과 커밋 `a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0`에는 자체 PARTIAL 인계와 실제 원 배정·분절·집계가 있다. `inputs.json`에 기록한 tree·Git blob과 SHA-256을 확인하고 `segments.csv`의 `unit_id`, `subject_id`, `event_time_ms`, `src_words`를 원문 수치와 맞췄다. 문서·조건별로 배정된 PET 번역자 창이다. 발행 HF TSV의 동일성 및 독립 QA는 미확인이다. [H195 고정 인계](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/HANDOFF.md) · [D03 고정 분절 L1–11](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L1-L11) · [입력 SHA 목록](inputs.json)
+
+196의 중앙 결과 커밋은 `6147197ee77016a096412353bd9c3a9f4cd61b1e`다. 실제 `bundle_only` 재열람·해시일치·복원 기록을 작은 순서로 정렬하면 C O2 1,083 B, C O1 1,127 B, C H1 1,460 B, C H2 1,464 B였다. O2는 `js-T01-r1`이 2026-11-24T19:33:57.136989Z에 `[]`를 반환했다는 문장이다. 판독기는 거울 없이 `bundle.json` 하나에서 원본의 L2–6, L55, L81–84 총 263 B를 열어 해시 일치를 확인했다. 이 비교에서 이어받은 것은 구간 보관 형식이다. [R03 판정 L7–25](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/matrix.csv#L7-L25) · [R04 비용 L25](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/costs.csv#L25) · [R05 판독 L24](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/receipts/core.jsonl#L24) · [O04 원 영수증](https://github.com/laadkke-arch/agentflow-open/blob/7042060cd73aad96f70ff290ec6d5f6adf22570b/docs/workstreams/research/AF-RES-186/receipts/js-T01-r1/receipt.json)
+
+## Q2 · 행 선택과 분모의 정답
+
+원문 표의 위에서부터 유형 두 건씩을 선택해 6/6 자리를 채웠다. 정답은 숫자 인용의 ms·원문 단어 수, 분절의 행 멀티셋, 배정 수, 생산자 수를 먼저 고정했다. `slot_id/subject_id/unit_id/FLORES-id` 조합으로 익명키를 만들었다. 서로 같은 분절 문자열이나 원문 번호만으로 PE와 HT를 합치지 않는다. 같은 문서의 원문 단어 수 111과 두 조건에 노출된 단어 222는 각각 다른 분모다. W1·W2의 보조 번역자 관측 15·9행은 총노동의 실재 분모로 편입되지 않는다. QA 연결 0행은 검수 시간이 공백이라는 증거다. [D01 결과 L28–53](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/RESULT.md#L28-L53) · [D02 배정 L1–7](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L1-L7) · [모집표](frame.csv) · [봉인 정답](gold.json)
+
+시계열의 방문 마지막 이벤트 t 합과 editing indicator는 구분된다. 두 시간 필드가 벌어지는 ITA 2 HT FLORES 528은 95,011 대 77,334 ms다. 같은 작업의 임시 STARTED 백업에는 시간 자체가 빠져 있다. 총노동 비교는 동일 출력에 연결된 독립 평가와 검수 시간 자료를 확보할 때 다시 계산할 수 있다. [D01 L41–42 및 산식](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/RESULT.md#L41-L42) · [O02 구현 L135–190](https://github.com/gsarti/divemt/blob/934c4106001adeaa982a882d063f33ce0a398217/divemt/parse_utils.py#L135-L190) · [O03 연구 범위 §3.1](https://aclanthology.org/2022.emnlp-main.532.pdf#page=3)
+
+## Q3 · 단건 표현으로 복원한 범위
+
+A는 `url`, `sentence`, `type`, `revision`, `relative_path`, `excerpt_sha256`, `locator`, `excerpt_base64`를 유지했다. 헤더와 정확한 원행을 함께 인용했다. 판독기는 인용·로컬 구간의 바이트를 확인한 뒤 문장에 적힌 언어·문서·조건·측정 범위와 원행을 대조했다. A도 데이터 스키마의 `event_time_ms`, `src_words`, 완료 표지를 해석하므로 네 수치와 두 보류를 복원했다. 이 해석은 196의 보관 JSON이 제공한 필드와 별도로 필요한 판독 지식이다. [R01 명세 L12–25/L67–79](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/make_bundles.py#L67-L79) · [D03 열 스키마 L1](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L1) · [A 주관측 L1–12](receipts/core.jsonl#L1-L12)
+
+B의 다섯 추가 필드는 `row_selector`, `group_by`, `missing`, `units`, `formula`다. B는 같은 로컬 분절을 술어로 독립 선택하고 언어·문서·조건·생산자로 그룹을 확인했다. 배정의 `planned_units`와 별도의 같은 원문 키 투영에서 코호트를 비교했다. 투영의 다섯 열은 언어·문서·분절 번호·FLORES ID·원문 지문이다. 집계값과 정답 행 목록은 B의 추가 필드에 없다. 시간 합과 단어 합은 실제 선택한 행에서 계산했다. [D02 배정 L1–3](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L1-L3) · [D04 코호트 L1–9](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/receipts/03-pairs.csv#L1-L9) · [B 관측 M1 L6](receipts/core.jsonl#L6)
+
+## Q4 · 맞는 숫자와 틀린 행
+
+C1의 원 권위 대상은 M1의 다섯 분절이다. 마지막 관측의 시간 104,985 ms와 17단어를 유지한 채 출처 키만 바꿨다. 648,615 ms·111단어·5행·1인이 같아도 FLORES 209가 빠졌다. C4는 같은 참여자의 첫 관측을 별칭 키로 다시 셌다. 표시 분모가 6행·136단어가 되어도 참여자 수는 여전히 1이다. B는 각각 코호트 불일치와 원문 단위 중복을 검출했다. 이는 생성 행을 넣은 통제 결과이며 주표본의 실제 오승인 건수는 0이었다. [D03 원행 L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv#L2-L6) · [C1/C4 통제 L1–2 및 L7–8](receipts/controls.jsonl#L1-L8)
+
+C2의 648,615 ms를 648,615초라고 표기하면 같은 숫자를 보존하면서 물리량을 1,000배로 바꾼다. C3의 생성 0은 같은 키로 남았으나 완료된 원측정은 4개였다. 두 안은 ms가 명시된 열과 원파일 상태를 각각 확인해 둘 다 보류했다. METR 원자료에서도 수정 시간 0분과 공백은 서로 다르다. issue 2는 개발자 36+0분이고 issue 26은 개발자 77분에 수정 공백이 붙는다. 검수자의 활동 시간은 두 행에서 확인되지 않는다. [C2/C3 통제 L3–6](receipts/controls.jsonl#L3-L6) · [D07 B06 및 B12–14](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/bounds.csv#L7-L15) · [O07 METR L3–27](https://github.com/METR/Measuring-Early-2025-AI-on-Exp-OSS-Devs/blob/7ff2d7670235f531dff77eff58355bd77392f396/data_complete.csv#L3-L27)
+
+실재 M1·M2 합을 별도 문장으로 쓰면 PET 사건창의 합은 1,253,741 ms다. 조건 관측 10행과 생산자 2명, 공유 원문 5분절이라는 제한을 붙여야 한다. 두 수치 차이 43,489 ms는 서로 다른 작업자의 두 조건창 차이다. 개인 전후 시간 절감이나 독립 QA 포함 순이득을 지지할 근거는 미확인이다. [D02 HT/PE1 배정 L2–3](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/assignments.csv#L2-L3) · [D04 같은 원문 L2–6](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/receipts/03-pairs.csv#L2-L6) · [맥락 계산 원출력](receipts/context.stdout.json)
+
+## Q5 · 접근과 독립 채점
+
+회차마다 새 임시 디렉터리에 `bundle.json`, `segments.csv`, `assignments.csv`, `source-units.csv`, 판독 코드를 배치했다. 네 자료를 한정해 미리 열었고 `strace`로 실제 열기와 새 파일·소켓의 EPERM을 확인했다. 판독기의 로그에는 읽은 파일과 지문, 발췌 위치, 실제 행키가 있다. A의 M1은 묶음·분절 파일을 읽어 5개 행을 계산했다. B의 M1은 동일 파일과 배정 24행 및 원문 단위 32행을 읽었고 분절 파일에서 96행을 검색했다. W1·W2는 보조 관측과 QA 연결 결손을 기록한 뒤 총노동을 미확인으로 남겼다. [M1 A/B 영수증 L5–6](receipts/core.jsonl#L5-L6) · [W1/W2 영수증 L9–12](receipts/core.jsonl#L9-L12)
+
+정답은 관측 프로그램이 종료한 뒤 별도 명령에서 열었다. 표의 `value`, `unit`, `rows`, `denominator`, `reason`은 개별 축이다. 통제의 축은 원 권위 자료 M1의 키·값에 대조하며 최종 판정에는 주장 단위와 자료 자격도 적용한다. C3의 생성 0처럼 물리 행의 키·개수가 맞아도 `admissible_rows=4`일 수 있다. 실패 종료 0건과 합리적 보류를 따로 확인했다. 196에서 원문과 보관 해시의 동시 변경이 내부 대조를 통과했던 결과는 이번에도 독립 기준점이 필요한 이유다. [채점표](matrix.csv) · [통제 L5–6](receipts/controls.jsonl#L5-L6) · [R03 196 동시 변경 L42](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/matrix.csv#L42)
+
+## Q6 · 공식 통계의 관측 키
+
+W3C PROV-DM의 entity는 고정 관측행과 발행된 집계에, activity는 행을 선택하고 계산한 실행에 대응시킬 수 있다. `used`와 `wasGeneratedBy`로 연결하고 참여자나 실행 책임은 agent에서 이어진다. `wasDerivedFrom`만 쓰면 세부 산식과 실제 사용행의 종류를 자동으로 얻을 수 없다. Data Cube의 dimension은 관측 키, measure는 대상 현상, attribute는 단위·스케일·상태를 설명한다. IC-12는 같은 자료집의 전체 차원이 같은 중복을 다룬다. §8.4는 실제 집계 방법을 자료와 분석에 맡긴다. [E01 PROV-DM §2.1/§5.1/§5.2](https://www.w3.org/TR/prov-dm/) · [E02 Data Cube §5.2/§8.4/IC-12](https://www.w3.org/TR/vocab-data-cube/)
+
+SDMX 3.1의 자료흐름과 Data Structure Definition을 관측과 같이 보면 차원 키와 측정값의 연결을 추적할 수 있다. Eurostat의 상세 보고 `RAIL_PA_TYPEPAS` 2024 API에는 `freq/unit/tra_cov/geo/time` 순으로 다섯 차원이 있다. 연간·국제·보고국 기준 DK 387와 PT 17의 합은 404백만 passenger-km다. LT 104와 RO 300의 합은 404천 passenger trips다. 두 보고국씩의 셀 값 합계이며 EU 총계나 고유 탑승자 수는 추정하지 않았다. 벨기에 좌표 71은 값 없이 `|C`, 에스토니아 좌표 76은 공개된 숫자 0이다. 탑승 횟수·거리·인구 대비 지표의 분모를 각각 확인해야 통계 비교가 성립한다. 단위 충돌 사례는 실제 2024 표를 읽은 뒤 찾은 사례다. [E03 SDMX 정보모형 PDF p.87–90](https://sdmx.org/wp-content/uploads/SDMx_3-1-0_SECTION_2_FINAL.pdf#page=87) · [E05 Eurostat ESMS §3.4/§4/§7](https://ec.europa.eu/eurostat/cache/metadata/en/rail_pa_esms.htm) · [E06 2024 API 좌표 74/90/254/261/71/76](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/rail_pa_typepas?lang=en&time=2024) · [E08 인구 분모](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Railway_passenger_transport_statistics_-_quarterly_and_annual_data) · [고정 계산](receipts/context.stdout.json)
+
+## Q7 · 인용 비용
+
+각 안의 실재 단일행은 정답 2/2, 합계는 정답 2/2, 비교 보류는 합리적 보류 2/2였다. 여섯 자리×두 표현 중 빈 자리 수는 0이고 주표본 오승인도 0건이다. 통제 네 건에서 A는 오승인 2·보류 2, B는 보류 4였다. C1은 같아 보이는 분모에서도 행 선택을 찾아낸 사례다. 실재 네 수치에서는 두 안이 이미 정확했고 W1·W2는 두 안 모두 근거가 불충분했다. [16행 채점표](matrix.csv) · [집계 원출력](receipts/score.json)
+
+정렬 UTF-8 compact JSON+LF로 실제 6개 묶음을 직렬화했다. A 26,948 B, B 29,283 B, 순증분 2,335 B다. 순증분은 행 선택식 387 B, 그룹 348 B, 결측 856 B, 단위 256 B, 산식 488 B다. 같은 A 바이트와 공통 자료 84,782 B는 순증분에 포함하지 않았다. 실재 합계 M1·M2에서 확장안 비용은 각각 +397·+398 B였고, 단일행 S1·S2는 각각 +415 B였다. A가 이미 충분한 네 수치의 관찰상 필요 확장은 0 B였다. 네 통제에서 효과가 확인된 값은 조합 B의 비용이며 각 필드의 최소 필요량은 별개 검사가 필요하다. [비용표](costs.csv) · [R01 동일 직렬화 L12–13](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/make_bundles.py#L12-L13)
+
+30개 확장 필드값을 동일한 필드·값 단위로 묶으면 고유값은 13개다. 공용 규칙 원장과 30개 참조를 실제 직렬화한 결과는 1,325 B였고 같은 규칙을 사건별 맵에 직접 저장한 값은 2,379 B였다. 여기에는 두 맵의 포장과 참조 비용이 포함된다. 공유 모델의 전체 발췌 저장·조회 지연·갱신 처리 비용은 미측정이다. [공유 원장 직렬화](receipts/rule-registry.json) · [개별 비용표](costs.csv)
+
+## 경쟁 설명과 조합 조건
+
+- 설계자는 재열람을 제공하는 정확한 단일행이나 완전한 집계 구간에 A를 사용할 수 있다. 이 연구의 A 판독기도 스키마의 완료·단위 의미를 사용했다. 출처 내 구간이 유일한 경우 196의 거울 조건 A도 원문을 읽었던 관측이 있다. 같은 운영 정책을 판독기에 주면 묶음에 필드를 반복하지 않아도 C1·C4 검증을 구현할 수 있다. 그 구성의 결과와 이식 비용은 미측정이다. [R03 196 거울 L20 및 단독 L21](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/matrix.csv#L20-L21) · [M1 양안](receipts/core.jsonl#L5-L6)
+- 연구자는 참여자·작업 역할·관측창을 먼저 정의한다. PET 합은 개별 분절 방문 t를 더하고, 같은 최종 출력이 서로 다른 작업에서 나올 수 있어 배정과 생산자를 대조해야 한다. 동일 출력인데도 생산자가 다르고 4,530/36,203 ms가 관측된 195의 표본 밖 반례와, 독립 QA가 없는 W1·W2는 숫자만 보이기 쉬운 범위를 좁힌다. [D07 B08/B15](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/bounds.csv#L9-L16)
+- 운영자는 A의 완전 근거가 크거나 반복되면 고정 익명 원행과 B의 선택·그룹·결측 정책을 버전이 있는 공용 원장으로 둘 수 있다. 함께 갱신되는 규칙·발췌·참조가 과거의 판정을 다시 계산할 버전과 연결돼야 한다. 고정 인용 + 별도 권위 자료를 저장하면 같은 합계의 행 대체를 찾을 수 있었지만 권위 자료까지 재봉인되는 시나리오에는 별도 증거가 필요하다. [공유 원장](receipts/rule-registry.json) · [C1/C4](receipts/controls.jsonl#L1-L8) · [R03 196 동시 변조](https://github.com/laadkke-arch/agentflow-open/blob/6147197ee77016a096412353bd9c3a9f4cd61b1e/docs/workstreams/research/AF-RES-196/matrix.csv#L42)
+- 공식 통계 작성자는 측정키·보고 지역·기준 연도·자료 개정 버전·결측 상태와 산식의 분모를 차원과 함께 보존한다. 투입 역할이 섞이는 PET와 국경 간 보고 수치는 모두 범위가 달라질 때 합산 자격을 새로 확인해야 한다. 기밀과 관측 0을 합치는 편의 규칙은 이번 증거와 충돌한다. [E04 구조 메타데이터](https://ec.europa.eu/eurostat/web/metadata) · [E05 통계 모집과 기밀성](https://ec.europa.eu/eurostat/cache/metadata/en/rail_pa_esms.htm) · [E06 2024 관측](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/rail_pa_typepas?lang=en&time=2024)
+
+## 추가 분석
+
+재검증은 고정 GitHub 두 선행판을 공급해 새 checkout에서 20개 프로세스와 별도 채점을 실행했다. 주표본·통제 원출력, 접근 목록·지문, 비용과 판정표 등 열 파일이 바이트 단위로 일치했다. 철도 비교는 직접 읽은 API의 정규화 사본과 지문으로 재계산했다. 원 HTTP 바이트는 이 실행환경에서 curl HTTP 403으로 미확인이다. 독립 검토자가 동일 입력으로 재판독할 때 사용할 명령과 원자료를 기록했다. [재현 명령](receipts/04.md) · [재실행 지문](receipts/replay-compare.stdout) · [자체점검](SELF_CHECK.md)
+
+| 불일치·약점 | 영향을 받는 주장 | 다음 조사·열 원자료 | 판정을 뒤집을 관측 |
+| --- | --- | --- | --- |
+| 실제 합계 두 건은 한 문서의 연속 구간이다. 네 통제의 씨앗은 M1 한 건이다. | 완전 구간인 A의 충분성 및 B의 오승인 감소가 다른 집계에 적용되는 범위 | D03 [전체 분절](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/segments.csv)와 D04 [다른 문서의 같은 원문 쌍](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/receipts/03-pairs.csv)에서 분산 구간 및 복수 그룹을 독립 모집 | 비연속·복수 생산자 집계에서도 정확한 인용만으로 행과 분모가 모두 일치하거나, 고정된 B 판독도 틀린 코호트를 승인 |
+| 코호트와 분절은 같은 195 원 추출 계보이고 판독 규칙을 작성자가 알고 있었다. | B가 복제와 행 교체를 감지한다는 관측의 독립성 및 일반성 | D05 [ZIP 지문](https://github.com/laadkke-arch/agentflow-open/blob/a674c67aaf2c4f1a6aaef4b1ac278dabf44188c0/docs/workstreams/research/AF-RES-195/inputs.json#L136-L144)과 195의 원 배정, 독립자가 봉인한 코호트로 교차 판독 | 코호트까지 함께 재봉인한 안을 B가 승인하거나, 독립 권위 입력을 사용할 때 A만으로 두 오승인을 모두 잡음 |
+| 독립 QA·수용 결과·검수 시간이 공개 입력에서 연결되지 않았다. | 번역자 PET 사건창 수치에서 동등 품질 및 검수 포함 총노동으로의 전이 | O03 [연구 범위](https://aclanthology.org/2022.emnlp-main.532.pdf#page=3)와 출력 SHA가 연결된 독립 검수자 판정·활동 원장 확보 | 두 조건의 같은 품질 기준 아래 수용 및 검수 시간이 각각 연결돼 W1/W2의 총노동과 분모를 계산할 수 있음 |
