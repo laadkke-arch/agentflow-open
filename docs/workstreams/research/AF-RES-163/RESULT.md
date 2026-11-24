@@ -7,15 +7,15 @@
 | Debian 열린 자연층 2 자리 | 동일 F-Debian | 미확인 | 미확인 | 미확인 | 순위/기준일 상태 |
 | GNU 종료 자연층 8 자리 | [GNU Debbugs](https://debbugs.gnu.org/) F-GNU | 미확인 | 미확인 | 미확인 | 순위/기준일 상태 |
 | GNU 열린 자연층 2 자리 | 동일 F-GNU | 미확인 | 미확인 | 미확인 | 순위/기준일 상태 |
-| Debian 1027832 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1027832) T1027832 | BTS→원 제출자; 별도 closer ack | 2023-01-04T21:24:04Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1027832) | 원 제출자=closer; 자기 종료 후 설명만 | 동일 통지 인지 |
-| Debian 1031403 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1031403) T1031403 | BTS→원 제출자; 별도 closer ack | 2024-02-24T13:21:09Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1031403) | 미확인 | 동일 통지 인지 |
+| Debian 1027832 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1027832) T1027832 | BTS→원 제출자; 별도 closer ack | 2023-01-04T21:24:04Z (L690–696) | 원 제출자=closer; 자기 종료 후 설명만 | 동일 통지 인지 |
+| Debian 1031403 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1031403) T1031403 | BTS→원 제출자; 별도 closer ack | 2024-02-24T13:21:09Z (L174–180) | 미확인 | 동일 통지 인지 |
 | Debian 1035733 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1035733) T1035733 | 미확인 | 종료 원문 미판독 | 미확인 | 발신 |
-| Debian 1074014 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1074014) T1074014 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:04Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1074014) | 미확인 | 동일 통지 인지 |
-| Debian 1075856 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1075856) T1075856 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:04Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1075856) | 원 제출자 후속 block 제거, 통지 인용 없음 | 동일 통지 인지 |
-| Debian 1089110 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1089110) T1089110 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:05Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1089110) | 미확인 | 동일 통지 인지 |
-| Debian 1094664 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1094664) T1094664 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:06Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1094664) | 미확인 | 동일 통지 인지 |
-| Debian 1098339 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1098339) T1098339 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:08Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1098339) | 미확인 | 동일 통지 인지 |
-| Debian 1114994 / 보충 (src:) | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1114994) T1114994 | BTS→원 제출자; 별도 closer ack | 2025-12-23T14:05:15Z (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1114994) | 미확인 | 동일 통지 인지 |
+| Debian 1074014 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1074014) T1074014 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:04Z (L2346–2352) | 미확인 | 동일 통지 인지 |
+| Debian 1075856 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1075856) T1075856 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:04Z (L458–463) | 원 제출자 후속 block 제거, 통지 인용 없음 | 동일 통지 인지 |
+| Debian 1089110 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1089110) T1089110 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:05Z (L915–921) | 미확인 | 동일 통지 인지 |
+| Debian 1094664 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1094664) T1094664 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:06Z (L116–121) | 미확인 | 동일 통지 인지 |
+| Debian 1098339 / 보충 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1098339) T1098339 | BTS→원 제출자; 별도 closer ack | 2025-02-20T20:12:08Z (L71–76) | 미확인 | 동일 통지 인지 |
+| Debian 1114994 / 보충 (src:) | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1114994) T1114994 | BTS→원 제출자; 별도 closer ack | 2025-12-23T14:05:15Z (L248–253) | 미확인 | 동일 통지 인지 |
 | Debian 1020248 / 반례·후속층 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1020248) X1020248A | BTS→원 제출자; 별도 closer ack 확인된 것만 | 2022-12-17T03:09:10Z; 2024-02-24T13:21:08Z | 첫 통지 J2 내용 인지; 두 번째 미확인 | 첫 통지 수신 경로, 두 번째 인지 |
 | Debian 1034732 / 반례·후속층 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1034732) X1034732A | BTS→원 제출자; 별도 closer ack 확인된 것만 | 2023-06-20T18:09:12Z; 2023-09-13T07:51:07Z; 2024-07-27T18:39:03Z | 미확인; 다른 수신인 반응은 제외 | 동일 원 제출자 인지 |
 | Debian 1095935 / 반례·후속층 | [원 스레드](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1095935) X1095935A | BTS→원 제출자; 별도 closer ack 확인된 것만 | 2025-10-15T07:55:02Z; 2025-10-31T09:19:02Z; 2025-11-05T21:33:02Z; 2026-01-14T15:39:02Z | 미확인; 다른 수신인 반응은 제외 | 동일 원 제출자 인지 |
