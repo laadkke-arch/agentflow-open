@@ -195,7 +195,7 @@ def main():
         decisions = json.loads((ROOT / "selection.json").read_text())
         rows = [frame_entry(project, item, decisions) for project, items in frames.items() for item in items]
         with (ROOT / "frame.csv").open("w", encoding="utf-8", newline="") as output:
-            writer = csv.DictWriter(output, rows[0])
+            writer = csv.DictWriter(output, rows[0], lineterminator="\n")
             writer.writeheader()
             writer.writerows(rows)
 
