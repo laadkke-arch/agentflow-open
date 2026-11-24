@@ -1,0 +1,475 @@
+{
+  "schema": 1,
+  "policy_view_sha256": "e837f240865f77e88fb942ae8c1b02906975e265df648ef4a5dfb5aa3636dbcc",
+  "annotator": "AF-RES-118 same worker",
+  "interpretation": "operation_atoms는 조작과 대상을 함께 표현한다. 카드 원래 영역의 다름은 명시 충돌이 아니다. counter_atoms는 이 요구 문맥에서 명시된 입력과 결과의 양립 여부를 판단한다.",
+  "definitions": {
+    "E-B1": {
+      "operation_atoms": [
+        "write_only_glare_exr"
+      ],
+      "preservation_checks": {
+        "other_render_results_excluded": "Glare만 독립 파일에 들어가는지 확인"
+      },
+      "counter_atoms": [
+        "exr_is_input",
+        "file_is_linked_input"
+      ]
+    },
+    "E-B2": {
+      "operation_atoms": [
+        "write_passes_exr"
+      ],
+      "preservation_checks": {
+        "external_apps_preserve_passes": "외부 앱에서 UV·Mist·Cryptomatte 내용과 구별 확인"
+      },
+      "counter_atoms": [
+        "pass_is_input",
+        "file_is_linked_input",
+        "exr_is_input"
+      ]
+    },
+    "E-B3": {
+      "operation_atoms": [
+        "viewer_previews_box_mask"
+      ],
+      "preservation_checks": {
+        "unconnected_node_keeps_preview_stable": "미연결 Double Edge Mask와 함께 Viewer에서 안정 확인"
+      },
+      "counter_atoms": []
+    },
+    "E-K1": {
+      "operation_atoms": [
+        "merge_selected_one_action"
+      ],
+      "preservation_checks": {
+        "retain_originals": "기존 레이어 유지",
+        "exclude_unselected": "비선택 레이어 미혼입 확인"
+      },
+      "counter_atoms": []
+    },
+    "E-K2": {
+      "operation_atoms": [
+        "resize_linked_file_with_document_export"
+      ],
+      "preservation_checks": {
+        "uncropped": "전체 내용이 축소되어 잘리지 않는지 확인"
+      },
+      "counter_atoms": []
+    },
+    "E-K3": {
+      "operation_atoms": [
+        "scale_file_layer_and_transform_mask"
+      ],
+      "preservation_checks": {
+        "maintain_canvas_position": "변형 마스크 위치와 문서·출력 축소를 확인"
+      },
+      "counter_atoms": []
+    },
+    "C-P1": {
+      "operation_atoms": [
+        "clone_updates",
+        "glow_updates"
+      ],
+      "preservation_checks": {
+        "original_paint_editable": "원 레이어에 계속 그릴 수 있는지 확인"
+      },
+      "counter_atoms": []
+    },
+    "C-P2": {
+      "operation_atoms": [
+        "rectangular_add"
+      ],
+      "preservation_checks": {
+        "outside_existing_mask": "Add의 사각형 바깥 기존 값 보존 확인"
+      },
+      "counter_atoms": [
+        "ellipse_output",
+        "gradient_output"
+      ]
+    },
+    "C-N1": {
+      "operation_atoms": [
+        "bokeh_exports_editable_mask"
+      ],
+      "preservation_checks": {
+        "source_image_intact": "원 이미지 유지"
+      },
+      "counter_atoms": [
+        "bokeh_mask_is_input"
+      ]
+    },
+    "C-N2": {
+      "operation_atoms": [
+        "filter_layer_ephemeral_overlay"
+      ],
+      "preservation_checks": {
+        "original_paint_intact": "원 픽셀 유지",
+        "stack_unchanged": "레이어 구성 유지"
+      },
+      "counter_atoms": [
+        "filter_layer_changes_scope"
+      ]
+    },
+    "H-B1": {
+      "operation_atoms": [
+        "geometry_tree_as_compositor_root"
+      ],
+      "preservation_checks": {
+        "sockets_preserved": "현재 소켓 보존"
+      },
+      "counter_atoms": []
+    },
+    "H-B2": {
+      "operation_atoms": [
+        "extract_layer_hash"
+      ],
+      "preservation_checks": {
+        "incomplete_keys_unassigned": "불완전 키에 ID를 부여하지 않는지 확인"
+      },
+      "counter_atoms": [
+        "crypto_named_socket_outputs"
+      ]
+    },
+    "H-B3": {
+      "operation_atoms": [
+        "read_all_named_exr_passes"
+      ],
+      "preservation_checks": {
+        "passthrough_pass_names": "Combined·Albedo 등 모든 이름 보존"
+      },
+      "counter_atoms": []
+    },
+    "H-K1": {
+      "operation_atoms": [
+        "filter_whole_canvas"
+      ],
+      "preservation_checks": {
+        "inverted_empty_bounded": "빈 선택 반전 후 범위가 기존 캔버스와 일치하는지 확인"
+      },
+      "counter_atoms": []
+    },
+    "H-K2": {
+      "operation_atoms": [
+        "clone_updates",
+        "apply_clone_mask"
+      ],
+      "preservation_checks": {
+        "nested_clones_with_blur_render": "복제본을 포함한 그룹에서 흐림 마스크를 붙인 뒤 합성 완료 확인"
+      },
+      "counter_atoms": []
+    },
+    "H-K3": {
+      "operation_atoms": [
+        "filter_mask_selects_area",
+        "invert_filter_declared"
+      ],
+      "preservation_checks": {
+        "unselected_area_excluded": "비선택 또는 빈 선택에 대한 픽셀 동일성 확인"
+      },
+      "counter_atoms": [
+        "filter_layer_changes_scope"
+      ]
+    }
+  },
+  "clauses": [
+    {
+      "feature_id": "B-M01",
+      "atom": "exr_is_input",
+      "field": "memo_en",
+      "span": "multilayer OpenEXR input",
+      "role": [
+        "exr",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L581–594",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_cryptomatte.cc#L581-L594"
+      }
+    },
+    {
+      "feature_id": "B-M01",
+      "atom": "pass_is_input",
+      "field": "memo_en",
+      "span": "from Cryptomatte render passes",
+      "role": [
+        "render_pass",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L581–594",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_cryptomatte.cc#L581-L594"
+      }
+    },
+    {
+      "feature_id": "B-M01",
+      "atom": "crypto_named_socket_outputs",
+      "field": "note",
+      "span": "The matte, image and pick sockets are separate.",
+      "role": null,
+      "evidence": {
+        "lines": "L581–594",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_cryptomatte.cc#L581-L594"
+      }
+    },
+    {
+      "feature_id": "B-M02",
+      "atom": "pass_is_input",
+      "field": "memo_en",
+      "span": "explicitly connected Crypto input passes",
+      "role": [
+        "render_pass",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L946–972",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_cryptomatte.cc#L946-L972"
+      }
+    },
+    {
+      "feature_id": "B-M02",
+      "atom": "crypto_named_socket_outputs",
+      "field": "memo_en",
+      "span": "producing a matte and pick preview.",
+      "role": null,
+      "evidence": {
+        "lines": "L946–972",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_cryptomatte.cc#L946-L972"
+      }
+    },
+    {
+      "feature_id": "B-M03",
+      "atom": "rectangular_add",
+      "field": "memo_en",
+      "span": "Generate or combine a rectangular mask",
+      "role": [
+        "mask",
+        "output"
+      ],
+      "evidence": {
+        "lines": "L32–63",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_box_mask.cc#L32-L63"
+      }
+    },
+    {
+      "feature_id": "B-M03",
+      "atom": "outside_existing_mask",
+      "field": "note",
+      "span": "For Add outside the rectangle, the base mask is copied.",
+      "role": null,
+      "evidence": {
+        "lines": "L76–103",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_box_mask.cc#L76-L103"
+      }
+    },
+    {
+      "feature_id": "B-M04",
+      "atom": "ellipse_output",
+      "field": "memo_en",
+      "span": "Generate or combine an elliptical mask",
+      "role": [
+        "mask",
+        "output"
+      ],
+      "evidence": {
+        "lines": "L30–61",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_ellipse_mask.cc#L30-L61"
+      }
+    },
+    {
+      "feature_id": "B-M05",
+      "atom": "gradient_output",
+      "field": "memo_en",
+      "span": "a gradient mask between the boundaries of an inner and an outer mask",
+      "role": [
+        "gradient",
+        "output"
+      ],
+      "evidence": {
+        "lines": "L13–37",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_double_edge_mask.cc#L13-L37"
+      }
+    },
+    {
+      "feature_id": "B-M06",
+      "atom": "pass_is_input",
+      "field": "memo_en",
+      "span": "index from a render pass",
+      "role": [
+        "render_pass",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L19–31",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_id_mask.cc#L19-L31"
+      }
+    },
+    {
+      "feature_id": "B-F03",
+      "atom": "bokeh_mask_is_input",
+      "field": "note",
+      "span": "Mask is consumed as a control. The node exposes Image as its output.",
+      "role": [
+        "mask",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L18–44",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_bokeh_blur.cc#L18-L44"
+      }
+    },
+    {
+      "feature_id": "B-F06",
+      "atom": "pass_is_input",
+      "field": "note",
+      "span": "Speed and depth are input passes",
+      "role": [
+        "render_pass",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L27–59",
+        "url": "https://github.com/blender/blender/blob/02f0899d78e374b63e7181d9061e1f7ab03419cc/source/blender/nodes/composite/nodes/node_composite_vector_blur.cc#L27-L59"
+      }
+    },
+    {
+      "feature_id": "K-L01",
+      "atom": "clone_updates",
+      "field": "memo_en",
+      "span": "Keep an updated copy of a source layer",
+      "role": [
+        "layer",
+        "output"
+      ],
+      "evidence": {
+        "lines": "L6–32",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/clone_layers.html#example-uses-of-clone-layers"
+      }
+    },
+    {
+      "feature_id": "K-L01",
+      "atom": "apply_clone_mask",
+      "field": "memo_en",
+      "span": "apply masks to the clone",
+      "role": [
+        "filter_mask",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L6–32",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/clone_layers.html#example-uses-of-clone-layers"
+      }
+    },
+    {
+      "feature_id": "K-L01",
+      "atom": "glow_updates",
+      "field": "note",
+      "span": "the glow on the clone updates",
+      "role": null,
+      "evidence": {
+        "lines": "L6–32",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/clone_layers.html#example-uses-of-clone-layers"
+      }
+    },
+    {
+      "feature_id": "K-L01",
+      "atom": "original_paint_editable",
+      "field": "memo_en",
+      "span": "leave the paint source editable",
+      "role": null,
+      "evidence": {
+        "lines": "L6–32",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/clone_layers.html#example-uses-of-clone-layers"
+      }
+    },
+    {
+      "feature_id": "K-L02",
+      "atom": "file_is_linked_input",
+      "field": "memo_en",
+      "span": "Reference an external still image as a layer",
+      "role": [
+        "file",
+        "input"
+      ],
+      "evidence": {
+        "lines": "L5–28",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/file_layers.html#file-layers"
+      }
+    },
+    {
+      "feature_id": "K-L04",
+      "atom": "filter_layer_changes_scope",
+      "field": "note",
+      "span": "The layer itself applies across the canvas.",
+      "role": [
+        "filter_layer",
+        "edit"
+      ],
+      "evidence": {
+        "lines": "L5–14",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_layers.html#filter-layer"
+      }
+    },
+    {
+      "feature_id": "K-L04",
+      "atom": "filter_whole_canvas",
+      "field": "memo_en",
+      "span": "Show underlying layers through a filter across the canvas",
+      "role": [
+        "filter_layer",
+        "edit"
+      ],
+      "evidence": {
+        "lines": "L5–14",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_layers.html#filter-layer"
+      }
+    },
+    {
+      "feature_id": "K-L04",
+      "atom": "original_paint_intact",
+      "field": "memo_en",
+      "span": "preserving the source paint pixels",
+      "role": null,
+      "evidence": {
+        "lines": "L5–14",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_layers.html#filter-layer"
+      }
+    },
+    {
+      "feature_id": "K-L05",
+      "atom": "filter_mask_selects_area",
+      "field": "memo_en",
+      "span": "Apply a filter to the selected area of one layer",
+      "role": [
+        "filter_mask",
+        "edit"
+      ],
+      "evidence": {
+        "lines": "L5–18",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_masks.html#filter-masks"
+      }
+    },
+    {
+      "feature_id": "K-L05",
+      "atom": "original_paint_intact",
+      "field": "memo_en",
+      "span": "intact source pixels",
+      "role": null,
+      "evidence": {
+        "lines": "L5–18",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_masks.html#filter-masks"
+      }
+    },
+    {
+      "feature_id": "K-L05",
+      "atom": "unselected_area_excluded",
+      "field": "note",
+      "span": "White includes and black excludes.",
+      "role": null,
+      "evidence": {
+        "lines": "L5–18",
+        "url": "https://docs.krita.org/en/reference_manual/layers_and_masks/filter_masks.html#filter-masks"
+      }
+    }
+  ]
+}
