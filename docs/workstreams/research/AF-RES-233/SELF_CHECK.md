@@ -1,0 +1,13 @@
+# SELF_CHECK — AF-RES-233
+자체 점검만(독립 검토 0회). result commit 전에 ④의 GitHub 파일을 직접 재읽음. 이 문서는 결론 예상과 관측을 구별한다. 산입 분모: 원장 52행, 성공 27행, unique counted 25, lineage labels 8; 실패/스니펫 25, 중복 성공 2. 실제 기관 원자료의 엄격 호스트 수 24(25개 work 중 E02 교육 mirror-only; E01 공식 E04 재회복). 출판일 미표기 웹 레코드는 update/version 또는 unknown. 첫 열람 개별 시각 미측정, 초기 시간창 2026-11-24T23:01Z–23:04:33Z, 추가 23:04:33Z–23:06:03Z(UTC). 원장에는 당시 기록한 시간창 시작과 후속 기록; 초 단위 재구성하지 않음. 검색 스니펫·접근 실패·직렬화 중복 미산입. 성공한 PDF 텍스트와 screenshot 실패를 분리(E04/F25); R05/R06 screenshot 판독. 
+| Q | 원근거/반증 | 예정·직접 관측·결측 | 판정·미달 사유 |
+|---|---|---|---|
+| Q1 | E04 역사 010/005/100/400/670; R02; A05 NDL; F01–F05 | A LC current 1/0/1; 원필드군 6/0/6; 역사 전사 1/1/0 | PARTIAL. 원자료 접근 실패; 500/$z 미표시를 현재 0으로 간주 금지; 두 parsed 로마자 철자 차이 |
+| Q2 | E04 L3613–3642, E02 정답; F15/F21–F23 상업/커뮤니티 반증 | B 실제 전거 2/0/2; actual bib reverse 3/0/3; 교육 자리 2/2/0 | PARTIAL. C를 B로 채우지 않음 |
+| Q3 | A01/A02 own BnF; A03/A04 own NDL; W02–W04; W01 두 링크 반증 | C LC/BnF 4/2/2(LC 0/2, BnF 2/2); NDL extra 2/2/0; 양쪽 대표 role 2/2/0; VIAF 원레코드 0 직접 | C separate in BnF/NDL; LC crosswalk/표제면 미확인. PARTIAL |
+| Q4 | R01/R02/R03/R04/R05/R06; E03/E04; A06 collective alias, A02 obsolete ISNI 반증 | 원규정 최소 5/6/0(1 초과); 현행 400/500/cancel 사건 각 1/0/1; 역사 400 예 1/1/0 | 규칙 확인, 실제 현행 MARC 미확인. 010 spec 예를 사건으로 세지 않음 |
+| Q5 | W01–W05, E04 main/added 교육; F16/F17; W05 subject 반증 | 실제 bib display 5/5/0; underlying works 4; raw code 5/0/5; title-page image 5/0/5 | PARTIAL. 역할어 확인, 코드/표제면 미확인 |
+| Q6 | G01/G02/G03/G04/G05/G06; G04 Rainier 4; F18–F20/F24 | GNIS guideline/service unique 5; 두 실제 ID 2/0/2; variant 행 1/0/1 | PARTIAL. JS-only/query 실패; ID/좌표는 색인 후보로만 |
+| Q7 | tables/decisions.csv, E04,A01,A02,A06,W01/W05,R01–R06 | 3안×3목적 9/9/0 설계 행; 실제 알고리즘 실행 0/9 | 비교 설계만, A/B missing 그대로. 독립 검토 없음 |
+정량 재계산: 기관 레코드 6/6(요구된 핵심 LC가 아니라 BnF/NDL), 원서지 5/5(원영상 0), 규정 6/5, 교육 3/3(1 mirror only), GNIS 5/3(실행 행 0). 22 이상 자료 수는 충족하나 핵심 조건 미충족. A/B/C 독립 신원 대조 3 중 1 부분 확인(C); 0 완결. 지정 5자리 완결 0, C 2부분, A/B 3 결측. B 0/2이므로 전체 PARTIAL. 4 underlying works는 역할 대조 분모, 지정 실체 사건과 합치지 않음. 
+필수 파일: SCOPE.md, sources.jsonl, authority.csv(16 rows), works.csv(14 rows), decisions.csv(9 rows), unresolved.md, COUNTEREXAMPLES.md, TABLES.md, RESULT.md(첫 두 표 및 Q1–7, 마지막 약점 3행), SELF_CHECK.md. HANDOFF 별도 마지막 commit 예정; 정확 result SHA reread 수행 결과는 HANDOFF에 기재. 경로 검사/CSV JSONL 구조 검사는 도구로 읽고 수량 대조; 실제 외부 실행, 코드 테스트, 독립 검토 미실시. SCOPE pre-seal 9be61a5202fc74c7639d5d06f8fb23c596fd2e7d; ② 64c4dc7dee449078a5612e63e1c763a5b828a540, ②b 17059a89b8f626ce7b0e28ce7d3bafc7023f77b2; ③ 08fa06818a51b56ba766eaa63715919caf6b1dbc; ④ 2cc1e8591ea52b8fc7074606ea1e1828d2ecea5f. User allowed web research only; no product/dependency changes. 
