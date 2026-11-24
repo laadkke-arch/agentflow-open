@@ -1,0 +1,12 @@
+# SELF_CHECK — AF-RES-125
+| 질문 | 주장 | 고정 근거 주소와 위치 | 반례를 찾은 곳과 관측 | 판정을 뒤집을 조건 | 미확인·최소 다음 확인 |
+|---|---|---|---|---|---|
+| Q1 | 8 검색, 96행, 88 unique; 48 조사 | frame.csv 고정 e2e12a010be5d77196b623157ac822af5cfed53c; evidence metadata files | search_issues 빈 응답→search_prs; MPL scipy 5개, total_count 미노출; 중복 SK19176 | 동일 정렬 API의 다른 경계/누락 | raw API pagination·incomplete_results·동률 재검산 |
+| Q2 | 0 본, 6 공석, 대조 각 1(잠정 포함) | changes.csv; evidence/*-parent-*.json; SK-19237/MPL-19359; SK-19372 | SK-18930 시험 alias, #19607 내부 이동, MPL-19500 wrapper 제거, #19211 np.asarray 추가; SK-19372 zero parent patch | 완전 diff에서 적격 hunk 확인 또는 대조 정의에 docstring 포함 | 4 발췌 전문, PR와 merge patch 불일치 재판독 |
+| Q3 | SP019/SP100 w 가용성, SKMIN 일부; MPLSET>=1.16 | sources.jsonl SKMIN SP019 SP100 MPLSET MPLUNION, evidence/version-read.json | SciPy CPython 0.19.1 vs PyPy1.1.0; NumPy runtime check1.15 vs setup1.16 | 원래 도입 부모 최소판과 최초 supplier release 확인 | git log -S, release tags/first distribution, author actual read version |
+| Q4 | 시험 인자 발견은 본 사례 발견 귀속 아님 | decisions S-WEIGHT/M-WARN, #18930 comment 735953792, #19500 comment 779530922 | reviewer warning/최소판, earlier omitted cleanup; #19359 example consolidation | author explicit discovery + adoption same hunk + historical public release | merge actor/전체 linked issue review 미확인; D3 본 분모0 |
+| Q5 | p=2 같은 w 결과 12 vs 6 추론, NaN warning·empty contract | SP019 L338–386 SP100 L434–503 SPREL18 NPREL-W MPLUNION L676–690; #19948 diff | v1.8 note same result wording vs formula; p=1 equal; old wrapper rational; 0 linewidth edge | old/new version executed tests confirming weight mapping & warning | 실행 receipt·revert·user release 미확인. NPTEST generic NaN test not exact |
+| Q6 | line counts ≠ hours | changes.csv files/add/del, decisions labor; #19237/#19359 stats | #19237 reviewer PR closure reported not hours; no saved time | human contemporaneous time/rework report | actual time, followup counts, runtime receipts 미확인 |
+| Q7 | announcement vs available vs production vs actual object | NGS81 pp1–2, NCATLOG v1.0/2.0, NCAT coverage; LOC16/21, GPO22 p21, CCS21 | VDatum 예정 vs actual; 2016 proposed Unauthorized vs 2021 Illegal; local CCS independent | same survey point / MARC ID and dated revisions | 기관별 point change, record 005 before/after, exact version unresolved |
+
+원장 count-precheck는 독립 저작을 work_id로 센다. PR body/comment/diff 한 건, backports 병합, supplier 파일 판본 통합. 58 unique 중 발췌 4와 정확한 경계 연관 시험 미확인을 표시한다. 문서 본문/patch 판독과 코드 실행은 별개. 명령 실행 실패는 HANDOFF에 적는다. 고정 결과 SHA에서 원장·행수·ID·경로 재조회 후 별도 인계.
