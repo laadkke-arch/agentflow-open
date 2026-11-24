@@ -73,12 +73,18 @@ RSpec.describe "AF-RES-241 Register", type: :feature, js: true do
       set_field("study_mode", COURSE_STUDY_MODES[:full_time], changed: false)
     end
     dates = {
-      "itt_start_date(3i)" => "1", "itt_start_date(2i)" => "9", "itt_start_date(1i)" => "2026",
-      "itt_end_date(3i)" => "31", "itt_end_date(2i)" => "7", "itt_end_date(1i)" => "2027",
+      "itt_start_date_3i" => "1", "itt_start_date_2i" => "9", "itt_start_date_1i" => "2026",
+      "itt_end_date_3i" => "31", "itt_end_date_2i" => "7", "itt_end_date_1i" => "2027",
     }
     dates.each do |suffix, value|
-      input = data["inputs"].find { |item| item["name"]&.end_with?("[#{suffix}]") && item["visible"] }
-      set_field(suffix, value, changed: false) if input && input["value"].blank?
+      input = data["inputs"].find { |item| item["id"] == "course_details_form_#{suffix}" && item["visible"] }
+      next unless input && input["value"].blank?
+
+      # register_form_with can generate transient DOM names for these fields.
+      page.find("[id=#{input.fetch('id').to_json}]").set(value)
+      @trace[:inputs_author_changed] << {
+        name: input["name"], id: input["id"], value: value, url: page.current_url, target_change: false,
+      }
     end
   end
 
@@ -94,7 +100,10 @@ RSpec.describe "AF-RES-241 Register", type: :feature, js: true do
     submit("course_details")
     register_models("after_phase")
     complete_required_course_fields(primary: anchor == "R1-2")
-    submit("return")
+    result = submit("return")
+    register_models("after")
+    expect(result["errors"]).to be_empty
+    expect(URI(result["url"]).path).to eq(@trace[:originPath])
   end
 
   anchors = {
@@ -114,10 +123,10 @@ RSpec.describe "AF-RES-241 Register", type: :feature, js: true do
         expect(data["inputs"].any? { |input| input["name"]&.end_with?("[#{first_field}]") && input["visible"] }).to be(true)
         if id.end_with?("-B")
           return_without_saving
+          register_models("after")
         else
           register_save(anchor)
         end
-        register_models("after")
       end
     end
   end
