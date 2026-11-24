@@ -129,7 +129,7 @@ def same_result(a, b):
     return all(a[key] == b[key] for key in ("outcome", "reason", "value"))
 
 
-def grade(run, event, out, expected, previous, last_seen, prior_outputs):
+def grade(run, event, out, expected, previous, last_seen, prior_outputs, projects):
     act = out["answer"]
     if act is None:
         return None
@@ -173,6 +173,8 @@ def grade(run, event, out, expected, previous, last_seen, prior_outputs):
     wrong_key = bool(action == "current" and real_basis.get("key") and real_basis["key"] != expected["key"])
     wrong_scope = bool(action == "current" and event.get("scope") and real_basis.get("scope") and
                        event["scope"] != real_basis["scope"])
+    origin = (real_basis.get("delivery") or "").removeprefix("request:")
+    foreign_project = bool(projects.get(origin) and projects[origin] != expected["project"])
     externally_false_hold = (eid in {"S-T5", "S-T6", "S-FIRST5", "S-FIRST6"} and
                              actual == "hold" and act["reason"] == "temporary")
     unnecessary = bool(action == "current" and event["retry"] and out["acquire_calls"] and
@@ -196,6 +198,8 @@ def grade(run, event, out, expected, previous, last_seen, prior_outputs):
         "mode": act["mode"], "grade": status, "reason_matches": int(reason_correct),
         "proof": matched, "delivery_fidelity": fidelity,
         "stale_success": int(stale), "cross_key_or_scope": int(wrong_key or wrong_scope),
+        "cross_project_contamination": int((wrong_key or wrong_scope) and foreign_project),
+        "evaluable_source_event": origin,
         "recovery_held": int(externally_false_hold),
         "unnecessary_retry": int(unnecessary),
         "acquire_calls": out["acquire_calls"], "local_file_reads": len(out["reads"]),
@@ -210,6 +214,7 @@ def assess(run, events, oracle, first):
     answers = []
     state = earlier_acquisitions.copy()
     matrix = []
+    projects = {e["id"]: e["project"] for e in events if "project" in e}
     for event, out in zip(events, run["trace"], strict=True):
         if event["id"] != out["id"]:
             raise ValueError(f'unaligned event: {event["id"]} / {out["id"]}')
@@ -217,7 +222,7 @@ def assess(run, events, oracle, first):
         if out["fetched"]:
             state[event["url"]] = out["fetched"]
         feedback = grade(run, event, out, exp[event["id"]], exp.get(event.get("prior")),
-                         state, earlier_outputs or previous) if event["id"] in exp else None
+                         state, earlier_outputs or previous, projects) if event["id"] in exp else None
         if feedback:
             answers.append(feedback)
             previous[event["id"]] = out["answer"]
@@ -276,6 +281,7 @@ def summarize(run, answers, events, replica):
         "same_delivery_writes": sum(t["sqlite_changes"] for t in traces if t["id"] == "S-DUP2"),
         "stale_success": sum(a["stale_success"] for a in answers),
         "cross_key_or_scope": sum(a["cross_key_or_scope"] for a in answers),
+        "cross_project_contamination": sum(a["cross_project_contamination"] for a in answers),
         "recovery_held": sum(a["recovery_held"] for a in answers),
         "terminal_recovery_held": sum(a["recovery_held"] for a in answers
                                       if a["id"] in {"S-T6", "S-FIRST6"}),
