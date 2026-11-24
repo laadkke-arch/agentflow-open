@@ -1,0 +1,10 @@
+2026-11-24 UTC, isolated Rails test environment, images and checksums in ../../environment.json.
+Git: git init, git fetch --depth 1 origin <exact source SHA>, git checkout --detach FETCH_HEAD, git log -1 --format='%H %aI %cI %s' for both services.
+Image verification: docker manifest inspect <service:exact SHA>, docker pull <service:exact SHA>, docker exec <service> sha256sum <listed original files>. Results in *-source-image-match.json (61/61).
+DB/cache: docker exec af241-pg pg_isready -U af241 (accepting connections); docker exec af241-pg postgres --version (17.11); docker exec af241-redis redis-cli ping (PONG); docker exec af241-redis redis-server --version (7.0.15).
+DB: docker exec af241-{app,reg} bundle exec rails db:prepare. Apply's first run created bat_apply_test; stored apply-db.* is the repeat after boot. Register created register_trainee_teacher_data_test (register-db.*).
+Fingerprint: docker exec <container> sh -c 'ruby -v && bundle -v && sha256sum Gemfile.lock yarn.lock package.json && node -v && bundle exec rails runner "puts({ rails: Rails.version, environment: Rails.env, locale: I18n.default_locale, encoding: Encoding.default_external.to_s }.inspect)"'
+Routes Apply: docker exec af241-app sh -c 'bundle exec rails routes | grep -E "accept_offer_references_edit_(type|name)|edit_course_choices_(which_course_are_you_applying_to|course_study_mode)|edit_(phone_number|address_type|address)|contact_information_review|course_choices_course_review"'
+Routes Register: docker exec af241-reg sh -c 'bundle exec rails routes | grep -E "check_details|training_route|course_education_phase|feedback|review_draft"'
+Pilot Apply: docker exec -e AF241_RAILS_PORT=14841 -e AF241_CAPTURE_DIR=/af241-scratch/out -e AF241_ONLY='^A3-1-B$' af241-app bundle exec rspec /af241-scratch/apply_spec.rb --format documentation
+Pilot Register: docker exec -e AF241_RAILS_PORT=14842 -e AF241_CAPTURE_DIR=/af241-scratch/out -e AF241_ONLY='^R1-1-B$' af241-reg bundle exec rspec /af241-scratch/register_spec.rb --format documentation
