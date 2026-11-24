@@ -1,0 +1,7 @@
+# AF-RES-182 SCOPE — 출력 열람 전 고정
+- 계획 128f673685ec804c526a38e3f89d4d8a43fcd299, 시작 6fa67328360b02bc7e7270d4ad3300bfe0f286bd (3 commits ahead, compare: dot-control.json +208 only). 중앙 AF-RES-182 RUNNING attempt 1, depends_on 173/175, result_commit null; 대용량 진행표는 fetch_file 빈 반환 후 blob be4880d610e635bf25ac6ec10342015894b5a1d6 직접 읽음. 변경 금지.
+- AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, product/RESEARCH_BRIEF, INDEX 확인. INDEX에는 신규 묶음 아직 없음, 악보 중복 발견 안 됨(색인 범위만). 173 HANDOFF 317d79c74935afae00d1fd4c6b4ea33a840f7fb0: strict same document 0/4. 175 HANDOFF b36b50399f7851fb785744576f4906e7fdadd963: same object/version/source/receiver 0/8. 중앙 DONE과 worker PARTIAL 분리. 다른 선행 자료 불필요.
+- 고정 모집: 02a,02c,11a,33b,33c,41i 각각 2.24/2.26, 12자리. 두 자료집은 한 구현 계보. 판 번호 경로만으로 실제 패치판을 추정하지 않음. 목차→입력/태그→사양→개별 그림→비교→다른 분야→판정. 입력 byte SHA 또는 태그 blob, 객체 키; 미입수는 unknown.
+- 판독 위치 선고정: 첫 part의 첫 관련 measure/voice (없으면 첫 시스템). 02a 첫 쉼표가 있는 마디 내 쉼표 glyph 수와 type; 02c 최초 multiple-rest 지시의 시작 마디~끝 마디와 숫자; 11a 최초 time의 beats/beat-type; 33b 첫 tied start/stop 쌍의 음표·pitch·마디; 33c 첫 slur start/stop 쌍의 음표·number; 41i 최초 시스템의 part-name-display 대 part-name. XML 확인 뒤 정확 키 기입, 그림 결과를 보고 위치 변경 금지.
+- 판정: 실제 그림 직접 열람한 경우만 실측; 캡션은 기대/당사자 문서로만. 판면 줄바꿈과 동일 음표 연결 별개. tie(음향)와 tied(표기) 별개; 출력은 편집/재생/roundtrip 증명 아님. 같은 그림 중복 산입 금지; 동일 여부 불명이면 보수적으로 보류. 동일 입력/객체/판/출력 자리 연결된 3쌍 이상 및 12자리, 비시각 속성 원문, 22 unique(입력6/그림8/문서4/타분야4)가 최소. 실패/미열람 기록, 분모 유지. 자료·사건·독립 관측 별도.
+- 실행/렌더/설치 없음, 제품 DB 및 수집기 최종안 미결정. 공개 1차 자료만; 한도/접근 차단 우회 금지. GitHub connector로 문서 커밋, 실제 checkout 검사 불가 시 인계.
