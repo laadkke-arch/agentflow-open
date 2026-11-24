@@ -1,0 +1,9 @@
+# 후속 전향 등록 — AF-RES-151
+기준 인계 1b1ebb24347000f60acbe4ad2e9aa8c94ba416b9. 기존 SCOPE/frame/requests/sources/pairs/decisions/audit 불변. 2026-11-24 16:11 UTC 쉘 X1 exact URL urllib.request DNS 실패 [Errno -3]; git ls-remote DNS exit128. 실제 환경 tesseract 5.5.0, pdftotext, pdftoppm, ffmpeg, eng/ron 언어팩 있음; ocrmypdf/whisper-cli/vosk/pocketsphinx 없음. 기존 자연 실패 0/6 유지. 후속 신규 층을 별도로 등록.
+## 자연 층
+N0: 기존 API URL을 웹 직접 open 재시도. 성공 시 creation asc 최초30, 해당 기간·태그 확인 및 원순서/저자/제외/결측 기록. 응답 안 되면 원 층 미복구.
+N1: 고정 대체 프레임, 공개 GitHub Joplin repository issues, query `repo:laurent22/joplin is:issue created:2023-01-01..2023-12-31 offline` creation asc, 최초 30개(정렬 tie는 반환순). 공급자 목록과 별개인 사용자 원문, 자기 과업+명시 offline 또는 다른 제약 하나가 있는 최초6 독립 저자; maintainer-only announcement, duplicate, unclear, bot, fix-only 제외. 검색 색인 반환순서의 자연 프레임이지 전체 이슈 원천순서 아님. connector 검색 불가시 web에서 고정 질의/기간의 순서 제공 공개 목록만 이용; 정렬이 보장되지 않으면 결측으로 남김. 답변/추천은 요구 추출 제외; 검색 결과 자체의 해결책 선노출 기록. 원 순서 먼저 저장, 요구 고정 이후 후보/원문 조회; 기존 R1–R6은 복제하지 않음. 같은 후보를 재사용하면 별도 기재. 목표는 6 요구를 원자료로 회복하고 가능한 후보쌍을 추가 비교, 무리한 후보 채우기 금지.
+## 자기 재판독
+고정 K01–K12 동일 atom·동일 근거 최대3. 기능/제약/실패 내용만 남긴 익명 packet, 제품명·URL·별·rating·자료량 수치 제외, A/B 측 무작위가 아닌 사전 고정 홀수 뒤집기. 별도 커밋한 packet을 읽어 S/X/U와 관계를 새로 수동 판독, 그 판정을 먼저 저장. 그 뒤 key·인기 지표를 공개하고 같은 내용+지표에서 재판독. 이전 지식/이전 판정 이미 노출된 동일 모델의 근거가림 자기 재판독이며 독립 신뢰도/완전 맹검 아님. 실제 인기도 관측 비교 가능한 지표 없으면 U, 0 아님. 추가 문서로 바뀐 판단은 인기 공개 효과와 분리.
+## 실행 및 반증
+R2/R3에 대표 Linux에서 tesseract CLI로 직접 만든 eng+ron 두 줄 이미지→TXT/PDF, PDF 자체 입력의 exit·stderr, pdftotext -bbox 및 원 이미지 좌표 비교. 합성 입력이고 역사 원 PDF 아님. 단일 장·폰트·판에 한정, wrapper 미설치로 OCRmyPDF 실행 불가. 입력 생성 code/해시, stdout/stderr/exit/version, 언어·정렬 측정 조건/허용오차 기록. 본 실험은 문서적 계약과 실제 일부 동작의 대조. Q4에는 LiveCaptions/PocketSphinx/Vosk actual issue/release/maintenance 원문, 상대적 낮은 별에 기능 성공/미완성/제약 반례, 그리고 높은 인기라도 해당 작업 실패를 직접 확인. 인기와 절대적인 가치의 인과관계 아님. Q1/Q7 운영 후속의 원문 diff/상태/날짜 확인. 코드/원장 검산과 체크아웃 계약 검사는 구별.
