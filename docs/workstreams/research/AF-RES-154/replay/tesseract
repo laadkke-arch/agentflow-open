@@ -1,0 +1,17 @@
+#!/bin/sh
+# Observation only. Forward arguments, stdout, stderr and exit status unchanged.
+set -u
+kind=other
+for arg do
+    case "$arg" in
+        --version|--list-langs) kind=probe; break ;;
+        osd) kind=orientation; break ;;
+        hocr|pdf|txt) kind=recognition; break ;;
+    esac
+done
+trace=/usr/src/paperless/data/af154-tesseract.tsv
+printf '%s\t%s\t%s\t%s\t%s\n' "$(date -u +%FT%T.%NZ)" "$$" start "$kind" "$*" >> "$trace" || exit 125
+/usr/bin/tesseract "$@"
+status=$?
+printf '%s\t%s\t%s\t%s\t%s\n' "$(date -u +%FT%T.%NZ)" "$$" exit "$kind" "$status" >> "$trace" || exit 125
+exit "$status"
