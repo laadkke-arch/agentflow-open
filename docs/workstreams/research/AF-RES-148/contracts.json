@@ -1,0 +1,208 @@
+{
+  "status": "candidate_only_not_validated",
+  "version": "draft-0.1",
+  "common": {
+    "preserve_original": "store exact API body or immutable artifact outside reader-visible packet; body_sha256 is of raw API string UTF-8; GitHub issue URL mutable; do not infer first revision from created_at",
+    "field_states": [
+      "known_author",
+      "observed_technical",
+      "inferred",
+      "unknown"
+    ],
+    "visibility": "Do not expose expected output or later answer in reader-facing source; keep audit layer separate. Source link itself may leak answer, use opaque case locator and trusted retrieval gateway."
+  },
+  "options": [
+    {
+      "name": "minimal-ref",
+      "fields": {
+        "request_text": "verbatim excerpt + original reference and hash",
+        "selection": {
+          "path": "file or source locator",
+          "range": "exact span or null",
+          "revision": "commit or current-body snapshot",
+          "quote": "exact selected original or null"
+        },
+        "operation": "verbatim or attributed summary",
+        "preserve": "explicit author constraints only; otherwise null",
+        "environment": "known version/format/parser",
+        "unknowns": []
+      },
+      "when": "one selected input and output contract sufficiently specified; low overhead",
+      "failure": "no exact span or mutable URI without snapshot; cannot reconstruct omitted neighbors"
+    },
+    {
+      "name": "bounded-related-context",
+      "extends": "minimal-ref",
+      "fields": {
+        "related": [
+          {
+            "relation": "producer|consumer|adjacent|reference",
+            "source_ref": "immutable reference or snapshot hash",
+            "span": "exact location",
+            "excerpt": "literal, no inference",
+            "chars": "Unicode codepoints <=800",
+            "trim": "range and omitted extent"
+          }
+        ],
+        "preserve_axes": [
+          {
+            "axis": "value|identity|order|representation|bytes",
+            "state": "known_author|unknown",
+            "evidence": "source ID"
+          }
+        ],
+        "assumptions": [
+          {
+            "text": "inference",
+            "evidence": "source ID",
+            "status": "unconfirmed"
+          }
+        ]
+      },
+      "when": "dependency likely changes link or feasibility; actual related artifact available",
+      "failure": "shared style mistaken for exception; sibling same visible surface but unrelated consumer; version mismatched; more context increases bias"
+    }
+  ],
+  "examples": [
+    {
+      "case": "E1",
+      "request_ref": "R01",
+      "selection": {
+        "path": "Maxwell.s_equations.txt",
+        "range": null,
+        "quote": null
+      },
+      "operation": "convert MediaWiki table to LaTeX",
+      "preserve_axes": [],
+      "related": [],
+      "unknowns": [
+        "attachment",
+        "exact expected output",
+        "math layout vs semantic value"
+      ]
+    },
+    {
+      "case": "E2",
+      "request_ref": "R02",
+      "selection": {
+        "path": "table.md",
+        "range": "second td",
+        "quote": "<td><pre>second column</pre></td>"
+      },
+      "operation": "convert to plain without loss",
+      "preserve_axes": [
+        {
+          "axis": "value",
+          "state": "known_author",
+          "evidence": "R02"
+        },
+        {
+          "axis": "order",
+          "state": "known_author",
+          "evidence": "R02"
+        }
+      ],
+      "related": [
+        {
+          "relation": "adjacent",
+          "source_ref": "R02 current-body snapshot",
+          "span": "first td",
+          "excerpt": "<td>first column</td>",
+          "chars": 21,
+          "trim": null
+        }
+      ],
+      "unknowns": [
+        "byte whitespace beyond sample",
+        "original version of issue"
+      ]
+    },
+    {
+      "case": "E3",
+      "request_ref": "R03",
+      "selection": {
+        "path": "code.md",
+        "range": "fence",
+        "quote": "```javascript hl_lines=\"1\"\nconsole.log('hello world');\n```"
+      },
+      "operation": "plain conversion recognizing code block",
+      "preserve_axes": [
+        {
+          "axis": "representation",
+          "state": "known_author",
+          "evidence": "R03"
+        }
+      ],
+      "related": [],
+      "unknowns": [
+        "target beyond plain",
+        "meaning of hl_lines"
+      ]
+    },
+    {
+      "case": "E4",
+      "request_ref": "R04",
+      "selection": {
+        "path": null,
+        "range": "Input block",
+        "quote": "export const addCartItem = (product: Product, quantity: number = 1) => async (dispatch: Dispatch, getState: () => RootState) => {"
+      },
+      "operation": "align nested arrow indentation",
+      "related": [
+        {
+          "relation": "consumer",
+          "source_ref": "R04 current body",
+          "span": "eslintrc.json rules @stylistic/js/indent",
+          "excerpt": "        \"@stylistic/js/indent\": [\"error\", 4, { \"SwitchCase\": 1 }],",
+          "chars": 66,
+          "trim": null
+        }
+      ],
+      "unknowns": [
+        "same input updateCartItem",
+        "ESLint/Stylistic version",
+        "effective config"
+      ]
+    },
+    {
+      "case": "E5",
+      "request_ref": "R05",
+      "selection": {
+        "path": null,
+        "range": "class A field",
+        "quote": "declare private readonly name: string;"
+      },
+      "operation": "retain declare before visibility modifier",
+      "preserve_axes": [
+        {
+          "axis": "order",
+          "state": "known_author",
+          "evidence": "R05"
+        }
+      ],
+      "related": [],
+      "unknowns": [
+        "TS version",
+        "compiler legality"
+      ]
+    },
+    {
+      "case": "E6",
+      "request_ref": "R06",
+      "selection": {
+        "path": null,
+        "range": null,
+        "quote": null
+      },
+      "operation": "improve GraphQL union formatting",
+      "related": [],
+      "unknowns": [
+        "original #14234 expectation",
+        "first commit parent",
+        "pre-change selected union"
+      ],
+      "note": "Do not use final patch as pre-request input."
+    }
+  ],
+  "restore": "Exact API snapshots separately held. Packet excerpts alone cannot restore whole request. Compare source_body_sha256 to snapshots and preserve visibility boundaries. No independent reread executed."
+}
