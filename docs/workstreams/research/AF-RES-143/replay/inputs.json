@@ -1,0 +1,66 @@
+{
+  "simple-statistics": {
+    "functions": ["quantile", "median"],
+    "families": [
+      {"id":"even","values":[9,1,7,3],"ps":[0,0.25,0.5,0.75,1],"layer":"scalar-contract","source":"T-SS-Q"},
+      {"id":"even-permuted","values":[7,3,9,1],"ps":[0.25,0.5,0.75],"layer":"scalar-contract","source":"T-SS-M"},
+      {"id":"odd","values":[9,1,7,3,5],"ps":[0,0.25,0.5,0.75,1],"layer":"scalar-contract","source":"T-SS-Q"},
+      {"id":"empty","values":[],"ps":[0.5],"layer":"empty","source":"T-SS-Q"},
+      {"id":"one","values":[-2],"ps":[0,0.25,0.5,1],"layer":"scalar-contract","source":"SS-QS"},
+      {"id":"tied-even","values":[4,1,4,1,4,9],"ps":[0.25,0.5,0.75],"layer":"scalar-contract","source":"T-SS-Q"},
+      {"id":"all-equal","values":[3,3,3,3,3],"ps":[0,0.5,1],"layer":"scalar-contract","source":"T-SS-Q"},
+      {"id":"signed-zero","values":["-0",0,-1,1],"ps":[0,0.25,0.5,1],"layer":"scalar-contract","source":"SS-QS"},
+      {"id":"fraction-negative","values":[-2,-0.5,4.25,1.125,-7],"ps":[0.25,0.5,0.75],"layer":"scalar-contract","source":"SS-Q"},
+      {"id":"nan-mixed","values":[3,"NaN",-2,1],"ps":[0,0.25,0.5,0.75,1],"layer":"defensive","source":"SS-QK"},
+      {"id":"nan-only","values":["NaN"],"ps":[0,0.5,1],"layer":"defensive","source":"SS-QK"},
+      {"id":"outside-p","values":[3,1,2],"ps":[-0.25,1.25,"NaN"],"functions":["quantile"],"layer":"defensive","source":"T-SS-Q"},
+      {"id":"vec-asc","values":[8,0,8,2,5,1],"ps":[[0,0.25,0.5,0.75,1]],"functions":["quantile"],"layer":"vector-contract","source":"T-SS-Q"},
+      {"id":"vec-desc","values":[8,0,8,2,5,1],"ps":[[1,0.75,0.5,0.25,0]],"functions":["quantile"],"layer":"vector-contract","source":"T-SS-Q"},
+      {"id":"vec-duplicates","values":[8,0,8,2,5,1],"ps":[[0.75,0.25,0.75,0.5,0.25]],"functions":["quantile"],"layer":"vector-contract","source":"SS-Q"},
+      {"id":"vec-one","values":[8,0,8,2,5,1],"ps":[[0.5]],"functions":["quantile"],"layer":"vector-contract","source":"SS-Q"},
+      {"id":"vec-empty-sample","values":[],"ps":[[0.25,0.75]],"functions":["quantile"],"layer":"defensive-vector","source":"T-SS-Q"},
+      {"id":"vec-empty-p","values":[8,0,8,2,5,1],"ps":[[]],"functions":["quantile"],"layer":"defensive-vector","source":"SS-Q"},
+      {"id":"vec-nan-sample","values":[3,"NaN",-2,1],"ps":[[0.75,0.25,0.5]],"functions":["quantile"],"layer":"defensive-vector","source":"SS-QK"},
+      {"id":"long-desc","range_desc":[1000,0],"ps":[0.3,0.5],"layer":"scalar-contract","source":"T-SS-QK"},
+      {"id":"long-vector","range_desc":[1000,0],"ps":[[0.95,0.2,0.2,1,0]],"functions":["quantile"],"layer":"vector-contract","source":"T-SS-QK"}
+    ],
+    "modes":["direct","sorted_copy"]
+  },
+  "d3-array": {
+    "functions": ["quantile","quantileSorted","median"],
+    "families": [
+      {"id":"even-asc","values":[1,2,3,4],"ps":[0,0.25,0.5,0.75,1],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"even-desc","values":[4,3,2,1],"ps":[0,0.25,0.5,0.75,1],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"even-permuted","values":[3,1,4,2],"ps":[0,0.3333333333333333,0.5,1],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"odd-interpolated","values":[0,10,30],"ps":[0,0.1,0.25,0.5,0.75,1],"layer":"scalar-contract","source":"D3-DOC"},
+      {"id":"zero-length","values":[],"ps":[0,0.5,1],"layer":"empty","source":"T-D3-Q"},
+      {"id":"singular","values":[-2],"ps":[0,0.25,0.5,1],"layer":"scalar-contract","source":"T-D3-M"},
+      {"id":"tied-even","values":[4,1,4,1,4,9],"ps":[0.25,0.5,0.75],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"duplicates","values":[3,3,3,3,3],"ps":[0,0.5,1],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"signed-zero","values":["-0",0,-1,1],"ps":[0,0.25,0.5,1],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"nan-mixed","values":[3,"NaN",-2,1],"ps":[0,0.5,1],"layer":"missing-values","source":"T-D3-M"},
+      {"id":"null-mixed","values":[10,null,3,"undefined",5,"NaN"],"ps":[0,0.5,1],"layer":"missing-values","source":"T-D3-M"},
+      {"id":"missing-only","values":["NaN",null,"undefined"],"ps":[0,0.5,1],"layer":"missing-values","source":"T-D3-M"},
+      {"id":"outside-p","values":[3,1,2],"ps":[-0.25,1.25,"NaN"],"functions":["quantile","quantileSorted"],"layer":"defensive","source":"D3-DOC"},
+      {"id":"array-p-control","values":[3,1,2],"ps":[[0.5],[0.25,0.75]],"functions":["quantile","quantileSorted"],"layer":"unsupported-vector","source":"D3-DOC"},
+      {"id":"accessor-ordered","values":[1,2,3,4],"ps":[0,0.25,0.5,1],"accessor":"box-trace","layer":"accessor-contract","source":"T-D3-Q"},
+      {"id":"accessor-permuted","values":[5,1,2,3],"ps":[0,0.25,0.5,1],"accessor":"box-trace","layer":"accessor-contract","source":"T-D3-M"},
+      {"id":"accessor-sparse","values":[10,null,3,"undefined",5,"NaN"],"ps":[0,0.5,1],"accessor":"box-trace","layer":"accessor-missing","source":"T-D3-M"},
+      {"id":"set-input","values":[3,1,4,2],"ps":[0,0.5,1],"representation":"set","functions":["quantile","median"],"modes":["direct"],"layer":"scalar-contract","source":"T-D3-Q"},
+      {"id":"typed-input","values":[3,1,4,2],"ps":[0,0.5,1],"representation":"float64","layer":"scalar-contract","source":"D3-DOC"},
+      {"id":"extreme-finite","values":["max","max"],"ps":[0,0.5,1],"layer":"scalar-contract","source":"T-D3-M"},
+      {"id":"long-desc","range_desc":[1000,0],"ps":[0.3,0.5],"layer":"scalar-contract","source":"T-SS-QK"}
+    ],
+    "modes":["direct","sorted_copy"]
+  },
+  "calibration": {
+    "package":"simple-statistics",
+    "versions":["6.1.0","6.1.1"],
+    "functions":["quantile"],
+    "families":[
+      {"id":"old-two-vectors","values":[500,468,454,469],"ps":[[0.25,0.5,0.75],[0.05,0.25,0.5,0.75,0.95]],"layer":"AF139-CAL","source":"AF139-POST"},
+      {"id":"old-empty","values":[],"ps":[0.5],"layer":"AF139-CAL","source":"T-SS-Q"}
+    ],
+    "modes":["direct"]
+  }
+}
