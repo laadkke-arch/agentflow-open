@@ -514,12 +514,23 @@ def run_once(study, repo, run):
         slots = labeled_results(selected, rank_map, labels, request_map, card_map)
         requests_table = request_table(rank_rows, request_map, labels)
         summary_table, metrics = coverage_summary(slots, requests_table, selected)
-        summary_by_scenario[name] = {"fingerprints": provenance, "groups": metrics}
         if name == "base":
+            summary_by_scenario[name] = {"fingerprints": provenance, "groups": metrics}
             write_csv(run / "slots.csv", slots)
             write_csv(run / "table1.csv", requests_table)
             write_csv(run / "table3.csv", summary_table)
             write_csv(run / "policy-scans.csv", scan_table(selected))
+        else:
+            baseline_groups = summary_by_scenario["base"]["groups"]
+            differences = {}
+            for group, detail in metrics.items():
+                before = baseline_groups[group]["observations"]
+                after = detail["observations"]
+                changes = {key: {"before": before[key], "after": value}
+                           for key, value in after.items() if before[key] != value}
+                if changes:
+                    differences[group] = changes
+            summary_by_scenario[name] = {"fingerprints": provenance, "observation_changes": differences}
     perturbations = compare_scenarios(scenarios)
     write_csv(run / "perturbations.csv", perturbations)
     return {
