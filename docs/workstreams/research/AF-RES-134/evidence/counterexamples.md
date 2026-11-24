@@ -1,0 +1,12 @@
+# 실제 원문에서 찾아본 순위 반례
+
+| 조사 | 직접 열어 확인한 내용 | 이번 여섯 요청에 대한 판정 |
+| --- | --- | --- |
+| 희망과 직접 거절 | G1-39의 희망은 mean, 반대는 sum이다. G2-want-18은 중복 log softmax를 피하려 한다. 두 동작의 요구 구절과 반대 구절을 따로 연결했다. [요청 구절](../requests.jsonl) | 거절한 심벌에 대응하는 고정 카드가 없다. 두 정책의 표시 충돌을 이 유형으로 확인할 수 없었다. |
+| 모델과 표본 가중치 | G2-how-5의 `가중치를` 대상은 작성자가 평가에 이미 사용하고 있던 모델 체크포인트다. D08 공식 원절은 샘플별 확률을 입력으로 받아 정수 인덱스를 돌려준다. [원문](https://github.com/sooftware/kospeech/issues/27) · [구절 지문](role-boundaries.jsonl) · [D08](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/utils/data/sampler.py#L228-L290) | 실제 탈락 원문의 단일 어절에 고정 판독기를 적용하니 B는 놓치고 C는 A10을 잡았다. 모집에서 GPU 평가 환경 장애로 제외한 사례라 순위 효과 장부에는 넣지 않았다. [토큰 검사](lexical-probes.jsonl) |
+| 이름만 닮은 복합어 | 텐서보드 원문은 로그 시각화기를 `뷰어`라고 부른다. 고정 판독기에서 A04는 126의 넓은 D 단계로만 잡히고 B/C에서는 매치되지 않는다. [용례 L380–395](https://cloud-allstudy.tistory.com/3743) · [토큰 검사](lexical-probes.jsonl) | 실제 채택 원문에서 이 표면은 확인되지 않았다. 넓은 부분 문자열까지 허용할 경우 생기는 역할 오인의 검사용으로만 남겼다. |
+| 복사 의도와 보존 | 포럼 3155의 저자는 데이터량을 유지하며 CPU→GPU 복사 시간을 줄이려 했다. 일반 텐서 clone의 동일 입력 데이터 사본과 저장소 공유 view는 서로 다른 결과다. 비연속 입력의 reshape는 복사가 될 수 있고 detach는 사본과 다르다. [원질문 #1](https://discuss.pytorch.kr/t/host-cpu-gpu-memory-copy-speedup/3155) · [view 안내](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/docs/source/tensor_view.rst#L5-L43) · [reshape 회귀](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/test/test_view_ops.py#L808-L834) | 연구 창 밖의 자연 질문 한 건이다. 채택 원문에서 저장소 복제/무복사 요구와 별칭의 순위 차이는 관측하지 못했다. |
+| 코드에만 있는 심벌 | G2-how-20에서 이름이 붙은 `.view`는 오류 추적에 나타났다. 원저자는 같은 TSV 열의 다섯 레이블을 사용하려 했다. [원질문](https://github.com/Beomi/KcBERT/issues/3) · [구절 위치](role-boundaries.jsonl) | T01이 B/C 표시 1위(15점, 정확 심벌 12점)였지만 기준은 미확인이다. Gate에서 세 후보 모두 보류했다. |
+| 표본 배치와 인덱스 묶음 | G2-how-24의 traceback에 batch 순회가 있고, 오류는 HDF5 객체를 Windows spawn으로 직렬화할 때 났다. D01을 단일 프로세스로 운용하면 그 경로를 피한다. D07은 인덱스 list이고 fetch가 이를 실제 샘플로 바꾼다. [원질문](https://github.com/HwangToeMat/VDSR_Pytorch_HTM/issues/1) · [loader](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/utils/data/dataloader.py#L410-L415) · [fetch](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/utils/data/_utils/fetch.py#L46-L55) | B/C는 D01 직접(1위), D04 일부(2위), D07 충돌(3위)을 표시했다. Gate는 셋을 보류했다. D01의 작업자·배치 보존을 보수적으로 읽어 직접 하나를 놓칠 수 있는 실측 사례다. 단일 프로세스 허용이라는 기준 해석에 한정된다. |
+
+[별칭 감사](alias-audit.csv)는 채택 원문의 B/C와 넓은 D 경계 진단 모두 0행이다. 원문의 해당 어절 효과를 측정할 기회가 없었다. 126에서 가져온 입력 경계 검사 12개는 별도 재생 시험으로, 구성문을 모집하거나 성능으로 계산하지 않았다.
