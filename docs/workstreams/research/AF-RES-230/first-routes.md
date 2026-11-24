@@ -1,0 +1,9 @@
+# 사전 안내 고정 — 답글 읽기 전
+원문 REST https://api.github.com/repos/audacity/audacity/issues/{3402,4811,5302,5797} 의 현재 title/body/created_at/updated_at만 판독. 최초판 미확인; 본문 언급된 링크의 후속 내용은 보지 않음. 공식 절 주소: M1 https://manual.audacityteam.org/man/export_multiple.html (Split files based on, Name files, Cases 1–5), M2 https://manual.audacityteam.org/man/label_tracks.html (Point labels and region labels; Editing or moving the label track). 사건판 동작 보증 아님. 아래 질문의 A/B는 **가정**이지 당사자 응답 아님.
+| 사건 | 선택 | 봉인 첫 안내 | 한 질문 (비교용 포함) | A 답→절 | B 답→절 | 비용/예측 |
+|---|---|---|---|---|---|---|
+| 3402 | 두 조건부 절 | M1 Split files based on (Tracks / Labels); M1 Name files; clip 직접 단위는 문서에 없음, 수작업 label workaround와 제안 분리 | 잘라 둔 각 clip 자체를 파일로 원하나요, 각 track 통째로 원하나요? | clip→M2 Point labels and region labels + M1 Cases 2/4 (단일 트랙 또는 믹스에 한정; 여러 트랙의 개별 clip 자동 export 보장 안 함) | track→M1 Tracks | 원문 clip 명시, 질문은 비용 1; 첫 링크 예상 유지. 이름 옵션 역시 기능 제안. |
+| 4811 | 즉답 | M1 Split files based on > Include audio before first label: 끄기; 기본값 회귀와 실제 옵션 사용을 분리 | 첫 label 전 소리도 별도 파일이어야 하나요? | 예→M1 Case 3 (on, first filename) | 아니오→M1 Case 1/2, off | 원문 off 명시, 되묻기 불필요; 예상 유지. |
+| 5302 | 즉답 | M1 Split files based on > Tracks; Labels 혼합과 구별; 현재 alpha regression 확인이 우선(3.3.3 정상이라는 원글). | 파일마다 한 트랙인가요, 같은 시간 구간의 여러 트랙 믹스인가요? | 독립→M1 Tracks | 믹스→M1 Labels | 원문 independent 명시, 되묻기 비용 1; Tracks가 실제로 켜졌는지/앞 공백 보존 미확인, 버그는 질문만으로 해결 안 됨. 예상 유지. |
+| 5797 | 두 조건부 절 | M1 Labels uppermost + M2 Moving Tracks (원하는 하단 label track을 최상단 라벨로 이동); 여러 라벨 트랙/부분 지원은 별도 기능요구 | 한 label track 전체로 충분한가요, 여러 줄/선택 일부를 동시에 쓰나요? | 한 줄→M2 Moving Tracks + M1 uppermost | 여러 줄/일부→M1 Labels 한계 + M2 Label Editor(임시 한 줄 구성은 가설, 선택만으로 동작하지 않음) | 본문 a/b/c 이미 명시하므로 두 조건부가 질문보다 적은 턴; 예상 유지. |
+공통 시간 원점 질문 후보: 다시 맞출 stem(프로젝트 동일 0)인가, 각 파일 첫 소리/구간부터 시작하는 배포본인가? 5302에는 원점이 미기재지만 독립 vs mix 첫 연결은 같을 수 있어 질문을 첫 턴에 강제하지 않음. 정확한 start/padding 옵션과 판별은 사후 자료/시험으로 보완. 나머지 세 사건에 일반 시간축 질문을 덧붙이지 않음.
