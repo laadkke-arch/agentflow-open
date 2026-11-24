@@ -18,6 +18,7 @@ def build():
         judgments = [e for e in events if e['type'] == 'judgment']
         finals = [e for e in events if e['type'] == 'final']
         starts = [e for e in events if e['type'] == 'start']
+        choices = [e for e in events if e['type'] == 'choice']
         if packet['status'] == 'ready':
             assert len(starts) == len(finals) == 1
             assert len(exposures) == len(judgments) <= 3
@@ -35,7 +36,11 @@ def build():
                 assert exp['at_utc'] <= jud['at_utc']
                 later = next((e for e in exposures if e['step'] == step + 1), None)
                 assert later is None or jud['at_utc'] <= later['at_utc']
+                choice = next(e for e in choices if e['next_step'] == step)
+                assert choice['at_utc'] <= exp['at_utc']
                 trails.append({**exp, 'case_id': packet['case_id'], 'condition': packet['condition'],
+                               'choice': choice, 'choice_event_file': str(event_paths[events.index(choice)].relative_to(ROOT)),
+                               'arrival_url_kind': 'observed_http_final_address', 'http_final_url_observed': True,
                                'event_file': str(event_paths[events.index(exp)].relative_to(ROOT)),
                                'exposed_sha256': hashlib.sha256(exp['exposed_text'].encode()).hexdigest()})
             answers.append({'session': sid, 'case_id': packet['case_id'], 'condition': packet['condition'],

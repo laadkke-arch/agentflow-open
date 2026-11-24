@@ -36,6 +36,7 @@ def build():
         judgments = by_type.get('judgment', [])
         final = by_type.get('final', [])
         starts = by_type.get('start', [])
+        choices = by_type.get('choice', [])
         if packet['status'] == 'ready':
             expected_real += 1
             assert len(starts) == 1, (sid, 'missing start')
@@ -60,6 +61,14 @@ def build():
                 copy = {**exp, 'case_id': packet['case_id'], 'condition': packet['condition'],
                         'exposed_sha256': hashlib.sha256(exp['exposed_text'].encode()).hexdigest()}
                 copy['event_file'] = next(str(p.relative_to(ROOT)) for p, e in zip(event_paths, events) if e is exp)
+                choice = next(e for e in choices if e['next_step'] == step)
+                assert choice['at_utc'] <= exp['at_utc']
+                copy['choice_event_file'] = next(str(p.relative_to(ROOT)) for p, e in zip(event_paths, events) if e is choice)
+                copy['choice'] = choice
+                connector_view = exp.get('transport', '').startswith('GitHub')
+                copy['arrival_url_kind'] = 'connector_logical_source_address' if connector_view else 'observed_http_final_address'
+                copy['http_final_url_observed'] = not connector_view
+                copy['arrival_metadata_qualification'] = 'raw helper arrival_confirmed denotes connector display/source address, not observed HTTP redirect destination' if connector_view else 'urllib response final URL observed; expired signing query removed in metadata derivative'
                 trails.append(copy)
                 status = 'observed'
             else:

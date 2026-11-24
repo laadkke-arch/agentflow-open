@@ -1,0 +1,67 @@
+{
+  "authorship": "root after main and control recipient seals; explanatory annotations, not new observations",
+  "cases": {
+    "G1": {
+      "layer": "주·자연 요청 / 정상·경계 비교는 연구 구성 포함",
+      "request_summary": "#56680: Path2D 제거·재생성 때 Curve2D 점 보존과 load/preload 차이",
+      "version_short": "3.4.2; 원 repo 고정 1a5942e8",
+      "gold_summary": "조건부. 노드/자원 수명·잔존 참조·지연 해제·실제 local flag·캐시를 함께 확인",
+      "gold_locator": "Scene.gd; Path2D.tscn/LocalPath2D.tscn; Godot3.4 Resources §Freeing resources",
+      "unknown": "3.4.2 재실행·원 load 변형·점 상태의 실제 동일 설정 대조 미확인",
+      "next": "Path2D.gd와 LocalPath2D.tscn, Resources 수명 절을 읽고 3.4.2에서 한 호출만 바꾼 대조",
+      "stages": {
+        "1": "목록만 확인. 코드·수명·실행값 근거 없음",
+        "2": "Scene.gd L3–18 양쪽 preload, L21–29 점 추가, L42–49 토글. load 대조·수명 근거는 없음",
+        "3": "Path2D.tscn L1–12 저장 곡선 비어 있음·local 명시 없음. 저장 상태를 실행 결과로 확대하지 않음"
+      },
+      "counterexample": "load라도 참조를 유지하면 공유 상태가 남을 수 있고 preload라도 local 조건이 다르면 독립화됨"
+    },
+    "G2": {
+      "layer": "주·자연 요청 / 동일값 정상 입력은 연구 구성",
+      "request_summary": "#57026: Number 값 1,1,2,3을 Sum 배열에서 보존해 합산",
+      "version_short": "4.0-dev.20220118; ZIP e0164394…",
+      "gold_summary": "조건부. 타입과 UID/경로를 구별하고 캐시·판·의도한 중복 참조를 보존",
+      "gold_locator": "fibonacci.tres ext_resource/numbers; one/two/three.tres; sum.gd; test.gd",
+      "unknown": "역사 빌드 SHA·4.0-dev 실행 미확인. 수신자는 원 .tres/.gd와 실제 값에 도달하지 못함",
+      "next": "ZIP 목록의 뒤에서 fibonacci.tres·one/two/three.tres·sum.gd·test.gd를 직접 연 뒤 정확한 역사판 대조",
+      "stages": {
+        "1": "ZIP 목록 0–1500자. 편집기 메타데이터가 앞에 있음; 저장값 본문 없음",
+        "2": "ZIP 목록 1500–3000자. 필요한 원 .gd/.tres 본문 미도달",
+        "3": "filesystem_cache7 L1–8의 Number/Sum 분류·동일 숫자 필드 확인. UID 의미·값·합계는 미확인"
+      },
+      "counterexample": "모든 값이 같으면 잘못 합쳐져도 합이 같아 정상처럼 보임; 같은 타입 자체와 UID 충돌은 다름"
+    },
+    "G3": {
+      "layer": "주·자연 요청 / 후속 Godot4 포트는 보조",
+      "request_summary": "#57268: 내장 Resource를 바꾼 뒤 씬 재시작 시 배열·사전·문자열 복원",
+      "version_short": "원 링크 Godot3; 요청 3.4.2/4alpha1",
+      "gold_summary": "조건부. 내장 자원 공유·실제 재시작 호출·local flag·세 속성·판을 구별",
+      "gold_locator": "test/main.gd, main.tscn, A_Thing.gd; engine3.4.2 scene_tree.cpp L1254–1298",
+      "unknown": "원 Godot3 실행 미확인; 수신자는 A_Thing.gd를 열지 않음. 후속4 포트의 local=true를 원 링크에 소급할 수 없음",
+      "next": "A_Thing.gd/project.godot를 읽고 원3.4.2/4alpha1에서 세 속성과 local flag 대조",
+      "stages": {
+        "1": "4개 파일의 ZIP 목록. 재시작 값이나 자원 공유 판정 근거 없음",
+        "2": "main.gd L1–31 변경·프레임 대기·change_scene·stop, 변경 후 g2 중복 출력 확인. 실제 reset 결과 미확인",
+        "3": "main.tscn L1–16 arr=[1.0], dict={\"0\":1.0}, strr=\"1\"·local 명시 없음. 실제 setter·복원값 미확인"
+      },
+      "counterexample": "후속4 포트는 local=true; false 변형과 reload값이 다름. 판·설정이 다른 성공을 원3의 성공으로 볼 수 없음"
+    }
+  },
+  "weaknesses": [
+    [
+      "LilyPond의 시간순 모집틀 결손: 자연 요청 3/6, 필수 배당 21/24. Godot 세 사건만 비교",
+      "공식 2022-01 date/thread index 또는 원 mbox를 먼저 열어 고정 질의·정렬로 첫40개를 복원; 임의 검색 사례로 대체 금지",
+      "L1–L3의 원 요청·인계 링크·보존 조건을 봉인하고 새 A/B 6문맥을 실행하면 분야 비교 분모가 생김"
+    ],
+    [
+      "모든 A/B 및 G2 삭제 대조의 노출이 같음. 공통 요청이 이미 조건을 설명하고 1500자/회 텍스트·ZIP 뷰어가 탐색을 제약",
+      "같은 원 요청에서 기존 조건은 유지하되 중복 안내와 새로운 탐색 단서를 구분하는 새 사전등록; 실제 브라우저/다른 예산과 별도 비교",
+      "여러 새 문맥에서 B가 다른 필요한 절에 도달하고 필수조건을 더 복원하며 좁은 안내의 반례 누락도 증가하지 않을 때 안내 효과 판단 변경"
+    ],
+    [
+      "역사판 실행값 분모0; 기준 읽기 시각 일부 근사·입력 원격 봉인보다 gold 독해 선행; 공유 디스크와 힌트 가시성으로 가림 한계",
+      "고정 원 ZIP/repo와 정확한3.4.2·4.0-dev 빌드로 재실행; 모집 입력 원격 봉인 후 별도 gold·수신 권한과 자동 시각을 계측",
+      "같은 판·설정에서 수치와 필수조건이 재현되고 봉인·노출 순서를 정확히 입증하면 역사판 미확인과 절차적 제한을 재평가"
+    ]
+  ]
+}
