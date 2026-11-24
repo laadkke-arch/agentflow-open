@@ -34,4 +34,52 @@
 | 키 입력마다 새 검색 | engine feature [B08 Features/Demo L200–229; usage L243–268](https://github.com/komoot/photon); [B10 Search L171–198](https://github.com/komoot/photon/blob/master/docs/api-v1.md) + demo terms [A02 L0–21,74–83](https://photon.komoot.io/) 또는 self [B09 DB/server L171–193; import L214–226](https://github.com/komoot/photon/blob/master/docs/usage.md); [D03 L8–15,32–45,69–76](https://download1.graphhopper.com/public/); local-only principle [F01 L66,479,682–709, _geocode/_createGeocodeRequest L805–945](https://github.com/maplibre/maplibre-gl-geocoder/blob/main/lib/index.ts) | 입력마다 공용량이 불명/운영 보장 필요하면 self 또는 local bounded index; Nominatim public 금지 | 키마다 외부 호출이 필수인가, prefix/local data + 명시 submit로 충분한가? 요청량/지역·언어 확인 | Photon demo feature와 무제한 사용 혼동; Nominatim self 가능 호출과 suggestion 품질 혼동 |
 | 인터넷 없이 새 지명 검색 | 데이터/인덱스 + runtime: [D03 L8–15,32–45,69–76](https://download1.graphhopper.com/public/); [B09 DB/server L171–193; import L214–226](https://github.com/komoot/photon/blob/master/docs/usage.md) 또는 [D02 L5–9](https://download.geofabrik.de/); [B02 L154–199](https://nominatim.org/release-docs/latest/admin/Import/); [B06 L85–125](https://nominatim.org/release-docs/latest/customize/SQLite/); version & update [B05 L94–121](https://nominatim.org/release-docs/latest/admin/Update/) | 외부 host 불가; device 내인지 LAN 서버인지에 따라 로컬 인덱스/런타임. 사전 구축 index 필요 | 완전 단말 단독인가 LAN 가능인가, 지역/언어/새 자료 주기/용량? 저장된 기존 조회만이면 exact cache로 한정 | raw PBF 파일 ≠ query service; local server ≠ device offline; unmatched index/version; no search index |
 
-> ④ 보정: #759를 앞선 임시 표본으로 편입하고 #805를 P2로 이동, #836/#867은 사후 보강. 정렬 전수는 미확정.
+
+## 판정 범위
+
+**PARTIAL — 기능/정책 12자리와 경로 판단은 문헌으로 작성, 원사건 최초 두 건씩의 전체 모집은 미확정.** 34개 산입 원자료(운영 4, 엔진 10, 소비자 9, 데이터 3, Open Library 7, 보강 코드 1), 9개 계보, 15개 미산입 행. 소비자 9건은 서로 다른 issue/discussion 단위이며 댓글은 원사건 내부 근거로 묶었다. 네 임시 표본 중 N1은 실제 공개 root, N2는 자체 NZ 데이터, P1은 자체 인스턴스와 공개 비교, P2는 실제 기존 Nominatim 공개 앱과 Photon 오프라인 전환 계획이다. P2는 전환 성공이 아니다. 전체 기간 날짜/번호순 최초 두 건을 증명한 엄격 표본은 0/4; 엄격 표본에 귀속된 소비자 원자료 0/5. 주표본 판정과 독립 보강을 섞지 않는다. 모든 운영 문서 조회일 2026-11-24 UTC; 과거 사건 시점 정책이 현행과 같다고 가정하지 않는다. 새 지오코딩 호출·배포·공유 부하 측정 없음.
+
+## Q1 — 운영 책임과 URL
+
+OSMF의 [A01 적용 범위 L2–18](https://operations.osmfoundation.org/policies/nominatim/)는 nominatim.openstreetmap.org 인스턴스에 관한 정책이며 다른 조직의 설치에 자동 이전되지 않는다. [A03 I L99–118](https://osmfoundation.org/wiki/Terms_of_Use), [A04 Introduction L104–115](https://osmfoundation.org/wiki/Privacy_Policy)는 OSMF 자체 서비스와 데이터의 구분을 돕는다. 엔진은 [B07 Nominatim 저장소](https://github.com/osm-search/Nominatim), 별도 운영은 B03/B04. Photon은 [B08 Features/Demo](https://github.com/komoot/photon) 검색 엔진과 [A02 demo/terms L0–21,74–83](https://photon.komoot.io/) komoot 공개 데모가 다르다. 엔진 라이선스, OSM 데이터 라이선스, 특정 호스트 접근 규칙을 별도 필드로 보존한다. 자체 운영의 호스트 정책은 그 운영자의 문서가 없으면 미확인이지 무제한 허용이 아니다. URL 이름·엔진 동일성만으로 관리 주체와 SLA가 같다는 설명을 기각한다.
+
+## Q2 — 호출 패턴과 운영 조건
+
+A01 Requirements/Websites and Apps/Unacceptable Use/Changes에 따르면 공개 Nominatim은 사용자가 직접 제출한 중간 규모 이하 요청에 조건이 붙고 앱 전체 합산 절대 1 req/s 상한, 식별 User-Agent/Referer, 출처표시, 서비스 전환 가능성, 가능한 경우 캐시·프록시를 요구/권장한다. 주기적 작업은 대량 처리 범주이며 작은 일회성 bulk에도 단일 스레드·기계 및 캐시 조건, 장시간/정기 실행에는 4 req/min 규칙이 있다. 입력 중 자동완성 및 체계적 수집은 금지; 1 req/s 이하의 자동완성도 금지이다. 정책은 변경될 수 있다. 일반 no/low-code·vibe-coding 플랫폼에 공개 API를 제안/제공/내장하지 않는다는 LLM 관련 제한을 반드시 눈에 띄게 전달해야 하므로 이 탐색기가 그런 플랫폼으로 작동할 경우 공개 Nominatim을 기본 추천/자동 결선하지 않는다. 정책 확인 링크는 기능 소개와 다르며 개발자가 그 조건을 인지해 의도적으로 선택하는 경우에 한하여 논의한다. 개인/기밀 입력을 보내지 않는다.
+
+A02의 Photon 데모는 합리적 사용, 과도한 사용 제한/차단 가능, 가용성 보장 없음과 운영자 변경 가능성을 밝힌다. 수치 상한/앱 합산 단위·캐시 요구·키별 제출 횟수 허용치 미기재; Nominatim 1/s를 복사하지 않는다. B08 search-as-you-type는 기능 근거일 뿐 요청량 권한이 아니다. B09의 결과 수 제한도 트래픽 단위가 아니다. 자체 설치는 두 공개 호스트 규칙의 직접 적용 밖이고 자체 운영자 제한과 라이선스/개인정보 검토가 필요하다. 인터넷 없이 새 요청은 두 공용 서비스 모두 원리상 연결 불가; 로컬 저장된 과거 결과 재사용과 새 지명 검색은 별개다.
+
+## Q3 — 기능과 데이터, 오프라인 범위
+
+[B01 Search L86–143](https://nominatim.org/release-docs/latest/api/Search/)의 완전 주소/구조화 질의는 전방 검색이며 prefix 후보 계약은 아니다. [B02 Import L154–199](https://nominatim.org/release-docs/latest/admin/Import/)는 import 방식에 따라 검색 가능 데이터가 달라지고 reverse-only는 forward index를 만들지 않는 반례다. [B03 Installation L98–137](https://nominatim.org/release-docs/latest/admin/Installation/)와 [B04 Deployment L96–126](https://nominatim.org/release-docs/latest/admin/Deployment-Python/)가 DB/서빙 전제를 나눈다. [B06 SQLite L85–125](https://nominatim.org/release-docs/latest/customize/SQLite/)는 PostgreSQL import 뒤 변환, Spatialite/파이썬 등 실행 전제이지 모든 단말 내장 패키지를 보장하지 않는다.
+
+Photon [B09 Usage L171–193,214–226](https://github.com/komoot/photon/blob/master/docs/usage.md), [B10 API L171–198](https://github.com/komoot/photon/blob/master/docs/api-v1.md)는 자체 서비스와 /api 질의, 내장/외부 OpenSearch 및 import 경로를 구분한다. [D03 배포 목록 L8–15,32–45,69–76](https://download1.graphhopper.com/public/)에서 버전과 ES/OS 형식 일치가 필요하다. [D01 planet L4–20](https://planet.openstreetmap.org/) 주간 전체 PBF, [D02 extract L5–9](https://download.geofabrik.de/) 보통 매일 지역 원천 파일은 ready-to-query 인덱스가 아니다. B05 업데이트 주기 예시와 D03 제공 시각은 자체 인덱스 갱신 완료시각과 별도다. LAN 내부 서버는 외부 인터넷이 없는 조직에서도 가능하나 휴대 단말이 서버에 접근 못하는 완전 오프라인과는 다른 배포 형태다. 단말 저장공간·RAM·지원 런타임·업데이트·라이선스 전제를 확인해야 한다. 문서 예시 사양은 지금의 가격이나 성능 보장이 아니다.
+
+## Q4 — 소비자가 실제 확보한 것
+
+표 2의 사건은 관찰/당사자 진술이며 규칙이나 전체 성공률이 아니다. [C01 #2677 원문과 답변](https://github.com/osm-search/Nominatim/issues/2677)은 Drupal Geocoder와 공개 root에서 표시 문제를 다루며 운영자 답은 Drupal 표시 문제를 지목한다. 즉 공개 엔진 탓이라는 경쟁 설명도 미확정이다. [C02 #2813 원문/답변](https://github.com/osm-search/Nominatim/issues/2813)은 자체 NZ 데이터의 부분 검색에서 후보 결과가 나왔지만 운영자는 suggestions가 검색 API 용도가 아니라고 명시했다. 가능성의 사례이지 지속 품질 보장은 아니다. P1 [C07 #759 L182–184,197–199,209–212](https://github.com/komoot/photon/discussions/759)의 공개/자가 비교는 실제 두 배포의 차이를 보여주지만 원인·현재 성능·빈도 미확인; P2 [C05 #805 L146–164](https://github.com/komoot/photon/discussions/805)의 기존 앱과 localhost 전환 문의에는 매개변수 조정이 필요하다는 답변이 있으며 성공 확인은 없다. C03 #715, C04 #722는 실제 호스트가 모호하므로 주표본 빈칸 원칙을 적용하고 보강만 한다. C08 #836과 C06 #867은 별개 공개 데모 장애/제약 사건이다. C09 #726 자체 사양 사건은 공개 비교가 답변 제안에 불과해 주표본 제외. 정확한 주표본 선정 결과로 일반화할 수 없는 이유는 frame.csv의 X11–X15와 다음 행동에 남긴다.
+
+## Q5 — 반례를 먼저 고려한 조합
+
+1. **서버 구축 불필요 가능:** 개발자가 공개 조건을 읽고 선택한 소수의 명시적 조회라면 A01/A02 조건 내 공용 호스트로 처리할 여지가 있다. 그러나 primary geocoding 서비스나 일반 자동 플랫폼의 기본 결선, 요구되는 가용성, 기밀 데이터, 앱 총량을 놓치면 오권고다.
+2. **공개 데모의 기능 성공 ≠ 지속 운용:** [C08 #836 L122–141](https://github.com/komoot/photon/discussions/836)에서 이용 지연·일부 접근 제한 및 자가 운영 제안, [C06 #867 본문/댓글](https://github.com/komoot/photon/issues/867)에서 오류 보고와 운영자의 복구/제한 유지 진술을 각각 확인했다. 현재 서비스 장애나 처리량을 주장하지 않는다.
+3. **키별 후보 ≠ 키별 원격 요청:** [F01 blob c98275f… L805–945](https://github.com/maplibre/maplibre-gl-geocoder/blob/main/lib/index.ts) local-only 경로는 원격 geocoder 호출 전에 분기하고 localGeocoder의 후보를 사용한다. 작은 지역/허용된 장소 목록을 내려받아 검색하고, 새로운 완전 질의만 명시적으로 제출하는 조합이 가능하다는 정적 구현 근거다. 전체 앱의 무네트워크 테스트나 단말 데이터 공급 보장은 아니다. 프록시·debounce는 공개 Nominatim 자동완성 금지를 해소하지 못한다.
+4. **자체 운영 ≠ 검색 즉시 가능:** B02/B06 및 D03의 검색 인덱스/버전 조건. C09는 자가 사양·저장장치를 바꿔도 문제가 남는 실제 대조. 비용을 줄일 수 있는 범위 제한·사전 구축 인덱스와 운영 비용을 늘리는 갱신/가용성/저장공간을 각각 제시한다.
+
+## Q6 — Open Library의 조회와 배포
+
+도서목록 사용자가 책 한 권을 식별하는 데는 [E04 Works/Edition L83–101](https://openlibrary.org/dev/docs/api/books) 또는 웹 레코드 링크가 충분할 수 있다. E03 검색 API는 여러 작품/판 정보를 조회한다. [E01 사용 지침 L85–131](https://openlibrary.org/developers/api?show_page_status=1)은 캐시·사용자 식별 연락처, 미식별 1 req/s와 식별 3 req/s, 고빈도 backend/대량 처리 제한을 구분하고 대량이면 덤프로 안내한다. OSMF와 같은 수치/서비스 조건으로 해석하지 않는다. [E02 dumps L58–110](https://openlibrary.org/developers/dumps)의 월별 배포 TSV는 레코드 type/key/revision/last_modified/JSON이며 [E05/E06 스키마 원장]과 별개로 작품-판 관계를 이해하고 적재해야 한다. [E07 실제 자가 인덱싱 L220–232,242–265](https://github.com/LibrariesHacked/openlibrary-search)는 정제, PostgreSQL 적재, SQL 검색의 작업을 기술한다. 과거 특정 M3에서 약 5시간 걸렸다는 당사자 진술은 데이터 크기/환경에 따라 달라지고 독립 검증하지 않았다. 월별 덤프 배포와 자체 인덱스 적용 시각, 웹 API 가시화 지연은 다른 시계다. 실제 지연 차이나 동일 질의 품질은 미확인이다. 도서목록 이용자에게 덤프 링크만 주는 것, 전체 인덱스 개발자에게 단건 API만 주는 것 모두 목적 불일치다.
+
+## Q7 — 탐색 링크의 최소 단위
+
+표 3 및 routes.csv는 첫 링크와 보조 링크를 구별한다. 단순 소개/수동 조회에는 운영 지침 또는 조회 페이지 하나가 충분할 수 있다. 실제 API 결선이면 서비스 정책 + 검색 API 계약, 자동완성 기능 구현이면 엔진의 기능 + 선택한 운영자의 사용 조건(또는 자체 운영 문서), 새 오프라인 질의이면 인덱스/원데이터 + 엔진 버전 및 import/실행/갱신 조건이 필요하다. 미리 정의된 목록만이면 로컬 검색 함수만으로 충분한 반례도 있다. 모호한 입력에서 먼저 묻는 최소 질문은 (a) 명시 제출인지 새 원격 요청이 매 입력에 필요한지, (b) 외부 인터넷 없는 단말인지 내부 서버 허용인지, (c) 규모·가용성·데이터 범위 및 갱신 필요성이다. 이미 명시된 목적은 질문 반복 대신 조건부 경로로 기록한다.
+
+### 경쟁 설명과 조합 비용
+
+서비스·엔진·데이터 중 하나를 제품 이름으로 뭉치면 링크 수는 줄지만 규칙과 실행 전제를 잃는다. 반대로 모두 링크하는 방식은 소량 수동 조회에 과잉이다. 기능 판정은 계약/구현, 이용 가능성은 host scope/policy/retrieval date, 운용 경험은 사례/시기/원요청/처분, 오프라인 가능성은 데이터·인덱스·배포 경계로 독립 연결한다. 이는 향후 제품의 DB 스키마·랭킹 결정이 아니라 원문 선택의 조건부 원리다. 대체 조합은 공개 명시 제출 + 작은 로컬 후보 목록, 자체 Photon + 일치 인덱스, 자체 Nominatim + 완전 질의 및 필요한 import/SQLite 변환, 공용 데모의 비핵심 시험 등이며 SLA/가격/정확도/실사용 처리량 수치는 미확인이다. 개발자(요청·캐시·전환/책임), 운영자(접근 제한·서비스 유지), 자체 담당자(인덱스 갱신·자원), 도서목록 이용자(조회/재사용)를 각각 분리한다.
+
+| 불일치·약점 | 영향을 받는 주장 | 다음 조사·열 원자료 | 판정을 뒤집을 관측 |
+| --- | --- | --- | --- |
+| Discussion 전 기간 날짜·번호순 조회 실패; public usage 해석에 따라 #2590/#759 및 host 결측 후보의 적격성 달라짐 | 네 사건의 최초 두 건, 실사용 일반화 | 양 repo 2022–25 REST issue 및 GraphQL discussion 전수 페이지; frame의 X11–X15; #2590/#715/#722 원문과 답변 | 현재 임시 후보보다 앞선 적격 사건 또는 주표본 후보 host/원요청이 실제로 불명임을 확인 |
+| Photon demo의 수치·합계 단위·캐시 규정과 역사 정책판 미확인 | 키별 원격 호출의 운영 허용 및 지속 사용 조건 | A02 현행 terms 및 운영자 변경 기록, A01 역사판, C08/C06 원답변 | 운영자가 해당 host의 자동완성 사용 패턴/요청량을 명시적으로 금지 또는 허용하고 적용 범위를 고정 |
+| 오프라인 실증/갱신 지연·실제 비용 미확인; C05는 이행 계획이며 E07은 과거 사례 | 단말 또는 LAN 새 질의, 자가 인덱스 경제성과 최신성 | B02/B06, B09/D03, E02/E07의 고정판·호환 인덱스, 완료한 소비자 사례; 후속 검증은 별도 허가 | 의도한 지역/런타임에서 일치 인덱스라도 네트워크가 필수거나 forward 검색 불가; 또는 실제 적용/갱신 기록이 전제·비용을 바꿈 |
