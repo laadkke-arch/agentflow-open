@@ -139,7 +139,7 @@ class Instance:
                     status, _, _ = self.http("/api/documents/")
                     if status == 200:
                         break
-                except (URLError, TimeoutError) as e:
+                except OSError as e:
                     last_error = str(e)
             time.sleep(0.4)
         else:

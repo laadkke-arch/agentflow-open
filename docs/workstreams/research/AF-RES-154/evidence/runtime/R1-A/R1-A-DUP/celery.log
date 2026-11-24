@@ -1,0 +1,20 @@
+[2026-11-24 16:02:47,882] [INFO] [celery.worker.strategy] Task documents.tasks.consume_file[19958b0e-98bc-432e-9d4b-4b19661165d9] received
+[2026-11-24 16:02:47,883] [DEBUG] [celery.pool] TaskPool: Apply <function fast_trace_task at 0x7fc1d123c9a0> (args:('documents.tasks.consume_file', '19958b0e-98bc-432e-9d4b-4b19661165d9', {'lang': 'py', 'task': 'documents.tasks.consume_file', 'id': '19958b0e-98bc-432e-9d4b-4b19661165d9', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '19958b0e-98bc-432e-9d4b-4b19661165d9', 'parent_id': None, 'argsrepr': "(ConsumableDocument(source=<DocumentSource.ConsumeFolder: 1>, original_file=PosixPath('/usr/src/paperless/consume/r1-a-dup-wt-write-retry.pdf'), mailrule_id=None, mime_type='application/pdf'), DocumentMetadataOverrides(filename=None, title=None, correspondent_id=None, document_type_id=None, tag_ids=None, storage_path_id=None, created=None, asn=None, owner_id=None, view_users=None, view_groups=None, change_users=None, change_groups=None, custom_field_ids=None))", 'kwargsrepr': '{}', 'origin': 'gen213@a793a05b3505', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}, 'properties': {'correlation_id':... kwargs:{})
+[2026-11-24 16:02:47,926] [ERROR] [celery.app.trace] Task documents.tasks.consume_file[19958b0e-98bc-432e-9d4b-4b19661165d9] raised unexpected: ConsumerError('r1-a-dup-wt-write-retry.pdf: Not consuming r1-a-dup-wt-write-retry.pdf: It is a duplicate of r1-a-r-wt-write-retry (#4)')
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 477, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 760, in __protected_call__
+    return self.run(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/tasks.py", line 167, in consume_file
+    document = Consumer().try_consume_file(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/consumer.py", line 373, in try_consume_file
+    self.pre_check_duplicate()
+  File "/usr/src/paperless/src/documents/consumer.py", line 155, in pre_check_duplicate
+    self._fail(
+  File "/usr/src/paperless/src/documents/consumer.py", line 115, in _fail
+    raise ConsumerError(f"{self.filename}: {log_message or message}") from exception
+documents.consumer.ConsumerError: r1-a-dup-wt-write-retry.pdf: Not consuming r1-a-dup-wt-write-retry.pdf: It is a duplicate of r1-a-r-wt-write-retry (#4)

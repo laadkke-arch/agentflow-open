@@ -1,0 +1,30 @@
+[2026-11-24 16:02:41,620] [INFO] [celery.worker.strategy] Task documents.tasks.consume_file[b56cd418-6a7f-4461-b244-3f9cb8872496] received
+[2026-11-24 16:02:41,621] [DEBUG] [celery.pool] TaskPool: Apply <function fast_trace_task at 0x7fc1d123c9a0> (args:('documents.tasks.consume_file', 'b56cd418-6a7f-4461-b244-3f9cb8872496', {'lang': 'py', 'task': 'documents.tasks.consume_file', 'id': 'b56cd418-6a7f-4461-b244-3f9cb8872496', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': 'b56cd418-6a7f-4461-b244-3f9cb8872496', 'parent_id': None, 'argsrepr': "(ConsumableDocument(source=<DocumentSource.ConsumeFolder: 1>, original_file=PosixPath('/usr/src/paperless/consume/r1-a-w-wt-write-retry.pdf'), mailrule_id=None, mime_type='application/pdf'), DocumentMetadataOverrides(filename=None, title=None, correspondent_id=None, document_type_id=None, tag_ids=None, storage_path_id=None, created=None, asn=None, owner_id=None, view_users=None, view_groups=None, change_users=None, change_groups=None, custom_field_ids=None))", 'kwargsrepr': '{}', 'origin': 'gen213@a793a05b3505', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}, 'properties': {'correlation_id':... kwargs:{})
+[2026-11-24 16:02:42,382] [ERROR] [celery.app.trace] Task documents.tasks.consume_file[b56cd418-6a7f-4461-b244-3f9cb8872496] raised unexpected: ConsumerError("r1-a-w-wt-write-retry.pdf: The following error occurred while storing document r1-a-w-wt-write-retry.pdf after parsing: [Errno 13] Permission denied: '/usr/src/paperless/media/documents/originals/0000004.pdf'")
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/asgiref/sync.py", line 349, in main_wrap
+    raise exc_info[1]
+  File "/usr/src/paperless/src/documents/consumer.py", line 527, in try_consume_file
+    self._write(
+  File "/usr/src/paperless/src/documents/consumer.py", line 806, in _write
+    with open(source, "rb") as read_file, open(target, "wb") as write_file:
+                                          ^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: '/usr/src/paperless/media/documents/originals/0000004.pdf'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 477, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 760, in __protected_call__
+    return self.run(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/tasks.py", line 167, in consume_file
+    document = Consumer().try_consume_file(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/consumer.py", line 577, in try_consume_file
+    self._fail(
+  File "/usr/src/paperless/src/documents/consumer.py", line 115, in _fail
+    raise ConsumerError(f"{self.filename}: {log_message or message}") from exception
+documents.consumer.ConsumerError: r1-a-w-wt-write-retry.pdf: The following error occurred while storing document r1-a-w-wt-write-retry.pdf after parsing: [Errno 13] Permission denied: '/usr/src/paperless/media/documents/originals/0000004.pdf'

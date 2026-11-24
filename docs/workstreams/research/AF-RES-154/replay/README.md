@@ -20,3 +20,5 @@ work=$(mktemp -d /tmp/af154-replay.XXXXXX)
 공급자 사본으로 시험을 재생하려면 위에 커밋된 고정 PDF와 validation-time.txt를 함께 사용한다. 새 시험 인증서를 쓰려면 `fixtures.py --generate --fixtures "$work/fresh-fixtures" --ledger "$work/fresh.jsonl"`을 실행한다. 새 키·시각이 들어간 서명 입력에는 새로운 SHA-256이 부여된다. 검사값의 문자열 경로, 작업 ID·시각, HTTP 헤더 파일명, PDF/A 생성 바이트는 검산에서 구분할 값이다.
 
 재생 중 원본과 기본 응답, 작업 결과, SQLite 읽기 증거, 서비스 로그가 `$work/runs`에 생긴다. 정상 업로드 UI 대신 공식 소비 감시 경로를 쓰며, API 인증과 파일 서버는 제품 그대로다. 환경 오류가 있으면 `harness-errors.json`과 각 인스턴스의 stdout/stderr를 먼저 읽는다. fixture에는 개인 자료와 개인 키가 들어 있지 않다.
+
+`run.py --phase matrix`는 16셀만 실행하며 `--phase controls`는 별도 X 설정 한 셀만 실행한다. 전체 명령이 A 반복의 쓰기 금지·복구·중복을 포함한다. `controls.py --out "$work/bag-and-render.json"`은 같은 fixture의 렌더링·서명·BagIt 대조다. `collect.py --raw "$work/runs" --task "$work/collected" --phase full`은 별도 임시 디렉터리에 재생 원장을 만든다.

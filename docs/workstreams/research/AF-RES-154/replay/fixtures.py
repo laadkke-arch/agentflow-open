@@ -32,12 +32,12 @@ TEXT = (
 TITLE = b"AF154 QA Immutable Title A"
 
 
-def command(*args):
-    return subprocess.run(args, capture_output=True, text=True, check=False, timeout=90)
+def command(*args, cwd=None):
+    return subprocess.run(args, cwd=cwd, capture_output=True, text=True, check=False, timeout=90)
 
 
-def checked(*args):
-    result = command(*args)
+def checked(*args, cwd=None):
+    result = command(*args, cwd=cwd)
     result.check_returncode()
     return result.stdout
 
