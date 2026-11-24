@@ -1,0 +1,29 @@
+{
+  "kind": "실행 기록",
+  "environment": {
+    "system": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14",
+    "git": "git version 2.52.0"
+  },
+  "git_head_before": "7ebba73951a10abed1f8c4f600fbaf2711de2104",
+  "cwd": ".",
+  "argv": [
+    "python",
+    "-B",
+    "-c",
+    "import csv\nimport gzip\nimport hashlib\nimport json\nimport re\nimport sys\nfrom collections import Counter\nfrom pathlib import Path\n\nroot, baseline = [Path(p) for p in sys.argv[1:]]\ndocs = {}\nfor folder in (\"api\", \"html\"):\n    here = root / \"receipts\" / folder\n    for r in json.loads((here / \"http.json\").read_text()):\n        raw = gzip.decompress((here / r[\"body\"]).read_bytes())\n        assert len(raw) == r[\"body_bytes\"]\n        assert hashlib.sha256(raw).hexdigest() == r[\"sha256\"]\n        assert r[\"http_status\"] == 200 and not r[\"error\"] and r[\"final_url\"] == r[\"request_url\"]\n        docs[r[\"source_id\"]] = json.loads(raw) if folder == \"api\" else raw.decode()\n\nwith baseline.open(newline=\"\") as f:\n    fixed = Counter((r[\"project\"], r[\"version\"], r[\"filename\"]) for r in csv.DictReader(f)\n                    if r[\"listing_status\"] == \"listed\")\nwith (root / \"files.csv\").open(newline=\"\") as f:\n    joined = {(r[\"project\"], r[\"version\"], r[\"filename\"]): r for r in csv.DictReader(f)}\nassert fixed == Counter(joined.keys()) and len(joined) == 88\n\ncases = ((\"matplotlib\", \"3.9.0\"), (\"matplotlib\", \"3.9.1\"), (\"matplotlib\", \"3.9.1.post1\"),\n         (\"pytest\", \"8.0.2\"), (\"pytest\", \"8.1.0\"), (\"pytest\", \"8.1.1\"))\nassertions = Counter()\nfor n, (p, v) in enumerate(cases, 1):\n    version = docs[f\"V{n:02}\"][\"urls\"]\n    pattern = re.compile(rf\"^{p}-{re.escape(v)}(?:-.+\\.whl|\\.tar\\.gz)$\")\n    simple = [r for r in docs[\"I01\" if p == \"matplotlib\" else \"I02\"][\"files\"] if pattern.fullmatch(r[\"filename\"])]\n    htm = docs[f\"H{n:02}\"]\n    html_sha = re.findall(\n        r'\\bid=\"([^\"]+\\.(?:whl|tar\\.gz))\"\\s+data-project-tabs-target=\"content\".*?'\n        r'SHA-256 checksum.*?data-clipboard-target=\"source\">([0-9a-f]{64})</span>', htm, re.S)\n    j_hash = {r[\"filename\"]: r[\"digests\"][\"sha256\"] for r in version}\n    s_hash = {r[\"filename\"]: r[\"hashes\"][\"sha256\"] for r in simple}\n    assert len(version) == len(simple) == len(html_sha) == len(j_hash) == len(s_hash)\n    assert j_hash == s_hash == dict(html_sha)\n    yanked = n in (2, 5)\n    for r in version:\n        assert r[\"yanked\"] is yanked\n        match = next(s for s in simple if s[\"filename\"] == r[\"filename\"])\n        assert match[\"yanked\"] == (r[\"yanked_reason\"] if yanked else False)\n        assert joined[p, v, r[\"filename\"]][\"json_sha256\"] == r[\"digests\"][\"sha256\"]\n    assertions[\"raw_html_json_simple_sha_agree\"] += len(version)\n    assertions[\"target\" if yanked else \"adjacent\"] += len(version)\n    print(f\"{p} {v} {len(version)} exact names and SHA-256 in all three views\")\n\nassert assertions == {\"raw_html_json_simple_sha_agree\": 88, \"target\": 26, \"adjacent\": 62}\nprint(\"UTC transport receipts, raw-body fingerprints and exact-key triple cross-check passed for 14 endpoints / 88 files\")",
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/docs/workstreams/research/AF-RES-216",
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/baseline.csv"
+  ],
+  "started_utc": "2026-11-24T21:53:18.962071Z",
+  "finished_utc": "2026-11-24T21:53:19.089627Z",
+  "input_sha256": {
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/baseline.csv": "102b6c20090e197f231a0f0e92ed51344f544661fc65e4ebb79145f5f50686ef",
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/docs/workstreams/research/AF-RES-216/files.csv": "94d9bcd3614e20182a47de7cae7d4abed3e13c6f27923b7cf91adb49f1304ced",
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/docs/workstreams/research/AF-RES-216/receipts/api/http.json": "cf5ec188b48b7586585e8526085c714986f27e1f2022da5873cd9cfd6941ee99",
+    "/tmp/af-res-216.NXcIdn/runs/frozen-phase4/docs/workstreams/research/AF-RES-216/receipts/html/http.json": "2ccd93fc4d8d9c05fb993ac9ecb034452131b49f24d99eca5e7fa3ebe5543cce"
+  },
+  "exit_code": 0,
+  "stdout": "matplotlib 3.9.0 29 exact names and SHA-256 in all three views\nmatplotlib 3.9.1 24 exact names and SHA-256 in all three views\nmatplotlib 3.9.1.post1 29 exact names and SHA-256 in all three views\npytest 8.0.2 2 exact names and SHA-256 in all three views\npytest 8.1.0 2 exact names and SHA-256 in all three views\npytest 8.1.1 2 exact names and SHA-256 in all three views\nUTC transport receipts, raw-body fingerprints and exact-key triple cross-check passed for 14 endpoints / 88 files\n",
+  "stderr": ""
+}
