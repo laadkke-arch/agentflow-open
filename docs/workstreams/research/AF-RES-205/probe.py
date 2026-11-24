@@ -432,6 +432,7 @@ def run(config, args):
           "requires Linux x86_64 / CPython 3.11")
     work = args.work.resolve()
     cache = args.cache.resolve() if args.cache else work / "artifacts"
+    locks = args.locks.resolve() if args.locks else None
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=True)
     work.mkdir(parents=True, exist_ok=True)
@@ -444,7 +445,7 @@ def run(config, args):
     write_json(out / "verify-wheels.json", proc)
     check(proc["exit_code"] == 0, f"wheel verification failed: {proc['stderr']}")
     with ThreadPoolExecutor(max_workers=args.jobs) as executor:
-        futures = [executor.submit(collect_environment, config, eid, work, out, cache, args.locks)
+        futures = [executor.submit(collect_environment, config, eid, work, out, cache, locks)
                    for eid in config["environments"]]
         for future in futures:
             print(*future.result(), flush=True)
