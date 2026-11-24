@@ -200,8 +200,58 @@ def error_entry(row, phase, issue, header, impl):
         "input": row["argument"], "type": issue, "header_or_docs_expected": header,
         "implementation_or_generator_expected": impl,
         "raw_value_repeat_1": row["observed_1"], "raw_value_repeat_2": row["observed_2"],
-        "repeat_match": row["same_raw_values"], "receipt_1": row["receipt_1"], "receipt_2": row["receipt_2"],
+        "repeat_match": row["same_raw_values"],
+        "buffer_repeat_1": row.get("buffer_repeat_1", ""),
+        "buffer_repeat_2": row.get("buffer_repeat_2", ""),
+        "receipt_1": row["receipt_1"], "receipt_2": row["receipt_2"],
     }
+
+
+def control_contract(consumer, first):
+    if consumer == PYTHON:
+        if first["operation"] == "name":
+            return ("python_no_name", "P02 L38–42", "P03 L1509–1516: exception/default")
+        return ("python_lookup_accept" if "code_points" in first else "python_lookup_miss",
+                "P02 L29–35: KeyError on miss",
+                "P03 L1055–1071, L1394–1443: exact algorithmic path vs ASCII folded table")
+    error = int(first["status"])
+    if first["operation"] == "lookup":
+        if error:
+            return ("lookup_miss_sentinel", "I02 L3806–3819: U_INVALID_CHAR_FOUND=10",
+                    "I03 L1530–1631: return 0xFFFF / U_ILLEGAL_CHAR_FOUND=12")
+        if first["return_hex"] == "FFFF":
+            return ("valid_noncharacter", "I02 L3806–3819: code point on success",
+                    "I03 L1562–1601: validated EXTENDED type and hexadecimal")
+        return ("icu_lookup_accept", "I02 L3806–3813: complete name matching",
+                "I03 L1545–1627: folds ASCII then branches on choice")
+    if error:
+        return ("buffer_warning" if error < 0 else "buffer_overflow",
+                "I02 L3758–3769: complete length; header describes NUL",
+                "I09 L1437–1458: warning on exact capacity, overflow if shorter")
+    return ("empty_name_with_success" if first["return"] == "0" else "synthetic_reverse",
+            "I02 L2060, L3758–3769: standard or synthetic plus full length",
+            "I03 L1487–1500: choice, fallback label, then NUL")
+
+
+def control_error_rows():
+    output = []
+    for consumer, count in ((PYTHON, 22), (ICU, 69)):
+        rows = observations(HERE / "receipts/controls", consumer)
+        assert len(rows) == count
+        for first, second, n1, n2 in rows:
+            issue, header, impl = control_contract(consumer, first)
+            raw_1, raw_2 = call_links("controls", consumer, n1, n2)
+            row = dict(first, consumer=consumer,
+                       argument=first["input"] if first["operation"] == "lookup" else "U+" + first["code_point"],
+                       observed_1=json_compact(outcome(consumer, first)),
+                       observed_2=json_compact(outcome(consumer, second)),
+                       same_raw_values=int(first == second), receipt_1=raw_1, receipt_2=raw_2)
+            if consumer == ICU and first["operation"] != "lookup":
+                for repeat, raw in ((1, first), (2, second)):
+                    row[f"buffer_repeat_{repeat}"] = json_compact({
+                        key: raw[key] for key in ("buffer_capacity", "nul_index", "buffer_hex")})
+            output.append(error_entry(row, "controls", issue, header, impl))
+    return output
 
 
 def show_outcome(row):
@@ -261,7 +311,7 @@ def generate_main():
     slots = directions(predicted, calls)
     write_csv(HERE / "calls.csv", calls)
     write_csv(HERE / "directions.csv", slots)
-    write_csv(HERE / "errors.csv", error_rows(calls))
+    write_csv(HERE / "errors.csv", error_rows(calls) + control_error_rows())
     sys.stdout.write(table_one(slots, calls))
 
 
