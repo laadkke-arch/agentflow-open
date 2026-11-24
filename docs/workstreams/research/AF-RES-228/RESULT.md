@@ -33,3 +33,62 @@
 | V+/V- | 새 빈 환경에서 양성·음성 재생 | 정상 3행/세 별표와 교차 GUID 2행을 각각 재현 | 원형 S02 true read 1/1/1, 3행. 교차 GUID feed 3·entry 2와 오배치 재현. [양성](receipts/REPLAY-positive.json), [음성](receipts/REPLAY-negative.json) | [새 컨테이너 영수증](receipts/container-replay.json), [경로 및 바이트](controls.csv) | 동일 런타임의 별도 컨테이너. 다른 평가자 검토는 미실시 |
 
 표 2의 한 행은 하나의 판별 목적이다. 하위 실행을 포함한 각각의 입력 변화와 전후 값은 [controls.csv](controls.csv)에 있다.
+
+## Q1. 원입력과 상태
+
+두 파일은 AF-RES-215가 고정한 RSS Dashboard의 공개 비식별 자료다. `96e930a268ade75c61e60e8427cd101bfb2f8cae`에서 읽은 바이트를 Git blob SHA-1과 SHA-256으로 각각 고정했다. 파일마다 다른 디렉터리를 사용했고 원형 실행에서는 basename을 `starred.json`으로 통일했다. 서로 다른 두 fixture를 동일 계정의 이력으로 연결할 근거는 없다. [S01의 표본 정책](https://github.com/amatya-aditya/obsidian-rss-dashboard/blob/96e930a268ade75c61e60e8427cd101bfb2f8cae/docs/starred-import-compatibility.md#L122-L138), [원값과 지문](inputs.json).
+
+| 입력 | 원래 이름 | 바이트 | Git blob SHA-1 | SHA-256 |
+| --- | --- | ---: | --- | --- |
+| S02 | `starred.json` | 3,858 | `336f65cc1a09679f82cfdb94e33e96f1b7272408` | `8ea0ca24dabbe6bbefa0784f94ade98b16eaa1863bbeb0db9a2334ad7f0cac7a` |
+| S03 | `starred-inoreader.json` | 2,863 | `c94a087d61074785e5986578d259a78526c596a2` | `db6a681d3ff2eea6ecdd7fb6eec42f3b773b88f16e86ea7a8dcc35d76ff521b0` |
+
+S02의 …0001과 S03의 …00b1/…00b2는 명시 read 토큰을 가진다. S02의 …0002/…0003에는 read와 unread 토큰이 모두 없다. 다섯 별표 토큰과 별도의 숫자 `starred` 값이 있다. 라벨 토큰은 …0002의 Design/art와 …00b1의 Misc다. 원본의 `alternate[0].href`와 `canonical[0].href`는 항목별로 같다. 실제 DB 비교에는 `origin.streamId`의 `feed/`를 뺀 URL과 내보낸 장문 ID를 사용했다. 장문 ID가 서비스에서 쓰는 형식이라는 사실은 원 발행자 RSS GUID의 보존을 입증하지 않는다. [S02 L11–132](fixtures/S02/starred.json), [S03 L11–93](fixtures/S03/starred-inoreader.json), [F03 장문 ID](https://www.inoreader.com/developers/article-ids).
+
+## Q2. 진입점과 환경
+
+FreshRSS 1.29.1 `b2c50115baa36c217e939ee3ea8ecfae52f91abd`를 읽기 전용으로 사용했다. 일회용 `DATA_PATH`마다 공식 `cli/prepare.php`, `cli/do-install.php --db-type=sqlite`, `cli/create-user.php --no-default-feeds`로 `afres228`을 만들었다. `config-user.custom.php`에 설정한 reception 불리언을 정상 사용자 로더로 다시 읽었다. 확장을 활성화하거나 피드 갱신을 호출하지 않은 상태에서 `php cli/import-for-user.php --user=afres228 --filename=<절대경로>`를 실행했다. Debian 13 amd64, PHP 8.4.28, PDO SQLite 3.46.1, cURL 8.14.1, libxml 2.9.14, 공급된 SimplePie 1.9.0이다. 설치·사용자·옵션 고정은 [R01](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/cli/import-for-user.php#L5-L44), [R07](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/Context.php#L101-L132), [실행기](run.py), [환경 영수증](receipts/runtime-main.json)에 있다.
+
+주실험의 8개 CLI 호출은 모두 exit 0이다. 새 피드를 추가하는 초회에는 아이콘 가져오기 경로의 이름 해석 실패가 S02 두 개 설치에서 각각 7건, S03에서 각각 4건 기록됐다. `strace`의 IPv4/IPv6 `connect` 기록 총 44개는 컨테이너의 loopback DNS 포트 53을 향했다. 컨테이너에 외부 네트워크를 연결하지 않았고 성공한 외부 HTTP 요청은 0건이다. 재수입은 `%network` 기록이 없고 새 경고가 추가되지 않았다. 성공한 아이콘 요청이나 웹 가져오기는 미확인이다. [R17 아이콘 준비](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/Feed.php#L430-L460), [R21 아이콘 경로](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/lib/favicons.php#L103-L126), [컨테이너 영수증](receipts/container-main.json), [S02-r0 stdout/stderr·시스템 호출·앱 로그](receipts/S02-r0.json).
+
+## Q3. 초회 DB 조인
+
+네 시작점 각각은 Uncategorized 한 개와 `feed/entry/entrytmp/tag/entrytag` 0행으로 시작했다. 실제 SQLite schema에는 prefix 없는 `feed.id`, `entry.id`, `UNIQUE(entry.id_feed, entry.guid)`와 `entrytag(id_tag,id_entry)`가 있다. S02의 두 설정 모두 feed/entry 3/3, 태그/관계 2/2, S03은 2/2와 1/1이다. 초회 10/10 자리에 피드 URL·GUID로 조인되는 하나의 행이 있고, 전부 item link와 별표를 보존했다. `entry.tags` 문자열은 이 표본에서 빈 값이다. Design/art와 Misc는 `entrytag`를 통해 붙었다. 피드 폴더는 원입력의 `origin.category`가 없어 Uncategorized로 남았으며 DB 태그 수가 수동으로 붙인 Inoreader 라벨 수와 같다고 해석할 근거는 없다. [F01 라벨 설명](https://www.inoreader.com/developers/stream-contents_), [R08 DDL](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/SQL/install.sql.sqlite.php#L17-L103), [실제 schema](schema.sql), [행별 CSV](observed.csv).
+
+## Q4. 재수입과 사용자 수정
+
+재수입 10/10은 같은 `feed.id`와 `entry.id`를 재사용했다. 행 수와 기사 URL, read, favorite, 라벨 관계의 측정값이 유지됐다. 네 경우의 `entrytmp`는 초회와 반복 뒤 모두 0행이었다. 동시에 10/10 행에서 초회의 양수 `lastSeen`이 재수입 후 0이 됐다. 파일 반복은 기존 `(id_feed,guid)`의 UPDATE를 타며, 새 객체의 기본 `lastSeen=0`을 대입한다. 이를 UI에서 보이는 항목 수나 읽음 상태로는 알아내기 어렵다. 정리 쿼리가 `lastSeen`을 참조하며 이번 정리 결과는 미확인이다. [R05 추가와 갱신](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L514-L549), [R20 기본 값](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/Entry.php#L24-L30), [R09 UPDATE](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/EntryDAO.php#L310-L324), [R09 정리](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/EntryDAO.php#L790-L849).
+
+C5의 일회용 DB에서는 공식 DAO로 …0001의 read와 favorite를 0으로, …0002의 read를 1로 바꿨다. 두 번째 항목의 Design을 떼고 LocalOnly를 붙였다. 원 바이트를 재수입하자 같은 세 ID에서 …0001의 read/favorite가 1/1로, …0002의 read가 0으로 바뀌었다. Design이 다시 붙고 수신에서 추가한 LocalOnly는 남아 두 관계에서 세 관계가 됐다. `lastUserModified`는 보존됐다. 이 사례에서 입력의 값과 누락을 채운 값은 읽음·별표 UPDATE에 쓰이고 태그는 관계를 추가한다. 동시 변경 처리와 더 복잡한 태그 조합의 동작은 미확인이다. [R09 플래그 바인딩](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/EntryDAO.php#L348-L367), [R11 관계 삽입](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/TagDAO.php#L302-L324), [C5 전후 영수증](receipts/C5-state-drift.json).
+
+## Q5. 수신 기본값과 명시적 안읽음
+
+세 explicit read 항목의 12자리는 모두 1이다. 토큰이 없는 두 항목의 여덟 자리는 reception=false에서 네 자리 0, true에서 네 자리 1이다. 두 단계에서 같은 결과였다. 0과 1은 수신기 값이다. 두 원항목의 과거 계정 상태는 미확인이다. 고정 기본 설정은 false이며, 다른 수신기 RSS Dashboard 소스와 시험은 그 입력의 부재를 false로 처리한다. 이 실험의 true 결과와 달라지는 구체적인 이관 조건이다. [R06](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/config-user.default.php#L64-L74), [R05 상태 파싱](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L441-L472), [A01 시험 기대](https://github.com/amatya-aditya/obsidian-rss-dashboard/blob/96e930a268ade75c61e60e8427cd101bfb2f8cae/test_files/unit/services/starred-import-mapper.test.ts#L217-L239), [DB 관측](observed.csv).
+
+C4-a의 합성 `categories[]` 안읽음 토큰은 reception=true에서도 …0002를 0으로 만들었다. C4-b의 합성 `read:false`는 수신 미지원 표현이며 …0002는 그대로 1이었다. Inoreader API는 안읽음 조작에 read 토큰 제거를 문서화한다. 합성 unread 토큰의 실제 계정 보관 파일 출력은 미확인이다. [F01 항목 필드](https://www.inoreader.com/developers/stream-contents_), [F02 수정 파라미터](https://www.inoreader.com/developers/edit-tag), [C4-a](receipts/C4-unread-token.json), [C4-b](receipts/C4-boolean-false.json).
+
+## Q6. 세 반례와 기각된 예측
+
+- **GUID 범위.** 같은 파일에서 …0001을 두 피드에 배치하자 피드 3개에 기사 2개가 생겼다. 피드 1은 빈 상태였고 피드 2의 …0001에는 피드 1 글의 링크·제목·read가 붙었다. 피드 2 출처 항목의 Design/art는 생성되지 않았다. 같은 변형을 파일 두 개로 나누자 각각의 피드에서 …0001이 공존했고 올바른 기사 세 개와 라벨 두 개가 생겼다. DB의 복합 키와 한 파일 안 GUID 단독 인덱스의 범위 차이가 관측을 설명한다. 파일 순서를 뒤집거나 실계정 Inoreader에서 같은 ID가 나올 빈도는 미확인이다. [R05 피드 매핑](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L405-L410), [R05 건너뛰기](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L514-L524), [C1 한 파일](receipts/C1-collision.json), [C1 분할](receipts/C1-split.json).
+- **링크 선택.** canonical만 다르게 한 경우 기존 alternate가 그대로 저장됐다. alternate가 빈 배열이고 canonical만 제공된 쌍은 행이 남았지만 link가 빈 문자열이었다. canonical을 우선하는 RSS Dashboard의 코드와 비교하면 수신기 선택에 따라 원링크가 달라질 수 있다. 원형 다섯 건은 두 URL이 같아 우선순위를 판별할 수 없었다. [R05 링크 선택](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L474-L480), [A02 링크 선택](https://github.com/amatya-aditya/obsidian-rss-dashboard/blob/96e930a268ade75c61e60e8427cd101bfb2f8cae/src/services/starred-import-mapper.ts#L250-L262), [C2 충돌](receipts/C2-conflict.json), [C2 canonical만](receipts/C2-canonical-only.json).
+- **파일명.** S03 원바이트의 `starred.json`, 원래 `starred-inoreader.json`, `transfer.json`은 각각 두 행과 별표 두 개로 들어왔다. 처음의 ‘중립 이름은 0행’ 예측을 폐기한다. 별표 토큰을 뺀 무라벨 항목은 같은 복제 바이트로 세 경로를 시험할 때 favorite 1/0/1을 보였다. CLI는 전체 경로의 대소문자 구분 substring으로 `starred` 모드를 고른다. 이 분기는 기본 별표를 다르게 하며 명시 별표 입력을 읽는 데는 두 JSON 모드가 통했다. JSON Feed 규격 자체의 적재는 범위 밖이다. [R01 CLI 경로](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/cli/import-for-user.php#L23-L36), [R05 형식 판별](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L224-L245), [F04 별도 JSON Feed 형식](https://www.jsonfeed.org/version/1.1/), [C3 다섯 경우](controls.csv).
+
+## Q7. 목적별로 필요한 링크
+
+**구독만** 옮길 경우 송신 OPML 메뉴와 수신 Import 절을 잇는다. **이미 확보한 별표 글**을 옮길 경우에는 실제 `starred.json`과 pinned CLI 및 `categories`·원링크 파서 절을 잇는다. 태그·원링크가 중요한 경우 수신 영수증으로 행과 관계까지 확인하는 사례를 함께 제공한다. **읽음 이력** 요구에는 송신 상태 표현과 수신 기본값을 먼저 제시한다. 원 파일에 토큰이 있는 항목과 수신에서 채운 항목을 나눠 보는 조건은 안내 파일에 있다. [advice.md](advice.md), [S04 송신 메뉴](https://www.inoreader.com/help/basic/preferences-customization/can-i-export-my-subscriptions-and-content), [R18 수신 사용자 문서](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/docs/en/users/04_Subscriptions.md#import), [AF-RES-215 고정판 매핑](https://github.com/laadkke-arch/agentflow-open/blob/58102fdacb7ac32ffcdacc08a55025612fdc7ebc/docs/workstreams/research/AF-RES-215/RESULT.md).
+
+Zotero의 동일 라이브러리 이전은 Sync 또는 데이터 디렉터리 이동으로 기존 연결을 가져가는 조건이다. 두 라이브러리를 합칠 때는 Zotero RDF에서 파일과 노트를 선택할 수 있다. 독립 레코드와 부모에 붙은 파일의 기능이 다르며 저장된 파일과 링크된 경로도 별개의 이동 단위다. 중복 후보는 라이브러리 범위 내 제목·DOI·ISBN 등의 단서로 제시되며, 사용자는 대표 항목과 필드를 골라 병합한다. 컬렉션·태그를 보존하는 병합과 화면에 중복이 몇 개 보이는지도 별개다. 이 대비는 RSS의 `(피드, GUID)` 조인, 관계 행, 사용자가 보는 별표 수를 각기 증명해야 하는 이유를 보여 준다. Zotero 동작 자체는 제작자 설명으로 비교했다. [T01 중복](https://www.zotero.org/support/duplicate_detection), [T02 동일 라이브러리](https://www.zotero.org/support/kb/transferring_a_library), [T03 라이브러리 결합](https://www.zotero.org/support/kb/merging_libraries), [T04 첨부 관계](https://www.zotero.org/support/attaching_files).
+
+## 적용 조건과 비용
+
+- **원 리더 사용자.** 현재 가진 파일에서 필요한 항목이 들어있고 어느 상태가 명시됐는지 먼저 확인할 수 있다. 같은 다섯 입력의 링크·별표·라벨은 정상 경로에서 연결됐다. C4와 C5는 누락된 read를 계정 이력으로 판단하거나 수신에서 바꾼 값을 재수입 뒤 보존된다고 보는 판단을 뒤집는다.
+- **수신기 유지자.** import 성공 신호에 입력 행·매칭·신규·수정·건너뜀·관계 수를 추가할 수 있다. GUID를 피드와 함께 인덱싱하면 C1의 배치 충돌을 검출할 수 있다. 충돌하는 입력을 수용할 정책을 결정할 때는 발신 ID가 서비스 전체에서 유일한 경우와 피드 안에서만 유일한 형식을 구별해야 한다. [F03 서비스 ID 표기](https://www.inoreader.com/developers/article-ids), [F04 피드 범위 ID](https://www.jsonfeed.org/version/1.1/), [F05 SQLite 제약 처리](https://www.sqlite.org/lang_conflict.html).
+- **자료 이관 담당자.** 빠른 경로는 파일 복제와 일회용 수신 DB에서 URL·상태·관계를 검산하는 방식이다. 사용자 상태를 많이 수정한 DB라면 사본 비교와 변경 목록 검토의 비용이 추가된다. 누락 근거까지 필요하면 별도 매핑에서 `absent`와 수신 기본값을 기록해야 한다. DB 불리언 하나로는 과거 근거를 되살릴 수 없다. 배너만으로 도착값을 판단할 수 없던 TT-RSS 초기 보고와, 다른 수신기 시험판 성공 보고는 이용자 관점의 상반된 사례다. [C01 초기 보고](https://github.com/FreshRSS/FreshRSS/issues/5583), [C02 사용자 응답](https://github.com/amatya-aditya/obsidian-rss-dashboard/issues/220#issuecomment-5635313461), [C03 구독/별표 요구](https://github.com/FreshRSS/FreshRSS/issues/2227).
+
+직접 산입한 고유 원자료는 48건, 계보는 9개다. 파일·수신 설정·차수로 계획된 20자리 중 20자리를 관측했다. 소비자 원보고는 서로 다른 네 건이고 이 중 세 건에 실제 가져오기 시도가 있으며, 이번의 Inoreader→FreshRSS 1.29.1 같은 계정의 과거 사용자 실측은 0건이다. C04의 사용자 보고와 C05의 수정은 한 사건이다. [자료 원장](sources.jsonl), [분모 검산](SELF_CHECK.md).
+
+| 중요한 불일치 또는 약점 | 영향을 받는 판단 | 다음에 볼 특정 자료·검사 | 판정이 뒤집힐 관측 |
+| --- | --- | --- | --- |
+| 원표본 두 자리에 발신 read/unread 토큰이 없다. reception으로 DB 값은 생긴다 | 과거 안읽음 이력 보존 | F01/F02에 대응하는 공개 비식별 내보내기에서 상태를 사전 확인한 항목과 원토큰을 쌍으로 대조 | 해당 발신판이 통제된 안읽음을 일관되게 토큰 부재로 표현한다는 양쪽 관측이 생기면 그 판에서만 부재 의미를 좁힐 수 있다. 지원하는 명시 unread가 실제 출력되면 직접 보존 경로도 추가된다 |
+| 원본 GUID는 전부 다르다. 한 파일 충돌과 오배치는 복제본에서 검증했다 | 실제 발신기 계정에서의 충돌 손실과 경고 필요성 | C1-a/b의 feed+GUID 검사를 두 피드가 들어있는 공개 또는 의도적으로 비식별화된 실제 sender specimen에 적용 | 지정 발신판의 실제 파일에서 same GUID 두 피드와 오배치가 함께 나오면 위험을 합성 통제에서 실제 이관으로 승격할 수 있다 |
+| 재수입에서 lastSeen은 0이 됐고 C5에서 수정 플래그도 달라졌다. 정리와 동시 갱신은 미실시 | 항목 수만 확인한 반복 수입의 장기 영향 | R09 L790–849의 정리 쿼리를 동일 판 로컬 SQLite에서 다른 `lastSeen` 두 항목, 같은 보존 옵션으로 실행 전후 비교 | 동일 행·다른 lastSeen에서 제거 결과가 갈리면 관찰한 메타데이터 변경이 해당 구성의 실제 보존 차이로 이어진다 |
