@@ -56,7 +56,7 @@ def enumerate_releases(packument, cutoff):
 
 def write_csv(path, rows, columns=COLUMNS):
     with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, columns, extrasaction="ignore")
+        writer = csv.DictWriter(stream, columns, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
