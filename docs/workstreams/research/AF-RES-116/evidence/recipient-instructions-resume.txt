@@ -1,0 +1,31 @@
+ROLE: Fresh AI recipient of one document-navigation packet.
+
+This is a bounded reading observation. You have not been given the other packets, reference answers, or expected routes. Do not inspect them. Your task is to try to answer the supplied request from the document views you actually obtain. You are an AI reader in a fresh conversation, not a human participant. No claim of blank prior model knowledge or operating-system isolation is made.
+
+The root supplies exactly one session ID rXX and its input path. Your only allowed study-file read is inputs/rXX.json. Read that JSON once to obtain the complete common request, optional one-line hint, official start URL, fixed version, and start_doc_id. Do not read AGENTS/STATE, SCOPE, cases, packets, authoring, gold, corpus bytes, sources, graph, other inputs, other agents' outputs, or event logs. Do not search the web or the filesystem. Do not read the reader engine source. Use the public CLI commands below exactly as the documented interface. Do not spawn another reader or modify any existing file.
+
+WORKDIR=/workspace/scratch/2446ddf3cbde/agentflow-open
+OWN=docs/workstreams/research/AF-RES-116
+
+Initialize once:
+python -B OWN/viewer/reader.py --session rXX init --corpus OWN/corpus.json.gz --start-doc START_DOC_FROM_INPUT --reader-id recipient-rXX-fresh-ai
+
+Open the first page (this uses opening 1):
+python -B OWN/viewer/reader.py --session rXX open --reason '공통 시작 문서를 먼저 읽는다.'
+
+After EVERY displayed view, before the next opening, record an answer:
+python -B OWN/viewer/reader.py --session rXX answer --json JSON_OBJECT
+
+JSON_OBJECT must contain nonempty strings operation, preservation, exceptions, disposition, and a citations array. Use Korean prose. State what operation you have evidence for, what retained property you have or have not confirmed, and what exception you have or have not found. Disposition can be 보류, 부분 확인, 조건부 답, or 충분히 확인, but do not force a positive result. Cite exact short quotations from a view actually seen, each as {"quote":"exact visible text","doc_id":"ID printed in the display header"}. An empty citation array is allowed when you have only a table of contents. Do not invent offsets. You may use knowledge to choose where to navigate, but claims supported only by prior knowledge must be marked unverified. The supplied request/hint is not proof that the requested behavior works.
+
+Select a visible link ID, or next, again, back, for another opening:
+python -B OWN/viewer/reader.py --session rXX choose --action VISIBLE_ID_OR_NEXT --reason '왜 이 항목을 선택했는지 현재 생각을 그대로 적는다.'
+
+You have at most THREE total openings including the first page. Every opening, including next/back/again, costs one. You may reuse a link seen in an earlier view. You may not guess URLs, anchors, IDs that have not appeared, search within the full document, or inspect metadata to learn hidden destinations. The displayed view, including navigation, is at most 1500 Unicode codepoints. Operational command receipts do not contain extra document content.
+
+After the final answer:
+python -B OWN/viewer/reader.py --session rXX finish --summary '판정과 남은 불확실성을 짧게 요약한다.'
+
+If you genuinely choose to stop before opening three, use finish --stop and explain why. Do not spend remaining openings automatically if you judge them unnecessary. Failed command attempts must not be concealed or bypassed by writing logs directly. Use shell-safe JSON quoting or Python subprocess.run with an argument list; no file-writing helper is necessary. The CLI is the only permitted writer and stores your exact choices, displays, answers, UTC times and measured wall intervals.
+
+When finished, tell the parent the session ID, observed number of openings, and whether any protocol mistake or access failure occurred. Do not summarize another packet or claim a human result.
