@@ -1,0 +1,8 @@
+# AF-RES-204 — 범위 고정 (묶음 ①)
+- 계획 기준 050278651b11a2a3a49d45baebf41c707c06b700 → 시작 c860f8240ab7b7077e2d5b63e438ddd83ff69a27 (compare: ahead 4, behind 0; 유일 변경 docs/automation/dot-control.json +261/-6). 배정 브랜치 work/research-af-res-204, owned path만 변경. 제어 파일 blob 4839b0345e1e644c20452df6282ecef0af76c456 전체 조회 후 204 RUNNING/depends_on 193 확인. 193 상태 DONE, result_commit 2beb6cb6a1857942c41670458ae32f4895777366; 지정된 2beb6cb6a1857942c41670458ae32f4895777366 HANDOFF/RESULT 읽음: 설치 인터페이스의 동일성과 실제 목적지·운영 조건의 차이, 엄격 사례 모집 실패를 전이하지 않고 재검증.
+- AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, RESEARCH_BRIEF, INDEX 읽음. 195/196 및 188 정확도, UI 콜백·행 선택, 메일, 공유 부하 측정 제외. API 호출/설치/배포/벤치마크 없음.
+- 12자리: Nominatim OSMF public / 자체, Photon public demo / 자체 × submit / per-keystroke / offline. 기능과 이용조건 별도: 문서상 가능/불가/미확인; 조건부 허용/금지/미기재/공개 호스트 정책 적용 밖. offline=검색 중 외부 인터넷 없음; 자체 LAN 서버와 단말 내 실행 분리. 원시 데이터 ≠ 인덱스 ≠ API. 공개 demo 성공 ≠ SLA.
+- 사례 모집: 2022-01-01~2025-12-31, 두 저장소 issue/discussion, 본문에 실제 client/endpoint와 autocomplete/offline/public usage 중 하나; repository별 작성일 오름차순·번호 tie break 최초 두. 결과/처분으로 고르지 않음. 모호한 host는 결측으로 남김. 모든 조회 후보와 제외 기록. 사후 보강 별도. 모집 완전성 확인 못 하면 PARTIAL. 예정 4 사건 + 최소 5개 고유 소비자 자료(같은 사건 댓글 별 자료 가능하나 사건 중복 금지).
+- 출처 최소 22: 운영 4, 엔진 6, 소비자 5, 데이터 3, Open Library 4. 동일 저작/재게시/미리보기 제외, 유형간 중복 계수 금지. 원문 버전 미표시 시 조회일+미표시. 조사 시점 UTC 2026-11-24(사용자 제공 +09:00 2026-11-25 05:51); 정확 시각 미측정. 원문 결과와 해석 구분.
+- 사전 노출: 문제 지시와 193 결과에서 서비스 정책과 목적 분리라는 가설 이미 노출, 블라인드 아님. 예측: public submit 조건부, public Nominatim autocomplete 금지 가설, self 운영/데이터 별도. 반례로 Photon demo 허용 범위와 local suggestions, small submit, offline resource 조건 검토. 제품 구조/순위 확정 금지.
+- ①~⑥ 순서로 저장. 코드/manifest 실행하지 않고 필요 시 인계 명령 기록.
