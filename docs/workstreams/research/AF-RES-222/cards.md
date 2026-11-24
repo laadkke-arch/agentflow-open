@@ -1,0 +1,8 @@
+# 세 목적의 반환 카드 (설계 후보; 제품 구현 아님)
+| 목적 | 첫 링크 | 보여줄 필드 | 실패 방지 |
+|---|---|---|---|
+| 과거 인용 재현 | 인용 당시 UCD 판의 UnicodeData/NameAliases 고정 주소+행 (예: U04/U03) | literal quotation, code, version, property role, original URI/row, citation observed time | 현재 별칭 존재를 과거에 소급하지 않음; FE18 BRAKCET 보존 |
+| 정정된 용어로 찾기 | 16.0.0 NameAliases 행 U01 → 동일 U+ 코드의 U02/NamesList | queried literal, normalized key(별도), matched alias/type, code, release first observed, original Name | exact formal name 및 correction 우선; control/alternate/abbreviation 선택 지원; annotation 별도 후보, 200B/2060/FFFE로 자동 병합 금지 |
+| 프로그램 정식 표시 | 실제 consumer의 고정 doc/impl P01/P02 또는 I01/I02/I06 | consumer version/UCD version, function, choice, expected/observed, return string/error/length, evidence ref | Python name vs lookup, ICU UNICODE vs ALIAS vs EXTENDED 분리; 000A Name 없음/합성 이름; 오류 status 우선 |
+예: 검색어 LATIN CAPITAL LETTER GHA → U+01A2 → 공식 Name LATIN CAPITAL LETTER OI, correction GHA 병기. 과거 인용에는 실제 문자열 그대로. 검색 클릭은 alias 행; 공식 표시는 consumer API 문서로. U+FEFF BOM은 alternate BYTE ORDER MARK와 다른 alias type; Python lookup 예상 성공, ICU name choice 예상 실패. 표시 카드가 BOM을 공식 Name으로 자동 바꾸면 안 된다.
+보존 필드 후보: namespace, stable_object_key(codepoint), codepoint, source_release, source_file/line, original_literal, name_role, normalized_search_key, relation(alias_of/annotation_of/related_to), first_observed_release, previous_absence_kind, consumer/version/ucd/choice/direction, result_status/error, source_id, checked_at, observed_vs_expected. source row 텍스트는 변경 이력에 붙이고 object ID는 새로 만들지 않는다. 전거의 경우 LCCN/authority URI + 100/400/500 및 날짜/670, 병합/취소 이력으로 identity 증거가 달라진다. Unicode 전용 unique-name 규칙을 전거에 그대로 이식하지 않는다.
