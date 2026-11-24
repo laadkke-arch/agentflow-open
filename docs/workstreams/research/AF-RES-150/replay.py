@@ -15,6 +15,7 @@ HOLD = 'HOLD'
 NONE = 'NONE'
 MODEL_NAMES = ('A', 'B', 'C')
 ABLATIONS = ('pin', 'route', 'alias', 'scope', 'authority', 'available', 'cancel')
+CONTROL_ALTERNATES = {'C01.2', 'C02.2', 'C03.2', 'C04.2'}
 FAULT_DAYS = ('9999-01-01', '9999-01-02')
 HERE = Path(__file__).resolve().parent
 
@@ -96,6 +97,8 @@ class Store:
         self.db.execute('INSERT OR IGNORE INTO observations VALUES (?, ?, ?)', (case_id, key, body))
 
     def accept(self, case_id, event):
+        if self.ablation == 'alternate' and event['id'] in CONTROL_ALTERNATES:
+            return
         if self.model == 'C':
             if self.ablation == 'alias' and event['id'] == 'N06.4':
                 return
@@ -250,7 +253,7 @@ class Store:
                 extras = [row['proof'] for row in edges if row['group'] in groups]
             else:
                 references = {left['id'], right['id']}
-                relationships = [row for row in edges if {row['left'], row['right']} == references]
+                relationships = [row for row in edges if {row['left'], row.get('right')} == references]
                 choices = [row for row in relationships if row['kind'] in {'alias', 'block'}]
                 latest = max(choices, key=time_key) if choices else None
                 value = 'same' if latest and latest['kind'] == 'alias' else 'distinct'
@@ -421,6 +424,7 @@ def run(args):
     if args.suite == 'full':
         scenarios += [(scenario, name, '') for scenario in ('duplicate', 'reverse', 'interrupt', 'bad-link') for name in MODEL_NAMES]
         scenarios += [(f'without-{field}', 'C', field) for field in ABLATIONS]
+        scenarios.append(('single-address', 'A', 'alternate'))
     answers, costs = [], []
     for scenario, name, field in scenarios:
         store = Store(args.out / f'{scenario}-{name}.sqlite3', name, field)
