@@ -1,0 +1,60 @@
+[2026-11-24 16:02:38,970] [INFO] [paperless.management.consumer] Adding /usr/src/paperless/consume/r1-a-si-si-signed-image.pdf to the task queue.
+[2026-11-24 16:02:39,011] [INFO] [paperless.consumer] Consuming r1-a-si-si-signed-image.pdf
+[2026-11-24 16:02:39,013] [DEBUG] [paperless.consumer] Detected mime type: application/pdf
+[2026-11-24 16:02:39,014] [DEBUG] [paperless.consumer] Parser: RasterisedDocumentParser
+[2026-11-24 16:02:39,017] [DEBUG] [paperless.consumer] Parsing r1-a-si-si-signed-image.pdf...
+[2026-11-24 16:02:39,148] [DEBUG] [paperless.parsing.tesseract] Calling OCRmyPDF with args: {'input_file': PosixPath('/tmp/paperless/paperless-ngx3nkje5f4/r1-a-si-si-signed-image.pdf'), 'output_file': PosixPath('/tmp/paperless/paperless-75aj6thg/archive.pdf'), 'use_threads': True, 'jobs': '1', 'language': 'eng', 'output_type': 'pdfa', 'progress_bar': False, 'color_conversion_strategy': 'RGB', 'skip_text': True, 'clean': True, 'deskew': True, 'rotate_pages': True, 'rotate_pages_threshold': 12.0, 'sidecar': PosixPath('/tmp/paperless/paperless-75aj6thg/sidecar.txt')}
+[2026-11-24 16:02:39,285] [WARNING] [paperless.parsing.tesseract] Encountered an error while running OCR: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+. Attempting force OCR to get the text.
+[2026-11-24 16:02:39,286] [DEBUG] [paperless.parsing.tesseract] Fallback: Calling OCRmyPDF with args: {'input_file': PosixPath('/tmp/paperless/paperless-ngx3nkje5f4/r1-a-si-si-signed-image.pdf'), 'output_file': PosixPath('/tmp/paperless/paperless-75aj6thg/archive-fallback.pdf'), 'use_threads': True, 'jobs': '1', 'language': 'eng', 'output_type': 'pdfa', 'progress_bar': False, 'color_conversion_strategy': 'RGB', 'force_ocr': True, 'clean': True, 'deskew': True, 'rotate_pages': True, 'rotate_pages_threshold': 12.0, 'sidecar': PosixPath('/tmp/paperless/paperless-75aj6thg/sidecar-fallback.txt')}
+[2026-11-24 16:02:39,382] [ERROR] [paperless.consumer] Error occurred while consuming document r1-a-si-si-signed-image.pdf: DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+Traceback (most recent call last):
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 330, in parse
+    ocrmypdf.ocr(**args)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/api.py", line 375, in ocr
+    return run_pipeline(options=options, plugin_manager=plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 225, in run_pipeline
+    return _run_pipeline(options, plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 189, in _run_pipeline
+    validate_pdfinfo_options(context)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipeline.py", line 202, in validate_pdfinfo_options
+    raise DigitalSignatureError()
+ocrmypdf.exceptions.DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 381, in parse
+    ocrmypdf.ocr(**args)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/api.py", line 375, in ocr
+    return run_pipeline(options=options, plugin_manager=plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 225, in run_pipeline
+    return _run_pipeline(options, plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 189, in _run_pipeline
+    validate_pdfinfo_options(context)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipeline.py", line 202, in validate_pdfinfo_options
+    raise DigitalSignatureError()
+ocrmypdf.exceptions.DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/asgiref/sync.py", line 349, in main_wrap
+    raise exc_info[1]
+  File "/usr/src/paperless/src/documents/consumer.py", line 446, in try_consume_file
+    document_parser.parse(self.path, mime_type, self.filename)
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 393, in parse
+    raise ParseError(f"{e.__class__.__name__}: {e!s}") from e
+documents.parsers.ParseError: DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+

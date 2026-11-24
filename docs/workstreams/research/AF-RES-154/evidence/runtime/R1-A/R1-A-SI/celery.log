@@ -1,0 +1,71 @@
+[2026-11-24 16:02:38,982] [INFO] [celery.worker.strategy] Task documents.tasks.consume_file[036ab334-7795-47e2-810a-cfbe8467cb40] received
+[2026-11-24 16:02:38,983] [DEBUG] [celery.pool] TaskPool: Apply <function fast_trace_task at 0x7fc1d123c9a0> (args:('documents.tasks.consume_file', '036ab334-7795-47e2-810a-cfbe8467cb40', {'lang': 'py', 'task': 'documents.tasks.consume_file', 'id': '036ab334-7795-47e2-810a-cfbe8467cb40', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '036ab334-7795-47e2-810a-cfbe8467cb40', 'parent_id': None, 'argsrepr': "(ConsumableDocument(source=<DocumentSource.ConsumeFolder: 1>, original_file=PosixPath('/usr/src/paperless/consume/r1-a-si-si-signed-image.pdf'), mailrule_id=None, mime_type='application/pdf'), DocumentMetadataOverrides(filename=None, title=None, correspondent_id=None, document_type_id=None, tag_ids=None, storage_path_id=None, created=None, asn=None, owner_id=None, view_users=None, view_groups=None, change_users=None, change_groups=None, custom_field_ids=None))", 'kwargsrepr': '{}', 'origin': 'gen213@a793a05b3505', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}, 'properties': {'correlation_id':... kwargs:{})
+[2026-11-24 16:02:39,396] [ERROR] [celery.app.trace] Task documents.tasks.consume_file[036ab334-7795-47e2-810a-cfbe8467cb40] raised unexpected: ConsumerError('r1-a-si-si-signed-image.pdf: Error occurred while consuming document r1-a-si-si-signed-image.pdf: DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,\ninvalidating the signature.\n')
+Traceback (most recent call last):
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 330, in parse
+    ocrmypdf.ocr(**args)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/api.py", line 375, in ocr
+    return run_pipeline(options=options, plugin_manager=plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 225, in run_pipeline
+    return _run_pipeline(options, plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 189, in _run_pipeline
+    validate_pdfinfo_options(context)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipeline.py", line 202, in validate_pdfinfo_options
+    raise DigitalSignatureError()
+ocrmypdf.exceptions.DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 381, in parse
+    ocrmypdf.ocr(**args)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/api.py", line 375, in ocr
+    return run_pipeline(options=options, plugin_manager=plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 225, in run_pipeline
+    return _run_pipeline(options, plugin_manager)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipelines/ocr.py", line 189, in _run_pipeline
+    validate_pdfinfo_options(context)
+  File "/usr/local/lib/python3.11/site-packages/ocrmypdf/_pipeline.py", line 202, in validate_pdfinfo_options
+    raise DigitalSignatureError()
+ocrmypdf.exceptions.DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/asgiref/sync.py", line 349, in main_wrap
+    raise exc_info[1]
+  File "/usr/src/paperless/src/documents/consumer.py", line 446, in try_consume_file
+    document_parser.parse(self.path, mime_type, self.filename)
+  File "/usr/src/paperless/src/paperless_tesseract/parsers.py", line 393, in parse
+    raise ParseError(f"{e.__class__.__name__}: {e!s}") from e
+documents.parsers.ParseError: DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 477, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/celery/app/trace.py", line 760, in __protected_call__
+    return self.run(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/tasks.py", line 167, in consume_file
+    document = Consumer().try_consume_file(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/paperless/src/documents/consumer.py", line 474, in try_consume_file
+    self._fail(
+  File "/usr/src/paperless/src/documents/consumer.py", line 115, in _fail
+    raise ConsumerError(f"{self.filename}: {log_message or message}") from exception
+documents.consumer.ConsumerError: r1-a-si-si-signed-image.pdf: Error occurred while consuming document r1-a-si-si-signed-image.pdf: DigitalSignatureError: Input PDF has a digital signature. OCR would alter the document,
+invalidating the signature.
+
