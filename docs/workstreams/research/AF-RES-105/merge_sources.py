@@ -1,7 +1,8 @@
 """Canonical source ledger. Reader records remain unchanged in evidence/ subdirectories."""
-import json
+import json,csv
 from pathlib import Path
 P=Path(__file__).resolve().parent
+proposal_urls={r['case_id']:r['proposal_url'] for r in csv.DictReader((P/'proposals.csv').open())}
 old=[json.loads(x) for x in (P/'sources.jsonl').read_text().splitlines()];by={x.get('source_id',x.get('id')):x for x in old}
 for path in sorted((P/'evidence').glob('*/sources-part.jsonl')):
  for line in path.read_text().splitlines():
@@ -32,6 +33,10 @@ for sid,s in by.items():
   s['terminology_note']='manual4.0 says Group Index; supplied node UI says Group ID. This is a terminology correspondence, not a direct quote.'
   s['location']='Inputs: Value and Group Index (node UI Group ID); Properties: data type/domain; Outputs: Leading, Trailing, Total; Examples/Table'
  if sid=='BL-O4':s['terminology_note']='manual4.0 says Scale; supplied node UI says Offset Scale. These terms are mapped, not quoted as identical labels.'
+ if sid in ['BL-K1-PROPOSAL','BL-N1-PROPOSAL']:
+  s['reader_original_url']=s['original_url']
+  s['original_url']=proposal_urls[sid.removesuffix('-PROPOSAL')]
+  s['canonical_provenance_note']='Exact answer URL joined from the remotely frozen proposal ledger; parent question URL retained above. Selection and immutable revision unchanged.'
  s['canonical_reader_record_preserved']=True
 (P/'sources.jsonl').write_text(''.join(json.dumps(s,ensure_ascii=False)+'\n' for s in by.values()))
 print('canonical sources',len(by),'counted',sum(s['counting']['counted_unique_primary_source'] for s in by.values()))
