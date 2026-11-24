@@ -22,3 +22,12 @@ work=$(mktemp -d /tmp/af154-replay.XXXXXX)
 재생 중 원본과 기본 응답, 작업 결과, SQLite 읽기 증거, 서비스 로그가 `$work/runs`에 생긴다. 정상 업로드 UI 대신 공식 소비 감시 경로를 쓰며, API 인증과 파일 서버는 제품 그대로다. 환경 오류가 있으면 `harness-errors.json`과 각 인스턴스의 stdout/stderr를 먼저 읽는다. fixture에는 개인 자료와 개인 키가 들어 있지 않다.
 
 `run.py --phase matrix`는 16셀만 실행하며 `--phase controls`는 별도 X 설정 한 셀만 실행한다. 전체 명령이 A 반복의 쓰기 금지·복구·중복을 포함한다. `controls.py --out "$work/bag-and-render.json"`은 같은 fixture의 렌더링·서명·BagIt 대조다. `collect.py --raw "$work/runs" --task "$work/collected" --phase full`은 별도 임시 디렉터리에 재생 원장을 만든다.
+
+커밋된 근거와 원장을 먼저 검사하고, 새로 재생한 동작과 대조한다.
+
+```sh
+/tmp/af154-replay-venv/bin/python "$task/replay/controls.py" --out "$work/bag-and-render.json"
+/tmp/af154-replay-venv/bin/python "$task/replay/verify.py" --replay-dir "$work/runs"
+```
+
+검사에서 PDF/A 파생의 SHA-256은 비교란에 따로 보고한다. 저장된 각 파생 응답의 지문과 내용은 자기 영수증에 대해 검증한다. 원본은 모든 재생에서 고정 입력과 바이트 단위로 비교한다. 변조 대조의 `pdfsig`는 종료 코드와 출력 문장을 모두 남긴다.
