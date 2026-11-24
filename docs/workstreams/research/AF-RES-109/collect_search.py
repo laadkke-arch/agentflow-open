@@ -37,7 +37,7 @@ def collect():
             arm_events = read_jsonl(path / "events.jsonl")
             arm_sources = read_jsonl(path / "sources.jsonl")
             assert result["request_id"] == rid and result["arm"] == arm
-            assert result["input_sha256"] == request["full_input_sha256"]
+            assert result["input_sha256"] == request["experiment_input_sha256"]
             assert result["actual_queries"] <= 3
             assert result["actual_explicit_opens"] <= 6
             finals = result["final_candidates"]

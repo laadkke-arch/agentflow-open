@@ -6,7 +6,7 @@
 
 모집 URL은 frame.csv와 sources.jsonl의 FRAME 행에 있다. 각 저장소2024 issue 검색을 생성시각순80건 가져와 같은 시각은 번호순으로 정렬한다. 검색결과의 상태·댓글·linked PR을 판독자에게 출력하지 않는다. 현재 접근 가능한 첫80의 지문이지 삭제된 사건을 포함한 역사적 전체 집합이 아니다.
 
-requests.jsonl의 `full_input_sha256`은 **title + 두 줄바꿈 + 현재 opening body**의 UTF-8 SHA256이다. 원문 URL의 API `/repos/{owner}/{repo}/issues/{number}`에서 title/body만 꺼내 같은 문자열을 만들고 대사할 수 있다. 편집되어 hash가 다르면 현재판을 예전 입력으로 취급하지 않는다. 전체 원문 캐시는 공개 저장소에 재게시하지 않았다. 원문 내용은 공개 출처에서 다시 읽고, 최초판을 확보하지 못하면 결손을 유지한다.
+requests.jsonl의 `full_input_sha256`은 **title + 두 줄바꿈 + 현재 opening body**의 원 API UTF-8 지문이다. 실제 A/B에 제공한 문자열은 CRLF/CR을 LF로 정규화한 것이며 `experiment_input_sha256`과 대사한다. 최초 봉인 때 두 지문의 차이를 놓쳤으나 원 hash를 유지하고 실제 hash를 추가했다. [정정 영수증](evidence/start/input-newline-reconciliation.json)에 모든 대응이 있다. 원문 URL의 API `/repos/{owner}/{repo}/issues/{number}`에서 title/body만 꺼내 같은 문자열을 만들고 대사할 수 있다. 줄바꿈 정규화 외 hash 차이가 나면 현재판을 예전 입력으로 취급하지 않는다. 전체 원문 캐시는 공개 저장소에 재게시하지 않았다. 원문 내용은 공개 출처에서 다시 읽고, 최초판을 확보하지 못하면 결손을 유지한다.
 
 최초판 복구의 최소 다음 행동은 각 issue의 공개 편집 이력에서 생성시점 본문판을 얻는 것이다. REST updated_at, 현재 bodyVersion, 현재 open/closed 상태는 최초판 증거가 아니다. 실제 첫 본문을 얻으면 두 조건·기지 안을 비교하고 새 연구층/새 봉인으로 재실행한다. 기존 표본을 조용히 바꾸지 않는다.
 
