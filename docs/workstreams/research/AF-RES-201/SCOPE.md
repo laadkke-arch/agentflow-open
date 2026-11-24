@@ -1,0 +1,7 @@
+# AF-RES-201 SCOPE
+- 계획 050278651b11a2a3a49d45baebf41c707c06b700 → 시작 c860f8240ab7b7077e2d5b63e438ddd83ff69a27 (compare ahead 4, behind 0, 변경 파일 dot-control.json만). 지정 브랜치 부재(422) 확인 후 시작 SHA에서 생성.
+- AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, START_HERE, 제품 RESEARCH_BRIEF, INDEX 읽음. dot-control 내용 API 빈 응답(blob 4839b0345e1e644c20452df6282ecef0af76c456), 대신 시작 SHA의 실제 diff hunk -4653,+4653에서 AF-RES-201 RUNNING, attempt 1, depends_on AF-RES-192, branch/owned_path 확인. 전체 JSON 미열람. AF-RES-192 60704a5701d1ac1608954d339b5ef8e9e25bcbd2 HANDOFF/RESULT 읽음: 중앙 완료와 자체 PARTIAL 구별, preferred DOI ≠ release ≠ 기능. archive/해시/설치 재조사 안 함. 195/196/199 및 동시 과제 제외.
+- 모집 고정(논문 읽기 전): C=colorspace 07120, K=k-diagram 08661, V=Vizagrams.jl 09037, R=Raincloud v1 DOI 10.12688/wellcomeopenres.15191.1. 논문→직접 연결 저자 자료→당대 판→그림. 각 본문/캡션/참고문헌의 모든 언급 위치순(중복 역할 가능). 예상(가설): C/K/V 비교·인용 가능, R 아이디어 또는 직접 API 사용 가능; 실제 열람으로 수정. R은 2021 이전 대조; 후기 DOI 소급 금지. 선행 결과 및 사용자 브리프에 먼저 노출되었으나 이번 4개 원문/코드는 아직 미열람.
+- 분모: P 4 고정, C 8 독립 저자 파일(당대 우선), T 4 날짜/발행/방법 자료, S 2 seaborn 논문·당대 기능 문서, M 4 같은 공연 프로그램·녹음·크레디트. 최소 22, 유형 간 중복 산입 금지. 12 목적 자리. 검색 결과/중복/접근 실패는 원장 제외 표시.
+- 규칙: 문장 역할과 실행 증거 독립. E0 언급만, E1 선언, E2 import/호출(필수/선택/문서/간접 구별), E3 특정 산출물 생성 경로, E4 동일 출력 실행 기록(파일·실행 식별 조인). E3도 실행 관측 아님. 양성 주장에는 버전과 위치, 미발견은 검색 범위와 한계. 최신 예제는 당시 사용으로 소급 금지. 비교 대상과 사용 사례를 별도 유지.
+- 작업은 공개 자료 읽기, 설계 판단만. 실제 체크아웃/manifest/빌드/검사 미실시(연결 API 파일 편집); 필요한 검증 명령 인계. UTC 날짜 2026-11-24(통제 diff dispatch 20:48Z; 열람 정확 초 미확인).
