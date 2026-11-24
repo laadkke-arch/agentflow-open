@@ -1,0 +1,4 @@
+# Pre-reader corrections and transport limitations
+
+1. The original LilyPond title regex in `protocol.json` contains a double backslash around `bpart(s)?`. Python interprets it as literal backslash-b rather than a word boundary. The human-language subject intent was parts/variables/reuse/includes. No LilyPond monthly candidate enumeration succeeded, so no case was selected under either interpretation. Preserve the original artifact and use `protocol-amendment.json` for an explicitly corrected future enumeration. Do not silently describe the original code as correct. The current L1–L3 vacancies remain.
+2. Original browser-style source acquisition was unavailable for selected public origins. `reader-method.md` specifies bounded web-service views and a GitHub contents/file adapter before recipient trials. A/B receive the same adapters and budgets. This is not evidence of a browser scrolling study.
