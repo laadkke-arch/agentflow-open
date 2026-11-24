@@ -1,0 +1,2 @@
+# 모집 원장 ②
+Kueue REST search first page: queue: 100/404 (incomplete_results=false); pending: 100/173 (incomplete_results=false); "fair sharing": 53/53 (incomplete_results=false); backfill: 1/1 (incomplete_results=false). UTC created ascending, ID tie 예정; 반환 순서는 원장에 그대로 저장. 19 중복 occurrence, 235 고유 ID. 377 검색 occurrence 미반환; 모든 개별 본문을 판정하지 않았고 첫 적격 5 복원 실패. 이전 40건 search connector의 일부 출력도 있었으나 별도 표본으로 가산하지 않음. Slurm Bugzilla 접근 불가, 월 원장 일부/검색 보충만. 두 원장의 자연층 0 확정/10 자리, 0/10은 양성률 아님. 보충 12행; 원 요청과 실측 분리. 최초 본문 노출을 숨기지 않음. 원장에 기록한 판독은 직접 읽은 위치만. 개인 정보/원문 전체 복제 없음.
