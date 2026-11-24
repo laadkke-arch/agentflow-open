@@ -1,0 +1,10 @@
+# AF-RES-188 — 범위와 사전 판정
+- 계획 기준 0f6765df46ad2128c7fdfa92c3bf917bbfe0c5e6; 착수 통합 SHA 72cf39aea54e2de2ba78a245593aefdc40205a16 (PLAN#43 first attempts). 브랜치 검색 결과 없음 → 이 SHA에서 work/research-af-res-188 생성.
+- AGENTS.md 9dabe506eac7f7f013d68174062dd6eeb682fd7d, STATE.md 3fe3fd626e5a1bb0fedabfa78052a774d601f95f, DOT_AUTOMATION.md 12ee268c493806c2fec83f261dc1ae08ecdee9c8, RESEARCH_WORKFLOW.md e707baa2c8b366f960f9da0c4ea7c1ea60f62b00 및 제품 브리프·프로토콜·README·ROADMAP·START_HERE·CLOUD_WORKFLOW 읽음. 색인 e76a22c3c4fbd588d61b7f1480049183adaeef7b: 아직 새 연구 항목 없음; 중앙 색인 수정 금지.
+- dot-control fetch_file 본문 빈 결과: 최신 blob f0c9a6ea6f8a385ca103fabcb95df3b1a3bd130e를 직접 fetch_blob하여 AF-RES-188 RUNNING attempt 1, worker web-pro, depends_on AF-RES-179, result_commit null 및 brief 확인. 계획판 blob 2d3a6fd86da2fabd965eb7be19f870803abe777a 직접 파싱: 179 DONE, 188 항목 아직 없음. 최신 179 DONE/51e726b67b53e00f0134b16bd762b3a684b86d04 동일. [고정 HANDOFF](https://github.com/laadkke-arch/agentflow-open/blob/51e726b67b53e00f0134b16bd762b3a684b86d04/docs/workstreams/research/AF-RES-179/HANDOFF.md) 자체 PARTIAL; 실제 연결·정확 입력·출력 조인 없으면 기능 확정 금지. 좌표에서는 설치와 실제 연산을 분리. 186/동회차 기다리지 않음. SQLite/Django 재실험 제외.
+- 사전 모집: OS 공식 시험 파일의 실제 ID 순으로 H1/H2(본토 내부), Z1/Z2(높이 기재), B1/B2(다른 수직 기준/경계) 6 질문 자리 고정. 동일 ID 중복 허용하되 고유점 수 별도. 지역 라벨 또는 좌표의 공식 설명 없으면 추정 대신 미확인. 공식 ID/열/기대값/단위/허용차 원행을 보존; 일반 정확도와 시험 허용차 혼동 금지.
+- 사건 E1 pyproj discussion #1534, E2/E3 해당 스레드나 공식 문서의 직접 링크 순 첫 적격 원제보(좌표·경로/관측 포함) 최대 2건. 유지자 예제는 해당 사용자 관측 아님. 별도 비교 자료는 사건 분모에 포함하지 않음.
+- 출처 할당 최소 5 OS / 5 EPSG·PROJ / 4 시험·설명·원제보 / 4 사건 자료 / 4 교정·조석 =22; 한 URL/동일 원문은 하나의 주 범주에만 산입. 접근 실패, 미리보기, 중복 제외; 계보/판/사건 수 분리. 자료 판 미표기 시 미확인. 공식 규칙·기대값은 새 측정이 아니다.
+- 경합 설명: 축 순서, 각도/거리 단위, 타원체고/정표고와 지역별 수직 기준, datum ensemble/시대, AOI, 낮은 정확도 대체 연산. 격자 배포 여부≠실효 선택≠정확도 달성. 네트워크/사전설치/미설치 환경을 구분; 저정밀 허용 시 별도 후보.
+- 조사 설계만 수행. PROJ/두 엔진 실행·새 좌표 계산 없음. 제품 DB/API/수집기/랭킹 미결정. GitHub 인터페이스만 사용, checkout 계약 검사 미실행(인계에 명령). 허용 경로 밖 변경 없음.
+- 노출 이력: 위 내부 파일 먼저 읽음. 이 시점에 외부 원자료·점 값은 아직 미열람. UTC 날짜는 작업 배정과 일치하는 2026-11-24/25 경계(UTC 2026-11-24 20시대부터 시작); 자료 원장에는 확인 UTC 날짜를 기록한다.
