@@ -33,7 +33,8 @@ def runtime(installation, tool, version):
         sha256 = file_hash(binary)
         if not version_info.endswith(f" v{version}") or sha256 != VERSION_LOCK["yq"][version]["binary_sha256"]:
             raise ValueError(f"Unexpected yq release: {version_info}, {sha256}")
-        artifacts = {"yq_binary_sha256": sha256}
+        artifacts = {"yq_binary_sha256": sha256,
+                     "go_runtime": VERSION_LOCK["yq"][version]["go_runtime_from_binary_strings"]}
     return bin_dir, {"cli_version": version_info, "os": platform.platform(), **artifacts}
 
 

@@ -71,6 +71,9 @@ def catalog():
         **{"data1.yaml": b"# sequence head\n['b', c, d] # sequence end\n"})
     add("Y4", "styled-block", CONTROL, "I-Y4", "Compare sequence comment and item-level style on a block array.",
         **{"data1.yaml": b"# sequence head\n- 'b' # first item\n- c\n- d\n"})
+    add("Y2", "upstream-expressions", THIRD_PARTY, "R-Y2-null",
+        "Exact constant expressions from the upstream null merge regression suite, passed as CLI arguments.")
+    rows[-1]["source_url"] = "https://github.com/mikefarah/yq/commit/9af55d555bf36b089db637c8da7971bdfaffc8f9"
     return rows
 
 
