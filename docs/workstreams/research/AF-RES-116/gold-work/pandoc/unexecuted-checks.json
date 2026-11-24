@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "created_utc": "2026-11-24T04:43:22.784136+00:00",
+  "all_product_runtime_status": "not_run",
+  "required_setup": "Use an already available exact historical binary/engine if authorized later; this task did not install or run it.",
+  "checks": [
+    {
+      "check_id": "P1-original",
+      "case_id": "P1",
+      "status": "not_run",
+      "input": "reproduction-inputs/P1-original.md",
+      "provenance": "exact original inline input, line endings normalized",
+      "argv": [
+        "<PANDOC_2.19.2_BINARY>",
+        "P1-original.md",
+        "--self-contained",
+        "--toc",
+        "--output=P1-original.html"
+      ],
+      "necessary_observations": [
+        "binary --version must be 2.19.2",
+        "TOC A1/A2 present; B1/B2 absent according to source-derived expectation",
+        "body B1/B2 present; one Fenced3 wrapper retained"
+      ],
+      "do_not_infer": "Stored screenshot and upstream expected test output are not this execution."
+    },
+    {
+      "check_id": "P1-hierarchy-counter",
+      "case_id": "P1",
+      "status": "not_run",
+      "input": "reproduction-inputs/P1-hierarchy-counter.md",
+      "provenance": "researcher-constructed counterinput; changes only B2 from level 2 to level 3; not a proposed solution preserving original heading hierarchy",
+      "argv": [
+        "<PANDOC_2.19.2_BINARY>",
+        "P1-hierarchy-counter.md",
+        "--self-contained",
+        "--toc",
+        "--output=P1-hierarchy-counter.html"
+      ],
+      "necessary_observations": [
+        "B1/B2 expected to appear as hierarchical items",
+        "one output group retained"
+      ],
+      "do_not_infer": "This changes the natural input and never replaces P1 in the natural sample."
+    },
+    {
+      "check_id": "P1-raw-candidate",
+      "case_id": "P1",
+      "status": "not_run",
+      "input": "reproduction-inputs/P1-raw-wrapper-candidate.md",
+      "provenance": "researcher adaptation of same-issue 2024 raw HTML proposal; native AST shape changed",
+      "argv": [
+        "<PANDOC_2.19.2_BINARY>",
+        "P1-raw-wrapper-candidate.md",
+        "--self-contained",
+        "--toc",
+        "--output=P1-raw-wrapper-candidate.html"
+      ],
+      "necessary_observations": [
+        "both peer headings in TOC",
+        "single Fenced3 emitted HTML grouping and valid nesting",
+        "source attributes/IDs required by real filter preserved"
+      ],
+      "do_not_infer": "No claim of historical-version success until actually executed; native Div AST is not preserved."
+    },
+    {
+      "check_id": "P2-space-tab-matrix",
+      "case_id": "P2",
+      "status": "not_run",
+      "input": [
+        "reproduction-inputs/P2-bare-keys.txt",
+        "reproduction-inputs/P2-space-enriched.yaml",
+        "reproduction-inputs/P2-tab-enriched.txt",
+        "reproduction-inputs/P2-example.md"
+      ],
+      "provenance": "constructed small inputs based on original schematic; full original file/keys unavailable",
+      "argv_template": [
+        "<PANDOC_3.8.3_BINARY>",
+        "--from=markdown+smart",
+        "--to=native",
+        "--abbreviations=<KEYS_FILE>",
+        "P2-example.md"
+      ],
+      "variants": [
+        "P2-bare-keys.txt",
+        "P2-space-enriched.yaml",
+        "P2-tab-enriched.txt"
+      ],
+      "necessary_observations": [
+        "exact reader token/space output, not just successful exit",
+        "bare keys expected NBSP; enriched variants expected not to match bare tokens",
+        "source files must remain byte-identical before/after; compare hashes"
+      ],
+      "do_not_infer": "Three schematic outputs cannot prove equivalence for the unknown full YAML key set."
+    },
+    {
+      "check_id": "P2-smart-exception",
+      "case_id": "P2",
+      "status": "not_run",
+      "input": [
+        "reproduction-inputs/P2-bare-keys.txt",
+        "reproduction-inputs/P2-example.md"
+      ],
+      "provenance": "constructed exception check",
+      "argv": [
+        "<PANDOC_3.8.3_BINARY>",
+        "--from=markdown-smart",
+        "--to=native",
+        "--abbreviations=P2-bare-keys.txt",
+        "P2-example.md"
+      ],
+      "necessary_observations": [
+        "no abbreviation NBSP effect when smart disabled"
+      ],
+      "do_not_infer": "Does not test arbitrary punctuation or multiword keys."
+    },
+    {
+      "check_id": "P3-tex-component",
+      "case_id": "P3",
+      "status": "not_run",
+      "input": [
+        "reproduction-inputs/P3-followup-with-listfiles.tex",
+        "reproduction-inputs/testgraphic.png"
+      ],
+      "provenance": "original followup TeX plus non-rendered \\listfiles instrumentation; engine identity is unresolved",
+      "argv": [
+        "<ACTUAL_LATEX_ENGINE_BINARY>",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-recorder",
+        "P3-followup-with-listfiles.tex"
+      ],
+      "necessary_observations": [
+        "record exact engine --version, full log package versions and template",
+        "actual next-page figure location",
+        "table retained; text/table lower bounds against body text area across pages",
+        "repeat TeX passes as necessary until longtable widths stabilize"
+      ],
+      "do_not_infer": "A selected current pdflatex run is not the original unknown Quarto/TeX environment."
+    },
+    {
+      "check_id": "P3-controls",
+      "case_id": "P3",
+      "status": "not_run",
+      "input": "reproduction-inputs/P3-original-layoutissue.md + testgraphic.png",
+      "provenance": "original attachment; controls described by author; need original actual render command",
+      "argv": [
+        "<ORIGINAL_RENDER_COMMAND_AND_OPTIONS_UNKNOWN>"
+      ],
+      "variants": [
+        "original with extra pre-figure paragraph and table",
+        "delete pre-figure paragraph so figure fits same page",
+        "remove table",
+        "replace table with another figure"
+      ],
+      "necessary_observations": [
+        "same actual engine/template/package environment for all variants",
+        "record float and table coordinates, page text area, log diagnostics",
+        "a success without an actual next-page float is a diagnostic control only"
+      ],
+      "do_not_infer": "Raw Pandoc invocation need not honor Quarto format YAML or match original pipeline."
+    },
+    {
+      "check_id": "P3-independent-upstream-counter",
+      "case_id": "P3",
+      "status": "not_run",
+      "input": "reproduction-inputs/P3-upstream-158.tex",
+      "provenance": "original independent LaTeX issue 158 MWE",
+      "argv": [
+        "<RECORDED_LATEX_ENGINE_BINARY>",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "P3-upstream-158.tex"
+      ],
+      "variants": [
+        "original first figure no placement argument",
+        "first figure [htbp] diagnostic variant"
+      ],
+      "necessary_observations": [
+        "verify whether h placement avoided genuine floating in the second variant",
+        "package/runtime version recorded"
+      ],
+      "do_not_infer": "A passed independent MWE does not by itself decide exact P3."
+    }
+  ],
+  "input_hashes": {
+    "P1-hierarchy-counter.md": "02c7eaa79b017b3ea68c55bf7fd3d1734d4c6254ea73ab92878e364733bb8017",
+    "P1-original.md": "505457a5e925d5c0a7a53cb9a0efd325ee3e343f38d45696eb0cf2b6725fc05f",
+    "P1-raw-wrapper-candidate.md": "234a20b88524a14f6d778396da9c4fee9b37442c9aa4f4dcdbfcad7b69d04ac7",
+    "P2-bare-keys.txt": "e6e9963ded61df236b4581247a2ad1eb460d56659a99acbe9999b28a889b9e1a",
+    "P2-example.md": "261c89f432881f6d8c8042415b9e487bf714b96d35ac4e7c2cdcd466fc611428",
+    "P2-space-enriched.yaml": "650ec78bb3f37a881275ccc1fc9ac95bd136ab06676a5ec9ea9ceebc5e9da1c8",
+    "P2-tab-enriched.txt": "b5780c9e68684ec57bedeed830e98f067d125812bd861299e5289557c104ef52",
+    "P3-followup-layoutissue.tex": "ea9bd37066af09b405acfc30a2d382630df560cd8430a6bf2f10e6d9810c6d4f",
+    "P3-followup-with-listfiles.tex": "bcdaafc968649d7e252b29d9705b5b7844c196ea4706617fbf74687e18d2166d",
+    "P3-original-layoutissue.md": "9041f545ec685fb5024cf2f55203c0399a0dba82e26e5e3606f988762d87c8fb",
+    "P3-upstream-158.tex": "9293688b81a64945046cdb3272cf85b61d509d55473a73ec21f7677850fd3f05",
+    "testgraphic.png": "c6ca5190d9723f0ddeeae96b88290cdd58f3c4650d0266ee1f6adbaaf3faacf6"
+  }
+}
