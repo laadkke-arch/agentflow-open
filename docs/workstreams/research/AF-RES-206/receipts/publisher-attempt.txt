@@ -1,0 +1,36 @@
+AF-RES-206 publisher retrieval observation, 2026-11-24 UTC
+
+OS resources page opened in the public web reader. The full Developer pack link resolved as a link target to the same URL recorded in AF-RES-188 X01.
+Web reader click/download result:
+  Failed to fetch https://www.ordnancesurvey.co.uk/documents/resources/OSTN15-OSGM15-DevelopersPack.zip: (400) Unsupported content-type: application/x-zip-compressed
+The reader's 400 concerns the reader's unsupported type. It does not establish the publisher's response status, bytes, or ZIP validity.
+
+Cloud command for the resources page:
+  curl --fail --silent --show-error --location --max-time 60 --dump-header /tmp/af-res-206-data/OS00.headers --output /tmp/af-res-206-data/OS00.html --write-out '%{json}\n' 'https://www.ordnancesurvey.co.uk/geodesy-positioning/coordinate-transformations/resources'
+stderr:
+  curl: (22) The requested URL returned error: 403
+exit: 22
+headers:
+  HTTP/1.1 403 Forbidden
+  content-length: 16
+  content-type: text/plain
+  date: Tue, 24 Nov 2026 20:52:10 GMT
+  server: envoy
+  connection: close
+
+Cloud command for the exact full pack:
+  curl --silent --show-error --location --max-time 50 --dump-header /tmp/af-res-206-data/OS01.headers --output /tmp/af-res-206-data/OS01.zip --write-out '%{http_code} %{url_effective} %{size_download}\n' 'https://www.ordnancesurvey.co.uk/documents/resources/OSTN15-OSGM15-DevelopersPack.zip'
+stderr:
+  curl: (56) CONNECT tunnel failed, response 403
+stdout:
+  000 https://www.ordnancesurvey.co.uk/documents/resources/OSTN15-OSGM15-DevelopersPack.zip 0
+exit: 56
+headers:
+  HTTP/1.1 403 Forbidden
+  content-length: 16
+  content-type: text/plain
+  date: Tue, 24 Nov 2026 20:52:25 GMT
+  server: envoy
+  connection: close
+
+Current managed network mode restricted/enforced, package_managers preset, zero custom hosts at observation. Publisher host and geomatics.cc were outside the activated policy. The environment change proposal for these two exact hosts returned pending_confirmation. No origin HTTP status or real origin redirect chain, content length, SHA, ZIP entry or archive version could be collected. No failed entity is counted as a publisher ZIP.
