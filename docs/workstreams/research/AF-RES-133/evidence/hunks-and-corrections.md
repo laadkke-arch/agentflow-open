@@ -1,0 +1,29 @@
+# 근거 영수증: hunk 및 정정 자료 (부분)
+
+확인일 2026-11-24 UTC 일 단위. 원격 GitHub 파일/commit/compare 응답 및 ONS 원문 HTML 직접 판독. 로컬 checkout/재현 실행은 하지 못했다. 아래는 최소 구간만 요약하거나 짧게 전사했다. PR의 base/head는 리뷰 직전/직후 SHA와 동일하다고 가정하지 않았다.
+
+## 코드
+
+- S-N2 #7579: [부모](https://github.com/scikit-image/scikit-image/blob/dff9fbd17dd4f3efcce6eeffab03b8b420602e44/pyproject.toml#L88) joblib 명시. [수정](https://github.com/scikit-image/scikit-image/commit/09b24f5ccefc0e88d392c685d8e33a8f9776fa29): pyproject.toml 및 requirements/docs.txt 의 별도 joblib 삭제와 sphinx-gallery[parallel]>=0.17 추가; doc/source/conf.py 주석/설치 지침 정리. [병합 파일](https://github.com/scikit-image/scikit-image/blob/76490395683e892d1ab366971a0850f15e629956/pyproject.toml#L69). [공급판](https://github.com/sphinx-gallery/sphinx-gallery/blob/v0.17.0/pyproject.toml#L61-L62) parallel extra = joblib. parent 비교 결과 3개 파일. 기존 parallel 선택 자체는 제안 이전. 발언과 정확한 변경 SHA 연결, 링크 제공 사례가 아니라 이름 제안. 독립 실행 및 릴리스 미확인.
+- X-N3 [병합](https://github.com/pydata/xarray/commit/707231e3ae17d2dcb68975e5189c42421a88d0df) utils.py +832/+892: tuple 반환 함수를 분리하고 set 변형을 추가, 단위시험 수정. 최초 후속 수정 SHA와 제안 직전 tree 미확인. 내부 함수이고 link 없음. 작성자가 일단 교체했다가 다른 형태 필요하다고 답한 과정 확인.
+- S-C1 [병합](https://github.com/scikit-image/scikit-image/commit/14540c8d193c45b737454e4efa36fd35a930e6cf): pyproject SciPy >=1.11→>=1.11.2; _graph.py +31,+69 default sparse_type="matrix", 명시 array; test_pixel_graph.py +16 matrix default, array opt-in, invalid type ValueError; _graph_cut.py +274 *→@. 다른 actor의 보호 변경과 링크 시간순 관계. 원작성자 귀속 및 실제 CI/릴리스 미확인.
+- S-L3 #7575: [대체 PR #7699](https://github.com/scikit-image/scikit-image/pull/7699) created 2025-02-08T02:04:21Z, merged 2025-02-11, 링크 제안은 02-08 23:37 이후. [공급 workflow](https://github.com/numpy/numpy/blob/11cc665f85fb1038cc2a5b2bdb64a1255215d651/.github/workflows/wheels.yml#L164-L175) L168 no-build-isolation, L173/174 prerelease/free threaded. [shell](https://github.com/numpy/numpy/blob/11cc665f85fb1038cc2a5b2bdb64a1255215d651/tools/wheels/cibw_before_build.sh#L56-L63) L59 Py_GIL_DISABLED, L62 nightly Cython. 다른 유지보수자의 수정이 먼저 시작되었고 draft #7575는 closed; 소비자 당시 정확한 CI 환경 미확인.
+- S-L2-C/S-L4 #7589: [최종](https://github.com/scikit-image/scikit-image/blob/4678f1bdd55e24e5545b86107eae10cb89aa8095/doc/examples/filters/plot_deconvolution.py#L40-L48) L40 Shot_noise 설명 링크; L41 max_photon_count=1000, L42 rng.poisson 후 scaling; L45 max 정규화, L48 richardson_lucy default clip. 원래도 rng.poisson 호출이 있었다. [공급 구현](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/skimage/restoration/deconvolution.py#L361-L425) L361 signature, L368 normalize 안내, L420 clip. clip=False 제안과 어두운 결과 보고 뒤 최종 정규화 유지. 실제 시각 품질 독립 확인 없음. 
+- X-L1 [head](https://github.com/pydata/xarray/commit/cecd5613fb533b3f1f0ca4ba4eff057fae9ccd0c) 마지막 diff overflow 처리 refactor이며 localcontext 도입 증거 아님. [consumer](https://github.com/pydata/xarray/blob/cecd5613fb533b3f1f0ca4ba4eff057fae9ccd0c/pyproject.toml) Python>=3.10 numpy>=1.24 pandas>=2.1. 원 PR 닫힘, 후속 #9618 전체 판독 아님.
+- X-L2-C [비교 후보 #9473](https://github.com/pydata/xarray/pull/9473) 제안 시 open, 이후 closed/unmerged. #9588 작성자가 이미 dedup 처리했다고 설명; merge diff [c057d13](https://github.com/pydata/xarray/commit/c057d13ab3df3f5dbc5e23b7de6ff9a728cf669e) 3 files/7 commits인 PR. 정확한 review tree는 미복구.
+
+## Q7 원표 두 쌍 및 별도 귀속 대조 (코드 분모 밖)
+
+| 사건 ID/표 | 이전 원자료와 값 | 정정판/현재값 | 귀속/한계 |
+|---|---|---|---|
+| C1 G7G6 2022 Q2 Civil Service FTE SA, 천명 | [2022-09-13 v28](https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/publicsectorpersonnel/timeseries/g7g6/pse/previous/v28) L225–226 480 | [현재 동일 series](https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/publicsectorpersonnel/timeseries/g7g6/pse) L57–63 정정 2022-09-13; L232–234 479, 2026-09-15 release | 동일 ID/분기 수치 차이 1천명; 현재까지 중간 수정 가능, GB/UK 표제 차이; 즉시 대체판 미복구. 연락 담당과 제보자는 동일하지 않음. |
+| C2 사망 인증 reform 표 R68 | [2026-09-25 v1](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/articles/deathcertificationreformenglandandwales/2025/previous/v1) L332–360 R68.8, 건수 11,835/13,528/14,933 및 23.1/26.6/30.4% | [정정판](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/articles/deathcertificationreformenglandandwales/2025) L63–68 2026-10-23 13:00 (timezone 미명시); L340–344 R68, 값 동일 | 식별 코드 수정이지 수치 수정 아님; formatting error라고 설명; 제보자 미기재. |
+| C3 VAT cash receipts HMRC 명시 | [ONS 2025-10-08 공지](https://blog.ons.gov.uk/2025/10/08/an-update-and-explanation-on-the-public-sector-finance-statistics/) L15–20 HMRC가 오류 발견 통지, 월 £200–500m, FYE March 약 £1bn 추정 | [September 2025 bulletin](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/bulletins/publicsectorfinances/september2025) section 7 L514–537: Apr–Aug £2.4bn cash understated; isolation FYE March borrowing 약 £1bn, FY–Aug £2bn; 전체 FY–Aug borrowing £4.2bn 하향 £79.6bn | 명시한 통보 주체 확인; 전체 수정에는 다른 업데이트가 섞임. 이전 표의 동일 row 직접 고정 미완료; 기사+bulletin 차이를 제보자 전체 공로로 계산 금지. |
+| C4 별도 HMRC 정정 공지 | [July 2026 bulletin](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/bulletins/publicsectorfinances/july2026) HMRC 보고, March/April/May 약 £235m per month | 교체 전후 동일 셀 미복구 | 제보자 표시만 확인한 상태. 수정 없음이라고 판정하지 않음. |
+
+[ONS revisions guide](https://www.ons.gov.uk/methodology/methodologytopicsandstatisticalconcepts/revisions/guidetostatisticalrevisions) section 4: 정정과 통상 revision 구별. C1/C2 판본 각각은 같은 work_id로 묶고 C3 blog와 bulletin은 별도 발행 저작이나 같은 사건으로 집계. 이 원표 비교와 PR 수를 합산하지 않는다.
+
+## 미실시/실패
+- web PR /commits 뷰 및 역사 버전 mypy docs, 소비자 wheel workflow 지정 경로를 열려 했으나 접근 실패/404. 원본이 소실되었다고 단정하지 않음.
+- GitHub 통합 댓글 API는 원문 일부와 DB id/시각 제공; separate REST endpoint pagination 및 original_commit_id는 확보 못함. GraphQL thread 응답의 head_sha를 original_commit_id로 대체 금지.
+- 실제 git ls-remote 시도: git ls-remote https://github.com/laadkke-arch/agentflow-open.git refs/heads/work/research-af-res-133 → exit 128, Could not resolve host: github.com. 정식 workbench 검사 아님.
