@@ -12,4 +12,4 @@
 
 ## 검산 기록
 
-[별도 50개 페이지 재회수](evidence/rechecked-public-pages.jsonl)로 합집합과 중복, 부모 ID, 끝 페이지를 [독립 집계식](replay/verify_report.py)에서 계산했다. [입력과 실행 원장](compatibility.csv)의 25행, [8 release 색인](releases.csv), [6 정정 사건](corrections.csv), [원전 37 고유 work_id](sources.jsonl)의 분모를 맞췄다. 77 출처 행에서 6개 접근 실패는 최소량에서 제외했다. 다른 검토 세션은 참가시키지 않았다. 아래 최종 인계에 커밋 기준의 재실행 영수증을 연결한다.
+[별도 50개 페이지 재회수](evidence/rechecked-public-pages.jsonl)로 합집합과 중복, 부모 ID, 끝 페이지를 [독립 집계식](replay/verify_report.py)에서 계산했다. [입력과 실행 원장](compatibility.csv)의 25행, [8 release 색인](releases.csv), [6 정정 사건](corrections.csv), [원전 37 고유 work_id](sources.jsonl)의 분모를 맞췄다. 85 출처 행에서 7개 접근 실패는 최소량에서 제외했다. 다른 검토 세션은 참가시키지 않았다. 아래 최종 인계에 커밋 기준의 재실행 영수증을 연결한다.
