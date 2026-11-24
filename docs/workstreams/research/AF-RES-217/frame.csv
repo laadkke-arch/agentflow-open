@@ -41,20 +41,20 @@ run,A06-OEM0-R2,primary,A06-OEM0,admitted_explicit_negative,미지원 예상,"�
 mode,A06-OEM1,primary,A06,admitted_positive,지원 예상,"지정 파일 read, Init 0, exit 0, 글자 있음",A06 E01 E02
 run,A06-OEM1-R1,primary,A06-OEM1,admitted_positive,지원 예상,"지정 파일 read, Init 0, exit 0, 글자 있음",A06 E01 E02
 run,A06-OEM1-R2,primary,A06-OEM1,admitted_positive,지원 예상,"지정 파일 read, Init 0, exit 0, 글자 있음",A06 E01 E02
-control,CT01,control,,planned,,누락 tessdata-dir,
-control,CT02,control,,planned,,정확 basename의 합성 바이트,
-control,CT03,control,,planned,,"명시 tessdata/eng, 환경 fast/eng",
-control,CT04,control,,planned,,"명시 fast/eng, 환경 tessdata/eng",
-control,CT05,control,,planned,,흰 페이지·LSTM,
-control,CT06,control,,planned,,"eng+ara, eng만",
-control,CT07,control,,planned,,eng+ara 모두,
-control,CT08,control,,planned,,Hunspell 양쪽,
-control,CT09,control,,planned,,Hunspell aff 누락,
-control,CT10,control,,planned,,Hunspell dic 누락,
-control,API-A01-OEM0,validation,,planned,,공개 TessBaseAPIInit2 legacy 양성,E09 E11
-control,API-A05-OEM0,validation,,planned,,공개 TessBaseAPIInit2 legacy 음성,E09 E11
-control,API-CT06,validation,,planned,,공개 TessBaseAPIInit2 두 요청 중 하나 초기화,E09 E11
-control,API-CT07,validation,,planned,,공개 TessBaseAPIInit2 두 언어 초기화,E09 E11
+control,CT01,control,,observed,,"누락 tessdata-dir / model_path_missing, Init -1, exit 1, stdout 0 B",E02 E03 C05
+control,CT02,control,,observed,,"정확 basename의 합성 바이트 / model_parse_rejected, Init -1, exit 1, stdout 0 B",E02 E04 C05
+control,CT03,control,,observed,,"명시 tessdata/eng, 환경 fast/eng / initialized, Init 0, exit 0, stdout 27 B",A01 A05 E03
+control,CT04,control,,observed,,"명시 fast/eng, 환경 tessdata/eng / legacy_components_missing, Init -1, exit 1, stdout 0 B",A01 A05 E02 E03
+control,CT05,control,,observed,,"흰 페이지·LSTM / initialized, Init 0, exit 0, stdout 0 B",A05 E01 E09
+control,CT06,control,,observed,,"eng+ara, eng만 / partial_language_success, Init 0, exit 0, stdout 29 B",A05 E02 E11 C07
+control,CT07,control,,observed,,"eng+ara 모두 / initialized, Init 0, exit 0, stdout 52 B",A05 A06 E02 E11
+control,CT08,control,,observed,,"Hunspell 양쪽 / spell_result, Init 별도, exit 0, stdout 13 B",H01 H02 H03
+control,CT09,control,,observed,,"Hunspell aff 누락 / spell_diagnostic, Init 별도, exit 1, stdout 0 B",H01 H02 H03
+control,CT10,control,,observed,,"Hunspell dic 누락 / spell_diagnostic, Init 별도, exit 1, stdout 0 B",H01 H02 H03
+control,API-A01-OEM0,validation,,observed,,"공개 TessBaseAPIInit2 legacy 양성 / api_measured, Init 0, exit 0, stdout 157 B",E09 E11
+control,API-A05-OEM0,validation,,observed,,"공개 TessBaseAPIInit2 legacy 음성 / api_measured, Init -1, exit 0, stdout 105 B",E09 E11
+control,API-CT06,validation,,observed,,"공개 TessBaseAPIInit2 두 요청 중 하나 초기화 / api_measured, Init 0, exit 0, stdout 157 B",E09 E11
+control,API-CT07,validation,,observed,,"공개 TessBaseAPIInit2 두 언어 초기화 / api_measured, Init 0, exit 0, stdout 164 B",E09 E11
 source,A01,model,,admitted,,고유 원본 바이트와 실측 구성,A01
 source,A02,model,,admitted,,고유 원본 바이트와 실측 구성,A02
 source,A03,model,,admitted,,고유 원본 바이트와 실측 구성,A03
@@ -109,3 +109,5 @@ exclusion,EX-OEM2-3,excluded,,excluded,,OEM2/3 범위 밖,
 exclusion,EX-OSD,excluded,,excluded,,방향/문자 판별,
 exclusion,EX-ACCURACY,excluded,,excluded,,사용자 OCR 정확도·제보 해결·모집 순서,
 exclusion,EX-205-206-207,excluded,,excluded,,별개 연구 데이터·결과,
+source,E12,engine-source,A04,admitted_post_hoc,,Cube 설명 주석과 5.3.0 숫자 1 모드 대조,E12
+validation,HEADER-6,post_hoc,A01–A06,observed,,6개 실제 file offset과 -d 표시의 4 B 차 확인,A01 A02 A03 A04 A05 A06 E04
