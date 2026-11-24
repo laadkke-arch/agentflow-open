@@ -42,3 +42,11 @@
 - down 전에 일치해야 하는 조건은 plot 좌표계·렌더러 크기·상태(시작 픽셀 extent, 실제 투영 tuple), 정상 이벤트, 예상 실제 hit class다. 비교는 관측 hit class와 시작 상태가 맞는 쌍으로 한다. 기존 brush 안의 mark 위치와 빈 위치가 모두 brush foreground면 그 둘은 brush hit의 반복 대조이며, 막대와 배경의 직접 hit 비교는 빈 초기 상태 및 밖 대조에서 한다. 위치·실측 hit가 달라진 행은 남겨서 판정 수에서 따로 센다. 미실행·렌더 오류·초기화 실패·성공 무변화를 별개 상태로 둔다.
 - 시각 점프 판정은 조작 모드에 맞춘 픽셀 잔차다. 새 범위면 down 예상 `[x0,x0]`, 첫 move 예상 `[x0,clamp(x1,0,W)]`. 기존 이동이면 down이 초기 extent 보존, 첫 move가 초기 두 끝에 `x1−x0`를 더한 후 전체 폭을 보존하며 plot 안으로 clamp하는 것이다. x0과 x1은 보정한 입력 CSS 좌표, W는 plot 폭이다. 끝별 절대 오차 최대값이 2px를 **초과**할 때 대체 환경의 점프로 표기하고, 0.5·1·2·4px를 각각 별도 집계한다. down의 잔차와 first의 잔차를 따로 남긴다. 창에서 마지막 move 좌표와 up 좌표도 확인한다. 투영 집합은 band 시작·끝과 pixel extent의 겹침으로 독립 확인하며, 0 폭은 null로 기대한다. 범주 증감, zero-width clear, overlay 전환과 픽셀 잔차를 따로 계산한다.
 - 대조는 본 행에서 분리한다. 1px 경계의 같은 쪽/넘는 쪽, 이동 없는 클릭, 기존 brush 안·밖의 동일 길이와 뒤 방향, 대표 관측기 해제 입력을 별도 ID로 둔다. 비교 대상은 x/y 축·원 CSV 및 로드된 source, 요약 bar key와 기하, 선택 안/밖의 fill, brush 폭과 enum이다. 사용자의 실제 장치·페이지에서 재현된 조건과 접근성 결과는 그 환경의 증거가 있어야 판단할 수 있다.
+
+## Pilot에서 봉인한 좌표
+
+plot의 화면 원점은 CSS (63,21), 너비×높이는 240×300, SVG와 Canvas surface는 359×342, DPR과 축 배율은 1이다. 6월 band의 x 범위는 [101,119]다. 그 달의 가장 큰 sun 사각형은 plot [101,126.923…]–[119,300]이므로 중심부를 (110,213), 막대 전체 위의 빈 plot을 (110,6)으로 정했다. 각각 화면 (173,234), (173,27)이다. main은 오른쪽으로 local x 110 → 111 → 130 → 150, CSS x 173 → 174 → 193 → 213이다. 스택은 6월·7월·8월에 걸친다. 기존 선택은 빈 y=6에서 x 70 → 71 → 110 → 170으로 먼저 만든다. 예상 기존 집합은 4–9월이다. 관측자 해제와 역방향 등은 본 행렬과 분리한 동일 [좌표와 시도 계획](plan.json)에 들어 있다.
+
+Pilot 24/24에서 empty의 두 위치는 각각 `marks`와 `root`를 받았다. active의 두 위치는 모두 `drag_brush_brush`를 받았다. 두 렌더러에서 같은 결과다. 막대 hover의 `unit` x offset은 101, plot과 brush는 0이었다. 이는 누르기 전 좌표계가 다를 수 있다는 사전 단서다. pilot의 본 입력은 hover까지이며 active 초기화만 drag했다. 초기 font 설정이 실제 축을 바꾸지 못한 사전 discovery 1회와 수정 후 결과를 구분한다. [pilot hit와 input](evidence/pilot/hits.jsonl) · [첫 설정 오류](evidence/pilot/initial-font-probe.txt) · [컴파일](evidence/compiled)
+
+고정판의 `unit`은 View의 mousemove를 받아 active scenegraph group으로 갱신된다. 실제 down·첫 move·up에 이 offset과 `x(unit)`으로 계산된 brush x를 같이 읽어 격차를 확인한다. 물리적 x가 같은 상하 입력과 reverse도 함께 둔다. 번들 내부 5.5.0 표기와 npm 배포 5.6.0 메타데이터 차이는 모든 pilot 영수증에서 확인했다. [unit 구성](https://github.com/vega/vega-lite/blob/1ff500a596b51f579d622c2559a4e7ca3f5d8cdd/src/compile/selection/assemble.ts#L96-L109)
