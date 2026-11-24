@@ -30,3 +30,5 @@
 3. starred.json에서 explicit star 제거/label 존재, filename 변경, canonical-only, articles wrapper 등 1개씩 변화; 1.29.1과 역사판 차이를 재현. 원본 삭제 금지. 실제 실행은 이번 작업 범위 밖.
 
 5차 재확인: Z03 L0–53만 읽은 상태 excluded → 2026-11-24 L54–67 실제 mapping 직접 열어 included, RDF/RIS note/attachment/collection 차이 확인. X02/X03 HTTP 재시도도 HTTPS timeout; 실패 상태 유지. F01 L237–242 재열람: subscriptions.xml은 파일명상 OPML dispatch에 해당(내용 조건); 4차 판단을 더 좁힘. frame의 12개 slot을 assessed_not_run 상태로 기록하고 migrations에 여섯 관측 열 추가(실행 아님).
+
+5차 결과 SHA 06f66e5c7e49060cc7f88ec82753105913bfdf6f 대조 후 C01 원댓글 719794538의 Result JSON과 C# mapping 재열람: migrations.csv의 'source tag sample 미확인' → 별도 참여자 source Tags=C#, C# 8, Evil code 실제 값 기록. Keywords header 추출이므로 사용자 label 보존이나 원작성자·수신 결과로 승격하지 않음. source ledger, Q1 문장 함께 정정. 12자리 및 4사건/38 work 분모와 PARTIAL 판정 불변.
