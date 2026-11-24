@@ -1,0 +1,10 @@
+# AF-RES-133 사전 모집·판정 (본문 이전)
+- 기준 67eb3c65404bf70de554bee6eb4c126344a3cd4a, 계획 42260ca230e028e1303667be943b861a1d5953e4. 최신 통합 AGENTS/STATE/START_HERE/RESEARCH_BRIEF/RESEARCH_WORKFLOW/DOT_AUTOMATION 및 dot-control blob 9a1f05eb133617b6fa1aadbca0a7873cf10f06e0 확인: 133 RUNNING, 129 DONE 중앙표와 PARTIAL 실제 인계 구분. 129 인계 86369e7091b3cb58bbea1e3277bee67967afeaa6, 결과 f288c8a0335be5d972c5782dccf021b5dd71e8af 및 snapshots/changes/decisions/sources/SCOPE/evidence 확인(원장 관련 구간). 129의 후기 리뷰어 인지와 최초 작성자 인지는 다른 주장, 지원판·계약·실행 별개. 이전 사례 재조사 안 함.
+- 신규 브랜치 최신 통합 기준에서 생성. manifest 없으며 웹 연결만 사용, CLI start/check 미실시(위조 금지). 중앙 진행표 미수정.
+- 모집: repo:pydata/xarray 또는 repo:scikit-image/scikit-image is:pr created:2024-10-01..2024-10-31, sort=created order=asc topn=24; 25번째 조회 경계 확인. 검색 wrapper created_at=null로 반환하여 시각은 PR metadata 재조회 예정. 순서와 번호만 아래에 먼저 고정. 25번째 xarray 9615, skimage 7594. 동률 번호순은 시각 복구 후 검증; 검색 제목/상태/본문으로 선별하지 않음. 보충층은 본창 전수 판독 후 적격 링크 사건 <2일 때 다음 24 이하.
+- xarray (24): 9562, 9563, 9566, 9569, 9570, 9571, 9572, 9574, 9578, 9580, 9584, 9585, 9586, 9587, 9588, 9589, 9590, 9592, 9598, 9599, 9602, 9604, 9613, 9614
+- scikit-image (24): 7561, 7562, 7565, 7566, 7567, 7569, 7570, 7571, 7572, 7573, 7574, 7575, 7576, 7578, 7579, 7580, 7581, 7582, 7586, 7587, 7588, 7589, 7590, 7593
+- 관측 단위는 동일 PR 작성자·동일 조작의 제안 전후. 링크=구체적 기존 공개 함수/도구의 URL과 해당 조작의 권고; 이름만, bot, self-link, formatting/release/issue reference 분리. PR 단위 링크/이름/무제안은 우선순위, 이벤트는 복수 가능. 미열람을 무제안으로 변환 금지. 일반 대화·submitted review·inline/replies·본문 각 읽기 범위 명시. 수정 전 본문 복구 불가 시 현재 snapshot 한정.
+- 각 repo 시간순 첫 링크 3, 첫 이름만 1, 첫 거절 또는 후속 수정 없음 1 (총10 자리); 공석/미확인 분리. 사건별 proposal arrived, author acknowledged, first learned, intent to change, same operation changed, merge/release 각각 독립 URL/시각/근거. 직접 귀속은 동일 작성자가 제안 때문에 선택 변경을 직접 표시하고 실제 hunk 확인; 시간순 선후만 별도. 이미 계획·타 리뷰·동의 후 유지·수정 선행·지원판 불일치 적극 찾기.
+- 계약: 제안 당시 consumer floor, supplier exact version, flags,input,return,exceptions, 정상 및 경계 사례; 정의/실행/릴리스 분리. 비용은 파일·조작·추가 절 수·달력 간격·당사자 명시 노동시간; 미확인=0 아님.
+- Q7 정정 전후 동일 표/행/항목 식별과 제보자 표시 별개, 코드 분모 밖. 최소 24 독립 원전: PR 12(각6), 계약6, 공개판/환경2, 정정4; 같은 PR/파일 계보·미러 제외, 실패와 내부 선행 제외.
