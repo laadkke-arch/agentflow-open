@@ -1,0 +1,11 @@
+# AF-RES-117 사전 모집·판정 봉인
+
+기준 101426a5e76154bb89b642dd9bd3c52fc1229c30 → 시작 ba55c71bf1382dc7b83cf46b2439f590866fc50f (ahead 3, behind 0; 758bd149, f8b8f2b1, ba55c71b; 변경은 docs/automation/dot-control.json만). 최신 행은 전체 파일 API가 빈 content를 반환하고 raw 접근이 실패하여 공식 compare patch에서 AF-RES-117 RUNNING, depends_on AF-RES-113, brief, owned_path를 직접 확인했다. https://github.com/laadkke-arch/agentflow-open/compare/101426a5e76154bb89b642dd9bd3c52fc1229c30...ba55c71bf1382dc7b83cf46b2439f590866fc50f
+AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW, RESEARCH_BRIEF, START_HERE, 113 HANDOFF와 결과 SHA의 RESULT/hops/decisions/verification-tests/returns를 GitHub로 열었다. 선행의 12자리, 공석9, 새 선택/시험0, 사후21행은 재조사하지 않음.
+ 
+## 사전 규칙
+- 모집 창: UTC 2023-01-01T00:00:00Z ~ 2025-12-31T23:59:59Z. 각 repo 전체 PR 생성순 asc(동률 number asc)를 조회하고, 최초 추가 원문 파일(PEP .rst 또는 RFC text/*.md 등)을 갖는 새 제안 PR만 30개 + 경계 1개까지 기록한다. 제목만으로 확정하지 않는다. 이 해석에서 모든 PR의 초기 스캔과 적격 새 원문 30개는 분리한다. 오자/번역/기존 제안 수정 제외. 30 안에서 사용자에게 보이는 실제 행동·상태·호환성 선택을 제시하는 앞 4개. 발견하지 못하면 공석 유지. API가 최초판을 못 보존하면 사유 명시. 후속 상태/댓글을 보지 않도록 응답에서 제목/생성시각/번호, 첫 commit의 추가 파일/patch만 투영; API 자체가 status를 전달한다는 위협은 기록. 모집 판정 전 최종 PR/댓글은 읽지 않는다. 최초 commit 목록은 force-push 이전을 보장하지 않음.
+- 보조층은 필요할 때만 2022-01-01~2022-12-31 UTC 같은 두 repo, 시간순의 새 제안 중 명시 기각과 출전 동시 기록 앞 최대 2개씩, 본층과 합산하지 않음. 비용/자료 부족 시 공석.
+- 계획 예산: 모집 각 30+1 적격/4 본사건; 고유 원저작 ≥24(8+6+6+2+2). 후보 URL·직접 개봉·고유 본문 별도. 초기 본문/당시 원문/결정·구현 계보/기관 원자료 구별, 선행 연구/메타데이터는 불산입. 링크가 여러 개인 경우 의사결정 조건에 대응하는 최초 시간순 인용부터 검토. 시간 정밀도 UTC; 개별 fetch 시각을 얻지 못하면 시각 미확인이라고 쓴다.
+- 등급 G1 단순 인용; G2 결정 전 조건 연결; G3 작성자/결정권자 명시 원인+선택 차이 확인; G0 증거 부족/없음(둘 구분). 채택/기각/보류, 제약·시험·문구·무변경·미확인 별도. 구현, 시험 정의, 실제 실행, 작업시간, 경과시간 별도. 같은 결정이 선례 전 존재/독립 제약/반대 사례를 찾고 최소 판별 관측을 적는다. 침묵은 기각 아님.
+- 동일 작업자 웹 판독; 독립 블라인드 재판독 없음. 실행 환경 git ls-remote는 DNS 실패(exit128), 따라서 원격 GitHub 읽기·커밋만. 계약 명령 미실시이며 수동 manifest는 검사용 정식 manifest 아님. 검증할 명령은 인계에 남김. 소유 경로 외 수정 없음.
