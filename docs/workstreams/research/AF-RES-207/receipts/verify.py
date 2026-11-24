@@ -105,10 +105,15 @@ def main():
     for row in costs:
         assert int(row["b_bytes"]) - int(row["a_bytes"]) == int(row["additional_bytes"])
         assert sum(int(v) for k,v in row.items() if k.endswith("_delta")) == int(row["additional_bytes"])
+    sections = (DATA / "RESULT.md").read_text().strip().split("\n\n")
+    tables = [section for section in sections if section.startswith("| ")]
+    assert sections[1:4] == tables[:3] and sections[-1] == tables[-1] and len(tables) == 4
+    assert [len(table.splitlines())-2 for table in tables] == [6, 10, 4, 3]
     print(f"{len(inputs['artifacts'])} pinned artifacts, {len(gathered)} unique sources, 6 frozen statements")
     print(f"{len(matrix)} matrix rows, {len(core)+len(controls)} guarded outputs, zero observed failures")
     print("C1 preserved values and denominators with a changed row set. The B receipt withheld.")
     print("Unit, missingness, duplicate controls and 2335 additional bytes reconciled.")
+    print("Report tables are contiguous. The final table contains three weaknesses.")
 
 
 if __name__ == "__main__":
