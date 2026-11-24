@@ -10,3 +10,5 @@
 
 ## ④b 재검토
 - 이전 ③의 임시 점 분류를 X14–X17로 수정: TP01 flag2, TP02/TP03 flag1, TP21 flag3. TP01~TP40 순서에서 TP02~TP20 flag1, 다음 TP21 flag3. 선택된 4개 ID의 원행 두 재게재본 일치, 원본 ZIP 바이트와 지역 경계는 여전히 인증하지 못함. T03/T04/T05의 구현 테스트 허용차는 OS 공인 허용차 아님. X05 표와 X16에 TP11·TP24·TP29 높이 1mm, TP31/32 E/N 값 차이가 있어 재게재본을 곧 공식 원전으로 부르지 않음. P10이 직접 연결한 X18은 중국 CRS 축·식별의 실제 제보로 Q5 반증 참고만, UK 변환·좌표 출력 없어 고정 사건 분모 제외. 원래 E1에서 축 순서가 원인인지는 여전히 미확인.
+
+- ⑤에서 O04의 PDF index4 스크린샷 및 L463–473 공식 flag key를 추가 재확인했다. 1=본토 Newlyn, 2=Scilly St Marys, 3=IoM Douglas02, 15=offshore, 16=outside. 따라서 ④b의 datum mapping 추정을 공식 규칙으로 강화하되, 원자료 점행 자체의 공식 ZIP provenance는 여전히 미확인. flag1은 본토 datum 범위이며 2km 연안 buffer 가능하므로 엄밀한 내륙 여부는 원자료 지리 설명 확인 필요. X05와 X16/17 차이를 native-vs-NTv2라고 확정하던 ③ 설명은 철회: X16/17 native형 전체 CSV도 TP31/32에서 NTv2 mirror E/N과 일치.
