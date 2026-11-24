@@ -604,7 +604,7 @@ def replay(args, inputs):
         for dataset, prefix in (("b23025", "api"), ("s2301", "s2301"), ("dp03", "dp03")):
             name = f"{prefix}-{region}"
             apis[dataset].update(extract(name, extract_api, inputs["requests"][name]["url"], [first, second]))
-    apis["b23025"].update(extract("api-states", extract_api, inputs["requests"]["api-states"],
+    apis["b23025"].update(extract("api-states", extract_api, inputs["requests"]["api-states"]["url"],
                                   [key for key in targets if key.startswith("040")]))
     cells, counts = target_cells(inputs, dat_rows, apis["b23025"], statuses)
     county = [cell for cell in cells if cell["geo_id_expected"].startswith("050")]
