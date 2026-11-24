@@ -1,0 +1,12 @@
+# 반례와 보존 조건
+
+| 반복해 본 조건 | 관측과 제한 | 원전 |
+| --- | --- | --- |
+| C가 그대로 둔 후보 | N1-03의 조사·표시 D01/D07 모두 B→C에서 같은 두 자리에 남았다. 표본은 두 후보 중 직접 0이라는 기준과 같이 해석한다. P1-07에서도 C가 다른 카드를 조사에 넣었지만 표시 3장은 모두 같은 순위에 남았다. | [N1-03 원문](https://github.com/sooftware/kospeech/issues/12) · [P1-07 원문](https://github.com/Beomi/KcELECTRA/issues/5) · [같은 카드 이동](../transitions.csv) |
+| 일부 기능이 밀림 | P1-07에 D08 4점이 추가되어 일부 D04는 조사 4→5, D02는 조사 8→예산 밖 9로 간다. D02의 직접 적격은 미확인이다. D04에는 기존 데이터 배치 경로의 조건이 붙는다. | [D04 원절](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/utils/data/_utils/collate.py#L337-L361) · [순위](../ranks.csv) |
+| 유용한 후보가 표시에서 밀릴 조건 | P1-07의 같은 스코어에서 손실 계산의 T08 점수만 0으로 둔 민감도 대조는 B의 세 번째 D04가 C의 D08로 바뀐다. 점수 변경은 정책 실험에서 사용하지 않았다. 관련 없는 코드 심벌의 점수 때문에 현재 표시가 보존됐음을 볼 수 있다. | [원문 L71–75](https://github.com/Beomi/KcELECTRA/issues/5) · [심벌 위치](symbol-roles.csv) · [민감도 검산](counterfactual.json) |
+| 흔한 가중치 형태가 실제 샘플 확률일 때 | P1-06 L48은 표본 단위 확률을 설명한다. P1-07 L4는 학습 가중치를 저장한 시도다. 134 카드 D08의 실제 반환은 int 인덱스다. 작성자가 새 표본 선택을 요구했다면 첫 사례의 카드 역할이 맞을 수 있다. P1-06은 과제 회고라 효과 분모에는 없다. | [과제 회고](https://github.com/Boostcamp-AI-Tech-2th-level01-04/TWL/issues/13) · [샘플러](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/utils/data/sampler.py#L228-L290) |
+| 독립 데이터와 계산 이력 | T07은 새 저장소에 값을 복사하되 autograd 연결을 유지한다. T08은 저장소를 공유해 수정 전파 가능성을 남긴다. 두 조건을 모두 요구한다면 각각의 링크 하나로는 계약을 완성할 수 없다. 이 요청 창에서 독립 복사/금지를 표현한 적격 저자 요청은 미관측이다. | [clone API](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/_torch_docs.py#L2716-L2735) · [detach 구현](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/aten/src/ATen/native/TensorShape.cpp#L3757-L3769) |
+| 전치의 출력 차이 | strided transpose는 두 축을 교환하면서 저장소를 공유한다. sparse transpose에는 다른 저장소와 축 제약이 있다. TensorFlow의 같은 영어 용어는 stride 없는 새 결과를 설명한다. 이번 창에서 전치를 요청한 적격 첫 글은 미관측이다. | [PyTorch transpose API](https://github.com/pytorch/pytorch/blob/a8d6afb511a69687bbb2b7e88a3cf67917e1697e/torch/_torch_docs.py#L11226-L11253) · [TensorFlow numpy compatibility](https://www.tensorflow.org/api_docs/python/tf/transpose#numpy_compatibility) |
+
+조건부안의 긍정적 사례는 새 표본에서 확인하지 못했다. P1-07의 토큰 준비와 배치 재사용, N1-05의 코퍼스 제공과 형식처럼 복수 조건이 남는 첫 글을 공석으로 유지했다. 예전 AF-RES-134의 HDF5에서 단일 프로세스 허용에 따라 D01이 직접일 수 있었던 결과는 교정 근거로 남긴다. dataset의 단일 프로세스 읽기도 입증돼야 한 조건만 남는다. [고정 인계](https://github.com/laadkke-arch/agentflow-open/blob/a21414017323dbd7a090b1e7b62f070d4fa1a1ab/docs/workstreams/research/AF-RES-134/HANDOFF.md)
