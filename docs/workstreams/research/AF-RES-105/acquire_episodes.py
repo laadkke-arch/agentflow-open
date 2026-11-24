@@ -6,6 +6,7 @@ responses are ignored; public locators, hashes and adjudications are committed.
 from pathlib import Path
 import argparse
 import hashlib
+import html
 import json
 import re
 import unicodedata
@@ -16,7 +17,8 @@ KNOWN=['already tried','already knew','already know','had already tried','have a
 NEW=["didn't know",'did not know',"wasn't aware",'was not aware','never knew','was unaware']
 
 def normalize(text):
-    return unicodedata.normalize('NFKC',text).lower().replace('\u2019',"'").replace('\u2018',"'")
+    visible=html.unescape(re.sub(r'<[^>]*>',' ',text))
+    return unicodedata.normalize('NFKC',visible).lower().replace('\u2019',"'").replace('\u2018',"'")
 
 def hits(text):
     value=normalize(text)
