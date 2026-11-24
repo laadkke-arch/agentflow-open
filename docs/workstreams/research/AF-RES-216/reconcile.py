@@ -443,13 +443,57 @@ def write_results(args):
     return int(bool(summary["endpoint_errors"]))
 
 
+def run_controls(fixture, out):
+    data = json.loads(fixture.read_text(encoding="utf-8"))
+    if data["kind"] != "researcher_synthetic_not_pypi":
+        raise ValueError("control fixture is not marked synthetic")
+    results = []
+    for scenario in data["scenarios"]:
+        base = {(r["project"], r["version"], r["filename"]): r for r in scenario["baseline"]}
+        versions = {(r["project"], r["version"]): (r["source_id"], r["body"])
+                    for r in scenario["version_responses"]}
+        simple = {r["project"]: (r["source_id"], r["body"]) for r in scenario["simple_responses"]}
+        rows, notes = reconcile(base, versions, simple, {}, {tuple(key) for key in scenario["scope"]})
+        rows_by_key = {(row["project"], row["version"], row["filename"]): row for row in rows}
+        expected_keys = {tuple(check["key"]) for check in scenario["expected_rows"]}
+        results.append({
+            "id": scenario["id"] + "_keyset",
+            "expected": {"keys": sorted(expected_keys), "ignored": scenario["expected_ignored"]},
+            "actual": {"keys": sorted(rows_by_key), "ignored": notes["ignored_simple_records"]},
+        })
+        for check in scenario["expected_rows"]:
+            row = rows_by_key.get(tuple(check["key"]), {})
+            expected = check["fields"]
+            actual = {field: row.get(field) for field in expected}
+            results.append({"id": check["id"], "expected": expected, "actual": actual})
+    for result in results:
+        result["passed"] = result["actual"] == result["expected"]
+        print(f"{result['id']} {'PASS' if result['passed'] else 'FAIL'}")
+    report = {
+        "kind": data["kind"], "fixture_sha256": hashlib.sha256(fixture.read_bytes()).hexdigest(),
+        "passed": sum(result["passed"] for result in results), "total": len(results), "results": results,
+    }
+    out.mkdir(parents=True, exist_ok=False)
+    (out / "controls-result.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    return int(report["passed"] != report["total"])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--baseline", type=Path, required=True)
-    parser.add_argument("--api", type=Path, required=True)
-    parser.add_argument("--html", type=Path, required=True)
+    parser.add_argument("--baseline", type=Path)
+    parser.add_argument("--api", type=Path)
+    parser.add_argument("--html", type=Path)
+    parser.add_argument("--controls", type=Path)
     parser.add_argument("--out", type=Path, required=True)
-    return write_results(parser.parse_args())
+    args = parser.parse_args()
+    measured_inputs = (args.baseline, args.api, args.html)
+    if args.controls:
+        if any(measured_inputs):
+            parser.error("--controls is separate from --baseline, --api and --html")
+        return run_controls(args.controls, args.out)
+    if not all(measured_inputs):
+        parser.error("use --baseline, --api and --html for public response replay")
+    return write_results(args)
 
 
 if __name__ == "__main__":
