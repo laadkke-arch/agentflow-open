@@ -1,6 +1,6 @@
 # ③ 주 실행 개봉
 
-두 GitHub fresh clone을 `9f1c49d76cf75589839cf372d6f32bfe4470ab37`에 각각 detached checkout으로 고정했다. `bash replay/bootstrap.sh TOOL_DIR`(소유 경로 내 replay 기준)과 `python replay/run.py --tools TOOL_DIR --repeat W1|W2` 모두 종료 0. 각각 별도 설치 경로에 Pandoc 3.1.11 Linux x86_64와 lockfile의 npm 의존성을 설치했다. [설치 W1](W1-setup.txt) · [설치 W2](W2-setup.txt). 두 checkout과 두 설치는 같은 호스트에 있다.
+두 GitHub fresh clone을 `9f1c49d76cf75589839cf372d6f32bfe4470ab37`에 각각 detached checkout으로 고정했다. `bash replay/bootstrap.sh TOOL_DIR`(소유 경로 내 replay 기준)과 `python replay/run.py --tools TOOL_DIR --repeat W1|W2` 모두 종료 0. 각각 별도 설치 경로에 Pandoc 3.1.11 Linux x86_64와 lockfile의 npm 의존성을 설치했다. [설치 W1](af155-W1-setup.txt) · [설치 W2](af155-W2-setup.txt). 두 checkout과 두 설치는 같은 호스트에 있다.
 
 [runs.jsonl](../runs.jsonl) 첫 구간은 W1/W2 각각 16행이다. 15개 경로를 실행했고 #15853은 자료 불일치로 각 1행을 미실행으로 남겼다. 실제 하위 프로세스는 반복당 47개(9×2 + 5×5 + 1×4)이며 종료 코드와 stdout/stderr를 보존했다. 두 반복의 47개 단계 출력과 파싱 요약이 일치했다. 각 경로의 실제 인수와 시간, stdin 또는 원파일 SHA-256은 원장에 있다.
 

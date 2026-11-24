@@ -3,10 +3,11 @@ const fs = require("node:fs");
 const [moduleDirectory, operation, bindingPath] = process.argv.slice(2);
 const input = fs.readFileSync(0, "utf8");
 
-if (operation === "expand") {
+if (operation === "expand" || operation === "expand-unescaped") {
   const mustache = require(moduleDirectory + "/mustache");
   const variables = bindingPath ? JSON.parse(fs.readFileSync(bindingPath, "utf8")) : {};
-  process.stdout.write(mustache.render(input, variables));
+  const config = operation === "expand-unescaped" ? {escape: String} : undefined;
+  process.stdout.write(mustache.render(input, variables, undefined, config));
 } else if (operation === "parse") {
   const {Parser, HtmlRenderer} = require(moduleDirectory + "/commonmark");
   const document = new Parser().parse(input);

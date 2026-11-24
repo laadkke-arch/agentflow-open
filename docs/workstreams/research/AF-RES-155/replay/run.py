@@ -35,6 +35,13 @@ TEMPLATE_PATHS = (
     ("X05-format-expanded", "X05-template-tail", "X05-bind-nested", "configured nested binding, format after expansion"),
 )
 
+ESCAPE_PATHS = (
+    ("X05-raw-nested-example", "X05-template", "X05-bind-nested", "author snippet, unescaped configuration and inferred binding"),
+    ("X05-raw-plain-boundary", "X05-template-tail", "X05-bind-plain", "configured plain binding, unescaped"),
+    ("X05-raw-nested-boundary", "X05-template-tail", "X05-bind-nested", "configured nested binding, unescaped"),
+    ("X05-raw-format-expanded", "X05-template-tail", "X05-bind-nested", "configured nested binding, unescaped, format after expansion"),
+)
+
 
 def fingerprint(data):
     return {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
@@ -158,6 +165,7 @@ def template_path(node, modules, inputs, spec, workdir):
         binding_files = {}
     prettify = [node, modules / "prettier/bin/prettier.cjs", "--no-config", "--no-editorconfig", "--parser", "markdown"]
     helper = [node, REPLAY / "pipeline.cjs", modules]
+    expand_mode = "expand-unescaped" if spec in ESCAPE_PATHS else "expand"
     stages = []
 
     def invoke(label, cmd, upstream, files=None):
@@ -168,16 +176,17 @@ def template_path(node, modules, inputs, spec, workdir):
         stages.append(record)
         return stdout
 
-    expanded = invoke("expand-original", [*helper, "expand", *binding_args], data, binding_files)
+    expanded = invoke("expand-original", [*helper, expand_mode, *binding_args], data, binding_files)
     original_parsed = invoke("parse-original-expanded", [*helper, "parse"], expanded)
-    if path_id == "X05-format-expanded":
+    if path_id in {"X05-format-expanded", "X05-raw-format-expanded"}:
         formatted_expanded = invoke("format-after-expansion", prettify, expanded)
     else:
         formatted = invoke("format-template", prettify, data)
-        formatted_expanded = invoke("expand-formatted", [*helper, "expand", *binding_args], formatted, binding_files)
+        formatted_expanded = invoke("expand-formatted", [*helper, expand_mode, *binding_args], formatted, binding_files)
     formatted_parsed = invoke("parse-formatted-expanded", [*helper, "parse"], formatted_expanded)
     return {"path_id": path_id, "input_id": input_id, "binding_id": binding_id,
-            "input": fingerprint(data), "binding": binding_files, "layer": layer, "stages": stages,
+            "input": fingerprint(data), "binding": binding_files, "layer": layer,
+            "expand_mode": expand_mode, "stages": stages,
             "summary": {
                 "original": json.loads(original_parsed) if original_parsed is not None else None,
                 "formatted": json.loads(formatted_parsed) if formatted_parsed is not None else None,
@@ -192,6 +201,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tools", type=Path, required=True)
     parser.add_argument("--repeat", required=True, help="Label for this fresh checkout")
+    parser.add_argument("--phase", choices=("main", "escape-contrast", "all"), default="all")
     args = parser.parse_args()
     tools = args.tools.resolve()
     pandoc = tools / "pandoc-3.1.11/bin/pandoc"
@@ -215,19 +225,24 @@ def main():
             "checkout_clean_at_start": not git(["status", "--porcelain"]),
             "versions": versions, "pandoc_executable": fingerprint(pandoc.read_bytes()),
             "lockfile": fingerprint((REPLAY / "package-lock.json").read_bytes()),
-            "driver_argv": [str(REPLAY / "run.py"), "--tools", str(tools), "--repeat", args.repeat]}
+            "driver_argv": [str(REPLAY / "run.py"), "--tools", str(tools), "--repeat", args.repeat,
+                            "--phase", args.phase]}
+    paths = PANDOC_PATHS + TEMPLATE_PATHS if args.phase != "escape-contrast" else ()
+    if args.phase != "main":
+        paths += ESCAPE_PATHS
     with tempfile.TemporaryDirectory(prefix="af155-replay-") as scratch:
-        for path in PANDOC_PATHS + TEMPLATE_PATHS:
+        for path in paths:
             cwd = Path(scratch) / path[0]
             cwd.mkdir()
             result = (pandoc_path(pandoc, inputs, path, cwd) if path in PANDOC_PATHS
                       else template_path(node, modules, inputs, path, cwd))
             print(json.dumps(base | {"status": "attempted"} | result, ensure_ascii=False), flush=True)
-    print(json.dumps(base | {
-        "status": "blocked_before_execution", "path_id": "E4-same-function", "input_id": "E4-input",
-        "stages": [], "summary": None, "layer": "author path",
-        "reason": "Input addCartItem differs from the output/expected updateCartItem; no verified effective config or paired source.",
-    }, ensure_ascii=False), flush=True)
+    if args.phase != "escape-contrast":
+        print(json.dumps(base | {
+            "status": "blocked_before_execution", "path_id": "E4-same-function", "input_id": "E4-input",
+            "stages": [], "summary": None, "layer": "author path",
+            "reason": "Input addCartItem differs from the output/expected updateCartItem; no verified effective config or paired source.",
+        }, ensure_ascii=False), flush=True)
 
 
 if __name__ == "__main__":
