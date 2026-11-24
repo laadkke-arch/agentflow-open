@@ -113,7 +113,7 @@ def sign_fixtures(folder):
         temp = Path(temp)
         root_key, signer_key = temp / "ca.key", temp / "signer.key"
         csr, signer_cert, extensions = temp / "signer.csr", temp / "signer.pem", temp / "x509.cnf"
-        root_cert = folder / "qa-root.pem"
+        root_cert = folder / "qa-root.crt"
         checked(
             "openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "3650",
             "-subj", "/CN=AF154 Synthetic QA Root", "-keyout", root_key, "-out", root_cert,
@@ -160,7 +160,7 @@ def sign_fixtures(folder):
 
 
 def inspect_inputs(folder, ledger):
-    root = load_cert_from_pemder(str(folder / "qa-root.pem"))
+    root = load_cert_from_pemder(str(folder / "qa-root.crt"))
     moment = datetime.fromisoformat((folder / "validation-time.txt").read_text().strip())
     rows = []
     names = {**NAMES, "INVALID": "invalid-metadata-control.pdf"}

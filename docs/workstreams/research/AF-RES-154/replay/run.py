@@ -372,7 +372,7 @@ def main():
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=False)
     inputs = args.fixtures.resolve()
-    root = load_cert_from_pemder(str(inputs / "qa-root.pem"))
+    root = load_cert_from_pemder(str(inputs / "qa-root.crt"))
     moment = datetime.fromisoformat((inputs / "validation-time.txt").read_text().strip())
     image_meta = {}
     for image in (APP, REDIS):
