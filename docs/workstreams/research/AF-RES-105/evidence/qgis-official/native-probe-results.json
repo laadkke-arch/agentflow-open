@@ -1,0 +1,160 @@
+{
+  "executed_utc": "2026-11-24T00:14:39.586297+00:00",
+  "completed_utc": "2026-11-24T00:14:39.936021+00:00",
+  "grade": "D3 synthetic independent execution; not the original user inputs",
+  "runtime": {
+    "QGIS": "3.40.6-Bratislava",
+    "GDAL": "GDAL 3.10.3, released 2025/04/01",
+    "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+    "executable": "/usr/bin/python3",
+    "QT_QPA_PLATFORM": "offscreen"
+  },
+  "repeat_label_probe": {
+    "case_id": "QG-T2",
+    "input": {
+      "geometry": "LINESTRING(0 0,1000 0)",
+      "crs": "EPSG:3857",
+      "label_field": "ROAD",
+      "repeat_distance": 200,
+      "repeat_unit": "MapUnits"
+    },
+    "expected_functional_checks": {
+      "more_than_one_label": true,
+      "all_repetitions_keep_same_text": true,
+      "input_feature_count_still_one": true
+    },
+    "observed": {
+      "labels": [
+        {
+          "text": "ROAD",
+          "feature_id": 1,
+          "rotation": 0.0
+        },
+        {
+          "text": "ROAD",
+          "feature_id": 1,
+          "rotation": 0.0
+        },
+        {
+          "text": "ROAD",
+          "feature_id": 1,
+          "rotation": 0.0
+        },
+        {
+          "text": "ROAD",
+          "feature_id": 1,
+          "rotation": 0.0
+        },
+        {
+          "text": "ROAD",
+          "feature_id": 1,
+          "rotation": 0.0
+        }
+      ],
+      "label_count": 5,
+      "image_cache": ".cache/qgis-official/native-repeat-labels.png",
+      "image_sha256": "cea4296702ddae34669146a5af0eda84b0f77802ed4f91489bca1fe52e891048",
+      "render_errors": []
+    },
+    "limit": "This names one feature repeatedly; it does not test every possible distance-label expression or prove a general impossibility."
+  },
+  "group_label_probe": {
+    "case_id": "QG-T3",
+    "input_rows": [
+      {
+        "name": "A",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "name": "A",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "name": "A",
+        "x": 500,
+        "y": 0
+      },
+      {
+        "name": "B",
+        "x": 0,
+        "y": 500
+      }
+    ],
+    "crs": "EPSG:3857",
+    "predicate": "$id = array_first(array_agg($id,\"Location_Names\"))",
+    "predicate_results": [
+      {
+        "feature_id": 1,
+        "name": "A",
+        "show_label": true
+      },
+      {
+        "feature_id": 2,
+        "name": "A",
+        "show_label": false
+      },
+      {
+        "feature_id": 3,
+        "name": "A",
+        "show_label": false
+      },
+      {
+        "feature_id": 4,
+        "name": "B",
+        "show_label": true
+      }
+    ],
+    "offset_only": {
+      "labels": [
+        {
+          "text": "B",
+          "feature_id": 4,
+          "rotation": 0.0
+        },
+        {
+          "text": "A",
+          "feature_id": 1,
+          "rotation": 0.0
+        },
+        {
+          "text": "A",
+          "feature_id": 3,
+          "rotation": 0.0
+        }
+      ],
+      "label_count": 3,
+      "image_cache": ".cache/qgis-official/native-offset-only.png",
+      "image_sha256": "00db9cba8d969acafcde15c59417cd2499f8131b6daab0c951842fe56ccaa7eb",
+      "render_errors": []
+    },
+    "with_show_label_predicate": {
+      "labels": [
+        {
+          "text": "B",
+          "feature_id": 4,
+          "rotation": 0.0
+        },
+        {
+          "text": "A",
+          "feature_id": 1,
+          "rotation": 0.0
+        }
+      ],
+      "label_count": 2,
+      "image_cache": ".cache/qgis-official/native-group-show-label.png",
+      "image_sha256": "2ef8d573edae8d881f993757447537b86a4f123505770bc5faeb6f1bc6d67211",
+      "render_errors": []
+    },
+    "expected_functional_checks": {
+      "predicate_selects_exactly_one_per_distinct_name": true,
+      "offset_placement_alone_keeps_multiple_A": true,
+      "show_label_condition_renders_one_per_name": true,
+      "features_attributes_and_geometries_unchanged": true
+    },
+    "limit": "The original linked example field is mapped to Location_Names for this synthetic layer. No ordering guarantee is inferred from array_first."
+  },
+  "all_checks_passed": true,
+  "source_script_sha256": "bcebf57f221cf9d616a21271c2c214b7b0a249f616f52954fc0c38fa4c6f1a7f"
+}

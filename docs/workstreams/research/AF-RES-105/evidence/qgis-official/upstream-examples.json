@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "prepared_utc": "2026-11-24T00:30:53.193619+00:00",
+  "grade": "D2: upstream input/expected-output assertions directly read; not executed",
+  "distinct_source_files": 2,
+  "examples": [
+    {
+      "source_ref": "QG-T-U-EXPRESSION",
+      "case_id": "QG-T3",
+      "path": "tests/src/core/testqgsexpression.cpp",
+      "location": "L2050-L2054",
+      "input": {
+        "expression": "array_first(array('a','b','c'))"
+      },
+      "expected_output": "a",
+      "empty_input_example": {
+        "expression": "array_first(array())",
+        "expected_output": "QVariant() / null-invalid"
+      },
+      "observed": "상류 데이터 행에 입력 식과 기대 반환값이 함께 있다.",
+      "execution_status": "read_only_not_executed",
+      "count_as_distinct_upstream_work": 1
+    },
+    {
+      "source_ref": "QG-T-U-GDAL",
+      "case_id": "QG-T4",
+      "path": "python/plugins/processing/tests/GdalAlgorithmsRasterTest.py",
+      "locations": [
+        "L2747-L2757: BuildVrt default",
+        "L2769-L2779: BuildVrt SEPARATE=False",
+        "L2078-L2087: Warp TARGET_RESOLUTION=10.0"
+      ],
+      "input": {
+        "algorithm": "BuildVrt",
+        "INPUT": [
+          "dem.tif fixture path"
+        ],
+        "OUTPUT": "check.vrt",
+        "SEPARATE": "omitted"
+      },
+      "expected_output": {
+        "executable": "gdalbuildvrt",
+        "options": [
+          "-overwrite",
+          "-resolution average",
+          "-separate",
+          "-r nearest",
+          "-input_file_list buildvrtInputFiles.txt"
+        ]
+      },
+      "changed_input": {
+        "SEPARATE": false
+      },
+      "changed_expected_output": "same command omits -separate",
+      "same_file_second_check": {
+        "location": "L2078-L2087",
+        "input": {
+          "algorithm": "Warp",
+          "INPUT": "dem.tif fixture path",
+          "SOURCE_CRS": "EPSG:3111",
+          "TARGET_RESOLUTION": 10.0,
+          "OUTPUT": "check.jpg"
+        },
+        "expected_output_options": [
+          "-overwrite",
+          "-s_srs EPSG:3111",
+          "-tr 10.0 10.0",
+          "-r near",
+          "-of JPEG"
+        ],
+        "None_or_zero_resolution": "omits -tr"
+      },
+      "observed": "시험 함수의 매개변수 사전과 assertEqual 기대 명령을 직접 읽었다.",
+      "execution_status": "read_only_not_executed",
+      "limit": "명령 문자열 입출력이며 픽셀 래스터 입출력 시험으로 분류하지 않는다.",
+      "count_as_distinct_upstream_work": 1
+    }
+  ]
+}

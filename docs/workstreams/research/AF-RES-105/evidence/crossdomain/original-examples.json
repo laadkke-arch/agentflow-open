@@ -1,0 +1,178 @@
+{
+  "read_completed_utc": "2026-11-24T00:13:42.949656+00:00",
+  "examples": [
+    {
+      "example_id": "CD-CALC-EX1",
+      "source_id": "CD-CALC-FORMULA",
+      "original_url": "https://github.com/LibreOffice/core/blob/da48488a73ddd66ea24cf16bbc4f7b9c08e9bea1/sc/qa/unit/ucalc_formula.cxx#L1508-L1713",
+      "version": "LibreOffice 24.2.0.3",
+      "kind": "upstream executable test specification; not executed in this research",
+      "input": {
+        "sheet": "Formula",
+        "A1": 2.0,
+        "C3": "=A1",
+        "C4": "=$A$1"
+      },
+      "observed_specification": [
+        {
+          "lines": "1524-1540",
+          "operation": "Delete row 2, then insert row 2; only formula cells move",
+          "expected": "Relative =A1 and absolute =$A$1 remain the same references."
+        },
+        {
+          "lines": "1542-1549",
+          "operation": "Insert two rows starting at row 1; target and formula cells shift",
+          "expected": {
+            "C5": "=A3",
+            "C6": "=$A$3"
+          }
+        },
+        {
+          "lines": "1578-1585",
+          "operation": "Insert cells A1:A3 shifting referenced A1 to A4 only",
+          "expected": {
+            "C3": "=A4",
+            "C4": "=$A$4"
+          }
+        },
+        {
+          "lines": "1596-1606",
+          "operation": "Delete row 1 containing the referenced value",
+          "expected": "Both relative and absolute formulas raise FormulaError::NoRef."
+        }
+      ],
+      "range_input": {
+        "B2": 1,
+        "B3": 2,
+        "C2": 3,
+        "C3": 4,
+        "A6": "=SUM(B2:C3)",
+        "A7": "=SUM($B$2:$C$3)"
+      },
+      "range_expected_sequence": [
+        {
+          "lines": "1682-1684",
+          "state": "before partial shift",
+          "outputs": [
+            10.0,
+            10.0
+          ]
+        },
+        {
+          "lines": "1686-1691",
+          "operation": "Insert cells B1:B2; shift only part of the data range",
+          "outputs": [
+            7.0,
+            7.0
+          ]
+        },
+        {
+          "lines": "1693-1698",
+          "operation": "Undo that shift by deleting cells B1:B2",
+          "outputs": [
+            10.0,
+            10.0
+          ]
+        },
+        {
+          "lines": "1700-1710",
+          "operation": "Delete rows 2:3 containing all referenced range",
+          "outputs": [
+            "NoRef",
+            "NoRef"
+          ]
+        }
+      ],
+      "limits": [
+        "The source asserts these outcomes; there is no local passing test receipt.",
+        "Copy/paste contrast is stated by the manual, not performed by this test section.",
+        "Value equivalence for this input does not imply the reference types are interchangeable under later copying."
+      ],
+      "input_output_fingerprint": "95e5fee141ad4a54211310e8cad5df4744fd43c6286eba6e26c3644b10dddc05"
+    },
+    {
+      "example_id": "CD-AUD-EX1",
+      "source_id": "CD-AUD-ISSUE2371",
+      "original_url": "https://github.com/audacity/audacity/issues/2371",
+      "reported_version": "Audacity 3.1.3; reporter also names older versions but we do not validate that range",
+      "author": "petersampsonaudacity (GitHub user 50205984)",
+      "created_utc": "2022-01-03T11:59:52Z",
+      "current_body_updated_utc": "2022-06-08T19:34:57Z",
+      "lineage": "2022 author reproduction referring to Bugzilla 2029/2018; do not count as independent confirmation of that earlier report.",
+      "input": {
+        "tone_seconds": 30,
+        "visible_track": "Mono, 44100 Hz, 32-bit float",
+        "envelope": "decrease from 5-10 s; visually near zero at 10-20 s; rise after 20 s",
+        "frequency": "미확인",
+        "original_exact_sample_array": "미확인"
+      },
+      "branch_A": {
+        "operation": "Envelope-only attenuation followed by three +50 dB Amplify passes with Allow Clipping",
+        "report": "Middle region was not exact digital zero.",
+        "direct_visual_output": "Amplified screenshot is not flat throughout 10-20 s; waveform expands and saturates well before 20 s. No exact nonzero amplitude measurement is supplied."
+      },
+      "branch_B": {
+        "operation": "After the envelope setup, additionally select 10-20 s and apply Ctrl+L silence, then the same three +50 dB amplifications",
+        "report": "The 10-20 s region remains silent.",
+        "direct_visual_output": "Image has a horizontal zero line between the 10 s and 20 s boundaries, despite saturated regions outside."
+      },
+      "image_reads": [
+        {
+          "source_id": "CD-AUD-2371-ENV",
+          "url": "https://user-images.githubusercontent.com/50205984/147927671-f58b2605-5d0c-4317-8e56-50fd66a07a28.png",
+          "sha256": "e10514e48bb225d2244ac656d012459625ceb5adb22d036936544e914b7f74a1"
+        },
+        {
+          "source_id": "CD-AUD-2371-AMP",
+          "url": "https://user-images.githubusercontent.com/50205984/147929024-764e0df8-790e-470f-8586-5366ce3d89e6.png",
+          "sha256": "6e03ec58c3de762e3cc03953cb8f317b7b505a23d1a7c0ba43e993bcfc9e3399"
+        },
+        {
+          "source_id": "CD-AUD-2371-SILENCE",
+          "url": "https://user-images.githubusercontent.com/50205984/147930382-659de5eb-08a1-46a0-bdfe-6e60311cfd1b.png",
+          "sha256": "a1785ff5313d3dae7b69fbc20d5aa6531c1635f21bfcd02d73d921f9bc112098"
+        }
+      ],
+      "limits": [
+        "The reported amplification sequence and version are author statements; screenshots do not independently authenticate execution order.",
+        "No original AUP3 or audio data linked in the read body, so numeric residual cannot be measured here.",
+        "This is not a newly learned-operation episode and not an Audacity 3.6.4 local replication.",
+        "Three images are one author/example, not three sources or cases."
+      ],
+      "input_output_fingerprint": "283620799385ac17a67774f6b2863ffde282955c2e3618eed73279803bc451e0"
+    },
+    {
+      "example_id": "CD-AUD-EX2",
+      "source_id": "CD-AUD-ISSUE5099",
+      "original_url": "https://github.com/audacity/audacity/issues/5099",
+      "reported_version": "Audacity 3.3.3, Windows",
+      "author": "bluemoehre (GitHub user 1735386); body includes a later PeterSampson editorial addition",
+      "created_utc": "2023-08-28T16:47:30Z",
+      "current_body_updated_utc": "2026-11-02T21:46:05Z",
+      "input": "Heavily compressed stereo clip with envelope fade-in/fade-out control points; selected clip block.",
+      "operation": "Effects > Noise Removal & Repair > Clip Fix",
+      "expected_by_reporter": "Retain envelope while repairing audio samples.",
+      "reported_output": "Control points shift to the clip beginning.",
+      "direct_visual_observation": "Before image has sloped top/bottom envelope edges and handles at several times; after image has flat upper/lower envelope boundaries and handles at the left edge. Exact seconds and sample values absent.",
+      "image_reads": [
+        {
+          "source_id": "CD-AUD-5099-BEFORE",
+          "url": "https://github.com/audacity/audacity/assets/1735386/ec5a9d7a-c2da-44e0-8941-eb9b11f51b3c",
+          "sha256": "4a2442409f2ded5b4a5042645c91e371a137ddfabde296eadb72c09e607b8c75"
+        },
+        {
+          "source_id": "CD-AUD-5099-AFTER",
+          "url": "https://github.com/audacity/audacity/assets/1735386/c7461aee-2b4d-46d5-9821-3baff0de3785",
+          "sha256": "e5a88d03e7e3662dbe07de46dab564d25203151a60ae31affd18582781958ace"
+        }
+      ],
+      "limits": [
+        "Current issue body is edited, not an immutable original revision.",
+        "No local Clip Fix run; no claim all effects or current releases behave this way.",
+        "The pinned manual links this same issue. Manual warning plus this issue are genealogically dependent for this bug, not two independent replications.",
+        "Supplementary countercase, excluded from the four-work minimum count to avoid inflating related evidence."
+      ],
+      "input_output_fingerprint": "7939eb47d7331411161c24ee687fc7cc6a7a52a3c5413880ecd535342a25043d"
+    }
+  ]
+}
