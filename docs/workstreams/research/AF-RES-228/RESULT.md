@@ -25,8 +25,11 @@
 
 | 표 2 | 통제·사용 목적 | 기대 | 관측 | 필요한 송신·수신 절 | 보류 이유 |
 | --- | --- | --- | --- | --- | --- |
-| C1 | GUID 교차 피드 | [사전 예측](SCOPE.md) | 미실시 | [원장](sources.jsonl) | 통제 실행 뒤 갱신 |
-| C2 | alternate/canonical 불일치 | [사전 예측](SCOPE.md) | 미실시 | [원장](sources.jsonl) | 통제 실행 뒤 갱신 |
-| C3 | 실제 입력 경로와 이름 | [사전 예측](SCOPE.md) | 미실시 | [원장](sources.jsonl) | 통제 실행 뒤 갱신 |
-| C4 | 읽음 상태의 명시적 안읽음 | [사전 예측](SCOPE.md) | 미실시 | [원장](sources.jsonl) | 통제 실행 뒤 갱신 |
-| C5 | 수신 쪽 사용자 변경 | [사전 예측](SCOPE.md) | 미실시 | [원장](sources.jsonl) | 통제 실행 뒤 갱신 |
+| C1 | 교차 피드 식별 키와 누락 | 한 파일이면 같은 GUID의 마지막 피드에 첫 항목 내용이 배정될 수 있다 | 한 파일 3피드·2행. …0001의 첫 링크가 feed 2에 붙고 Design/art 0. 같은 내용을 둘로 나누면 3행·태그 2. [한 파일](receipts/C1-collision.json), [분할](receipts/C1-split.json) | [S02 /items/0–1](fixtures/S02/starred.json), [R05 L405–410, L521–524](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L405-L410) | 원형 다섯 ID는 서로 다르다. 실계정 충돌 빈도 미확인 |
+| C2 | 원링크 선택 | 변경한 canonical보다 alternate를 저장한다 | 충돌 시 기존 alternate 그대로. alternate가 빈 배열이면 행이 있고 link 길이가 0. [충돌](receipts/C2-conflict.json), [canonical만](receipts/C2-canonical-only.json) | [F01 항목 설명](https://www.inoreader.com/developers/stream-contents_), [R05 L474–480](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L474-L480) | 실제 발행자 canonical 또는 리디렉션 확인은 범위 밖 |
+| C3 | 이름이 내용과 별표에 미치는 영향 | 명시 별표 두 개는 세 이름에서 보존. 토큰 제거 복제본으로만 이름 효과 | 원래 이름과 중립 이름도 동일 바이트 2행·2별표. 토큰을 뺀 행의 favorite는 starred/중립/starred 디렉터리에서 1/0/1. [통제 5회](controls.csv) | [S03 /items/1](fixtures/S03/starred-inoreader.json), [R01 전체 경로](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/cli/import-for-user.php#L23-L36), [R05 L224–245](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L224-L245) | 다른 JSON 스키마나 브라우저 업로드는 범위 밖 |
+| C4 | 읽음 없음과 explicit false | reception=true에서 unread 토큰만 기본값을 넘는다 | …0002에서 unread 토큰은 0, read:false는 1. 나머지 두 항목은 두 경우 모두 1. [unread 토큰](receipts/C4-unread-token.json), [JSON false](receipts/C4-boolean-false.json) | [F02 상태 변경](https://www.inoreader.com/developers/edit-tag), [R05 L441–472](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Controllers/importExportController.php#L441-L472) | unread 토큰을 Inoreader가 실제 archive로 내보내는지는 미확인. JSON false는 미지원 표현 |
+| C5 | 수신에서 수정한 상태의 재수입 | 기존 행에 read/별표가 대입되고 태그 관계가 추가된다 | 3행과 동일 ID 그대로. …0001 read/별표 0/0→1/1, …0002 read 1→0. Design 복원, LocalOnly 유지. [사용자 수정 통제](receipts/C5-state-drift.json) | [R09 UPDATE](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/EntryDAO.php#L297-L324), [R11 태그 관계](https://github.com/FreshRSS/FreshRSS/blob/b2c50115baa36c217e939ee3ea8ecfae52f91abd/app/Models/TagDAO.php#L302-L324) | DAO로 변경했다. 운영의 다른 플래그와 동시 갱신은 미실시 |
+| V+/V- | 새 빈 환경에서 양성·음성 재생 | 정상 3행/세 별표와 교차 GUID 2행을 각각 재현 | 원형 S02 true read 1/1/1, 3행. 교차 GUID feed 3·entry 2와 오배치 재현. [양성](receipts/REPLAY-positive.json), [음성](receipts/REPLAY-negative.json) | [새 컨테이너 영수증](receipts/container-replay.json), [경로 및 바이트](controls.csv) | 동일 런타임의 별도 컨테이너. 다른 평가자 검토는 미실시 |
+
+표 2의 한 행은 하나의 판별 목적이다. 하위 실행을 포함한 각각의 입력 변화와 전후 값은 [controls.csv](controls.csv)에 있다.
