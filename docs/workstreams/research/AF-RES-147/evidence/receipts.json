@@ -1,0 +1,129 @@
+{
+  "input_sha256": {
+    "editions.csv": "1779a984ae585d8693d400a890eb39c6b9a91827d45586cd4febb16c1162a6c1",
+    "oracle.csv": "28d6b386c3eb9d337ad35bd2ff57cd4260fb93291d167fd94ad18672b32f16d9",
+    "events.jsonl": "1a5492de92edf1806c8bb90ab9fe64995c5df38379db6002f8a644635bb0abe9",
+    "schemas.sql": "738a65cdd9d85dbb0a906f27921fdabef0fa2e7c88b1f61a28bc3ee5f581b5b0",
+    "sources.jsonl": "cd7ea886e582164fe5fa0487e93a3d6e5001d608cae0ae360f801a51a1d2ab6c",
+    "evidence/artifacts.json": "340b2724dcd40edc06039932eadda99c2bf2cbb55096db8d55ae2655c3f1650d",
+    "evidence/calibration.json": "e5fc6d1cc8e9b4d651a84a20a7a82e4d33471b95c2d26ecb6e5f11313c9a0940",
+    "evidence/origin-comparisons.json": "a0ec0b9c3703253072af6334e7d74951e351dbbc726905abd234fac700f6764a",
+    "replay/events.py": "b077e5869f85697d6bc9174670177602127108272c9ca71808fd35d4333a10cd",
+    "replay/oracle_build.py": "26d4536e250b2b126298b2854f2a1abfbe8e67d569baf00c90b4e7f937e5d2f9",
+    "replay/prepare.py": "9911371f0717d7d93da0da0ee1e5eb4091081147e4e169fdc237a2f09c31063b",
+    "replay/provider.py": "333e1c5cde3ff7ddd9670e08a031809b8bcaac998c726f2af691e923b14b95c9",
+    "replay/run.py": "fdcbe7a4780aca2df5c6d77e238de4273d3a817084a1ca51c0832c6f218ffd96",
+    "replay/score.py": "5f231517522c7aaf7d0cb18f3fa5cd7dbce67124192214742c403475f24eab39",
+    "replay/store.py": "acf57cb04a0f39206d18bb8ce001ec666247e119e20590b6ed2322296cf1a19a",
+    "replay/fixture_source.json": "cd89ef294e1c221d79ce06132a22194d10f361dfc662aab27fb88d103f74348d",
+    "replay/selection.json": "ee6e0eb543675dfe2124d174906d7757294efeb91898d0b4a9ca0424ae2f9dad"
+  },
+  "oracle_cells": {
+    "planned": 32,
+    "read": 32,
+    "availability": {
+      "available": 32
+    }
+  },
+  "public_edition_adjacent_changes": {
+    "tzdb:announced": {
+      "pairs": 3,
+      "changed": 2,
+      "same": 1
+    },
+    "tzdb:adjacent": {
+      "pairs": 3,
+      "same": 3
+    },
+    "tzdb:unopened": {
+      "pairs": 6,
+      "same": 6
+    },
+    "cldr:announced": {
+      "pairs": 3,
+      "changed": 1,
+      "same": 2,
+      "same_value_new_origin": 1
+    },
+    "cldr:adjacent": {
+      "pairs": 3,
+      "changed": 1,
+      "same": 2,
+      "same_value_new_origin": 1
+    },
+    "cldr:unopened": {
+      "pairs": 6,
+      "same": 6,
+      "same_value_new_origin": 1
+    }
+  },
+  "source_ledger_rows": 50,
+  "unique_qualifying_works": {
+    "tzdb": 7,
+    "cldr": 7,
+    "impl-tzdb": 2,
+    "impl-cldr": 2,
+    "identity-cache": 4,
+    "transport": 3,
+    "statistics-standards": 3
+  },
+  "expected_scope": {
+    "dense": 222,
+    "sparse": 110,
+    "control": 49,
+    "reversed": 49,
+    "calibration": 3
+  },
+  "from_empty_replays": {
+    "A": "7d38b0646127063aaf39e19173fcd83c0fe854f944b2136d298d147873a31d62",
+    "B": "7d38b0646127063aaf39e19173fcd83c0fe854f944b2136d298d147873a31d62",
+    "equal": true,
+    "batches_per_pass": 136,
+    "events_per_pass": 14620,
+    "engine": {
+      "python": "3.12.14",
+      "sqlite": "3.53.1",
+      "sqlite_journal": "DELETE",
+      "sqlite_synchronous": "FULL"
+    },
+    "deterministic_without_nanoseconds": true
+  },
+  "result_rows": {
+    "answers": 7720,
+    "ablation": 5404,
+    "costs": 272,
+    "transitions": 1076
+  },
+  "checks": {
+    "scoped_current": "match both independently read value and proof",
+    "dense_two_project_history": 64,
+    "history_reads_dense_c_retry": 112,
+    "normal_and_reverse_current_answers_match": true,
+    "as_of_at_late_arrival_changes": true,
+    "idempotent_delivery_b_c": true,
+    "no_file_fetch_for_initial_catalogue": true
+  },
+  "failures": [
+    {
+      "stage": "official archive HEAD",
+      "result": "tunnel 403",
+      "retry": "upstream exact-commit tree"
+    },
+    {
+      "stage": "public script smoke",
+      "result": "SQLite INSERT binding arity error",
+      "status": "fixed; control smoke then all replayed"
+    },
+    {
+      "stage": "older workflow calibration",
+      "result": "7.8.6 require MODULE_NOT_FOUND",
+      "separate_cohort": true
+    }
+  ],
+  "variable": [
+    "wall and setup times",
+    "file pages on different SQLite/runtime environment",
+    "archive/preparation transfer and time"
+  ],
+  "isolated_evaluation": "run.py never imports this scorer or opens oracle.csv"
+}
