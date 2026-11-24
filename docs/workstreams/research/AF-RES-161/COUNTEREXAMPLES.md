@@ -6,3 +6,6 @@
 - G04의 2026-11-14 제안 지침은 2019 사건에 소급 적용하지 않는다. G02와 bot 지연 표현(24시간 vs 며칠)이 다르다. 정확한 지연 SLA로 해석 금지.
 - 보정: ③ OBSERVATIONS의 '수신자·하류 각각 next-edit'는 각각 병합판→복구판, 봇 변경판→복구판 구간이다. 하류가 자체 병합됐다는 뜻 아님. 4개 무관·안정 필드와 3개 대상 수정 필드, 0 직접 손실은 선택 행에 한정. 독립 편집의 존재와 보존에 관한 자연층 관측 없음. IxxxC publication_or_revision_date는 보고 최초일을 유지한 ② 원장 필드이며 댓글 자체 날짜로 쓰지 않는다(댓글 ID/observed에 기록한 날짜 우선). 
 - 직접 판독 하한: history 2/8 (6 부족), report 15/6, guidance 5/4, library 2/2, geographic 2/2 = 26 고유 산입, 추가 J03 비산입. 동일 사건 WD-KG는 1계보/2 객체의 서로 다른 수정 원전 2개; 보수적으로 사건 단위로 합치면 25개, history 1/8. 16개 자연 OL 자리 중 연속 판 직접 확인 0, 16 WD 자리는 순위 미복원. 분모가 다른 보강층으로 대체 금지. Q1 미확인, Q2/Q4의 유효 독립 후속 수정 보존/소실 직접 비교 미확인, Q5 외부 서지 고정판 미확인. PARTIAL.
+
+## 추가 보강 (④ 보정 커밋)
+검색식: `site:wikidata.org/wiki/Wikidata:Project_chat/Archive "merge" "undo" "diff" "2023" wrong merge`, `site:phabricator.wikimedia.org Wikidata "merge" "undo" "2021" "diff" wrong item`, `site:wikidata.org "Undo revision" "wrong merge" "2024" "Difference between revisions"`, 동일 2022. W05–W08 실제 보고 읽음. 특히 W05는 유효 후보 후속 편집이 있었다는 보고지만 값과 복구판 불명으로 직접 비교 미달. W07의 8분 내 복구 보고도 무손실 증명 아님. W08은 동일 개체 병합 방향 반전이라는 반례 후보. B24–B27 원장 접근 실패. 새 보고 4개는 이미 하한 충족한 report 층 보강으로 별도 0산입, 26 및 history 2 고정; 원순위/자연 분모 변경 없음. frame에 T237262/T237899와 새 보강 4자리 명시.
