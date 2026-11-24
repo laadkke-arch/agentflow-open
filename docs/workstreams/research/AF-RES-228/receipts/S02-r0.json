@@ -1,0 +1,460 @@
+{
+  "run_id": "S02-r0",
+  "source_id": "S02",
+  "receiver_expected": "b2c50115baa36c217e939ee3ea8ecfae52f91abd",
+  "requested_reception": false,
+  "commands": {
+    "prepare": {
+      "argv": [
+        "php",
+        "cli/prepare.php"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:31+00:00",
+      "exit": 0,
+      "stdout": "ℹ️ Remember to re-apply the appropriate access rights, such as:\tsudo cli/access-permissions.sh\n",
+      "stderr": "",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data"
+    },
+    "install": {
+      "argv": [
+        "php",
+        "cli/do-install.php",
+        "--default-user=afres228",
+        "--db-type=sqlite",
+        "--auth-type=none",
+        "--base-url=http://localhost",
+        "--disable-update=true"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:31+00:00",
+      "exit": 0,
+      "stdout": "ℹ️ Remember to create the default user: afres228\t./cli/create-user.php --user afres228 --password 'password' --more-options\nℹ️ Remember to re-apply the appropriate access rights, such as:\tsudo cli/access-permissions.sh\n",
+      "stderr": "FreshRSS install…\n",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data"
+    },
+    "create_user": {
+      "argv": [
+        "php",
+        "cli/create-user.php",
+        "--user=afres228",
+        "--no-default-feeds"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:31+00:00",
+      "exit": 0,
+      "stdout": "FreshRSS creating user “afres228”…\nℹ️ Remember to refresh the feeds of the user: afres228\t./cli/actualize-user.php --user afres228\nℹ️ Remember to re-apply the appropriate access rights, such as:\tsudo cli/access-permissions.sh\n",
+      "stderr": "",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data"
+    },
+    "inspect_loaded_config": {
+      "argv": [
+        "php",
+        "-r",
+        "\nrequire 'cli/_cli.php';\ncliInitUser($argv[1]);\necho json_encode([\n    'freshrss' => FRESHRSS_VERSION,\n    'data_path' => DATA_PATH,\n    'db_engine' => FreshRSS_Context::systemConf()->db['type'],\n    'reception' => FreshRSS_Context::userConf()->mark_when['reception'],\n    'enabled_extensions' => FreshRSS_Context::userConf()->extensions_enabled,\n], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), \"\\n\";\n",
+        "afres228"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:31+00:00",
+      "exit": 0,
+      "stdout": "{\"freshrss\":\"1.29.1\",\"data_path\":\"/tmp/afres228-mjk0gqe1/S02-r0/data\",\"db_engine\":\"sqlite\",\"reception\":false,\"enabled_extensions\":[]}\n",
+      "stderr": "",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data"
+    },
+    "import_first": {
+      "argv": [
+        "strace",
+        "-f",
+        "-qq",
+        "-yy",
+        "-s",
+        "256",
+        "-e",
+        "trace=%network",
+        "-o",
+        "/tmp/afres228-mjk0gqe1/S02-r0/import_first.strace",
+        "php",
+        "cli/import-for-user.php",
+        "--user=afres228",
+        "--filename=/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:31+00:00",
+      "exit": 0,
+      "stdout": "FreshRSS importing ZIP/OPML/JSON/TXT for user “afres228”…\n",
+      "stderr": "",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data",
+      "strace_network": "20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21016]>\n20    connect(5<UNIX:[21016]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21017]>\n21    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 7<UNIX-STREAM:[21920]>\n21    connect(7<UNIX-STREAM:[21920]>, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)\n21    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 7<UNIX-STREAM:[21921]>\n21    connect(7<UNIX-STREAM:[21921]>, {sa_family=AF_UNIX, sun_path=\"/var/run/nscd/socket\"}, 110) = -1 ENOENT (No such file or directory)\n21    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21922]>\n21    setsockopt(7<UDP:[21922]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n21    connect(7<UDP:[21922]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n21    sendmmsg(7<UDP:[21922]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"n\\254\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\1\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=35}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\375\\255\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n21    sendto(7<UDP:[21922]>, \"\\375\\255\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", 35, MSG_NOSIGNAL, NULL, 0) = 35\n21    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21923]>\n21    setsockopt(7<UDP:[21923]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n21    connect(7<UDP:[21923]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n21    sendmmsg(7<UDP:[21923]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"n\\254\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\1\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=35}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\375\\255\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n21    sendto(7<UDP:[21923]>, \"\\375\\255\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", 35, MSG_NOSIGNAL, NULL, 0) = 35\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21018]>\n20    connect(5<UNIX:[21018]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21019]>\n22    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18162]>\n22    setsockopt(7<UDP:[18162]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n22    connect(7<UDP:[18162]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n22    sendmmsg(7<UDP:[18162]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\206\\37\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\1\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=35}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\345\\35\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n22    sendto(7<UDP:[18162]>, \"\\345\\35\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", 35, MSG_NOSIGNAL, NULL, 0) = 35\n22    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18163]>\n22    setsockopt(7<UDP:[18163]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n22    connect(7<UDP:[18163]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n22    sendmmsg(7<UDP:[18163]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\206\\37\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\1\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=35}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\345\\35\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", iov_len=35}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n22    sendto(7<UDP:[18163]>, \"\\345\\35\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\fexample-feed\\4test\\0\\0\\34\\0\\1\", 35, MSG_NOSIGNAL, NULL, 0) = 35\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21020]>\n20    connect(5<UNIX:[21020]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21021]>\n23    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18164]>\n23    setsockopt(7<UDP:[18164]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n23    connect(7<UDP:[18164]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n23    sendmmsg(7<UDP:[18164]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\2501\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"|?\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n23    sendto(7<UDP:[18164]>, \"|?\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n23    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18165]>\n23    setsockopt(7<UDP:[18165]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n23    connect(7<UDP:[18165]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n23    sendmmsg(7<UDP:[18165]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\2501\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"|?\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n23    sendto(7<UDP:[18165]>, \"|?\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21022]>\n20    connect(5<UNIX:[21022]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21023]>\n24    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21924]>\n24    setsockopt(7<UDP:[21924]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n24    connect(7<UDP:[21924]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n24    sendmmsg(7<UDP:[21924]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\0231\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\2450\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n24    sendto(7<UDP:[21924]>, \"\\2450\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n24    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21925]>\n24    setsockopt(7<UDP:[21925]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n24    connect(7<UDP:[21925]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n24    sendmmsg(7<UDP:[21925]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\0231\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\2450\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n24    sendto(7<UDP:[21925]>, \"\\2450\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21024]>\n20    connect(5<UNIX:[21024]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21025]>\n25    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[19173]>\n25    setsockopt(7<UDP:[19173]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n25    connect(7<UDP:[19173]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n25    sendmmsg(7<UDP:[19173]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\nz\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"0}\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n25    sendto(7<UDP:[19173]>, \"0}\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n25    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[19174]>\n25    setsockopt(7<UDP:[19174]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n25    connect(7<UDP:[19174]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n25    sendmmsg(7<UDP:[19174]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\nz\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\1\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=29}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"0}\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", iov_len=29}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n25    sendto(7<UDP:[19174]>, \"0}\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\7example\\3com\\0\\0\\34\\0\\1\", 29, MSG_NOSIGNAL, NULL, 0) = 29\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21026]>\n20    connect(5<UNIX:[21026]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21027]>\n26    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21926]>\n26    setsockopt(7<UDP:[21926]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n26    connect(7<UDP:[21926]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n26    sendmmsg(7<UDP:[21926]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"J\\10\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\1\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=45}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"/\\17\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n26    sendto(7<UDP:[21926]>, \"/\\17\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", 45, MSG_NOSIGNAL, NULL, 0) = 45\n26    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[21927]>\n26    setsockopt(7<UDP:[21927]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n26    connect(7<UDP:[21927]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n26    sendmmsg(7<UDP:[21927]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"J\\10\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\1\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=45}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"/\\17\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n26    sendto(7<UDP:[21927]>, \"/\\17\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", 45, MSG_NOSIGNAL, NULL, 0) = 45\n20    socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 5<UNIX:[21028]>\n20    connect(5<UNIX:[21028]>, {sa_family=AF_UNIX, sun_path=\"/dev/log\"}, 110) = -1 ENOENT (No such file or directory)\n20    socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6<UDPv6:[21029]>\n27    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18166]>\n27    setsockopt(7<UDP:[18166]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n27    connect(7<UDP:[18166]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n27    sendmmsg(7<UDP:[18166]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\234g\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\1\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=45}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\363d\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n27    sendto(7<UDP:[18166]>, \"\\363d\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", 45, MSG_NOSIGNAL, NULL, 0) = 45\n27    socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 7<UDP:[18167]>\n27    setsockopt(7<UDP:[18167]>, SOL_IP, IP_RECVERR, [1], 4) = 0\n27    connect(7<UDP:[18167]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr(\"127.0.0.1\")}, 16) = 0\n27    sendmmsg(7<UDP:[18167]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\234g\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\1\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=45}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base=\"\\363d\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", iov_len=45}], msg_iovlen=1, msg_controllen=0, msg_flags=0}}], 2, MSG_NOSIGNAL) = 1\n27    sendto(7<UDP:[18167]>, \"\\363d\\1\\0\\0\\1\\0\\0\\0\\0\\0\\0\\16not-subscribed\\7example\\4test\\0\\0\\34\\0\\1\", 45, MSG_NOSIGNAL, NULL, 0) = 45\n",
+      "app_log_files_after_command": {
+        "users/afres228/log.txt": "[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example-feed.test https://example-feed.test/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example-feed.test https://example-feed.test/favicon.ico\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/blog/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/favicon.ico\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: not-subscribed.example.test https://not-subscribed.example.test/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: not-subscribed.example.test https://not-subscribed.example.test/favicon.ico\n"
+      }
+    },
+    "import_repeat": {
+      "argv": [
+        "strace",
+        "-f",
+        "-qq",
+        "-yy",
+        "-s",
+        "256",
+        "-e",
+        "trace=%network",
+        "-o",
+        "/tmp/afres228-mjk0gqe1/S02-r0/import_repeat.strace",
+        "php",
+        "cli/import-for-user.php",
+        "--user=afres228",
+        "--filename=/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json"
+      ],
+      "started_utc": "2026-11-24T22:24:31+00:00",
+      "finished_utc": "2026-11-24T22:24:32+00:00",
+      "exit": 0,
+      "stdout": "FreshRSS importing ZIP/OPML/JSON/TXT for user “afres228”…\n",
+      "stderr": "",
+      "DATA_PATH": "/tmp/afres228-mjk0gqe1/S02-r0/data",
+      "strace_network": "",
+      "app_log_files_after_command": {
+        "users/afres228/log.txt": "[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example-feed.test https://example-feed.test/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example-feed.test https://example-feed.test/favicon.ico\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/blog/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: example.com https://example.com/favicon.ico\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: not-subscribed.example.test https://not-subscribed.example.test/\n[Tue, 24 Nov 2026 22:24:31 +0000] [warning] --- Error fetching content: HTTP code 0: Could not resolve host: not-subscribed.example.test https://not-subscribed.example.test/favicon.ico\n"
+      }
+    }
+  },
+  "inputs": {
+    "first": {
+      "path": "/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json",
+      "path_given_as_filename": "/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json",
+      "items": 3,
+      "bytes": 3858,
+      "sha256": "8ea0ca24dabbe6bbefa0784f94ade98b16eaa1863bbeb0db9a2334ad7f0cac7a",
+      "git_blob_sha1": "336f65cc1a09679f82cfdb94e33e96f1b7272408"
+    },
+    "repeat": {
+      "path": "/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json",
+      "path_given_as_filename": "/tmp/afres228-mjk0gqe1/S02-r0/input/S02/starred.json",
+      "items": 3,
+      "bytes": 3858,
+      "sha256": "8ea0ca24dabbe6bbefa0784f94ade98b16eaa1863bbeb0db9a2334ad7f0cac7a",
+      "git_blob_sha1": "336f65cc1a09679f82cfdb94e33e96f1b7272408"
+    }
+  },
+  "snapshots": {
+    "baseline": {
+      "db_path": "/tmp/afres228-mjk0gqe1/S02-r0/data/users/afres228/db.sqlite",
+      "db_sha256": "61d66fc0e3543b238915d5033c3986a445e145f62be0fa8de7bdc8bd5e1b72d6",
+      "wal_sha256": null,
+      "schema_sha256": "ce9b5d7c082b33b6358f91f7168a9f80a02bba8185214aac5a248be29d198976",
+      "tables": [
+        "category",
+        "entry",
+        "entrytag",
+        "entrytmp",
+        "feed",
+        "sqlite_sequence",
+        "tag"
+      ],
+      "counts": {
+        "category": 1,
+        "feed": 0,
+        "entry": 0,
+        "entrytmp": 0,
+        "tag": 0,
+        "entrytag": 0
+      },
+      "quick_check": "ok",
+      "foreign_key_check": [],
+      "categories": [
+        {
+          "id": 1,
+          "name": "Uncategorized"
+        }
+      ],
+      "feeds": [],
+      "entries": [],
+      "tags": [],
+      "entrytags": []
+    },
+    "first": {
+      "db_path": "/tmp/afres228-mjk0gqe1/S02-r0/data/users/afres228/db.sqlite",
+      "db_sha256": "5b73b7053c7929874fda941437966f603b18b79c9aeaa9f6f29bfebd9690b661",
+      "wal_sha256": null,
+      "schema_sha256": "ce9b5d7c082b33b6358f91f7168a9f80a02bba8185214aac5a248be29d198976",
+      "tables": [
+        "category",
+        "entry",
+        "entrytag",
+        "entrytmp",
+        "feed",
+        "sqlite_sequence",
+        "tag"
+      ],
+      "counts": {
+        "category": 1,
+        "feed": 3,
+        "entry": 3,
+        "entrytmp": 0,
+        "tag": 2,
+        "entrytag": 2
+      },
+      "quick_check": "ok",
+      "foreign_key_check": [],
+      "categories": [
+        {
+          "id": 1,
+          "name": "Uncategorized"
+        }
+      ],
+      "feeds": [
+        {
+          "id": 1,
+          "url": "https://example-feed.test/rss",
+          "name": "Example Feed",
+          "website": "https://example-feed.test/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 0,
+          "lastUpdate": 0
+        },
+        {
+          "id": 2,
+          "url": "https://example.com/blog/feed.xml",
+          "name": "Example Blog",
+          "website": "https://example.com/blog/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 1,
+          "lastUpdate": 0
+        },
+        {
+          "id": 3,
+          "url": "https://not-subscribed.example.test/feed",
+          "name": "Not Subscribed Source",
+          "website": "https://not-subscribed.example.test/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 1,
+          "lastUpdate": 0
+        }
+      ],
+      "entries": [
+        {
+          "id": 1795559071841651,
+          "id_feed": 1,
+          "feed_url": "https://example-feed.test/rss",
+          "guid": "tag:google.com,2005:reader/item/0000000000000001",
+          "title": "Existing Feed Article One",
+          "link": "https://example-feed.test/articles/one",
+          "is_read": 1,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699999000,
+          "lastSeen": 1795559071,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "af625dc63214ca1608edebbc81e934fd"
+        },
+        {
+          "id": 1795559071841650,
+          "id_feed": 2,
+          "feed_url": "https://example.com/blog/feed.xml",
+          "guid": "tag:google.com,2005:reader/item/0000000000000002",
+          "title": "Existing Feed Article Two With Labels",
+          "link": "https://example.com/blog/article-two",
+          "is_read": 0,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699998000,
+          "lastSeen": 1795559071,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "ea32a71c9d5eeb7f7ebb788bc4215157"
+        },
+        {
+          "id": 1795559071841649,
+          "id_feed": 3,
+          "feed_url": "https://not-subscribed.example.test/feed",
+          "guid": "tag:google.com,2005:reader/item/0000000000000003",
+          "title": "Unsubscribed Source Article",
+          "link": "https://not-subscribed.example.test/articles/three",
+          "is_read": 0,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699997000,
+          "lastSeen": 1795559071,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "8ce896528e1c8354bfd47c2ec3f892cf"
+        }
+      ],
+      "tags": [
+        {
+          "id": 1,
+          "name": "art"
+        },
+        {
+          "id": 2,
+          "name": "Design"
+        }
+      ],
+      "entrytags": [
+        {
+          "id_entry": 1795559071841650,
+          "id_tag": 1,
+          "name": "art"
+        },
+        {
+          "id_entry": 1795559071841650,
+          "id_tag": 2,
+          "name": "Design"
+        }
+      ]
+    },
+    "repeat": {
+      "db_path": "/tmp/afres228-mjk0gqe1/S02-r0/data/users/afres228/db.sqlite",
+      "db_sha256": "d767d1ebd5b5103812081777d45421b9dea39a5f2f77ec7d3c8f2a4f793d99c4",
+      "wal_sha256": null,
+      "schema_sha256": "ce9b5d7c082b33b6358f91f7168a9f80a02bba8185214aac5a248be29d198976",
+      "tables": [
+        "category",
+        "entry",
+        "entrytag",
+        "entrytmp",
+        "feed",
+        "sqlite_sequence",
+        "tag"
+      ],
+      "counts": {
+        "category": 1,
+        "feed": 3,
+        "entry": 3,
+        "entrytmp": 0,
+        "tag": 2,
+        "entrytag": 2
+      },
+      "quick_check": "ok",
+      "foreign_key_check": [],
+      "categories": [
+        {
+          "id": 1,
+          "name": "Uncategorized"
+        }
+      ],
+      "feeds": [
+        {
+          "id": 1,
+          "url": "https://example-feed.test/rss",
+          "name": "Example Feed",
+          "website": "https://example-feed.test/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 0,
+          "lastUpdate": 0
+        },
+        {
+          "id": 2,
+          "url": "https://example.com/blog/feed.xml",
+          "name": "Example Blog",
+          "website": "https://example.com/blog/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 1,
+          "lastUpdate": 0
+        },
+        {
+          "id": 3,
+          "url": "https://not-subscribed.example.test/feed",
+          "name": "Not Subscribed Source",
+          "website": "https://not-subscribed.example.test/",
+          "category": 1,
+          "cache_nbEntries": 1,
+          "cache_nbUnreads": 1,
+          "lastUpdate": 0
+        }
+      ],
+      "entries": [
+        {
+          "id": 1795559071841651,
+          "id_feed": 1,
+          "feed_url": "https://example-feed.test/rss",
+          "guid": "tag:google.com,2005:reader/item/0000000000000001",
+          "title": "Existing Feed Article One",
+          "link": "https://example-feed.test/articles/one",
+          "is_read": 1,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699999000,
+          "lastSeen": 0,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "af625dc63214ca1608edebbc81e934fd"
+        },
+        {
+          "id": 1795559071841650,
+          "id_feed": 2,
+          "feed_url": "https://example.com/blog/feed.xml",
+          "guid": "tag:google.com,2005:reader/item/0000000000000002",
+          "title": "Existing Feed Article Two With Labels",
+          "link": "https://example.com/blog/article-two",
+          "is_read": 0,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699998000,
+          "lastSeen": 0,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "ea32a71c9d5eeb7f7ebb788bc4215157"
+        },
+        {
+          "id": 1795559071841649,
+          "id_feed": 3,
+          "feed_url": "https://not-subscribed.example.test/feed",
+          "guid": "tag:google.com,2005:reader/item/0000000000000003",
+          "title": "Unsubscribed Source Article",
+          "link": "https://not-subscribed.example.test/articles/three",
+          "is_read": 0,
+          "is_favorite": 1,
+          "entry_tags": "",
+          "date": 1699997000,
+          "lastSeen": 0,
+          "lastModified": null,
+          "lastUserModified": null,
+          "row_hash": "8ce896528e1c8354bfd47c2ec3f892cf"
+        }
+      ],
+      "tags": [
+        {
+          "id": 1,
+          "name": "art"
+        },
+        {
+          "id": 2,
+          "name": "Design"
+        }
+      ],
+      "entrytags": [
+        {
+          "id_entry": 1795559071841650,
+          "id_tag": 1,
+          "name": "art"
+        },
+        {
+          "id_entry": 1795559071841650,
+          "id_tag": 2,
+          "name": "Design"
+        }
+      ]
+    }
+  },
+  "user_override": {
+    "path": "/tmp/afres228-mjk0gqe1/S02-r0/data/config-user.custom.php",
+    "text": "<?php\nreturn ['mark_when' => ['reception' => false]];\n",
+    "bytes": 54,
+    "sha256": "6aaa8315d8a6a6904efa727baaafa874eca4b86d166652286e61dae37cdc0ff0",
+    "git_blob_sha1": "acd4ca0e2eb13ba7c6a80a4bd59b7e7afb12812d"
+  },
+  "effective_settings": {
+    "freshrss": "1.29.1",
+    "data_path": "/tmp/afres228-mjk0gqe1/S02-r0/data",
+    "db_engine": "sqlite",
+    "reception": false,
+    "enabled_extensions": []
+  }
+}
