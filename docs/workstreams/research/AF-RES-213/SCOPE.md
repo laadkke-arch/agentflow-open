@@ -7,3 +7,9 @@
 - 판정: 목록 ID/설치 링크 vs 실제 편집 macro/layout vs 오프라인 소비자별 필요한 자산·내장·조건부. XML 관찰/제작자 규칙/당사자 발언/추론 분리. 실행·캐시·journal approval은 관찰 없는 한 미확인. locale 기본값/override와 fallback 차이; 메타데이터 결손과 스타일 오류 분리. 반례: 같은 부모 다른 언어, 자식 템플릿 override, 동일 약어, 공유 부모 수정 파급.
 - 노출: 작성자는 착수문·두 저널명·부모 공유 가능성·202 결과·목표 및 검색어를 사전 인지. 맹검/독립 검토 아님. 렌더러 실행, 새 실험, 설치/계정 변경 없음. 검증 명령은 인계에만 기록.
 - 원문마다 정확 URL, 판, 경로, 실제 내용/단위와 한계. 출처 확인 UTC 일자는 시스템 날짜 2026-11-25 (정밀 시각 미확인). 결과와 반례 교차 점검 후 별도 HANDOFF.
+
+## 착수 후 확인 및 정정 (묶음 ②)
+- 최초 control contents/raw 실패는 그대로 보존. 이후 [Git blob](https://api.github.com/repos/laadkke-arch/agentflow-open/git/blobs/e28dbb0945afff7a471bb1ecaedfb436809cfc97) 응답의 tasks에서 AF-RES-213 RUNNING, depends_on=[AF-RES-202], 지정 branch/owned_path 일치, AF-RES-202 DONE/result_commit cc543b8d1b8f8748fa363999b76a55f05de2266c를 직접 확인. 이전 미확인 정정. 추가 의존 없음. 중앙 DONE은 202 HANDOFF의 PARTIAL과 구별.
+- UTC 일자는 명시 착수 timestamp(2026-11-25T06:29+09:00)를 환산하면 2026-11-24; SCOPE의 시스템 날짜 표기를 정정, 정밀 UTC clock은 미측정.
+- 소비자 고정: Zotero 5c3676746f92068667de0a01ffa9d92ebf70ed72, bundled-styles 17a34cd4e366c2778c2c0db832fc34180f10efd7, locale submodule 8bef426f89f38c0789223c50e53ec2197bc50bb3; Pandoc 568dab14533940ecee16824097400f1eabf13869 (tag 3.8.3 조회), citeproc 0.12 caec46cd273d3ac84a3de3eae936b2916e49e9fb (허용 dependency range 대표판, installed build 아님). Zotero/Pandoc의 locale 및 캐시 경계를 별도 판정.
+- 직접 판독 산입 38: {"A":7,"B":5,"C":15,"D":7,"E":4}. 유형별 하한 충족은 자료수에 한정; 정확 두 저널 원제보, 저널 승인, 런타임 미확인. 관련 저널·일반 데이터 오류 보강 분리.
