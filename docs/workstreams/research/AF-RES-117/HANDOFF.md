@@ -1,0 +1,25 @@
+# AF-RES-117 HANDOFF — PARTIAL
+
+- 배정: web-pro / work/research-af-res-117 / owned_path docs/workstreams/research/AF-RES-117/
+- 통합판 시작 ba55c71bf1382dc7b83cf46b2439f590866fc50f; 계획 기준 101426a5e76154bb89b642dd9bd3c52fc1229c30. 시작 차이는 중앙 진행표만. AF-RES-113 의존 handoff 7a8fa21da69d141a7288662b7b556370529259a9, result 9351759623393c87038033de2adf9865a9f7abcc. 선행 인수 수치는 재조사하지 않음.
+- **검사 결과 고정 SHA** [63d6852aa4693902bfafa420c319144e93d741a7](https://github.com/laadkke-arch/agentflow-open/commit/63d6852aa4693902bfafa420c319144e93d741a7). [RESULT.md](https://github.com/laadkke-arch/agentflow-open/blob/63d6852aa4693902bfafa420c319144e93d741a7/docs/workstreams/research/AF-RES-117/RESULT.md). 검사 영수증 SHA [0df389406ad5c83fe1275a0bd3ebe9ff6e7547d4](https://github.com/laadkke-arch/agentflow-open/commit/0df389406ad5c83fe1275a0bd3ebe9ff6e7547d4).
+- 인수: 초기 8자리(잠정), 사건 51행, 주장 8행, 반환 8행, 타 분야 2행; 원장 46행, 고유 원저작 본문/관련 절 24(8+6+6+2+2), 고유 후보 원 URL 45, 성공 로그 행 42, 실패 4. 실제 총 검색 후보·개봉 횟수 미확인; 원장 로그만 집계. G3 특정 선례→옵션 선택 차이의 교집합 확인 0. 이는 영향 없음 또는 모집단 비율을 입증하지 않음.
+- 핵심 근접사례: R1 #3362 io-mux 링크 삽입 + 같은 날 diff 01030129의 문구 완화; API 폐기 유보는 1/13 이전. R3 #3367 외부 Pod/enum_dispatch 반례 및 TODO, 작성자가 한계 인정 후 2/7 가용시간 부족·재작성·미해결로 종료. P4 #2997 mypy example 인용과 실제 TypedMapping→ReadOnly 범위 축소는 별도 관측. R2 #3365 분류 원안 기각과 이미 선택한 안에 대한 anyhow 비유. P2 PEP704 철회는 기존 PEP668·권한·Conda 혼합 문제. P3 절차 종료와 후속 PEP710 별도 파일/해시 프로토타입은 기각 동일 사건 아님. R4 GHC 인용 용어 정정과 실제 안정화는 별도. 시간 절감 0건 확인. 타 분야: Central Subway 3A 기각/3B 선택에도 공통 Powell capacity 유지; Rubens 원작 회귀 대신 후대 역사와 panel 안정 보존.
+- 보류: 30+1 적격 frame ×2, 초기 8자리만 확인, 200 metadata로 모집 완료 주장 불가. 당시 외부 crate 원문 3(io-mux/bytemuck/enum_dispatch) 미확인; 보조층 0/최대4; 최초 독립 인용·사후 독립 인용 전수 추적 미완. NG194 사전 treatment proposal 미확인. 외부 프로젝트 시험 실행 및 실제 노동비용 0건 확인. 정확 UTC 열람 시각 미기록. workbench 정식 manifest 미생성. 독립 검토 없음.
+- 묶음별 커밋(각각 원격 SHA 재열람): 
+  1. 모집·코딩 [2b7bfb96d15dec6e830292efb3224aaf70d9f92d](https://github.com/laadkke-arch/agentflow-open/commit/2b7bfb96d15dec6e830292efb3224aaf70d9f92d)
+  2. 초기안 [dddba73e9b5b9e0bb4c0cdbda9daa24555d835b5](https://github.com/laadkke-arch/agentflow-open/commit/dddba73e9b5b9e0bb4c0cdbda9daa24555d835b5)
+  3. 최초 인용·반응 [9100ed86f5b7d869ba6e075647ba973ef7e05bf2](https://github.com/laadkke-arch/agentflow-open/commit/9100ed86f5b7d869ba6e075647ba973ef7e05bf2)
+  4. 반증·타 분야·원장 [9a6b65b7ab47c152d8deaeb0b68b998e955ec081](https://github.com/laadkke-arch/agentflow-open/commit/9a6b65b7ab47c152d8deaeb0b68b998e955ec081)
+  5. 표·자가 점검 [63d6852aa4693902bfafa420c319144e93d741a7](https://github.com/laadkke-arch/agentflow-open/commit/63d6852aa4693902bfafa420c319144e93d741a7)
+  6. 검사 기록 [0df389406ad5c83fe1275a0bd3ebe9ff6e7547d4](https://github.com/laadkke-arch/agentflow-open/commit/0df389406ad5c83fe1275a0bd3ebe9ff6e7547d4)
+- 동일 작업자 고정 SHA API 판독 검산: 결과 table headers 3/끝 3행, Q1–Q7 7행, source ID 46/46, counts match, events 51/51 ID, initial_draft 8, claims/returns 각8, transfer2, compare start→result 변경 경로 15/15 소유 경로. GitHub 도구 실행 결과는 evidence/acceptance-evidence.json. 이것은 코드/시험 실행과 별개.
+- 셸 진단: `git ls-remote https://github.com/laadkke-arch/agentflow-open.git refs/heads/chore/workspace-foundation` exit128, github.com DNS 해석 실패(요약; stderr 원문 미보존). 실제 GitHub connector 커밋은 성공. `python -B -m workbench.session start af-res-117 --allow docs/workstreams/research/AF-RES-117/ --dependency work/research-af-res-113=7a8fa21da69d141a7288662b7b556370529259a9 --output docs/workstreams/research/AF-RES-117/manifest.json --fetch` 미실시. 기존 수동 manifest는 보존하고 올바른 시작판/checkout에서 formal manifest를 재구성할 것(기존 파일에 무단 덮어쓰지 않음). 고정 결과판을 검사할 명령: `python -B -m workbench.session check docs/workstreams/research/AF-RES-117/manifest.json --fetch` (workbench/session.py CLI lines307–313에서 인수 확인). 실행 가능 환경에서 저장소 정책에 맞는 checkout 및 시작판/의존성 확인 후 실행하고 stdout/stderr/exit code 남길 것. 원 프로젝트 코드 테스트 미실시; pip prototype의 테스트 입력은 simplewheel wheel/simple sdist, archive_info.hashes nonempty 및 url 두 필드; exact head와 CI 로그 먼저 확인. CPython #110764, Rust #119888 테스트 실행기록은 보류.
+- 다음 첫 행동: [frame.csv 고정판](https://github.com/laadkke-arch/agentflow-open/blob/63d6852aa4693902bfafa420c319144e93d741a7/docs/workstreams/research/AF-RES-117/frame.csv)과 [사전 SCOPE](https://github.com/laadkke-arch/agentflow-open/blob/2b7bfb96d15dec6e830292efb3224aaf70d9f92d/docs/workstreams/research/AF-RES-117/SCOPE.md)를 별도 모집자에게 전달. 기존 결과/후속 댓글을 보여주지 말고 30+1×2 적격 순서를 재구성한 뒤 기존 8자리와 대조. 가장 먼저 두 repo의 생성순 search API와 첫 commit/parent patch를 열 것. 기존 선정에 맞춰 모집하지 않음. 필요 시 당시 버전 fixed tags, 리뷰/Discourse 등으로 시점 재구성.
+- 색인 제안 한 줄: AF-RES-117 PARTIAL | 잠정 8 사례·24 원문, 특정 선례의 선택/시험 변화 G3 미입증; R1 링크-문구 diff, R3 복수 반례·가용시간 종료; 모집틀·당시판·실행 결손 | RESULT 63d6852 | HANDOFF 본 커밋. 중앙 진행표 수정 없음.
+
+| 가장 중요한 불일치·약점 | 다음 조사와 직접 열 자료 | 어떤 관측이면 판단이 바뀌나 |
+|---|---|---|
+| 모집틀 미완; 잠정 8자리와 확정 적격 30+1×2 구분 | 별도 blind 모집자 frame.csv + 두 repo 최초 commit/parent diff | 앞선 적격 사례 발견 시 자리 교체/재코딩, 일치 시 확정 |
+| 당시판 3개 및 특정 선례→선택 인과 미입증 | io-mux/bytemuck/enum_dispatch 2023 고정판, R1 01030129/R3 Jan6–Feb7, P4 옵션전환 diff | 작성자 명시 원인 + 동일 조건의 이전/이후 선택·시험 차이 관측 시 G3 |
+| 실제 시험·노동비용 미관측; 박물관 사전 처리계획 공석 | CPython#110764/pip#11865/rust#119888 CI logs, NG194 treatment proposal/approval | 같은 입력 실행 결과, 작업시간 기록 또는 사전-사후 승인 자료로 승격 |
