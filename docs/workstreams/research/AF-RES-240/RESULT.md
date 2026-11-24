@@ -54,12 +54,64 @@
 | 시간대 · ZoneInfo (IANA 2024b) | `backward` 포함 때 `US/Eastern`과 `Asia/Calcutta`, 두 target | `key`와 `str`은 입력 키 그대로 | `ZoneInfoNotFoundError`. `backward` 제외 대조에서 옛 두 키만 실패 | [T01 backward](https://data.iana.org/time-zones/tzdb-2024b/backward), [T09 key](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Doc/library/zoneinfo.rst#L250-L278) |
 | 시간대 · ICU4C 76.1 CLDR 46.0 / tzdb 2024b | `US/Eastern`, `Asia/Calcutta`과 두 target | `ucal_getTimeZoneID`는 입력 키, CLDR canonical은 `America/New_York`·`Asia/Calcutta`, IANA preferred는 `America/New_York`·`Asia/Kolkata` | canonical/IANA는 알 수 없는 키에 `U_ILLEGAL_ARGUMENT_ERROR`. open/get ID는 `Etc/Unknown`과 status 0 | [T04 Time Zone Names](https://www.unicode.org/reports/tr35/tr35-73/tr35-dates.html#Time_Zone_Names), [T07 ID API](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/i18n/unicode/ucal.h#L1368-L1417) |
 
-## 주관측
 
-[방향표](directions.csv)에 36자리 중 적용 34, N/A 2를 보존했다. [하위 호출표](calls.csv)에 입력·choice 조합 102개와 각 2회 원영수증을 연결했다. 예정 204 / 관측 204 / 결측 0이며 lookup alias 104회도 모두 관측했다. 같은 키의 원값 차이는 0건이다.
+## Q1. 바이너리와 데이터 판
 
-- CPython 3.13.0/UCD 15.1.0과 ICU4C 76.1/UCD 16.0 및 ICU data 76.1이 런타임 출력과 일치한다. [environment.json](environment.json)
-- 봉인한 19행(13 alias, 5 Name, 1 placeholder)이 UCD 두 판의 실제 표본과 38/38 일치했다. [바이트 대조](receipts/build/ucd-compare.stdout)
-- CPython은 매 반복 5 Name·13 alias를 모두 검색했다. 역방향 12회 중 10회는 기존 이름이며 000A에서 `ValueError`와 `None`이 한 번씩 나왔다. ICU는 매 반복 lookup 54회 중 14회 성공과 40회 실패였다. 세 choice에서 길이 0과 정상 상태가 함께 나온 역방향 키가 3개였다.
-- 확장한 102개 사전 예상은 구현의 값을 모두 재현했다. 헤더의 miss 상수와 실제 miss 상수는 40키/80회에서 다르다. [오류 조인](errors.csv)
-- Q6·Q7은 [반례·정정](COUNTEREXAMPLES.md)에 원값과 함께 기록했다.
+CPython은 v3.13.0의 peeled commit `60403a5409ff2c3f3b07dd2ca91a7a3e096839c7`에서 빌드했다. `sys.version`은 `3.13.0 (main, Nov 24 2026, 23:03:53) [GCC 14.2.0]`이고 `unicodedata.unidata_version`은 `15.1.0`이다. 원래 tar.xz URL은 셸에서 HTTP 403이어서 원 저장소의 SHA 아카이브를 썼다. 실행 파일, 실제 `unicodedata` 확장 모듈, ldd 목록, 소스 아카이브 SHA-256을 저장했다. P01의 출시일·소스 표, P02 L18–21의 문서 설명과 동일하다. 시스템의 3.13.5도 15.1.0을 표시해 UCD 줄만으로는 patch 판이 고정되지 않는다. 다른 플랫폼의 배포 바이너리와 서명은 미확인이다. [P01 릴리스](https://www.python.org/downloads/release/python-3130/), [P02 매뉴얼](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Doc/library/unicodedata.rst#L18-L42), [CPython 원로그](receipts/main/python-1.stdout#L1)
+
+ICU는 release-76-1 `8eca245c7484ac6cc179e3e5f7c1ea7680810f39`의 공식 ICU4C 소스 tar를 빌드했다. 헤더와 `u_getVersion` 76.1, `u_getUnicodeVersion` 16.0, `u_getDataVersion` 76.1 / `U_ZERO_ERROR`를 모두 확인했다. `u_getDataDirectory`는 빈 문자열이고 ldd는 해당 빌드 prefix의 `libicuuc.so.76`, `libicui18n.so.76`, `libicudata.so.76`를 가리킨다. data 심벌은 `icudt76_dat`이다. 소스 tar의 `icudt76l.dat`에서 꺼낸 `unames.icu`는 빌드 입력과 바이트가 같으며 SHA-256은 `262483b0171456733567fd1e3d2a7768373c181463a26ceb092fc250f081ad36`이다. 개별 데이터 디렉터리를 지정한 빌드, 운영체제별 재빌드 및 원 생성기에서의 data 재생은 미확인이다. [I01 릴리스](https://github.com/unicode-org/icu/releases/tag/release-76-1), [I03 data 로드 L179–211](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unames.cpp#L179-L211), [I07 로더](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/udata.cpp#L1275-L1359), [data 확인](receipts/build/data-check.stdout), [실제 링크](receipts/main/ldd.stdout), [environment.json](environment.json)
+
+## Q2. 원행과 실제 입력 바이트
+
+AF-RES-222의 UCD 16.0.0 여섯 행을 출발점으로 5 Name, 13 alias, 1 placeholder를 봉인했다. 두 UCD 판의 보존본에서 선택한 19행씩 38/38, 세미콜론 필드의 raw 행과 ASCII 입력 바이트가 모두 일치한다. U+FE18 Name은 `BRAKCET`, 별칭은 `BRACKET`이다. U+000A의 field 1 `<control>`은 공식 Name의 값이 없음을 뜻한다. 이 자리는 두 old→code에서 N/A이고 `<control>` 자체의 검색은 ④ 음성 통제에만 있다. U+000A의 UnicodeData legacy 필드 `LINE FEED (LF)`도 공식 별칭 두 문자열과 구별했다. 통제 실험에서 두 소비자는 그 괄호 포함 표현을 거절했다. 15.1.0 원배포 URL의 전체 바이트, 16.0.0 원배포와 보존본 전체 파일의 byte-for-byte 일치는 미확인이다. 선행 원표의 웹 줄 번호와 이번 raw 파일의 줄 번호는 빈 줄 정규화로 다를 수 있다. [R01 고정 원표](https://github.com/laadkke-arch/agentflow-open/blob/fe41449d156eb5e723c254a0530863468c084480/docs/workstreams/research/AF-RES-222/names.csv), [U01 NameAliases 16.0](https://www.unicode.org/Public/16.0.0/ucd/NameAliases.txt), [U02 UnicodeData 16.0](https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt), [U03 15.1 alias 보존본](https://raw.githubusercontent.com/unicode-org/unicodetools/725fb6055cd42915c74bcf77b91aa8fb8ef18669/unicodetools/data/ucd/15.1.0/NameAliases.txt), [U04 15.1 Name 보존본](https://raw.githubusercontent.com/unicode-org/unicodetools/725fb6055cd42915c74bcf77b91aa8fb8ef18669/unicodetools/data/ucd/15.1.0/UnicodeData.txt), [U05 §4.2.5](https://www.unicode.org/reports/tr44/tr44-34.html#Code_Point_Labels), [38행 검산](receipts/build/ucd-compare.stdout)
+
+## Q3. CPython의 검색과 표시
+
+매 반복 lookup의 공식 Name 5/5와 별칭 13/13이 예상 코드에 매핑됐다. 표시 호출 12개 중 다섯 공식 Name이 `name(cp)`와 `name(cp, None)`에서 두 번씩 반환됐다. 나머지 두 호출은 000A의 `ValueError('no such name')`와 Python `None`이었다. 예를 들어 `WEIERSTRASS ELLIPTIC FUNCTION`은 U+2118을 찾고 그 코드의 Name은 `SCRIPT CAPITAL P`다. `LINE FEED`로 찾은 U+000A는 역방향 Name이 없다. P04의 생성기는 alias type에 관계없이 lookup 엔트리를 만들고, P03의 lookup은 해당 코드로 재매핑한다. P05의 상류 테스트도 Name과 alias의 입력 일치·문자열 차이를 검사한다. `-I -m test -j1 test_ucn`은 exit 0, run 14, skipped 2였다. 다른 UCD의 `ucd_3_2_0` 및 전체 named sequence 표는 범위 밖이다. [P03 조회와 역조회](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Modules/unicodedata.c#L1503-L1569), [P04 생성기](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Tools/unicode/makeunicodedata.py#L944-L958), [P05 회귀시험](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Lib/test/test_ucn.py#L118-L142), [실행 결과](receipts/build/python-test_ucn.stdout), [000A 원값](receipts/main/python-1.stdout#L28)
+
+## Q4. ICU의 세 choice
+
+lookup은 매 반복 54호출 중 14 성공이었다. UNICODE/EXTENDED는 각각 다섯 공식 이름을 찾고 13 alias는 모두 거절했다. ALIAS는 네 correction을 찾고 다섯 공식 Name 및 나머지 9 alias를 거절했다. 나머지 40호출의 반환과 상태는 각각 65535, 12 `U_ILLEGAL_CHAR_FOUND`였다. 정정명→코드→같은 정정명의 왕복에는 ALIAS가 필요하다. `u_charName` 18호출은 18회 status 0이고, UNICODE와 ALIAS의 000A 및 ALIAS의 FEFF에서 길이 0·빈 문자열·첫 바이트 NUL을 관측했다. EXTENDED의 000A는 길이 14와 `<control-000A>`였다. 본 실험은 초기 상태 0과 용량 256이고 데이터 누락 또는 기존 오류 상태의 호출은 미측정이다. [I02 enum과 API](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unicode/uchar.h#L2049-L2063), [I03 함수 구현](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unames.cpp#L1449-L1632), [I06 correction 슬롯](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/tools/unicode/c/genprops/namespropsbuilder.cpp#L296-L337), [1회 원값](receipts/main/icu-1.stdout), [2회 원값](receipts/main/icu-2.stdout)
+
+## Q5. 문서·구현·데이터·시험 비교
+
+고정 헤더 I02 L3808–3819의 miss 문구는 `U_INVALID_CHAR_FOUND` 10과 정의하지 않는 반환 숫자를 제시한다. 구현 I03 L1530, L1624–1631과 실측은 `U_ILLEGAL_CHAR_FOUND` 12 및 65535(0xFFFF)였다. 본 실험 40키/80회, 반례 44키/88회가 이에 해당했다. AF-RES-222의 구현 기준 예측과 확장 규칙을 적용한 비교에서는 102키/204회 일치했다. 선행 5개 ICU old→code 자리는 choice가 미기재였으며 이번에 ALIAS 실패를 포함해 구체화했다. I06의 correction 선택과 I05의 상류 양성 시험은 각기 네 correction의 수용 범위와 양성 왕복을 뒷받침한다. 고정 빌드의 `cintltst /tsutil/cucdtst/TestCharNames` 종료 0. 그 시험만으로 일반 miss의 오류 상수를 판정할 수 없어 두 실행의 수치를 연결했다. 용량 경계의 NUL 기술도 I02와 I09/실측 사이에 차이가 있다. 다른 ICU 패치의 계약, 다양한 데이터 결함의 상태 번호는 미확인이다. [R02 원예측](https://github.com/laadkke-arch/agentflow-open/blob/fe41449d156eb5e723c254a0530863468c084480/docs/workstreams/research/AF-RES-222/consumers.csv), [I02 오류 문서](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unicode/uchar.h#L3806-L3829), [I04 상수 정수](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unicode/utypes.h#L442-L485), [I05 상류 시험](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/test/cintltst/cucdtst.c#L1839-L1868), [ICU 시험 실행](receipts/build/icu-TestCharNames.stdout), [상수 조인](errors.csv)
+
+## Q6. 표기 한 조건과 유효 U+FFFF
+
+일반 Name·alias의 ASCII 소문자는 CPython에서 성공했지만 CJK/한글 알고리즘 이름의 소문자는 실패했다. CJK 숫자부의 `4E00`→`4e00` 한 글자만 바꿔도 `KeyError`였다. ICU UNICODE/EXTENDED는 이번 CJK·한글 소문자 대조를 수용했다. 두 소비자에서 추가 공백 세 대조가 실패해 UAX44-LM2를 그대로 대리하지 못한다. `LF`→`L`, `<control>`, 존재하지 않는 이름도 양쪽 miss이며, 두 UCD의 전체 abbreviation 354행씩에서 한 글자는 관측 0이다. 제품 전체의 가능한 입력과 모든 알고리즘 이름은 미확인이다. [U05 §5.9.2](https://www.unicode.org/reports/tr44/tr44-34.html#Matching_Character_Names), [P03 ASCII 표 비교](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Modules/unicodedata.c#L1055-L1071), [P03 알고리즘 파서](https://github.com/python/cpython/blob/60403a5409ff2c3f3b07dd2ca91a7a3e096839c7/Modules/unicodedata.c#L1394-L1443), [반례와 분모](COUNTEREXAMPLES.md)
+
+ICU EXTENDED의 `<noncharacter-FFFF>`는 65535 / 0 `U_ZERO_ERROR`이며, `<control-FFFF>`는 65535 / 12 `U_ILLEGAL_CHAR_FOUND`다. `<CONTROL-000a>`와 `<control-000A>`도 EXTENDED로 10/0을 반환했다. 000A의 합성 표시와 공식 Name 부재는 함께 성립한다. 버퍼 1 및 정확 길이 23은 양의 overflow 15와 음의 경고 −124를 가르고, 경고에서 `U_SUCCESS=1`인데도 NUL은 없었다. status와 길이, NUL 위치를 검사해야 각 반환 의미가 보인다. 이 경계는 입력 23행의 91키 × 2에만 적용한다. 더 작은 0바이트 용량 및 모든 fallback 조합은 미측정이다. [I03 합성 파서](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/unames.cpp#L1562-L1610), [I09 버퍼 경계](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/common/ustring.cpp#L1437-L1458), [FFFF 원영수증](receipts/controls/icu-1.stdout#L62), [경계 원영수증](receipts/controls/icu-1.stdout#L71)
+
+## Q7. 시간대 Link와 소비자 ID
+
+IANA 2024b `backward` L127/L311의 두 Link를 따로 비교했다. `US/Eastern`을 넣으면 ZoneInfo의 `key`·`str`과 ICU 달력 ID는 `US/Eastern`이고, ICU CLDR canonical과 IANA preferred 조회는 `America/New_York`이다. Kolkata 쌍은 더 강한 대조다. `Asia/Calcutta`와 `Asia/Kolkata` 양쪽 입력에서 ICU CLDR canonical은 `Asia/Calcutta`, IANA preferred는 `Asia/Kolkata`였다. Link를 제거한 TZif 트리는 CPython에서 옛 두 이름을 거절했다. 존재하지 않는 키는 ZoneInfo와 ICU ID 검사에서 실패했고, ICU 달력 open과 ID에서는 0 / `Etc/Unknown`으로 진행했다. 시간대 선택기에 어떤 표시를 제공할지는 ID echo, CLDR 안정 ID, IANA preferred, locale 표시명 중 필요한 계약에 달려 있다. 여기서 검산한 것은 앞 세 ID 계약과 두 Link이며 시각 계산이나 현지화 표시는 미측정이다. [T01 IANA backward](https://data.iana.org/time-zones/tzdb-2024b/backward), [T02 명명 규칙](https://data.iana.org/time-zones/tzdb-2024b/theory.html#naming), [T03 CLDR XML](https://github.com/unicode-org/cldr/blob/e1d37acce5dae468c414172be53b666d58d45be8/common/bcp47/timezone.xml#L217), [T04 안정 ID](https://www.unicode.org/reports/tr35/tr35-73/tr35-dates.html#Time_Zone_Names), [T08 구현](https://github.com/unicode-org/icu/blob/8eca245c7484ac6cc179e3e5f7c1ea7680810f39/icu4c/source/i18n/timezone.cpp#L1547-L1586), [15건 대조](COUNTEREXAMPLES.md#시간대의-입력반환-id)
+
+## 분모와 재현
+
+자료 원장 62행은 성공 39행(직접 확인 37 및 중복·다른 판 2)과 실패 23행이다. 성공행의 고유 work_id 35개 중 산입 29개, lineage_id 7개다. 산입은 UCD/정책/배포 6 · CPython 5 · ICU 8 · AF-RES-222 원표 2 · 시간대 8이다. 실패 또는 다른 판은 표본의 결측값으로 변환하지 않았다. 독립 비교 단위는 문자 6점과 다른 분야 Link 2쌍이다. 라이브러리·choice·회차와 통제는 그 비교 단위의 관측이다. [자료 원장](sources.jsonl)
+
+| 분모 | 예정 | 관측 | 결측 | 별도 기록 |
+| --- | ---: | ---: | ---: | --- |
+| UCD 두 판 원행×입력 바이트 | 38 | 38 | 0 | 19/판, 일치 38 |
+| 방향 자리 | 36 | 34 | 0 | N/A 2 |
+| 본 실험 호출 | 204 | 204 | 0 | CPython 60·ICU 144, 별칭 104 부분집합 |
+| 반례 호출 | 182 | 182 | 0 | CPython 44·ICU 138 |
+| 시간대 입력×조건 | 15 | 15 | 0 | ICU 내장, CPython backward 포함·제외에 각 5 |
+| 깨끗한 checkout 재생 출력 쌍 | 11 | 11 | 0 | stdout·stderr 각각 `cmp` 일치, 별도 반복 |
+
+GitHub에서 새 checkout을 만들어 ④ 커밋을 detach하고 동일하게 지문이 찍힌 두 빌드로 11개 프로세스를 다시 실행했다. 초기와 종료 checkout은 깨끗했고 본 실험 4프로세스, 반례 4프로세스, 시간대 3프로세스의 stdout/stderr 바이트가 모두 같았다. 204·182·15의 원 관측 합계에는 재생을 포함하지 않았다. 상류 시험, 두 버전 인쇄와 공개 자료 열람은 이름 호출 수 밖이다. [재생 명령](receipts/replay/replay.command.sh), [재생 원영수증](receipts/replay/replay.stdout), [입력·반복 조인](directions.csv), [102 하위 키](calls.csv)
+
+## 비용과 조건별 선택
+
+두 빌드는 같은 클라우드 Linux에서 겹쳐 실행했다. 원로그 기준 CPython은 118초, ICU는 106초에 소스 수신과 빌드·기본 런타임 판 확인을 끝냈다. 이름 API 사용에 붙는 빌드 비용과 아카이브 수신 비용은 처음 환경 준비에 발생한다. 깨끗한 checkout 재생은 이미 빌드된 동일 라이브러리를 사용했다. [빌드 명령과 로그](receipts/build/), [재생 종료 기록](receipts/replay/replay.receipt)
+
+편집·연구에서는 공식 Name과 정확한 과거 인용 리터럴을 판과 함께 저장하고 정정 별칭을 따로 노출할 수 있다. 입력 수용을 폭넓게 보장하려면 UCD `Name_Alias` 원표와 목적별 비교 규칙을 직접 고정한다. 비용은 버전별 데이터 검산, 정규화 규칙 및 기존 입력의 추적이다. 배포 라이브러리와 똑같은 입력을 받아야 하면 실제 API/choice/버전별 결과를 적합성 기준으로 사용한다. 비용은 구현별 테스트, 오류 코드·버퍼 판별과 업그레이드 재검산이다. 시간대에서 받은 옛 문자열을 남기며 정규 키로 연결해야 하면 원래 입력과 선택한 IANA 또는 CLDR 판의 ID를 저장한다. 동일한 추적 구조를 문자 Name에도 사용할 수 있다.
+
+## 중요한 불일치 또는 약점
+
+| 중요한 불일치 또는 약점 | 영향을 받는 판단 | 다음에 볼 구체적 자료·검사 | 판정이 바뀌는 관측 |
+| --- | --- | --- | --- |
+| ICU 76.1 헤더 miss는 10이라고 쓰지만 실행은 12 / 65535였다. 숫자 65535를 반환하는 정상 경로도 있다. | 실패 분기 및 noncharacter 검색 | I02와 I03 고정 줄 대조, `Q6-unknown`과 `Q6-synthetic-ffff`를 동일 API·새 status로 실행 | 같은 고정 data/빌드에서 miss가 10이거나 실제 EXTENDED FFFF가 status 0을 반환하지 않음 |
+| CPython의 일반 이름 ASCII fold를 CJK·한글 알고리즘 이름에 일반화하면 틀린다. 세 공백 대조도 두 라이브러리에서 실패했다. | 표기 정규화와 검색 성공률 | P03 L1055 및 L1394 이하, Q6의 upper/lower와 공백 키를 한 조건씩 재생 | 같은 판에서 소문자 알고리즘 이름이 양성 기준과 동일하거나 공백 추가 입력이 수용됨 |
+| 두 라이브러리는 각각 한 고정 Linux build와 해당 data를 확인했다. 배포 전체 및 지역화 표시로의 이식성은 미확인이다. | 버전·data 패키지·표시 정책을 바꾸는 적용 | 다른 빌드의 `ldd`, `u_getDataVersion`, `unames.icu` SHA 및 같은 `main/controls`, 시간대는 두 API와 UI locale 표시를 비교 | 같은 이름·Link에서 상태/표시가 달라지거나 data 변경 없이 다른 빌드에서 반복적으로 차이가 남 |
