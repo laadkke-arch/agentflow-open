@@ -12,7 +12,7 @@ from statistics import median
 
 HERE = Path(__file__).resolve().parent
 POLICIES = ("O", "P", "S", "F")
-SCENARIOS = ("base", "no-sparse", "big-catalog", "late-recovery")
+SCENARIOS = ("base", "no-sparse", "big-catalog", "late-recovery", "archive-catalog")
 SCORES = ("correct", "stale", "false_exclusion", "unknown", "no_shelf", "deferred")
 
 
@@ -37,8 +37,8 @@ def digest(value):
     return sha256(canonical(value).encode("utf-8")).hexdigest()
 
 
-def write_json(path, value):
-    path.write_text(json.dumps(value, sort_keys=True, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+def write_json(path, value, *, sort_keys=True):
+    path.write_text(json.dumps(value, sort_keys=sort_keys, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def write_csv(path, rows):
@@ -126,7 +126,7 @@ class World:
         return "train" if now < self.cut else "holdout"
 
     def catalog(self, source, now):
-        after = now - self.config["catalog_lookback_hours"]
+        after = 0 if self.scenario == "archive-catalog" else now - self.config["catalog_lookback_hours"]
         return [self.envelope(row) for row in self.events[source]
                 if row["kind"] == "new" and row["observed"]["catalog"] is not None
                 and after <= row["at"] <= now and row["observed"]["catalog"] <= now]
@@ -444,7 +444,7 @@ class Run:
         return dict(self.keys(), phase=phase, supplier=event["supplier"], id=eid,
                     kind=event["kind"], original_url=event["original_url"],
                     evidence_ids="|".join(event["source_ids"]), anchor_utc=world.stamp(origin),
-                    signal_utc=world.stamp(observable) if observable is not None else "",
+                    signal_utc=world.stamp(observable) if observable is not None and observable < stop else "",
                     first_seen_utc=world.stamp(seen) if seen < stop else "",
                     direct_utc=world.stamp(first_direct) if first_direct < stop else "", status=status,
                     delay_h=round(seen-origin, 3) if seen < stop else "",
@@ -555,7 +555,8 @@ def execute(config, events, training, args):
         write_csv(output / f"{name}.csv", rows)
     if args.checkpoint:
         temp = args.checkpoint.with_suffix(".part")
-        write_json(temp, {"input_sha256": fingerprint, "runs": saved})
+        # A restart must retain the same ledger column order as a continuous run.
+        write_json(temp, {"input_sha256": fingerprint, "runs": saved}, sort_keys=False)
         temp.replace(args.checkpoint)
 
 
