@@ -74,9 +74,60 @@ OPTIONS.md와 표2. A는 40/41 활성 확인 atom으로 간단하며 K05 동률 
 ## 경쟁 설명·추가 분석
 H1 부분 근거 보존 효과는 작음(1/41); H0 단순 대표 충분한 경우 11/12에서 유일 atom 손실0, 그러나 별개 OS 선택지와 새 요청에 조건부 복원은 별도. H2 자료 부족을 실패 처리하는 A unknown_exclude에서 24/41, 대조12/22로 활성 감소. A 동률 양쪽 보존 시 활성40/41 불변, 숨김 10/24(기본12/24); B 동률 양쪽 활성41/41 불변, 숨김9/24(기본11/24). 조건 대조에서 A/B 동률 변형의 수치 불변. H3 저장/재취득 비용은 구성 단위로만 비교, 실제 단가 없음. 원장 37행, 고유 산입 27=요구6+제작자10+운영 결정7+타분야4. 발행 주체 표기24, 독립 발행 주체 수 미확인, 호스트15, 영어·독일어. 한 기관 문서 여러 사건과 한 사건 여러 문서 구별. 전체 판독의 인기도 선노출·후향 쌍 고정은 SCOPE 선행 규칙의 이탈; 자연 표본 관측 0/6. 신규 조건별 판독은 원장 기반 해석이며 코드/제품 실행 없음. audit.json에서 108 판단행 수치 및 원장 ID 참조 재계산, 불일치0, 12 고유쌍, 최대3 문서 상한 확인. 이는 의미 판정 정확도 검증이 아니다.
 
+## 후속 관측 (2026-11-24 UTC; 기존 표 1–3은 기준판의 관측으로 보존)
+기준 HANDOFF: [1b1ebb2](https://github.com/laadkke-arch/agentflow-open/commit/1b1ebb24347000f60acbe4ad2e9aa8c94ba416b9). 이 절은 기준 수치의 사후 수정이 아니라 별도 전향 표본/재판독/실행 결과이다. 원본 27 산입 자료와 기존 12쌍·6대조·108 판단행은 불변. 아래 신규 자연층 6쌍을 보충층 분모에 합산하지 않는다.
+
+### Q2/Q3 자연층: 원순서와 실패, 선택 및 근거
+| 프레임 | 사전 등록 → 순서 봉인 → 판독 | 관측 결과 | 결측/편향 |
+| --- | --- | --- | --- |
+| N0 원 Stack Exchange API | 기존 SCOPE; 동일 URL urllib DNS 실패 및 web open 실패 | 0/6 그대로 | 원 모집단/순서 미확인 |
+| N1 Joplin 2023 offline | [PROTOCOL](followup/PROTOCOL.md), [원순서](followup/natural-index.json), [판독](followup/natural-n1.jsonl) | 7 반환, 5 서로 다른 저자 적격, 2 유지관리자 설계 제외 | 5/6, 프레임 종료; N2와 합쳐 성공으로 처리하지 않음 |
+| N2 Syncthing 2024년 1분기 | [PROTOCOL](followup/N2_PROTOCOL.md), [원순서](followup/natural-n2-index.json), [판독](followup/natural-n2.jsonl), [후보 사전 봉인](followup/natural-pair-plan.jsonl) | 생성일 오름차순 최초 반환 30개, 8개 선별 심사 중 6개 포함/2개 제외, 22 quota; 6 저자 | 9·10번도 개별 원문 열었으나 quota 이후 미코딩; 검색 색인 순서이지 전체 모집단 아님. #9324는 오류 로그로 과업을 추론: 이를 엄격 제외하면 5/6. 저자 역할/소속 독립성 미감사. |
+
+N2는 새 도메인을 사전 등록한 대체 전향 자연 표본이다. 검색 시 본문 일부 노출은 있었고, 후보 쌍과 원문 예산(각 최대 2)을 생산자 문서 개봉 전에 별도 커밋했다. 저자의 실제 요구를 보되 아래 쌍은 연구자의 비교 대상이며 당사자 채택이 아니다. 
+| 요구 원문/조건 | 후보/원문 ID | A/B atom | 판정 및 실패 |
+| --- | --- | --- | --- |
+| [N2-01 #9311](https://github.com/syncthing/syncthing/issues/9311) USB-C, 무인터넷 sync | Android USB tether+Syncthing static address N-P01/N-P09a vs LocalSend N-P02 | SUS / USU | 상호보완; USB 지원 OS 제한, 실제 무인터넷 라우팅 미확인; LocalSend 수동 transfer를 자동 sync로 간주 금지 |
+| [N2-02 #9313](https://github.com/syncthing/syncthing/issues/9313) UI/API short ID 길이 통일 | Git abbreviation N-P03 vs Kubernetes UID N-P04 | SXU / SUU | 근거 부족; Git 충돌 시 최소 길이보다 길어짐 실제 실행; 기존 ID 호환 미확인 |
+| [N2-03 #9315](https://github.com/syncthing/syncthing/issues/9315) gokrazy, build 중 생성 제거 | Go generate 후 생성물 커밋 N-P05 vs embed N-P06 | SSU / SUU | 근거 부족; embed에는 원본 asset 필요, 실제 Syncthing/gokrazy 빌드 미실행 |
+| [N2-04 #9320](https://github.com/syncthing/syncthing/issues/9320) KeePassXC 버튼, Firefox | shadow DOM N-P07 vs iframe N-P08 | SUU / SUU | 근거 부족; shadow root가 이미 있는 사용자 실패, 분리 원리만 입증 |
+| [N2-05 #9324](https://github.com/syncthing/syncthing/issues/9324) UPnP conflict 718 | UPnP N-P09/N-P09a vs NAT-PMP N-P10 | SUU / SUU | 근거 부족; 특정 라우터/718 복구 미확인; 증상으로부터 요구 추론 |
+| [N2-06 #9328](https://github.com/syncthing/syncthing/issues/9328) metered시 remote device pause, local 유지 | NetworkManager Metered/dispatcher N-P11/N-P11a vs Syncthing 특정 장치 pause/resume N-P12/N-P12a | SUU / USS | 상호보완; 정책 이벤트와 조작 API를 연결한 실제 통합 미실행 |
+
+직접 원문 [sources-followup](followup/sources-followup.jsonl), [추가 D-Bus 원문](followup/additional-source.jsonl), [쌍 및 판단](followup/natural-pairs.jsonl), [선별 결정](followup/natural-decisions.csv). N2 주 18 요구 atom 중 확인 합집합 11, 후보 셀 36 중 S15/U20/X1. 완전 충족 후보 0, 완전 후보 회수율 분모0(산출 불가). 기존 산입 27 유지; 후속 출처 26행 중 counted 20(행 기준; 관련 제품/동일 매뉴얼/사건 중복 가능), N1·N2 적격 요청 5+6 별도. 합쳐 고유 독립 원자료 58이라고 주장하지 않음.
+
+### Q4 실제 가림·공개와 양방향 반례
+[가림 packet 12](followup/masked-packets.jsonl) 먼저 봉인(06353d7), [자기 판독 12](followup/masked-ratings.jsonl) 다음 봉인(6592b0d), [초기 공개](followup/revealed-ratings.jsonl), [확장 공개](followup/reveal-extended.jsonl)와 [지표·PR 원장](followup/popularity-operations.jsonl). 이름/URL/stars를 삭제하고 좌우 위치를 바꾼 저장 근거 요약을 읽어 S/U/X 수동 판독. 같은 연구자 기존 지식 선노출은 남아 있으므로 독립 가림 실험 아님(독립 판독자0). 기존 판정 대비 3/12쌍 3셀 변경(K03 입력, K05/K06 PDF 출력 명시 부족), 인기 공개 효과와 구분. 가림→공개 0/12쌍 변화, 양쪽 비교 가능한 저장소 별 6/12; 6쌍은 한쪽 지표 없음. 별은 기능 atom이 아니라는 규칙을 적용했으므로 이 0을 인과적 인기 효과 부재로 일반화하지 않는다. Vosk core 15.3k, whisper.cpp 55.5k, LiveCaptions 1.8k, Tesseract 77.6k, OCRmyPDF 35.4k, PocketSphinx 4.4k, NAPS2 4.8k: 확인일 표시 반올림 수치. Vosk Android demo 1.1k는 core와 별개; Aiko/gscan2pdf/Windows 비교 가능한 별 없음=미확인.
+
+- 낮은 인지도이지만 특정 가치: LiveCaptions v0.4.2 [release](https://github.com/abb128/LiveCaptions/releases/tag/v0.4.2)에는 빌드 수정과 D-Bus text stream 및 dbus-monitor 사용 예시(Q4-01); 더 큰 whisper.cpp의 저장소 지표가 직접 Linux 데스크톱 출력 경로를 보장하지 않음. 작은 Vosk Android demo [#69](https://github.com/alphacep/vosk-android-demo/issues/69)는 에뮬레이터 mic 설정 후 다른 댓글 작성자가 동작 보고, 원 저자 해결은 불명. 부품·예제로서 검토 가치.
+- 낮은 인지도이면서 특정 조건 낮은 가치: 같은 LiveCaptions [#113](https://github.com/abb128/LiveCaptions/issues/113)에서 사용자 약 21MB history 누적 후 export crash, 파일 제거시 history 손실. [Vosk demo #224](https://github.com/alphacep/vosk-android-demo/issues/224)는 tablet mic에서 16/48kHz 변경 후에도 partial/final 없음(열린 이슈). 이 조건의 신뢰 가능한 전체 구현으로 채택할 근거 부족. [Vosk core #2026](https://github.com/alphacep/vosk-api/issues/2026) Pi5 파일 동작/실시간 불량 사용자 보고. 기록된 보고와 연구자 실행을 구별한다. 작은 예제 실패를 전체 프로젝트 영구 무가치로 확대하지 않음.
+- 높은 인지도도 조건 실패: 아래 Tesseract 실제 PDF 직접입력 실패, RO diacritic 손실. 기존 R4 높은 평점 녹음기의 전사 불가 인정도 유지. 이들은 인기와 해당 계약을 분리할 이유이며 모든 작은 프로젝트 우위를 증명하지 않는다.
+
+### Q3/Q5 대표 환경 실제 실행 (3개 좁은 프로브)
+| 실행/환경 | 실측 결과 | 미확인 |
+| --- | --- | --- |
+| [OCR probe](followup/ocr_probe.py) / [receipt](followup/ocr-receipt.json), Linux Tesseract 5.5.0 eng+ron, 합성 PNG 1600×1000 200dpi | PNG→TXT, PNG→PDF exit0; PDF 직접 입력 exit1; exact token 4/7, 영어 4/4 중심 좌표 25px 이내, 루마니아어 3/3 diacritic 소실 → exact 대응 불가; 렌더 차이 34,921/1,600,000 pixel | 2014 사용자 원 PDF, 실제 OCRmyPDF wrapper, RO 정렬, Mac/Windows, 사용자 품질 기준 미검증 |
+| [Git/Go probe](followup/natural_probe.py) / [receipt](followup/natural-execution-receipt.json), Git 2.47.3 | 두 합성 blob 4자 prefix 1a77 충돌: --short=4 결과 1a772 및 1a77b (5자), 최소 길이 ≠ 정확 길이 | Syncthing device ID API 실제 변경/호환 아님 |
+| 같은 probe Go 1.23.2 Linux GOPROXY off | go generate exit1(하위 sh exit17), 기존 asset 있는 go build exit0, 실행 stdout AF151 local asset; asset 삭제 후 build exit1 | 실제 gokrazy/Syncthing 소스/빌드 아님 |
+
+OCR 입력과 명령/sha, stdout/stderr, 실제 환경 및 시간은 receipt에 전사했다(원 tool 출력에서 전사; byte-identical raw receipt라고 주장하지 않음). Linux에서 설치된 도구의 좁은 재현만; OCRmyPDF/Vosk/whisper CLI 미설치, DNS 차단. 엄격 우위 양방향 반전 기존 0/6 유지(새 N2는 두 조건 대조 아님), 실제 채택 반전·사용자 효용은 미확인.
+
+### Q6/Q7 선택 비교·재심사
+| 방법 | 기존 보충 활성/확인, 보관/확인 | N2 활성/확인, 보관/확인 | N2 숨김/12, 제외에 의한 유일 atom 손실 |
+| --- | --- | --- | --- |
+| A 단순 대표 | 40/41,40/41 | 9/11,9/11 | 6,2(N2-01/N2-06) |
+| B 근거 다양성 | 41/41,41/41 | 11/11,11/11 | 4,0 |
+| C 조건부 보류 | 24/41,41/41 | 0/11,11/11 | 12,0 |
+
+A 제외 슬롯 6 역검토: 4/6 현 요구 확인 유일 atom 손실0, N2-01 오프라인 transfer 및 N2-06 metered 감지 각각 1 손실. B 두 근거 연결이 필요한 작업에서는 합집합 보존 효과, C는 이번 완전 후보 부재로 전부 보류(검색 결과가 빈 것과 자료가 없는 것은 다름). 동률 양쪽 A 활성9/11 숨김4/12, B 활성11/11 숨김2/12; unknown 전부 제외 A 0/11 숨김12/12. 후보·동일 예산의 수치 검산이며 실제 사용자 시간·가격·재취득 노동 미실측. 별도 층이므로 모집단 효과 비교/합산 금지. [final-verification](followup/final-verification.json) 고정 원장에서 18행 재계산 차이0, 근거 ID 누락0, 가림/공개 코드 연결 차이0; 기존 audit 108행 유지. 
+- CineLog upstream [#76](https://github.com/Alcidauk/CineLog/issues/76) 직접 확인: non-FOSS greendao gradle plugin 논점(2024-03-25), 3/28 maintainer 이행 의사, 5/29 생성 코드 포함 제안, 5/30 DAO 재작성 중, 6/12 plugin source 공개 댓글, 6/20 completed. [F-Droid D2](https://f-droid.org/en/2024/04/04/twif.html) 전체 버전 비활성 → [D3](https://f-droid.org/en/2024/06/20/twif.html) 2.0.0 복귀. 코드 diff 미확보, DAO 수정 단독 원인 확정 불가. N2-03와 같은 생성/배포 계약이 변경 시 재심사 신호.
+- [D10](https://f-droid.org/en/2024/10/24/twif.html) Conversations Classic 일시 제외 및 수정 시 재포함 정책; DSub2000 방치 원본 대체 fork 편입, Audio Recorder 3년 뒤 복귀 원문. 일시 제외 뒤 실제 해당 앱 재편입 미확인. Awesome PR [#3919](https://github.com/sindresorhus/awesome/pull/3919), [#3901](https://github.com/sindresorhus/awesome/pull/3901) 직접 metadata: 양쪽 open/merged=false/closed_at=null, merged_at=null; mergeable은 편입 승인 아님. 과거에 열려 있던 결론을 임의 닫지 않음.
+- 영구 제외보다 조건별 H 재심사: 버전/라이선스 변경, 신규 입력과 플랫폼, 실패 재현 또는 실제 재포함 시 다시 열기. 실제 복구 비용 및 제품 채택은 기록 없으므로 단가/사용자 피해 추정 금지.
+
+
 ## 가장 중요한 불일치·약점
 | 불일치·약점 | 어떤 결정에 영향을 주는가 | 다음 조사와 구할 자료 | 판단이 뒤집힐 관측 |
 | --- | --- | --- | --- |
-| 자연층 0/6, 보충 선택과 후보 사전 노출 | A/B/C의 일반 성능·6/6 선택변경 일반화 불가 | X1 API 원응답·원순서 30개 및 최초6 적격, 공급자 원문 열기 전에 쌍 봉인 | 전향 자연층에서 추가 근거 보존이 0 또는 B/C에 큰 이득·손해 |
-| 진정한 가림/공개 0/12, 작은 구현의 실제 정비·미완성/실행 자료 부족 | Q4 인기와 가치 분리·U의 실질 의미·Q3 완전 계약 | P1b/P4/P8의 fixed version 예제/이슈, 같은 입력/환경 실행, 익명 packet 독립 재판독, 양방향 희소성 사례 | 작은 예제가 실제 요구 실패하거나 독립 판독이 유일 기능을 변경 |
-| R3 정렬·RO_EN와 R6 OS/라우팅 등 U; 엄격 반전0/6 및 실제 재취득 노동/채택 미확인 | 영구 제외·보류·실제 비용 및 추천 가치 결정 | R3 원 PDF 또는 재현 입력·2014 판과 현행판; R6 OS/오디오 입력; D2→D3 변경 diff와 운영 노동 | 양쪽 엄격 우위 반전, 실제 대체 불가/복원 노동 또는 보존의 높은 기회비용 관측 |
+| 대체 자연 N2 6/6(엄격 과업 명시 5/6), 원 N0 0/6, N1 5/6; 색인 순서 및 저자 소속 미감사 | A/B/C 일반 성능, 표본 선택 편향 | exact X1 API 응답·원순서 및 독립 도메인 표본 | 추가 자연층에서 B의 순이익 소멸 또는 일관된 큰 이득 |
+| 가림→확장 공개 12/12 자기 판독, 비교별 6/12, 독립 0; 작은 구현 장애와 동작 사례는 사용자 보고 | Q4 인기·부품 가치의 독립 추론 | 독립 판독자에 동일 가림 packet, 고정판별 앱/SDK 실행 | 독립 판독 및 동작 결과가 유일 기능 판정을 변경 |
+| 대표 프로브 3개 합성, R3 원 PDF/RO 정렬과 R6 라우팅 미확인, 엄격 반전0/6·실제 재취득 노동·CineLog 수정 diff 미확인 | 보류/영구 제외·실제 비용/추천 판단 | 원 입력/환경, 수정 diff, 실측 복구 노동 및 실제 사용 | 양방향 엄격 우위, 실제 대체/복원 비용 또는 보관 고비용 관측 |
