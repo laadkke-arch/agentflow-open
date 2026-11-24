@@ -1,0 +1,93 @@
+<section class="sphx-glr-example-title" id="text-rotation-mode">
+<span id="sphx-glr-gallery-text-labels-and-annotations-demo-text-rotation-mode-py"></span><h1>Text Rotation Mode<a class="headerlink" href="#text-rotation-mode" title="Permalink to this heading">#</a></h1>
+<p>This example illustrates the effect of <code class="docutils literal notranslate"><span class="pre">rotation_mode</span></code> on the positioning
+of rotated text.</p>
+<p>Rotated <a class="reference internal" href="../../api/text_api.html#matplotlib.text.Text" title="matplotlib.text.Text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Text</span></code></a>s are created by passing the parameter <code class="docutils literal notranslate"><span class="pre">rotation</span></code> to
+the constructor or the axes' method <a class="reference internal" href="../../api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">text</span></code></a>.</p>
+<p>The actual positioning depends on the additional parameters
+<code class="docutils literal notranslate"><span class="pre">horizontalalignment</span></code>, <code class="docutils literal notranslate"><span class="pre">verticalalignment</span></code> and <code class="docutils literal notranslate"><span class="pre">rotation_mode</span></code>.
+<code class="docutils literal notranslate"><span class="pre">rotation_mode</span></code> determines the order of rotation and alignment:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rotation_mode='default'</span></code> (or None) first rotates the text and then aligns
+the bounding box of the rotated text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotation_mode='anchor'</span></code> aligns the unrotated text and then rotates the
+text around the point of alignment.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<span class="k">def</span> <span class="nf">test_rotation_mode</span><span class="p">(</span><a href="../../api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="n">ha_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"center"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span>
+    <span class="n">va_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"center"</span><span class="p">,</span> <span class="s2">"baseline"</span><span class="p">,</span> <span class="s2">"bottom"</span><span class="p">]</span>
+    <span class="n">axs</span> <span class="o">=</span> <a href="../../api/figure_api.html#matplotlib.figure.Figure.subplots" title="matplotlib.figure.Figure.subplots" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">va_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ha_list</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                       <span class="n">gridspec_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># labels and title</span>
+    <span class="k">for</span> <span class="n">ha</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ha_list</span><span class="p">,</span> <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">ha</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">va</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">va_list</span><span class="p">,</span> <span class="n">axs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"rotation_mode='</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">'"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">"large"</span><span class="p">)</span>
+
+    <span class="n">kw</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{}</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"default"</span> <span class="k">else</span>
+        <span class="p">{</span><span class="s2">"bbox"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s2">"square,pad=0."</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s2">"C1"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)}</span>
+    <span class="p">)</span>
+
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># use a different text alignment in each axes</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">va</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">va_list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">ha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ha_list</span><span class="p">):</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="c1"># prepare axes layout</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"skyblue"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"skyblue"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"C0"</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># add text with rotation and alignment settings</span>
+            <span class="n">tx</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"Tpg"</span><span class="p">,</span>
+                         <span class="n">size</span><span class="o">=</span><span class="s2">"x-large"</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+                         <span class="n">horizontalalignment</span><span class="o">=</span><span class="n">ha</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="n">va</span><span class="p">,</span>
+                         <span class="n">rotation_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">texts</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">=</span> <span class="n">tx</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"default"</span><span class="p">:</span>
+        <span class="c1"># highlight bbox</span>
+        <a href="../../api/backend_agg_api.html#matplotlib.backends.backend_agg.FigureCanvasAgg.draw" title="matplotlib.backends.backend_agg.FigureCanvasAgg.draw" class="sphx-glr-backref-module-matplotlib-backends-backend_agg sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span></a><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">())</span>
+            <span class="n">rect</span> <span class="o">=</span> <a href="../../api/_as_gen/matplotlib.patches.Rectangle.html#matplotlib.patches.Rectangle" title="matplotlib.patches.Rectangle" class="sphx-glr-backref-module-matplotlib-patches sphx-glr-backref-type-py-class"><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span></a><span class="p">((</span><span class="n">bb</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span><span class="p">),</span> <span class="n">bb</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                                 <span class="n">facecolor</span><span class="o">=</span><span class="s2">"C1"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+
+
+<a href="../../api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <a href="../../api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subfigs</span></a> <span class="o">=</span> <a href="../../api/figure_api.html#matplotlib.figure.Figure.subfigures" title="matplotlib.figure.Figure.subfigures" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">subfigures</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">test_rotation_mode</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subfigs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"default"</span><span class="p">)</span>
+<span class="n">test_rotation_mode</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subfigs</span></a><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"anchor"</span><span class="p">)</span>
+<a href="../../api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_demo_text_rotation_mode_001.png" srcset="../../_images/sphx_glr_demo_text_rotation_mode_001.png, ../../_images/sphx_glr_demo_text_rotation_mode_001_2_0x.png 2.0x" alt="rotation_mode='default', rotation_mode='anchor'" class="sphx-glr-single-img"><div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<p>The use of the following functions, methods, classes and modules is shown
+in this example:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.text</span></code></a> / <a class="reference internal" href="../../api/_as_gen/matplotlib.pyplot.text.html#matplotlib.pyplot.text" title="matplotlib.pyplot.text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.text</span></code></a></p></li>
+</ul>
+</div>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-text-labels-and-annotations-demo-text-rotation-mode-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/58345f9f57bb466b821c32d7c2c5509e/demo_text_rotation_mode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">demo_text_rotation_mode.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5b5d52ac8b43604288d79ae75c5a8dc5/demo_text_rotation_mode.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_text_rotation_mode.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+            

@@ -1,0 +1,184 @@
+{
+  "sha": "4daadf7221439831260dedfa901b9616821154b0",
+  "message": "Peformance: vec_unique_count (#5158)\n\n* Use `is_unique()`\r\n\r\n* Use `vec_unique_count()`",
+  "url": "https://github.com/tidyverse/ggplot2/commit/4daadf7221439831260dedfa901b9616821154b0",
+  "parents": [
+    {
+      "sha": "81008595434f5dcffb5156ae80e2f8bcf5491294",
+      "url": "https://api.github.com/repos/tidyverse/ggplot2/commits/81008595434f5dcffb5156ae80e2f8bcf5491294",
+      "html_url": "https://github.com/tidyverse/ggplot2/commit/81008595434f5dcffb5156ae80e2f8bcf5491294"
+    }
+  ],
+  "files": [
+    {
+      "sha": "f748cc51b38757ae32a800d60f5a61a6e4678e93",
+      "filename": "R/axis-secondary.R",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Faxis-secondary.R",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Faxis-secondary.R",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Faxis-secondary.R?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -193,7 +193,7 @@ AxisSecondary <- ggproto(\"AxisSecondary\", NULL,\n     full_range <- self$transform_range(old_range)\n \n     # Test for monotonicity\n-    if (length(unique0(sign(diff(full_range)))) != 1)\n+    if (!is_unique(sign(diff(full_range))))\n       cli::cli_abort(\"Transformation for secondary axes must be monotonic\")\n   },\n "
+    },
+    {
+      "sha": "923825ccc673e90eb9e052f1819aba76c923b735",
+      "filename": "R/facet-.r",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Ffacet-.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Ffacet-.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Ffacet-.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -119,10 +119,10 @@ Facet <- ggproto(\"Facet\", NULL,\n     }\n   },\n   draw_back = function(data, layout, x_scales, y_scales, theme, params) {\n-    rep(list(zeroGrob()), length(unique0(layout$PANEL)))\n+    rep(list(zeroGrob()), vec_unique_count(layout$PANEL))\n   },\n   draw_front = function(data, layout, x_scales, y_scales, theme, params) {\n-    rep(list(zeroGrob()), length(unique0(layout$PANEL)))\n+    rep(list(zeroGrob()), vec_unique_count(layout$PANEL))\n   },\n   draw_panels = function(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params) {\n     cli::cli_abort(\"Not implemented\")"
+    },
+    {
+      "sha": "79a24e157b14c536fab6e57f967d8dceae4c7d6f",
+      "filename": "R/guides-axis.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fguides-axis.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fguides-axis.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fguides-axis.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -440,7 +440,7 @@ warn_for_guide_position <- function(guide) {\n     return()\n   }\n \n-  if (length(unique0(guide$key[[position_aes]][breaks_are_unique])) == 1) {\n+  if (is_unique(guide$key[[position_aes]][breaks_are_unique])) {\n     cli::cli_warn(c(\n       \"Position guide is perpendicular to the intended axis\",\n       \"i\" = \"Did you mean to specify a different guide {.arg position}?\""
+    },
+    {
+      "sha": "731f467b00e5abdc4f9bc8f3f08ebed408241381",
+      "filename": "R/position-collide.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-collide.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-collide.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fposition-collide.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -48,7 +48,7 @@ collide <- function(data, width = NULL, name, strategy,\n   intervals <- as.numeric(t(unique0(data[c(\"xmin\", \"xmax\")])))\n   intervals <- intervals[!is.na(intervals)]\n \n-  if (length(unique0(intervals)) > 1 & any(diff(scale(intervals)) < -1e-6)) {\n+  if (vec_unique_count(intervals) > 1 & any(diff(scale(intervals)) < -1e-6)) {\n     cli::cli_warn(\"{.fn {name}} requires non-overlapping {.field x} intervals\")\n     # This is where the algorithm from [L. Wilkinson. Dot plots.\n     # The American Statistician, 1999.] should be used"
+    },
+    {
+      "sha": "35b426a4e7aac3eff9a68d125e7fc6ee8e4869fb",
+      "filename": "R/position-dodge.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-dodge.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-dodge.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fposition-dodge.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -144,7 +144,7 @@ PositionDodge <- ggproto(\"PositionDodge\", Position,\n # Assumes that each set has the same horizontal position.\n pos_dodge <- function(df, width, n = NULL) {\n   if (is.null(n)) {\n-    n <- length(unique0(df$group))\n+    n <- vec_unique_count(df$group)\n   }\n \n   if (n == 1)"
+    },
+    {
+      "sha": "937da31298c647d5e6cb607166920b4849c4d7d9",
+      "filename": "R/position-jitterdodge.R",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-jitterdodge.R",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fposition-jitterdodge.R",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fposition-jitterdodge.R?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -53,7 +53,7 @@ PositionJitterdodge <- ggproto(\"PositionJitterdodge\", Position,\n       cli::cli_abort(\"{.fn position_jitterdodge} requires at least one aesthetic to dodge by\")\n     }\n     ndodge    <- lapply(data[dodgecols], levels)  # returns NULL for numeric, i.e. non-dodge layers\n-    ndodge    <- length(unique0(unlist(ndodge)))\n+    ndodge    <- vec_unique_count(unlist(ndodge))\n \n     list(\n       dodge.width = self$dodge.width,"
+    },
+    {
+      "sha": "2a87f4197c0f079aad053e157cd41b75480643cb",
+      "filename": "R/stat-.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fstat-.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -143,7 +143,7 @@ Stat <- ggproto(\"Stat\",\n \n       # Then, check whether the rest of the columns have constant values (type 2)\n       # or not (type 3).\n-      non_constant <- vapply(old, function(x) length(unique0(x)) > 1, logical(1L))\n+      non_constant <- vapply(old, vec_unique_count, integer(1)) > 1L\n \n       # Record the non-constant columns.\n       non_constant_columns <<- c(non_constant_columns, names(old)[non_constant])"
+    },
+    {
+      "sha": "2ce5b09d1662679b0c0e90a883a850f3aff923a5",
+      "filename": "R/stat-align.R",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-align.R",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-align.R",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fstat-align.R?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -56,7 +56,7 @@ StatAlign <- ggproto(\"StatAlign\", Stat,\n \n   compute_group = function(data, scales, flipped_aes = NA, unique_loc = NULL, adjust = 0) {\n     data <- flip_data(data, flipped_aes)\n-    if (length(unique(data$x)) == 1) {\n+    if (is_unique(data$x)) {\n       # Not enough data to align\n       return(new_data_frame())\n     }"
+    },
+    {
+      "sha": "c8b39db4659d37b400e320ede6497743a0e562c2",
+      "filename": "R/stat-boxplot.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-boxplot.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-boxplot.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fstat-boxplot.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -108,7 +108,7 @@ StatBoxplot <- ggproto(\"StatBoxplot\", Stat,\n       stats[c(1, 5)] <- range(c(stats[2:4], data$y[!outliers]), na.rm = TRUE)\n     }\n \n-    if (length(unique0(data$x)) > 1)\n+    if (vec_unique_count(data$x) > 1)\n       width <- diff(range(data$x)) * 0.9\n \n     df <- data_frame0(!!!as.list(stats))"
+    },
+    {
+      "sha": "5216b870c8710f56f5c581110f660f7edde5073f",
+      "filename": "R/stat-smooth.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-smooth.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-smooth.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fstat-smooth.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -130,7 +130,7 @@ StatSmooth <- ggproto(\"StatSmooth\", Stat,\n                            xseq = NULL, level = 0.95, method.args = list(),\n                            na.rm = FALSE, flipped_aes = NA) {\n     data <- flip_data(data, flipped_aes)\n-    if (length(unique0(data$x)) < 2) {\n+    if (vec_unique_count(data$x) < 2) {\n       # Not enough data to perform fit\n       return(data_frame0())\n     }"
+    },
+    {
+      "sha": "d93b8b19368862e22ed7e2e43a59e554dbaeecc7",
+      "filename": "R/stat-ydensity.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-ydensity.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Fstat-ydensity.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fstat-ydensity.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -87,7 +87,7 @@ StatYdensity <- ggproto(\"StatYdensity\", Stat,\n     dens$x <- mean(range(data$x))\n \n     # Compute width if x has multiple values\n-    if (length(unique0(data$x)) > 1) {\n+    if (vec_unique_count(data$x) > 1) {\n       width <- diff(range(data$x)) * 0.9\n     }\n     dens$width <- width"
+    },
+    {
+      "sha": "fad66a6a49ecd1f5431ec5d2d1a1b6926abe39d7",
+      "filename": "R/utilities.r",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 3,
+      "changes": 9,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Futilities.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Futilities.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Futilities.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -61,7 +61,7 @@ clist <- function(l) {\n #\n # @keyword internal\n uniquecols <- function(df) {\n-  df <- df[1, sapply(df, function(x) length(unique0(x)) == 1), drop = FALSE]\n+  df <- df[1, sapply(df, is_unique), drop = FALSE]\n   rownames(df) <- 1:nrow(df)\n   df\n }\n@@ -356,6 +356,9 @@ data_frame0 <- function(...) data_frame(..., .name_repair = \"minimal\")\n # Wrapping unique0() to accept NULL\n unique0 <- function(x, ...) if (is.null(x)) x else vec_unique(x, ...)\n \n+# Code readability checking for uniqueness\n+is_unique <- function(x) vec_unique_count(x) == 1L\n+\n # Check inputs with tibble but allow column vectors (see #2609 and #2374)\n as_gg_data_frame <- function(x) {\n   x <- lapply(x, validate_column_vec)\n@@ -547,14 +550,14 @@ has_flipped_aes <- function(data, params = list(), main_is_orthogonal = NA,\n   if (group_has_equal) {\n     if (has_x) {\n       if (length(x) == 1) return(FALSE)\n-      x_groups <- vapply(split(data$x, data$group), function(x) length(unique0(x)), integer(1))\n+      x_groups <- vapply(split(data$x, data$group), vec_unique_count, integer(1))\n       if (all(x_groups == 1)) {\n         return(FALSE)\n       }\n     }\n     if (has_y) {\n       if (length(y) == 1) return(TRUE)\n-      y_groups <- vapply(split(data$y, data$group), function(x) length(unique0(x)), integer(1))\n+      y_groups <- vapply(split(data$y, data$group), vec_unique_count, integer(1))\n       if (all(y_groups == 1)) {\n         return(TRUE)\n       }"
+    },
+    {
+      "sha": "204128f197ea357680f18fdec5367bdfb597f64b",
+      "filename": "tests/testthat/test-aes-grouping.r",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/tests%2Ftestthat%2Ftest-aes-grouping.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/tests%2Ftestthat%2Ftest-aes-grouping.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/tests%2Ftestthat%2Ftest-aes-grouping.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -5,7 +5,7 @@ df <- data_frame(\n )\n \n group <- function(x) as.vector(layer_data(x, 1)$group)\n-groups <- function(x) length(unique(group(x)))\n+groups <- function(x) vec_unique_count(group(x))\n \n \n test_that(\"one group per combination of discrete vars\", {"
+    },
+    {
+      "sha": "49c13161040cda44a97246dda77b787e16c988fa",
+      "filename": "tests/testthat/test-facet-.r",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/tests%2Ftestthat%2Ftest-facet-.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/tests%2Ftestthat%2Ftest-facet-.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/tests%2Ftestthat%2Ftest-facet-.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -193,12 +193,12 @@ test_that(\"facets with free scales scale independently\", {\n   l2 <- p + facet_grid(. ~ z, scales = \"free\")\n   d2 <- cdata(l2)[[1]]\n   expect_true(sd(d2$x) < 1e-10)\n-  expect_equal(length(unique(d2$y)), 3)\n+  expect_length(unique(d2$y), 3)\n \n   # LHS of facet_grid()\n   l3 <- p + facet_grid(z ~ ., scales = \"free\")\n   d3 <- cdata(l3)[[1]]\n-  expect_equal(length(unique(d3$x)), 3)\n+  expect_length(unique(d3$x), 3)\n   expect_true(sd(d3$y) < 1e-10)\n })\n "
+    }
+  ],
+  "receipt": "evidence/ggplot2/receipts/change-4daadf7221439831260dedfa901b9616821154b0.json.json",
+  "selection": "Postseal targeted history search of main position_jitterdodge/scale_linewidth paths; official change context, not a new supplemental sample"
+}

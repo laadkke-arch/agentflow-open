@@ -1,0 +1,47 @@
+{
+  "sha": "202029b1979c7d92920f2b17fbeb7ddf1d37b208",
+  "message": "Delete utilies-table.R (#5426)\n\n* Delete utilies-table.R\r\n\r\n* Update collate directive",
+  "author_date": "2023-10-02T10:02:20Z",
+  "committer_date": "2023-10-02T10:02:20Z",
+  "url": "https://github.com/tidyverse/ggplot2/commit/202029b1979c7d92920f2b17fbeb7ddf1d37b208",
+  "parents": [
+    {
+      "sha": "fa26a55b192f8a7706ad2effe54a3f874d3413c7",
+      "url": "https://api.github.com/repos/tidyverse/ggplot2/commits/fa26a55b192f8a7706ad2effe54a3f874d3413c7",
+      "html_url": "https://github.com/tidyverse/ggplot2/commit/fa26a55b192f8a7706ad2effe54a3f874d3413c7"
+    }
+  ],
+  "stats": {
+    "total": 41,
+    "additions": 0,
+    "deletions": 41
+  },
+  "files": [
+    {
+      "sha": "275e56f047ed2cb122ff8473bccd38fdcd853b68",
+      "filename": "DESCRIPTION",
+      "status": "modified",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/202029b1979c7d92920f2b17fbeb7ddf1d37b208/DESCRIPTION",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/202029b1979c7d92920f2b17fbeb7ddf1d37b208/DESCRIPTION",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/DESCRIPTION?ref=202029b1979c7d92920f2b17fbeb7ddf1d37b208",
+      "patch": "@@ -272,7 +272,6 @@ Collate:\n     'utilities-help.R'\n     'utilities-matrix.R'\n     'utilities-resolution.R'\n-    'utilities-table.R'\n     'utilities-tidy-eval.R'\n     'zxx.R'\n     'zzz.R'"
+    },
+    {
+      "sha": "77d7e83407fafda4ae35ab3dfb6f95665fa08335",
+      "filename": "R/utilities-table.R",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 40,
+      "changes": 40,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/fa26a55b192f8a7706ad2effe54a3f874d3413c7/R%2Futilities-table.R",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/fa26a55b192f8a7706ad2effe54a3f874d3413c7/R%2Futilities-table.R",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Futilities-table.R?ref=fa26a55b192f8a7706ad2effe54a3f874d3413c7",
+      "patch": "@@ -1,40 +0,0 @@\n-compute_grob_widths <- function(grob_layout, widths) {\n-  cols <- split(grob_layout, grob_layout$l)\n-  widths <- lapply(cols, compute_grob_dimensions, dims = widths)\n-  inject(unit.c(!!!widths))\n-}\n-\n-compute_grob_heights <- function(grob_layout, heights) {\n-  cols <- split(grob_layout, grob_layout$t)\n-  heights <- lapply(cols, compute_grob_dimensions, dims = heights)\n-  inject(unit.c(!!!heights))\n-}\n-\n-compute_grob_dimensions <- function(grob_layout, dims) {\n-  # If any don't have explicit dims, then width is NULL\n-  if (!any(grob_layout$type %in% names(dims))) {\n-    return(unit(1, \"null\"))\n-  }\n-\n-  grob_layout <- grob_layout[grob_layout$type %in% names(dims), , drop = FALSE]\n-\n-  dims <- unique0(Map(function(type, pos) {\n-    type_width <- dims[[type]]\n-    if (length(type_width) == 1) type_width else type_width[pos]\n-  }, grob_layout$type, grob_layout$id))\n-  units <- vapply(dims, is.unit, logical(1))\n-\n-  if (all(units)) {\n-    if (all(lapply(dims, attr, \"unit\") == \"null\")) unit(max(unlist(dims)), \"null\")\n-    else inject(max(!!!dims))\n-  } else {\n-    raw_max <- unit(max(unlist(dims[!units])), \"cm\")\n-    if (any(units)) {\n-      unit_max <- max(inject(unit.c(!!!dims[units])))\n-      max(raw_max, unit_max)\n-    }\n-    else {\n-      raw_max\n-    }\n-  }\n-}"
+    }
+  ],
+  "receipt": "evidence/ggplot2/receipts/change-202029b1979c7d92920f2b17fbeb7ddf1d37b208.json.json",
+  "note": "API response can truncate large patches; local exact Git history and targeted diff provide full selected-path verification."
+}

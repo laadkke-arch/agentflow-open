@@ -1,0 +1,96 @@
+{
+  "utc": "2026-11-24T00:10:49.281850+00:00",
+  "reviewer": "/root; author conclusions already known; verification reread, not blind independent adjudication",
+  "scope": "four old/new actual section snapshots; no new primary-work count; no browser/example run",
+  "rows": [
+    {
+      "case": "MP-A2",
+      "edition": "new",
+      "source_url": "https://raw.githubusercontent.com/matplotlib/matplotlib.github.com/410d8388303fab638bbedbd1d2eace0e5efb0de9/3.7.0/gallery/text_labels_and_annotations/demo_text_rotation_mode.html",
+      "source_line": 1026,
+      "fragment": "text-rotation-mode",
+      "snapshot": "evidence/matplotlib/observations/MP-A2-new-section.html",
+      "snapshot_sha256": "962d5b9231bd41845998b4e061202620d03717a4ed18b38558828b0c6e616769",
+      "pre_count": 1,
+      "code_reparsed": [
+        "import matplotlib.pyplot as plt\n\n\ndef test_rotation_mode(fig, mode):\n    ha_list = [\"left\", \"center\", \"right\"]\n    va_list = [\"top\", \"center\", \"baseline\", \"bottom\"]\n    axs = fig.subplots(len(va_list), len(ha_list), sharex=True, sharey=True,\n                       subplot_kw=dict(aspect=1),\n                       gridspec_kw=dict(hspace=0, wspace=0))\n\n    # labels and title\n    for ha, ax in zip(ha_list, axs[-1, :]):\n        ax.set_xlabel(ha)\n    for va, ax in zip(va_list, axs[:, 0]):\n        ax.set_ylabel(va)\n    axs[0, 1].set_title(f\"rotation_mode='{mode}'\", size=\"large\")\n\n    kw = (\n        {} if mode == \"default\" else\n        {\"bbox\": dict(boxstyle=\"square,pad=0.\", ec=\"none\", fc=\"C1\", alpha=0.3)}\n    )\n\n    texts = {}\n\n    # use a different text alignment in each axes\n    for i, va in enumerate(va_list):\n        for j, ha in enumerate(ha_list):\n            ax = axs[i, j]\n            # prepare axes layout\n            ax.set(xticks=[], yticks=[])\n            ax.axvline(0.5, color=\"skyblue\", zorder=0)\n            ax.axhline(0.5, color=\"skyblue\", zorder=0)\n            ax.plot(0.5, 0.5, color=\"C0\", marker=\"o\", zorder=1)\n            # add text with rotation and alignment settings\n            tx = ax.text(0.5, 0.5, \"Tpg\",\n                         size=\"x-large\", rotation=40,\n                         horizontalalignment=ha, verticalalignment=va,\n                         rotation_mode=mode, **kw)\n            texts[ax] = tx\n\n    if mode == \"default\":\n        # highlight bbox\n        fig.canvas.draw()\n        for ax, text in texts.items():\n            bb = text.get_window_extent().transformed(ax.transData.inverted())\n            rect = plt.Rectangle((bb.x0, bb.y0), bb.width, bb.height,\n                                 facecolor=\"C1\", alpha=0.3, zorder=2)\n            ax.add_patch(rect)\n\n\nfig = plt.figure(figsize=(8, 5))\nsubfigs = fig.subfigures(1, 2)\ntest_rotation_mode(subfigs[0], \"default\")\ntest_rotation_mode(subfigs[1], \"anchor\")\nplt.show()\n"
+      ],
+      "image_attrs": [
+        {
+          "src": "../../_images/sphx_glr_demo_text_rotation_mode_001.png",
+          "srcset": "../../_images/sphx_glr_demo_text_rotation_mode_001.png, ../../_images/sphx_glr_demo_text_rotation_mode_001_2_0x.png 2.0x",
+          "alt": "rotation_mode='default', rotation_mode='anchor'",
+          "class": "sphx-glr-single-img"
+        }
+      ],
+      "review_observation": "new default path passes no bbox to text; get_window_extent and Rectangle implement highlighting; core Axes.text rotation/ha/va persists"
+    },
+    {
+      "case": "MP-A2",
+      "edition": "old",
+      "source_url": "https://raw.githubusercontent.com/matplotlib/matplotlib.github.com/f3ac5407f8ffc861cae1ea87eddd06c63b222e4b/3.6.3/gallery/text_labels_and_annotations/text_rotation.html",
+      "source_line": 1025,
+      "fragment": "default-text-rotation-demonstration",
+      "snapshot": "evidence/matplotlib/observations/MP-A2-old-section.html",
+      "snapshot_sha256": "5b0c7e19d3bb7d80a2ae29f58068228faed6016c9ec3af2aed88d750813ff84c",
+      "pre_count": 1,
+      "code_reparsed": [
+        "import matplotlib.pyplot as plt\nimport numpy as np\n\n\ndef addtext(ax, props):\n    ax.text(0.5, 0.5, 'text 0', props, rotation=0)\n    ax.text(1.5, 0.5, 'text 45', props, rotation=45)\n    ax.text(2.5, 0.5, 'text 135', props, rotation=135)\n    ax.text(3.5, 0.5, 'text 225', props, rotation=225)\n    ax.text(4.5, 0.5, 'text -45', props, rotation=-45)\n    for x in range(0, 5):\n        ax.scatter(x + 0.5, 0.5, color='r', alpha=0.5)\n    ax.set_yticks([0, .5, 1])\n    ax.set_xticks(np.arange(0, 5.1, 0.5))\n    ax.set_xlim(0, 5)\n    ax.grid(True)\n\n\n# the text bounding box\nbbox = {'fc': '0.8', 'pad': 0}\n\nfig, axs = plt.subplots(2, 1, sharex=True)\n\naddtext(axs[0], {'ha': 'center', 'va': 'center', 'bbox': bbox})\naxs[0].set_ylabel('center / center')\n\naddtext(axs[1], {'ha': 'left', 'va': 'bottom', 'bbox': bbox})\naxs[1].set_ylabel('left / bottom')\n\nplt.show()\n"
+      ],
+      "image_attrs": [
+        {
+          "src": "../../_images/sphx_glr_text_rotation_001.png",
+          "srcset": "../../_images/sphx_glr_text_rotation_001.png, ../../_images/sphx_glr_text_rotation_001_2_0x.png 2.0x",
+          "alt": "text rotation",
+          "class": "sphx-glr-single-img"
+        }
+      ],
+      "review_observation": "old published source and first plot direct re-read"
+    },
+    {
+      "case": "MP-G2",
+      "edition": "new",
+      "source_url": "https://raw.githubusercontent.com/matplotlib/matplotlib.github.com/410d8388303fab638bbedbd1d2eace0e5efb0de9/3.7.0/gallery/lines_bars_and_markers/barchart.html",
+      "source_line": 1026,
+      "fragment": "grouped-bar-chart-with-labels",
+      "snapshot": "evidence/matplotlib/observations/MP-G2-new-section.html",
+      "snapshot_sha256": "89fb411bb664a47df28ee546a34dee36abf55a13da0c4574cbd5f85c33801e14",
+      "pre_count": 1,
+      "code_reparsed": [
+        "# data from https://allisonhorst.github.io/palmerpenguins/\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nspecies = (\"Adelie\", \"Chinstrap\", \"Gentoo\")\npenguin_means = {\n    'Bill Depth': (18.35, 18.43, 14.98),\n    'Bill Length': (38.79, 48.83, 47.50),\n    'Flipper Length': (189.95, 195.82, 217.19),\n}\n\nx = np.arange(len(species))  # the label locations\nwidth = 0.25  # the width of the bars\nmultiplier = 0\n\nfig, ax = plt.subplots(constrained_layout=True)\n\nfor attribute, measurement in penguin_means.items():\n    offset = width * multiplier\n    rects = ax.bar(x + offset, measurement, width, label=attribute)\n    ax.bar_label(rects, padding=3)\n    multiplier += 1\n\n# Add some text for labels, title and custom x-axis tick labels, etc.\nax.set_ylabel('Length (mm)')\nax.set_title('Penguin attributes by species')\nax.set_xticks(x + width, species)\nax.legend(loc='upper left', ncols=3)\nax.set_ylim(0, 250)\n\nplt.show()\n"
+      ],
+      "image_attrs": [
+        {
+          "src": "../../_images/sphx_glr_barchart_001.png",
+          "srcset": "../../_images/sphx_glr_barchart_001.png, ../../_images/sphx_glr_barchart_001_2_0x.png 2.0x",
+          "alt": "Penguin attributes by species",
+          "class": "sphx-glr-single-img"
+        }
+      ],
+      "review_observation": "new penguin series loop preserves bar offset and bar_label, original two-call Men/Women G1-G5 score example not present in this section"
+    },
+    {
+      "case": "MP-G2",
+      "edition": "old",
+      "source_url": "https://raw.githubusercontent.com/matplotlib/matplotlib.github.com/f3ac5407f8ffc861cae1ea87eddd06c63b222e4b/3.6.3/gallery/lines_bars_and_markers/barchart.html",
+      "source_line": 1025,
+      "fragment": "grouped-bar-chart-with-labels",
+      "snapshot": "evidence/matplotlib/observations/MP-G2-old-section.html",
+      "snapshot_sha256": "38a9e93a45969fe9b7eaaed02628826eb4f9bfe7aaa3c9758430c57eb9e67941",
+      "pre_count": 1,
+      "code_reparsed": [
+        "import matplotlib.pyplot as plt\nimport numpy as np\n\n\nlabels = ['G1', 'G2', 'G3', 'G4', 'G5']\nmen_means = [20, 34, 30, 35, 27]\nwomen_means = [25, 32, 34, 20, 25]\n\nx = np.arange(len(labels))  # the label locations\nwidth = 0.35  # the width of the bars\n\nfig, ax = plt.subplots()\nrects1 = ax.bar(x - width/2, men_means, width, label='Men')\nrects2 = ax.bar(x + width/2, women_means, width, label='Women')\n\n# Add some text for labels, title and custom x-axis tick labels, etc.\nax.set_ylabel('Scores')\nax.set_title('Scores by group and gender')\nax.set_xticks(x, labels)\nax.legend()\n\nax.bar_label(rects1, padding=3)\nax.bar_label(rects2, padding=3)\n\nfig.tight_layout()\n\nplt.show()\n"
+      ],
+      "image_attrs": [
+        {
+          "src": "../../_images/sphx_glr_barchart_001.png",
+          "srcset": "../../_images/sphx_glr_barchart_001.png, ../../_images/sphx_glr_barchart_001_2_0x.png 2.0x",
+          "alt": "Scores by group and gender",
+          "class": "sphx-glr-single-img"
+        }
+      ],
+      "review_observation": "old published source and first plot direct re-read"
+    }
+  ],
+  "limitations": "Absence in one section does not prove global absence. Full-gallery candidate search remains project+independent-reviewer work. Historical G and browser display are 미확인."
+}

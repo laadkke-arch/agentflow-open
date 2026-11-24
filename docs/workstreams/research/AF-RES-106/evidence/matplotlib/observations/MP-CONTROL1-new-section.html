@@ -1,0 +1,178 @@
+<section class="sphx-glr-example-title" id="custom-scale">
+<span id="sphx-glr-gallery-scales-custom-scale-py"></span><h1>Custom scale<a class="headerlink" href="#custom-scale" title="Permalink to this heading">#</a></h1>
+<p>Create a custom scale, by implementing the scaling use for latitude data in a
+Mercator Projection.</p>
+<p>Unless you are making special use of the <a class="reference internal" href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Transform</span></code></a> class, you probably
+don't need to use this verbose method, and instead can use <a class="reference internal" href="../../api/scale_api.html#matplotlib.scale.FuncScale" title="matplotlib.scale.FuncScale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FuncScale</span></code></a>
+and the <code class="docutils literal notranslate"><span class="pre">'function'</span></code> option of <a class="reference internal" href="../../api/_as_gen/matplotlib.axes.Axes.set_xscale.html#matplotlib.axes.Axes.set_xscale" title="matplotlib.axes.Axes.set_xscale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xscale</span></code></a> and <a class="reference internal" href="../../api/_as_gen/matplotlib.axes.Axes.set_yscale.html#matplotlib.axes.Axes.set_yscale" title="matplotlib.axes.Axes.set_yscale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_yscale</span></code></a>.
+See the last example in <a class="reference internal" href="scales.html"><span class="doc">Scales</span></a>.</p>
+<img src="../../_images/sphx_glr_custom_scale_001.png" srcset="../../_images/sphx_glr_custom_scale_001.png, ../../_images/sphx_glr_custom_scale_001_2_0x.png 2.0x" alt="Mercator projection" class="sphx-glr-single-img"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ma</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <span class="n">mscale</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">transforms</span> <span class="k">as</span> <span class="n">mtransforms</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <a href="../../api/ticker_api.html#matplotlib.ticker.FixedLocator" title="matplotlib.ticker.FixedLocator" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FixedLocator</span></a><span class="p">,</span> <a href="../../api/ticker_api.html#matplotlib.ticker.FuncFormatter" title="matplotlib.ticker.FuncFormatter" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FuncFormatter</span></a>
+
+
+<span class="k">class</span> <span class="nc">MercatorLatitudeScale</span><span class="p">(</span><a href="../../api/scale_api.html#matplotlib.scale.ScaleBase" title="matplotlib.scale.ScaleBase" class="sphx-glr-backref-module-matplotlib-scale sphx-glr-backref-type-py-class"><span class="n">mscale</span><span class="o">.</span><span class="n">ScaleBase</span></a><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Scales data in range -pi/2 to pi/2 (-90 to 90 degrees) using</span>
+<span class="sd">    the system used to scale latitudes in a Mercator__ projection.</span>
+
+<span class="sd">    The scale function:</span>
+<span class="sd">      ln(tan(y) + sec(y))</span>
+
+<span class="sd">    The inverse scale function:</span>
+<span class="sd">      atan(sinh(y))</span>
+
+<span class="sd">    Since the Mercator scale tends to infinity at +/- 90 degrees,</span>
+<span class="sd">    there is user-defined threshold, above and below which nothing</span>
+<span class="sd">    will be plotted.  This defaults to +/- 85 degrees.</span>
+
+<span class="sd">    __ https://en.wikipedia.org/wiki/Mercator_projection</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># The scale class must have a member ``name`` that defines the string used</span>
+    <span class="c1"># to select the scale.  For example, ``ax.set_yscale("mercator")`` would be</span>
+    <span class="c1"># used to select this scale.</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'mercator'</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span></a><span class="p">(</span><span class="mi">85</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Any keyword arguments passed to ``set_xscale`` and ``set_yscale`` will</span>
+<span class="sd">        be passed along to the scale's constructor.</span>
+
+<span class="sd">        thresh: The degree above which to crop the data.</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">thresh</span> <span class="o">&gt;=</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"thresh must be less than pi/2"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+
+    <span class="k">def</span> <span class="nf">get_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Override this method to return a new instance that does the</span>
+<span class="sd">        actual transformation of the data.</span>
+
+<span class="sd">        The MercatorLatitudeTransform class is defined below as a</span>
+<span class="sd">        nested class of this one.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">MercatorLatitudeTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_default_locators_and_formatters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Override to set up the locators and formatters to use with the</span>
+<span class="sd">        scale.  This is only required if the scale requires custom</span>
+<span class="sd">        locators and formatters.  Writing custom locators and</span>
+<span class="sd">        formatters is rather outside the scope of this example, but</span>
+<span class="sd">        there are many helpful examples in :mod:`.ticker`.</span>
+
+<span class="sd">        In our case, the Mercator example uses a fixed locator from -90 to 90</span>
+<span class="sd">        degrees and a custom formatter to convert the radians to degrees and</span>
+<span class="sd">        put a degree symbol after the value.</span>
+<span class="sd">        """</span>
+        <span class="n">fmt</span> <span class="o">=</span> <a href="../../api/ticker_api.html#matplotlib.ticker.FuncFormatter" title="matplotlib.ticker.FuncFormatter" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FuncFormatter</span></a><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">degrees</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="se">\N{DEGREE SIGN}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">major_locator</span><span class="o">=</span><a href="../../api/ticker_api.html#matplotlib.ticker.FixedLocator" title="matplotlib.ticker.FixedLocator" class="sphx-glr-backref-module-matplotlib-ticker sphx-glr-backref-type-py-class"><span class="n">FixedLocator</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">radians</span></a><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">10</span><span class="p">))),</span>
+                 <span class="n">major_formatter</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">minor_formatter</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">limit_range_for_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">minpos</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Override to limit the bounds of the axis to the domain of the</span>
+<span class="sd">        transform.  In the case of Mercator, the bounds should be</span>
+<span class="sd">        limited to the threshold that was passed in.  Unlike the</span>
+<span class="sd">        autoscaling provided by the tick locators, this range limiting</span>
+<span class="sd">        will always be adhered to, whether the axis range is set</span>
+<span class="sd">        manually, determined automatically or changed through panning</span>
+<span class="sd">        and zooming.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">vmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">MercatorLatitudeTransform</span><span class="p">(</span><a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">mtransforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">):</span>
+        <span class="c1"># There are two value members that must be defined.</span>
+        <span class="c1"># ``input_dims`` and ``output_dims`` specify number of input</span>
+        <span class="c1"># dimensions and output dimensions to the transformation.</span>
+        <span class="c1"># These are used by the transformation framework to do some</span>
+        <span class="c1"># error checking and prevent incompatible transformations from</span>
+        <span class="c1"># being connected together.  When defining transforms for a</span>
+        <span class="c1"># scale, which are, by definition, separable and have only one</span>
+        <span class="c1"># dimension, these members should always be set to 1.</span>
+        <span class="n">input_dims</span> <span class="o">=</span> <span class="n">output_dims</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thresh</span><span class="p">):</span>
+            <a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">mtransforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+
+        <span class="k">def</span> <span class="nf">transform_non_affine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            This transform takes a numpy array and returns a transformed copy.</span>
+<span class="sd">            Since the range of the Mercator scale is limited by the</span>
+<span class="sd">            user-specified threshold, the input array must be masked to</span>
+<span class="sd">            contain only valid values.  Matplotlib will handle masked arrays</span>
+<span class="sd">            and remove the out-of-range data from the plot.  However, the</span>
+<span class="sd">            returned array *must* have the same shape as the input array, since</span>
+<span class="sd">            these values need to remain synchronized with values in the other</span>
+<span class="sd">            dimension.</span>
+<span class="sd">            """</span>
+            <span class="n">masked</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ma.masked_where.html#numpy.ma.masked_where" title="numpy.ma.masked_where" class="sphx-glr-backref-module-numpy-ma sphx-glr-backref-type-py-function"><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span></a><span class="p">((</span><span class="n">a</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">masked</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">ma</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">ma</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">masked</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">log</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">tan</span></a><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">cos</span></a><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">inverted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            Override this method so Matplotlib knows how to get the</span>
+<span class="sd">            inverse transform for this transform.</span>
+<span class="sd">            """</span>
+            <span class="k">return</span> <a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">MercatorLatitudeScale</span><span class="o">.</span><span class="n">InvertedMercatorLatitudeTransform</span></a><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">InvertedMercatorLatitudeTransform</span><span class="p">(</span><a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">mtransforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">):</span>
+        <span class="n">input_dims</span> <span class="o">=</span> <span class="n">output_dims</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thresh</span><span class="p">):</span>
+            <a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">mtransforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+
+        <span class="k">def</span> <span class="nf">transform_non_affine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+            <span class="k">return</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">arctan</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">sinh</span></a><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">inverted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <a href="../../api/transformations.html#matplotlib.transforms.Transform" title="matplotlib.transforms.Transform" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class"><span class="n">MercatorLatitudeScale</span><span class="o">.</span><span class="n">MercatorLatitudeTransform</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span>
+
+
+<span class="c1"># Now that the Scale class has been defined, it must be registered so</span>
+<span class="c1"># that Matplotlib can find it.</span>
+<a href="../../api/scale_api.html#matplotlib.scale.register_scale" title="matplotlib.scale.register_scale" class="sphx-glr-backref-module-matplotlib-scale sphx-glr-backref-type-py-function"><span class="n">mscale</span><span class="o">.</span><span class="n">register_scale</span></a><span class="p">(</span><a href="../../api/scale_api.html#matplotlib.scale.ScaleBase" title="matplotlib.scale.ScaleBase" class="sphx-glr-backref-module-matplotlib-scale sphx-glr-backref-type-py-class"><span class="n">MercatorLatitudeScale</span></a><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="o">-</span><span class="mf">180.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">radians</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a><span class="p">)</span><span class="o">/</span><span class="mf">2.</span>
+
+    <a href="../../api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">,</span> <span class="s1">'-'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <a href="../../api/_as_gen/matplotlib.pyplot.yscale.html#matplotlib.pyplot.yscale" title="matplotlib.pyplot.yscale" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">yscale</span></a><span class="p">(</span><span class="s1">'mercator'</span><span class="p">)</span>
+
+    <a href="../../api/_as_gen/matplotlib.pyplot.xlabel.html#matplotlib.pyplot.xlabel" title="matplotlib.pyplot.xlabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span></a><span class="p">(</span><span class="s1">'Longitude'</span><span class="p">)</span>
+    <a href="../../api/_as_gen/matplotlib.pyplot.ylabel.html#matplotlib.pyplot.ylabel" title="matplotlib.pyplot.ylabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span></a><span class="p">(</span><span class="s1">'Latitude'</span><span class="p">)</span>
+    <a href="../../api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="matplotlib.pyplot.title" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="s1">'Mercator projection'</span><span class="p">)</span>
+    <a href="../../api/_as_gen/matplotlib.pyplot.grid.html#matplotlib.pyplot.grid" title="matplotlib.pyplot.grid" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <a href="../../api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-scales-custom-scale-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/fa2e2df1666c376511e25ba972f9b06c/custom_scale.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">custom_scale.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/89bcffa85728ef8c09a8c94e84b43418/custom_scale.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">custom_scale.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+            

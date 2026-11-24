@@ -1,0 +1,95 @@
+{
+  "sha": "5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+  "message": "Switch to scales::Range classes (#5086)\n\n* Switch to scales::Range classes\r\n\r\n* Delete range.r\r\n\r\n* Update tests\r\n\r\n* Add NEWS bullet\r\n\r\n* Update Collate field",
+  "author_date": "2023-02-21T17:58:01Z",
+  "committer_date": "2023-02-21T17:58:01Z",
+  "url": "https://github.com/tidyverse/ggplot2/commit/5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+  "parents": [
+    {
+      "sha": "4daadf7221439831260dedfa901b9616821154b0",
+      "url": "https://api.github.com/repos/tidyverse/ggplot2/commits/4daadf7221439831260dedfa901b9616821154b0",
+      "html_url": "https://github.com/tidyverse/ggplot2/commit/4daadf7221439831260dedfa901b9616821154b0"
+    }
+  ],
+  "stats": {
+    "total": 66,
+    "additions": 17,
+    "deletions": 49
+  },
+  "files": [
+    {
+      "sha": "95280eba7b7f21c7beb216343554109f7346846f",
+      "filename": "DESCRIPTION",
+      "status": "modified",
+      "additions": 0,
+      "deletions": 1,
+      "changes": 1,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/DESCRIPTION",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/DESCRIPTION",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/DESCRIPTION?ref=5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+      "patch": "@@ -205,7 +205,6 @@ Collate:\n     'position-nudge.R'\n     'position-stack.r'\n     'quick-plot.r'\n-    'range.r'\n     'reshape-add-margins.R'\n     'save.r'\n     'scale-.r'"
+    },
+    {
+      "sha": "26f999e4f652140c83987fc036d38260db6dbba1",
+      "filename": "NEWS.md",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/NEWS.md",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/NEWS.md",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/NEWS.md?ref=5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+      "patch": "@@ -1,5 +1,7 @@\n # ggplot2 (development version)\n \n+* ggplot2 now uses `scales::DiscreteRange` and `scales::ContinuousRange`, which\n+  are available to write scale extensions from scratch (@teunbrand, #2710).\n * For the purposes of checking required or non-missing aesthetics, character \n   vectors are no longer considered non-finite (@teunbrand, @4284).\n * Fixed bug in `coord_sf()` where graticule lines didn't obey "
+    },
+    {
+      "sha": "9d025812ba84ee826931cf6814670743e441ebce",
+      "filename": "R/range.r",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 33,
+      "changes": 33,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/4daadf7221439831260dedfa901b9616821154b0/R%2Frange.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/4daadf7221439831260dedfa901b9616821154b0/R%2Frange.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Frange.r?ref=4daadf7221439831260dedfa901b9616821154b0",
+      "patch": "@@ -1,33 +0,0 @@\n-#' Mutable ranges have a two methods (`train` and `reset`), and make\n-#' it possible to build up complete ranges with multiple passes.\n-#'\n-#' These range objects should be instantiated with\n-#' [continuous_range()] and [discrete_range()].\n-#'\n-#' @noRd\n-Range <- ggproto(\"Range\", NULL,\n-  range = NULL,\n-  reset = function(self) {\n-    self$range <- NULL\n-  }\n-)\n-\n-RangeDiscrete <- ggproto(\"RangeDiscrete\", Range,\n-  train = function(self, x, drop = FALSE, na.rm = FALSE) {\n-    self$range <- scales::train_discrete(x, self$range, drop = drop, na.rm = na.rm)\n-  }\n-)\n-\n-RangeContinuous <- ggproto(\"RangeContinuous\", Range,\n-  train = function(self, x) {\n-    self$range <- scales::train_continuous(x, self$range)\n-  }\n-)\n-\n-continuous_range <- function() {\n-  ggproto(NULL, RangeContinuous)\n-}\n-\n-discrete_range <- function() {\n-  ggproto(NULL, RangeDiscrete)\n-}"
+    },
+    {
+      "sha": "aa7cc9cb9051a01a24e358efccc2d87e453c68d3",
+      "filename": "R/scale-.r",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 9,
+      "changes": 18,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/R%2Fscale-.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/R%2Fscale-.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fscale-.r?ref=5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+      "patch": "@@ -126,7 +126,7 @@ continuous_scale <- function(aesthetics, scale_name, palette, name = waiver(),\n     scale_name = scale_name,\n     palette = palette,\n \n-    range = continuous_range(),\n+    range = ContinuousRange$new(),\n     limits = limits,\n     trans = trans,\n     na.value = na.value,\n@@ -211,7 +211,7 @@ discrete_scale <- function(aesthetics, scale_name, palette, name = waiver(),\n     scale_name = scale_name,\n     palette = palette,\n \n-    range = discrete_range(),\n+    range = DiscreteRange$new(),\n     limits = limits,\n     na.value = na.value,\n     na.translate = na.translate,\n@@ -280,7 +280,7 @@ binned_scale <- function(aesthetics, scale_name, palette, name = waiver(),\n     scale_name = scale_name,\n     palette = palette,\n \n-    range = continuous_range(),\n+    range = ContinuousRange$new(),\n     limits = limits,\n     trans = trans,\n     na.value = na.value,\n@@ -406,7 +406,7 @@ Scale <- ggproto(\"Scale\", NULL,\n     cli::cli_abort(\"Not implemented\")\n   },\n \n-  range = ggproto(NULL, Range),\n+  range = Range$new(),\n   limits = NULL,\n   na.value = NA,\n   expand = waiver(),\n@@ -580,7 +580,7 @@ has_default_transform <- function(scale) {\n #' @usage NULL\n #' @export\n ScaleContinuous <- ggproto(\"ScaleContinuous\", Scale,\n-  range = continuous_range(),\n+  range = ContinuousRange$new(),\n   na.value = NA_real_,\n   rescaler = rescale,\n   oob = censor,\n@@ -763,7 +763,7 @@ ScaleContinuous <- ggproto(\"ScaleContinuous\", Scale,\n \n   clone = function(self) {\n     new <- ggproto(NULL, self)\n-    new$range <- continuous_range()\n+    new$range <- ContinuousRange$new()\n     new\n   },\n \n@@ -951,7 +951,7 @@ ScaleDiscrete <- ggproto(\"ScaleDiscrete\", Scale,\n \n   clone = function(self) {\n     new <- ggproto(NULL, self)\n-    new$range <- discrete_range()\n+    new$range <- DiscreteRange$new()\n     new\n   },\n \n@@ -989,7 +989,7 @@ ScaleDiscrete <- ggproto(\"ScaleDiscrete\", Scale,\n #' @usage NULL\n #' @export\n ScaleBinned <- ggproto(\"ScaleBinned\", Scale,\n-  range = continuous_range(),\n+  range = ContinuousRange$new(),\n   na.value = NA_real_,\n   rescaler = rescale,\n   oob = squish,\n@@ -1155,7 +1155,7 @@ ScaleBinned <- ggproto(\"ScaleBinned\", Scale,\n \n   clone = function(self) {\n     new <- ggproto(NULL, self)\n-    new$range <- continuous_range()\n+    new$range <- ContinuousRange$new()\n     new\n   },\n "
+    },
+    {
+      "sha": "d58b95c5a5d703ace8de0d85bdca18ceaa403f0a",
+      "filename": "R/scale-discrete-.r",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/R%2Fscale-discrete-.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/R%2Fscale-discrete-.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/R%2Fscale-discrete-.r?ref=5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+      "patch": "@@ -63,7 +63,7 @@ scale_x_discrete <- function(..., expand = waiver(), guide = waiver(), position\n   sc <- discrete_scale(c(\"x\", \"xmin\", \"xmax\", \"xend\"), \"position_d\", identity, ...,\n     expand = expand, guide = guide, position = position, super = ScaleDiscretePosition)\n \n-  sc$range_c <- continuous_range()\n+  sc$range_c <- ContinuousRange$new()\n   sc\n }\n #' @rdname scale_discrete\n@@ -72,7 +72,7 @@ scale_y_discrete <- function(..., expand = waiver(), guide = waiver(), position\n   sc <- discrete_scale(c(\"y\", \"ymin\", \"ymax\", \"yend\"), \"position_d\", identity, ...,\n     expand = expand, guide = guide, position = position, super = ScaleDiscretePosition)\n \n-  sc$range_c <- continuous_range()\n+  sc$range_c <- ContinuousRange$new()\n   sc\n }\n \n@@ -135,8 +135,8 @@ ScaleDiscretePosition <- ggproto(\"ScaleDiscretePosition\", ScaleDiscrete,\n \n   clone = function(self) {\n     new <- ggproto(NULL, self)\n-    new$range <- discrete_range()\n-    new$range_c <- continuous_range()\n+    new$range <- DiscreteRange$new()\n+    new$range_c <- ContinuousRange$new()\n     new\n   }\n )"
+    },
+    {
+      "sha": "e75b6352f3842ad132666279492ce48c09fb6b5f",
+      "filename": "tests/testthat/test-range.r",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/tidyverse/ggplot2/blob/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/tests%2Ftestthat%2Ftest-range.r",
+      "raw_url": "https://github.com/tidyverse/ggplot2/raw/5074f11bb10f28e37f89c1601400f4a5bffcd9f4/tests%2Ftestthat%2Ftest-range.r",
+      "contents_url": "https://api.github.com/repos/tidyverse/ggplot2/contents/tests%2Ftestthat%2Ftest-range.r?ref=5074f11bb10f28e37f89c1601400f4a5bffcd9f4",
+      "patch": "@@ -1,5 +1,5 @@\n test_that(\"continuous ranges expand as expected\", {\n-  r <- continuous_range()\n+  r <- ContinuousRange$new()\n \n   r$train(1)\n   expect_equal(r$range, c(1, 1))\n@@ -9,7 +9,7 @@ test_that(\"continuous ranges expand as expected\", {\n })\n \n test_that(\"discrete ranges expand as expected\", {\n-  r <- discrete_range()\n+  r <- DiscreteRange$new()\n \n   r$train(\"a\")\n   expect_equal(r$range, \"a\")"
+    }
+  ],
+  "receipt": "evidence/ggplot2/receipts/change-5074f11bb10f28e37f89c1601400f4a5bffcd9f4.json.json",
+  "note": "API response can truncate large patches; local exact Git history and targeted diff provide full selected-path verification."
+}

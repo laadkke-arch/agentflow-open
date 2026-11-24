@@ -1,0 +1,25 @@
+commit 4daadf7221439831260dedfa901b9616821154b0
+Author:     Teun van den Brand <49372158+teunbrand@users.noreply.github.com>
+AuthorDate: Tue Feb 21 18:19:36 2023 +0100
+Commit:     GitHub <noreply@github.com>
+CommitDate: Tue Feb 21 18:19:36 2023 +0100
+
+    Peformance: vec_unique_count (#5158)
+    
+    * Use `is_unique()`
+    
+    * Use `vec_unique_count()`
+
+diff --git a/R/position-jitterdodge.R b/R/position-jitterdodge.R
+index 8705d3b0..937da312 100644
+--- a/R/position-jitterdodge.R
++++ b/R/position-jitterdodge.R
+@@ -53,7 +53,7 @@ PositionJitterdodge <- ggproto("PositionJitterdodge", Position,
+       cli::cli_abort("{.fn position_jitterdodge} requires at least one aesthetic to dodge by")
+     }
+     ndodge    <- lapply(data[dodgecols], levels)  # returns NULL for numeric, i.e. non-dodge layers
+-    ndodge    <- length(unique0(unlist(ndodge)))
++    ndodge    <- vec_unique_count(unlist(ndodge))
+ 
+     list(
+       dodge.width = self$dodge.width,

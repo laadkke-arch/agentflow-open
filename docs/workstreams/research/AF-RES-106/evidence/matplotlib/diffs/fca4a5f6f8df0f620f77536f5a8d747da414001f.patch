@@ -1,0 +1,176 @@
+commit fca4a5f6f8df0f620f77536f5a8d747da414001f
+Author:     Antony Lee <anntzer.lee@gmail.com>
+AuthorDate: Thu Jan 19 10:40:05 2023 +0100
+Commit:     MeeseeksDev[bot] <meeseeksmachine@gmail.com>
+CommitDate: Thu Jan 19 09:40:14 2023 +0000
+
+    Backport PR #25019: Tweak titles pyplot examples.
+
+diff --git a/examples/pyplots/axline.py b/examples/pyplots/axline.py
+index 68149eaa..5da9dc1a 100644
+--- a/examples/pyplots/axline.py
++++ b/examples/pyplots/axline.py
+@@ -10,6 +10,7 @@ sigmoid function.
+ 
+ `~.axes.Axes.axline` draws infinite straight lines in arbitrary directions.
+ """
++
+ import numpy as np
+ import matplotlib.pyplot as plt
+ 
+diff --git a/examples/pyplots/pyplot_mathtext.py b/examples/pyplots/pyplot_mathtext.py
+deleted file mode 100644
+index a62dd6d9..00000000
+--- a/examples/pyplots/pyplot_mathtext.py
++++ /dev/null
+@@ -1,30 +0,0 @@
+-"""
+-===============
+-Pyplot Mathtext
+-===============
+-
+-Use mathematical expressions in text labels. For an overview over MathText
+-see :doc:`/tutorials/text/mathtext`.
+-"""
+-import numpy as np
+-import matplotlib.pyplot as plt
+-t = np.arange(0.0, 2.0, 0.01)
+-s = np.sin(2*np.pi*t)
+-
+-plt.plot(t, s)
+-plt.title(r'$\alpha_i > \beta_i$', fontsize=20)
+-plt.text(1, -0.6, r'$\sum_{i=0}^\infty x_i$', fontsize=20)
+-plt.text(0.6, 0.6, r'$\mathcal{A}\mathrm{sin}(2 \omega t)$',
+-         fontsize=20)
+-plt.xlabel('Time [s]')
+-plt.ylabel('Voltage [mV]')
+-plt.show()
+-
+-#############################################################################
+-#
+-# .. admonition:: References
+-#
+-#    The use of the following functions, methods, classes and modules is shown
+-#    in this example:
+-#
+-#    - `matplotlib.axes.Axes.text` / `matplotlib.pyplot.text`
+diff --git a/examples/pyplots/pyplot_simple.py b/examples/pyplots/pyplot_simple.py
+index 1a3b457a..096323b6 100644
+--- a/examples/pyplots/pyplot_simple.py
++++ b/examples/pyplots/pyplot_simple.py
+@@ -1,16 +1,16 @@
+ """
+-=============
+-Pyplot Simple
+-=============
++===========
++Simple plot
++===========
+ 
+-A very simple pyplot where a list of numbers are plotted against their
+-index. Creates a straight line due to the rate of change being 1 for
+-both the X and Y axis. Use a format string (here, 'o-r') to set the
++A simple plot where a list of numbers are plotted against their index,
++resulting in a straight line. Use a format string (here, 'o-r') to set the
+ markers (circles), linestyle (solid line) and color (red).
+ 
+ .. redirect-from:: /gallery/pyplots/fig_axes_labels_simple
+ .. redirect-from:: /gallery/pyplots/pyplot_formatstr
+ """
++
+ import matplotlib.pyplot as plt
+ 
+ plt.plot([1, 2, 3, 4], 'o-r')
+diff --git a/examples/pyplots/pyplot_text.py b/examples/pyplots/pyplot_text.py
+index e50e9038..00e738ef 100644
+--- a/examples/pyplots/pyplot_text.py
++++ b/examples/pyplots/pyplot_text.py
+@@ -1,29 +1,29 @@
+ """
+-===========
+-Pyplot Text
+-===========
++==============================
++Text and mathtext using pyplot
++==============================
+ 
+-"""
+-import numpy as np
+-import matplotlib.pyplot as plt
++Set the special text objects `~.pyplot.title`, `~.pyplot.xlabel`, and
++`~.pyplot.ylabel` through the dedicated pyplot functions.  Additional text
++objects can be placed in the axes using `~.pyplot.text`.
+ 
+-# Fixing random state for reproducibility
+-np.random.seed(19680801)
++You can use TeX-like mathematical typesetting in all texts; see also
++:doc:`/tutorials/text/mathtext`.
+ 
+-mu, sigma = 100, 15
+-x = mu + sigma * np.random.randn(10000)
++.. redirect-from:: /gallery/pyplots/pyplot_mathtext
++"""
+ 
+-# the histogram of the data
+-n, bins, patches = plt.hist(x, 50, density=True, facecolor='g', alpha=0.75)
++import numpy as np
++import matplotlib.pyplot as plt
+ 
++t = np.arange(0.0, 2.0, 0.01)
++s = np.sin(2*np.pi*t)
+ 
+-plt.xlabel('Smarts')
+-plt.ylabel('Probability')
+-plt.title('Histogram of IQ')
+-plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
+-plt.xlim(40, 160)
+-plt.ylim(0, 0.03)
+-plt.grid(True)
++plt.plot(t, s)
++plt.text(0, -1, r'Hello, world!', fontsize=15)
++plt.title(r'$\mathcal{A}\sin(\omega t)$', fontsize=20)
++plt.xlabel('Time [s]')
++plt.ylabel('Voltage [mV]')
+ plt.show()
+ 
+ #############################################################################
+diff --git a/examples/pyplots/pyplot_three.py b/examples/pyplots/pyplot_three.py
+index 476796b4..7dfcddb7 100644
+--- a/examples/pyplots/pyplot_three.py
++++ b/examples/pyplots/pyplot_three.py
+@@ -1,10 +1,11 @@
+ """
+-============
+-Pyplot Three
+-============
++===========================
++Multiple lines using pyplot
++===========================
+ 
+-Plot three line plots in a single call to `~matplotlib.pyplot.plot`.
++Plot three datasets with a single call to `~matplotlib.pyplot.plot`.
+ """
++
+ import numpy as np
+ import matplotlib.pyplot as plt
+ 
+diff --git a/examples/pyplots/pyplot_two_subplots.py b/examples/pyplots/pyplot_two_subplots.py
+index 5280fb0b..d316da2f 100644
+--- a/examples/pyplots/pyplot_two_subplots.py
++++ b/examples/pyplots/pyplot_two_subplots.py
+@@ -1,10 +1,11 @@
+ """
+-===================
+-Pyplot Two Subplots
+-===================
++=========================
++Two subplots using pyplot
++=========================
+ 
+-Create a figure with two subplots with `.pyplot.subplot`.
++Create a figure with two subplots using `.pyplot.subplot`.
+ """
++
+ import numpy as np
+ import matplotlib.pyplot as plt
+ 
