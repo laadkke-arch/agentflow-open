@@ -9,3 +9,9 @@
 
 ## 모집 고정 ②
 WCAG: 2018-01-30–03-30 UTC inclusive, actual repository w3c/wcag21 (w3c/wcag search returned 2 unrelated IDs, exclude). PR call points to members-only transition request; WBS CloseCRIssues auth redirect; public CfC contains 15 IDs only (not whole round). Use CR-linked repository date range + CR Comment label as round marker, ascending issue number. 81 candidates all recorded, 41 CR-labelled, first six 752, 753, 754, 755, 756, 757. No disposition-based sorting; label snapshot not historic proof; fallback email completeness unverified. Planned closure 4/10 and response 4/17 (wiki, not proven actual). XPath last CR 2016-12-13–2017-01-10 UTC (notifier explicit deadline), PR 1/17–2/28 separate. Bugzilla product listing 404, month archives accessible with no new subject clearly XPath 3.1 in window; no replacement by prior or subsequent cases. Six slots retained unknown, not six negative cases. Re-check subject misclassification with product list or original issue IDs. W3C PR states no substantive CR→PR changes; not evidence of no comments. Source dates UTC day precision; source ledger captures material accesses; repeated page windows sometimes grouped, no duplicate count.
+
+
+## ④ 보정 기록
+- ② frame의 자연 6 body_pending→read, 표본 순서 불변. 보충층을 별도 행으로 추가; 2016-11/12 XPath 두 건 및 2017-01 PR 두 건은 마지막 CR 자리 대체 금지. 보충은 반례 검색용이며 결과 방향에 따라 선택되어 빈도 추정 불가.
+- ③ 2017-01 월간 index 부분창 산정 12→14 정정; 원목록 불완전 결론 불변. 자연 WCAG 6개는 원제출자가 동일 계정임을 판독; 독립 당사자 1명. 33 comments 반환, 원제출자 후속 0, 전체 역사 아님. 화면 중재·검색 재시도는 자료 수와 별개.
+- ④ 일부 도구 응답은 긴 본문의 발췌 및 반복 fetch로 출력됨. 출처 원장에는 실제 판독 단위와 경계를 남기되 모든 반복 fetch의 별도 행은 완전하지 않음. eLife 본문 접속 challenge→공개 발행자 XML 두 JATS subarticle 사용, blob SHA 보존. 시민 PDF 본문 text 판독, Southend 표지 screenshot 확인, Winchester 대상 페이지 screenshot 실패; 개별 주민의 동의로 확대 금지.
