@@ -1,0 +1,7 @@
+# 재현할 입력·실행 여건
+- 셸 `git ls-remote https://github.com/laadkke-arch/agentflow-open.git refs/heads/chore/workspace-foundation` exit128, DNS Could not resolve host: github.com (07:53:04Z). 정식 manifest start/check 미실행.
+- R1: io-mux 1.4.0 historical example E1, Linux child stdout/stderr 번갈아 송신, explicit done 및 exit 후 drain 대 EOF. fixed checkout `cargo test --locked` (lockfile 확인), example input, source tag/순서/종료/ENOBUFS 비교. 미실행.
+- R3: bytemuck 1.12.3 및 enum_dispatch 0.3.9 `cargo test` fixed checkout; README example, StepBy<Concrete>→StepBy<Enum> wrapper A9, Pod bit-pattern/no padding. rustc/cargo 판과 입력 지문. 0.3.10/0.3.11 비교 별도. 미실행.
+- P4: mypy 41574e0 full SHA 확인 checkout; runner/requirements 확인 후 `python -m pytest mypy/test/testcheck.py -k testOperatorContainsNarrowsTypedDicts` (runner 확인), _total/_final/_partialThroughTotalFalse/_unionWithList. Pyright I10 before/after typeNarrowingTypedDict1.py 및 removed f9; runner 확인. typing_extensions `gh pr view 284 --repo python/typing_extensions --json mergeCommit` fixed checkout, `python -m unittest discover -s src -p 'test_typing_extensions.py'` (당시 runner 확인), qualifier/inheritance, Child2 assertion. 
+- R4 `gh pr view 119888 --repo rust-lang/rust --json mergeCommit` fixed SHA, `./x.py test tests/ui/diagnostic_namespace` (당시 경로 확인), .stderr expectations. R2 신규 회귀시험 미확인.
+- 각 명령은 재개 제안이며 실행 결과 아님. 깨끗한 별도 checkout의 환경·입력 hash·stdout/stderr·exit·불일치 남길 것. 과거 실제 실행 영수증은 CI run/jobs와 exact commit 별도로 대조; 신규 재현≠과거 실행.
