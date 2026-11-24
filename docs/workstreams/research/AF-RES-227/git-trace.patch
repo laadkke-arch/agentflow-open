@@ -1,0 +1,188 @@
+diff --git a/xdiff/xdiffi.c b/xdiff/xdiffi.c
+index 344c2df..9737dc7 100644
+--- a/xdiff/xdiffi.c
++++ b/xdiff/xdiffi.c
+@@ -91,6 +91,7 @@ static long xdl_split(unsigned long const *ha1, long off1, long lim1,
+ 			if (i1 - prev1 > xenv->snake_cnt)
+ 				got_snake = 1;
+ 			kvdf[d] = i1;
++			fprintf(stderr, "AF227 M diagonal F %ld %ld %ld %ld %ld\n", ec, d, prev1, i1, i2);
+ 			if (odd && bmin <= d && d <= bmax && kvdb[d] <= i1) {
+ 				spl->i1 = i1;
+ 				spl->i2 = i2;
+@@ -128,6 +129,7 @@ static long xdl_split(unsigned long const *ha1, long off1, long lim1,
+ 			if (prev1 - i1 > xenv->snake_cnt)
+ 				got_snake = 1;
+ 			kvdb[d] = i1;
++			fprintf(stderr, "AF227 M diagonal B %ld %ld %ld %ld %ld\n", ec, d, prev1, i1, i2);
+ 			if (!odd && fmin <= d && d <= fmax && i1 <= kvdf[d]) {
+ 				spl->i1 = i1;
+ 				spl->i2 = i2;
+@@ -293,6 +295,9 @@ int xdl_recs_cmp(diffdata_t *dd1, long off1, long lim1,
+ 			return -1;
+ 		}
+ 
++		fprintf(stderr, "AF227 M split %ld %ld %ld %ld %ld %ld %d\n",
++			off1, lim1, off2, lim2, spl.i1, spl.i2, need_min);
++
+ 		/*
+ 		 * ... et Impera.
+ 		 */
+@@ -330,6 +335,13 @@ int xdl_do_diff(mmfile_t *mf1, mmfile_t *mf2, xpparam_t const *xpp,
+ 		goto out;
+ 	}
+ 
++	fprintf(stderr, "AF227 M classic %ld %ld %ld %ld\n",
++		xe->xdf1.nrec, xe->xdf2.nrec, xe->xdf1.nreff, xe->xdf2.nreff);
++	for (ndiags = 0; ndiags < xe->xdf1.nreff; ndiags++)
++		fprintf(stderr, "AF227 M map A %ld %ld\n", ndiags, xe->xdf1.rindex[ndiags] + 1);
++	for (ndiags = 0; ndiags < xe->xdf2.nreff; ndiags++)
++		fprintf(stderr, "AF227 M map B %ld %ld\n", ndiags, xe->xdf2.rindex[ndiags] + 1);
++
+ 	/*
+ 	 * Allocate and setup K vectors to be used by the differential
+ 	 * algorithm.
+@@ -1051,6 +1063,19 @@ static void xdl_mark_ignorable_regex(xdchange_t *xscr, const xdfenv_t *xe,
+ 	}
+ }
+ 
++static void af227_trace_flags(const char *phase, const xdfenv_t *xe)
++{
++	long line;
++
++	fprintf(stderr, "AF227 flags %s ", phase);
++	for (line = 0; line < xe->xdf1.nrec; line++)
++		fputc(xe->xdf1.rchg[line] ? '1' : '0', stderr);
++	fputc(' ', stderr);
++	for (line = 0; line < xe->xdf2.nrec; line++)
++		fputc(xe->xdf2.rchg[line] ? '1' : '0', stderr);
++	fputc('\n', stderr);
++}
++
+ int xdl_diff(mmfile_t *mf1, mmfile_t *mf2, xpparam_t const *xpp,
+ 	     xdemitconf_t const *xecfg, xdemitcb_t *ecb) {
+ 	xdchange_t *xscr;
+@@ -1061,6 +1086,7 @@ int xdl_diff(mmfile_t *mf1, mmfile_t *mf2, xpparam_t const *xpp,
+ 
+ 		return -1;
+ 	}
++	af227_trace_flags("pre-compact", &xe);
+ 	if (xdl_change_compact(&xe.xdf1, &xe.xdf2, xpp->flags) < 0 ||
+ 	    xdl_change_compact(&xe.xdf2, &xe.xdf1, xpp->flags) < 0 ||
+ 	    xdl_build_script(&xe, &xscr) < 0) {
+@@ -1068,6 +1094,7 @@ int xdl_diff(mmfile_t *mf1, mmfile_t *mf2, xpparam_t const *xpp,
+ 		xdl_free_env(&xe);
+ 		return -1;
+ 	}
++	af227_trace_flags("post-compact", &xe);
+ 	if (xscr) {
+ 		if (xpp->flags & XDF_IGNORE_BLANK_LINES)
+ 			xdl_mark_ignorable_lines(xscr, &xe, xpp->flags);
+diff --git a/xdiff/xhistogram.c b/xdiff/xhistogram.c
+index 16a8fe2..820c0ae 100644
+--- a/xdiff/xhistogram.c
++++ b/xdiff/xhistogram.c
+@@ -198,6 +198,9 @@ static int try_lcs(struct histindex *index, struct region *lcs, int b_ptr,
+ 
+ 			if (b_next <= be)
+ 				b_next = be + 1;
++			fprintf(stderr, "AF227 H candidate %d %u %u %u %u %u %d\n",
++				b_ptr, as, ae, bs, be, rc,
++				lcs->end1 - lcs->begin1 < ae - as || rc < index->cnt);
+ 			if (lcs->end1 - lcs->begin1 < ae - as || rc < index->cnt) {
+ 				lcs->begin1 = as;
+ 				lcs->begin2 = bs;
+@@ -252,6 +255,7 @@ static int find_lcs(xpparam_t const *xpp, xdfenv_t *env,
+ {
+ 	int b_ptr;
+ 	int ret = -1;
++	int observed_a;
+ 	struct histindex index;
+ 
+ 	memset(&index, 0, sizeof(index));
+@@ -287,9 +291,13 @@ static int find_lcs(xpparam_t const *xpp, xdfenv_t *env,
+ 		goto cleanup;
+ 
+ 	index.cnt = index.max_chain_length + 1;
++	for (observed_a = line1; observed_a < line1 + count1; observed_a++)
++		fprintf(stderr, "AF227 H A-count %d %u\n", observed_a, (unsigned int)CNT((&index), observed_a));
+ 
+-	for (b_ptr = line2; b_ptr <= LINE_END(2); )
++	for (b_ptr = line2; b_ptr <= LINE_END(2); ) {
++		fprintf(stderr, "AF227 H B-seed %d\n", b_ptr);
+ 		b_ptr = try_lcs(&index, lcs, b_ptr, line1, count1, line2, count2);
++	}
+ 
+ 	if (index.has_common && index.max_chain_length < index.cnt)
+ 		ret = 1;
+@@ -309,6 +317,7 @@ static int histogram_diff(xpparam_t const *xpp, xdfenv_t *env,
+ 	int result;
+ redo:
+ 	result = -1;
++	fprintf(stderr, "AF227 H scope %d %d %d %d\n", line1, count1, line2, count2);
+ 
+ 	if (count1 <= 0 && count2 <= 0)
+ 		return 0;
+@@ -328,6 +337,8 @@ static int histogram_diff(xpparam_t const *xpp, xdfenv_t *env,
+ 
+ 	memset(&lcs, 0, sizeof(lcs));
+ 	lcs_found = find_lcs(xpp, env, &lcs, line1, count1, line2, count2);
++	fprintf(stderr, "AF227 H result %d %u %u %u %u\n", lcs_found,
++		lcs.begin1, lcs.end1, lcs.begin2, lcs.end2);
+ 	if (lcs_found < 0)
+ 		goto out;
+ 	else if (lcs_found)
+diff --git a/xdiff/xpatience.c b/xdiff/xpatience.c
+index a2d8955..2c7a6ae 100644
+--- a/xdiff/xpatience.c
++++ b/xdiff/xpatience.c
+@@ -213,6 +213,8 @@ static int find_longest_common_sequence(struct hashmap *map, struct entry **res)
+ 		i = binary_search(sequence, longest, entry);
+ 		entry->previous = i < 0 ? NULL : sequence[i];
+ 		++i;
++		fprintf(stderr, "AF227 P candidate %lu %lu %d %d\n",
++			entry->line1, entry->line2, i, i <= anchor_i);
+ 		if (i <= anchor_i)
+ 			continue;
+ 		sequence[i] = entry;
+@@ -324,15 +326,19 @@ static int patience_diff(xpparam_t const *xpp, xdfenv_t *env,
+ 		int line1, int count1, int line2, int count2)
+ {
+ 	struct hashmap map;
+-	struct entry *first;
++	struct entry *first, *observed;
+ 	int result = 0;
+ 
++	fprintf(stderr, "AF227 P scope %d %d %d %d\n", line1, count1, line2, count2);
++
+ 	/* trivial case: one side is empty */
+ 	if (!count1) {
++		fprintf(stderr, "AF227 P branch left-empty\n");
+ 		while(count2--)
+ 			env->xdf2.rchg[line2++ - 1] = 1;
+ 		return 0;
+ 	} else if (!count2) {
++		fprintf(stderr, "AF227 P branch right-empty\n");
+ 		while(count1--)
+ 			env->xdf1.rchg[line1++ - 1] = 1;
+ 		return 0;
+@@ -344,7 +350,9 @@ static int patience_diff(xpparam_t const *xpp, xdfenv_t *env,
+ 		return -1;
+ 
+ 	/* are there any matching lines at all? */
++	fprintf(stderr, "AF227 P common %lu\n", map.has_matches);
+ 	if (!map.has_matches) {
++		fprintf(stderr, "AF227 P branch no-common\n");
+ 		while(count1--)
+ 			env->xdf1.rchg[line1++ - 1] = 1;
+ 		while(count2--)
+@@ -356,6 +364,9 @@ static int patience_diff(xpparam_t const *xpp, xdfenv_t *env,
+ 	result = find_longest_common_sequence(&map, &first);
+ 	if (result)
+ 		goto out;
++	fprintf(stderr, "AF227 P branch %s\n", first ? "chain" : "classic-fallback");
++	for (observed = first; observed; observed = observed->next)
++		fprintf(stderr, "AF227 P selected %lu %lu\n", observed->line1, observed->line2);
+ 	if (first)
+ 		result = walk_common_sequence(&map, first,
+ 			line1, count1, line2, count2);

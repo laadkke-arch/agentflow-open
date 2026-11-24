@@ -191,10 +191,10 @@ def primary_table(rows, checks, ties, anchors=None, assessments=None):
         m = r['matching']
         anchor = (anchors or {}).get((case, method))
         if anchor is None:
-            anchor = f"blocks \`{compact(m['blocks_original_0based'])}\`" if m else '미측정'
+            anchor = f"blocks `{compact(m['blocks_original_0based'])}`" if m else '미측정'
         version = '0.2.13' if method == BREEZY else '2.43.0'
-        fingerprint = f"\`{r['input_sha256']['a'][:10]}…\`/\`{r['input_sha256']['b'][:10]}…\`"
-        values = ' · '.join(f'\`{h}\`' for h in r['headers']) or '0 hunk'
+        fingerprint = f"`{r['input_sha256']['a'][:10]}…`/`{r['input_sha256']['b'][:10]}…`"
+        values = ' · '.join(f'`{h}`' for h in r['headers']) or '0 hunk'
         values += f"; +{len(r['inserted_b'])}/−{len(r['deleted_a'])}, exit {r['exit_code']}"
         counterpart = rows[r['ordinal'] - 1 + 32]
         link = f"[1]({r['receipt_ref']}) · [2]({counterpart['receipt_ref']})"

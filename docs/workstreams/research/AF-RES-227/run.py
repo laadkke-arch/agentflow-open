@@ -249,6 +249,36 @@ def control_trials():
                         yield Trial(case, method, context, indent, direction)
 
 
+def challenge_cases(cases):
+    extras = [
+        ('W1', ['a', 'b ', 'c'], ['a', 'b', 'c']),
+        ('CE3', list('abcdefghijklmnop'), list('abcdefxydefghijklmnop')),
+        ('CE4', ['A', '1', 'B'], ['X', '1', 'Y']),
+        ('CE6', ['A', 'B', 'C'], ['B', 'C', 'A']),
+        ('CE7', ['A', 'x', 'x', 'x'], ['x', 'x', 'x', 'A']),
+    ]
+    return {**cases, **{case: {'a': make_side(a), 'b': make_side(b)} for case, a, b in extras}}
+
+
+def challenge_trials():
+    for method in GIT_METHODS:
+        yield Trial('W1', method)
+        yield Trial('W1', method, extra=('--ignore-space-at-eol',))
+    yield Trial('W1', BREEZY, indent=None)
+    for case in ('C1', 'C2'):
+        yield Trial(case, 'python-difflib', indent=None)
+    for method in ('breezy-default', BREEZY, 'python-difflib'):
+        yield Trial('CE3', method, indent=None)
+    yield Trial('CE4', 'myers', 0, False)
+    yield Trial('CE4', 'myers', 0, False, extra=('--inter-hunk-context=1',))
+    yield Trial('CE6', 'patience', 0, False)
+    yield Trial('CE6', 'anchored', 0, False, extra=('--anchored=A',))
+    yield Trial('CE7', 'patience', 0, False)
+    yield Trial('CE7', 'minimal', 0, False)
+    for method in METHODS:
+        yield Trial('R1', method, 0, None if method == BREEZY else False)
+
+
 def source_identity(source, pin, env, allow_patch=False):
     tag, tagged_object, commit = pin
     cmd = ['/usr/bin/git', '-C', source, 'rev-parse', 'HEAD', f'refs/tags/{tag}']
@@ -269,7 +299,11 @@ def environment(args):
     breezy = source_identity(args.breezy_source, BREEZY_PIN, env)
     binary = args.git_source / 'git'
     version = capture([binary, '--version', '--build-options'], directory, env)
-    if version['exit_code'] != 0 or version['stdout'].splitlines()[0] != 'git version 2.43.0':
+    release_line = version['stdout'].splitlines()[:1]
+    expected_versions = [['git version 2.43.0']]
+    if args.phase == 'diagnostic':
+        expected_versions.append(['git version 2.43.0.dirty'])
+    if version['exit_code'] != 0 or release_line not in expected_versions:
         raise RuntimeError(f'Wrong binary: {version["stdout"]} {version["stderr"]}')
     git.update(binary_sha256=digest(binary.read_bytes()), version_receipt=version,
                compiler=capture(['/usr/bin/gcc', '--version'], directory, env),
@@ -279,7 +313,7 @@ def environment(args):
         module_sha256={str(p.relative_to(args.breezy_source)): digest(p.read_bytes()) for p in
                        (args.breezy_source/'patiencediff').glob('*.py')},
         c_extension_files=sorted(str(p.name) for p in (args.breezy_source/'patiencediff').glob('*.so')),
-        install='Direct import of the pinned source checkout via worker, no compiled Breeze extension selected.',
+        install='Direct import of the pinned source checkout via worker, no compiled Breezy extension selected.',
     )
     return {
         'schema': 1, 'generated_utc': now(), 'phase': args.phase,
@@ -352,7 +386,7 @@ def main(argv):
     parser.add_argument('--breezy-source', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--scratch', type=Path, required=True)
-    parser.add_argument('--phase', choices=('stock', 'diagnostic'), default='stock')
+    parser.add_argument('--phase', choices=('stock', 'diagnostic', 'challenges'), default='stock')
     args = parser.parse_args(argv)
     for field in ('git_source', 'breezy_source', 'out', 'scratch'):
         setattr(args, field, getattr(args, field).resolve())
@@ -366,13 +400,17 @@ def main(argv):
         save_jsonl(args.out / 'public.jsonl', public_suites(args))
         save_json(args.out.parent / 'environment.json', metadata)
         sources = ('base', 'controls', 'public')
-    else:
+    elif args.phase == 'diagnostic':
         save_jsonl(args.out / 'diagnostic-base.jsonl',
                    collect(args, cases, basic_trials(cases, repeats=1), 'diagnostic-base', trace=True))
         save_jsonl(args.out / 'diagnostic-controls.jsonl',
                    collect(args, cases, control_trials(), 'diagnostic-controls', trace=True))
         save_json(args.out / 'diagnostic-environment.json', metadata)
         sources = ('diagnostic-base', 'diagnostic-controls')
+    else:
+        save_jsonl(args.out / 'challenges.jsonl',
+                   collect(args, challenge_cases(cases), challenge_trials(), 'challenges'))
+        sources = ('challenges',)
     failed = 0
     for name in sources:
         rows = load_jsonl(args.out / f'{name}.jsonl')
