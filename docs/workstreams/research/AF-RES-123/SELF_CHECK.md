@@ -1,0 +1,13 @@
+# AF-RES-123 자가 검토
+
+브라우저 입력은 Playwright Core와 Chromium이 실행했다. 출처·판단과 로그 검산은 같은 Codex Cloud 작업자가 수행했다. 별도 사람이나 AI의 판독, 원 작성자의 입력 및 채택 판독은 미실시다. [원장 검산](evidence/verification.json)
+
+| 질문 | 답과 근거 source_id | 판정이 틀릴 조건 | 찾은 반례·대조 | 미확인과 이유 |
+| --- | --- | --- | --- | --- |
+| Q1 작성자·사양 | opening 631바이트 지문은 119와 동일. Editor payload의 유일한 추가 키는 v5.2.0 schema. ISS-8628, ISS-8628-C, ISS-8628-ED, DATA-CSV, AF119-CASE. | 최초 공개 revision과 현재 API 본문이 다르거나 옛 Editor가 다른 데이터를 불러왔다. | schema URL이 있어도 엔진은 명시되지 않았다. 고정 CSV는 과거 Editor resolve를 증명하지 않는다. | 공개 댓글은 비어 있다. GIF legacy·두 별칭 접근 실패. 당시 선택 상태·판·장치·실제 원데이터 지문 미확인. |
+| Q2 계약과 세 diff | VL-DEFAULT, VL-INTERVAL, VL-PAN, VL-UNIT, VL-PROJ, VL-COLOR, VL-EMPTY, T-VL-PAN, T-VL-INT. x month는 E로 컴파일되고 translate가 앞 brush 시작의 gate다. | scale bind, 초기값·다른 clear 규칙, tooltip/z-order 또는 다른 compiler가 작동한다. | T-VL-PAN의 scale bind는 다운 게이트가 다르다. EX-VL-CLR은 mouseup을 직접 clear로 지정한다. 원형은 click의 0폭으로도 tuple이 빈다. | 다른 세대 bundle과 동일 출력, 터치 또는 키보드 구현 미확인. npm metadata와 내부 버전 문자열이 다르다. |
+| Q3 실제 hit | VG-VIEW, VG-SVG, VG-CANVAS, VG-COORD, VL-STACK. SVG path와 Canvas active item으로 empty mark/root, active brush를 확인했다. | 캔버스 선행 move, DPR, clip, 다른 z-order가 hit를 바꾼다. | 같은 시작 CSS x와 기존 선택에서 막대 위 좌표도 `drag_brush_brush`였다. shared active·mark의 첫 move는 다시 `marks`였다. | 다른 폰트와 DPR에서 좌표 선택·offset의 유지 미실시. |
+| Q4 첫 이동 | VL-INTERVAL, VL-UNIT, VG-COORD, VG-BAND. 비교 48/48 중 16행은 첫 잔차 101px, 나머지 32행은 0px. | root 이외의 단위에 대한 포인터 좌표가 원래 요구인 차트거나, 현재 재생에는 없는 이벤트 소비가 있다. | 빈 mark의 1px 실제 전진이 첫 January를 만든 뒤 같은 band 중앙을 따라가면 다시 공석. 기존 원형 brush는 1px를 올바르게 평행이동한다. | GIF의 저자 점프 수치와 frame-by-frame 비교가 미확인이다. round 제거와 다른 core 판은 실행하지 않았다. |
+| Q5 반증 | VG-BAND, T-VG-BAND, EX-VL-CLR, BR-1672, BR-2288. 경계 1px, click, 내부·외부 reverse, x 고정 y 이동, 관측자 해제로 구분했다. | 입력이 band edge와 겹치는지 판정하는 rounding 또는 브라우저 배율이 달라진다. | x=100→101에서 enum만 정상적으로 증가. brush 안 click은 보존, 바깥은 down에서 clear. y 이동만으로 x 범위가 생긴 경우는 좌표 원점 전환이었다. | 두 번째 장비·가속도·포인터 캡처 입력은 별도 검증 필요. |
+| Q6 공식 절 반환 | VL-PAN, VL-SELECT, VL-COLOR, VL-PROJ, VL-UNIT, VG-COORD. 유지할 목적과 실제 hit를 받으면 이동·색·투영의 반환 절 우선순위가 달라진다. | 불투명한 overlay, 신규 선택을 원하는 목표, commit의 설정이 다르거나 마크 좌표계 문맥이 생략된다. | local 16/16은 동작·투영 유지. shared 8/8 빈 state에서 새 선택이 계속 가능했고 기존 영역 위 두 시작도 새 경로가 됐다. | 독립 가림 판독과 사용자 채택 없음. 세 후보 비교는 단일 작업자의 case 분석이다. |
+| Q7 다른 도구 | MAP-TRANS, MAP-PAN, MAP-DEMO, MAP-9625, MAP-ORDER, AUDIO-SEL, AUDIO-CLIP, AUDIO-12487, A11Y-DRAG. 시작 hit와 현재 선택이 바뀌면 geometry·view·clip·time range가 달라진다. | 제품판이나 입력 도구가 달라져 modifier와 hit priority가 바뀐다. | Audacity의 track 선택과 시간 경계는 다른 상태다. OpenLayers는 filter에서 거부한 피처 위 픽셀도 pan으로 넘길 수 있다. | 지도·오디오 자체의 직접 UI 재실행과 터치·키보드 비교는 범위 밖의 미실측이다. |

@@ -10,7 +10,7 @@
 
 Selection Tool로 파형에서 좌·우 drag를 하면 시간 범위를 그린다. 기존 선택의 경계 가까이에서 커서가 바뀌면 경계를 한쪽만 움직일 수 있다. Shift-click으로 경계를 잡는 조작과 시간 단위 및 물리적 clip 경계 snap을 문서가 별도로 설명한다. 동일한 화면 x에서도 파형의 선택 경계와 clip 상단 handle은 다른 동작을 건다. 선택 영역 내부의 clip handle을 끌면 선택된 여러 clip과 영역 위치가 함께 움직이며, 외부 handle을 끌면 그 clip이 이동하고 선택 영역의 시간은 유지된다. [선택 경계](https://manual.audacityteam.org/man/audacity_selection.html#Extending_or_contracting_an_existing_selection) · [Moving Clips](https://manual.audacityteam.org/man/audacity_tracks_and_clips.html#Moving_Clips)
 
-AU4/Future #12487의 작성자는 단일 트랙의 시간 선택에서 바깥쪽 canvas를 Ctrl/Cmd-click했더니 그 트랙이 선택 대상에서 빠졌다고 보고했다. 기대 동작은 시간 경계의 확장·축소이고 트랙의 선택 여부는 헤더에서 조작하길 원했다. 지원하는 modifier와 구현의 의미를 매뉴얼의 Shift 조작과 혼용하면 잘못된 기능 절을 돌려준다. 옵션과 판을 확인한 뒤 범위의 시간과 트랙 ID를 따로 본다. [저자 입력·상태](https://github.com/audacity/audacity/issues/12487) · [선택 길이·시각](https://manual.audacityteam.org/man/selection_toolbar.html)
+AU4/Future #12487의 작성자는 단일 트랙의 시간 선택에서 바깥쪽 canvas를 Ctrl/Cmd-click했더니 그 트랙이 선택 대상에서 빠졌다고 보고했다. 기대 동작은 시간 경계의 확장·축소이고 트랙의 선택 여부는 헤더에서 조작하길 원했다. 지원하는 modifier와 구현의 의미를 매뉴얼의 Shift 조작과 혼용하면 잘못된 기능 절을 돌려준다. 옵션과 판을 확인한 뒤 범위의 시간과 트랙 ID를 따로 본다. [저자 입력·상태](https://github.com/audacity/audacity/issues/12487)
 
 ## 인계할 최소 단서
 
