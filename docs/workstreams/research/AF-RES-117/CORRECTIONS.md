@@ -1,0 +1,6 @@
+# Correction and scope notes
+- R3 closure initially unconfirmed at 9100ed86f5b7d869ba6e075647ba973ef7e05bf2; author Feb7 comment 1421350925 now direct read. Discussion exposed substantial redesign; closure explicitly personal capacity, not a specific external link. No G3.
+- P2 date originally recorded with midnight placeholder; date-only corrected. Jan17 exact diff predates Jan18 PEP668 comment.
+- io-mux current docs first reported version 2.2.1, reread 2.2.2: moving latest URL, historical version not established. Current version not substitute for 2023.
+- {"initial_draft":8,"external":6,"decision_implementation":6,"transport":2,"museum":2} counted unique original works, 24 broad; strict historical-source coverage and museum predecision plan deficient. Museum annual report distinct institutional report but published after treatment announcement. Transit errata and ROD distinct. No auxiliary sample recruited. Do not mistake current docs, prototype or release report for independent historical verification.
+- PEP668, PEP703 current PEP previously opened as related texts; original study frame 200 search rows, source ledger does not enumerate every exploratory URL; candidate/actual URL counts only for logged rows, not a claim of complete search accounting.
