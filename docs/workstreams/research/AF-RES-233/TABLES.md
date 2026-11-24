@@ -4,7 +4,7 @@
 | 지명 자리·기관·판 | 010/URI·원필드 | 선호명/이형명/관계 | 저작 근거·주소 | 동일·별개·보류 | 미확인 |
 |---|---|---|---|---|---|
 | A 역사 LC 2004 전사(2008 교재) | 010 $a n 79090096; 005 20040623033151.0; 100/400/670; $z·500 표시 없음 | Tennessee Williams 1911–1983; Thomas Lanier Williams 같은 날짜; 두 번역 전사 | [E04 Appendix B L9615–9665](https://www.loc.gov/catworkshop/courses/nametitleauth/pdf/Name-Title_Trnee_Manual.pdf) 670 Glass menagerie 1945 등 | 역사 레코드 내 동일 | 실제 현대판 및 정확 전사 철자 |
-| A 현행 LC | [n79090096](https://id.loc.gov/authorities/names/n79090096) 접근 실패 F01–F04 | 미확인 | A05 NDL 자체 출처는 별도 | 보류 | 010 $a/$z,005,100,400,500,670 전체 |
+| A 현행 LC | [n79090096](https://id.loc.gov/authorities/names/n79090096) 접근 실패 F01–F05 | 미확인 | A05 NDL 자체 출처는 별도 | 보류 | 010 $a/$z,005,100,400,500,670 전체 |
 | B 1951 자리 LC/기타 | 010/URI 미확인 | 교육 Davis, Kate, 1951- | E04 L3629–3632 Rough road c2000; Secretary of the Interior 2003 | 보류 | 원전거 및 서지 연결 |
 | B 1959 자리 LC/기타 | 010/URI 미확인 | 교육 Davis, Kate, 1959- | E04 L3634–3638 Raptors of the Rockies 2002; E02 정답 | 보류 | 원전거 및 서지 연결 |
 | C père LC | [n79042162](https://id.loc.gov/authorities/names/n79042162) NDL 연결 후보 A03 | LC 원필드 미확인 | A03 NDL citation | LC 보류 | 010/005/100/400/500/670 |
