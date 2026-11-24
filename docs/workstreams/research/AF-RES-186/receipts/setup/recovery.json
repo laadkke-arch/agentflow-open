@@ -1,0 +1,49 @@
+{
+  "recovered_attempts": [
+    {
+      "stage": "initial Go compiler discovery",
+      "argv": [
+        "/usr/bin/go",
+        "version"
+      ],
+      "exit_code": 1,
+      "observed_output": "Go: Unknown option: version",
+      "recovery": "Installed the official Go 1.23.12 distribution in scratch and checked its SHA-256."
+    },
+    {
+      "stage": "initial Go module prefetch",
+      "argv": [
+        "/tmp/af186-tools/go/bin/go",
+        "mod",
+        "download",
+        "-json",
+        "all"
+      ],
+      "cwd": "/tmp/af186-gold",
+      "exit_code": 1,
+      "stdout": "gold-download-all.initial.stdout.log",
+      "stdout_sha256": "20d9a4569671aee57bc78156a193bb316eb417644e5a2f2688d49a27dd2a6a40",
+      "cause": "Fetching the objx test dependency zip needed the default GOPATH sumdb state in an unwritable home.",
+      "recovery": "Set a writable scratch GOPATH and prefetched the linked cachecontrol module. Kept GOSUMDB enabled."
+    }
+  ],
+  "js_lock_creation": {
+    "argv": [
+      "npm",
+      "--prefix",
+      "/tmp/af186-runtime/js-deps",
+      "install",
+      "--package-lock-only",
+      "--omit=dev",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "--registry=https://registry.npmjs.org",
+      "--cache=/tmp/af186-runtime/npm-cache"
+    ],
+    "exit_code": 0,
+    "dependency_scope": "pinned checkout package.json dependencies only",
+    "lock_sha256": "6b9258ab18c8a33d4640d44edbfc82976d7e792f6a324aeea35c789b4bbffab6",
+    "installed_by": "js-ci.json"
+  }
+}
