@@ -15,3 +15,9 @@
 6. 공식 높이뛰기 공동 1위 및 jump-off 각각 별개 사건, SQL 계약을 소급 결정하지 않는 비유. 근거 직접 원저작 22개 이상 및 지정 분류별 하한; 보조 원문은 첫 답 점수와 독립. 개별 UTC 불가 시 실제 확인 시간창 명시. 독립 검토와 자체 점검 분리.
 
 이 커밋 시점 외부 DBA 질문·답·검색 응답·공식 SQL/스포츠 자료 미열람. 이후 모집 원응답에 대상 링크가 함께 있으면 비가림 사실을 보고하고 질의 봉인 전 도착 답 본문은 열지 않는다. 질문별 계약/질의 봉인은 모집 성공 후 별도 수행한다.
+
+## 사전 정정 — API 문서만 열고 실제 원질문/답 미열람
+- https://api.stackexchange.com/docs/advanced-search Discussion: tagged는 OR(적어도 하나). 최초 봉인의 /search/advanced 모집은 AND 표본을 보장하지 못하므로 폐기한다. https://api.stackexchange.com/docs/questions Discussion: /questions tagged는 AND. 모집 정상 진입점은 /2.3/questions?site=dba&tagged=postgresql%3Bgreatest-n-per-group&fromdate=1325376000&todate=1735689599&sort=creation&order=asc&pagesize=100&page=1&filter=F_FRAME. 두 태그 확인, 페이지2까지 및 경계 동률 처리 유지. 초기 advanced withbody probe는 웹 조회 불가여서 자료/표집에 미산입.
+- A relevance는 /search/advanced의 실제 OR 결과 원순서를 영수증에 보존한다. 두 태그 동시 만족을 클라이언트 metadata 단계에서 검사하고 그 부분수열의 최초 5자리만 대상으로 삼는 사전 정의 보정(원래 OR top5와 별도 보존). raw position과 AND-filtered position을 모두 표시. 첫 5개 AND를 얻을 때까지 페이지를 확인하되 본문은 읽지 않는다. has_more=false/백오프/실패/페이지 경계 기록. 서버의 AND relevance 순위라고 주장하지 않으며 strict 동일 태그 원응답 비교가 아니므로 별도 민감도(원 top5의 적격 후보 여부). 동률/시간 비용 보정 불가 시 PARTIAL. 검색 전 질의 봉인이 여전히 선행.
+- https://api.stackexchange.com/docs/types/original-question 의 실제 type 이름은 original_question(단수); closed_details 필드는 original_questions(복수). 필터 생성 응답 included_fields로 검증. https://api.stackexchange.com/docs/filters 에서 withbody는 default+body에 불과함을 확인.
+- 필터 생성 curl 시도는 DNS 실패(HTTP 000); 공개 API web 직접 접근을 재시도할 예정. 원응답이 없으면 원 표본/질의/도착 답은 추정으로 채우지 않는다.
