@@ -1,0 +1,452 @@
+[
+  {
+    "n": 19950,
+    "sha": "5a80b8e4ba9b08d6462d962c1e94dd045a6afdbd",
+    "url": "https://github.com/matplotlib/matplotlib/commit/5a80b8e4ba9b08d6462d962c1e94dd045a6afdbd",
+    "files": [
+      {
+        "filename": "lib/matplotlib/axes/_axes.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_axes.py"
+      }
+    ],
+    "author": {
+      "login": "tacaswell",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/199813?v=4",
+      "id": 199813
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #19950 from meeseeksmachine/auto-backport-of-pr-19948-on-v3.4.x\n\nBackport PR #19948 on branch v3.4.x (Allow numpy arrays to be used as elinewidth)",
+    "diff_length": 956,
+    "diff_excerpt": "@@ -3382,7 +3382,7 @@ def errorbar(self, x, y, yerr=None, xerr=None,\n         # Make the style dict for the line collections (the bars).\n         eb_lines_style = {**base_style, 'color': ecolor}\n \n-        if elinewidth:\n+        if elinewidth is not None:\n             eb_lines_style['linewidth'] = elinewidth\n         elif 'linewidth' in kwargs:\n             eb_lines_style['linewidth'] = kwargs['linewidth']\n@@ -3519,6 +3519,13 @@ def test_errorbar_every(fig_test, fig_ref):\n                     capsize=4, c='C1', fmt='none')\n \n \n+@pytest.mark.parametrize('elinewidth', [[1, 2, 3],\n+                                        np.array([1, 2, 3]),\n+                                        1])\n+def test_errorbar_linewidth_type(elinewidth):\n+    plt.errorbar([1, 2, 3], [1, 2, 3], yerr=[1, 2, 3], elinewidth=elinewidth)\n+\n+\n @image_comparison(['hist_stacked_stepfilled', 'hist_stacked_stepfilled'])\n def test_hist_stacked_stepfilled():\n     # make some data",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20003,
+    "sha": "d7c70bbe50c760901794f74f3570189d262b3b77",
+    "url": "https://github.com/matplotlib/matplotlib/commit/d7c70bbe50c760901794f74f3570189d262b3b77",
+    "files": [
+      {
+        "filename": ".circleci/config.yml"
+      },
+      {
+        "filename": ".github/workflows/cibuildwheel.yml"
+      },
+      {
+        "filename": "doc/api/next_api_changes/development/20003-ES.rst"
+      },
+      {
+        "filename": "doc/devel/dependencies.rst"
+      },
+      {
+        "filename": "doc/devel/min_dep_policy.rst"
+      },
+      {
+        "filename": "lib/matplotlib/__init__.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_axes.py"
+      },
+      {
+        "filename": "requirements/testing/minver.txt"
+      },
+      {
+        "filename": "setup.py"
+      }
+    ],
+    "author": {
+      "login": "jkseppan",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/92814?v=4",
+      "id": 92814
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20003 from QuLogic/np117\n\nBump minimum NumPy to 1.17",
+    "diff_length": 3865,
+    "diff_excerpt": "@@ -150,7 +150,7 @@ jobs:\n       - pip-install\n \n       - deps-install:\n-          numpy_version: \"==1.16.0\"\n+          numpy_version: \"==1.17.3\"\n       - mpl-install\n \n       - doc-build\n@@ -13,8 +13,8 @@ jobs:\n     name: Build wheels on ${{ matrix.os }}\n     runs-on: ${{ matrix.os }}\n     env:\n-      min-numpy-version: \"1.16.0\"\n-      min-numpy-hash: \"04/b6/d7faa70a3e3eac39f943cc6a6a64ce378259677de516bd899dd9eb8f9b32\"\n+      min-numpy-version: \"1.17.0\"\n+      min-numpy-hash: \"da/32/1b8f2bb5fb50e4db68543eb85ce37b9fa6660cd05b58bddfafafa7ed62da\"\n     strategy:\n       matrix:\n         os: [ubuntu-18.04, windows-latest, macos-latest]\n@@ -0,0 +1,15 @@\n+Increase to minimum supported versions of dependencies\n+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n+\n+For Maptlotlib 3.5, the :ref:`minimum supported versions <dependencies>` are\n+being bumped:\n+\n++------------+-----------------+---------------+\n+| Dependency |  min in mpl3.4  | min in mpl3.5 |\n++============+=================+===============+\n+|   NumPy    |      1.16       |     1.17      |\n++------------+-----------------+---------------+\n+\n+This is consistent with our :ref:`min_deps_policy` and `NEP29\n+<https://numpy.org/neps/nep-0029-deprecation_policy.html>`__\n+\n@@ -15,7 +15,7 @@ mandatory dependencies are automatically installed. This list is mainly for\n reference.\n \n * `Python <https://www.python.org/downloads/>`_ (>= 3.7)\n-* `NumPy <https://numpy.org>`_ (>= 1.16)\n+* `NumPy <https://numpy.org>`_ (>= 1.17)\n * `setuptools <https://setuptools.readthedocs.io/en/latest/>`_\n * `cycler <https://matplotlib.org/cycler/>`_ (>= 0.10.0)\n * `dateutil <https://pypi.org/project/python-dateutil>`_ (>= 2.7)\n@@ -83,7 +83,8 @@ specification of the dependencies.\n ==========  ========  ======\n Matplotlib  Python    NumPy\n ==========  ========  ======\n-3.4         3.7       1.16.0\n+3.5         3.7       1.17.0\n+`3.4`_      3.7       1.16.0\n `3.3`_      3.6       1.15.0\n `3.2`_      3.6       1.11.0\n `3.1`_      3.6       1.11.0\n@@ -99,6 +100,7 @@ Matplotlib  Python    NumPy\n 1.0         2.4       1.1\n ==========  ========  ======\n \n+.. _`3.4`: https://matplotlib.org/3.4.0/users/installing.html#dependencies\n .. _`3.3`: https://matplotlib.org/3.3.0/users/installing.html#dependencies\n .. _`3.2`: https://matplotlib.org/3.2.0/users/installing.html#dependencies\n .. _`3.1`: https://matplotlib.org/3.1.0/users/installing.html#dependencies\n@@ -161,7 +161,7 @@ def _check_versions():\n             (\"cycler\", \"0.10\"),\n             (\"dateutil\", \"2.7\"),\n             (\"kiwisolver\", \"1.0.1\"),\n-            (\"numpy\", \"1.16\"),\n+            (\"numpy\", \"1.17\"),\n             (\"pyparsing\", \"2.2.1\"),\n     ]:\n         module = importlib.import_module(modname)\n@@ -1006,7 +1006,7 @@ def test_fill_between_interpolate_nan():\n     y1 = np.asarray([8, 18, np.nan, 18, 8, 18, 24, 18, 8, 18])\n     y2 = np.asarray([18, 11, 8, 11, 18, 26, 32, 30, np.nan, np.nan])\n \n-    # numpy 1.16 issues warning 'invalid value encountered in greater_equal'\n+    # NumPy <1.19 issues warning 'invalid value encountered in greater_equal'\n     # for comparisons that include nan.\n     with np.errstate(invalid='ignore'):\n         greater2 = y2 >= y1\n@@ -2,7 +2,7 @@\n \n cycler==0.10\n kiwisolver==1.0.1\n-numpy==1.16.0\n+numpy==1.17.0\n pillow==6.2.0\n pyparsing==2.2.1\n python-dateutil==2.7\n@@ -305,14 +305,14 @@ def make_release_tree(self, base_dir, files):\n     python_requires='>={}'.format('.'.join(str(n) for n in py_min_version)),\n     setup_requires=[\n         \"certifi>=2020.06.20\",\n-        \"numpy>=1.16\",\n+        \"numpy>=1.17\",\n         \"setuptools_scm>=4\",\n         \"setuptools_scm_git_archive\",\n     ],\n     install_requires=[\n         \"cycler>=0.10\",\n         \"kiwisolver>=1.0.1\",\n-        \"numpy>=1.16\",\n+        \"numpy>=1.17\",\n         \"pillow>=6.2.0\",\n         \"pyparsing>=2.2.1\",\n         \"python-dateutil>=2.7\",",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20196,
+    "sha": "dcffef76109f152550cc1e2373c557babb5e2bf4",
+    "url": "https://github.com/matplotlib/matplotlib/commit/dcffef76109f152550cc1e2373c557babb5e2bf4",
+    "files": [
+      {
+        "filename": "tutorials/colors/colormaps.py"
+      }
+    ],
+    "author": {
+      "login": "Ellert van der Velden",
+      "name": "Ellert van der Velden",
+      "email": null,
+      "avatar_url": null,
+      "id": null
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Replaced links to colormap packages with link to third-party packages list in MPL docs (#20196)\n\n* Replaced links to colormaps with link to MPL docs\r\n\r\n* Improve link to use full RST.",
+    "diff_length": 2156,
+    "diff_excerpt": "@@ -4,8 +4,9 @@\n ********************************\n \n Matplotlib has a number of built-in colormaps accessible via\n-`.matplotlib.cm.get_cmap`.  There are also external libraries like\n-[palettable]_ and [colorcet]_ that have many extra colormaps.\n+`.matplotlib.cm.get_cmap`.  There are also external libraries that\n+have many extra colormaps, which can be viewed in the\n+`Third-party colormaps`_ section of the Matplotlib documentation.\n Here we briefly discuss how to choose between the many options.  For\n help on creating your own colormaps, see\n :doc:`/tutorials/colors/colormap-manipulation`.\n@@ -32,8 +33,9 @@\n perceives changes in the lightness parameter as changes in the data\n much better than, for example, changes in hue. Therefore, colormaps\n which have monotonically increasing lightness through the colormap\n-will be better interpreted by the viewer. A wonderful example of\n-perceptually uniform colormaps is [colorcet]_.\n+will be better interpreted by the viewer. Wonderful examples of\n+perceptually uniform colormaps can be found in the\n+`Third-party colormaps`_ section as well.\n \n Color can be represented in 3D space in various ways. One way to represent color\n is using CIELAB. In CIELAB, color space is represented by lightness,\n@@ -414,7 +416,7 @@ def plot_color_gradients(cmap_category, cmap_list):\n # References\n # ==========\n #\n-# .. [colorcet] https://colorcet.pyviz.org\n+# .. _Third-party colormaps: https://matplotlib.org/mpl-third-party/#colormaps-and-styles\n # .. [Ware] http://ccom.unh.edu/sites/default/files/publications/Ware_1988_CGA_Color_sequences_univariate_maps.pdf\n # .. [Moreland] http://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf\n # .. [list-colormaps] https://gist.github.com/endolith/2719900#id7\n@@ -424,5 +426,4 @@ def plot_color_gradients(cmap_category, cmap_list):\n # .. [bw] http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/\n # .. [colorblindness] http://www.color-blindness.com/\n # .. [IBM] https://doi.org/10.1109/VISUAL.1995.480803\n-# .. [palettable] https://jiffyclub.github.io/palettable/\n # .. [turbo] https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20248,
+    "sha": "69b51f1f4e7f8bab684fdf925ef8e2f94bbf2031",
+    "url": "https://github.com/matplotlib/matplotlib/commit/69b51f1f4e7f8bab684fdf925ef8e2f94bbf2031",
+    "files": [
+      {
+        "filename": "lib/matplotlib/backends/backend_pgf.py"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20248 from anntzer/pgferr\n\nReplace pgf image-streaming warning by error.",
+    "diff_length": 482,
+    "diff_excerpt": "@@ -624,9 +624,9 @@ def draw_image(self, gc, x, y, im, transform=None):\n             return\n \n         if not os.path.exists(getattr(self.fh, \"name\", \"\")):\n-            _api.warn_external(\n+            raise ValueError(\n                 \"streamed pgf-code does not support raster graphics, consider \"\n-                \"using the pgf-to-pdf option.\")\n+                \"using the pgf-to-pdf option\")\n \n         # save the images to png files\n         path = pathlib.Path(self.fh.name)",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20259,
+    "sha": "b25263e0d8e0a1bb0852dbb10c9d57ce69977192",
+    "url": "https://github.com/matplotlib/matplotlib/commit/b25263e0d8e0a1bb0852dbb10c9d57ce69977192",
+    "files": [
+      {
+        "filename": "lib/matplotlib/backends/backend_pgf.py"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20259 from meeseeksmachine/auto-backport-of-pr-20248-on-v3.4.x\n\nBackport PR #20248 on branch v3.4.x (Replace pgf image-streaming warning by error.)",
+    "diff_length": 482,
+    "diff_excerpt": "@@ -635,9 +635,9 @@ def draw_image(self, gc, x, y, im, transform=None):\n             return\n \n         if not os.path.exists(getattr(self.fh, \"name\", \"\")):\n-            _api.warn_external(\n+            raise ValueError(\n                 \"streamed pgf-code does not support raster graphics, consider \"\n-                \"using the pgf-to-pdf option.\")\n+                \"using the pgf-to-pdf option\")\n \n         # save the images to png files\n         path = pathlib.Path(self.fh.name)",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20295,
+    "sha": "b76d3998dce572e6e80d0957d97e602b80eef9db",
+    "url": "https://github.com/matplotlib/matplotlib/commit/b76d3998dce572e6e80d0957d97e602b80eef9db",
+    "files": [
+      {
+        "filename": "lib/matplotlib/text.py"
+      }
+    ],
+    "author": {
+      "login": "tacaswell",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/199813?v=4",
+      "id": 199813
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20295 from anntzer/wt\n\nReplace text._wrap_text by _cm_set().",
+    "diff_length": 4641,
+    "diff_excerpt": "@@ -2,7 +2,6 @@\n Classes for including text in a figure.\n \"\"\"\n \n-import contextlib\n import logging\n import math\n import weakref\n@@ -22,20 +21,6 @@\n _log = logging.getLogger(__name__)\n \n \n-@contextlib.contextmanager\n-def _wrap_text(textobj):\n-    \"\"\"Temporarily inserts newlines if the wrap option is enabled.\"\"\"\n-    if textobj.get_wrap():\n-        old_text = textobj.get_text()\n-        try:\n-            textobj.set_text(textobj._get_wrapped_text())\n-            yield textobj\n-        finally:\n-            textobj.set_text(old_text)\n-    else:\n-        yield textobj\n-\n-\n # Extracted from Text's method to serve as a function\n def get_rotation(rotation):\n     \"\"\"\n@@ -631,9 +616,12 @@ def _get_rendered_text_width(self, text):\n \n     def _get_wrapped_text(self):\n         \"\"\"\n-        Return a copy of the text with new lines added, so that\n-        the text is wrapped relative to the parent figure.\n+        Return a copy of the text string with new lines added so that the text\n+        is wrapped relative to the parent figure (if `get_wrap` is True).\n         \"\"\"\n+        if not self.get_wrap():\n+            return self.get_text()\n+\n         # Not fit to handle breaking up latex syntax correctly, so\n         # ignore latex for now.\n         if self.get_usetex():\n@@ -690,14 +678,14 @@ def draw(self, renderer):\n \n         renderer.open_group('text', self.get_gid())\n \n-        with _wrap_text(self) as textobj:\n-            bbox, info, descent = textobj._get_layout(renderer)\n-            trans = textobj.get_transform()\n+        with self._cm_set(text=self._get_wrapped_text()):\n+            bbox, info, descent = self._get_layout(renderer)\n+            trans = self.get_transform()\n \n-            # don't use textobj.get_position here, which refers to text\n+            # don't use self.get_position here, which refers to text\n             # position in Text:\n-            posx = float(textobj.convert_xunits(textobj._x))\n-            posy = float(textobj.convert_yunits(textobj._y))\n+            posx = float(self.convert_xunits(self._x))\n+            posy = float(self.convert_yunits(self._y))\n             posx, posy = trans.transform((posx, posy))\n             if not np.isfinite(posx) or not np.isfinite(posy):\n                 _log.warning(\"posx and posy should be finite values\")\n@@ -706,41 +694,41 @@ def draw(self, renderer):\n \n             # Update the location and size of the bbox\n             # (`.patches.FancyBboxPatch`), and draw it.\n-            if textobj._bbox_patch:\n+            if self._bbox_patch:\n                 self.update_bbox_position_size(renderer)\n                 self._bbox_patch.draw(renderer)\n \n             gc = renderer.new_gc()\n-            gc.set_foreground(textobj.get_color())\n-            gc.set_alpha(textobj.get_alpha())\n-            gc.set_url(textobj._url)\n-            textobj._set_gc_clip(gc)\n+            gc.set_foreground(self.get_color())\n+            gc.set_alpha(self.get_alpha())\n+            gc.set_url(self._url)\n+            self._set_gc_clip(gc)\n \n-            angle = textobj.get_rotation()\n+            angle = self.get_rotation()\n \n             for line, wh, x, y in info:\n \n-                mtext = textobj if len(info) == 1 else None\n+                mtext = self if len(info) == 1 else None\n                 x = x + posx\n                 y = y + posy\n                 if renderer.flipy():\n                     y = canvash - y\n-                clean_line, ismath = textobj._preprocess_math(line)\n+                clean_line, ismath = self._preprocess_math(line)\n \n-                if textobj.get_path_effects():\n+                if self.get_path_effects():\n                     from matplotlib.patheffects import PathEffectRenderer\n                     textrenderer = PathEffectRenderer(\n-                        textobj.get_path_effects(), renderer)\n+                        self.get_path_effects(), renderer)\n                 else:\n                     textrenderer = renderer\n \n-                if textobj.get_usetex():\n+                if self.get_usetex():\n                     textrenderer.draw_tex(gc, x, y, clean_line,\n-                                          textobj._fontproperties, angle,\n+                                          self._fontproperties, angle,\n                                           mtext=mtext)\n                 else:\n                     textrenderer.draw_text(gc, x, y, clean_line,\n-                                           textobj._fontproperties, angle,\n+                                           self._fontproperties, angle,\n                                            ismath=ismath, mtext=mtext)\n \n         gc.restore()",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20332,
+    "sha": "0b741ee11bebcf7f7216b345f90bfcf50f30e76d",
+    "url": "https://github.com/matplotlib/matplotlib/commit/0b741ee11bebcf7f7216b345f90bfcf50f30e76d",
+    "files": [
+      {
+        "filename": "doc/api/next_api_changes/deprecations/20237-TH.rst"
+      },
+      {
+        "filename": "lib/matplotlib/collections.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_collections.py"
+      }
+    ],
+    "author": {
+      "login": "jklymak",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1562854?v=4",
+      "id": 1562854
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20332 from jeffreypaul15/mpl-20322\n\nQuadmesh's default value of shading is now set to 'flat' instead of False",
+    "diff_length": 2064,
+    "diff_excerpt": "@@ -3,11 +3,11 @@ QuadMesh signature\n The ``QuadMesh`` signature ::\n \n     def __init__(meshWidth, meshHeight, coordinates,\n-                 antialiased=True, shading=False, **kwargs)\n+                 antialiased=True, shading='flat', **kwargs)\n \n is deprecated and replaced by the new signature ::\n \n-    def __init__(coordinates, *, antialiased=True, shading=False, **kwargs)\n+    def __init__(coordinates, *, antialiased=True, shading='flat', **kwargs)\n \n In particular:\n \n@@ -2002,15 +2002,15 @@ def __init__(self, *args, **kwargs):\n             # The following raises a TypeError iif the args don't match.\n             w, h, coords, antialiased, shading, kwargs = (\n                 lambda meshWidth, meshHeight, coordinates, antialiased=True,\n-                       shading=False, **kwargs:\n+                       shading='flat', **kwargs:\n                 (meshWidth, meshHeight, coordinates, antialiased, shading,\n                  kwargs))(*args, **kwargs)\n         except TypeError as exc:\n             # New signature:\n             # If the following raises a TypeError (i.e. args don't match),\n             # just let it propagate.\n             coords, antialiased, shading, kwargs = (\n-                lambda coordinates, antialiased=True, shading=False, **kwargs:\n+                lambda coordinates, antialiased=True, shading='flat', **kwargs:\n                 (coordinates, antialiased, shading, kwargs))(*args, **kwargs)\n             coords = np.asarray(coords, np.float64)\n         else:  # The old signature matched.\n@@ -743,6 +743,7 @@ def test_quadmesh_deprecated_signature(\n     qmesh = QuadMesh(coords, **kwargs)\n     qmesh.set_array(C)\n     ax.add_collection(qmesh)\n+    assert qmesh._shading == 'flat'\n \n     ax = fig_ref.add_subplot()\n     ax.set(xlim=(0, 5), ylim=(0, 4))\n@@ -754,6 +755,7 @@ def test_quadmesh_deprecated_signature(\n                          **kwargs)\n     qmesh.set_array(C.flatten() if flat_ref else C)\n     ax.add_collection(qmesh)\n+    assert qmesh._shading == 'flat'\n \n \n @check_figures_equal(extensions=['png'])",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20632,
+    "sha": "14b34fd18685d037fc4d67d40df69b602b22ec7f",
+    "url": "https://github.com/matplotlib/matplotlib/commit/14b34fd18685d037fc4d67d40df69b602b22ec7f",
+    "files": [
+      {
+        "filename": "examples/subplots_axes_and_figures/zoom_inset_axes.py"
+      },
+      {
+        "filename": "examples/text_labels_and_annotations/mathtext_examples.py"
+      },
+      {
+        "filename": "lib/matplotlib/projections/geo.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_constrainedlayout.py"
+      },
+      {
+        "filename": "lib/matplotlib/tests/test_text.py"
+      },
+      {
+        "filename": "tutorials/intermediate/constrainedlayout_guide.py"
+      }
+    ],
+    "author": {
+      "login": "timhoffm",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+      "id": 2836374
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20632 from timhoffm/ticklabels-empty-str\n\nUse ticklabels([]) instead of ticklabels('')",
+    "diff_length": 2743,
+    "diff_excerpt": "@@ -33,8 +33,8 @@ def get_demo_image():\n x1, x2, y1, y2 = -1.5, -0.9, -2.5, -1.9\n axins.set_xlim(x1, x2)\n axins.set_ylim(y1, y2)\n-axins.set_xticklabels('')\n-axins.set_yticklabels('')\n+axins.set_xticklabels([])\n+axins.set_yticklabels([])\n \n ax.indicate_inset_zoom(axins, edgecolor=\"black\")\n \n@@ -68,8 +68,8 @@ def doall():\n     plt.gca().set_ylim(0., 1.)\n     plt.gca().set_title(\"Matplotlib's math rendering engine\",\n                         color=mpl_grey_rvb, fontsize=14, weight='bold')\n-    plt.gca().set_xticklabels(\"\", visible=False)\n-    plt.gca().set_yticklabels(\"\", visible=False)\n+    plt.gca().set_xticklabels([])\n+    plt.gca().set_yticklabels([])\n \n     # Gap between lines in axes coords\n     line_axesfrac = 1 / n_lines\n@@ -147,6 +147,7 @@ def set_yscale(self, *args, **kwargs):\n     set_xscale = set_yscale\n \n     def set_xlim(self, *args, **kwargs):\n+        \"\"\"Not supported. Please consider using Cartopy.\"\"\"\n         raise TypeError(\"Changing axes limits of a geographic projection is \"\n                         \"not supported.  Please consider using Cartopy.\")\n \n@@ -16,8 +16,8 @@ def example_plot(ax, fontsize=12, nodec=False):\n         ax.set_ylabel('y-label', fontsize=fontsize)\n         ax.set_title('Title', fontsize=fontsize)\n     else:\n-        ax.set_xticklabels('')\n-        ax.set_yticklabels('')\n+        ax.set_xticklabels([])\n+        ax.set_yticklabels([])\n \n \n def example_pcolor(ax, fontsize=12):\n@@ -428,8 +428,8 @@ def test_colorbar_align():\n             if nn != 1:\n                 cb.ax.xaxis.set_ticks([])\n                 cb.ax.yaxis.set_ticks([])\n-                ax.set_xticklabels('')\n-                ax.set_yticklabels('')\n+                ax.set_xticklabels([])\n+                ax.set_yticklabels([])\n         fig.set_constrained_layout_pads(w_pad=4 / 72, h_pad=4 / 72, hspace=0.1,\n                                         wspace=0.1)\n \n@@ -636,12 +636,12 @@ def test_large_subscript_title():\n     ax = axs[0]\n     ax.set_title(r'$\\sum_{i} x_i$')\n     ax.set_title('New way', loc='left')\n-    ax.set_xticklabels('')\n+    ax.set_xticklabels([])\n \n     ax = axs[1]\n     ax.set_title(r'$\\sum_{i} x_i$', y=1.01)\n     ax.set_title('Old Way', loc='left')\n-    ax.set_xticklabels('')\n+    ax.set_xticklabels([])\n \n \n def test_wrap():\n@@ -296,8 +296,8 @@ def example_plot(ax, fontsize=12, hide_labels=False):\n for pad, ax in zip(pads, axs.flat):\n     pc = ax.pcolormesh(arr, **pc_kwargs)\n     fig.colorbar(pc, ax=ax, shrink=0.6, pad=pad)\n-    ax.set_xticklabels('')\n-    ax.set_yticklabels('')\n+    ax.set_xticklabels([])\n+    ax.set_yticklabels([])\n     ax.set_title(f'pad: {pad}')\n fig.set_constrained_layout_pads(w_pad=2 / 72, h_pad=2 / 72, hspace=0.2,\n                                 wspace=0.2)",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20636,
+    "sha": "ed4f81463324886ccfe5b93814493f9ec275ab7b",
+    "url": "https://github.com/matplotlib/matplotlib/commit/ed4f81463324886ccfe5b93814493f9ec275ab7b",
+    "files": [
+      {
+        "filename": "examples/axes_grid1/make_room_for_ylabel_using_axesgrid.py"
+      },
+      {
+        "filename": "examples/axes_grid1/simple_axisline4.py"
+      },
+      {
+        "filename": "examples/axisartist/demo_ticklabel_alignment.py"
+      },
+      {
+        "filename": "examples/images_contours_and_fields/image_annotated_heatmap.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/bar_label_demo.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/barchart.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/barh.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/broken_barh.py"
+      },
+      {
+        "filename": "examples/lines_bars_and_markers/hat_graph.py"
+      },
+      {
+        "filename": "examples/pyplots/auto_subplots_adjust.py"
+      },
+      {
+        "filename": "examples/scales/log_bar.py"
+      },
+      {
+        "filename": "examples/showcase/integral.py"
+      },
+      {
+        "filename": "examples/specialty_plots/mri_with_eeg.py"
+      },
+      {
+        "filename": "examples/statistics/barchart_demo.py"
+      },
+      {
+        "filename": "examples/statistics/boxplot_vs_violin.py"
+      },
+      {
+        "filename": "examples/statistics/customized_violin.py"
+      },
+      {
+        "filename": "examples/statistics/multiple_histograms_side_by_side.py"
+      },
+      {
+        "filename": "examples/style_sheets/ggplot.py"
+      },
+      {
+        "filename": "examples/style_sheets/style_sheets_reference.py"
+      },
+      {
+        "filename": "examples/text_labels_and_annotations/multiline.py"
+      },
+      {
+        "filename": "examples/ticks_and_spines/spines_bounds.py"
+      },
+      {
+        "filename": "examples/units/bar_unit_demo.py"
+      },
+      {
+        "filename": "tutorials/toolkits/axes_grid.py"
+      }
+    ],
+    "author": {
+      "login": "story645",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1300499?v=4",
+      "id": 1300499
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20636 from timhoffm/doc-xticks-labels\n\nUse set_xticks(ticks, labels) instead of a separate set_xticklabels()",
+    "diff_length": 11027,
+    "diff_excerpt": "@@ -14,8 +14,7 @@\n plt.figure()\n ax = plt.axes([0, 0, 1, 1])\n \n-ax.set_yticks([0.5])\n-ax.set_yticklabels([\"very long label\"])\n+ax.set_yticks([0.5], labels=[\"very long label\"])\n \n make_axes_area_auto_adjustable(ax)\n \n@@ -26,8 +25,7 @@\n ax1 = plt.axes([0, 0, 1, 0.5])\n ax2 = plt.axes([0, 0.5, 1, 0.5])\n \n-ax1.set_yticks([0.5])\n-ax1.set_yticklabels([\"very long label\"])\n+ax1.set_yticks([0.5], labels=[\"very long label\"])\n ax1.set_ylabel(\"Y label\")\n \n ax2.set_title(\"Title\")\n@@ -53,8 +51,7 @@\n divider.add_auto_adjustable_area(use_axes=[ax1, ax2], pad=0.1,\n                                  adjust_dirs=[\"top\", \"bottom\"])\n \n-ax1.set_yticks([0.5])\n-ax1.set_yticklabels([\"very long label\"])\n+ax1.set_yticks([0.5], labels=[\"very long label\"])\n \n ax2.set_title(\"Title\")\n ax2.set_xlabel(\"X - Label\")\n@@ -13,9 +13,9 @@\n ax.plot(xx, np.sin(xx))\n \n ax2 = ax.twin()  # ax2 is responsible for \"top\" axis and \"right\" axis\n-ax2.set_xticks([0., .5*np.pi, np.pi, 1.5*np.pi, 2*np.pi])\n-ax2.set_xticklabels([\"$0$\", r\"$\\frac{1}{2}\\pi$\",\n-                     r\"$\\pi$\", r\"$\\frac{3}{2}\\pi$\", r\"$2\\pi$\"])\n+ax2.set_xticks([0., .5*np.pi, np.pi, 1.5*np.pi, 2*np.pi],\n+               labels=[\"$0$\", r\"$\\frac{1}{2}\\pi$\",\n+                       r\"$\\pi$\", r\"$\\frac{3}{2}\\pi$\", r\"$2\\pi$\"])\n \n ax2.axis[\"right\"].major_ticklabels.set_visible(False)\n ax2.axis[\"top\"].major_ticklabels.set_visible(True)\n@@ -12,10 +12,8 @@\n \n def setup_axes(fig, pos):\n     ax = fig.add_subplot(pos, axes_class=axisartist.Axes)\n-    ax.set_yticks([0.2, 0.8])\n-    ax.set_yticklabels([\"short\", \"loooong\"])\n-    ax.set_xticks([0.2, 0.8])\n-    ax.set_xticklabels([r\"$\\frac{1}{2}\\pi$\", r\"$\\pi$\"])\n+    ax.set_yticks([0.2, 0.8], labels=[\"short\", \"loooong\"])\n+    ax.set_xticks([0.2, 0.8], labels=[r\"$\\frac{1}{2}\\pi$\", r\"$\\pi$\"])\n     return ax\n \n \n@@ -59,12 +59,9 @@\n fig, ax = plt.subplots()\n im = ax.imshow(harvest)\n \n-# We want to show all ticks...\n-ax.set_xticks(np.arange(len(farmers)))\n-ax.set_yticks(np.arange(len(vegetables)))\n-# ... and label them with the respective list entries\n-ax.set_xticklabels(farmers)\n-ax.set_yticklabels(vegetables)\n+# Show all ticks and label them with the respective list entries\n+ax.set_xticks(np.arange(len(farmers)), labels=farmers)\n+ax.set_yticks(np.arange(len(vegetables)), labels=vegetables)\n \n # Rotate the tick labels and set their alignment.\n plt.setp(ax.get_xticklabels(), rotation=45, ha=\"right\",\n@@ -133,12 +130,9 @@ def heatmap(data, row_labels, col_labels, ax=None,\n     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)\n     cbar.ax.set_ylabel(cbarlabel, rotation=-90, va=\"bottom\")\n \n-    # We want to show all ticks...\n-    ax.set_xticks(np.arange(data.shape[1]))\n-    ax.set_yticks(np.arange(data.shape[0]))\n-    # ... and label them with the respective list entries.\n-    ax.set_xticklabels(col_labels)\n-    ax.set_yticklabels(row_labels)\n+    # Show all ticks and label them with the respective list entries.\n+    ax.set_xticks(np.arange(data.shape[1]), labels=col_labels)\n+    ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)\n \n     # Let the horizontal axes labeling appear on top.\n     ax.tick_params(top=True, bottom=False,\n@@ -40,8 +40,7 @@\n ax.axhline(0, color='grey', linewidth=0.8)\n ax.set_ylabel('Scores')\n ax.set_title('Scores by group and gender')\n-ax.set_xticks(ind)\n-ax.set_xticklabels(('G1', 'G2', 'G3', 'G4', 'G5'))\n+ax.set_xticks(ind, labels=['G1', 'G2', 'G3', 'G4', 'G5'])\n ax.legend()\n \n # Label with label_type 'center' instead of the default 'edge'\n@@ -66,8 +65,7 @@\n fig, ax = plt.subplots()\n \n hbars = ax.barh(y_pos, performance, xerr=error, align='center')\n-ax.set_yticks(y_pos)\n-ax.set_yticklabels(people)\n+ax.set_yticks(y_pos, labels=people)\n ax.invert_yaxis()  # labels read top-to-bottom\n ax.set_xlabel('Performance')\n ax.set_title('How fast do you want to go today?')\n@@ -84,8 +82,7 @@\n fig, ax = plt.subplots()\n \n hbars = ax.barh(y_pos, performance, xerr=error, align='center')\n-ax.set_yticks(y_pos)\n-ax.set_yticklabels(people)\n+ax.set_yticks(y_pos, labels=people)\n ax.invert_yaxis()  # labels read top-to-bottom\n ax.set_xlabel('Performance')\n ax.set_title('How fast do you want to go today?')\n@@ -25,8 +25,7 @@\n # Add some text for labels, title and custom x-axis tick labels, etc.\n ax.set_ylabel('Scores')\n ax.set_title('Scores by group and gender')\n-ax.set_xticks(x)\n-ax.set_xticklabels(labels)\n+ax.set_xticks(x, labels)\n ax.legend()\n \n ax.bar_label(rects1, padding=3)\n@@ -22,8 +22,7 @@\n error = np.random.rand(len(people))\n \n ax.barh(y_pos, performance, xerr=error, align='center')\n-ax.set_yticks(y_pos)\n-ax.set_yticklabels(people)\n+ax.set_yticks(y_pos, labels=people)\n ax.invert_yaxis()  # labels read top-to-bottom\n ax.set_xlabel('Performance')\n ax.set_title('How fast do you want to go today?')\n@@ -14,8 +14,7 @@\n ax.set_ylim(5, 35)\n ax.set_xlim(0, 200)\n ax.set_xlabel('seconds since start')\n-ax.set_yticks([15, 25])\n-ax.set_yticklabels(['Bill', 'Jim'])\n+ax.set_yticks([15, 25], labels=['Bill', 'Jim'])\n ax.grid(True)\n ax.annotate('race interrupted', (61, 25),\n             xytext=(0.8, 0.9), textcoords='axes fraction',\n@@ -40,8 +40,7 @@ def label_bars(heights, rects):\n \n     values = np.asarray(values)\n     x = np.arange(values.shape[1])\n-    ax.set_xticks(x)\n-    ax.set_xticklabels(xlabels)\n+    ax.set_xticks(x, labels=xlabels)\n     spacing = 0.3  # spacing between hat groups\n     width = (1 - spacing) / values.shape[0]\n     heights0 = values[0]\n@@ -43,13 +43,12 @@\n \n fig, ax = plt.subplots()\n ax.plot(range(10))\n-ax.set_yticks((2, 5, 7))\n-labels = ax.set_yticklabels(('really, really, really', 'long', 'labels'))\n+ax.set_yticks([2, 5, 7], labels=['really, really, really', 'long', 'labels'])\n \n \n def on_draw(event):\n     bboxes = []\n-    for label in labels:\n+    for label in ax.get_yticklabels():\n         # Bounding box in pixels\n         bbox_px = label.get_window_extent()\n         # Transform to relative figure coordinates. This is the inverse of\n@@ -20,8 +20,7 @@\n     y = [d[i] for d in data]\n     b = ax.bar(x + i * dimw, y, dimw, bottom=0.001)\n \n-ax.set_xticks(x + dimw / 2)\n-ax.set_xticklabels(map(str, x))\n+ax.set_xticks(x + dimw / 2, labels=map(str, x))\n ax.set_yscale('log')\n \n ax.set_xlabel('x')\n@@ -46,8 +46,7 @@ def func(x):\n ax.spines.top.set_visible(False)\n ax.xaxis.set_ticks_position('bottom')\n \n-ax.set_xticks((a, b))\n-ax.set_xticklabels(('$a$', '$b$'))\n+ax.set_xticks([a, b], labels=['$a$', '$b$'])\n ax.set_yticks([])\n \n plt.show()\n@@ -68,8 +68,7 @@\n ax2.add_collection(lines)\n \n # Set the yticks to use axes coordinates on the y axis\n-ax2.set_yticks(ticklocs)\n-ax2.set_yticklabels(['PG3', 'PG5', 'PG7', 'PG9'])\n+ax2.set_yticks(ticklocs, labels=['PG3', 'PG5', 'PG7', 'PG9'])\n \n ax2.set_xlabel('Time (s)')\n \n@@ -88,14 +88,12 @@ def plot_student_results(student, scores, cohort_size):\n     # Set the right-hand Y-axis ticks and labels\n     ax2 = ax1.twinx()\n \n-    # Set the tick locations\n-    ax2.set_yticks(pos)\n+    # Set the tick locations and labels\n+    ax2.set_yticks(\n+        pos, labels=[format_score(scores[k].score, k) for k in test_names])\n     # Set equal limits on both yaxis so that the ticks line up\n     ax2.set_ylim(ax1.get_ylim())\n \n-    # Set the tick labels\n-    ax2.set_yticklabels([format_score(scores[k].score, k) for k in test_names])\n-\n     ax2.set_ylabel('Test Scores')\n \n     xlabel = ('Percentile Ranking Across {grade} Grade {gender}s\\n'\n@@ -45,13 +45,11 @@\n # adding horizontal grid lines\n for ax in axs:\n     ax.yaxis.grid(True)\n-    ax.set_xticks([y + 1 for y in range(len(all_data))])\n+    ax.set_xticks([y + 1 for y in range(len(all_data))],\n+                  labels=['x1', 'x2', 'x3', 'x4'])\n     ax.set_xlabel('Four separate samples')\n     ax.set_ylabel('Observed values')\n \n-# add x-tick labels\n-plt.setp(axs, xticks=[y + 1 for y in range(len(all_data))],\n-         xticklabels=['x1', 'x2', 'x3', 'x4'])\n plt.show()\n \n #############################################################################\n@@ -29,8 +29,7 @@ def adjacent_values(vals, q1, q3):\n def set_axis_style(ax, labels):\n     ax.xaxis.set_tick_params(direction='out')\n     ax.xaxis.set_ticks_position('bottom')\n-    ax.set_xticks(np.arange(1, len(labels) + 1))\n-    ax.set_xticklabels(labels)\n+    ax.set_xticks(np.arange(1, len(labels) + 1), labels=labels)\n     ax.set_xlim(0.25, len(labels) + 0.75)\n     ax.set_xlabel('Sample name')\n \n@@ -54,8 +54,7 @@\n     lefts = x_loc - 0.5 * binned_data\n     ax.barh(centers, binned_data, height=heights, left=lefts)\n \n-ax.set_xticks(x_locations)\n-ax.set_xticklabels(labels)\n+ax.set_xticks(x_locations, labels)\n \n ax.set_ylabel(\"Data values\")\n ax.set_xlabel(\"Data sets\")\n@@ -45,8 +45,7 @@\n ax3.bar(x, y1, width)\n ax3.bar(x + width, y2, width,\n         color=list(plt.rcParams['axes.prop_cycle'])[2]['color'])\n-ax3.set_xticks(x + width)\n-ax3.set_xticklabels(['a', 'b', 'c', 'd', 'e'])\n+ax3.set_xticks(x + width, labels=['a', 'b', 'c', 'd', 'e'])\n \n # circles with colors from default color cycle\n for i, color in enumerate(plt.rcParams['axes.prop_cycle']):\n@@ -45,8 +45,7 @@ def plot_bar_graphs(ax, prng, min_value=5, max_value=25, nb_samples=5):\n     width = 0.25\n     ax.bar(x, ya, width)\n     ax.bar(x + width, yb, width, color='C2')\n-    ax.set_xticks(x + width)\n-    ax.set_xticklabels(['a', 'b', 'c', 'd', 'e'])\n+    ax.set_xticks(x + width, labels=['a', 'b', 'c', 'd', 'e'])\n     return ax\n \n \n@@ -34,9 +34,9 @@\n          va=\"baseline\", ha=\"right\", multialignment=\"left\",\n          bbox=dict(fc=\"none\"))\n \n-ax1.set_xticks([0.2, 0.4, 0.6, 0.8, 1.])\n-ax1.set_xticklabels([\"Jan\\n2009\", \"Feb\\n2009\", \"Mar\\n2009\", \"Apr\\n2009\",\n-                     \"May\\n2009\"])\n+ax1.set_xticks([0.2, 0.4, 0.6, 0.8, 1.],\n+               labels=[\"Jan\\n2009\", \"Feb\\n2009\", \"Mar\\n2009\", \"Apr\\n2009\",\n+                       \"May\\n2009\"])\n \n ax1.axhline(0.4)\n ax1.set_title(\"test line spacing for multiline text\")\n@@ -21,8 +21,7 @@\n \n # set ticks and tick labels\n ax.set_xlim((0, 2*np.pi))\n-ax.set_xticks([0, np.pi, 2*np.pi])\n-ax.set_xticklabels(['0', r'$\\pi$', r'2$\\pi$'])\n+ax.set_xticks([0, np.pi, 2*np.pi], labels=['0', r'$\\pi$', r'2$\\pi$'])\n ax.set_ylim((-1.5, 1.5))\n ax.set_yticks([-1, 0, 1])\n \n@@ -33,8 +33,7 @@\n        label='Women')\n \n ax.set_title('Scores by group and gender')\n-ax.set_xticks(ind + width / 2)\n-ax.set_xticklabels(('G1', 'G2', 'G3', 'G4', 'G5'))\n+ax.set_xticks(ind + width / 2, labels=['G1', 'G2', 'G3', 'G4', 'G5'])\n \n ax.legend()\n ax.yaxis.set_units(inch)\n@@ -161,9 +161,9 @@\n tick-formatter for bottom(or left)-axis. ::\n \n   ax2 = ax.twin() # now, ax2 is responsible for \"top\" axis and \"right\" axis\n-  ax2.set_xticks([0., .5*np.pi, np.pi, 1.5*np.pi, 2*np.pi])\n-  ax2.set_xticklabels([\"0\", r\"$\\frac{1}{2}\\pi$\",\n-                       r\"$\\pi$\", r\"$\\frac{3}{2}\\pi$\", r\"$2\\pi$\"])\n+  ax2.set_xticks([0., .5*np.pi, np.pi, 1.5*np.pi, 2*np.pi],\n+                 labels=[\"0\", r\"$\\frac{1}{2}\\pi$\",\n+                         r\"$\\pi$\", r\"$\\frac{3}{2}\\pi$\", r\"$2\\pi$\"])\n \n .. figure:: ../../gallery/axes_grid1/images/sphx_glr_simple_axisline4_001.png\n    :target: ../../gallery/axes_grid1/simple_axisline4.html",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20892,
+    "sha": "c352dfc69902ff6973f154b43ffde334c30babfc",
+    "url": "https://github.com/matplotlib/matplotlib/commit/c352dfc69902ff6973f154b43ffde334c30babfc",
+    "files": [
+      {
+        "filename": "doc/api/index.rst"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20892 from timhoffm/discouraged\n\nLabel pylab as \"discouraged\" instead of \"disapproved\"",
+    "diff_length": 267,
+    "diff_excerpt": "@@ -166,7 +166,7 @@ Further reading:\n - Most of the :ref:`examples <examples-index>` use the object-oriented approach\n    (except for the pyplot section)\n \n-The pylab API (disapproved)\n+The pylab API (discouraged)\n ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n \n .. automodule:: pylab",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20893,
+    "sha": "60050720942c73f6a40a770b09194287830832f1",
+    "url": "https://github.com/matplotlib/matplotlib/commit/60050720942c73f6a40a770b09194287830832f1",
+    "files": [
+      {
+        "filename": "doc/api/index.rst"
+      }
+    ],
+    "author": {
+      "login": "QuLogic",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/302469?v=4",
+      "id": 302469
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20893 from meeseeksmachine/auto-backport-of-pr-20892-on-v3.5.x\n\nBackport PR #20892 on branch v3.5.x (Label pylab as \"discouraged\" instead of \"disapproved\")",
+    "diff_length": 267,
+    "diff_excerpt": "@@ -166,7 +166,7 @@ Further reading:\n - Most of the :ref:`examples <examples-index>` use the object-oriented approach\n    (except for the pyplot section)\n \n-The pylab API (disapproved)\n+The pylab API (discouraged)\n ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n \n .. automodule:: pylab",
+    "parent": "not exposed by connector"
+  },
+  {
+    "n": 20942,
+    "sha": "4e21dcfe12c2359865352683cc946cbdab87fd52",
+    "url": "https://github.com/matplotlib/matplotlib/commit/4e21dcfe12c2359865352683cc946cbdab87fd52",
+    "files": [
+      {
+        "filename": "lib/matplotlib/axes/_base.py"
+      }
+    ],
+    "author": {
+      "login": "timhoffm",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/2836374?v=4",
+      "id": 2836374
+    },
+    "committer": {
+      "login": "web-flow",
+      "name": null,
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "id": 19864447
+    },
+    "message": "Merge pull request #20942 from timhoffm/doc-axes-capitalization\n\nDOC Use 'Axes' instead of 'axes' in axes._base.py",
+    "diff_length": 26622,
+    "diff_excerpt": "@@ -96,7 +96,7 @@ def wrapper(self, *args, **kwargs):\n \n class _TransformedBoundsLocator:\n     \"\"\"\n-    Axes locator for `.Axes.inset_axes` and similarly positioned axes.\n+    Axes locator for `.Axes.inset_axes` and similarly positioned Axes.\n \n     The locator is a callable object used in `.Axes.set_aspect` to compute the\n     axes location depending on the renderer.\n@@ -105,7 +105,7 @@ class _TransformedBoundsLocator:\n     def __init__(self, bounds, transform):\n         \"\"\"\n         *bounds* (a ``[l, b, w, h]`` rectangle) and *transform* together\n-        specify the position of the inset axes.\n+        specify the position of the inset Axes.\n         \"\"\"\n         self._bounds = bounds\n         self._transform = transform\n@@ -563,26 +563,26 @@ def __init__(self, fig, rect,\n                  **kwargs\n                  ):\n         \"\"\"\n-        Build an axes in a figure.\n+        Build an Axes in a figure.\n \n         Parameters\n         ----------\n         fig : `~matplotlib.figure.Figure`\n-            The axes is build in the `.Figure` *fig*.\n+            The Axes is built in the `.Figure` *fig*.\n \n         rect : [left, bottom, width, height]\n-            The axes is build in the rectangle *rect*. *rect* is in\n+            The Axes is built in the rectangle *rect*. *rect* is in\n             `.Figure` coordinates.\n \n         sharex, sharey : `~.axes.Axes`, optional\n             The x or y `~.matplotlib.axis` is shared with the x or\n             y axis in the input `~.axes.Axes`.\n \n         frameon : bool, default: True\n-            Whether the axes frame is visible.\n+            Whether the Axes frame is visible.\n \n         box_aspect : float, optional\n-            Set a fixed aspect for the axes box, i.e. the ratio of height to\n+            Set a fixed aspect for the Axes box, i.e. the ratio of height to\n             width. See `~.axes.Axes.set_box_aspect` for details.\n \n         **kwargs\n@@ -615,7 +615,7 @@ def __init__(self, fig, rect,\n         self.set_figure(fig)\n         self.set_box_aspect(box_aspect)\n         self._axes_locator = None  # Optionally set via update(kwargs).\n-        # placeholder for any colorbars added that use this axes.\n+        # placeholder for any colorbars added that use this Axes.\n         # (see colorbar.py):\n         self._colorbars = []\n         self.spines = mspines.Spines.from_dict(self._gen_axes_spines())\n@@ -723,7 +723,7 @@ def __repr__(self):\n \n     def get_window_extent(self, *args, **kwargs):\n         \"\"\"\n-        Return the axes bounding box in display space; *args* and *kwargs*\n+        Return the Axes bounding box in display space; *args* and *kwargs*\n         are empty.\n \n         This bounding box does not include the spines, ticks, ticklables,\n@@ -809,7 +809,7 @@ def _set_lim_and_transforms(self):\n \n             This method is primarily used by rectilinear projections of the\n             `~matplotlib.axes.Axes` class, and is meant to be overridden by\n-            new kinds of projection axes that need different transformations\n+            new kinds of projection Axes that need different transformations\n             and limits. (See `~matplotlib.projections.polar.PolarAxes` for an\n             example.)\n         \"\"\"\n@@ -866,7 +866,7 @@ def get_xaxis_text1_transform(self, pad_points):\n         -------\n         transform : Transform\n             The transform used for drawing x-axis labels, which will add\n-            *pad_points* of padding (in points) between the axes and the label.\n+            *pad_points* of padding (in points) between the axis and the label.\n             The x-direction is in data coordinates and the y-direction is in\n             axis coordinates\n         valign : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}\n@@ -892,7 +892,7 @@ def get_xaxis_text2_transform(self, pad_points):\n         -------\n         transform : Transform\n             The transform used for drawing secondary x-axis labels, which will\n-            add *pad_points* of padding (in points) between the axes and the\n+            add *pad_points* of padding (in points) between the axis and the\n             label.  The x-direction is in data coordinates and the y-direction\n             is in axis coordinates\n         valign : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}\n@@ -942,7 +942,7 @@ def get_yaxis_text1_transform(self, pad_points):\n         -------\n         transform : Transform\n             The transform used for drawing y-axis labels, which will add\n-            *pad_points* of padding (in points) between the axes and the label.\n+            *pad_points* of padding (in points) between the axis and the label.\n             The x-direction is in axis coordinates and the y-direction is in\n             data coordinates\n         valign : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}\n@@ -968,7 +968,7 @@ def get_yaxis_text2_transform(self, pad_points):\n         -------\n         transform : Transform\n             The transform used for drawing secondart y-axis labels, which will\n-            add *pad_points* of padding (in points) between the axes and the\n+            add *pad_points* of padding (in points) between the axis and the\n             label.  The x-direction is in axis coordinates and the y-direction\n             is in data coordinates\n         valign : {'center', 'top', 'bottom', 'baseline', 'center_baseline'}\n@@ -1002,7 +1002,7 @@ def _update_transScale(self):\n \n     def get_position(self, original=False):\n         \"\"\"\n-        Get a copy of the axes rectangle as a `.Bbox`.\n+        Return the position of the Axes within the figure as a `.Bbox`.\n \n         Parameters\n         ----------\n@@ -1026,7 +1026,7 @@ def get_position(self, original=False):\n \n     def set_position(self, pos, which='both'):\n         \"\"\"\n-        Set the axes position.\n+        Set the Axes position.\n \n         Axes have two position attributes. The 'original' position is the\n         position allocated for the Axes. The 'active' position is the\n@@ -1081,7 +1081,7 @@ def reset_position(self):\n \n     def set_axes_locator(self, locator):\n         \"\"\"\n-        Set the axes locator.\n+        Set the Axes locator.\n \n         Parameters\n         ----------\n@@ -1097,7 +1097,7 @@ def get_axes_locator(self):\n         return self._axes_locator\n \n     def _set_artist_props(self, a):\n-        \"\"\"Set the boilerplate props for artists added to axes.\"\"\"\n+        \"\"\"Set the boilerplate props for artists added to Axes.\"\"\"\n         a.set_figure(self.figure)\n         if not a.is_transform_set():\n             a.set_transform(self.transData)\n@@ -1111,8 +1111,8 @@ def _gen_axes_patch(self):\n         Returns\n         -------\n         Patch\n-            The patch used to draw the background of the axes.  It is also used\n-            as the clipping path for any data elements on the axes.\n+            The patch used to draw the background of the Axes.  It is also used\n+            as the clipping path for any data elements on the Axes.\n \n             In the standard axes, this is a rectangle, but in other projections\n             it may not be.\n@@ -1129,9 +1129,9 @@ def _gen_axes_spines(self, locations=None, offset=0.0, units='inches'):\n         -------\n         dict\n             Mapping of spine names to `.Line2D` or `.Patch` instances that are\n-            used to draw axes spines.\n+            used to draw Axes spines.\n \n-            In the standard axes, spines are single line segments, but in other\n+            In the standard Axes, spines are single line segments, but in other\n             projections they may not be.\n \n         Notes\n@@ -1147,7 +1147,7 @@ def sharex(self, other):\n \n         This is equivalent to passing ``sharex=other`` when constructing the\n         axes, and cannot be used if the x-axis is already being shared with\n-        another axes.\n+        another Axes.\n         \"\"\"\n         _api.check_isinstance(_AxesBase, other=other)\n         if self._sharex is not None and other is not self._sharex:\n@@ -1166,7 +1166,7 @@ def sharey(self, other):\n \n         This is equivalent to passing ``sharey=other`` when constructing the\n         axes, and cannot be used if the y-axis is already being shared with\n-        another axes.\n+        another Axes.\n         \"\"\"\n         _api.check_isinstance(_AxesBase, other=other)\n         if self._sharey is not None and other is not self._sharey:\n@@ -1180,7 +1180,7 @@ def sharey(self, other):\n         self.yaxis._scale = other.yaxis._scale\n \n     def cla(self):\n-        \"\"\"Clear the axes.\"\"\"\n+        \"\"\"Clear the Axes.\"\"\"\n         # Note: this is called by Axes.__init__()\n \n         # stash the current visibility state\n@@ -1285,7 +1285,7 @@ def cla(self):\n         for _title in (self.title, self._left_title, self._right_title):\n             self._set_artist_props(_title)\n \n-        # The patch draws the background of the axes.  We want this to be below\n+        # The patch draws the background of the Axes.  We want this to be below\n         # the other artists.  We use the frame to draw the edges so we are\n         # setting the edgecolor to None.\n         self.patch = self._gen_axes_patch()\n@@ -1471,7 +1471,7 @@ def texts(self):\n                                valid_types=mtext.Text)\n \n     def clear(self):\n-        \"\"\"Clear the axes.\"\"\"\n+        \"\"\"Clear the Axes.\"\"\"\n         self.cla()\n \n     def get_facecolor(self):\n@@ -1520,13 +1520,13 @@ def set_prop_cycle(self, *args, **kwargs):\n \n         Form 2 creates a `~cycler.Cycler` which cycles over one or more\n         properties simultaneously and set it as the property cycle of the\n-        axes. If multiple properties are given, their value lists must have\n+        Axes. If multiple properties are given, their value lists must have\n         the same length. This is just a shortcut for explicitly creating a\n         cycler and passing it to the function, i.e. it's short for\n         ``set_prop_cycle(cycler(label=values label2=values2, ...))``.\n \n         Form 3 creates a `~cycler.Cycler` for a single property and set it\n-        as the property cycle of the axes. This form exists for compatibility\n+        as the property cycle of the Axes. This form exists for compatibility\n         with the original `cycler.cycler` interface. Its use is discouraged\n         in favor of the kwarg form, i.e. ``set_prop_cycle(label=values)``.\n \n@@ -1710,15 +1710,15 @@ def set_adjustable(self, adjustable, share=False):\n                         for ax in axs)):\n             # Limits adjustment by apply_aspect assumes that the axes' aspect\n             # ratio can be computed from the data limits and scales.\n-            raise ValueError(\"Cannot set axes adjustable to 'datalim' for \"\n+            raise ValueError(\"Cannot set Axes adjustable to 'datalim' for \"\n                              \"Axes which override 'get_data_ratio'\")\n         for ax in axs:\n             ax._adjustable = adjustable\n         self.stale = True\n \n     def get_box_aspect(self):\n         \"\"\"\n-        Return the axes box aspect, i.e. the ratio of height to width.\n+        Return the Axes box aspect, i.e. the ratio of height to width.\n \n         The box aspect is ``None`` (i.e. chosen depending on the available\n         figure space) unless explicitly specified.\n@@ -1734,21 +1734,21 @@ def get_box_aspect(self):\n \n     def set_box_aspect(self, aspect=None):\n         \"\"\"\n-        Set the axes box aspect, i.e. the ratio of height to width.\n+        Set the Axes box aspect, i.e. the ratio of height to width.\n \n-        This defines the aspect of the axes in figure space and is not to be\n+        This defines the aspect of the Axes in figure space and is not to be\n         confused with the data aspect (see `~.Axes.set_aspect`).\n \n         Parameters\n         ----------\n         aspect : float or None\n             Changes the physical dimensions of the Axes, such that the ratio\n-            of the axes height to the axes width in physical units is equal to\n+            of the Axes height to the Axe",
+    "parent": "not exposed by connector"
+  }
+]
