@@ -1,0 +1,6 @@
+# AF-RES-208 범위 고정
+- 착수 SHA 87ffc1539bcf33da0fccf45eb15982a02d93e409; 기준 bb146773bbffba5e724e8c842951e2c25198c2da 대비 ahead 5/behind 0, 변경은 dot-control.json만(compare API). 신규 브랜치 work/research-af-res-208. 허용 경로만 수정.
+- AGENTS/STATE/DOT_AUTOMATION/RESEARCH_WORKFLOW 최신판, 고정판 RESEARCH_BRIEF/WORKFLOW, 색인 관련어(calendar/캘린더/회차/197) 확인(일치 없음), dot-control blob e28dbb0945afff7a471bb1ecaedfb436809cfc97 직접 읽음. 208 RUNNING, attempt1, depends_on 197. 197 중앙 DONE, 실제 HANDOFF는 PARTIAL; be77f8550bbfcc1eaba2e8422b9d96101392a08d HANDOFF/requests/answers 읽음. 현재 면 토글 vs 선택 ID 보존; 실제 수신 ID 0. 재표집하지 않음.
+- 목적: 원래 회차 집합/예외/시리즈 경계에 따라 부분 구조 링크 선택. 제품 최종설계 아님. 205~207 제외. 8957/8450/4862/6437 고정 목적표본, 교체 없음. 먼저 본문 API만 읽고 동결 후 댓글. 최초 편집 이력 불가 시 현재 본문 및 updated_at만 표시. 공개 첨부 원본과 UI, API receipt 구별.
+- 통제 네 개: 주간 월요일 09:00–10:00 (TZID Europe/Berlin), 2026-03-09,16,23,30,04-06,13. 경계 03-23 원시각; C1 03-16을 03-27로 이동(역방향 대조도); C2 03-30 취소; C3 월→금 (복잡한 MO/WE 중 MO만 별도); C4 03-29 DST, 동일 현지 시각 vs UTC. 명시적 합성 기대값, 실제 시험 아님. 무예외 등가 대조.
+- Q1~7, 세 방법, 단건/후속/복잡패턴/전체의 집합을 나눔. 원시각 기준 순서와 표시 시각 차이, 보존 조건 없으면 한 질문. 규약 추론·제작자 규칙·작성자 발언·실측 분리. 소스 22 고유 작업(4 본문/6 변경·시험·후속/5 계약/4 예제·ICS/3 교통), RFC 절 중복 금지. 유형/사건/통제 분모 별도. 열람 실패 제외. 직접 확인 날짜 UTC 2026-11-24(세션 시작; 날짜 정밀도). 브리프 및 선행 답변에 노출; 독립 블라인드 검토 아님. 실행 환경의 workbench/실제 캘린더 시험은 하지 않고 명령 인계. 결손 시 PARTIAL.
