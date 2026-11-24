@@ -33,13 +33,18 @@
 
 | 반례·변경한 값 | 두 엔진의 연결 | 수학적 기대 | 권할 목적·원문 절 | 남은 한계 |
 |---|---|---|---|---|
-| C2, 대각 부호 유지·크기 변경 | scikit-image A, ContourPy B | 중심과 쌍선형 모두 양의 대각 B | 이진 전경 4연결 S01 Notes / 보간 P02 §3 | 연속장 목표가 정해져야 추천 가능 |
-| C3, 양의 평균·음의 안장 | scikit-image A, ContourPy B | m=+0.5 → B, s=−0.25 → A | DEM 사각면 비교 D02 ALGORITHM RULES / P03 §4(a) | 내부 분기 미계측 |
-| C4, 정확히 동률 | 두 엔진 A | bilinear X | exact tie 정책 P01 §2 | ±2^-20 통제는 다음 묶음에서 관측 |
-| C5, 비모호 | 두 엔진 C | E–W | 지도 비모호 선형 교차 D02 General Case | 실제 DEM은 미실행 |
-| 별도 마스크·축·부호·퇴화 | 미확인 | 사전 등록된 입력과 검산 규칙 유지 | S01 Notes / C07 Corner mask | 원호출은 다음 묶음 |
+| C2, C1과 같은 부호에 대각 크기 변경 | A / B | m=1, s=1이므로 B | 전경 4연결 [S01 Notes](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/skimage/measure/_find_contours.py#L60-L71), 쌍선형 장 [P02 `3 Test 1](https://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Chernyaev96.pdf#page=3) | 값의 크기에 불변인 영상 정책을 지형 보간에 적용하면 B를 놓친다 |
+| C3, 평균 양수·안장 음수 | A / B | m=+0.5 → B, s=−0.25 → A | 중앙점 정책 [C05 Overview](https://github.com/contourpy/contourpy/blob/713550ab7ea74e6f4e813e6947b9b0c84d7ccb7b/docs/description.rst#L23-L37), 쌍선형 [P03 `4(a)](https://thomas.lewiner.org/pdfs/marching_cubes_jgt.pdf#page=7) | 내부 분기 계측 미실시. A가 맞아도 직선 내부는 쌍선형 등값곡선에서 벗어난다 |
+| C4 동률과 NW에 ε=−2⁻²⁰, +2⁻²⁰ | 동률 A/A, −ε 방향 A/A, +ε 방향 A/B | 동률 X, 감소 A, 증가 B | 정확 동률을 보존하는 연속장 [P01 `2](https://graphics.stanford.edu/courses/cs164-10-spring/Handouts/paper_p83-nielson.pdf#page=3), 등호 정책 [C05 L9–33](https://github.com/contourpy/contourpy/blob/713550ab7ea74e6f4e813e6947b9b0c84d7ccb7b/docs/description.rst#L9-L33) | 주어진 지수에서 두 번의 교란을 시험했다. 일반 수치 한계 미측정 |
+| C5, 위 두 값 2·아래 두 값 −1 | C / C | v=2/3의 E–W 한 직선 | 비모호 등고 교차 [D02 General Case](https://gdal.org/en/stable/api/gdal_alg.html#_CPPv421GDALContourGenerateEx15GDALRasterBandH9OGRLayerH12CSLConstList16GDALProgressFuncPv), [D01 Symbols](https://www.usgs.gov/ngp-standards-and-specifications/us-topo-map-symbol-guide) | 합성 셀이며 실제 DEM 수직오차·좌표변환은 미측정 |
+| C3 전치, 좌우·상하 반사 | 전치 A/B, 좌우 B/A, 상하 B/A | 전치는 A/B 자체 보존, 한 축 반사는 둘 교환 | 배열 좌표를 플롯으로 옮기는 [S04 L29–37](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/doc/examples/edges/plot_contours.py#L29-L37), [C02 L109–115](https://github.com/contourpy/contourpy/blob/713550ab7ea74e6f4e813e6947b9b0c84d7ccb7b/lib/contourpy/__init__.py#L109-L115) | 좌표를 고정하고 격자만 전환. 사용자 지정 비정방 좌표 미시험 |
+| C3 부호 반전, L=0 | A→B / B→B, ContourPy의 순회 반전 | F→−F는 같은 영집합 A | 전경/배경이 바뀔 때 [S01 Notes](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/skimage/measure/_find_contours.py#L60-L84), [P02 `2–3](https://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Chernyaev96.pdf#page=3) | 등호 없는 이 입력의 결론이다 |
+| C3 NW 제외, C5 NW 제외 | C3 0 / E–S, C5 0 / E→내부. CP corner_mask=False 둘 다 0 | CP 유효 삼각형 C3 S→E, C5 (1,2/3)→(1/3,2/3) | 부분 삼각형 보존 [C07 Corner mask](https://github.com/contourpy/contourpy/blob/713550ab7ea74e6f4e813e6947b9b0c84d7ccb7b/docs/user_guide/calculate/z_corner_mask.rst#L68-L76), 전 셀 제외 [S02 L76–92](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/skimage/measure/_find_contours_cy.pyx#L76-L92) | 0은 빈 원배열. 내부 끝은 마스크 경계다 |
+| C3 scikit-image fully_connected=high, C4 양의 픽셀 라벨 | high B / 기본 B. C4 기본 A/A, SciPy 4/8에서 성분 2/1 | C3 전경 대각은 8연결 요구 B. C4 라벨 수는 이산 정책에 따라 달라짐 | 이진 객체/장벽 [D04 `19.7](https://imagej.net/ij/docs/guide/146-19.html), [D05 Examples](https://docs.scipy.org/doc/scipy-1.15.3/reference/generated/scipy.ndimage.label.html#examples) | 라벨 수는 열려 있는 선의 개수와 단위가 다름 |
+| 꼭짓점·동일 변 정확 수준 | 두 엔진 모두 N/W→S, 별도 격자에서는 N 경계만 | 꼭짓점에는 두 변이 입사, 경계만의 길이 1은 관통 0 | exact 수준 정책 [S01 L91–104](https://github.com/scikit-image/scikit-image/blob/e8a42ba85aaf5fd9322ef9ca51bc21063b22fcae/skimage/measure/_find_contours.py#L91-L104), [D03 NOTES](https://grass.osgeo.org/grass-stable/manuals/r.contour.html#notes) | 코너와 한 변 조각을 별도 기록한다 |
+| R2 같은 원배열, 선택을 (0,0)→(1,1)로 바꿔 열람 | 원 (0,0)은 N–W/N–W, 추가 (1,1)은 B/A | [[0,2],[2,0]], L=.5, m=s=.5(수준 차감 후) → A | 반환 호출 [C03 L87–117](https://github.com/contourpy/contourpy/blob/713550ab7ea74e6f4e813e6947b9b0c84d7ccb7b/tests/test_convert.py#L87-L117), 쌍선형 [P03 `4(a)](https://thomas.lewiner.org/pdfs/marching_cubes_jgt.pdf#page=7) | 탐색적 추가 선택. 28회 분모는 고정 선택 (0,0) 유지 |
 
-표 2 한 행은 반례·대조 시나리오다. 엔진 순서는 scikit-image, ContourPy다. X는 쌍선형 영집합의 교차다.
+표 2 한 행은 반례·대조 시나리오다. 엔진 순서는 scikit-image, ContourPy다. X는 쌍선형 영집합의 교차다. 별도 API 변경의 원지문·옵션·순서와 수동 기대는 [controls.csv](controls.csv)에 있다.
 
 ## 주관측
 
