@@ -38,14 +38,14 @@ sha256sum "$AF150_PATH"/{cases.jsonl,sources.jsonl,replay.py,answers.csv,costs.c
 
 | 구분 | 시행 | 확인 기준 |
 | --- | --- | --- |
-| 자연 재생 | 날짜로 가린 초기 입력과 후속 입력을 방식별 DB에 전달 | `normal/*/*/pre|post/*`의 F/L/T/A 384행. post의 P 48행은 별도 집계. |
+| 자연 재생 | 날짜로 가린 초기 입력과 후속 입력을 방식별 DB에 전달 | `normal/*/*/pre\|post/*`의 F/L/T/A 384행. post의 P 48행은 별도 집계. |
 | 사후 과거 조회 | 후속 입력을 저장한 DB에 같은 과거 질문 | `lookback` 192행. N01의 배포–발표 사이를 전후로 다시 물은 `pre-announcement`와 `announcement-lookback` 12행씩. |
 | 후속 유입 | Atom/Pulsar, React, PREDIMED 새 관측을 별도 인용으로 질의 | `new-citation` 36행. 기존 인용의 actor와 새 인용의 actor를 분리. |
 | 조회 요청 순서 | 같은 실행에서 F/L/T/A의 요청만 뒤집음 | 정상 답·비용 CSV에 바이트 차이 0. |
 | 중복 전달 | 케이스의 입력을 같은 순서로 한 번 더 수신 | `duplicate`의 답 내용·근거·판정 변화 0. A 행 쓰기 38→76, B/C 52/60 유지. 남은 행 36/52/60. |
 | 역순 정정 전달 | 각 사건 후속 묶음에서 문서는 같은 자리에 두고 관계·공지 전달만 역순 | `reverse`에서 A의 N06 L 두 행 변화. 당시 조회 오류 하나가 우연히 없어지고 현재 조회 오류 하나가 생겼다. B/C 변화 0. |
 | 실패 및 재실행 | N12 후속 transaction의 첫 쓰기 뒤 예외, rollback, SQLite 연결 닫기/다시 열기, 원 묶음 재실행 | 각 방식 실제 중단 1, abort 쓰기 1. 중단 전후 DB 행 지문 동일. 비교 가능한 최종 답·근거·판정과 남은 행 모두 정상본과 일치. |
-| 고의 오류와 취소 | N04 거짓 별칭, N06 거짓 분리, 각 선언 ID만 취소 | `bad-link/C/N04|N06/injected|repaired/L|P` 8행. C의 네 오답이 원래 결과와 일치하도록 복구. 취소 생략에서는 네 오답 유지. |
+| 고의 오류와 취소 | N04 거짓 별칭, N06 거짓 분리, 각 선언 ID만 취소 | `bad-link/C/N04\|N06/injected\|repaired/L\|P` 8행. C의 네 오답이 원래 결과와 일치하도록 복구. 취소 생략에서는 네 오답 유지. |
 | 필드 제거 | pin, scope, authority, available을 독립적으로 하나씩 생략 | `without-*/C`을 정상 C와 같은 `case_id, checkpoint, query_id`로 맞춘다. 취소만 정상 C 대신 오류 구성 C와 맞춘다. |
 | 개별 관계 제거 | N05.3 이동의 방향만 생략하고 공지·주체 보존. N06.4 전달 관계 생략 | 변경 단위 각각 한 관계. 이동 L과 두 판의 근거, 이관 L과 주소 동일 판단이 각 두 행씩 달라진다. |
 | 주소 한 개 | A에 같은 입력을 주고 안정 대조의 두 번째 주소 쓰기만 생략 | F/L/T/A 32/32 일치, post P 근거 소실 4/4. 대조의 행·성공 쓰기 8→4, 논리 바이트 2,098→1,051. |
@@ -129,6 +129,26 @@ JS
 
 Node v24.22.3의 두 구성 입력은 각각 `[3,16]`, 종료 0이었다. 공통 콜백 메커니즘만 실측했다. 오래된 브라우저에 인라인 polyfill을 삽입하거나 양쪽 문서의 호환 범위를 실행하지 않았다. 해당 실행에는 역사 브라우저와 es 페이지의 Polyfill 절이 필요하다. [MDN es 본문](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach#polyfill) · [MDN en-US 본문](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
 
-다른 외부 프로젝트의 서비스 구동은 미실시다. 예를 들어 Compose 이름 확인을 실사용에서 반복하려면 Docker 데몬과 고정 V1 1.29.2, V2 v2.0.0에 `name`/ `container_name` 없는 `services: {web: {image: busybox}}`를 주고 `docker-compose -p demo up -d`와 `docker compose -p demo up -d`를 각각 새 프로젝트에서 수행한 뒤 `docker ps --filter label=com.docker.compose.project=demo --format '{{.Names}}'`로 확인한다. 실제 기동에는 종료되지 않는 서비스 명령을 더 포함해야 한다. 이 연구는 고정 소스의 이름 함수만 판독했다. [V1 소스](https://raw.githubusercontent.com/docker/compose/1.29.2/compose/service.py) · [V2 소스](https://raw.githubusercontent.com/docker/compose/v2.0.0/pkg/compose/convergence.go).
+Compose의 소스 이름 계산은 읽었다. 실제 기동 비교의 미실시 입력과 명령은 아래와 같다. 각 명령은 자기 버전의 CLI와 Docker 데몬이 있는 별도 테스트 환경에서 수행한다. [V1 소스](https://raw.githubusercontent.com/docker/compose/1.29.2/compose/service.py) · [V2 소스](https://raw.githubusercontent.com/docker/compose/v2.0.0/pkg/compose/convergence.go).
+
+```yaml
+version: "3.8"
+services:
+  web:
+    image: busybox:1.36.1
+    command: ["sleep", "600"]
+```
+
+```sh
+# 위 파일을 compose.yaml로 저장한 고정 CLI 실험. 이번 연구에서는 미실시.
+docker-compose -f compose.yaml -p demo up -d
+docker ps --filter label=com.docker.compose.project=demo --format '{{.Names}}'
+docker-compose -f compose.yaml -p demo down
+
+docker compose -f compose.yaml -p demo up -d
+docker ps --filter label=com.docker.compose.project=demo --format '{{.Names}}'
+docker compose -f compose.yaml -p demo down
+```
+
 
 Open Library 원 거래·revision 비교, Ostrom 1970 본문, NEJM notice PDF를 열지 못했다. 그 URL과 대체 근거는 S08c/d, S11c, S12c에 보존했다. 초기 셸의 외부 자료 조회는 HTTPS tunnel 403이었으며 위 자료 원문 열람은 별도 웹 도구의 본문 확인으로 기록했다. 임의의 외부 브라우저의 상태나 서버의 영구 가용성을 추정하지 않았다.
