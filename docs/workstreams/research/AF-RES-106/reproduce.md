@@ -53,9 +53,9 @@ ggplot2의 별칭은 코드·데이터·목적·API와 실제 그림을 함께 �
 
 ## Q4–Q6: 원문, 후계, NO와 혼동표
 
-프로젝트별 `audit.json`, `lineage.csv`, `returns.csv`, `sources.jsonl`은 같은 사례의 절→자원→발행 코드→저자 source→공식 변경을 잇는다. root `lineage.csv`는 결원까지 포함한24판 자리이며 root `returns.csv`는12자리다. `P`, 옛 경로 P, 옛 fragment DOM, 정적 redirect 연결, 실제 browser arrival, 원 목적 U, 일반 역할 U, 구체 방법/핵심 API, literal 데이터, G를 나눈다.
+프로젝트별 `lineage-final.json`, `returns-final.json`, `FINAL_AUDIT.md`, `sources-stage3.jsonl`은 같은 사례의 절→자원→발행 코드→저자 source→공식 변경을 잇는다. root `lineage.csv`는 결원까지 포함한24판 자리이며 root `returns.csv`는12자리다. `P`, 옛 경로 P, 옛 fragment DOM, 정적 redirect 연결, 실제 browser arrival, 원 목적 U, 일반 역할 U, 구체 방법/핵심 API, literal 데이터, G를 나눈다.
 
-Matplotlib barchart 원 목적의 NO는 그 첫 URL에서 찾지 못했다는 뜻이 아니다. 새 발행 Python bundle522개에서 옛 basename·G1~G5·Men/Women·점수·bar/bar_label 특징을 전수 검색하고, 검색 후보5개와 공식 barchart 변경 diff를 직접 대조한 **해당 gallery 범위의 부재**다. 다른 예제에 Men/Women 점수만 있거나 막대가 비슷해도 side-by-side+수치 label이라는 원 목적/제약이 모두 이어지는지는 별도 읽는다. 저장된 검색 영수증과 후보 판독을 먼저 확인한다. 미확인을 NO로 채우지 않는다.
+Matplotlib barchart 원 목적의 NO는 그 첫 URL에서 찾지 못했다는 뜻이 아니다. 새 발행 Python bundle522개에서 옛 basename·G1~G5·Men/Women·점수·bar/bar_label 특징을 전수 검색하고, 검색 후보5개+의미상 후보5개 총10본문과 공식 barchart 변경2건의 diff를 직접 대조한 **해당 gallery 범위의 부재**다. 다른 예제에 Men/Women 점수만 있거나 막대가 비슷해도 side-by-side+수치 label이라는 원 목적/제약이 모두 이어지는지는 별도 읽는다. 저장된 검색 영수증과 후보 판독을 먼저 확인한다. 미확인을 NO로 채우지 않는다.
 
 각 project×stratum에서 `U_original_purpose`와 `U_visual_role`을 따로 평가한다. YES 예측/YES 실측은 TP, YES/NO는 FP, NO/YES는 FN, NO/NO는 TN. 실측 미확인·예측 유보·결원은 혼동표 네 칸에 넣지 않는다. 실제 양성은 TP+FN, 음성은 FP+TN이며 분모0의 FPR/특이도는 `산출 불가`다. 주8쌍·보조·102 과거 사례를 합친 전체 성능을 만들지 않는다.
 
@@ -75,6 +75,29 @@ python -B docs/workstreams/research/AF-RES-106/evidence/crossdomain/analyze_stat
 
 `sources.jsonl`은 각 직접 열람과 자동 스캔/실패/계승을 구별하고 `evidence/source-reconciliation.json`은 동일 논리 예제·양판·동일 사건·번들/그림/규격 앵커 중복을 합친다. body8 이상, 별계보 source/payload6 이상, 공식 기록6 이상, IIIF 규격/실물 및 JATS 규격/실물 각2 이상을 각각 확인한다. URL 수·HTTP 요청 수·독립 저작 수·독립 사례 수는 다르다.
 
-별도 AI의 stage1/stage2 검토와 결과5사례의 독립 판독은 `evidence/crossdomain/review-stage*.json`, `independent-outcomes.json`에 있다. 같은 계열 모델의 분담이며 사람/외부 전문가 검증이 아니다. root의 원 XML·선택 code 재독은 작성자 결론을 안 상태의 확인으로, blind 판독에 합치지 않는다.
+별도 AI의 stage1/stage2 검토와 결과5사례의 별도 판독은 `evidence/crossdomain/review-stage*.json`, `independent-outcomes.json`에 있다. 같은 계열 모델의 분담이며 사람/외부 전문가 검증이 아니다. 회수한5사례 판독에는 일부 저자 결과가 첫 원문 읽기 뒤 노출됐다는 자체 기록이 있으므로 완전 맹검이라고 부르지 않는다. 재개 후 A2/G2를 다른 담당자가 다시 읽은 범위는 `evidence/ggplot2/review-matplotlib.json`, Q7/선택/38자료 별도 대사는 `evidence/crossdomain/review-final.json`과 `source-count-review.json`을 따른다. root의 원 XML·선택 code 재독은 작성자 결론을 안 상태의 확인으로, blind 판독에 합치지 않는다.
 
 결과 커밋 후 GitHub의 고정 SHA에서 RESULT 세 표·대표 원근거/출력·이 재현 절차를 다시 연다. 반환 절의 actual DOM id와 고정 source line/자원 지문을 재대조하고, raw HTML#id를 실제 렌더된 역사 사이트의 scroll 성공으로 말하지 않는다. Matplotlib의 버전 사이트 URL은 실제 GET 원문과 고정본의 절/자원을 비교한 범위에서만 읽기 링크로 제시한다. 이 마지막 재열람 영수증과 두 저장소 검사 영수증을 추가 커밋한 다음 HANDOFF를 마지막 단독 커밋으로 남긴다.
+
+
+## 재개 결과의 정확한 재계산·검사 입력
+
+재개 원격 끝은8054c2221d4023ba03c904d96f13928219d36c3d였다. 현재 판독의 권위와 회수 초안의 차이는 `evidence/RECOVERY.md`에 있다. root `sources.jsonl`은670행이며 보수 allowlist38개만 최소 자료수에 산입한다. 아래 authoring 재생성 명령은 root 파일을 갱신하므로 **고정 결과판의 별도 복사본에서만** 실행한다. 기존 봉인 frame/predictions는 바꾸지 않는다.
+
+```sh
+python -B docs/workstreams/research/AF-RES-106/tools/assemble_ledgers.py
+python -B docs/workstreams/research/AF-RES-106/tools/build_report.py
+python -B docs/workstreams/research/AF-RES-106/tools/recalculate.py --write
+python -B docs/workstreams/research/AF-RES-106/tools/verify.py
+```
+
+파일 갱신 없이 분모를 재검산할 때는 `python -B docs/workstreams/research/AF-RES-106/tools/recalculate.py`를 사용한다. 원장/선정 대사48개와 추가 봉인·tree547경로·16판fragment·PNG/source bytes·최소자료38·필수표 구조 검사가 적용된다. 정답의 의미를 자동 인증하지 않는다.
+
+결과/SELF_CHECK를 커밋하고 모든 변경·미추적 파일이 없는 해당SHA에서 다음 wrapper를 실행하면, 연구 구조 검사와 배정문에 적힌 두 검사를 순서대로 수행한다. 모든 검사가 끝난 뒤에만 own 경로로 영수증을 쓰므로 `--require-clean`의 입력을 오염시키지 않는다.
+
+```sh
+python -B docs/workstreams/research/AF-RES-106/tools/validate_result.py
+python -B docs/workstreams/research/AF-RES-106/tools/readback_result.py
+```
+
+두 번째 명령의 pin은 첫 명령이 보존한 `evidence/validation/run.json`의 `result_sha`다. 고정 GitHub24파일(대표PNG 포함), 원본16절과 현재 Matplotlib8버전문서의 actual fragment를 다시 읽는다. 응답 실패·지문 불일치·id 부재는 실패로 보존하며 실제 browser scroll로 부르지 않는다. 실제 명령/UTC/결과SHA/종료값/원격확인 범위는 최종 VALIDATION/HANDOFF를 따른다. 이 영수증 문서들을 이전 결과검사의 대상으로 소급 포함하지 않는다.

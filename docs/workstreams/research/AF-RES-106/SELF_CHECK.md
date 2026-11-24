@@ -1,0 +1,31 @@
+# AF-RES-106 자체 점검
+
+연구 판독 상태: **COMPLETE_WITH_LIMITATIONS**. 직접 자료 하한 부족0, 핵심 비교 미수행0. 허용한 경로층 결원4쌍과 browser/역사 생성의 미확인은 아래처럼 별개다. 실제 저장소 검사 및 고정 결과판 재열람은 결과 커밋 뒤 실행하고 `VALIDATION.md`/`evidence/validation/`에 남긴다. 이 문서의 자기 점검을 그 실행 증거로 대체하지 않는다.
+
+| 질문 | 답 | 직접 연 근거 URL·위치 | 판단에 반하는 경우·어디서 찾아 무엇을 확인했나 | 미확인·결론을 바꿀 최소 추가 조사 |
+|---|---|---|---|---|
+| Q1 옛 잔여 모집 | GG reference195→적격68; MP gallery608→적격479. 첫40씩·교정·별칭을 제외. 첫 예제 단위와 외부 그림/실행 source download를 구분 | [GG 옛 tree](https://api.github.com/repos/tidyverse/ggplot2/git/trees/57852124c86f770dd443fcf5064d30ea320a4731?recursive=1), [MP 옛 발행 루트](https://github.com/matplotlib/matplotlib.github.com/tree/f3ac5407f8ffc861cae1ea87eddd06c63b222e4b/3.6.3/gallery), [frame.csv](frame.csv), 프로젝트 old HTML·stage1 수신영수증 | stat_unique 제목과 첫 실제 예제는 다름: 첫 geom_point(alpha=0.1)와 뒤 unique 통계를 구별. 같은 출력이어도 qplot/stat_identity 방법이 다르면 별칭으로 지우지 않음. MP download-only39를 그림 없는 실패로 치환하지 않음 | 자동 파싱 전수와 의미 판독을 구별. GG 저자 source-set1개 연계 미확인; 원 HTML/Rd에 정확한 저자 예제 연결이 새로 확인되면 그 경로 신호의 분류를 재검토 |
+| Q2 독립 경로 신호 | GG A0/M57/G11, MP A3/M0/G476. A→M→G 배타적. 547개 hash·층별 앞2개 일치 | [GG 새 tree](https://api.github.com/repos/tidyverse/ggplot2/git/trees/392175bbb00b04025aa5d17a0c18b3896adeb40f?recursive=1), [MP 새 subtree](https://api.github.com/repos/matplotlib/matplotlib.github.com/git/trees/94eb9c8195d36c3cc1a36876409629a115b5a9ae?recursive=1), [봉인8054](https://github.com/laadkke-arch/agentflow-open/commit/8054c2221d4023ba03c904d96f13928219d36c3d) | man-only에서는 GG M0/G68. 옛 저자 R 예제와 연결을 확인한 뒤 .r→.R을 보존하면 M57이 됨. source blob 변화만으로 M을 만들지 않음 | 규칙 교정은 경로 노출 후였다는 한계. [METHOD_AMENDMENT.md](METHOD_AMENDMENT.md)의 두 정의를 미노출 판에 고정해 결과가 바뀌는지 비교 |
+| Q3 사전 예측 | 12자리=YES6/NO2/결원4. 실제 예측 유보0. 임시 URL을 결과 URL로 소급 교정하지 않음 | [고정 predictions](https://github.com/laadkke-arch/agentflow-open/blob/8054c2221d4023ba03c904d96f13928219d36c3d/docs/workstreams/research/AF-RES-106/predictions.csv), [봉인 지문14개](evidence/stage2-seal-manifest.json) | 경로가 없던 bullseye/text_rotation의 목적이 새 이름/절에 이어져 사전 NO를 반박. barchart는 같은 경로라도 구체 설명 대상이 바뀜 | 현재 판독 후 새 예측을 만들었다고 주장하지 않음. 새로운 미노출 목적·판을 정한 holdout에서 재검증 필요 |
+| Q4 후계·정확 도착 | 8실제쌍의 양판 절·PNG·source/diff 확인. A1 rename, A2 통합, G1 id 변경, G2 내용 교체 | [bullseye rename](https://github.com/matplotlib/matplotlib/commit/0d39834ce0c1d579703672e3890b42806eda2121), [rotation 통합](https://github.com/matplotlib/matplotlib/commit/f21219be5f7411a38b1598382f16dd7b099ffa9e), [lineage.csv](lineage.csv) | 같은 그림/이름/해시만으로 판단하지 않음. G2 후보10본문 중 units bar는 Tea/Coffee, percentile은 다른 독자 목적, agg_filter는 축을 숨긴 shadow 예제. 원 목적 NO는 갤러리 검색 범위로 제한 | raw text/plain의 #id는 실제 렌더 이동이 아님. MP-A1 meta refresh의 fragment 전달은 미확인. 실제 browser에서 반환 주소·위치가 다르면 arrival/반환을 수정 |
+| Q5 P/U/API/G 분리 | 실제16판 P YES, 옛 경로 P는 새 A1/A2 NO. 원 구체 목적 새판7YES/1NO, 일반역할8YES. G16판 미확인 | [G2 새 고정 절](https://raw.githubusercontent.com/matplotlib/matplotlib.github.com/410d8388303fab638bbedbd1d2eace0e5efb0de9/3.7.0/gallery/lines_bars_and_markers/barchart.html), [A2 새 source](https://github.com/matplotlib/matplotlib/blob/235131a6bc2527aee7eea370fd5f94564a48c20d/examples/text_labels_and_annotations/demo_text_rotation_mode.py), [별도 방법 판독](evidence/ggplot2/review-matplotlib.json) | A2는 회전 API YES지만 default bbox 강조 방식 NO. A1 colorbar add_axes→inset_axes, G2 두 대칭 bar 호출→loop. 같은 공개 핵심 API와 완전히 같은 recipe를 구분 | 당시 run/environment/output manifest/digest가 없으므로 G YES/NO 결정 불가. 실제 보존 run과 발행 자원 연결을 확보하면 해당판 G 갱신. 이전 빈 실행36조회 반복하지 않음 |
+| Q6 양방향 오류 | 원 목적: GG M/G 각각 TP2, MP A FN2, MP G TP1FP1, 두 공석층 각 결원2. 일반역할 MP G TP2. 보조 MP 새1쌍 FN1 별도 | [counts.json](counts.json), [522source 검색](evidence/matplotlib/new-bundle-search.json), [GG D/R2사건](evidence/ggplot2/supplemental-selection.json), [MP D/R6커밋](evidence/matplotlib/supplemental-selection.json) | G2는 실제 같은 PNG경로가 새 절에서 참조되므로 엄격한 미사용 잔류 파일이 아님. 새 G일반6본문+보조D/R3사건, GG9본문에서 그 방향을 추가 탐색했으나 미관측 | 원 목적 음성1의 FPR1/1을 일반화하지 않음. GG 미판독59·MP G미판독470을 새 사전등록으로 읽고 실제 미사용 사례가 나오면 범위 결손을 해소. 모든 음성0층 FPR 산출 불가 |
+| Q7 타 분야·반환 충분성 | IIIF Canvas/painting/thumbnail·Choice/target과 JATS figure/xref/실제 DOM을 분리. 각 주 자리 반환결정·정확 위치·비용 기록 | [IIIF Presentation3](https://iiif.io/api/presentation/3.0/), [Rijks 실물](https://iiif.micr.io/PJEZO/manifest), [JATS fig/xref](https://jats.nlm.nih.gov/publishing/tag-library/1.3/element/fig.html), [PLOS XML](https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0319031&type=manuscript), [반환원장](returns.csv) | Fig7 본문 참조4회는3문단. Table3 Ncut caption은 유효xref로 Nassoc Fig7을 가리킴. Fitz32개 comment 영역 null은 정확 영역 도착 근거가 아님. 같은 이미지/유효id도 목적 정합성을 보장하지 않음 | 실제 viewer fallback·공식 교정·저자 의도 미확인. 좌표와 공식 수정이 확인되거나 browser가 다른 부분으로 이동하면 유보/반환을 바꿈 |
+
+## 분자·분모·자료 하한 대사
+
+- 첫 세 표의 행수는 모집12, 판별24, 오류·반환12다. 실제8쌍·16판과 결원4쌍·8판을 따로 세었다. 결원을 NO나 실측 미확인 사례에 넣지 않았다.
+- 원 목적의 실제 새판 양성7·음성1, 일반역할 양성8·음성0이다. 원 목적 MP G의 TP1/FP1과 MP A의 FN2를 다른 층과 합친 성능 비율로 보고하지 않았다. 실제 음성0이면 FPR·특이도는 `산출 불가`다.
+- 신규 고유1차자료38=본문15+별계보 그림/source6+공식 변화10+IIIF5+JATS2. 요구 하한8/6/6/2/2를 모두 만족하고 부족 수는0이다. 원장670행에는 스캔·계승·중복·실패도 있으며 이를 자료38에 합산하지 않는다.
+- 표 행의 source/HTML/payload/지문은 `lineage.csv`, `returns.csv`, `sources.jsonl`와 각 프로젝트 `lineage-final.json`의 evidence_files에 연결된다. 전체sha256은 원장에 있고 RESULT 표는 읽기 편하도록 앞12자리만 표시한다.
+- 기존 stat_unique 본문과 새 PNG를 두 번 세지 않았으며 MP3개의 merge diff는 같은 사건으로 제외했다. 새 규격의 여러 앵커와 PLOS XML/HTML/그림도 각각 한 저작으로 합쳤다. [정확 allowlist](evidence/crossdomain/source-count-review.json), [최종 재분류 기록](evidence/source-reconciliation.json).
+
+## 자기 점검과 별도 판독
+
+프로젝트 담당자의 판독은 자기 점검이며 root의 결론을 안 상태의 code/PNG 재독은 확인 검토다. 다른 ggplot2 담당자가 MP-A2/G2 원문·code·PNG를 읽어 핵심 API와 원 recipe의 차이를 확인했고, 교차분야 담당자가 Q7·547개 선택식·38자료 계보를 별도로 재검산했다. 사람 검토는 없다. 회수한 이전 별도5사례 판독에는 일부 결과 노출이 있었다는 기록이 있어 완전 맹검이라고 부르지 않는다. [검토 범위](evidence/RECOVERY.md), [MP 교차검토](evidence/ggplot2/review-matplotlib.json), [Q7/선택 재검산](evidence/crossdomain/review-final.json).
+
+GG 편의 웹 리더 실패4회(DisabledError)는 성공한 원본 HTTP 경로와 구별해 보존했고 산입0이다. 이와 별개로 Q7 최초 탐색 실패4회(웹 리더 Internal Error3회·일반 User-Agent GET HTTP403 1회)는 `evidence/crossdomain/probe-failures.json`에 남겼으며 모두 산입0이다. source-set 교정과 봉인 전 validator 실패도 삭제하지 않았다. 최종 실제 계약/공통검사 실패가 있다면 후속 VALIDATION/HANDOFF에 그대로 기록한다.
+
+## 미실시와 재개 입력
+
+실제 R/Python 예제 실행·브라우저 fragment scroll·IIIF viewer·역사 빌드 복원은 미실시다. 필수 정적 비교와 자료 하한의 미달 때문에 중단한 PARTIAL이 아니다. 정확한 다음 입력은 `returns.csv`의 고정/렌더 URL과 actual fragment, 과거 build의 보존 run ID/environment lock/output manifest다. 현재 예제 재실행을 과거 생성 증거로 대체하지 않는다.

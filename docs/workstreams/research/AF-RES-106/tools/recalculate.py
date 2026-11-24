@@ -135,7 +135,10 @@ def calculate():
               "edition_slots": 24, "observed_editions": len(actual_rows), "vacant_editions": 24 - len(actual_rows),
               "main_original_purpose": confusion(predictions, new_rows, "U_original_purpose"),
               "main_visual_role": confusion(predictions, new_rows, "U_visual_role"),
-              "main_specific_method": confusion(predictions, new_rows, "method_specific"),
+              "method_observations": [{"case_id": r["case_id"], "specific_target": r.get("method_specific", "미확인"),
+                                        "core_api": r.get("method_core_api", "미확인"),
+                                        "original_recipe": r.get("method_original_exact", "미확인")}
+                                       for r in new_rows.values()],
               "sources": {"ledger_rows": len(sources), "unique_primary_works": len(counted),
                           "count_by_category": dict(count_by_category), "minimum": minimum,
                           "excluded_rows": len(sources) - len(counted),
