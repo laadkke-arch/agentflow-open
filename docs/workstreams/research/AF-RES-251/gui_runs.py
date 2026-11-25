@@ -56,7 +56,12 @@ class Desktop:
         self.x("type", "--clearmodifiers", "--delay", 1, value)
 
     def title(self):
-        return self.x("getactivewindow", "getwindowname")
+        try:
+            return self.x("getactivewindow", "getwindowname")
+        except RuntimeError as error:
+            if "XGetWindowProperty[_NET_ACTIVE_WINDOW] failed" in str(error):
+                return ""
+            raise
 
     def window_geometry(self, window):
         geometry = self.invoke("xwininfo", "-id", window)
@@ -74,8 +79,8 @@ class Desktop:
             time.sleep(0.12)
         raise RuntimeError(f"Unexpected active window: {title!r}")
 
-    def shot(self, path):
-        self.invoke("import", "-window", "root", "-strip", path)
+    def shot(self, path, window="root"):
+        self.invoke("import", "-window", window, "-strip", path)
 
     def picker(self, path, *, label=False):
         if label:
@@ -91,7 +96,7 @@ class Desktop:
         if title == "A" and self.version == "3.5.0" and path == FIXTURES / "A.wav":
             # The project title can change before Audacity finishes tempo detection.
             deadline = time.monotonic() + 1.5
-            while title == "A" and time.monotonic() < deadline:
+            while title in ("", "A") and time.monotonic() < deadline:
                 time.sleep(0.12)
                 title = self.title()
         if title == "Music Import":
@@ -142,7 +147,8 @@ def run(desktop, version, condition, run_dir):
 
         desktop.key("alt+e", "l", "Return")
         desktop.wait_title(lambda title: title == "Edit Labels")
-        desktop.shot(run_dir / "labels.png")
+        time.sleep(0.45)  # Wait for the grid and the numeric editor to paint.
+        desktop.shot(run_dir / "labels.png", desktop.x("getactivewindow"))
         desktop.key("Escape")
         desktop.wait_title(lambda title: title == "A")
         desktop.click(167, 209)
@@ -181,6 +187,7 @@ def run(desktop, version, condition, run_dir):
             lambda title: title == "Export Audio" and desktop.x("getactivewindow") != settings_window
         )
         record["completion_window"] = title
+        time.sleep(0.35)
         desktop.shot(run_dir / "completion.png")
         record["files"] = sorted(path.name for path in outputs.iterdir())
         record["export_completed"] = bool(record["files"])
