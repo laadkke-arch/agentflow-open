@@ -33,6 +33,7 @@ METHOD_WORDS = re.compile(
     re.I,
 )
 WRAPPER = ".items .has_more .quota_max .quota_remaining .backoff .error_id .error_name .error_message"
+WRAPPER_META = ("has_more", "quota_max", "quota_remaining", "backoff", "error_id", "error_name")
 CREDIT = "shallow_user.display_name shallow_user.link"
 QBODY = (
     "question.question_id question.title question.body question.creation_date "
@@ -134,6 +135,11 @@ def status_document(provider, body, exit_code, http, connect):
         data = json.loads(body)
     except (UnicodeError, ValueError):
         data = None
+    if (
+        provider == "stackexchange" and exit_code in (0, 22) and isinstance(data, dict)
+        and ("error_id" in data or "error_name" in data)
+    ):
+        return "api_error", data
     if not 200 <= http < 300:
         return "http_error", data
     if exit_code != 0:
@@ -141,12 +147,11 @@ def status_document(provider, body, exit_code, http, connect):
     if not isinstance(data, dict):
         return "invalid_json_object", data
     if provider == "stackexchange":
-        if "error_id" in data or "error_name" in data:
-            return "api_error", data
         fields_ok = (
             isinstance(data.get("items"), list)
             and isinstance(data.get("has_more"), bool)
-            and all(type(data.get(key)) is int for key in ("quota_max", "quota_remaining"))
+            and all(type(data.get(key)) is int and data[key] >= 0 for key in ("quota_max", "quota_remaining"))
+            and type(data.get("backoff", 0)) is int and data.get("backoff", 0) >= 0
         )
     else:
         message = data.get("message")
@@ -211,6 +216,9 @@ class Archive:
             entry["provider"], raw, entry["curl_exit"], entry["http_status"], entry["connect_status"],
         )
         require(status == entry["status"], f"{entry['id']} reclassification mismatch")
+        wrapper = data if isinstance(data, dict) and entry["provider"] == "stackexchange" else {}
+        require(all(entry.get(field) == wrapper.get(field) for field in WRAPPER_META),
+                f"{entry['id']} wrapper metadata mismatch")
         return data
 
     def before_request(self, provider, method, url):
@@ -231,8 +239,12 @@ class Archive:
             wait_until = max(wait_until, datetime.fromisoformat(last["utc_end"]) + timedelta(seconds=1))
         for entry in previous:
             end = datetime.fromisoformat(entry["utc_end"])
+            backoff = entry["backoff"]
             if entry["method"] == method:
-                wait_until = max(wait_until, end + timedelta(seconds=entry["backoff"] or 0))
+                if type(backoff) is int and backoff > 0:
+                    wait_until = max(wait_until, end + timedelta(seconds=backoff))
+                if entry["error_name"] == "throttle_violation":
+                    wait_until = max(wait_until, end + timedelta(seconds=60))
             retry_after = entry["response_headers"].get("retry-after")
             if entry["http_status"] in (429, 503) and retry_after and retry_after.isdecimal():
                 wait_until = max(wait_until, end + timedelta(seconds=int(retry_after)))
@@ -280,7 +292,6 @@ class Archive:
         http, connect = tuple(map(int, match.groups())) if match else (0, 0)
         status, data = status_document(provider, raw, proc.returncode, http, connect)
         wrapper = data if isinstance(data, dict) and provider == "stackexchange" else {}
-        fields = ("has_more", "quota_max", "quota_remaining", "backoff", "error_id", "error_name")
         body_file = receipt_id + ".body" if raw else None
         entry = {
             "id": receipt_id, "key": key, "attempt": number, "url": url,
@@ -291,7 +302,7 @@ class Archive:
             "curl_stderr": proc.stderr.decode("utf-8", errors="replace").strip(),
             "response_headers": response_headers, "status": status,
             "body_file": body_file, "body_sha256": digest(raw) if raw else None, "body_bytes": len(raw),
-            **{field: wrapper.get(field) for field in fields},
+            **{field: wrapper.get(field) for field in WRAPPER_META},
         }
         if body_file:
             save(self.directory, body_file, raw)
@@ -321,6 +332,11 @@ class Archive:
         return token
 
     def audit(self):
+        ids = [entry["id"] for entry in self.entries]
+        require(len(ids) == len(set(ids)), "Repeated receipt ID")
+        listed = {entry["body_file"] for entry in self.entries if entry["body_file"]}
+        stored = {path.name for path in self.directory.glob("*.body")}
+        require(stored == listed, "Receipt body list differs from the stored files")
         for entry in self.entries:
             self.read(entry)
         return {
@@ -459,9 +475,12 @@ def origin(archive, question_id, candidate):
         archive, f"revisions-{question_id}", "revisions", f"/posts/{question_id}/revisions",
         {"site": "dba", "filter": archive.filter("revision")},
     )
-    require(all(row.get("post_id") == question_id and type(row.get("creation_date")) is int
-                for row, _, _ in revisions), f"{receipts[-1]}: revision identity/date mismatch")
-    revisions.sort(key=lambda record: (record[0]["creation_date"], record[0].get("revision_number", 0)))
+    require(all(
+        row.get("post_id") == question_id and type(row.get("creation_date")) is int
+        and (row.get("revision_number") is None or type(row["revision_number"]) is int)
+        for row, _, _ in revisions
+    ), f"{receipts[-1]}: revision identity/date mismatch")
+    revisions.sort(key=lambda record: (record[0]["creation_date"], record[0].get("revision_number") or 0))
     initial_rows = [
         (row, receipt, position) for row, receipt, position in revisions
         if row.get("revision_number") == 1
@@ -556,7 +575,8 @@ def route_b(archive, question_id):
     })
     item = single(page, "question_id", question_id)
     require(item is not None, f"{page.receipt}: origin public question absent")
-    require((item.get("closed_reason") or "").strip().casefold() == "duplicate",
+    reason = item.get("closed_reason")
+    require(isinstance(reason, str) and reason.strip().casefold() == "duplicate",
             f"{page.receipt}: closure state has changed since frame")
     details = item.get("closed_details")
     require(isinstance(details, dict), f"{page.receipt}: closed_details missing")
@@ -647,7 +667,7 @@ POST_URL = re.compile(
 POST_ANCHOR = re.compile(r"^/(?:q|a|questions|answers|posts)/\d|^#(?:answer-)?\d+", re.I)
 BANNER = re.compile(
     r"^\s*(?:possible duplicate\b|duplicate of\b|marked as duplicate\b|"
-    r"this question already has an answer here\b|this question has been asked before\b)",
+    r"this question already has (?:an answer|answers) here\b|this question has been asked before\b)",
     re.I,
 )
 SQL_START = re.compile(r"(?:^|\n)\s*(?:SELECT|WITH|UPDATE|DELETE|EXPLAIN)\b", re.I)
@@ -668,6 +688,8 @@ class PostText(HTMLParser):
         if tag in VOID:
             if tag in {"br", "hr"}:
                 self.handle_data("\n")
+            elif tag == "img" and attrs.get("alt"):
+                self.handle_data("[image: " + attrs["alt"] + "]")
             return
         href = attrs.get("href") or ""
         classes = attrs.get("class") or ""
@@ -710,6 +732,8 @@ class PostText(HTMLParser):
             text = {"post_link": "[post link redacted]", "banner": "", "origin_sql": "[SQL redacted]"}[hide]
         if tag in BLOCKS:
             text = "\n" + text.strip("\n") + "\n"
+        if tag in {"td", "th"}:
+            text += " | "
         self.handle_data(text)
 
     def masked(self, body):
@@ -862,14 +886,19 @@ def crossref(archive):
                 require(len(items) <= rows and all(isinstance(doi, str) and doi for doi in keys),
                         f"{meta['id']}: missing DOI or overlong page")
                 item_keys = [doi.casefold() for doi in keys]
-                duplicates = sorted(seen & set(item_keys) | {key for key in item_keys if item_keys.count(key) > 1})
+                duplicates = sorted((seen & set(item_keys)) | {key for key in item_keys if item_keys.count(key) > 1})
                 seen.update(item_keys)
                 current.append({
                     "receipt": meta["id"], "cursor_in": cursor, "cursor_out": message.get("next-cursor"),
                     "total_results": message["total-results"], "doi_in_provider_order": keys,
                     "duplicate_dois": duplicates,
+                    "item_fingerprints_in_provider_order": [digest(json_bytes(item)) for item in items],
                 })
                 if len(items) < rows:
+                    require(
+                        page != 1 or items or message["total-results"] == 0,
+                        f"{meta['id']}: empty initial page with positive rows and nonzero total",
+                    )
                     result["status"] = "normal_zero" if page == 1 and message["total-results"] == 0 else "short_page"
                     break
                 cursor = message.get("next-cursor")
@@ -908,6 +937,20 @@ def run(args):
         save(output, "frame.csv", csv_bytes(FRAME_FIELDS, rows))
         save(output, "frame-stats.json", json_bytes(info))
         return info
+    if args.phase in {"calibration-origin", "calibration-routes"}:
+        preparing = args.phase == "calibration-origin"
+        inputs = archive if preparing else Archive(output, offline=True)
+        selected = origin(inputs, CALIBRATION, 1)
+        files = {"calibration-query.csv": csv_bytes(QUERY_FIELDS, [selected[0]])}
+        if preparing:
+            for name, data in files.items():
+                save(output, name, data)
+            return {"calibration": CALIBRATION, "query_rows_unsealed": 1}
+        verify_seal(output, args.seal, files)
+        mapping, _, _, ready = collect_routes(archive, [selected], "separate-calibration")
+        save(output, "receipts/calibration-routes.json", json_bytes(mapping))
+        require(ready, "Calibration has an incomplete route")
+        return {"calibration": CALIBRATION, "new_gets": archive.new_requests}
     # Routes use only previously archived origin evidence until the Git seal is verified.
     if args.phase in {"routes", "replay"}:
         artifact_archive = Archive(output, offline=True)
@@ -941,10 +984,11 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("phase", choices=(
         "frame", "probe-frame", "origins", "routes", "crossref", "audit", "replay", "replay-crossref",
+        "calibration-origin", "calibration-routes",
     ))
     parser.add_argument("--output", type=Path, default=ROOT)
     parser.add_argument("--retry-failed", action="store_true", help="Preserve prior attempts and retry a failed GET")
-    parser.add_argument("--seal", help="Git commit containing frame.csv, frame-stats.json and queries.csv")
+    parser.add_argument("--seal", help="Git commit containing the complete origin or calibration query files")
     args = parser.parse_args(argv)
     try:
         result = run(args)
