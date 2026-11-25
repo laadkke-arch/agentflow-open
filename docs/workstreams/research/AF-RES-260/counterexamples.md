@@ -6,3 +6,4 @@
 - I02 당사자 보고 GET 실패와 maintainer ZIP 포함 주장 공존: HTTP 상태·실제 누락은 미확인. I01 subset 제안과 T02 교차 출처는 현재 표본의 동일 출처에 조건부.
 - G05 공식 OGC sample binary 미수신 → G02 GDAL publisher SQL actual rows를 명시적 별도 표본으로 대체 비교; 원래 artifact 행을 채웠다고 주장하지 않음.
 - 정정 근거는 sources.jsonl, 정확한 4 통제/조건은 bundles.md. SCOPE 원판을 보존하여 변경 순서를 추적. 독립 검토 미실시.
+- 후속 정정: G06 GDAL byte.gpkg 실제 bytes 12800 B와 G07 SQLite 파일 규격을 정적으로 판독. G02 SQL x는 G06 binary byte와 이름/last_change가 다르다. matrix 값은 일치하지만 동일 serialized data가 아니다. byte evidence JSON에 page offset/serial types/overflow를 저장. 본체 증거가 있는 GDAL sample로 비교하고, OGC 74984 미수신 유지. T08c red-bg.css를 열어 외부 red rule 자체도 확인했지만 픽셀/네트워크는 여전히 미실행.
