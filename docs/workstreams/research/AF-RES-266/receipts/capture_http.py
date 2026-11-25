@@ -3,14 +3,35 @@ import argparse
 import gzip
 import hashlib
 import json
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from urllib.parse import urlsplit, urlunsplit
 
 
 def utc():
     return datetime.now(timezone.utc).isoformat(timespec="microseconds")
+
+
+def public_url(url):
+    if url and urlsplit(url).hostname == "release-assets.githubusercontent.com":
+        parts = urlsplit(url)
+        return urlunsplit(parts._replace(query="", fragment=""))
+    return url
+
+
+def public_headers(raw):
+    def sanitize(line):
+        name, _, value = line.group().partition(b":")
+        if name.lower() == b"location":
+            redacted = public_url(value.strip().decode("ascii"))
+            return name + b": " + redacted.encode("ascii")
+        return name + b": [redacted]"
+
+    return re.sub(rb"^(?:set-cookie|authorization|proxy-authorization|location):[^\r\n]*",
+                  sanitize, raw, flags=re.IGNORECASE | re.MULTILINE)
 
 
 def main():
@@ -47,13 +68,20 @@ def main():
             stderr_path.write_bytes(process.stderr)
 
     curl = json.loads(process.stdout) if process.stdout else {}
+    curl["url_effective"] = public_url(curl.get("url_effective"))
+    raw_headers = header_path.read_bytes() if header_path.exists() else b""
+    headers = public_headers(raw_headers)
+    if headers != raw_headers:
+        header_path.write_bytes(headers)
     fields = ["response_code", "http_version", "url_effective", "content_type",
               "num_redirects", "size_download", "time_total", "ssl_verify_result", "errormsg"]
     receipt = {
         "requested_url": args.url, "accept": args.accept, "started_utc": started,
         "finished_utc": finished, "command": command, "exit_code": process.returncode,
         "curl": {name: curl.get(name) for name in fields},
-        "headers_sha256": hashlib.sha256(header_path.read_bytes()).hexdigest() if header_path.exists() else None,
+        "headers_sha256": hashlib.sha256(headers).hexdigest() if header_path.exists() else None,
+        "raw_headers_sha256": hashlib.sha256(raw_headers).hexdigest() if headers != raw_headers else None,
+        "header_storage": "redacted session headers/redirect query" if headers != raw_headers else "verbatim",
         "body_sha256": hashlib.sha256(body).hexdigest() if body_received else None,
         "body_bytes": len(body) if body_received else None,
         "body_filename": args.body.name if body_received and not args.discard_body else None,
