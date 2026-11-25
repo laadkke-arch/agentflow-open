@@ -1,0 +1,34 @@
+# ④ 반증과 판정 정정 (SCOPE 원본과 OBSERVATIONS 유지)
+
+## 직접 읽은 반례와 적용 변경
+| id | 실제 근거 및 위치 | 첫 판정의 약점 | 수정 규칙 | 재판독 |
+|---|---|---|---|---|
+| C1 | D01 directed task API 이름, D02 training+기본 API 안내, D09 Mica sidebar | 사전 질문에서 이름을 제시하면 첫 노출 자체가 앞당겨짐 | 사전 회상 문구에는 이름/선택지 없음; 이름, 원리, 조건, 적용 능력 분리. 회상 없음은 U. | N은 기존 upper-bound 효과 알고 있음(CONCEPT_ONLY), 이름/표준 API 사용만 N_CONSISTENT. '새 원리 발견' 제외. |
+| C2 | D05 §Evaluation L233–235 Assieme 73/90 외부 페이지 안 가도 preview; hover 일부 우연 | 제공/클릭만 세면 클릭 없는 실질 노출 손실 | first_content_visible(카드 제목, snippet, hover, URL, 문서 본문) 각각. open은 navigation. 이해/시도와 별개 | R에서 A1 제목 노출은 Y, A1 문서 열기 N. B 두 anchor 같은 페이지라 후보별 독립 노출 불가. |
+| C3 | D10 §V L481–486 양 조건 1명씩 inline usage 자력 발견; 236 M1 close 먼저 | 추천 뒤 개선은 추천 때문이라는 과잉 판정 | prior 또는 self-search가 먼저면 추천-발견 attribution 뒤집음. 차례는 clock uncertainty 적용. | N의 대안 탐색 이력에 불완전 추적이면 U. L군 t12− 자력 발견 시도 Y 및 independent. |
+| C4 | D06 §VII 실제 compile 요구 없음, D11 §3.2 40개 탐색/14 통합 시도; 236 S1 zip은 추천자 | 수정 제안이나 제3자 코드를 본인 교체로 세기 | stable target, same actor, artifact parent/child bytes & functional diff, authenticated save 필요. | N/F만 실제 저장을 가정; K/R no. 타인 commit/코드 예시는 U. |
+| C5 | F04 Exp2 Table2 결함 모방, F02 경고/지연에도 고착, F03 경고 조건 효과 | 새 API 사용률=품질 상승 | 동일 요구 독립 품질/인수; 좋은/나쁜 모방을 구별, 후반 재작업과 rollback도 별도. | F의 left는 tie no-tie(B1 vector)는 통과, B2/B3/B6/B7 실패. 교체는 Y, 인수 N. |
+| C6 | F01 자체 초기 아이디어도 고착 경쟁 설명, D10 첫 결과에 집중 | 링크 없이도 초기 접근에 고착할 수 있음 | 원래 같은 방식/의도적 거절/자기 생성 선호 분리. 새로운 예시가 더 낫다는 전제 없음. | K와 R은 현재 요구 만족; 변경 없음이 실패가 아님. |
+| C7 | M02 carryover/first-period 사후 선택, M04 allocation concealment | AB/BA 균형만으로 전이 해결 또는 타이밍을 첫 봉인 뒤 무작위 선정할 때 순서 충돌 | enrollment에서 sequence 은폐 배정, first task order 알려줌, 타이밍은 t0에만 해제. first period primary 사전지정. period2는 반대 timing 추론 가능. | 48 배정 all; 24 first primary; 24 second exploratory; 다른 사람 간 메시지 차단+노출 위반 유지. |
+| C8 | P01/P02와 237 원장 reviewer key 부재, M03 monotone selection | 0 post-review 작성자 분=reviewer 무노동 혹은 수락자만 평균 | reviewer/acceptor actor+active sec; all assignment, failure/withdrawal/missing separate. | F 노동 비용 발생, 실패 분모에 포함. unknown reviewer min은 0 금지. |
+
+## 세 개 이상 반전 관측을 완전 합성으로 손 적용
+원행 K/N/R/F는 동일 유지. 아래는 같은 규칙을 가상 추가 행으로 재채점한 것으로 새로운 실험 아님.
+- N' prior sealed draft from same participant before t0 contains bisect_right with right-boundary explanation. 이름/조건 K → 첫 API 발견 주장 철회; post implementation replacement Y 유지, 인수 별개.
+- N'' browser event t=-1 or L t=7 with self-search result same exact method visible and explanation; provided card at t0/t12. first exposure source self-search if time ordering valid; card attribution contradicted even if later code identical. L assignment remains L.
+- N''' after artifact hash matches but authenticated edit actor is recommender or reviewer and no author edit; replacement by participant U (or contradicted if full evidence shows other actor); test pass and acceptance alone cannot fix attribution.
+- R' post uses Counter for diagnostics only and manual runs core unchanged. code hash differs but functional mechanism same; auxiliary/refactor, main replacement N. If core changed and meets spec, label implementation replace (not global aggregation).
+- F' t24 code left rejected; t40 author returns to exact pre hash following review; temporary replacement Y, retained_at_cutoff at t24 Y but final retained N, final independent acceptance may become Y. Original t24 failure stays. F'' t40 right passes but reviewer wrote it: post-review output improved, author-change attribution U/contradicted; role/time recorded separately.
+- K' API previously known name only, initial design wrong for separated keys; after link correctly explains run boundaries and changes code. name K, condition N_CONSISTENT, application improved; do not dismiss new condition learning merely known name.
+- Missing: t0 artifact corrupted but later right code and clear self report: prior N_CONSISTENT cannot be assigned without seal, U; replacement U; quality still testable. Complete log absent does not count as no change.
+
+## 규칙 세분화 (정정 후 적용)
+Prior family/name/condition/application 4 dimensions. N_CONSISTENT only dimension-specific explicit unawareness + sealed contradictory/compatible evidence (no evidence of prior positive usage) + later explanation, no confirmed prior exposure. 'I can't remember' alone U. Positive prior evidence overrides later novelty selfreport for same dimension; conflict about source or timing U rather than choosing convenient explanation. Task conceptual knowledge (desired upper-bound) vs API implementation strategy (library algorithm) separate. Implementation replacement includes manual linear scan→library binary search with same specified behavior; do not equate changed implementation with changed functional requirement or newfound concept. A/B small tasks do not demonstrate architecture-level design transfer. Track quality as pre/post outputs, not judged by API preference.
+
+Initial design artifact before link may be pseudocode rather than executable: classify planning change vs executable artifact change separately. Require t0 executable or same target with actual meaningful code for 'existing implementation replaced'; draft-only→first implementation is first implementation based on candidate, not replace. Code hash equal but comments/import formatting changed? function-level delta and operation class, not byte difference alone. If t0 incomplete, mark quality baseline U; post pass does not establish improvement without measurable baseline.
+
+For all-assigned primary effect define one outcome per assigned participant×task: any suitable-candidate same-author retained implementation replacement with novelty-consistent named API or condition separately; generic first discovery/changes regardless of path also measured in both conditions. Candidate attribution can only be evaluated when recommendation available and is a descriptive mechanism metric (not treatment effect on click). Use 1st-period only. If Q7 independent coder disagreement on N_CONSISTENT → hold U until adjudication, never majority by two votes. 
+No actual participant evidence or independent coder; these are proposed rules and synthetic hand coding. Revise result language; prior SCOPE intact, observations intact.
+
+## Cost reversal (synthetic arithmetic, not estimates)
+For four traces: K author11 reviewer3 acceptor1=15, N author15 reviewer4 acceptor1=20, R author13 reviewer3 acceptor1=17, F author13 reviewer5 acceptor1=19; total71, accepted3; 71/3≈23.67 synthetic person-min per acceptance. Successful-only 52/3≈17.33; failure omitted underestimates. Different tasks/conditions and hand-made cases forbid effect calculation. Hypothetical E author 8 review 12 accept 1=21; L author 12 review 3 accept 1=16; maker savings 4, net extra 5. Cost ratio also affected by accepted denominator. Reviewer no active log => total labor U not 0. Time windows fixed cap and active segments; baseline is shared pre-treatment cost, report both baseline-inclusive and post-treatment.
