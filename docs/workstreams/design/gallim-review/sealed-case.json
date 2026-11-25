@@ -1,0 +1,66 @@
+{
+  "case_id": "EVAL-X1",
+  "sealed_by": "gallim-review thread (기존안 강점·실패 조건 검증)",
+  "sealed_before": "reading any new design proposal from other threads",
+  "outside_existing_examples": {
+    "checked_ref": "work/design-gallim@fc68f0d1227cab2bf5a7a4b8eef1d9d6f3affc5c",
+    "path": "docs/workstreams/design/",
+    "patterns": ["pocket", "bagit", "oai-pmh", "나중에 읽기", "read-later", "read later"],
+    "hits": 0
+  },
+  "ground_truth_in_corpus": "none: no pinned pre-2025-05-22 reading of Pocket export/API, no reviewed alternative service",
+  "request": {
+    "at_utc": "2025-05-15T00:00:00Z",
+    "project": "개인 지식관리 웹앱: 웹 클리퍼 → 저장 목록(링크·제목·태그·저장일) → 전문 검색 → 공유 페이지",
+    "selected_part": "저장 목록 계층: 클리퍼 입력을 보관하고 변경분을 검색 계층에 넘긴다",
+    "goal": "저장 목록을 직접 만들고 운영하지 않고 기존 서비스나 부품으로 대신한다",
+    "requirements": [
+      {"id": "R1", "required": true, "text": "사용자가 저장한 링크·태그·저장일을 언제든 공개 형식으로 내보낼 수 있어야 한다."},
+      {"id": "R2", "required": true, "text": "외부 서비스가 종료를 발표해도 사용자 목록 전체의 사본이 우리 쪽에 남아, 종료 후 30일 동안 사용자가 조회할 수 있어야 한다."},
+      {"id": "R3", "required": true, "text": "클리퍼 → 저장 → 검색 순서를 유지하고, 검색 계층은 저장 계층의 추가·삭제를 받아야 한다."}
+    ],
+    "preferences": ["무료 또는 소규모 비용", "읽기 API 제공"],
+    "out_of_scope": ["클리퍼 화면", "전문 검색 엔진 선택", "읽기 화면"],
+    "unknown": ["사용자 수", "기존 데이터 양"]
+  },
+  "events": {
+    "ledger": "https://github.com/laadkke-arch/agentflow-open/blob/ba038a0aa589985d5f14549fa55f628f02fa151d/docs/workstreams/research/AF-RES-152/events.jsonl",
+    "sources": "https://github.com/laadkke-arch/agentflow-open/blob/ba038a0aa589985d5f14549fa55f628f02fa151d/docs/workstreams/research/AF-RES-152/sources.jsonl",
+    "same_url": "https://support.mozilla.org/en-US/kb/future-of-pocket",
+    "sequence": [
+      {"id": "E1", "date": "2025-05-22", "event_ids": ["CT-POCKET-DELIST"], "source_ids": ["MO-POCKET-ANN", "MO-POCKET-BASE"], "fact": "종료 결정 공지, 신규 설치 중단, 7/8 이후 내보내기 전용, 기한 10/8"},
+      {"id": "E2", "date": "2025-07-08", "event_ids": ["POCKET-STOP"], "source_ids": ["MO-POCKET-STOP"], "fact": "저장 종료, 내보내기 계속"},
+      {"id": "E3", "date": "2025-10-08", "event_ids": ["POCKET-D1"], "source_ids": ["MO-POCKET-D1"], "fact": "내보내기 기한 11/6로 변경"},
+      {"id": "E4", "date": "2025-10-09", "event_ids": ["POCKET-D2"], "source_ids": ["MO-POCKET-D2"], "fact": "내보내기 기한 11/12로 재연장"},
+      {"id": "E5", "date": "2025-11-12", "event_ids": ["POCKET-EXPORT-END"], "source_ids": ["MO-POCKET-END"], "fact": "내보내기·API 비활성화, 도움말은 200"}
+    ]
+  },
+  "principle_sources_in_repo": [
+    {"name": "OAI-PMH deleted records / resumption", "ledger": "https://github.com/laadkke-arch/agentflow-open/blob/ba038a0aa589985d5f14549fa55f628f02fa151d/docs/workstreams/research/AF-RES-152/sources.jsonl", "source_id": "OP-OAI"},
+    {"name": "BagIt RFC 8493 packaging with fixity", "ledger": "https://github.com/laadkke-arch/agentflow-open/blob/d996a675e01194fdacde17c6542cbbe77561cbc9/docs/workstreams/research/AF-RES-263/sources.jsonl", "source_id": "B01"}
+  ],
+  "checkpoints": [
+    {"at": "T0", "utc": "2025-05-15T00:00:00Z", "criteria": {
+      "T0-a": "R1/R2 지지·검증됨에는 고정판 원문 위치 필요. 없으면 '확인할 후보' + 첫 원문 + 확인 한 가지. 인지도 순위는 실패",
+      "T0-b": "R2는 우리 쪽 지속 사본의 성질임을 짚고 '시험해 볼 원리'를 별도 제시. 빌릴 것과 대상에서 재확인할 것(호출 한도, 삭제 신호, 토큰 만료) 구분. '공지 후 일괄 내보내기'만 권하면 실패",
+      "T0-c": "R1 해석 (가) 사용자 직접 내보내기 / (나) 우리 앱의 API 읽기. 고른 해석을 밝히거나 한 번만 되묻기"}},
+    {"at": "T1", "utc": "2025-07-09T00:00:00Z", "criteria": {
+      "T1-a": "200이어도 R3 이유 무효 표시. 유효로 읽으면 낡은 추천",
+      "T1-b": "T0 답을 당시 입력·근거·판정으로 재생, 덮어쓰기 금지"}},
+    {"at": "E3-E4", "utc": "2025-10-10T00:00:00Z", "criteria": {
+      "E-a": "같은 URL의 기한 변경을 새 항목으로 세지 않고 판별 기한을 보존. '10/9에 알던 기한' 질의 가능"}},
+    {"at": "T2", "utc": "2025-11-13T00:00:00Z", "criteria": {
+      "T2-a": "Pocket R1·R2 반증. 검증된 대체 없음 + 다음 행동. 지어낸 대안은 실패",
+      "T2-b": "도구 철회가 무관한 원리 후보 판정을 바꾸지 않음"}},
+    {"at": "T3", "utc": "2026-03-01T00:00:00Z",
+     "request": "연구실 위키의 '참고문헌 북마크' 부분을 외부 서비스에 맡기고 싶다. 서비스가 문을 닫아도 북마크가 우리 서버에 남아야 한다. 화면은 범위 밖.",
+     "criteria": {
+      "T3-a": "원리 후보가 이름이 아니라 관계로 재발견",
+      "T3-b": "EVAL-X1의 Pocket 판정·사용자 맥락 불승계, 공개 관측만 재사용"}}
+  ],
+  "observations_to_record": ["오승인 수", "낡은 추천 시간(E2, E5 이후)", "과거 답 재생 성공/실패", "T2 지어낸 대안 수와 다음 행동", "원리 생존(T2)·재발견 순위와 경로(T3)", "열람 원문 수·외부 요청·바이트·판독 시간"],
+  "evaluator_exposure": {
+    "read_before_seal": ["work/design-gallim@fc68f0d1 docs and code", "AF-RES-012/147/150/152/257/258 RESULT/HANDOFF", "AF-RES-152 ledger rows for Pocket", "AF-RES-263 ledger rows for BagIt"],
+    "not_read_before_seal": ["new design proposals from other threads", "pre-2025-05-22 Pocket export/API docs", "alternative read-later services"]
+  }
+}
