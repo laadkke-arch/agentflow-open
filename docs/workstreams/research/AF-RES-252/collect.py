@@ -574,12 +574,15 @@ def route_b(archive, question_id):
         "site": "dba", "filter": archive.filter("duplicate"),
     })
     item = single(page, "question_id", question_id)
-    require(item is not None, f"{page.receipt}: origin public question absent")
+    if item is None:
+        return {"status": "vacant_origin_absent", "question_id": None, "receipt": page.receipt, "ordered_ids": None}
     reason = item.get("closed_reason")
     require(isinstance(reason, str) and reason.strip().casefold() == "duplicate",
             f"{page.receipt}: closure state has changed since frame")
+    if "closed_details" not in item:
+        return {"status": "vacant_details_absent", "question_id": None, "receipt": page.receipt, "ordered_ids": None}
     details = item.get("closed_details")
-    require(isinstance(details, dict), f"{page.receipt}: closed_details missing")
+    require(isinstance(details, dict), f"{page.receipt}: invalid closed_details")
     array = details.get("original_questions", [])
     require(isinstance(array, list) and all(
         isinstance(ref, dict) and type(ref.get("question_id")) is int for ref in array
@@ -591,9 +594,8 @@ def route_b(archive, question_id):
         state = "vacant_empty" if "original_questions" in details else "vacant_array_absent"
     else:
         state = "selected"
-    return {"status": state, "question_id": first, "receipt": page.receipt, "ordered_ids": [
-        item["question_id"] for item in array
-    ]}
+    return {"status": state, "question_id": first, "receipt": page.receipt,
+            "ordered_ids": [reference["question_id"] for reference in array] if "original_questions" in details else None}
 
 
 def credit(item, url):

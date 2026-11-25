@@ -16,7 +16,7 @@
 ## 선택과 판독 개방
 
 - A는 `/search/advanced?site=dba&tagged=postgresql%3Bgreatest-n-per-group&sort=relevance&order=desc&pagesize=5`에 봉인 질의를 더한다. 검색에는 모집 날짜를 적용하지 않는다. 제공자의 OR raw top5와 제공자 전순서에서 AND를 충족한 부분수열의 최초 5를 기록한다. 이 부분수열에서 자기 ID를 뺀 첫 요소를 선택한다. 출력 순위를 재정렬하지 않는다. 5개 확보, has_more=false, 익명 API 페이지 한도(25), 실패 중 먼저 만난 종료 상태와 추가 비용을 남긴다.
-- B는 `closed_details.original_questions` 원순서의 첫 ID다. 첫 원소가 자기이거나 정상 응답에서 배열이 없거나 비면 그대로 기록한다. 자기 경로를 사용 가능한 외부 도착으로 세지 않는다. `closed_details` 전체가 빠진 경우는 대상 확인 실패로 남긴다. 후보 단계의 검증된 필터가 있어야 absent/empty와 전송·필터 결측을 가를 수 있다.
+- B는 `closed_details.original_questions` 원순서의 첫 ID다. 자기 경로를 사용 가능한 외부 도착으로 세지 않는다. 검증된 필터와 정상 wrapper에서 원글·`closed_details`·`original_questions`의 생략과 빈 배열을 각각 구분한다. 필드가 생략된 경우는 제공된 외부 도착의 공석으로 기록하며 실제 중복 관계는 미확인이다. 전송·필터 결측과 자료형 오류는 별개다.
 - 도착 질문당 1회 본문, 채택 답 ID 우선(채택 ID GET이 비면 대체하지 않음). 채택 ID가 없으면 전체 답 메타를 score 내림차순·creation_date·answer_id 오름차순으로 정렬한다. 고른 한 답만 본문을 가져온다. 공유 질문·답의 물리적 GET을 재사용하고 논리적 경로 예산을 따로 기록한다. 공개 출처·귀속은 대응표에 두고 판독판에는 배치하지 않는다.
 - 254의 개방 순서는 manifest → origins → destinations → mapping이다. origins는 후보 순번과 익명 라벨·가림 본문으로 구성한다. destinations는 무작위 순서·불투명 라벨을 사용한다. 중복 뱃지·글 링크를 지우고, origin에서 해법의 직접 단서가 되는 SQL 코드 블록을 마스킹한다. 도착 답의 SQL은 남긴다. 키워드·표현·데이터에서 원글 또는 해법을 역추정할 수 있는 한계를 기록한다. 원문과 연결표는 별도 보존한다.
 - 누락된 first-window를 정상 빈 표로 만들지 않는다. 미수신·부분 전송·스키마 또는 transport 오류, 검증된 빈 배열, 사전 공석, 적용 대상 밖을 각각 기록한다. 정상 0 모집의 경우 실제 수신한 영수증으로 0을 증명해야 한다. 필수 배열과 입력이 확정되기 전에는 254를 열지 않는다.

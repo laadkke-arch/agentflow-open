@@ -271,6 +271,18 @@ class ReplayTest(unittest.TestCase):
         self.assertIn("SELECT true", (self.output / "reader" / "destinations.jsonl").read_text())
         self.assertEqual(af.run(pars("replay", self.output, self.seal))["packet"], manifest)
 
+    def test_missing_duplicate_details_differs_from_empty_array_or_missing_receipt(self):
+        self.fixture.filter("duplicate")
+        self.fixture.se("duplicate-1000", "questions-by-id", "/questions/1000", {
+            "site": "dba", "filter": "fake-duplicate",
+        }, [{"question_id": 1000, "closed_reason": "Duplicate"}])
+        archive = af.Archive(self.output, offline=True)
+        result = af.route_b(archive, 1000)
+        self.assertEqual(result["status"], "vacant_details_absent")
+        self.assertIsNone(result["ordered_ids"])
+        with self.assertRaisesRegex(af.Missing, "receipt missing"):
+            af.route_b(archive, 1001)
+
     def test_replay_catches_one_raw_record_missing_after_valid_hash(self):
         self.positive_packet()
         self.fixture.mutate(self.search_key, lambda payload: payload["items"].pop(2))
