@@ -22,8 +22,9 @@ def now():
 
 
 class Desktop:
-    def __init__(self, xdotool):
+    def __init__(self, xdotool, version):
         self.xdotool = xdotool
+        self.version = version
         self.commands = []
 
     def invoke(self, *args):
@@ -57,12 +58,12 @@ class Desktop:
     def title(self):
         return self.x("getactivewindow", "getwindowname")
 
-    def client_corner(self, window):
+    def window_geometry(self, window):
         geometry = self.invoke("xwininfo", "-id", window)
-        top = re.findall(r"Absolute upper-left [XY]:\s+(-?\d+)", geometry)
-        if len(top) != 2:
-            raise RuntimeError(f"No window origin in xwininfo result: {geometry}")
-        return tuple(int(value) for value in top)
+        fields = re.findall(r"^\s*(?:Absolute upper-left [XY]|Width|Height):\s+(-?\d+)", geometry, re.M)
+        if len(fields) != 4:
+            raise RuntimeError(f"No window geometry in xwininfo result: {geometry}")
+        return tuple(int(value) for value in fields)
 
     def wait_title(self, expected, timeout=7):
         deadline = time.monotonic() + timeout
@@ -79,17 +80,26 @@ class Desktop:
     def picker(self, path, *, label=False):
         if label:
             self.key("alt+f", "i", "l")
+            self.wait_title(lambda title: title.startswith("Select") and "label" in title.lower())
         else:
             self.key("ctrl+shift+i")
-        self.wait_title(lambda title: "select" in title.lower() or "import" in title.lower())
+            self.wait_title(lambda title: title == "Select one or more files")
         self.key("ctrl+l", "ctrl+a")
         self.type(path)
         self.key("Return")
         title = self.wait_title(lambda title: title in ("A", "Music Import"))
+        if title == "A" and self.version == "3.5.0" and path == FIXTURES / "A.wav":
+            # The project title can change before Audacity finishes tempo detection.
+            deadline = time.monotonic() + 1.5
+            while title == "A" and time.monotonic() < deadline:
+                time.sleep(0.12)
+                title = self.title()
         if title == "Music Import":
-            left, top = self.client_corner(self.x("getactivewindow"))
+            left, top, _, _ = self.window_geometry(self.x("getactivewindow"))
             self.click(left + 284, top + 91)  # No: keep the project in seconds.
             self.wait_title(lambda title: title == "A")
+        elif title != "A":
+            raise RuntimeError(f"Unexpected post-import window: {title!r}")
         time.sleep(0.18)
 
     def move_up(self, y):
@@ -145,18 +155,24 @@ def run(desktop, version, condition, run_dir):
             route = desktop.wait_title(lambda title: title in ("Audacity", "Export Audio"))
             if route == "Audacity":
                 chooser = desktop.x("getactivewindow")
-                left, top = desktop.client_corner(chooser)
+                left, top, _, _ = desktop.window_geometry(chooser)
                 desktop.shot(run_dir / "local-export-choice.png")
                 desktop.click(left + 500, top + 427)
         desktop.wait_title(lambda title: title == "Export Audio")
         settings_window = desktop.x("getactivewindow")
-        left, top = desktop.client_corner(settings_window)
+        left, top, _, _ = desktop.window_geometry(settings_window)
         desktop.click(left + 235, top + 63)
         desktop.key("ctrl+a")
         desktop.type(outputs)
         desktop.click(left + 170, top + 336)
-        time.sleep(0.25)
-        left, top = desktop.client_corner(settings_window)
+        deadline = time.monotonic() + 7
+        while True:
+            left, top, _, height = desktop.window_geometry(settings_window)
+            if height >= 650:
+                break
+            if time.monotonic() >= deadline:
+                raise RuntimeError("Multiple Files did not expand the export dialog")
+            time.sleep(0.12)
         desktop.click(left + 16, top + 499)
         desktop.x("mousemove", 1020, 875)
         desktop.shot(run_dir / "export.png")
@@ -195,7 +211,7 @@ def main():
     parser.add_argument("run_ids", nargs="+", help="e.g. base-r1, move-b-r2, silent-b-r1")
     parser.add_argument("--xdotool", default="xdotool")
     args = parser.parse_args()
-    desktop = Desktop(args.xdotool)
+    desktop = Desktop(args.xdotool, args.version)
     for run_id in args.run_ids:
         condition, repetition = run_id.rsplit("-r", 1)
         if condition not in (*CONDITIONS, "silent-b") or not repetition.isdecimal():
