@@ -55,6 +55,8 @@ Debian 13.6 amd64, Linux 6.18.57에 Chromium `156.0.8078.79-1~deb13u1`, ChromeDr
 
 같은 엔진·시험의 r1과 r2는 원형 PNG의 양쪽 SHA 및 기하의 단어 fragment 전체가 일치했다. 측정한 범위는 주 시험 fragment 96/96, 내장 파란 비교 36/36, 외부 참조 132/132이다. 한 줄이 여러 단어를 같은 y에 놓는 것을 관측한 값이며, CSSOM의 font ascent/descent는 캡처 내 잉크 모양의 경계와 구별된다. 232의 정적 cut과 일치한 4개 시험×엔진 조건은 이미 공개 기대를 읽은 후에 관측했다. 가림 적중률의 분모는 공석 0이다. [선행 계산 S05](https://github.com/laadkke-arch/agentflow-open/blob/430a1a5ec049f58878d963cb8ca539c9375f93d0/docs/workstreams/research/AF-RES-232/predictions.csv), [별도 로드 원영수증](receipts/geometry/).
 
+정규 runner와 기하용 서버의 화면을 직접 대조하니 Chromium 003은 반복별 입력·참조 각각 3,086픽셀이 달랐다. 차이는 설명 문단의 `[8,18,497,34)` 픽셀 영역에 있고 y 34 이후 Ahem 블록의 차이는 0이었다. 다른 6개 슬롯은 두 경로의 입력·참조 PNG SHA가 각각 일치했다. 설명 문단 래스터 차이의 원인은 미확인이다. 원형 판정에는 canonical PNG만 사용했다. [두 캡처 경로 비교](receipts/cross-layer.json).
+
 ## Q5. 합성 통제가 가른 목적과 폭
 
 두 합성 입력에서 glyph와 공백의 advance는 20 CSS px 수준이고 줄 수는 모두 실제 3이다. C1의 최대 접두사 `[8,6,2]` ch와 최소 분산 `[4,7,5]` ch는 고정 줄 수에서 잔여폭 분산 `56/9` 대 `14/9` ch²다. 등폭·고정 k에서 폭 분산과 잔여폭 분산의 순위는 같다. 원 C1 balance는 두 엔진에서 두 번째 후보였다. 단어 2 뒤에 `br`를 두면 오른쪽 chunk의 `[3,5]` ch가 `[6,2]` ch보다 분산이 작다. WebKitGTK가 `[3,5]`로 바뀌었고, Chromium은 `[6,2]`를 그려 강제 뒤 세부 예측이 빗나갔다. [S01 CSS Text 4 §5.4](https://www.w3.org/TR/2026/WD-css-text-4-20260814/#text-wrap-style), [C1 원표 S05B](https://github.com/laadkke-arch/agentflow-open/blob/430a1a5ec049f58878d963cb8ca539c9375f93d0/docs/workstreams/research/AF-RES-232/breaks.csv).
