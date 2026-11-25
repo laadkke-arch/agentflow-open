@@ -118,12 +118,23 @@ def record(out, work, book):
             raise ValueError("Container package-document path differs from pin")
         public = {kind: package.read(book[kind]) for kind in ("opf", "nav")}
         matches = {kind: git_blob(data) == book[kind + "_git_blob"] for kind, data in public.items()}
+        line_endings = {}
+        for kind, shipped in public.items():
+            source = sources[kind][0]
+            line_endings[kind] = {
+                "source_bytes": len(source), "shipped_bytes": len(shipped),
+                "source_crlf": source.count(b"\r\n"), "shipped_crlf": shipped.count(b"\r\n"),
+                "shipped_git_blob": git_blob(shipped), "shipped_sha256": hashlib.sha256(shipped).hexdigest(),
+                "equal_after_crlf_to_lf": source.replace(b"\r\n", b"\n") == shipped.replace(b"\r\n", b"\n"),
+            }
         published_view = parse(book, public["opf"], public["nav"])
     frozen_view = parse(book, sources["opf"][0], sources["nav"][0])
     result = {"case": slug, "xml_sources": {kind: {"url": url, "sha256": sha, "git_blob": git_blob(data)}
                                            for kind, (data, url, sha) in sources.items()},
               "epub": {"url": epub_url, "sha256": digest(filename), "bytes": filename.stat().st_size,
-                       "package_paths": paths, "member_matches_pinned_git_blob": matches},
+                       "package_paths": paths, "member_matches_pinned_git_blob": matches,
+                       "member_line_endings": line_endings,
+                       "container_sha256": hashlib.sha256(container).hexdigest()},
               "views_equal": frozen_view == published_view, "frozen": frozen_view,
               "shipped": published_view}
     write_json(folder / "result.json", result)
