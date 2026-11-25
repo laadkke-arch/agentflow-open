@@ -35,7 +35,7 @@ A–F 카드가 질문·대상·입력판·관찰 동사·보류 문장을 독�
 
 ## Q2. 목격/원천 계보
 
-[S01 PROV Primer](https://www.w3.org/TR/prov-primer/) §3.1–3.6, [S02 PROV-DM](https://www.w3.org/TR/prov-dm/) §5.2.1–2에서 entity, activity, agent, derivation/revision/quotation을 다르게 취급한다. 여기서는 간단한 경량 관계만 차용(표준 전체 도입을 결정하지 않음).
+[S01 PROV Primer](https://www.w3.org/TR/prov-primer/) §3.1–3.6, [S02 PROV-DM](https://www.w3.org/TR/prov-dm/) §5.2.1–2에서 entity, activity, agent, derivation/revision/quotation을 다르게 취급한다. [S05 PROV-O](https://www.w3.org/TR/prov-o/) L895–914 및 qualified quotation/revision examples L2670–2741도 인용, revision, primary source의 구별과 section/attribution의 표현을 지원한다. 여기서는 간단한 경량 관계만 차용(표준 전체 도입을 결정하지 않음).
 
 | 실제 예 | 관계의 최소 표기 | 독립 증거로 더할 수 있는가 |
 |---|---|---|
@@ -48,7 +48,7 @@ A–F 카드가 질문·대상·입력판·관찰 동사·보류 문장을 독�
 | F01 rows / F02 Data Spec | machine output entity + methodology; field/row→actor | 같은 연구 계보; row별 data, 별 연구가 아님 |
 | H05 PLOS와 H06 PMC | 동일 DOI 재게재 | source_id는 별도, work 하나 |
 
-동일 주석을 복사한 인계 카드가 추가 목격을 제공하는 것으로 보지 않는다. 별도 actor의 회신도 관측된 행위/발언에만 범위 한정. 여섯 사례 간 공유 직접 원자료를 찾지 못했다. 공통 분석 표준 S01–04는 경험 사건의 공동 원천이 아니다. [H01](https://training.cochrane.org/handbook/current/chapter-04) §4.6.2의 report vs study 구분과도 일치.
+동일 주석을 복사한 인계 카드가 추가 목격을 제공하는 것으로 보지 않는다. 별도 actor의 회신도 관측된 행위/발언에만 범위 한정. 여섯 사례 간 공유 직접 원자료를 찾지 못했다. 공통 분석 표준 S01–05는 경험 사건의 공동 원천이 아니다. [H01](https://training.cochrane.org/handbook/current/chapter-04) §4.6.2의 report vs study 구분과도 일치.
 
 ## Q3. 필요·보완·충돌·독립 15쌍
 
@@ -101,7 +101,7 @@ A–F 카드가 질문·대상·입력판·관찰 동사·보류 문장을 독�
 ## 비용·대안·추가 분석
 
 - 공통 6장의 자료 접근 index를 보존하는 비용, 변경 시 locator 재확인 비용은 미계측. L은 첫 링크 안내와 저비용 판단, X는 근거 교체/판 충돌/행위자/고비용 결정에 적합. 검토자는 X에서 모든 필요한 raw input과 주장 단위 교체 가능성 확인. 최종 schema 도입이나 독립 성능 평가는 미확인.
-- 원장 71 records: counted 37 고유 원저작/원산출물(사례19, 결정10, 표준4, 종합4) 및 23 source lineage IDs. 원저작 수는 산출물 수: PBF/PNG/JSON은 distinct publisher artifacts지만 같은 asset lineage, PEP622/634는 같은 decision lineage, PROV Primer/DM 두 표준 원문 같은 lineage. Handbook 두 장은 1 work, PEP635 같은 설명 계보로 하한 미산입, PRISMA PMC duplicate 제외. 보수적으로 PEP622/634 중 하나와 PROV Primer를 제외하더라도 총35, 단 표준 4개 원문 요구는 각 독립 W3C 문서 기준 충족. 19 case works에서 6 사례별 최소 1 충족; 6 지명 사례는 서로 다른 관측 단위이지 6 독립 재현 실험이 아님. 재실험 0, 모델 실험 0(범위 밖). 
+- 원장 72 records: counted 38 고유 원저작/원산출물(사례19, 결정10, 표준5, 종합4) 및 23 source lineage IDs. 원저작 수는 산출물 수: PBF/PNG/JSON은 distinct publisher artifacts지만 같은 asset lineage, PEP622/634는 같은 decision lineage, PROV Primer/DM 두 표준 원문 같은 lineage. Handbook 두 장은 1 work, PEP635 같은 설명 계보로 하한 미산입, PRISMA PMC duplicate 제외. 보수적으로 PEP622/634 중 하나와 비규범적 PROV Primer Note(S01)를 제외하더라도 총36. 표준 네 원문은 S02/S03/S04/S05의 W3C Recommendations로 충족, PROV 계열은 동일 lineage. 19 case works에서 6 사례별 최소 1 충족; 6 지명 사례는 서로 다른 관측 단위이지 6 독립 재현 실험이 아님. 재실험 0, 모델 실험 0(범위 밖). 
 - 먼저 원장 기반 claim-level retrieval과 deletion tests를 수행하고, 렌더/PCM/실제 노동 데이터는 별도 실측 작업에 인계한다. 238–242 사용하지 않음. 이전 AF-RES-020 숫자는 brief의 문제 동기, 이번 독립 관측으로 재산정하지 않음.
 
 | 중요한 불일치 또는 약점 | 영향을 받는 판단 | 다음에 볼 구체적 원자료·검사 | 판정이 바뀌는 관측 |
