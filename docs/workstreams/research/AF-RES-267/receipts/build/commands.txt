@@ -1,0 +1,15 @@
+First source transfer (HTTP 403, curl exit 22, wrapper exit 1):
+curl --fail --silent --show-error --location --connect-timeout 15 --max-time 120 -o Python-3.12.0.tar.xz https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz
+
+Actual build in a fresh /tmp directory (LC_ALL=C):
+git -c advice.detachedHead=false clone --depth 1 --branch v3.12.0 --single-branch https://github.com/python/cpython.git cpython
+git -C cpython rev-parse refs/tags/v3.12.0 HEAD
+test HEAD == 0fb18b02c8ad56299d6a2910be0bab8ad601ef24 (compare git rev-parse HEAD)
+cd cpython
+gcc --version
+./configure --quiet --without-ensurepip
+make -s -j5
+./python -VV
+sha256sum python
+
+Git clone and source commit validation succeeded. The quiet build emitted GCC warnings and reported optional modules omitted. See make.stdout.gz (gzip preserves the raw stdout) and make.stderr. Runtime and loaded bisect/copy fingerprints are in r1/environment.json.
