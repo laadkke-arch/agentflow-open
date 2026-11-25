@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+from urllib.parse import quote
 import zipfile
 
 ASSETS = ("KhronosGroup/glTF-Sample-Assets", "e124e8d8d7330a5372bc2b4d00d39a4a9d7997ea")
@@ -44,7 +45,6 @@ def index(root, group, repository, selected):
         _mode, kind, blob = meta.split()
         if kind != "blob" or not selected(path):
             continue
-        from urllib.parse import quote
         records.append({
             "path": path,
             "repo": project,
@@ -82,7 +82,7 @@ def selected_asset(path):
         return False
     return (len(parts) == 3 and parts[2] == "README.md") or (
         len(parts) == 4 and (parts[2] in {"glTF", "glTF-Binary"} or
-                            parts[1:] == ["AnisotropyBarnLamp", "glTF-KTX-BasisU", parts[3]]))
+                            (parts[1] == "AnisotropyBarnLamp" and parts[2] == "glTF-KTX-BasisU")))
 
 
 def book_archive(root, records):
