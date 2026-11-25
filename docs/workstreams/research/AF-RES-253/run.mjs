@@ -127,6 +127,7 @@ function requestedCases() {
       ['aria', 'aria.html'],
       ['aria-reversed', 'aria-reversed.html'],
       ['aria-unique', 'aria-unique.html'],
+      ['aria-unique-wrong', 'aria-unique-wrong.html'],
     ]
     : inputs.fixtures.map(name => [name, name + '.html']);
   const modes = suite === 'default' ? ['default'] : Object.keys(inputs.modes);
