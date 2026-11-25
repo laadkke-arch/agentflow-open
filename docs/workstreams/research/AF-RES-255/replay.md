@@ -28,6 +28,9 @@ cd "$AF255_WPT"
   chrome css/css-text/white-space/text-wrap-balance-002.html css/css-text/white-space/text-wrap-balance-003.html
 git rev-parse HEAD HEAD:css/css-text HEAD:fonts
 git diff --exit-code HEAD
+git ls-tree -r --name-only HEAD css/css-text | LC_ALL=C sort | sha256sum
+git grep -ilE '(text-wrap(-style)?[[:space:]]*:[^;{}]*balance|valdef-text-wrap-balance)' HEAD -- css/css-text \
+  ':(exclude,glob)**/reference/**' ':(exclude,glob)**/*-ref.*' ':(exclude,glob)**/*-notref.*' ':(exclude,glob)**/support/**'
 ```
 
 패키지는 Debian 인덱스에서 `apt-get download` 또는 pool의 `.deb`를 받아 `dpkg-deb -x`로 `/tmp`에 펼친다. `env.json.packages`의 Version·해시를 대조한다. Chromium driver의 추출 루트는 `/tmp/afres255-net/chromium`, WebKitGTK 세 패키지와 Xvfb·보조 라이브러리의 추출 루트는 `/tmp/afres255-net/gtk`다. Xvfb를 `:87 -screen 0 1280x1024x24 -nolisten tcp -noreset`로 시작한 뒤 `DISPLAY=:87 xrandr --current`를 실행한다. 기존 두 경로를 사용할 경우 SHA와 실행판을 대조한 뒤 다음을 수행한다. `libexec` C 코드는 Debian 패키지에 들어 있는 네 파일의 절대 경로만 추출 위치로 연결한다. 빌드된 브라우저·드라이버·WebCore 파일은 패키지의 바이트 그대로다. 재생은 Chromium의 `--no-sandbox`와 GTK의 브라우저 샌드박스 해제 및 소프트웨어 렌더링을 포함한 해당 환경에서 고정 공개 입력을 localhost로 연다.
@@ -50,6 +53,8 @@ python "$AF255_OWNED/reftest.py" --wpt "$AF255_WPT" --engine chromium --engine w
 `geometry.py`는 원형과 다른 프로세스·프로필에서 로컬 HTTP 서버로 정확히 같은 bytes를 읽는다. `measure.js`는 글자를 분리해 감싸거나 CSS를 주입하는 대신 텍스트 노드 내 DOM Range의 좌표를 읽는다. CSS px와 폰트 advance를 기록하며 `br`는 단어 식별용 텍스트 경계로 표현한다. 수평 LTR, 동일 폰트의 이 입력에서 같은 블록 y의 허용 오차는 0.5 CSS px다. 데이터에는 `fontEvents`, `fontResources`, `faces`, HTTP status·font payload SHA와 `documentWidth`가 포함된다. 로드 이벤트 수집을 위해 별도 계측 서버에서 폰트 응답을 350ms 늦춘다. Chromedriver는 eager, WebKitGTK는 normal navigation이다.
 
 합성 C1·W7는 각기 width 8ch·7ch에 Ahem 20px와 normal gaps를 둔다. `-forced`는 word 2 뒤에 `br`를 삽입하고 나머지 CSS를 유지한다. 별도 002 변형은 word 2 또는 3 뒤에 `br`를 두며 원 입력 경로에서 실행하지 않는다. `missing-font`는 다른 HTTP 포트에서 해당 TTF 요청만 404로 응답한다. CSS 선언과 HTML byte는 보존한다. 002/003의 진단 결과는 별도 픽셀 비교이며 WPT 공식 PASS 모집에 산입하지 않는다.
+
+`controls`의 W7 후속 시험은 명시 cut 1;3과 동일 텍스트의 `calc(7ch + 0.015625px)` 및 `calc(7ch + 1px)` auto/balance다. `font-audit`는 포트의 별도 calibration 문서 및 원문을 담은 same-origin iframe에서 FontFaceSet 이벤트를 시도한다. WebKitGTK 이벤트가 수신되지 않았던 영수증과 실제 TTF HTTP 응답을 같이 남겼다.
 
 cue 원본은 `manifest.json`의 고정 `cue_fixture.url`을 다운로드한다. 두 cue의 raw line과 시각을 정적 추출한 뒤 브라우저가 `<track>`을 `hidden`으로 읽은 `VTTCue`에서 검산한다. 42ch·20ch 컨테이너에서 `pre-line`으로 두 cue 텍스트를 재배치한다. 이 높이와 줄은 일반 DOM 통제이며 비디오 오버레이나 읽기 선호 실험의 범위 밖이다.
 
