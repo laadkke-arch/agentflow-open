@@ -33,3 +33,9 @@ loopback HTTP의 회차별 allowlist로 모델·런타임 제공 파일을 분�
 | Q7 출판물 | Creative Commons Shared Culture 고정판에서 OPF 항목과 XHTML의 사용 간선을 둘 다 확인할 수 있다. 컨테이너 포함, 선언, 선택은 다른 관측이다. | 샘플 고정판 `7651e2002b631e6577fadf7e9e0692fa6efb8746`의 OPF→spine→XHTML→영상/텍스트트랙을 두 로컬 추출 경로로 비교. 동일 해시의 archive 입력을 쓰고, 빈 폴더에서 Lamp 및 BoxTextured와 함께 재생. EPUB 플레이어의 코덱·픽셀 선택은 표본 밖. |
 
 예정, 관측, 정상 공석, 미수신, 미실행, 적용 대상 밖과 단순 미확인을 구분한다. 주요 원바이트·디코더·결과가 미달이면 해당 목적 또는 작업 상태를 PARTIAL로 기록한다. 통합 담당의 상태와 구분한다.
+
+## 결과와 인계의 고정판
+
+- 사전 합격표는 `ffe11059acf34169890e49fcea5df835f2a2bf7f`, 원 측정은 `7c002297b6f2fa7ebeaf74b7e623be757463872c`, 고정 결과·자기점검은 `28973f6f7e17b738ca5a9feb7f984498e2330bd1`이다. 로더 실제 REVISION은 `188dev`였으며 선택한 Git commit은 사전판과 같다. [고정 결과](https://github.com/laadkke-arch/agentflow-open/blob/28973f6f7e17b738ca5a9feb7f984498e2330bd1/docs/workstreams/research/AF-RES-265/RESULT.md)
+- 고정판에서 소유 경로를 그대로 펼쳐 대표 케이스 11개와 probe/EPUB을 다시 실행했다. 이 판의 개별 세션과 전체 저장소 검사·본문/표 감사도 종료 0이다. [고정판 해시](receipts/result-sha256.json), [저장소 검사](receipts/repo-check.json), [고정판 빈 폴더 재생](receipts/fixed-replay.json)
+- 인계 판은 다음 단독 `HANDOFF.md` commit이다. 받은 브랜치에서 `git log -1 --format=%H HEAD -- docs/workstreams/research/AF-RES-265/HANDOFF.md`가 이 SHA를 가리킨다. 이번 브랜치의 원격 head와 단독 변경 범위를 게시 뒤 대조한다.
