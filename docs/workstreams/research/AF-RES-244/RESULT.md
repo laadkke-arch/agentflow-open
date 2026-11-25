@@ -22,7 +22,7 @@
 - N: neighbors/approximate_nearest_neighbors.
 - C: release_highlights/plot_release_highlights_0_24_0 → classification/plot_classifier_comparison → ensemble/plot_voting_decision_regions → neighbors/plot_caching_nearest_neighbors → neighbors/plot_nca_classification → neighbors/plot_nca_dim_reduction → neighbors/plot_classification → preprocessing/plot_scaling_importance → text/plot_document_classification_20newsgroups.
 - G: cluster/plot_agglomerative_clustering → cluster/plot_cluster_comparison → cluster/plot_ward_structured_vs_unstructured.
-API 원 HTML과 공개 예제 HTML·다운로드 링크를 공식 publisher docs repo의 1.6 경로에서 확인했다. 5개 배포 .py ↔ 1.6.1 태그 .py 내용 및 blob 5/5 일치(E1–E5 및 -download). 정확판 원문 목록이지 소스트리 파일명 정렬 아님. S1 doc/conf.py, S3 build_doc.sh는 source checkout 설치 후 문서 빌드 관계를 지지; 실제 release build manifest/SG 설치판 및 실행 로그 미확인. S2는 min=0.17.1일 뿐.
+API 원 HTML과 공개 예제 HTML·다운로드 링크를 공식 publisher docs repo의 1.6 경로에서 확인했다. 5개 배포 .py ↔ 1.6.1 태그 .py 내용 및 blob 5/5 일치(E1–E5 및 -download). 정확판 원문 목록이지 소스트리 파일명 정렬 아님. ④ gallery-all.csv는 13개 전체 원 href(1+9+3), original_anchor_position 및 선정 여부를 보존. publisher commit [34aafaf61](https://github.com/scikit-learn/scikit-learn.github.io/commit/34aafaf61b4a20a7520817c02a5924baf026e3fe)에서 API 3 + 도착 HTML 5 blob 일치 8/8 재확인. 소스 태그 [f159b78d](https://github.com/scikit-learn/scikit-learn/commit/f159b78dc59f250cdde8fe391a21f0bc871960ad) 및 SG 비교 태그 [1a1e728d](https://github.com/sphinx-gallery/sphinx-gallery/commit/1a1e728df84b7b140989e9a4789c084a086dfbea)를 고정했다. S1 doc/conf.py, S3 build_doc.sh는 source checkout 설치 후 문서 빌드 관계를 지지; 실제 release build manifest/SG 설치판 및 실행 로그 미확인. S2는 min=0.17.1일 뿐.
 
 ## Q2 — 생성 경로
 R1/R2의 공개 RST L11–13은 클래스와 메서드들의 fully qualified 이름을 minigallery에 함께 전달하며 R3 L8–10은 함수 이름만 전달한다. 명시 파일/glob 없음. S7의 directive에는 이름 또는 경로 경로가 존재하지만 이 세 호출은 이름 경로. 따라서 클래스 목록을 특정 메서드 사용 목록으로 보아서는 안 된다. S1 L691–715의 doc_module=sklearn, backreferences_dir 및 inspect_global_variables=False는 자동 실행 namespace 검출을 막는다. S4 AST import map + 접근 이름, explicit text role; S5 L1230–1259의 정규화·필터링; S6 테스트와 S7 include 경로. 실제 호출·반환값 분석을 indexer가 수행하는 것은 아니다. E1 L292/296 명시 class role이 이름 후보의 실제 유입 경로로 강하게 지지되나 당시 _codeobj/빌드 로그 미확인으로 exact path 확정은 보류. E2/E3/E4/E5는 import 후 호출 AST 양성 후보. S1 L570–617 release highlight 우선과 제목 기반 정렬이 관련성 순위와 다름. 구체 control은 index-controls.md에 정리한다.
@@ -34,7 +34,7 @@ G1 E4 L55는 k30(설명 20 불일치), mode default connectivity; G2 E5 L77–15
 반례 E8 L585–591: precomputed sparse test에서 NN.fit 후 kneighbors 호출 반환값을 대입/출력하지 않는다(무오류 목적); L2164–2166은 반환 tuple [0] 거리만 비교. I2 L274와 I12 L118은 return_distance=False로 아예 반환을 생략하는 별개 경우. E8 L1444–1473은 동일 함수 두 모드 출력 배열의 독립 테스트 예상값을 제공하며 실행하지 않았다.
 
 ## Q5 — 두 면의 정보 차이
-표 2의 예산을 따른다. API→예제 쌍이 독립 시행이 아니고 순서 및 API 원면에 이미 답이 노출되므로 두 면 효과를 인과 추정하지 않는다. N/C는 gallery 표본의 전체 목적 적합도와 API 원면의 직접성이 다르다. G는 연결에 관해 예제 소비 맥락이 추가되지만 distance 계약을 실제 조작으로 전환하려면 추가 예제/테스트가 필요하다. E8 fixture는 비표본 보강이지 표본 5분모에 추가하지 않는다. serial output(HTML 내 공개 수치/배열)과 소스 주석의 저자 예시·이미지 참조 구분. 정확한 출력 픽셀 수치와 실행 비용/시간은 미확인.
+표 2의 예산을 따른다. API→예제 쌍이 독립 시행이 아니고 순서 및 API 원면에 이미 답이 노출되므로 두 면 효과를 인과 추정하지 않는다. N/C는 gallery 표본의 전체 목적 적합도와 API 원면의 직접성이 다르다. G는 연결에 관해 예제 소비 맥락이 추가되지만 distance 계약을 실제 조작으로 전환하려면 추가 예제/테스트가 필요하다. E8 fixture는 비표본 보강이지 표본 5분모에 추가하지 않는다. serial output(HTML 내 공개 수치/배열)과 소스 주석의 저자 예시·이미지 참조 구분. 정확한 출력 픽셀 수치와 실행 비용/시간은 미확인. 민감도(기준 변경, 별도): 내부 predict 배열이 accuracy로 소비되기만 하면 성공이라 정의하면 C2는 직접 1/2 C 표본, 전체 1/5; 다만 요청 목적은 새 레이블 회수이므로 사전 기준을 유지. G 목적을 connectivity 하나로 줄이면 G1/G2 직접 2/2이고 전체 표본 2/5. N1을 TSNE embedding 목적이라고 바꾸면 적합성 상승하지만 N tuple 조건은 해결되지 않는다.
 
 ## Q6 — 다른 분야 색인의 의미
 M1 DTD 250101 DescriptorName/@MajorTopicYN Y/N 기본 N; M2 PubMed [majr] 별표와 [mh] 차이; M3 교육 자료는 Descriptor Y OR Qualifier Y를 major로 추출; M4 check tag와 major 구분. M6/M7 역사적 공개 XML 사본 두 건 직접 열람: PMID12091962 Humans N / Prisoners Y, PMID11748933 Cryopreservation N(그러나 methods Qualifier Y) / Sperm Motility Y. M8 PMID9997 Chromatium N + enzymology qualifier Y는 보강 반례. 원행/계보는 index-controls.md. NLM 직접 XML F1–F8 미접근, 역사적 원레코드 사본은 현재 NLM 원응답과 동일하다고 주장하지 않고 엄격 산입에서 제외. 이 한계 때문에 전체 PARTIAL. MeSH 주제 중심성과 코드 목적 적합성은 동형이 아님: 전자는 색인자가 부여한 의미, 후자는 사용자의 특정 반환 조작에 대한 증거. 의료 판단 없음.
@@ -45,6 +45,9 @@ M1 DTD 250101 DescriptorName/@MajorTopicYN Y/N 기본 N; M2 PubMed [majr] 별표
 ## 비용·대안·추가 분석
 sources.jsonl 84행, 엄격 산입 38개 서로 다른 work_id/10 lineage_id, API 3, 예제·시험 9, 생성기 9, 구현 12, NLM 공식 지침 5; NLM 원 XML 0/2(역사적 사본 2 직접 열람, 보강 1; 미산입). 17 실패 행, 기타 미산입 29행(중복 형식/버전/negative search/사본 등). 예제 5 독립 도착, 1 공석; 비교 목적 3, 5쌍. 역사적 문헌은 두 PMID 별개 기록이나 최신 원천 계보는 미확인. 동일 저작의 웹·raw HTML·다운로드·Git 파일을 별도 work로 세지 않았다. 파일/공식 절 단위는 독립 실험/기관과 다르다. 21개 총량 충족이 XML 하한 미달을 상쇄하지 않는다. 
 대안 A: 기존 minigallery 유지(저비용·넓은 탐색, 호출 미확인); B: AST에 실제 call/args/return dataflow 태그 추가(동적 호출, decorator, alias, internal, 재할당·shape 어려움); C: API 인라인 예제 우선+ 목적별 snippet(짧은 답, 현장 맥락 손실); D: 테스트/실행 receipt로 검증된 결과 추가(시간/환경 비용, stale version). A+B+C 조합, D는 필요할 때만. 독립 가림 평가의 다음 입력은 본표 각 URL과 사전 기준을 독립 판독자에게 노출 순서 랜덤으로 주는 방식; 본 연구에서는 미실시. 
+## 자체 판정
+PARTIAL — 본표 6/6 슬롯 상태 확인(5 예제, 1 정상 공석), Q1–Q7 문서 판독 및 38개 산입. 원 NLM XML 2개 미확보가 완료 조건 하한에 걸린다. SG 실제 빌드 버전/정확 유입 파일, 실제 실행, 독립 가림·독립 검토 미실시. sources.jsonl과 index-controls.md에 반례 및 복구 경로를 남김. ④ 사전 순서 수정 없음; C1 정확 소비 L154 보정 및 전체 DOM anchor 재감사.
+
 ## 최종 약점과 반전
 | 중요한 불일치 또는 약점 | 영향을 받는 판단 | 다음에 볼 구체적 원자료·검사 | 판정이 바뀌는 관측 |
 |---|---|---|---|
