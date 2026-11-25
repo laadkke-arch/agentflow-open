@@ -1,0 +1,8 @@
+# AF-RES-244 사전등록 (도착 예제 열람 전)
+통합 8e1000cd9446909bc06cb2905c89c8bc78e99beb; 진행표 blob 4c5470fdbf34e703241c29416518fb0cd9939c9e; 계획 7369707441e2eb70e84004ca6cb3bfeefc8b4061. 본인 RUNNING, web-pro, attempt1, branch work/research-af-res-244 신규 생성. 유일 의존 231 중앙 DONE/자체 PARTIAL e55fd8c9df7fdd45259346aeb8884a7d3586594b: HANDOFF, RESULT, comparison, receipts/INDEX 읽음; 0/8 도착 답은 효과 0이 아니라 결측. 238–242 결과 및 252/254 SQL 문제 제외. AGENTS/STATE/DOT_AUTOMATION/RESEARCH_WORKFLOW 읽음. 문서판 1.6 URL, 정확 patch는 페이지 표시/태그 대조 후 확정. 소스 태그 1.6.1은 후보. 
+## 사전 규칙
+세 API 페이지의 Examples using ... 섹션에서 DOM/게시 순서 유지, href 원문 보존, 해석된 URL 기준 첫 두 고유 링크 선택. 중복과 전체 목록 수 별도; 문서 내 Examples와 See also 제외. 세 심볼×2=6 예정 자리, 실제 섹션이 없어 확인된 경우만 정상 공석; 접근 실패/파싱 실패는 결측. 원순서부터 커밋하고 도착 페이지 열기. 같은 예제 다른 형식은 하나의 저작; 다른 심볼에서 재등장하면 슬롯은 보존, 독립 증거 중복 제거.
+## 목적과 판정
+N: fit한 객체의 kneighbors(query 또는 명시적인 자기 질의)에서 거리와 fitted sample의 행 인덱스 두 반환을 회수하고 각각 출력/인덱싱/후속 연산에 연결. 배열 positional index이지 외부 업무 ID는 아니다. C: fit 후 새 질의의 predict 결과인 분류 레이블을 출력 또는 명확한 후속 연산으로 연결; 학습 y나 확률, score만으로 대체하지 않음. G: 함수 kneighbors_graph의 표본 그래프 또는 명시적 질의-학습 표본 그래프, sparse return의 mode connectivity/distance를 확인; feature graph 및 estimator method/다른 심볼의 결과는 대체하지 않음. 두 mode를 별도 기록하고 한 mode만이면 해당 mode 직접, 전체 목적 조건부. 출력 수치/그림의 값 계보가 호출 반환에 연결되어야 직접(코드 명시만, 소비/결과 없는 경우 조건부). 이름/객체만으로 필요 조작이 없으면 조건부(불충족 사유 명시); 원문/귀속 불명은 미확인. 실행 재현은 별도이며 출판된 그림/숫자를 실행 관측이라 부르지 않음.
+## 노출 및 비용
+API 1면의 인라인 Examples, 서명, 반환 계약 및 출판 결과만; 예제 단독 1면은 해당 HTML 본문(코드 및 출판 결과)만; 두 면은 API+해당 예제, 추가 .py/Git/설정은 감사용 별도 비용이며 두 면 점수에 넣지 않음. 링크 선별 후 동일 HTML의 독립 가림 판독은 하지 못하는 단일 연구자 설계; 노출 순서를 기록. 예측(미검증): 인라인 API 예제가 목적에 직접적일 수 있고 gallery는 관련성을 보장하되 반환 소비/모드/새 표본을 보장하지 않을 것. 단, 직접 충족 예제가 다수면 해당 사례에 반전. MeSH MajorTopicYN은 등장-중심 관계의 통제, 의료 판단 없음.
