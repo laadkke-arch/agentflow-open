@@ -31,8 +31,9 @@ CUE_SELECTORS = ['#cue-3-wide', '#cue-3-narrow', '#cue-4-wide', '#cue-4-narrow']
 
 
 def control_doc(text, width, mode):
+    css_width = f'{width}ch' if isinstance(width, int) else width
     return (f'<!doctype html><link rel="stylesheet" href="/fonts/ahem.css">\n'
-            f'<style>body {{ margin: 8px; }} #control {{ font: 20px/1 Ahem; width: {width}ch; '
+            f'<style>body {{ margin: 8px; }} #control {{ font: 20px/1 Ahem; width: {css_width}; '
             f'text-wrap: {mode}; white-space: normal; hyphens: none; word-break: normal; '
             f'overflow-wrap: normal; text-align: start; letter-spacing: 0; word-spacing: 0; }}</style>\n'
             f'<div id="control">{text}</div>\n').encode()
@@ -41,10 +42,14 @@ def control_doc(text, width, mode):
 def build_controls():
     docs = {}
     for case, (text, width) in WORDS.items():
-        left, right = text.split(' ', 2)[:2], text.split(' ', 2)[2]
+        first, second, rest = text.split(' ', 2)
         for mode in ('auto', 'balance'):
             docs[f'/{case}-{mode}.html'] = control_doc(text, width, mode)
-            docs[f'/{case}-{mode}-forced.html'] = control_doc(' '.join(left) + '<br>' + right, width, mode)
+            docs[f'/{case}-{mode}-forced.html'] = control_doc(f'{first} {second}<br>{rest}', width, mode)
+    docs['/W7-exact-fit-control.html'] = control_doc('aaaa<br>b c<br>dddd ee', 7, 'auto')
+    for suffix, width in [('plus-unit', 'calc(7ch + 0.015625px)'), ('plus-px', 'calc(7ch + 1px)')]:
+        for mode in ('auto', 'balance'):
+            docs[f'/W7-{mode}-{suffix}.html'] = control_doc(WORDS['W7'][0], width, mode)
     return docs
 
 
@@ -266,6 +271,9 @@ def controls(args):
     for cut in (2, 3):
         label = f'002-explicit-cut{cut}-vs-reference'
         comparisons[label] = picture_pair(out / f'002-explicit-cut{cut}.png', out / (Path(ref).stem + '.png'), out / (label + '.png'))
+    for suffix in ('plus-unit', 'plus-px'):
+        label = f'W7-auto-vs-balance-{suffix}'
+        comparisons[label] = picture_pair(out / f'W7-auto-{suffix}.png', out / f'W7-balance-{suffix}.png', out / (label + '.png'))
     write_json(out / 'controls.json', {'engine': args.engine, 'inputs': results, 'comparisons': comparisons, 'http': events})
 
 
@@ -280,12 +288,78 @@ def captions(args):
             result = measure_page(command, base + '/captions.html', CUE_SELECTORS, cue=True)
     raw = []
     for cue_block in fixture.decode('utf-8-sig').replace('\r\n', '\n').split('\n\n'):
+        if not cue_block.strip():
+            continue
         cue_id, *lines = cue_block.splitlines()
         if cue_id in MANIFEST['cue_fixture']['cue_ids']:
             timing, *text = lines
             raw.append({'id': cue_id, 'timing': timing, 'rawText': '\n'.join(text)})
     write_json(out / 'captions.json', {'engine': args.engine, 'fixture_sha256': MANIFEST['cue_fixture']['sha256'],
                                      'raw_cues': raw, 'measurement': result, 'http': events})
+
+
+FONT_AUDIT = '''
+const source = arguments[0];
+const done = arguments[arguments.length - 1];
+const frame = document.createElement('iframe');
+frame.width = 800;
+frame.height = 600;
+const started = performance.now();
+const state = {events: []};
+let timer;
+const timeout = setTimeout(() => { clearInterval(timer); done(state); }, 4000);
+timer = setInterval(() => {
+  const doc = frame.contentDocument;
+  if (!doc || new URL(doc.URL).pathname !== source) return;
+  clearInterval(timer);
+  state.attachedMs = performance.now() - started;
+  state.url = doc.URL;
+  for (const type of ['loading', 'loadingdone', 'loadingerror']) {
+    doc.fonts.addEventListener(type, event => {
+      state.events.push({type, atMs: performance.now() - started,
+        faces: Array.from(event.fontfaces, face => ({family: face.family, status: face.status}))});
+      if (type === 'loadingdone' || type === 'loadingerror') {
+        clearTimeout(timeout);
+        state.faceSet = Array.from(doc.fonts, face => ({family: face.family, status: face.status}));
+        done(state);
+      }
+    }, {once: true});
+  }
+}, 8);
+frame.src = source;
+document.body.append(frame);
+'''
+
+FONT_CALIBRATION = b'''<!doctype html>
+<script>
+window.fontCapture = [];
+for (const type of ['loading', 'loadingdone', 'loadingerror']) {
+  document.fonts.addEventListener(type, event => window.fontCapture.push({
+    type, atMs: performance.now(),
+    faces: Array.from(event.fontfaces, face => ({family: face.family, status: face.status})),
+  }));
+}
+</script><link rel="stylesheet" href="/fonts/ahem.css">
+<div style="font:20px Ahem">123 567 901</div>
+'''
+
+
+def font_audit(args):
+    out = args.output / (args.engine + '-font-audit')
+    out.mkdir(parents=True)
+    docs = {**result_files(args.wpt), '/font-audit.html': b'<!doctype html><title>Font load event audit</title><body>',
+            '/font-calibration.html': FONT_CALIBRATION}
+    with serve(args.wpt, docs, delay=0.75) as (base, events):
+        with webdriver(args, out) as command:
+            command('/url', 'POST', {'url': base + '/font-calibration.html'})
+            calibration = execute('return window.fontCapture', command)
+            checks = []
+            for test in MANIFEST['tests']:
+                command('/url', 'POST', {'url': base + '/font-audit.html'})
+                checks.append({'test': test['id'], **execute(FONT_AUDIT, command, ['/' + test['input']], async_script=True)})
+    write_json(out / 'font-audit.json', {'engine': args.engine, 'font_route_delay_seconds': 0.75,
+                                        'separate_calibration': calibration,
+                                        'checks': checks, 'http': events})
 
 
 def main():
@@ -296,7 +370,7 @@ def main():
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--profiles', type=Path, required=True)
-    parser.add_argument('--mode', required=True, choices=('original', 'missing-font', 'controls', 'captions'))
+    parser.add_argument('--mode', required=True, choices=('original', 'missing-font', 'controls', 'captions', 'font-audit'))
     parser.add_argument('--test', action='append', choices=('002', '003'))
     parser.add_argument('--repeat', action='append', type=int)
     parser.add_argument('--vtt', type=Path)
@@ -310,6 +384,8 @@ def main():
         if args.vtt is None:
             parser.error('--vtt is required for captions')
         captions(args)
+    elif args.mode == 'font-audit':
+        font_audit(args)
     else:
         suffix = '-missing-font' if args.mode == 'missing-font' else ''
         for test in MANIFEST['tests']:
