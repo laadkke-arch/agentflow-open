@@ -27,7 +27,7 @@
 
 ## Q4. A/B 도착 배열
 
-A의 현재 순서는 제공자 OR 검색에서만 가져온다. raw 상위 5개와 두 태그 AND 부분수열의 최초 5개, 첫 비자기 후보를 각각 기록한다. 5개 확보까지 추가 페이지가 필요할 수 있고, 익명 page 25에서 잘리면 미확인으로 기록한다. B는 `original_questions`의 원배열 첫 ID를 쓰며 첫 요소가 자기이면 그대로 두고 외부 도착 공석으로 본다. 선봉인 입력이 없어 두 배열을 요청하지 않았다. K01의 화면 중복 표시로 B 배열을 채우지 않았다. [S02 /search/advanced](https://api.stackexchange.com/docs/advanced-search) · [S04 closed_details](https://api.stackexchange.com/docs/types/closed-details) · [S13 익명 한도](https://api.stackexchange.com/docs)
+A의 현재 순서는 제공자 OR 검색에서만 가져온다. raw 상위 5개와 두 태그 AND 부분수열의 최초 5개, 첫 비자기 후보를 각각 기록한다. 5개 확보까지 추가 페이지가 필요할 수 있고, 익명 page 25에서 잘리면 미확인으로 기록한다. B는 `original_questions` 원배열의 첫 ID를 쓴다. 정상 응답의 자기 첫 요소, 질문 미반환, `closed_details` 생략, 배열 필드 생략, 빈 배열을 별도 공석으로 표시한다. 선봉인 입력이 없어 두 배열을 요청하지 않았다. 합성 A에서 자기 제외 후 raw 위치 6의 후보를 복원했고, B에서 첫 요소가 자기여도 다음 요소로 이동하지 않는 동작을 확인했다. [S02 /search/advanced](https://api.stackexchange.com/docs/advanced-search) · [S04 closed_details](https://api.stackexchange.com/docs/types/closed-details) · [S13 익명 한도](https://api.stackexchange.com/docs) · [재생](replay.md)
 
 ## Q5. 질문당 한 답과 예산
 
@@ -35,18 +35,18 @@ A의 현재 순서는 제공자 OR 검색에서만 가져온다. raw 상위 5개
 
 ## Q6. 판독 가능성
 
-실제 패킷은 차단 상태다. 코드의 판독판은 질문·답·저작권 귀속의 메타데이터를 별도 대응표로 옮기고 duplicate 배너와 게시물 링크를 제거한다. 원질문의 SQL 코드 단서와 제목의 명시 해법어를 마스킹한다. 요구를 재구성해야 하므로 내용상 같은 뜻의 일반 표현이나 테이블 구조는 남을 수 있다. #138641의 UPDATE·답 링크는 원본 보존과 판독판 저감이 함께 필요한 실제 사례다. 이 작업자는 보정 HTML을 열어 배너를 본 상태다. 254는 봉인과 파일 해시 검산을 마친 뒤 지정 순서로 처음 연다. [K01 #138641](https://dba.stackexchange.com/questions/138641/efficiently-get-records-with-latest-timestamp-per-group?noredirect=1) · [S19 각 revision 라이선스](https://stackoverflow.com/help/licensing)
+실제 패킷은 차단 상태다. 코드의 판독판은 질문·답·저작권 귀속의 메타데이터를 별도 대응표로 옮기고 duplicate 배너와 게시물 링크를 제거한다. 원질문의 SQL 코드 단서와 제목의 명시 해법어를 마스킹한다. 요구를 재구성해야 하므로 일반 표현·예시 데이터·표의 구조는 남는다. 본문·그림을 통해 알아본 출처, 문체로 추정한 저자, 남은 해결 접근은 가림 한계다. #138641의 UPDATE·답 링크는 원본과 판독판의 노출 차이를 보여 준다. 이 작업자는 보정 HTML을 열어 배너를 보았다. 합성 판독판 4·2·14 레코드의 재파싱, 해시, 링크 제거와 표 열 보존을 확인했다. 254는 실제 봉인과 파일 해시 검산이 끝나면 지정 순서로 연다. [K01 #138641](https://dba.stackexchange.com/questions/138641/efficiently-get-records-with-latest-timestamp-per-group?noredirect=1) · [S19 각 revision 라이선스](https://stackoverflow.com/help/licensing) · [재생](replay.md)
 
 ## Q7. Crossref와 페이지 분류
 
-서지 실험은 Shannon 제목의 relevance와 Kuhn 제목에 1900-01-01 단일 날짜를 적용한 조건이다. 둘 모두 첫 cursor GET이 CONNECT 403이었다. 원응답·DOI 순서·next-cursor와 정상 0 여부는 미확인이다. 공식 문서는 cursor 시작 `*`, 이후 `next-cursor`, `len(items)<rows` 정지를 정의한다. `rows=0`의 빈 items는 total-results와 별도로 확인해야 한다. Wiley에서 같은 Shannon 제목·저자의 서로 다른 두 DOI를, Chicago Press에서 Kuhn 초판 1962년과 4판 2012년을 직접 열었다. 이 출판사 서지는 제목·날짜·식별자에 관한 반례이며 Crossref API 순서값은 남아 있지 않다. [C02 Crossref tips](https://www.crossref.org/documentation/retrieve-metadata/rest-api/tips-for-using-the-crossref-rest-api/) · [F03](receipts/crossref-shannon-p1.1.meta.json) · [F04](receipts/crossref-kuhn-1900-p1.1.meta.json) · [C07 Shannon 7월](https://onlinelibrary.wiley.com/doi/10.1002/j.1538-7305.1948.tb01338.x) · [C08 Shannon 10월](https://onlinelibrary.wiley.com/doi/10.1002/j.1538-7305.1948.tb00917.x) · [C09 Kuhn](https://press.uchicago.edu/ucp/books/book/chicago/S/bo13179781)
+서지 실험은 Shannon 제목의 relevance와 Kuhn 제목에 1900-01-01 단일 날짜를 적용한 조건이다. 둘 모두 첫 cursor GET이 CONNECT 403이었다. 원응답·DOI 순서·next-cursor와 정상 0 여부는 미확인이다. 공식 문서는 cursor 시작 `*`, 이후 `next-cursor`, `len(items)<rows` 정지를 정의한다. `rows=0`의 빈 items는 total-results와 별도로 확인해야 한다. Wiley에서 같은 Shannon 제목·저자의 서로 다른 두 DOI를, Chicago Press에서 Kuhn 초판 1962년과 4판 2012년을 직접 열었다. 제목만으로 두 DOI를 하나로 합치면 서로 다른 권호를 잃는다. 합성 입력은 정상 0, 다음 커서가 있어도 끝나는 페이지, 중복 DOI, 레코드 순서 변조를 검출했다. [C02 Crossref tips](https://www.crossref.org/documentation/retrieve-metadata/rest-api/tips-for-using-the-crossref-rest-api/) · [F03](receipts/crossref-shannon-p1.1.meta.json) · [F04](receipts/crossref-kuhn-1900-p1.1.meta.json) · [C07 Shannon 7월](https://onlinelibrary.wiley.com/doi/10.1002/j.1538-7305.1948.tb01338.x) · [C08 Shannon 10월](https://onlinelibrary.wiley.com/doi/10.1002/j.1538-7305.1948.tb00917.x) · [C09 Kuhn](https://press.uchicago.edu/ucp/books/book/chicago/S/bo13179781) · [재생](replay.md)
 
 ## 비용과 대안
 
-- Cloud GET 시도 4건, 제공자가 보낸 공개 본문 0바이트 관측, 제공자 호출 차감 수 미확인. 정상 frame은 페이지와 경계에서 비용이 들고 A는 후보당 최대 25 metadata 페이지가 필요할 수 있다. 답 본문 예산과 그 메타데이터 비용은 별개다.
-- 열람 원장은 68행, 산입 고유 원자료 41건, 그 계보 20개다. 공식 SE 자료 18, DBA 보조 10과 보정 1, 제작자 규격·선행 인계·라이선스 4, Crossref 공식·저자 사례 6, 출판사 제목 계보 2를 산입했다. DBA 직접 열람 11건 가운데 본표 0, 보정 1, 보조 10이다. Crossref 실시간 실험 관측 0/2, 둘 다 결측이다. [sources.jsonl](sources.jsonl)
+- `collect.py` Cloud GET 시도 4건에서 제공자 본문을 받은 연결은 0건이다. 제공자 호출 차감 수는 미확인이다. 착수 시 단순 연결 시도 F05·F06은 별도로 집계했다. 정상 frame은 페이지와 경계에서 비용이 들고 A는 후보당 최대 25 metadata 페이지가 필요할 수 있다. 실제 답 본문 예산과 메타데이터 비용은 별개다. [Cloud 실행 기록](receipts/live-execution.json)
+- 열람 원장은 75행, 산입 고유 원자료 41건, 그 계보 20개다. 공식 SE 자료 18, DBA 보조 10과 보정 1, 제작자 규격·선행 인계·라이선스 4, Crossref 공식·저자 사례 6, 출판사 제목 계보 2를 산입했다. DBA 직접 열람 11건 가운데 본표 0, 보정 1, 보조 10이다. Crossref 실시간 실험 관측 0/2와 결측 2는 따로 센다. [sources.jsonl](sources.jsonl)
 - Crossref 두 연구에서 동일한 제목이나 가장 높은 검색 순위만으로 서지 동일성을 고정하기 어렵다. Grobid는 응답을 TEI로 재구성하고, Tkaczyk는 후보 검증을 검색 점수와 따로 비교했다. 254의 의미 판독을 위한 대응표를 분리하는 이유를 보여 주되 해당 일치 알고리즘을 이 실험의 순위 대용으로 쓰지 않았다. [C05 연구](https://www.crossref.org/blog/what-if-i-told-you-that-bibliographic-references-can-be-structured/) · [C06 Grobid](https://www.crossref.org/blog/how-grobid-uses-crossref-metadata-to-enrich-bibliographic-information/)
-- 결과는 PARTIAL이다. 환경의 공개 API 연결을 확보하면 원래 GET에서 모집과 판독 패킷을 이어간다. HTML·문서·정규화 로그는 원응답이 확인된 뒤의 검산과 제한을 설명하는 증거다.
+- 결과는 PARTIAL이다. 같은 공개 API URL에서 필터 토큰을 받은 뒤 모집과 판독 패킷을 이어갈 수 있다. GitHub에는 직접 열람 자료, 연결 실패 영수증, 독립 폴더에서 실행한 자체 재생과 합성 검사 12개를 저장했다. 별도 독립 검토는 미실시다. [재생 실행 기록](receipts/replay-execution.json) · [자체 점검](SELF_CHECK.md)
 
 | 중요한 불일치 또는 약점 | 영향을 받는 판단 | 다음에 볼 구체적 원자료·검사 | 판정이 바뀌는 관측 |
 |---|---|---|---|
