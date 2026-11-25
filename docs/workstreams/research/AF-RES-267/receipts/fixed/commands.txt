@@ -1,0 +1,26 @@
+Checked fixed-result commit: 7155d95fb2194fb03e65826689f09871a1785261
+Base commit: 9eeb7105c7edec2c5c4c0a1f722916b9d664b236
+
+Repository checks in the clean checkout on the repository environment's Python 3.12.14.
+python -m workbench.session check docs/workstreams/research/AF-RES-267/session.json --fetch
+python scripts/cloud_check.py --environment codex-cloud --fetch-contract --require-clean
+Underlying acceptance (executed by cloud_check.py): python scripts/check.py --require-git
+Raw stdout/stderr and exit are under repository/. The paths in cloud-check.json are
+checkout-relative .workbench paths emitted by the tool. Corresponding raw child logs
+are preserved under repository/child-logs/. The acceptance stdout is losslessly
+compressed as acceptance.stdout.log.gz; raw-expanded.sha256 verifies its bytes.
+The explicit session check covers AF-RES-267. check-all reported no_active_sessions.
+Scope: Git contract and ownership, core tests, two labs, demo/export/bundle restore,
+discovery source linkage and original smoke. See the cloud-check JSON for exact argv.
+
+The fixed version was read via git archive and replayed with the exact CPython 3.12.0 build.
+git archive 7155d95fb2194fb03e65826689f09871a1785261 docs/workstreams/research/AF-RES-267 | tar -xf - -C /tmp/af-res-267-fixed.y1td5bmQ/archive
+The complete replay launcher argv and input/output files are in replay/summary.json,
+replay/environment.json and per-process receipt.json. It used fresh work directories.
+python /tmp/af-res-267-fixed.y1td5bmQ/readback.py /tmp/af-res-267-fixed.y1td5bmQ/archive/docs/workstreams/research/AF-RES-267 /tmp/af-res-267-fixed.y1td5bmQ/replay
+Argument 1 is the archived result's owned path. Argument 2 is the new replay output.
+
+git diff --name-only 9eeb7105c7edec2c5c4c0a1f722916b9d664b236 7155d95fb2194fb03e65826689f09871a1785261
+git diff --check 9eeb7105c7edec2c5c4c0a1f722916b9d664b236 7155d95fb2194fb03e65826689f09871a1785261
+git diff --exit-code 9eeb7105c7edec2c5c4c0a1f722916b9d664b236 7155d95fb2194fb03e65826689f09871a1785261 -- docs/automation/dot-control.json
+The path test, whitespace check and control diff all exited 0.
