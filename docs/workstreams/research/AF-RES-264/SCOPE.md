@@ -35,3 +35,7 @@ GitHub 저장소 `laadkke-arch/agentflow-open`의 `chore/workspace-foundation`�
 | Q7 | Creative Commons 예제 nav가 spine에 포함되고 La Page Blanche nav는 별도; 각 nav 표제/항목과 spine 순서를 분리 | nav라는 파일명과 실제 manifest/spine 참조가 불일치 | 243의 네 고정 blob을 같은 XML 파서로 추출, nav 표제·toc/page-list·ordered spine·linear와 resolve 경로 보존 |
 
 비교량은 Title·부모 경로·목적지 이름/페이지/모드/좌표와 인쇄 영역·문구·표시 순서다. MuPDF 좌표가 화면 기준일 때 PDF 좌표로 환산해 비교한다. 인쇄 제목이나 항목이 없음을 읽은 경우는 **정상 공석**, parser nonzero·비정상 raw·바이너리 미확보는 **미확인/실패**, 실행하지 않은 것은 **미실행**, EPUB viewer UI나 원사건 성공률은 **적용 대상 밖/미수신**으로 기록한다. 대조는 writer×template swap, 2.3 조건부 삭제, 기본값 명시, 날짜/ID, 최소 책갈피 공석 검사, EPUB 두 개다. 고정판에서 각 실험을 다시 실행해 읽기 관측을 비교한다.
+
+## 고정 결과 열람점
+
+범위·예측의 첫 고정판은 `9a2b113b273c190561015e86c62c6eb5cee97d25`다. 실행 및 자체 검토를 함께 확인한 결과판은 `9cf1b3437e7d793fcb25cc478505694ef383ba49`다. 후속 검증 영수증이 검사한 대상도 그 SHA다. 인계는 지정 브랜치의 마지막 단독 `HANDOFF.md` 커밋으로 식별한다. [고정 결과](https://github.com/laadkke-arch/agentflow-open/blob/9cf1b3437e7d793fcb25cc478505694ef383ba49/docs/workstreams/research/AF-RES-264/RESULT.md) · [자체 검토](https://github.com/laadkke-arch/agentflow-open/blob/9cf1b3437e7d793fcb25cc478505694ef383ba49/docs/workstreams/research/AF-RES-264/SELF_CHECK.md)
