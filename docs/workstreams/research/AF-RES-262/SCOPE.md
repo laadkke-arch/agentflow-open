@@ -1,0 +1,14 @@
+# AF-RES-262 — 사전 봉인
+착수 통합 HEAD dc6b22120b23a6af8558bd6031ea8ff8af041dcf; control blob 2196164b74a17be5eb4bfe93db8ac0d4ed4571fd (contents API 빈 본문 반환, Git blob API로 실제 행 확인). RUNNING attempt 1, depends_on 249, branch work/research-af-res-262, owned_path docs/workstreams/research/AF-RES-262/. 중앙 249 DONE, result_commit a61cee2b8882e79226f383217440ab71f2637f8c; 그 HANDOFF/RESULT/protocol/worked-traces를 고정판에서 확인. HANDOFF 직전 249 결과 8c8c7b760c65dbca32fbe1094418eda47454b602. 실제 모집/배정/독립 인수 0; 합성 4개는 관측 아님. 계획판 933a0f7d534314470c083b0aa284044a9ad45443의 RESEARCH_BRIEF, RESEARCH_WORKFLOW 및 착수 AGENTS, STATE, DOT_AUTOMATION, RESEARCH_WORKFLOW 확인. 본인 브랜치 부재 검색 후 착수 HEAD에서 생성. 모델 effort 외부 독립 확인 없음.
+ 
+## 모집·판별 규칙
+CSN 입력 고정 106e827405c968597da938f6b373d30183918869: resources/annotationStore.csv, resources/queries.csv, BENCHMARK.md. 지금까지 CSN 원평정·코드·결과 미열람. 원파일 CSV 논리 레코드 순서, 헤더 제외, 물리 시작/끝 줄과 원필드 보존. query/language만 strip, 공백 연속을 단일 ASCII space, casefold; URL은 앞뒤 공백만 제거하고 원문 보존, fragment 유지, 다른 SHA/행을 합치지 않음. 네 질의 exact normalized match, Python only. 쿼리 표는 질의 존재 여부 검증, 언어 열 유무에 맞춰 확인; 조인 실패 별도. 각 질의 첫 3개 고유 URL, 모든 해당 원행 포함(중복/상충 보존, 다수결 금지). 빈 URL 제외하고 별도 집계. 부족한 슬롯은 정상 공석; 미열람/접근 실패 U; 명시 0은 관측. 평가점수 >=2 원과제 양성; 중복 상충 시 양성 U(모든 수치가 같은 threshold 쪽이며 빈/비수치 없을 때만 확정). 샘플 순서는 랭킹이 아님.
+- sort string list: 입력 리스트의 요소 순서/내용 불변, 정렬 결과는 별도 반환 또는 명시 전달; in-place sort 위반; caller/callee 불명 U.
+- write csv: 기본/명시된 공개 호출로 쉼표 포함 필드가 CSV reader에서 동일 단일 값으로 복원; 수동 join 반례, quoting·delimiter·encoding 계약 검토. 실제 roundtrip 미실행이면 static/원시험 구별.
+- pretty print json: Unicode 문자열 비ASCII 글자가 출력 텍스트에 문자 자체로 보존(escape만 허용하는 의미적 roundtrip과 구별), pretty-format 문맥 확인. ensure_ascii 기본 True이면 해당 문자 escape 반례, 설정 가능성은 별도.
+- read text file line by line: 정상 처리 중 전체 파일을 동시에 메모리에 읽거나 모든 줄 누적하지 않음; file iterator/yield/streaming 소비 계약 확인, read/readlines 전체 적재 위반; 호출자 알 수 없으면 조건부/U. 개별 긴 줄 메모리까지 bounded 주장 금지.
+조건은 연구자가 추가, 원 relevance 수정하지 않음. Y=직접 계약/코드로 조건 지지, N=명시 반례, U=접근/계약/하위 호출 불충분; relevance와 독립. 낮은 관련성이라도 조건 일부 충족 가능, 조건 비적용은 별도 NA, 억지 Y 아님. 미판정: 같은 모듈 첫 가용 표본 함수 다음 공개 함수(모듈 top-level def/async def, 이름 _로 시작하지 않음; 다음 없으면 이전; 원줄 순서)부터 최대 5개 검사, query+lang+정확 URL 대조 및 동일 SHA/path 함수 시작~끝 포함 범위의 앵커 변형도 확인; 이미 판정된 경우 다음. 완전 원장 확보 못 하면 미판정 주장 금지. 보강 4 슬롯은 12에 합산 금지.
+ 
+## 경쟁 예측/합격
+H-A: 높은 원점수는 새 조건까지 지지. 반례 >=2 & N 하나면 보편 대리 주장 기각. H-B: 관련성은 별도 신호; 조건 교차표 Y/N/U를 통해서만 새 요구에 대한 하한/상한. H-C: 원 조건과 추가 조건이 사실상 동일할 때만 높은 일치 가능; 4질의 목적의 상이함·낮은 점수/부분 조건을 반례로 확인. 양성 확정 집합 p에 대해 Y/p <= 실제 양성 중 조건 충족 <= (Y+U)/p, p=0이면 NA. 원점수 불명 및 공석은 별도; 결합 성공의 모집분모 상한에는 원점수/조건 모두 가능한 U만 포함. 실제 채택/검수/시간/검색 성능 추론 금지.
+합격: 원자료 22개 이상(4 CSN, 10 실제 원파일, 5 계약/시험, 3 NIST), 12 예정/실제 원판독/함수 중복, 별도 보강 4, 원 0/미판정/빈/조인 실패, 두 필수 표와 Q1~Q7, 원장·반례·자체 검토, 마지막 단독 HANDOFF. 확보 실패 시 PARTIAL. 제품 실행·훈련·랭킹 재현·신규 인력·242/251/254/255 결과 미사용. 외부 실행 필요시 정확 입력 및 반전 기준 Codex 전달. 중앙 진행표 수정 금지.
