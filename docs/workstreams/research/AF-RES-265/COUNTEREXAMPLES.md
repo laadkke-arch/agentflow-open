@@ -19,3 +19,7 @@
 - Playwright 환경에서 초기 smoke의 결손 probe는 응답 헤더만 읽고 종료하여 404 본문 완료 이벤트가 남지 않았다. probe의 본문 읽기를 추가하자 이 probe는 통과했다. 이어 실제 Three FileLoader도 일부 404를 헤더로 거절해 두 진단 회차의 프로세스가 1을 반환했다. 빈 404 본문만으로는 같은 증상이 남았다.
 - 최종 harness에서 비성공 HTTP 헤더를 받은 사건은 `response(status)`로 기록하고, `requestfinished` 없는 사건은 `non2xxWithoutFinish`로 보존했다. 응답/실패 모두 없는 URL은 여전히 `outstandingRequests`에 남아 실행을 실패시킨다. 성공 응답은 완료 이벤트를 기다린다. 로더 코드·픽셀 합격 기준·자산은 같고, 최종 두 회차 프로세스는 각각 0이다.
 - 디버그 행은 주검사/대조 공식 분모에서 제외했다. 절차의 앞뒤와 원문은 [계측 진단](receipts/instrumentation.json), 최종 [실행 명령](receipts/experiment-commands.json)에 있다. 브라우저 probe, 화면·파일 선택, 교정 및 재확인은 동일 작성자가 수행했다.
+
+## 빈 폴더 재생에서 발견한 차이
+
+첫 비교기의 종료 조건은 모든 브라우저 종료 이벤트와 draw 콜백 순서 일치였다. 깨끗한 데이터에서는 서버의 도착 URL·상태·바디 지문과 실제 브라우저 response가 같아도 일부 Chromium 200 이후 신호가 `finish`와 `net::ERR_ABORTED` 사이에서 바뀌었다. 합성 `fallback-ktx-absent`의 draw 콜백 순서도 금속/필라멘트가 바뀌었지만 멀티셋·호출 수·픽셀 지문은 일치했다. 404 이후 본문 완료 이벤트 유무도 달랐다. 원문 에러를 남기고, 도착 URL·응답·콜백 및 관측 픽셀은 계속 엄격 대조하면서 종료 관측과 draw 호출 순서 차이를 따로 출력하도록 했다. 후행 abort의 원인은 확인하지 않았다. [빈 폴더 비교 원문](receipts/clean-replay.json)

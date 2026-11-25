@@ -1,5 +1,6 @@
 """Compare pinned evidence to an independent browser and extraction run."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -20,14 +21,50 @@ def normalize(text):
     return BLOB.sub(r"\1<id>", text)
 
 
+def browser_events(data, *, terminal):
+    observed_response = {e["url"] for e in data["browserHttp"] if e["event"] == "response"}
+    events = []
+    for event in data["browserHttp"]:
+        kind, url = event["event"], event["url"]
+        error = event.get("error") or ""
+        if not url.startswith(("http:", "https:")):
+            continue
+        # after-response terminal events are reported separately; phase/status still
+        # has to match, and pre-response failures are always part of the assertion.
+        graph = kind in ("request", "response") or (
+            kind == "failure" and (url not in observed_response or error != "net::ERR_ABORTED")
+        )
+        if graph != terminal:
+            events.append((kind, normalize(url), event.get("status") or 0, error))
+    return sorted(events)
+
+
+def lifecycle_differences(base, replay):
+    a = Counter(browser_events(base, terminal=True))
+    b = Counter(browser_events(replay, terminal=True))
+    if a != b:
+        print(f"  lifecycle: baseline only={list((a - b).elements())}, replay only={list((b - a).elements())}")
+    a = sorted((normalize(x["url"]), x["status"]) for x in base["non2xxWithoutFinish"])
+    b = sorted((normalize(x["url"]), x["status"]) for x in replay["non2xxWithoutFinish"])
+    if a != b:
+        print(f"  non-2xx without a body-finish event: baseline={a}, replay={b}")
+    a = (base["outcome"].get("draw") or {}).get("callbacks")
+    b = (replay["outcome"].get("draw") or {}).get("callbacks")
+    if a != b:
+        print(f"  render callback order: baseline={[d['mesh'] for d in a]}, replay={[d['mesh'] for d in b]}")
+
+
 def signature(data):
     outcome = data["outcome"]
     result = {k: outcome[k] for k in BROWSER_KEYS if k in outcome}
     result["server"] = sorted((e["category"], e["url"], e["status"], e["bodyBytes"], e["bodySha256"])
                               for e in data["serverHttp"])
-    result["browser_http"] = sorted((e["event"], normalize(e["url"]), e.get("status", 0), e.get("error") or "")
-                                    for e in data["browserHttp"] if e["url"].startswith(("http:", "https:")))
-    result["non2xxWithoutFinish"] = sorted((normalize(e["url"]), e["status"]) for e in data["non2xxWithoutFinish"])
+    result["browser_http"] = browser_events(data, terminal=False)
+    result["workerCount"] = len(data["workers"])
+    if result.get("draw"):
+        # A callback's order can vary while its mesh, count and pixels are unchanged.
+        result["draw"] = dict(result["draw"])
+        result["draw"]["callbacks"] = sorted(result["draw"]["callbacks"], key=lambda c: (c["mesh"], c["primitive"], c["name"]))
     result["console"] = sorted((e["type"], normalize(e["text"])) for e in data["console"])
     result["blocked"] = data["blocked"]
     result["entrySha256"] = data.get("sha256")
@@ -58,7 +95,8 @@ def compare_round(archived, clean, number):
         f = copy["outcome"].get("frame", {}).get("png") if copy["outcome"].get("frame") else None
         if f:
             assert f["sha256"] == sha(clean / rdir / f["path"]) == sha(archived / rdir / f["path"])
-        print(f"equal {rdir}/{case} HTTP, result, frame{' (+PNG)' if f else ''}")
+        print(f"equal {rdir}/{case} requests/statuses, result, frame{' (+PNG)' if f else ''}")
+        lifecycle_differences(base, copy)
     return len(cases)
 
 
