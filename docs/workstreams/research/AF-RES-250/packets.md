@@ -56,7 +56,7 @@
 
 - **질문/목적:** 작성자 노동과 총노동·검수·인수를 분리
 - **좁은 주장:** METR early data 한 행의 두 시간은 README Data Spec상 동일 작성자의 initial/post-review 작업이다. dev655 issue1 232/10분, issue2 36/0분. reviewer/acceptance join 근거는 없다.
-- **입력판/원근거:** F01 [data_complete.csv](https://github.com/METR/Measuring-Early-2025-AI-on-Exp-OSS-Devs/blob/7ff2d7670235f531dff77eff58355bd77392f396/data_complete.csv) header and dev_id655 issue_id1/2; F02 [README Data Spec](https://github.com/METR/Measuring-Early-2025-AI-on-Exp-OSS-Devs/blob/7ff2d7670235f531dff77eff58355bd77392f396/README.md#data-specification) (heading Data Spec, anchor not asserted). I237-3 stages.csv; I237-2 12 inherited rows.
+- **입력판/원근거:** F01 [data_complete.csv](https://github.com/METR/Measuring-Early-2025-AI-on-Exp-OSS-Devs/blob/7ff2d7670235f531dff77eff58355bd77392f396/data_complete.csv) header and dev_id655 issue_id1/2; F02 [README Data Spec](https://github.com/METR/Measuring-Early-2025-AI-on-Exp-OSS-Devs/blob/7ff2d7670235f531dff77eff58355bd77392f396/README.md) (heading Data Spec, anchor not asserted). I237-3 stages.csv; I237-2 12 inherited rows.
 - **더 강한 주장 보류:** 0 post-review 작성자 시간 ≠ reviewer 0; 전체 팀 노동, 인수 품질, AI 효과/절감, 12행의 모집 대표성 미확인.
 - **대안:** 작성자 time pair만 제시; 별도 reviewer time+accepted artifact+actor join을 확보한 뒤 total labor 계산. 완료 사례만으로 비교 금지.
 - **폐기/재개:** data dictionary 또는 author/row key 반증 시 actor/time 해석 재개; 추가 reviewer logs가 있으면 total-labor hold 재개, 기존 author times 그대로 유지.
