@@ -13,6 +13,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -424,6 +425,69 @@ def a4_20():
     return out
 
 
+# ------------------------------------------------------------------------------------------- R-3 판독 재현성
+def r3(mode):
+    """07 R-3: 같은 위치를 다시 읽었을 때 결과 차이(08 I21). 판독기는 gh-pinned-lines/1(결정적 코드).
+    위치: queues.py·locks.py의 v3.13.18·v3.12.3에서 docstring이 있는 모든 class·def(기호 경로로 찾음).
+    읽기 셋: (A) R1 실행 때 기록한 raw 원문, (B) 같은 주소를 나중에 다시 받은 원문(fixtures/http_r3, --live에서만 네트워크 4회),
+    (C) 이 컨테이너에 설치된 같은 판의 표준 라이브러리(다른 배포 경로, fixtures/local_stdlib).
+    더해 R1 위치 4개를 바이트 범위(Range)로 다시 받아(네트워크 4회) 전체 원문의 같은 범위와 대조한다.
+    잰다: 파일 바이트 일치, 위치별 줄 범위 일치, 인용 지문 일치, 같은 장부에 세 번 쓸 때 새 관측·다시 본 기록·충돌 수."""
+    from afledger.adapters.reader_github import raw_url
+    ta = Transport("replay", FIX / "http")
+    tb = Transport("record" if mode == "live" else "replay", FIX / "http_r3")
+    files = [("v3.13.18", "Lib/asyncio/queues.py"), ("v3.13.18", "Lib/asyncio/locks.py"),
+             ("v3.12.3", "Lib/asyncio/queues.py"), ("v3.12.3", "Lib/asyncio/locks.py")]
+    out = {"rule": r3.__doc__.split("\n")[1:5], "files": {}, "positions": 0, "by_pair": {}, "range": []}
+    L = Ledger()
+    pairs = {"A_vs_B": Counter(), "A_vs_C": Counter()}
+    for tag, path in files:
+        url = raw_url("python/cpython", tag, path)
+        ra, rb = ta.get(url), tb.get(url, note=f"r3 reread {tag}:{path}")
+        texts = {"A": ra.text(), "B": rb.text() if rb.status == 200 else None,
+                 "C": (FIX / "local_stdlib" / tag.lstrip("v") / "asyncio" / path.split("/")[-1]).read_text(encoding="utf-8")}
+        sha = {k: (hashlib.sha256(v.encode()).hexdigest()[:16] if v is not None else None) for k, v in texts.items()}
+        out["files"][f"{tag}:{path}"] = {"sha256_16": sha, "B_status": rb.status, "B_fetched_at": rb.fetched_at,
+                                         "A_fetched_at": ra.fetched_at, "etag_A": ra.headers.get("etag"),
+                                         "etag_B": rb.headers.get("etag")}
+        syms = {k: locate.symbols(v) for k, v in texts.items() if v is not None}
+        for q, sa in syms["A"].items():
+            if not sa["doc"]:
+                continue
+            out["positions"] += 1
+            qa = locate.lines_text(texts["A"], *sa["doc"])
+            for read in ("A", "B", "C"):
+                if read not in syms:
+                    continue
+                sx = syms[read].get(q)
+                quote = locate.lines_text(texts[read], *sx["doc"]) if sx and sx["doc"] else None
+                L.observe(url=f"https://github.com/python/cpython/blob/{tag}/{path}", edition_key=tag, edition_kind="release",
+                          position=f"{q}.__doc__", at=f"2026-11-26T0{'ABC'.index(read) + 1}:00:00Z", method="read_line",
+                          quote=quote or "(없음)", quote_lang="en", statement="docstring", reader=f"gh-pinned-lines/1:{read}")
+                if read != "A":
+                    c = pairs[f"A_vs_{read}"]
+                    c["compared"] += 1
+                    c["same_lines"] += bool(sx and sx["doc"] == sa["doc"])
+                    c["same_quote_fp"] += bool(quote and locate.quote_fp(quote) == locate.quote_fp(qa))
+    out["by_pair"] = {k: dict(v) for k, v in pairs.items()}
+    out["ledger"] = {"observations": L.counts()["observations"], "sightings": L.counts()["sightings"],
+                     "conflicts_flagged": sum(1 for a in L.alerts if a["kind"] == "reading_conflict"),
+                     "audit_jobs": len(L.jobs())}
+    # R1 위치 4개를 바이트 범위로 다시 받는다(관문 재열람과 같은 길)
+    live = json.loads((OUT / "r1_live.json").read_text(encoding="utf-8"))
+    for k, r in live["rev1"]["readings"].items():
+        tag, path = "v3.13.18", r["link"].split("/blob/")[1].split("#")[0].split("/", 1)[1]
+        url = raw_url("python/cpython", tag, path)
+        full = ta.get(url).body
+        a_, b_ = map(int, r["byte_span"].split("-"))
+        rr = tb.get(url, {"Range": f"bytes={r['byte_span']}"}, note=f"r3 range {k}")
+        out["range"].append({"id": k, "position": r["position"], "status": rr.status,
+                             "same_bytes_as_full_slice": rr.body == full[a_:b_ + 1],
+                             "same_quote_fp": locate.quote_fp(rr.text()) == r["quote_fp"]})
+    write("measure_r3.json", out)
+    return out
+
+
 # ------------------------------------------------------------------------------------------- R-6 규모
 NOISE_TOTAL = 20000
 
@@ -591,7 +655,7 @@ def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
-           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale()}
+           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode)}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -606,6 +670,7 @@ def main():
     for k, v in res["r6"]["variants"].items():
         print("R6", k, "T1d", v["T1_drawer"], "T1f", v["T1_flow"], "T2", v["T2"], "T3", v["T3"],
               {kk: (vv["asyncio_queue"], vv["asyncio_semaphore"], vv["noise_in_top12"]) for kk, vv in v["drawer"].items()})
+    print("R3", json.dumps(res["r3"]["by_pair"]), json.dumps(res["r3"]["ledger"]), [x["same_quote_fp"] for x in res["r3"]["range"]])
     print("A4-20", json.dumps(res["a4_20"]["summary"], ensure_ascii=False))
     print("R6-SCALE", json.dumps(res["r6_scale"]["end_condition_met"]), json.dumps(res["r6_scale"]["rank_rules"]["r2"]["r1"]))
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])

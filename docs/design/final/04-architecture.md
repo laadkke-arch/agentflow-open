@@ -298,7 +298,7 @@ WHERE r.req_id = :req AND (r.path = 'fresh' OR (h.eligible = 1 AND h.lexical_acc
 | 같은 요청판을 두 번 보낸다 | 같은 내용이면 같은 `req_id`. 다른 내용이면 거절 | `test_intake_retry_and_conflict` |
 | 임차가 풀린 뒤 앞 작업자가 돌아온다 | `lease`가 임차 표지(시도 번호)를 주고, `finish(token=)`는 지금도 그 임차일 때만 받는다. 대체는 완료와 같은 거래에서 쓴다. v1에서는 늦은 작업자가 결과를 덮어쓰고 대체가 두 갈래가 됐다 | `test_late_worker_is_fenced_and_supersession_is_written_once`, 07 M5a |
 | 작업자가 판을 받아 온 뒤 새 판 항목이 온다 | 임차 중 작업에는 합치지 않고 새 작업을 만든다 | `test_new_cause_does_not_merge_into_a_leased_job`, 07 M5b |
-| 같은 판·같은 위치를 두 번 읽어 인용이 조금 다르다 | 관측이 둘 생긴다. 재사용은 나중 것을 돌려준다. **[빈칸]** 충돌 표시와 감사 작업이 없다 | 07 M5c, R-3 |
+| 같은 판·같은 위치를 두 번 읽어 인용이 조금 다르다 | 관측이 둘 생긴다. 재사용은 나중 것을 돌려준다. **[빈칸]** 충돌 표시와 감사 작업이 없다 | 07 M5c, R-3  구현 노트 [I21](08-implementation.md#i21-r-3-판독-재현성-코드-판독기는-90개-위치-세-번-읽기에서-차이-0-충돌-규칙을-넣었다) 참조(충돌 표시와 감사 작업을 넣었다) |
 
 ### 6.2 재시도
 

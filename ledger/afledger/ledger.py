@@ -285,6 +285,18 @@ class Ledger:
                  None if anchor_in_doc is None else int(anchor_in_doc), map_method, map_from,
                  locate.MAP_RULES if map_method else None, byte_span, key))
             obs_id = cur.lastrowid
+            if outcome == "content" and method == "read_line" and fp:
+                # 판독 충돌(07 R-3, 08 I21): 같은 판·같은 위치를 같은 방법으로 읽었는데 인용이 다르고 대체로 이어지지 않았다.
+                # 두 관측을 모두 남기고, 앞 관측에 감사 작업(conflict:새 관측)을 만들고 운영자에게 알린다. 어느 쪽도 고르지 않는다
+                for (old,) in self.db.execute(
+                        "SELECT obs_id FROM observation WHERE edition_id=? AND position=? AND method='read_line'"
+                        " AND outcome='content' AND quote_fp<>? AND obs_id<>?", (ed, position, fp, obs_id)).fetchall():
+                    linked = self.db.execute("SELECT 1 FROM supersession WHERE (old_obs=? AND new_obs=?) OR"
+                                             " (old_obs=? AND new_obs=?)", (old, obs_id, obs_id, old)).fetchone()
+                    if not linked:
+                        self._enqueue(old, "audit", f"conflict:{obs_id}", at)
+                        self.alerts.append({"kind": "reading_conflict", "obs": old, "other": obs_id, "at": at,
+                                            "position": position})
             if project:
                 self.origin[obs_id] = project
                 if method in ("read_line", "executed"):

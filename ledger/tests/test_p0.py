@@ -147,3 +147,18 @@ class BudgetB1(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReadingConflictR3(unittest.TestCase):
+    def test_same_position_read_differently_is_flagged_not_chosen(self):
+        L = Ledger()
+        kw = dict(url="https://github.com/o/r/blob/v1/a.py", edition_key="v1", edition_kind="release",
+                  position="L1-L2", method="read_line", quote_lang="en", statement="s")
+        o1, _ = L.observe(at=T, quote="First reading.", **kw)
+        o1b, created = L.observe(at="2026-11-27T00:00:00Z", quote="First   reading.", **kw)
+        self.assertEqual((o1b, created), (o1, False))                 # 같은 인용(공백만 다름)은 다시 본 기록
+        self.assertEqual(L.alerts, [])
+        o2, created = L.observe(at="2026-11-28T00:00:00Z", quote="Second reading.", **kw)
+        self.assertTrue(created)                                      # 두 관측을 모두 남긴다
+        self.assertEqual(L.alerts[-1]["kind"], "reading_conflict")
+        self.assertEqual([(j["obs_id"], j["cause_ref"]) for j in L.jobs()], [(o1, f"conflict:{o2}")])

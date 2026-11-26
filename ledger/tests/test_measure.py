@@ -46,3 +46,13 @@ class MeasuredChoices(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReaderReproducibility(unittest.TestCase):
+    def test_r3_recorded_rereads_agree(self):
+        r = load("measure_r3.json")
+        self.assertGreaterEqual(r["positions"], 50)
+        for pair in r["by_pair"].values():
+            self.assertEqual(pair["same_quote_fp"], pair["compared"])
+        self.assertEqual(r["ledger"]["conflicts_flagged"], 0)
+        self.assertTrue(all(x["same_quote_fp"] for x in r["range"]))
