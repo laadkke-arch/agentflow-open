@@ -27,7 +27,10 @@ class MeasuredChoices(unittest.TestCase):
 
     def test_a4_and_maps_are_recorded(self):
         a = load("measure_a4.json")
-        self.assertFalse(a["variants"]["i1_en"]["catalog_only"]["big_deviation"])
+        self.assertFalse(a["variants"]["i1_en@t2"]["catalog_only"]["big_deviation"])
+        self.assertEqual(set(a["r1_flow_with_i1_ko"]), {"t1_catalog_only", "t1_with_F01", "t2_catalog_only", "t2_with_F01"})
+        b = load("measure_b1.json")["modes"]
+        self.assertGreaterEqual(b["t2"]["reached"], b["t1"]["reached"])
         m = load("measure_r1_map.json")
         self.assertEqual(m["total"]["agree"], m["total"]["positions"])
         n = load("measure_normalize.json")

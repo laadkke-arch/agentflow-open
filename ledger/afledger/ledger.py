@@ -29,6 +29,7 @@ import hmac
 import secrets
 
 from . import config, locate, normalize, privacy
+from . import tokenize as ko_tok
 
 SQL_DIR = Path(__file__).resolve().parent / "sql"
 
@@ -120,6 +121,7 @@ class Ledger:
     def __init__(self, path: str = ":memory:", features: dict | None = None):
         self.features = {"drawer": True, "usage": True, "split": True}
         self.features.update(features or {})
+        self.token_rules = config.TOKEN_RULES   # 서랍 토큰화 규칙 판(t1 영어만, t2 다국어). 측정에서 비교하려고 인스턴스마다 바꿀 수 있다
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys = ON")
@@ -291,9 +293,13 @@ class Ledger:
         """꼬리표를 붙인다. 어느 프로젝트 요청 원문에만 있고 원문 쪽에는 없는 내용어가 들어 있으면 거절한다."""
         self._privacy_lint(obs_id, text)
         with self.db:
-            self.db.execute(
+            cur = self.db.execute(
                 "INSERT OR IGNORE INTO tag(obs_id, slot, height, lang, text, audience, written_from)"
                 " VALUES (?,?,?,?,?,?,?)", (obs_id, slot, height, lang, text, audience, written_from))
+            if cur.rowcount == 1:
+                words, gs = ko_tok.index_text(text)
+                if words:
+                    self.db.execute("INSERT INTO tag_fts_ko(rowid, words, grams) VALUES (?,?,?)", (cur.lastrowid, words, gs))
         return self.db.execute(
             "SELECT tag_id FROM tag WHERE obs_id=? AND slot=? AND height=? AND lang=? AND text=?",
             (obs_id, slot, height, lang, text)).fetchone()[0]
@@ -819,21 +825,26 @@ class Ledger:
                 if not matched:
                     continue
                 d = per_obs.setdefault(r["obs_id"], {"obs_id": r["obs_id"], "score": 0.0, "slots": set(),
-                                                     "matched": []})
+                                                     "matched": [], "func": set()})
                 d["score"] += r["score"]
                 d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
                 d["matched"] += [m for m in matched if m not in d["matched"]]
+                d["func"] |= {m for m in matched if m in FUNCTION_WORDS or m.isdigit()}
+        if self.token_rules == "t2":
+            self._drawer_ko(needs, at, per_obs, include_function_words)
         hits = []
         for d in per_obs.values():
-            d["lexical_accident"] = all(m in FUNCTION_WORDS or m.isdigit() for m in d["matched"])
+            d.setdefault("func", set())
+            d["lexical_accident"] = all(m in d["func"] for m in d["matched"])
             content_slots = len(d["slots"]) if not d["lexical_accident"] else 0
-            distinct = {stem(m) for m in d["matched"] if m not in FUNCTION_WORDS}
+            distinct = {stem(m) if "~" not in m else m.split("~")[0] for m in d["matched"] if m not in d["func"]}
             d["eligible"] = (content_slots >= min_slots and len(distinct) >= 2) or \
                             (min_slots <= 1 and content_slots >= 1)
             hits.append(d)
         hits.sort(key=lambda d: (not d["eligible"], d["lexical_accident"], d["score"]))
         hits = hits[:k]
         for d in hits:
+            d.pop("func", None)
             # 서랍은 옛 관측의 꼬리표로도 적중한다. 인용 전에 현재 관측을 확인하라고 같이 돌려준다(M7e)
             d["current"] = self.current(d["obs_id"], at)
         if not log:   # 진단용 검색(기능어 포함 감사 등)은 탐색 기록에 남기지 않는다
@@ -854,6 +865,31 @@ class Ledger:
                 d["rank"] = i
                 d["slots"] = sorted(d["slots"])
         return hits
+
+    def _drawer_ko(self, needs, at, per_obs: dict, include_function_words: bool) -> None:
+        """한국어 두 층(어절 줄기·음절 2-gram)으로 같은 칸 꼬리표를 맞춘다(07 R-5, t2). 결과는 per_obs에 더한다."""
+        for n in needs:
+            units = ko_tok.ko_units(n["text"], include_function=include_function_words)
+            if not units:
+                continue
+            terms = [f'words : "{u["word"]}"' for u in units] + \
+                    [f'grams : "{g}"' for g in dict.fromkeys(g for u in units for g in u["grams"])]
+            slot_filter = "" if n["slot"] == "summary" else "AND (t.slot=? OR t.slot='summary')"
+            args = [" OR ".join(terms), at] + ([] if n["slot"] == "summary" else [n["slot"]])
+            rows = self.db.execute(
+                "SELECT t.obs_id, t.slot, k.words, k.grams, bm25(tag_fts_ko) AS score FROM tag_fts_ko k"
+                " JOIN tag t ON t.tag_id = k.rowid JOIN observation o ON o.obs_id = t.obs_id"
+                f" WHERE tag_fts_ko MATCH ? AND o.observed_at <= ? {slot_filter}", args).fetchall()
+            for r in rows:
+                matched = ko_tok.match_units(units, set(r["words"].split()), set(r["grams"].split()))
+                if not matched:
+                    continue
+                d = per_obs.setdefault(r["obs_id"], {"obs_id": r["obs_id"], "score": 0.0, "slots": set(),
+                                                     "matched": [], "func": set()})
+                d["score"] += r["score"]
+                d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
+                d["matched"] += [m for m, _f in matched if m not in d["matched"]]
+                d["func"] |= {m for m, f in matched if f}
 
     def search_fresh(self, p: str, req: int, at: str, branch_results: dict[str, list[dict]]) -> list[dict]:
         """새 검색. 실제 검색은 바깥 도구가 하고, 여기서는 갈래별 결과를 기록한다(고정 자료)."""

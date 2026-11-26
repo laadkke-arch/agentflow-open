@@ -74,9 +74,12 @@ def a4(mode):
     out = {"rule": "크게 어긋남 = 자동 문장의 서랍 상위 6개에 asyncio-queue가 없거나, 손 문장 상위 6개와 겹침이 3개 미만이거나, "
                    "asyncio-queue가 자격을 잃거나, 새 검색 직접 갈래 1위가 queues.py가 아님(돌리기 전에 정함)",
            "variants": {}}
-    for name, needs in variants.items():
+    out["token_rules_compared"] = ["t1", "t2"]
+    for tok in ("t1", "t2"):
+      for name, needs in variants.items():
         for with_noise in (False, True):
             L = Ledger()
+            L.token_rules = tok
             catalog = preload_catalog(L)
             noise = preload_noise(L) if with_noise else {}
             p = L.project("A")
@@ -86,12 +89,18 @@ def a4(mode):
             req = L.intake(p, **kw)
             hits = L.search_drawer(p, req, T0, k=12)
             ids = drawer_ids(L, catalog, noise, hits)
+            deep = L.search_drawer(p, req, T0, k=5000, log=False)
+            deep_ids = drawer_ids(L, catalog, noise, deep)
             row = {"top6": ids[:6], "eligible_top6": [h["eligible"] for h in hits[:6]],
                    "asyncio_queue_rank": ids.index("asyncio-queue") + 1 if "asyncio-queue" in ids else None,
                    "asyncio_queue_eligible": next((h["eligible"] for h, i in zip(hits, ids) if i == "asyncio-queue"), False),
                    "eligible_count": sum(h["eligible"] for h in hits),
-                   "asyncio_semaphore_rank": ids.index("asyncio-semaphore") + 1 if "asyncio-semaphore" in ids else None}
-            if not with_noise:
+                   "asyncio_semaphore_rank": ids.index("asyncio-semaphore") + 1 if "asyncio-semaphore" in ids else None,
+                   "eligible_total": sum(h["eligible"] for h in deep),
+                   "deep_rank": {n: (deep_ids.index(n) + 1 if n in deep_ids else None,
+                                     next((h["eligible"] for h, i in zip(deep, deep_ids) if i == n), False))
+                                 for n in ("asyncio-queue", "asyncio-semaphore")}}
+            if not with_noise and tok == "t2":
                 row["needs"] = needs
                 try:
                     d = direct_branch(L, t, p, req, T0, context=L.context(p, req), request_text=s["text"],
@@ -100,10 +109,11 @@ def a4(mode):
                     row["fresh_top"] = [x["path"] for x in d["results"]]
                 except Exception as e:  # noqa: BLE001 - 기록이 없으면 측정에서 뺀다
                     row["fresh_error"] = f"{type(e).__name__}: {e}"
-            out["variants"].setdefault(name, {})["with_F01_noise" if with_noise else "catalog_only"] = row
-    hand6 = out["variants"]["hand"]["catalog_only"]["top6"]
-    for name in ("i1_ko", "i1_en"):
-        v = out["variants"][name]["catalog_only"]
+            out["variants"].setdefault(f"{name}@{tok}", {})["with_F01_noise" if with_noise else "catalog_only"] = row
+    for tok in ("t1", "t2"):
+      hand6 = out["variants"][f"hand@{tok}"]["catalog_only"]["top6"]
+      for name in ("i1_ko", "i1_en"):
+        v = out["variants"][f"{name}@{tok}"]["catalog_only"]
         overlap = len(set(v["top6"]) & set(hand6))
         big = (v["asyncio_queue_rank"] is None or v["asyncio_queue_rank"] > 6 or overlap < 3 or not v["asyncio_queue_eligible"]
                or (v.get("fresh_top") or [None])[0] != "Lib/asyncio/queues.py")
@@ -111,86 +121,95 @@ def a4(mode):
         v["big_deviation"] = big
         # 돌린 뒤 드러난 이차 신호(규칙에는 없다): 적격 후보 수와 근접 대안(세마포어)이 서랍에 남는가
         v["secondary"] = {"eligible_count": v["eligible_count"],
-                          "eligible_count_hand": out["variants"]["hand"]["catalog_only"]["eligible_count"],
+                          "eligible_count_hand": out["variants"][f"hand@{tok}"]["catalog_only"]["eligible_count"],
                           "asyncio_semaphore_rank": v["asyncio_semaphore_rank"],
-                          "asyncio_semaphore_rank_hand": out["variants"]["hand"]["catalog_only"]["asyncio_semaphore_rank"]}
-    # 자동 접수(i1, 한국어 원문)로 R1 흐름 전체를 돌리면 완료 기준 2가 어떻게 되나(기록 재생; 새 검색은 위에서 기록)
+                          "asyncio_semaphore_rank_hand": out["variants"][f"hand@{tok}"]["catalog_only"]["asyncio_semaphore_rank"]}
+    # 자동 접수(i1, 한국어 원문)로 R1 흐름 전체를 돌리면 완료 기준 2가 어떻게 되나(서랍 토큰화 t1·t2 × F01 잡음 유무)
     import run_r1
-    try:
-        r = run_r1.run(mode if mode == "live" else "replay", needs="i1")
-        r.pop("_ledger")
-        folded = {f["condition"]: f["reason"] for f in r["rev1"]["answer"]["folded"]}
-        out["r1_flow_with_i1_ko"] = {
-            "status": r["rev1"]["answer"]["status"],
-            "first_link": next((s_["sentence"].split("첫 원문: ")[1].split(" ")[0] for s_ in r["rev1"]["answer"]["slots"]
-                                if s_["kind"] == "direct"), None),
-            "semaphore_folded_with_condition": "H1 U" in folded.get("대기 8을 대기열 길이로 지키는가", ""),
-            "create_all_folded": "H2 위반" in folded.get("입력마다 작업 객체를 미리 만드는가", ""),
-            "unread": r["rev1"]["unread"], "drawer_symbols": [x["name"] for x in r["rev1"]["fresh_direct"]["drawer_symbols_resolved"]],
-            "budget": r["rev1"]["budget"]}
-    except Exception as e:  # noqa: BLE001
-        out["r1_flow_with_i1_ko"] = {"error": f"{type(e).__name__}: {e}"}
+    from afledger import config as cfg
+    out["r1_flow_with_i1_ko"] = {}
+    saved = cfg.TOKEN_RULES
+    for tok in ("t1", "t2"):
+        for noise in (False, True):
+            cfg.TOKEN_RULES = tok
+            key = f"{tok}_{'with_F01' if noise else 'catalog_only'}"
+            try:
+                r = run_r1.run(mode if mode == "live" else "replay", needs="i1", noise=noise)
+                r.pop("_ledger")
+                folded = {f["condition"]: f["reason"] for f in r["rev1"]["answer"]["folded"]}
+                slot1 = next((s_["sentence"] for s_ in r["rev1"]["answer"]["slots"] if s_["kind"] == "direct"), "")
+                c2 = {"first_slot_queue_313_L4": "/blob/v3.13." in slot1 and "queues.py#L" in slot1
+                      and "이 판에서 실행해 값을 확인했다" in slot1,
+                      "must_four_workers": "[필수] 일꾼 작업을 정확히 4개" in slot1,
+                      "semaphore_folded_H1U": "H1 U" in folded.get("대기 8을 대기열 길이로 지키는가", ""),
+                      "create_all_folded_H2": "H2 위반" in folded.get("입력마다 작업 객체를 미리 만드는가", ""),
+                      "search_record": bool(r["rev1"]["drawer"]) and bool(r["rev1"]["fresh_direct"]["calls"])}
+                out["r1_flow_with_i1_ko"][key] = {"criterion2_pass": all(c2.values()), "parts": c2,
+                    "status": r["rev1"]["answer"]["status"], "unread": r["rev1"]["unread"],
+                    "drawer_top3": [h["id"] for h in r["rev1"]["drawer"][:3]],
+                    "drawer_symbols": [x["name"] for x in r["rev1"]["fresh_direct"]["drawer_symbols_resolved"]],
+                    "budget": r["rev1"]["budget"]}
+            except Exception as e:  # noqa: BLE001
+                out["r1_flow_with_i1_ko"][key] = {"error": f"{type(e).__name__}: {e}"}
+    cfg.TOKEN_RULES = saved
     write("measure_a4.json", out)
     return out
 
 
 # ------------------------------------------------------------------------------------------- B1
-KO_FUNC_EOJEOL = re.compile(r"^(수|것|등|및|또는|그리고|위해|위한|대한|대해|통해|따라|같은|다른|모든|각|더|때|경우|"
-                            r"한다|했다|된다|됐다|있다|없다|있는|없는|하는|되는|하고|되고|하며|되며|할|될|한|된|해야|하면|되면|"
-                            r"이다|있고|없고|있으며|않는다|않고|않는|수를|수가|것을|것이|것은|때는|때에|경우에)$")
-
-
 def ko_eojeol(text):
     return list(dict.fromkeys(re.findall(r"[가-힣]+", text)))
 
 
 def b1():
-    """한국어 문장을 칸 하나(summary)의 필요 문장으로 그대로 넣는다.
-    t0 = 제품 그대로(영어 토큰만 본다), t1 = 한글 어절을 그대로 토큰으로 세는 경우(형태 분석 없음, FTS5 unicode61과 같음).
-    우연 적중 = 맞은 토큰이 모두 기능어(영어 닫힌 목록, 숫자, 한국어 기능 어절 목록 KO_FUNC_EOJEOL)인 적중."""
+    """한국어 문장을 칸 하나(summary)의 필요 문장으로 그대로 넣는다(질의 101개, 서랍 = 자료집 156 + F01).
+    t1 = 설계 예제 토큰화(영어만), t2 = R-5 결정(영어 + 한국어 어절 줄기·음절 2-gram, 기능 어절 제외).
+    naive = 한글 어절을 그대로 토큰으로 세는 경우(형태 분석·기능 어절 목록 없음, FTS5 unicode61과 같음).
+    도달 = 적중이 하나 이상인 질의. 내용 도달 = 우연이 아닌 적중이 하나 이상인 질의.
+    우연 적중 = 맞은 토큰이 모두 기능어(영어 닫힌 목록, 숫자, tokenize.KO_FUNC_EOJEOL·조사 덩어리)인 적중."""
+    from afledger import tokenize as kt
     rows = link_index_rows()
     sample = [r for i, r in enumerate(rows) if i % 40 == 0 and re.search(r"[가-힣]", r["use"])][:100]
     s = studio("studio_rev1.json")
     queries = [{"src": "R1 P03.w 한국어 원문", "text": s["text"]}] + \
               [{"src": f"link-index {r['record']}", "text": r["use"]} for r in sample]
+    out = {"queries": len(queries), "sample_rule": "link-index 40행마다 1행(한글 use), 최대 100 + R1 원문", "modes": {}}
+    for mode in ("t1", "t2"):
+        L = Ledger()
+        L.token_rules = mode
+        preload_catalog(L)
+        preload_noise(L)
+        p = L.project("B1")
+        c = Counter()
+        for i, qd in enumerate(queries):
+            req = L.intake(p, request_key=f"B{i}", rev=1, at=T0, text=qd["text"], selected_part="s", requirements=[],
+                           needs=[{"slot": "summary", "lang": "ko", "text": qd["text"]}])
+            hits = L.search_drawer(p, req, T0, k=10, min_slots=1, include_function_words=True, log=False)
+            c["hits"] += len(hits)
+            c["accidents"] += sum(h["lexical_accident"] for h in hits)
+            c["reached"] += bool(hits)
+            c["content_reached"] += any(not h["lexical_accident"] for h in hits)
+        out["modes"][mode] = dict(c) | {"accident_ratio": round(c["accidents"] / c["hits"], 4) if c["hits"] else None}
+    # naive: 한글 어절 그대로(기능 어절도 내용어로)
     L = Ledger()
-    catalog = preload_catalog(L)
-    noise = preload_noise(L)
+    preload_catalog(L)
+    preload_noise(L)
     tags = [(t["obs_id"], t["text"]) for t in L.db.execute("SELECT obs_id, text FROM tag")]
-    res = {"t0_product": Counter(), "t1_eojeol": Counter()}
+    c = Counter()
     examples = []
-    p = L.project("B1")
-    for i, qd in enumerate(queries):
-        req = L.intake(p, request_key=f"B{i}", rev=1, at=T0, text=qd["text"], selected_part="s", requirements=[],
-                       needs=[{"slot": "summary", "lang": "ko", "text": qd["text"]}])
-        hits = L.search_drawer(p, req, T0, k=10, min_slots=1, include_function_words=True, log=False)
-        res["t0_product"]["queries"] += 1
-        res["t0_product"]["hits"] += len(hits)
-        res["t0_product"]["accidents"] += sum(h["lexical_accident"] for h in hits)
-        res["t0_product"]["queries_with_any_ascii_token"] += bool(content_tokens(qd["text"]))
-        # t1: 한글 어절을 그대로 토큰으로 센다(조사가 붙은 채, 기능 어절도 내용어로 센다)
+    for qd in queries:
         qt = set(ko_eojeol(qd["text"]))
-        scored = []
-        for oid, text in tags:
-            m = qt & set(ko_eojeol(text))
-            if m:
-                scored.append((len(m), oid, sorted(m)))
-        scored.sort(key=lambda x: (-x[0], x[1]))
-        top = scored[:10]
-        acc = [x for x in top if all(KO_FUNC_EOJEOL.match(w) for w in x[2])]
-        res["t1_eojeol"]["queries"] += 1
-        res["t1_eojeol"]["hits"] += len(top)
-        res["t1_eojeol"]["accidents"] += len(acc)
-        res["t1_eojeol"]["eligible_if_counted_as_content"] += sum(1 for x in acc if x[0] >= 2)
-        if acc and len(examples) < 8:
+        scored = sorted(((len(qt & set(ko_eojeol(t))), o, sorted(qt & set(ko_eojeol(t)))) for o, t in tags
+                         if qt & set(ko_eojeol(t))), key=lambda x: (-x[0], x[1]))[:10]
+        acc = [x for x in scored if all(kt.KO_FUNC_EOJEOL.match(w) or w in kt.KO_ENDINGS_SET for w in x[2])]
+        c["hits"] += len(scored)
+        c["accidents"] += len(acc)
+        c["reached"] += bool(scored)
+        c["eligible_if_counted_as_content"] += sum(1 for x in acc if x[0] >= 2)
+        if acc and len(examples) < 6:
             examples.append({"query": qd["src"], "matched_only_function_eojeols": acc[0][2]})
-    out = {"queries": len(queries), "sample_rule": "link-index 40행마다 1행(한글 use), 최대 100 + R1 원문",
-           "t0_product": dict(res["t0_product"]), "t1_eojeol": dict(res["t1_eojeol"]), "examples": examples}
-    for k in ("t0_product", "t1_eojeol"):
-        h = out[k]["hits"]
-        out[k]["accident_ratio"] = round(out[k]["accidents"] / h, 4) if h else None
-    out["reading"] = ("t0: 제품은 한글을 토큰으로 보지 않아 한국어 문장은 영어 차용어로만 서랍에 닿는다. "
-                      "t1: 한글 어절을 그대로 세면 기능 어절만 맞은 적중이 생긴다(B1이 걱정한 실패).")
+    out["modes"]["naive_eojeol"] = dict(c) | {"accident_ratio": round(c["accidents"] / c["hits"], 4) if c["hits"] else None}
+    out["examples_naive"] = examples
     write("measure_b1.json", out)
     return out
 
@@ -342,9 +361,10 @@ def main():
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
-                     v["catalog_only"].get("big_deviation"), (v["catalog_only"].get("fresh_top") or [None])[0])
+                     v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
                  for k, v in a.items()})
-    print("B1", {k: res["b1"][k] for k in ("t0_product", "t1_eojeol")})
+    print("A4 flow", {k: (v.get("criterion2_pass"), v.get("parts")) for k, v in res["a4"]["r1_flow_with_i1_ko"].items()})
+    print("B1", res["b1"]["modes"])
     print("R4", res["r4"]["variants"], "chosen", res["r4"]["chosen"])
     print("NORM", {k: res["norm"][k] for k in ("rows", "distinct_raw_urls", "distinct_url_norm", "distinct_page",
                                                 "distinct_target_or_page", "errors", "idempotent_page_on_url_norm")})

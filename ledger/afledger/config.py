@@ -4,13 +4,15 @@
 """
 
 # ---- 규칙 판(결과 행에 남겨 나중 규칙으로 다시 계산할 수 있게 한다)
-RULE_VERSION = "unit1-r1"          # answer_run.rule_version. 설계 예제는 "final-v1+review"
+RULE_VERSION = "unit1-r2"          # answer_run.rule_version. 설계 예제는 "final-v1+review"
 NORM_RULES = "n1"                  # 주소 정규화(R-1 임시안). afledger/normalize.py가 실제 값을 정한다
 MAP_RULES = "m1"                   # 판 사이 위치 대응(R-1 임시안). afledger/locate.py
 BUDGET_RULES = "b1"                # 예산 셈법(D1·D11 그대로). afledger/budget.py
 PRIVACY_RULES = "p2"               # 꼬리표 사생활 검사. p1 = 설계 예제(영어 토큰), p2 = p1 + 한국어(privacy.py, 08 I8)
 SEARCH_RULES = "s1"                # 새 검색 직접 갈래의 질의 규칙. afledger/adapters/search_github.py
 INTAKE_RULES = "i1"                # 접수가 쓰는 칸별 필요 문장. afledger/intake.py
+TOKEN_RULES = "t2"                 # 서랍 토큰화(R-5 결정: 다국어). t1 = 설계 예제(영어만). afledger/tokenize.py
+INTAKE_TRANSLATE = None            # 영어 번역 접수는 비교용 선택지로만 남긴다(구현하지 않음, 08 I16). None = 원문 그대로
 
 # ---- 예산(07 D1·D11, 06 C1)
 REQUEST_FETCHES = 4                # 요청판 하나의 가져오기 수

@@ -5,7 +5,7 @@ Python 3.11 이상, 표준 라이브러리와 SQLite FTS5만 쓴다. 클라우�
 구현하면서 드러난 설계 수정점은 [08-implementation.md](../docs/design/final/08-implementation.md)에 있다.
 
 ```sh
-python3 -I ledger/tests/run.py            # 시험 64개. 네트워크 없이 기록 재생
+python3 -I ledger/tests/run.py            # 시험 67개. 네트워크 없이 기록 재생
 python3 -I ledger/run_r1.py               # R1을 기록 재생으로 돌려 결과를 출력
 python3 -I ledger/run_r1.py --live        # 실제 검색·원문·실행으로 돌리고 기록, out/r1_live.json을 쓴다
 python3 -I ledger/measure.py [--live]     # A4·B1·R-4·정규화 회귀·F01 잡음·위치 대응 측정, out/measure_*.json
@@ -24,6 +24,7 @@ python3 -I ledger/measure.py [--live]     # A4·B1·R-4·정규화 회귀·F01 �
 | `afledger/locate.py` | 위치 앵커와 판 사이 위치 대응(R-1 임시안 m1) |
 | `afledger/budget.py` | 요청 시계 예산(D1·D11, b1) |
 | `afledger/privacy.py` | 공개 꼬리표 사생활 검사(p1·p2) |
+| `afledger/tokenize.py` | 서랍 토큰화(R-5 결정 t2: 영어 + 한국어 어절 줄기·음절 2-gram) |
 | `afledger/studio.py`, `afledger/intake.py` | Studio 입력 모형과 접수(칸별 필요 문장 규칙 i1) |
 | `afledger/adapters/http.py` | HTTP 기록·재생 |
 | `afledger/adapters/reader_github.py` | 판독 어댑터: GitHub 고정판 줄 범위 |

@@ -146,6 +146,9 @@ CREATE TABLE IF NOT EXISTS tag (
 CREATE VIRTUAL TABLE IF NOT EXISTS tag_fts USING fts5(
   text, content='tag', content_rowid='tag_id', tokenize='porter unicode61'
 );
+-- 한국어 두 층 색인(07 R-5 결정, 규칙 판 t2, afledger/tokenize.py). rowid = tag_id.
+-- words: 조사·어미를 하나 뗀 어절 줄기(기능 어절 포함, 감사 검색용), grams: 줄기의 음절 2-gram. 엔진이 꼬리표를 쓸 때 채운다.
+CREATE VIRTUAL TABLE IF NOT EXISTS tag_fts_ko USING fts5(words, grams, tokenize='unicode61');
 
 -- 대비: 같은 조건에서 두 관측이 어떻게 갈리는가. 조건과 값에 요청 수치가 들어가므로(07 M7c) 본문은
 -- 프로젝트 장부({p}.contrast)에 두고 공용에는 두 관측과 본문 지문(HMAC)만 둔다(07 D6c).
