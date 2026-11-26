@@ -44,6 +44,21 @@ class MeasuredChoices(unittest.TestCase):
         self.assertEqual(n["errors"], {})
 
 
+class JudgedNoiseI25(unittest.TestCase):
+    def test_judgments_cover_the_fixed_sample_and_e1_is_the_measured_default(self):
+        import csv
+        import measure
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i25" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertEqual(len(rows), 120)
+        self.assertTrue(all(r["grade"] in ("0", "1", "2") and r["reason"] for r in rows))
+        sample = measure.i25_sample()                                    # 판정 표본은 모은 쌍에서 규칙으로 다시 나온다
+        self.assertEqual([(r["request"], r["url"]) for r in rows], [(x["request"], x["url"]) for x in sample])
+        self.assertEqual(load("i25_pairs.json")["elig_rules"], config.ELIG_RULES)
+        i24 = load("measure_i24.json")
+        self.assertTrue(i24["revert_to_e1"])
+        self.assertEqual(config.ELIG_RULES, "e1")
+
+
 if __name__ == "__main__":
     unittest.main()
 

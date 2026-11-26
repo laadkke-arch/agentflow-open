@@ -593,7 +593,7 @@ def i24():
     saved = config.ELIG_RULES
     res = {}
     try:
-        for rule in ("e1", "e2"):
+        for rule in sorted(("e1", "e2"), key=lambda r: r == saved):   # 기본 규칙을 마지막에 돌려 공용 출력 파일을 기본으로 남긴다
             config.ELIG_RULES = rule
             a, r = a4_20(), r6_scale()
             res[rule] = {"a4_20": a["summary"], "r6_scale_r2": {k: r["rank_rules"]["r2"][k] for k in ("r1", "a4_20")},
@@ -680,6 +680,23 @@ I25_RULE = [
     "등급(012 qrels와 같은 눈금): 2 = 요청의 조건 하나에 바로 쓰일 장치·원리, 1 = 같은 구체 문제의 쓸 만한 배경, 0 = 넓은 분야나 낱말만 겹침.",
     "잡음 = 등급 0과 판정하지 않은 실제 행, 그리고 합성 잡음 전부(합성은 따로 보고). 판정자: 이 세션의 모델(사람 판정 아님), 판정 근거 한 줄을 남긴다.",
 ]
+
+
+def i25_sample(pairs_file="i25_pairs.json", cap=120) -> list[dict]:
+    """I25_RULE 첫 줄의 표본: 요청 이름순으로 돌아가며 요청마다 가장 좋은 순위부터 한 쌍씩, cap쌍까지."""
+    pairs = json.loads((OUT / pairs_file).read_text(encoding="utf-8"))["pairs"]
+    by: dict = {}
+    for x in pairs:
+        by.setdefault(x["request"], []).append(x)
+    for k in by:
+        by[k].sort(key=lambda x: (min(x["seen_in"].values()), x["url"]))
+    out, i = [], 0
+    while len(out) < cap and any(i < len(v) for v in by.values()):
+        for k in sorted(by):
+            if i < len(by[k]) and len(out) < cap:
+                out.append(by[k][i])
+        i += 1
+    return out
 
 
 def i25_score(pairs_file="i25_pairs.json", judgments=FIX / "i25" / "judgments.tsv"):
@@ -792,7 +809,7 @@ def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
-           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24()}
+           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24(), "i25_pairs": i25_collect(), "i25": i25_score()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -811,6 +828,7 @@ def main():
     print("A4-20", json.dumps(res["a4_20"]["summary"], ensure_ascii=False))
     print("R6-SCALE", json.dumps(res["r6_scale"]["end_condition_met"]), json.dumps(res["r6_scale"]["rank_rules"]["r2"]["r1"]))
     print("I24", json.dumps(res["i24"]["noise_top10"]), "revert", res["i24"]["revert_to_e1"])
+    print("I25", res["i25"]["grade_counts"], json.dumps({c: v["a4_20"] for c, v in res["i25"]["by_config"].items()}))
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 
