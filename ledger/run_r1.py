@@ -50,7 +50,8 @@ class Fmt:
                       lambda m: str(self.v[m.group(1)] if m.group(2) is None else self.v[m.group(1)][m.group(2)]), s)
 
 
-def run(mode: str = "replay") -> dict:
+def run(mode: str = "replay", needs: str = "studio") -> dict:
+    """needs="i1"이면 Studio의 칸별 필요 문장을 빼고 접수 규칙 i1이 쓰게 한다(A4)."""
     plan = load("plan.json")
     t = Transport(mode if mode != "live" else "record", FIX / "http")
     runner = ReceiptRunner(mode if mode != "live" else "record", FIX / "exec")
@@ -65,6 +66,8 @@ def run(mode: str = "replay") -> dict:
     # =========================================================== 요청판 1 (CPython 3.13)
     p = L.project("A")
     s1 = load("studio_rev1.json")
+    if needs == "i1":
+        s1.pop("needs")
     t0 = s1["received_at"]
     req1, info = intake(L, p, s1)
     it = plan["interpretation"]

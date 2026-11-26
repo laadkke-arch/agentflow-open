@@ -2,11 +2,12 @@
 
 p1  설계 예제 그대로. 영어 토큰([0-9a-z])만 본다. 어느 요청 원문에만 있고 원문 쪽(인용·진술)에는 없는
     다섯 글자 이상 내용어가 둘 이상이면 거절한다. 한국어 사본은 통과한다(07 M2b).
-p2  p1 + 한국어. 한글 어절에서 끝의 조사·어미를 하나 떼어 낸 줄기(두 음절 이상)를 내용어로 본다.
-    요청에만 있는 한국어 줄기가 KO_MIN_COUNT개 이상이거나, 영어·한국어 합이 셋 이상이거나,
-    요청 문장과 공백을 접어 VERBATIM_CHARS 글자 이상(그 절반 이상이 한글) 그대로 겹치면 거절한다.
+p2  p1 + 한국어 겹침. 요청 문장(비공개 필요 문장 포함)과 공백을 접어 VERBATIM_CHARS(16) 글자 이상(그 절반 이상이 한글)
+    그대로 겹치고 그 조각이 원문 쪽에는 없으면 거절한다.
+    한국어 줄기 개수 규칙(조사·어미를 뗀 줄기가 요청에만 KO_MIN_COUNT개 이상)도 만들었지만 같은 분야 요청 20개와 대조하면
+    정당한 꼬리표를 78% 거절해 껐다(KO_TOKEN_RULE=False). 그래서 p2는 한국어 바꿔 쓰기(의역)를 잡지 못한다.
 거절 문장에는 낱말·프로젝트 이름을 넣지 않는다(07 M2b, 시험 test_privacy_error_does_not_echo_the_private_words).
-값은 ledger/out/measure_r4.json의 측정으로 골랐다(08 I8).
+값은 ledger/out/measure_r4.json의 측정으로 골랐다: 누출 시도 152건 통과 0, 정당한 꼬리표 225건 중 거절 3(1.3%) (08 I8).
 """
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ KO_ENDINGS = sorted(set("""
 KO_STOP = frozenset("것 수 등 및 또는 그리고 그러나 하지만 때문 위해 대한 대해 경우 이후 이전 다른 같은 모든 각 더 덜 안 밖 위 아래 사이".split())
 
 KO_MIN_LEN = 2
+KO_TOKEN_RULE = False  # True면 한국어 줄기 개수 규칙도 쓴다. 측정에서 정당한 꼬리표를 78% 거절해 껐다(08 I8)
 KO_MIN_COUNT = 3
 VERBATIM_CHARS = 16
 
@@ -96,7 +98,9 @@ def leak(tag: str, source_side: str, request: str, rules: str | None = None) -> 
     private_k = set(ko_content(request)) - src_k
     leaked_k = [t for t in ko_content(tag) if t in private_k]
     n = len(leaked_a) + len(leaked_k)
-    if len(leaked_a) >= 2 or len(leaked_k) >= KO_MIN_COUNT or n >= 3:
+    if len(leaked_a) >= 2:
+        return n
+    if KO_TOKEN_RULE and (len(leaked_k) >= KO_MIN_COUNT or n >= 3):
         return n
     if _verbatim(tag, request, source_side, VERBATIM_CHARS):
         return max(n, 1)
