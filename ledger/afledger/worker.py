@@ -2,7 +2,7 @@
 
 한 번의 작업:
   1. 후속 몫(follow_budget_left)이 0이면 잡지 않는다(작업은 대기로 남는다, 07 D11). config.DEADLINE_BUDGET="separate"면
-     기한 원인만 가진 작업은 후속 몫을 쓰지 않고 clock="deadline"으로 센다(08 I22, 결정 전 선택지).
+     기한 원인만 가진 작업은 후속 몫을 쓰지 않고 clock="deadline"으로 센다(08 I22, 결정 I23으로 기본).
   2. lease로 임차 표지를 받는다. 0이면 다른 작업자가 잡았다.
   3. 읽을 판: job_editions(작업에 합쳐진 채널 항목의 판 키, 07 D3)가 있으면 발행 순으로 모두, 없으면 읽는 시각의 최신 판.
   4. 판마다 reader(관측, 판 키 또는 None, 시각)로 읽고 fetched(clock="follow")로 센다. 실패(None)도 1회다.

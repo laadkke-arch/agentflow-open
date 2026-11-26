@@ -133,7 +133,8 @@ def run(n_phases: int = 12, seed: int = 7) -> dict:
 
 
 def compare() -> dict:
-    """D4(기한 읽기 셋)와 D11(후속 몫 168시간당 3회)의 충돌을 본다(08 I22). 세 경우를 같은 위상 12개로 돈다."""
+    """D4(기한 읽기 셋)와 D11(후속 몫 168시간당 3회)의 충돌을 본다(08 I22). 세 경우를 같은 위상 12개로 돈다.
+    deadline_separate가 결정된 기본(b2, 08 I23)이고 design_D4_in_follow는 b1이다."""
     from afledger import config
     saved = (config.DEADLINE_BUDGET, config.FOLLOW_FETCHES_PER_10_SOURCES, Ledger.FOLLOW_FETCHES_PER_10_SOURCES)
     out = {}
