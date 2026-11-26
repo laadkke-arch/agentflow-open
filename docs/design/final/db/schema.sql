@@ -33,6 +33,29 @@ CREATE TABLE IF NOT EXISTS locator_alias_cancel (
   reason       TEXT NOT NULL
 );
 
+-- 인용 본문. 관측은 지문만 든다. 권리자가 요청하면 본문만 지우고 묘비(지운 시각·이유)를 남긴다(07 D7).
+-- 같은 문장은 판이 달라도 한 행이다. 지운 뒤 같은 문장을 다시 읽어도 본문을 다시 쓰지 않는다.
+CREATE TABLE IF NOT EXISTS quote_text (
+  quote_fp     TEXT PRIMARY KEY,
+  text         TEXT,
+  stored_at    TEXT NOT NULL,
+  erased_at    TEXT,
+  erase_reason TEXT,
+  CHECK ((text IS NULL) = (erased_at IS NOT NULL))
+);
+
+-- 원문 가져오기 기록(07 D1). 예산이 세는 단위다. 요청 시계의 가져오기는 프로젝트 장부에 둔다(누가 왜 읽었는지는 공용에 남기지 않는다).
+CREATE TABLE IF NOT EXISTS fetch_log (
+  fetch_id    INTEGER PRIMARY KEY,
+  clock       TEXT NOT NULL CHECK (clock IN ('follow','background')),
+  url         TEXT NOT NULL,
+  edition_key TEXT,
+  at          TEXT NOT NULL,
+  outcome     TEXT NOT NULL CHECK (outcome IN ('ok','not_modified','not_found','unreachable','truncated','unsupported')),
+  bytes       INTEGER,
+  job_id      INTEGER
+);
+
 -- 판: 번호·태그·커밋·DOI·문서 개정 ID. 없으면 kind='fetch'로 (가져온 시각, 지문)을 키로 쓴다.
 CREATE TABLE IF NOT EXISTS edition (
   edition_id    INTEGER PRIMARY KEY,
@@ -63,16 +86,16 @@ CREATE TABLE IF NOT EXISTS observation (
   observed_at   TEXT NOT NULL,     -- 처음 본 시각
   method        TEXT NOT NULL CHECK (method IN ('intro_only','read_line','executed')),
   outcome       TEXT NOT NULL CHECK (outcome IN ('content','not_found','unreachable','unsupported','truncated')),
-  quote         TEXT,              -- 원문 언어의 짧은 인용
-  quote_lang    TEXT,
+  quote_lang    TEXT,              -- 인용 본문은 quote_text에 지문으로 둔다(07 D7: 권리자 요청 때 본문만 지운다)
   quote_fp      TEXT,              -- 공백을 접은 인용의 sha256. 판이 달라도 같은 문장인지 본다
   statement     TEXT NOT NULL,     -- 원문 쪽에서 쓴 한 줄. 요청 문장을 쓰지 않는다
   evidence_ref  TEXT,              -- 인용이 원문 그대로가 아니면 판독문의 출처(연구 원장 행 등)
   flip_position TEXT,              -- 이 결론이 기대는 문장·줄·플래그
   receipt_id    INTEGER REFERENCES receipt(receipt_id),
   reader        TEXT,              -- 판독한 주체: 모델 ID와 프롬프트 판, 또는 사람. 잘못된 판독기의 관측을 골라 다시 확인한다
+  via_alias     INTEGER REFERENCES locator_alias(alias_id),  -- 이 별칭을 따라 열었다(07 D5). 별칭 취소 때 인용 자리에 알린다
   idem_key      TEXT NOT NULL UNIQUE,
-  CHECK (outcome <> 'content' OR quote IS NOT NULL OR receipt_id IS NOT NULL OR method = 'intro_only'),
+  CHECK (outcome <> 'content' OR quote_fp IS NOT NULL OR receipt_id IS NOT NULL OR method = 'intro_only'),
   CHECK (method <> 'executed' OR receipt_id IS NOT NULL)
 );
 CREATE INDEX IF NOT EXISTS observation_by_edition ON observation(edition_id, position);
@@ -191,6 +214,12 @@ CREATE TRIGGER IF NOT EXISTS observation_no_update BEFORE UPDATE ON observation
 BEGIN SELECT RAISE(ABORT, 'observation is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS observation_no_delete BEFORE DELETE ON observation
 BEGIN SELECT RAISE(ABORT, 'observation is append-only'); END;
+-- 인용 본문은 지우기(본문 → NULL)만 허용한다. 다른 본문으로 바꾸거나 묘비를 지울 수 없다.
+CREATE TRIGGER IF NOT EXISTS quote_text_erase_only BEFORE UPDATE ON quote_text
+WHEN NEW.text IS NOT NULL OR OLD.text IS NULL OR NEW.quote_fp <> OLD.quote_fp
+BEGIN SELECT RAISE(ABORT, 'quote_text can only be erased'); END;
+CREATE TRIGGER IF NOT EXISTS quote_text_no_delete BEFORE DELETE ON quote_text
+BEGIN SELECT RAISE(ABORT, 'quote_text keeps a tombstone'); END;
 CREATE TRIGGER IF NOT EXISTS edition_no_update BEFORE UPDATE ON edition
 BEGIN SELECT RAISE(ABORT, 'edition is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS receipt_no_update BEFORE UPDATE ON receipt

@@ -6,7 +6,7 @@
   {
    "id": "M1",
    "title": "실제 시계로 EVAL-X1 재생",
-   "claim": "06 3.4 단위 2 완료 기준: 사건마다 작업 1개, Pocket 자리에만 알림, 원리 자리 알림 0, '10월 9일에 알던 기한' 11월 6일",
+   "claim": "06 3.4 단위 2 완료 기준: 실제 폴링 시계에서 각 개정이 게시 뒤 폴링 주기 + 24시간 안에 관측되고, 대체 뒤에도 공급자 층 감시가 살아 있고, 원리 자리 알림 0. 기한 없는 문서의 중간 개정도 관측한다(discovery_ops 6절 규칙 (5)). v1 기준(사건마다 작업 1개, '10월 9일에 알던 기한' 11월 6일)은 v1_claim_holds에 따로 적는다",
    "setup": "72시간 폴링(위상 0~66시간, 6시간 간격 12개), 매시 기한 시계와 작업자, 2025-05-15~11-20. 세계 둘: 개정이 효력일 0시에 올라옴(사례 재생과 같음) / 14시에 올라옴[가정]. 기한 시계를 켜고 끈다",
    "observed": {
     "jobs_total_by_phase": {
@@ -60,7 +60,8 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 0
+     "supplier_layer_watch_alive_at_end": 0,
+     "supplier_layer_watch_alive_all_phases": false
     },
     "case_world_without_deadline_clock": {
      "jobs_total_min_max": [
@@ -100,7 +101,8 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 0
+     "supplier_layer_watch_alive_at_end": 0,
+     "supplier_layer_watch_alive_all_phases": false
     },
     "late_world(개정이 효력일 14시에 올라옴)": {
      "jobs_total_min_max": [
@@ -139,7 +141,8 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 0
+     "supplier_layer_watch_alive_at_end": 0,
+     "supplier_layer_watch_alive_all_phases": false
     },
     "late_world_without_deadline_clock": {
      "jobs_total_min_max": [
@@ -178,7 +181,8 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 0
+     "supplier_layer_watch_alive_at_end": 0,
+     "supplier_layer_watch_alive_all_phases": false
     },
     "m1b_observed_editions": [
      "rev:r1",
@@ -187,7 +191,12 @@
     "m1b_merged_causes": [
      "channel:https://docs.example/pricing/history#r3"
     ],
-    "m1b_middle_revision_lost": true
+    "m1b_middle_revision_lost": true,
+    "unit2_criterion_by_world": {
+     "case_world": false,
+     "late_world": false
+    },
+    "v1_claim_holds": false
    },
    "verdict": "깨짐",
    "missing": [
@@ -358,6 +367,11 @@
       "엔진 L.opens(새 관측 수)": "budget_exhausted"
      }
     },
+    "rules_checked": [
+     "04_5절(파일 수, 실행 따로)",
+     "request_utility_6절(실패·재열람·실행 포함)",
+     "엔진 L.opens(새 관측 수)"
+    ],
     "project_c_gate": "reopen",
     "project_c_counted_opens": 0,
     "shared_budget_grid": {
@@ -674,7 +688,7 @@
   {
    "id": "M9",
    "title": "시각 형식",
-   "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
+   "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한(고친 엔진은 24시간 뒤도)에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
    "setup": "(a) 날짜만 적은 기한 하나와 정상 기한 하나 (b) +09:00 표기 발행 시각과 Z 표기 발행 시각",
    "observed": {
     "a_due_result": null,
@@ -696,12 +710,13 @@
    "claim": "discovery_ops 2절: 권리자가 요청하면 지운다, 묘비를 남긴다. 1.8: 요청 때 새로 읽은 공개 원문도 관측은 공개, 누가 왜 읽었는지는 남기지 않는다",
    "setup": "(a) 관측의 인용을 지우려 한다 (b) 요청 흐름이 사용자의 비공개 저장소 주소를 연다 (c) 사례 셋에서 요청이 처음 연 주소",
    "observed": {
-    "a_quote_erasable": false,
     "a_redaction_api": false,
+    "a_quote_erasable": false,
+    "b_visibility_guard": false,
+    "b_private_rejected": false,
     "b_private_url_in_commons": true,
-    "b_visibility_column": [],
     "c_request_originated_locators": 5,
-    "c_request_originated_with_exact_time": 5
+    "c_request_originated_with_time_of_day": 3
    },
    "verdict": "깨짐",
    "missing": [
@@ -719,6 +734,8 @@
     "answer_runs": 24,
     "notices": 24,
     "notices_on_non_latest_revisions": 16,
+    "held": 0,
+    "delivered_to_non_latest": 16,
     "answer_run_columns": [
      "run_id",
      "req_id",

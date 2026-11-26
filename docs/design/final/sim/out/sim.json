@@ -6,7 +6,7 @@
   {
    "id": "M1",
    "title": "실제 시계로 EVAL-X1 재생",
-   "claim": "06 3.4 단위 2 완료 기준: 사건마다 작업 1개, Pocket 자리에만 알림, 원리 자리 알림 0, '10월 9일에 알던 기한' 11월 6일",
+   "claim": "06 3.4 단위 2 완료 기준: 실제 폴링 시계에서 각 개정이 게시 뒤 폴링 주기 + 24시간 안에 관측되고, 대체 뒤에도 공급자 층 감시가 살아 있고, 원리 자리 알림 0. 기한 없는 문서의 중간 개정도 관측한다(discovery_ops 6절 규칙 (5)). v1 기준(사건마다 작업 1개, '10월 9일에 알던 기한' 11월 6일)은 v1_claim_holds에 따로 적는다",
    "setup": "72시간 폴링(위상 0~66시간, 6시간 간격 12개), 매시 기한 시계와 작업자, 2025-05-15~11-20. 세계 둘: 개정이 효력일 0시에 올라옴(사례 재생과 같음) / 14시에 올라옴[가정]. 기한 시계를 켜고 끈다",
    "observed": {
     "jobs_total_by_phase": {
@@ -60,7 +60,8 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 1
+     "supplier_layer_watch_alive_at_end": 1,
+     "supplier_layer_watch_alive_all_phases": true
     },
     "case_world_without_deadline_clock": {
      "jobs_total_min_max": [
@@ -100,16 +101,16 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 1
+     "supplier_layer_watch_alive_at_end": 1,
+     "supplier_layer_watch_alive_all_phases": true
     },
     "late_world(개정이 효력일 14시에 올라옴)": {
      "jobs_total_min_max": [
-      10,
-      11
+      12,
+      14
      ],
      "known_2025_10_09T12_counts": {
-      "308355": 4,
-      "300072": 8
+      "308355": 12
      },
      "lag_hours": {
       "297191": {
@@ -119,13 +120,13 @@
       },
       "300072": {
        "min": 18.0,
-       "max": 84.0,
+       "max": 24.0,
        "never_observed_phases": 0
       },
       "308355": {
        "min": 18.0,
-       "max": 36.0,
-       "never_observed_phases": 8
+       "max": 24.0,
+       "never_observed_phases": 0
       },
       "308427": {
        "min": 18.0,
@@ -134,12 +135,13 @@
       },
       "313551": {
        "min": 18.0,
-       "max": 84.0,
+       "max": 24.0,
        "never_observed_phases": 0
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 1
+     "supplier_layer_watch_alive_at_end": 1,
+     "supplier_layer_watch_alive_all_phases": true
     },
     "late_world_without_deadline_clock": {
      "jobs_total_min_max": [
@@ -178,18 +180,25 @@
       }
      },
      "max_principle_slot_notices": 0,
-     "supplier_layer_watch_alive_at_end": 1
+     "supplier_layer_watch_alive_at_end": 1,
+     "supplier_layer_watch_alive_all_phases": true
     },
     "m1b_observed_editions": [
      "rev:r1",
+     "rev:r2",
      "rev:r3"
     ],
     "m1b_merged_causes": [
      "channel:https://docs.example/pricing/history#r3"
     ],
-    "m1b_middle_revision_lost": true
+    "m1b_middle_revision_lost": false,
+    "unit2_criterion_by_world": {
+     "case_world": true,
+     "late_world": true
+    },
+    "v1_claim_holds": false
    },
-   "verdict": "깨짐",
+   "verdict": "유지",
    "missing": [
     "단위 2 완료 기준(작업 1개, 10월 9일 기한)은 사례 재생이 사건 시각에 맞춰 폴링해서 나온 값이다. 실제 시계에서는 기한 작업이 제때 따로 돌아 작업 수가 늘고, '그날 알던 것'은 폴링 위상에 따라 달라진다.",
     "개정이 기한 0시에 올라오는 세계에서는 기한 시계가 지연을 0으로 만들고, 끄면 한 주기 안에 쌓인 개정을 놓친다(유지되는 부분). 개정이 기한 당일 낮에 올라오면 기한 0시 읽기는 옛 판을 보고 지나가 효과가 사라진다. 기한 뒤 읽기(T+24h)가 없다.",
@@ -334,30 +343,39 @@
     "counting_rules_r1": {
      "04_5절(파일 수, 실행 따로)": 2,
      "request_utility_6절(실패·재열람·실행 포함)": 3,
-     "엔진 L.opens(새 관측 수)": 8
+     "엔진 L.opens(새 관측 수)": 8,
+     "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)": 2
     },
     "status_by_budget_and_rule": {
      "4": {
       "04_5절(파일 수, 실행 따로)": "complete",
       "request_utility_6절(실패·재열람·실행 포함)": "complete",
-      "엔진 L.opens(새 관측 수)": "budget_exhausted"
+      "엔진 L.opens(새 관측 수)": "budget_exhausted",
+      "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)": "complete"
      },
      "3": {
       "04_5절(파일 수, 실행 따로)": "complete",
       "request_utility_6절(실패·재열람·실행 포함)": "complete",
-      "엔진 L.opens(새 관측 수)": "budget_exhausted"
+      "엔진 L.opens(새 관측 수)": "budget_exhausted",
+      "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)": "complete"
      },
      "2": {
       "04_5절(파일 수, 실행 따로)": "complete",
       "request_utility_6절(실패·재열람·실행 포함)": "budget_exhausted",
-      "엔진 L.opens(새 관측 수)": "budget_exhausted"
+      "엔진 L.opens(새 관측 수)": "budget_exhausted",
+      "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)": "complete"
      },
      "1": {
       "04_5절(파일 수, 실행 따로)": "budget_exhausted",
       "request_utility_6절(실패·재열람·실행 포함)": "budget_exhausted",
-      "엔진 L.opens(새 관측 수)": "budget_exhausted"
+      "엔진 L.opens(새 관측 수)": "budget_exhausted",
+      "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)": "budget_exhausted"
      }
     },
+    "rules_checked": [
+     "04_5절(파일 수, 실행 따로)",
+     "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)"
+    ],
     "project_c_gate": "reopen",
     "project_c_counted_opens": 0,
     "shared_budget_grid": {
@@ -452,18 +470,101 @@
       "max_cursor_age_h": 1992
      }
     },
-    "configs_over_5pct_deferral": [
-     "C3_req5",
-     "C3_req20",
-     "C7_req5",
-     "C7_req20",
-     "C10_req5",
-     "C10_req20",
-     "C15_req5",
-     "C15_req20"
-    ]
+    "engine_per_clock_grid": {
+     "C3_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.25,
+      "max_cursor_age_h": 154,
+      "source_reads_per_week": 11.4,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C3_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.021,
+      "max_cursor_age_h": 155,
+      "source_reads_per_week": 40.8,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C7_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.517,
+      "max_cursor_age_h": 167,
+      "source_reads_per_week": 13.0,
+      "polls_per_week": 12.3,
+      "follow_hours_deferred": 0
+     },
+     "C7_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.079,
+      "max_cursor_age_h": 164,
+      "source_reads_per_week": 42.3,
+      "polls_per_week": 12.3,
+      "follow_hours_deferred": 0
+     },
+     "C10_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.617,
+      "max_cursor_age_h": 165,
+      "source_reads_per_week": 13.7,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C10_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.158,
+      "max_cursor_age_h": 167,
+      "source_reads_per_week": 43.8,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C15_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.633,
+      "max_cursor_age_h": 167,
+      "source_reads_per_week": 15.2,
+      "polls_per_week": 25.7,
+      "follow_hours_deferred": 0
+     },
+     "C15_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.254,
+      "max_cursor_age_h": 165,
+      "source_reads_per_week": 46.1,
+      "polls_per_week": 25.7,
+      "follow_hours_deferred": 0
+     },
+     "C30_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.817,
+      "max_cursor_age_h": 162,
+      "source_reads_per_week": 16.3,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 0
+     },
+     "C30_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.471,
+      "max_cursor_age_h": 166,
+      "source_reads_per_week": 51.8,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 0
+     }
+    },
+    "configs_over_5pct_deferral": []
    },
-   "verdict": "모순",
+   "verdict": "유지",
    "missing": [
     "같은 R1이 세는 법에 따라 원문 2·3·8회다. 예산 4에서 complete인지 budget_exhausted인지가 문서마다 다르다.",
     "프로젝트 C는 재사용 관문이 reopen인데 엔진은 열람 0회로 센다. 다시 본 기록(sighting)을 열람으로 세지 않기 때문이다.",
@@ -478,8 +579,10 @@
    "claim": "04 6.3: 별칭을 따라 만든 답 자리는 사용 쪽지로 찾아 알린다. 잘못된 대체는 반대 방향의 새 관측과 confirms로 되돌린다. discovery_ops 3절: 공급자 철회는 핀 형태로 현재 추천이 갈린다",
    "setup": "(a) 별칭을 따라 연 관측으로 답한 뒤 별칭 취소 (b) 같은 판을 두 프로젝트가 ==8.1.0과 <8.1.1로 쓰다 철회 (c) 같은 판을 잘못 읽어 invalidates를 쓰고 나중에 바로잡기",
    "observed": {
-    "a_alias_cancel_notices": 0,
-    "a_columns_linking_alias_to_obs": [],
+    "a_alias_cancel_notices": 1,
+    "a_columns_linking_alias_to_obs": [
+     "via_alias"
+    ],
     "b_notices_by_pin": {
      "P_eq": [
       "근거 무효: 8.1.0 철회(yanked) (알게 된 시각 2026-11-27T00:00:00Z)"
@@ -507,7 +610,7 @@
     "c_notice_effects": [],
     "c_wrong_slip_carried_to_next_revision": false
    },
-   "verdict": "깨짐",
+   "verdict": "유지",
    "missing": [
     "별칭과 관측·사용 쪽지를 잇는 열이 없다. 별칭을 취소해도 그 별칭을 따라 만든 자리를 찾을 길이 없다.",
     "공급자 철회를 나타낼 결과 값이 없고(outcome에 withdrawn 없음), 핀 형태를 담을 칸이 없어 두 프로젝트가 같은 '근거 무효'를 받는다.",
@@ -685,7 +788,7 @@
   {
    "id": "M9",
    "title": "시각 형식",
-   "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
+   "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한(고친 엔진은 24시간 뒤도)에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
    "setup": "(a) 날짜만 적은 기한 하나와 정상 기한 하나 (b) +09:00 표기 발행 시각과 Z 표기 발행 시각",
    "observed": {
     "a_due_result": 2,
@@ -707,14 +810,15 @@
    "claim": "discovery_ops 2절: 권리자가 요청하면 지운다, 묘비를 남긴다. 1.8: 요청 때 새로 읽은 공개 원문도 관측은 공개, 누가 왜 읽었는지는 남기지 않는다",
    "setup": "(a) 관측의 인용을 지우려 한다 (b) 요청 흐름이 사용자의 비공개 저장소 주소를 연다 (c) 사례 셋에서 요청이 처음 연 주소",
    "observed": {
-    "a_quote_erasable": false,
-    "a_redaction_api": false,
-    "b_private_url_in_commons": true,
-    "b_visibility_column": [],
+    "a_redaction_api": true,
+    "a_quote_erasable": true,
+    "b_visibility_guard": true,
+    "b_private_rejected": true,
+    "b_private_url_in_commons": false,
     "c_request_originated_locators": 5,
-    "c_request_originated_with_exact_time": 5
+    "c_request_originated_with_time_of_day": 0
    },
-   "verdict": "깨짐",
+   "verdict": "유지",
    "missing": [
     "관측은 트리거로 수정·삭제가 막혀 인용을 지울 길이 없다. 덧붙이기 원칙과 권리자 삭제·묘비가 부딪힌다. 인용 본문을 지울 수 있는 별도 저장으로 빼야 한다.",
     "'공개 원문'을 가리는 규칙이 없다. 요청 흐름이 연 비공개 주소(사용자의 저장소, 사내 문서)도 공용 장부에 들어간다.",
@@ -730,6 +834,8 @@
     "answer_runs": 24,
     "notices": 24,
     "notices_on_non_latest_revisions": 16,
+    "held": 16,
+    "delivered_to_non_latest": 0,
     "answer_run_columns": [
      "run_id",
      "req_id",
@@ -741,7 +847,7 @@
      "idem_key"
     ]
    },
-   "verdict": "빈칸",
+   "verdict": "유지",
    "missing": [
     "'활성 답'의 정의와 칸이 없다. 새 요청판이 나온 옛 답에도 알림이 가고, 바뀐 것이 없는 '다시 확인됨'도 알림이 된다.",
     "알림의 읽음·묶음·우선순위가 없다. 인기 관측 하나가 바뀌면 모든 프로젝트의 모든 옛 답에 알림이 쌓인다."

@@ -7,7 +7,7 @@
 시나리오 ID와 묻는 것:
   M1  실제 시계로 EVAL-X1 재생(72시간 폴링, 매시 기한 시계, 매시 작업자, 위상 12개)
   M2  대량: 공용 장부·프로젝트 수가 늘 때 서랍 잡음, 사생활 검사, 전파의 비용
-  M3  열람 예산 축소: 세는 법 셋의 모순, 출처가 늘 때 단일 예산의 붕괴
+  M3  열람 예산 축소: 세는 법 셋의 모순, 출처가 늘 때 단일 예산의 붕괴(엔진에 시계별 예산이 있으면 그 격자도)
   M4  출처 이동·철회·잘못된 대체: 별칭 취소, 공급자 철회, 대체 되돌리기
   M5  동시 변경: 임차 만료 뒤 늦은 완료, 임차 중 새 원인, 판독 비결정성
   M6  다국어 신규 출처: 일본어 꼬리표, 한국어 필요 문장, 한국어 사생활 검사
@@ -20,7 +20,8 @@
 
 판정 값: "깨짐"(설계서가 말한 동작과 다르게 나온다), "빈칸"(설계서가 정하지 않아 구현자가 막힌다),
 "모순"(설계서의 두 곳이 서로 다르다), "유지"(규칙이 버텼다).
-판정은 관측값에서 계산한다. 같은 코드를 고친 엔진에 돌리면 판정이 바뀔 수 있다.
+판정은 관측값에서 계산한다. 같은 코드를 고친 엔진에 돌리면 판정이 바뀔 수 있다. 엔진에 07 6절 결정의 기능
+(via_alias, visibility, redact, job_editions, fetched, notice.held)이 있으면 쓰고, 없으면 v1처럼 돈다.
 
 실행:
   python3 -I ops_sim.py                         # 요약 출력, out/sim.json 쓰기
@@ -109,6 +110,13 @@ def verdict(broken: bool, kind="깨짐") -> str:
 
 def table_cols(L, table, schema="main") -> list[str]:
     return [r[1] for r in L.db.execute(f"PRAGMA {schema}.table_info({table})")]
+
+
+def quote_sql(L) -> tuple[str, str]:
+    """인용 본문을 읽는 SELECT 식과 JOIN. 고친 엔진은 인용을 quote_text로 뗐고(07 D7), v1은 observation.quote에 둔다."""
+    if L.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='quote_text'").fetchone():
+        return "q.text AS quote", " LEFT JOIN quote_text q ON q.quote_fp=o.quote_fp"
+    return "o.quote", ""
 
 
 # ============================================================================ M1 실제 시계
@@ -264,7 +272,8 @@ def m1() -> dict:
                       "known_2025_10_09T12_counts": dict(Counter(r["known_2025_10_09T12"] for r in runs)),
                       "lag_hours": lag,
                       "max_principle_slot_notices": max(r["notices"].get("2", 0) for r in runs),
-                      "supplier_layer_watch_alive_at_end": max(r["supplier_layer_watch_alive_at_end"] for r in runs)}
+                      "supplier_layer_watch_alive_at_end": max(r["supplier_layer_watch_alive_at_end"] for r in runs),
+                      "supplier_layer_watch_alive_all_phases": all(r["supplier_layer_watch_alive_at_end"] for r in runs)}
 
     runs0, case_world = sweep(0, True)
     _, case_world_nodeadline = sweep(0, False)
@@ -281,19 +290,29 @@ def m1() -> dict:
     o, _ = L.observe(url=doc, edition_key="rev:r1", edition_kind="revision", position="요금표", at=revs[0][1],
                      method="read_line", quote=revs[0][2], quote_lang="ko", statement=revs[0][2])
     L.channel("ex", hist, "revision_history", period_h=72)
-    L.poll(hist, [{"id": "r1", "title": "r1", "url": doc}], revs[0][1])
+    L.poll(hist, [{"id": "r1", "title": "r1", "url": doc, "edition": "rev:r1"}], revs[0][1])
     L.watch(o, hist)
     t = revs[0][1]
     while t <= "2026-01-20T00:00:00Z":
         if hours(revs[0][1], t) % 72 == 0:
-            L.poll(hist, [{"id": rid, "title": rid, "url": doc} for rid, eff, _ in revs if eff <= t], t)
+            L.poll(hist, [{"id": rid, "title": rid, "url": doc, "edition": f"rev:{rid}"} for rid, eff, _ in revs
+                          if eff <= t], t)
         for j in L.jobs():
             tok = L.lease(j["job_id"], plus(t, 1))
-            rid, eff, text = [r for r in revs if r[1] <= t][-1]
-            new, created = L.observe(url=doc, edition_key=f"rev:{rid}", edition_kind="revision", position="요금표",
-                                     at=t, method="read_line", quote=text, quote_lang="ko", statement=text)
-            finish(L, j["job_id"], new, token=tok,
-                   sup=(L.current(j["obs_id"], t), "changes_value", t, eff) if created else None)
+            todo = [r for r in revs if r[1] <= t][-1:]
+            if hasattr(L, "job_editions"):     # 고친 엔진(07 D3): 합친 작업이 든 판을 발행 순으로 모두 읽는다
+                keys = {e["edition_key"] for e in L.job_editions(j["job_id"])}
+                todo = [r for r in revs if r[1] <= t and f"rev:{r[0]}" in keys] or todo
+            for k, (rid, eff, text) in enumerate(todo):
+                new, created = L.observe(url=doc, edition_key=f"rev:{rid}", edition_kind="revision", position="요금표",
+                                         at=t, method="read_line", quote=text, quote_lang="ko", statement=text)
+                cur = L.current(j["obs_id"], t)
+                if k < len(todo) - 1:
+                    if created and cur != new:
+                        L.supersede(cur, new, "changes_value", known_from=t, effective_from=eff)
+                    continue
+                finish(L, j["job_id"], new, token=tok,
+                       sup=(cur, "changes_value", t, eff) if created and cur != new else None)
             L.watch(new, hist)
         t = plus(t, 1)
     observed = [r[0] for r in L.db.execute(
@@ -302,10 +321,18 @@ def m1() -> dict:
     L.db.close()
     m1b_lost = "rev:r2" not in observed
 
-    broken = (min(claim_jobs) != 5 or max(claim_jobs) != 5) or len(k1009) > 1
+    def unit2(world, off):
+        """06 3.4 단위 2 완료 기준: 각 개정이 게시 뒤 폴링 주기(72) + 24시간 안에 관측, 공급자 층 감시 유지, 원리 자리 알림 0"""
+        return (all(v["never_observed_phases"] == 0 and v["max"] - off <= 72 + 24 for v in world["lag_hours"].values())
+                and world["supplier_layer_watch_alive_all_phases"] and world["max_principle_slot_notices"] == 0)
+    v1_claim = min(claim_jobs) == 5 and max(claim_jobs) == 5 and len(k1009) == 1
+    crit = {"case_world": unit2(case_world, 0), "late_world": unit2(late_world, 14)}
+    broken = not all(crit.values()) or m1b_lost
     return {
         "id": "M1", "title": "실제 시계로 EVAL-X1 재생",
-        "claim": "06 3.4 단위 2 완료 기준: 사건마다 작업 1개, Pocket 자리에만 알림, 원리 자리 알림 0, '10월 9일에 알던 기한' 11월 6일",
+        "claim": "06 3.4 단위 2 완료 기준: 실제 폴링 시계에서 각 개정이 게시 뒤 폴링 주기 + 24시간 안에 관측되고, 대체 뒤에도 공급자 층 감시가 "
+                 "살아 있고, 원리 자리 알림 0. 기한 없는 문서의 중간 개정도 관측한다(discovery_ops 6절 규칙 (5)). "
+                 "v1 기준(사건마다 작업 1개, '10월 9일에 알던 기한' 11월 6일)은 v1_claim_holds에 따로 적는다",
         "setup": "72시간 폴링(위상 0~66시간, 6시간 간격 12개), 매시 기한 시계와 작업자, 2025-05-15~11-20. "
                  "세계 둘: 개정이 효력일 0시에 올라옴(사례 재생과 같음) / 14시에 올라옴[가정]. 기한 시계를 켜고 끈다",
         "observed": {
@@ -315,6 +342,7 @@ def m1() -> dict:
             "late_world(개정이 효력일 14시에 올라옴)": late_world,
             "late_world_without_deadline_clock": late_world_nodeadline,
             "m1b_observed_editions": observed, "m1b_merged_causes": merged, "m1b_middle_revision_lost": m1b_lost,
+            "unit2_criterion_by_world": crit, "v1_claim_holds": v1_claim,
         },
         "verdict": verdict(broken),
         "missing": [
@@ -476,8 +504,9 @@ def m2b() -> dict:
     cases.case_a(L, catalog)
     cases.case_b(L)
     cases.case_r2(L)
+    qe, qj = quote_sql(L)
     authored = L.db.execute(
-        "SELECT t.obs_id, t.slot, t.text, o.quote, o.statement FROM tag t JOIN observation o USING(obs_id)"
+        f"SELECT t.obs_id, t.slot, t.text, {qe}, o.statement FROM tag t JOIN observation o USING(obs_id){qj}"
         " WHERE t.written_from <> 'catalog_description' AND t.lang='en' ORDER BY t.tag_id").fetchall()
     authored = [dict(r) for r in authored]
     L.db.close()
@@ -540,6 +569,102 @@ def m2b() -> dict:
     }
 
 
+# ============================================================================ 예산 모형(M3, decide_sim D11이 같이 쓴다)
+BUDGET_POLICIES = ["A 한 묶음, 폴링 먼저(v1 해석)", "B 한 묶음, 요청 먼저", "C 시계별(폴링은 조건부 요청)",
+                   "D 시계별 + 후속 몫을 출처 10개당 168시간 3회"]
+
+
+def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, request_cap=4, follow_per_10=3) -> dict:
+    """출처 C개, 주간 요청 lam건을 weeks주 돌린다. 출처 절반은 72시간·절반은 168시간 주기로 폴링하고, 폴링마다
+    p_change 확률로 바뀐 것을 봐 후속 읽기 1회를 만든다. 요청은 새 원문 2회와 관문이 닫히면 재열람 1회를 쓴다.
+    한 묶음(A·B)은 168시간당 budget회를 모두가 나눠 쓰고, 시계별(C·D)은 요청당 request_cap회, 후속은 168시간당
+    follow_per_10회(D는 출처 10개마다 그만큼), 배경 폴링은 조건부 요청이라 읽기 예산 밖이다[가정, 07 R-2]."""
+    rnd = random.Random(seed + C * 7 + lam)
+    per_clock = policy[0] in "CD"
+    H = weeks * 168
+    period = [72 if i % 2 == 0 else 168 for i in range(C)]
+    next_due = [rnd.randrange(period[i]) for i in range(C)]
+    last_poll, last_direct = [None] * C, [None] * C
+    spent: list[int] = []
+    follow = []           # 바뀐 것을 본 출처(후속 읽기 대기)
+    follow_spent: list[int] = []
+    pending = []
+    arrivals = sorted((int(rnd.uniform(0, H)), rnd.randrange(C)) for _ in range(int(lam * weeks)))
+    ai = 0
+    st = Counter()
+    cursor_age = []
+    for h in range(H):
+        spent = [x for x in spent if x > h - 168]
+        follow_spent = [x for x in follow_spent if x > h - 168]
+        while ai < len(arrivals) and arrivals[ai][0] <= h:
+            pending.append(arrivals[ai])
+            ai += 1
+
+        def do_requests():
+            keep = []
+            for (t0, src) in pending:
+                fresh = last_poll[src] is not None and h - last_poll[src] <= 2 * period[src]
+                direct = last_direct[src] is not None and h - last_direct[src] <= 168
+                need = 2 + (0 if (fresh and direct) else 1)
+                room = (budget - len(spent)) if not per_clock else request_cap
+                if room >= need:
+                    if not per_clock:
+                        spent.extend([h] * need)
+                    st["request_reads"] += need
+                    st["done"] += 1
+                    st["reopen"] += 0 if (fresh and direct) else 1
+                    last_direct[src] = h
+                    if h > t0:
+                        st["deferred"] += 1
+                elif h - t0 >= 72:
+                    st["exhausted"] += 1
+                else:
+                    keep.append((t0, src))
+            pending[:] = keep
+
+        if policy == BUDGET_POLICIES[1]:
+            do_requests()
+        for i in range(C):
+            if h >= next_due[i]:
+                if per_clock or len(spent) < budget:
+                    if not per_clock:
+                        spent.append(h)
+                    st["polls"] += 1
+                    last_poll[i] = h
+                    next_due[i] = h + period[i]
+                    if rnd.random() < p_change:
+                        follow.append(i)
+                else:
+                    st["poll_hours_deferred"] += 1
+        if policy != BUDGET_POLICIES[1]:
+            do_requests()
+        keep_f = []
+        for i in follow:
+            if per_clock:
+                cap = follow_per_10 if policy[0] == "C" else follow_per_10 * max(1, -(-C // 10))
+                ok = len(follow_spent) < cap
+                if ok:
+                    follow_spent.append(h)
+            else:
+                ok = len(spent) < budget
+                if ok:
+                    spent.append(h)
+            if ok:
+                st["follow_reads"] += 1
+                last_direct[i] = h
+            else:
+                keep_f.append(i)
+                st["follow_hours_deferred"] += 1
+        follow = keep_f
+        if h % 24 == 0:
+            cursor_age.append(max((h - lp) if lp is not None else h for lp in last_poll))
+    n = max(1, st["done"] + st["exhausted"])
+    return {"deferred_rate": round(st["deferred"] / n, 3), "exhausted_rate": round(st["exhausted"] / n, 3),
+            "gate_reopen_rate": round(st["reopen"] / max(1, st["done"]), 3), "max_cursor_age_h": max(cursor_age),
+            "source_reads_per_week": round((st["request_reads"] + st["follow_reads"]) / weeks, 1),
+            "polls_per_week": round(st["polls"] / weeks, 1), "follow_hours_deferred": st["follow_hours_deferred"]}
+
+
 # ============================================================================ M3 예산
 def m3() -> dict:
     # (a) 세는 법 셋. 사례 A 첫 요청이 실제로 한 일에서 센다.
@@ -555,6 +680,19 @@ def m3() -> dict:
     engine_opens = a["opens_t0"]
     rules = {"04_5절(파일 수, 실행 따로)": files, "request_utility_6절(실패·재열람·실행 포함)": files + execs,
              "엔진 L.opens(새 관측 수)": engine_opens}
+    k_fetch = "엔진 fetch_count(07 D1, 판독 어댑터가 적은 가져오기)"
+    if hasattr(L, "fetched"):
+        # 고친 엔진: 판독 어댑터가 하듯 T0에 받은 (주소, 판)마다 가져오기를 적고 엔진이 센다. 위치 수와 무관하다
+        req1 = L.db.execute(f"SELECT min(req_id) FROM {pA}.request_rev").fetchone()[0]
+        for url, ek in L.db.execute(
+                "SELECT DISTINCT l.url, e.edition_key FROM observation o JOIN edition e USING(edition_id)"
+                " JOIN locator l USING(locator_id) WHERE o.method='read_line' AND o.observed_at='2026-11-26T01:00:00Z'"
+                " ORDER BY l.url").fetchall():
+            L.fetched(url, ek, "2026-11-26T01:00:00Z", p=pA, req=req1)
+        rules[k_fetch] = L.fetch_count(p=pA, req=req1)
+        rules_checked = ["04_5절(파일 수, 실행 따로)", k_fetch]     # 07 D1 확정 뒤 예산이 세는 것은 이 둘이다
+    else:
+        rules_checked = list(rules)
     table = {}
     for b in (4, 3, 2, 1):
         table[str(b)] = {k: ("complete" if v <= b else "budget_exhausted") for k, v in rules.items()}
@@ -620,14 +758,25 @@ def m3() -> dict:
                 "poll_hours_deferred": stats["poll_hours_deferred"], "max_cursor_age_h": max(cursor_age)}
 
     grid = {f"C{C}_req{lam}": budget_run(C, lam) for C in (3, 7, 10, 15, 30) for lam in (5, 20)}
-    collapse = [k for k, v in grid.items() if v["deferred_rate"] > 0.05]
-    contradiction = len(set(v for v in table["4"].values())) > 1
+    per_clock = None
+    if hasattr(eng.Ledger, "REQUEST_FETCHES"):
+        # 고친 엔진: 시계별 예산(07 D11). 엔진의 설정 값으로 같은 출처·요청 격자를 돌린다
+        per_clock = {f"C{C}_req{lam}": budget_model(BUDGET_POLICIES[3], C, lam,
+                                                     request_cap=eng.Ledger.REQUEST_FETCHES,
+                                                     follow_per_10=eng.Ledger.FOLLOW_FETCHES_PER_10_SOURCES)
+                     for C in (3, 7, 10, 15, 30) for lam in (5, 20)}
+        collapse = [k for k, v in per_clock.items() if v["deferred_rate"] > 0.05 or v["exhausted_rate"] > 0]
+    else:
+        collapse = [k for k, v in grid.items() if v["deferred_rate"] > 0.05]
+    contradiction = len(set(table["4"][k] for k in rules_checked)) > 1
     return {
         "id": "M3", "title": "열람 예산 축소",
         "claim": "04 5절·C1: 요청 하나에 원문 4회. 배경은 출처당 72시간마다 1회. 예산 단위는 152 HIGH(168시간당 24회). 보류율 5% 초과면 후속·배경 몫을 줄인다",
         "setup": "(a) 사례 A 첫 요청을 세 문서의 세는 법으로 센다. (b) 출처 C개·주간 요청 λ건을 12주 돌린다. 배경 폴링을 먼저 쓰고(채널 차분 보호), 요청은 새 원문 2회와 관문이 닫히면 재열람 1회를 쓴다",
         "observed": {"counting_rules_r1": rules, "status_by_budget_and_rule": table,
+                     "rules_checked": rules_checked,
                      "project_c_gate": c_gate, "project_c_counted_opens": c_counted, "shared_budget_grid": grid,
+                     **({"engine_per_clock_grid": per_clock} if per_clock is not None else {}),
                      "configs_over_5pct_deferral": collapse},
         "verdict": "모순" if contradiction else verdict(bool(collapse)),
         "missing": [
@@ -651,8 +800,9 @@ def m4() -> dict:
     old, new = "https://formulae.example/tree-sitter", "https://formulae.example/tree-sitter-cli"
     aid = L.alias(old, new, "moved", t)
     target = L.resolve(old, t)
+    kw = {"via_alias": aid} if has_param(L.observe, "via_alias") else {}     # 07 D5: 따라 연 별칭을 남긴다
     o, _ = L.observe(url=target, edition_key="0.25.0", edition_kind="release", position="install", at=t,
-                     method="read_line", quote="brew install tree-sitter-cli", quote_lang="en", statement="CLI 설치")
+                     method="read_line", quote="brew install tree-sitter-cli", quote_lang="en", statement="CLI 설치", **kw)
     req = L.intake(p, request_key="R", rev=1, at=t, text="t", selected_part="s", requirements=[], prior={"state": "none"})
     L.search_fresh(p, req, t, {"direct": [{"url": old}]})
     L.compose(p, req, t, slots=[{"kind": "direct", "first": o, "ladder": "L2", "verb": "설치", "where": "install",
@@ -686,8 +836,9 @@ def m4() -> dict:
                      method="read_line", quote="yanked: true", quote_lang="en", statement="8.1.0 철회(yanked)")
     finish(L, j["job_id"], y, token=tok, sup=(o, "invalidates", "2026-11-27T00:00:00Z", None))
     texts = {name: [x["text"] for x in L.propagate(f"p_{name}", "2026-11-28T00:00:00Z")] for name in runs}
-    outcome_enum = re.search(r"outcome\s+TEXT NOT NULL CHECK \(outcome IN \(([^)]*)\)",
-                             (Path(eng.__file__).parent / "schema.sql").read_text(encoding="utf-8")).group(1)
+    schema_sql = (Path(eng.__file__).parent / "schema.sql").read_text(encoding="utf-8")
+    obs_table = schema_sql[schema_sql.index("CREATE TABLE IF NOT EXISTS observation"):]
+    outcome_enum = re.search(r"outcome\s+TEXT NOT NULL CHECK \(outcome IN \(([^)]*)\)", obs_table).group(1)
     out["b_notices_by_pin"] = texts
     out["b_same_notice_for_both_pins"] = texts["P_eq"] == texts["P_lt"]
     out["b_outcome_values"] = outcome_enum
@@ -1137,7 +1288,7 @@ def m9() -> dict:
     broken = out["a_due_error"] is not None or out["a_jobs_created"] < 2 or out["b_latest_edition"] != out["b_expected"]
     return {
         "id": "M9", "title": "시각 형식",
-        "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
+        "claim": "04 3.3·discovery_ops 6절: 공지 기한 24시간 전과 기한(고친 엔진은 24시간 뒤도)에 직접 읽는다. 최신 판은 발행 시각으로 고른다",
         "setup": "(a) 날짜만 적은 기한 하나와 정상 기한 하나 (b) +09:00 표기 발행 시각과 Z 표기 발행 시각",
         "observed": out,
         "verdict": verdict(broken),
@@ -1153,18 +1304,29 @@ def m9() -> dict:
 def m10() -> dict:
     out = {}
     L, o = small_ledger()
-    try:
-        L.db.execute("UPDATE observation SET quote=NULL WHERE obs_id=?", (o,))
-        out["a_quote_erasable"] = True
-    except sqlite3.DatabaseError:
-        out["a_quote_erasable"] = False
     out["a_redaction_api"] = hasattr(L, "redact")
+    if out["a_redaction_api"]:       # 고친 엔진(07 D7): 인용 본문만 지우고 지문·진술은 남긴다
+        L.redact(obs_id=o, at="2026-11-27T00:00:00Z", reason="권리자 요청")
+        row = L.obs(o)
+        out["a_quote_erasable"] = row["quote"] is None and row["quote_fp"] is not None
+    else:
+        try:
+            L.db.execute("UPDATE observation SET quote=NULL WHERE obs_id=?", (o,))
+            out["a_quote_erasable"] = True
+        except sqlite3.DatabaseError:
+            out["a_quote_erasable"] = False
     p = L.project("A")
     priv = "https://github.com/acme-corp/internal-billing/blob/main/README.md"
-    L.observe(url=priv, edition_key="main@abc123", edition_kind="commit", position="L1-20", at="2026-11-26T00:00:00Z",
-              method="read_line", quote="Internal billing service.", quote_lang="en", statement="내부 과금 서비스", project=p)
+    out["b_visibility_guard"] = has_param(L.observe, "visibility")   # 07 D6a: 요청 흐름이 공개 여부를 넘긴다
+    kw = {"visibility": "private"} if out["b_visibility_guard"] else {}
+    try:
+        L.observe(url=priv, edition_key="main@abc123", edition_kind="commit", position="L1-20", at="2026-11-26T00:00:00Z",
+                  method="read_line", quote="Internal billing service.", quote_lang="en", statement="내부 과금 서비스",
+                  project=p, **kw)
+        out["b_private_rejected"] = False
+    except eng.PrivacyError:
+        out["b_private_rejected"] = True
     out["b_private_url_in_commons"] = L.db.execute("SELECT count(*) FROM locator WHERE url=?", (priv,)).fetchone()[0] == 1
-    out["b_visibility_column"] = [c for c in table_cols(L, "locator") if "visib" in c or "public" in c]
     L.db.close()
     L = eng.Ledger()
     catalog = cases.preload_catalog(L)
@@ -1173,8 +1335,8 @@ def m10() -> dict:
     cases.case_r2(L)
     out["c_request_originated_locators"] = L.db.execute(
         "SELECT count(*) FROM locator WHERE first_seen_via='request'").fetchone()[0]
-    out["c_request_originated_with_exact_time"] = L.db.execute(
-        "SELECT count(*) FROM locator l WHERE first_seen_via='request' AND first_seen_at LIKE '____-__-__T__:__:__Z'").fetchone()[0]
+    out["c_request_originated_with_time_of_day"] = L.db.execute(
+        "SELECT count(*) FROM locator l WHERE first_seen_via='request' AND first_seen_at NOT LIKE '%T00:00:00Z'").fetchone()[0]
     L.db.close()
     broken = (not out["a_quote_erasable"] and not out["a_redaction_api"]) or out["b_private_url_in_commons"]
     return {
@@ -1216,14 +1378,23 @@ def m11() -> dict:
             if (p, n["run"]) not in latest:
                 on_old += 1
     cols = table_cols(L, "answer_run", "p_P0")
+    held, delivered_old = 0, on_old
+    if "held" in table_cols(L, "notice", "p_P0"):     # 고친 엔진(07 D2): 활성 답이 아닌 답의 알림은 쌓되 알리지 않는다
+        delivered_old = 0
+        for p in L.projects:
+            for r in L.db.execute(f"SELECT run_id, held FROM {p}.notice").fetchall():
+                if r["held"]:
+                    held += 1
+                elif (p, r["run_id"]) not in latest:
+                    delivered_old += 1
     L.db.close()
     return {
         "id": "M11", "title": "알림 누적과 활성 답",
         "claim": "04 7절 '활성 답 항목'(재확인 큐 최고령), 3.3 알림",
         "setup": "프로젝트 8개가 같은 관측을 요청판 1·2·3에서 인용한 뒤, 그 관측에 '다시 확인됨' 대체가 하나 생긴다",
         "observed": {"answer_runs": runs, "notices": total, "notices_on_non_latest_revisions": on_old,
-                     "answer_run_columns": cols},
-        "verdict": "빈칸" if on_old > 0 else "유지",
+                     "held": held, "delivered_to_non_latest": delivered_old, "answer_run_columns": cols},
+        "verdict": "빈칸" if delivered_old > 0 else "유지",
         "missing": [
             "'활성 답'의 정의와 칸이 없다. 새 요청판이 나온 옛 답에도 알림이 가고, 바뀐 것이 없는 '다시 확인됨'도 알림이 된다.",
             "알림의 읽음·묶음·우선순위가 없다. 인기 관측 하나가 바뀌면 모든 프로젝트의 모든 옛 답에 알림이 쌓인다.",

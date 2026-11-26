@@ -476,5 +476,142 @@ class OperationalFixes(unittest.TestCase):
         self.assertTrue(out["dropped"][0]["superseded"])
 
 
+class Decisions(unittest.TestCase):
+    """07-review.md 6절에서 확정한 설계 결정. 갈린 결정은 ../sim/decide_sim.py로 비교해 골랐다."""
+    CH = "https://example.org/changes"
+
+    def test_d1_budget_counts_fetches_not_observations(self):
+        L, o = small()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        L.fetched("https://example.org/doc", "v1", T, p=p, req=req)            # 한 파일에서 위치 셋을 읽어도 한 번
+        L.fetched("https://example.org/doc2", "v1", T, "unreachable", p=p, req=req)   # 실패도 센다
+        L.fetched("https://example.org/feed", None, T, "not_modified", clock="background")
+        self.assertEqual(L.fetch_count(p=p, req=req), 2)
+        self.assertEqual(L.request_budget_left(p, req), 2)
+        self.assertEqual(L.fetch_count(clock="background"), 0)                 # 304는 읽기 예산 밖
+        self.assertEqual(L.fetch_count(clock="background", include_not_modified=True), 1)
+        with self.assertRaises(ValueError):
+            L.fetched("https://example.org/doc", "v1", T)                       # 요청 시계는 요청판을 적는다
+
+    def test_d2_only_the_active_answer_is_notified(self):
+        L, o = small()
+        p = L.project("A")
+        slot = {"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "§1", "reason": "r", "hold": "h"}
+        r1 = L.intake(p, request_key="R", rev=1, at=T, text="t1", selected_part="s", requirements=[],
+                      prior={"state": "none"})
+        run1 = L.compose(p, r1, T, slots=[slot])
+        L.show(p, run1, 1, T)
+        r2 = L.intake(p, request_key="R", rev=2, at="2026-11-27T00:00:00Z", text="t2", selected_part="s",
+                      requirements=[], prior={"state": "none"})
+        L.compose(p, r2, "2026-11-27T00:00:00Z", slots=[slot])               # 새 판의 답은 아직 보이지 않았다
+        o2, _ = L.observe(url="https://example.org/doc", edition_key="v2", edition_kind="release", position="§1",
+                          at="2026-11-28T00:00:00Z", method="read_line", quote="Read-only.", quote_lang="en",
+                          statement="읽기 전용.")
+        L.supersede(o, o2, "invalidates", "2026-11-28T00:00:00Z")
+        L.propagate(p, "2026-11-28T01:00:00Z")
+        self.assertEqual([n["run_id"] for n in L.inbox(p, "2026-11-28T01:00:00Z")], [run1])   # 사용자가 본 답
+        self.assertEqual(L.db.execute(f"SELECT count(*) FROM {p}.notice WHERE held=1").fetchone()[0], 1)
+
+    def test_d3_merged_job_lists_every_revision(self):
+        L, o = small()
+        L.channel("ex", self.CH, "revision_history")
+        L.watch(o, self.CH)
+        L.poll(self.CH, [{"id": "r0", "title": "r0", "edition": "rev:r0"}], T)
+        first = L.jobs()[0]
+        L.finish(first["job_id"], None, token=L.lease(first["job_id"], "2026-11-27T00:00:00Z"))
+        L.poll(self.CH, [{"id": "r2", "title": "r2", "edition": "rev:r2"}, {"id": "r1", "title": "r1", "edition": "rev:r1"},
+                         {"id": "r0", "title": "r0", "edition": "rev:r0"}], "2026-11-29T00:00:00Z")
+        job = L.jobs()
+        self.assertEqual(len(job), 1)
+        self.assertEqual(sorted(e["edition_key"] for e in L.job_editions(job[0]["job_id"])), ["rev:r1", "rev:r2"])
+
+    def test_d4_deadline_is_read_again_a_day_later(self):
+        L, o = small()
+        L.channel("ex", self.CH, "changelog")
+        L.watch(o, self.CH, deadline="2026-12-01T00:00:00Z")
+        L.due("2026-11-30T00:00:00Z")
+        job = L.jobs()[0]
+        L.finish(job["job_id"], None, token=L.lease(job["job_id"], "2026-11-30T01:00:00Z"))
+        L.due("2026-12-01T00:00:00Z")
+        job = L.jobs()[0]
+        L.finish(job["job_id"], None, token=L.lease(job["job_id"], "2026-12-01T01:00:00Z"))
+        self.assertEqual(L.due("2026-12-02T00:00:00Z"), 1)
+        self.assertTrue(L.jobs()[0]["cause_ref"].endswith("#T+24h"))
+
+    def test_d5_alias_cancel_reaches_slots_that_followed_it(self):
+        L = Ledger()
+        p = L.project("A")
+        a = L.alias("https://formulae.example/tree-sitter", "https://formulae.example/tree-sitter-cli", "moved", T)
+        o, _ = L.observe(url="https://formulae.example/tree-sitter-cli", edition_key="0.25", edition_kind="release",
+                         position="desc", at=T, method="read_line", quote="CLI for tree-sitter", quote_lang="en",
+                         statement="파서 생성 CLI", via_alias=a)
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        run = L.compose(p, req, T, slots=[{"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "desc",
+                                            "reason": "r", "hold": "h"}])
+        L.cancel_alias(a, "2026-11-27T00:00:00Z", "이름은 남았지만 다른 대상")
+        self.assertEqual([j["cause_ref"] for j in L.jobs()], [f"alias:{a}"])
+        notes = L.propagate(p, "2026-11-27T01:00:00Z")
+        self.assertEqual([(n["run"], n["effect"]) for n in notes], [(run, "alias_cancelled")])
+
+    def test_d6_private_source_and_request_time(self):
+        L = Ledger()
+        with self.assertRaises(PrivacyError):
+            L.observe(url="https://github.com/acme/internal/blob/main/README.md", edition_key="abc", edition_kind="commit",
+                      position="L1", at=T, method="read_line", quote="Internal.", quote_lang="en", statement="내부",
+                      visibility="private")
+        self.assertEqual(L.db.execute("SELECT count(*) FROM locator").fetchone()[0], 0)
+        L.observe(url="https://example.org/a", edition_key="v1", edition_kind="release", position="§1",
+                  at="2026-11-26T13:47:05Z", method="read_line", quote="A.", quote_lang="en", statement="a")
+        self.assertEqual(L.db.execute("SELECT first_seen_at FROM locator").fetchone()[0], "2026-11-26T00:00:00Z")
+
+    def test_d7_quote_is_erased_with_a_tombstone(self):
+        L, o = small()
+        self.assertEqual(L.obs(o)["quote"], "Export is supported.")
+        self.assertEqual(L.redact(obs_id=o, at="2026-11-27T00:00:00Z", reason="권리자 요청"), 1)
+        row = L.obs(o)
+        self.assertIsNone(row["quote"])
+        self.assertIsNotNone(row["quote_fp"])                                   # 지문·진술은 남는다
+        self.assertEqual(row["statement"], "내보내기를 지원한다.")
+        L.observe(url="https://example.org/doc", edition_key="v1", edition_kind="release", position="§1",
+                  at="2026-11-28T00:00:00Z", method="read_line", quote="Export is supported.", quote_lang="en",
+                  statement="내보내기를 지원한다.")
+        self.assertIsNone(L.obs(o)["quote"])                                    # 다시 읽어도 본문을 되살리지 않는다
+        with self.assertRaises(sqlite3.DatabaseError):
+            L.db.execute("UPDATE quote_text SET text='x'")
+        with self.assertRaises(sqlite3.DatabaseError):
+            L.db.execute("DELETE FROM quote_text")
+
+    def test_d8_pinned_edition_is_not_reread_on_age_alone(self):
+        L, o = small()                                                          # release 판
+        L.channel("ex", self.CH, "changelog")
+        L.watch(o, self.CH)
+        L.poll(self.CH, [], "2026-12-20T00:00:00Z")
+        self.assertEqual(L.reuse_gate(o, "2026-12-20T01:00:00Z")["decision"], "reuse")   # 24일 지났지만 고정판
+        m, _ = L.observe(url="https://example.org/live", edition_key="rev:1", edition_kind="revision", position="§",
+                         at=T, method="read_line", quote="Live.", quote_lang="en", statement="살아 있는 문서")
+        L.watch(m, self.CH)
+        self.assertIn("마지막 직접 확인이 168시간보다 오래됨", L.reuse_gate(m, "2026-12-20T01:00:00Z")["why"])
+
+    def test_deadline_window_closes_after_it_was_checked(self):
+        L, o = small()
+        L.channel("ex", self.CH, "changelog")
+        L.watch(o, self.CH, deadline="2026-11-28T00:00:00Z")
+        L.poll(self.CH, [], "2026-11-30T00:00:00Z")
+        self.assertIn("공지 기한 2026-11-28T00:00:00Z 임박 또는 경과", L.reuse_gate(o, "2026-11-30T01:00:00Z")["why"])
+        L.observe(url="https://example.org/doc", edition_key="v1", edition_kind="release", position="§1",
+                  at="2026-11-30T02:00:00Z", method="read_line", quote="Export is supported.", quote_lang="en",
+                  statement="내보내기를 지원한다.", via="channel")
+        self.assertEqual(L.reuse_gate(o, "2026-11-30T03:00:00Z")["decision"], "reuse")   # v1은 영원히 reopen
+
+    def test_d9_edition_match_rule(self):
+        m = Ledger.edition_matches
+        self.assertTrue(m("CPython 3.13", "v3.13.18"))
+        self.assertFalse(m("CPython 3.1", "v3.13.18"))
+        self.assertTrue(m("3.13.18", "v3.13.18"))
+        self.assertFalse(m("3.13.17", "v3.13.18"))
+        self.assertFalse(m("", "v3.13.18"))
+
+
 if __name__ == "__main__":
     unittest.main()

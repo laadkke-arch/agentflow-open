@@ -146,7 +146,18 @@ CREATE TABLE IF NOT EXISTS {p}.notice (
   effect     TEXT NOT NULL,
   created_at TEXT NOT NULL,
   text       TEXT NOT NULL,
+  held       INTEGER NOT NULL DEFAULT 0 CHECK (held IN (0,1)),  -- 1: 활성 답이 아니라 알리지 않고 재생 때만 붙인다(07 D2)
   UNIQUE (run_id, slot_no, old_obs, new_obs)
+);
+-- 요청 시계의 원문 가져오기(07 D1). 예산은 이 행 수로 센다. 실행은 따로 센다.
+CREATE TABLE IF NOT EXISTS {p}.fetch_log (
+  fetch_id    INTEGER PRIMARY KEY,
+  req_id      INTEGER NOT NULL REFERENCES request_rev(req_id),
+  url         TEXT NOT NULL,
+  edition_key TEXT,
+  at          TEXT NOT NULL,
+  outcome     TEXT NOT NULL CHECK (outcome IN ('ok','not_modified','not_found','unreachable','truncated','unsupported')),
+  bytes       INTEGER
 );
 -- 노출과 이후 행동(평가용).
 CREATE TABLE IF NOT EXISTS {p}.exposure (

@@ -138,6 +138,20 @@ class Ledger:
                  " UNION SELECT c.new_obs FROM supersession_cancel c WHERE c.cancelled_at<=:at")
     FAR_FUTURE = "9999-12-31T23:59:59Z"
     RULE_VERSION = "final-v1+review"   # 07-review.md의 고침(조합 검사·임차 표지 등)을 넣은 규칙 판
+    # 기한 시계가 읽는 시각(기한 기준 시간). 07 D4에서 후보 여섯을 시뮬레이션(sim/decide_sim.py)으로 비교해 골랐다.
+    # v1은 T-24h·T뿐이라 기한 당일 낮에 올라온 개정을 끝내 놓쳤다
+    DEADLINE_READS = (("T-24h", -24), ("T", 0), ("T+24h", 24))
+    # 활성 답 규칙(07 D2): "all"(v1, 모든 답에 알림), "latest"(요청 키의 가장 늦은 실행),
+    # "shown_latest"(그때까지 노출된 가장 늦은 실행, 노출이 없으면 가장 늦은 실행)
+    ACTIVE_RULE = "shown_latest"
+    # 재사용 관문 조건 5(168시간 직접 확인)를 바꾸는 판 종류(07 D8). 주장이 그 판에 고정된 종류만.
+    # IMMUTABLE_RECHECK_H가 None이면 면제, 숫자면 168시간 대신 그 시간
+    IMMUTABLE_KINDS: tuple = ("release", "commit", "tag", "doi")
+    IMMUTABLE_RECHECK_H: int | None = None
+    # 시계별 예산(07 D11). 요청 시계는 요청판마다, 후속 시계는 168시간마다 감시 출처 10개당, 배경 폴링은 조건부 요청이라
+    # 원문 읽기 예산 밖(폴링 비용은 07 R-2에서 잰다)
+    REQUEST_FETCHES = 4
+    FOLLOW_FETCHES_PER_10_SOURCES = 3
 
     def stale(self, obs_id: int, at: str | None = None) -> bool:
         """at 시각에 이 관측을 근거로 인용하면 안 되는가(무효·값 바뀜으로 대체됐거나 철회된 판독)."""
@@ -161,6 +175,9 @@ class Ledger:
 
     # ------------------------------------------------------------------ 공용 장부 쓰기
     def _locator(self, url: str, at: str, via: str) -> int:
+        if via == "request":
+            # 요청이 처음 연 주소의 첫 관측 시각은 날짜까지만 둔다. 누가 언제 무엇을 찾았는지 짐작하지 못하게(07 D6)
+            at = utc(at)[:10] + "T00:00:00Z"
         self.db.execute(
             "INSERT OR IGNORE INTO locator(url, first_seen_at, first_seen_via) VALUES (?,?,?)",
             (url, at, via))
@@ -186,13 +203,21 @@ class Ledger:
 
     def observe(self, *, url, edition_key, edition_kind, position, at, method, outcome="content",
                 quote=None, quote_lang=None, statement, flip_position=None, receipt_id=None,
-                published_at=None, via="request", evidence_ref=None, project=None, reader=None) -> tuple[int, bool]:
+                published_at=None, via="request", evidence_ref=None, project=None, reader=None,
+                via_alias=None, visibility="public") -> tuple[int, bool]:
         """관측을 남긴다. 같은 (판, 위치, 결과, 인용 지문, 방법, 영수증)이면 새 행 대신 sighting을 더한다.
-        reader는 판독한 주체(모델 ID·프롬프트 판, 사람)다. 멱등 키에는 넣지 않는다."""
+        reader는 판독한 주체(모델 ID·프롬프트 판, 사람)다. via_alias는 이 관측을 연 별칭이다. 둘 다 멱등 키에는 넣지 않는다.
+        visibility는 판독 어댑터가 정한다. 공개가 아닌 원문(사용자 저장소, 사내 문서)은 공용 장부에 쓰지 않는다(07 D6)."""
+        if visibility != "public":
+            raise PrivacyError("비공개 원문은 공용 장부에 쓰지 않는다. 사용자 자신의 원문은 프로젝트 장부의 맥락 사실로 둔다")
         with self.db:
             loc = self._locator(url, at, via)
             ed = self._edition(loc, edition_key, edition_kind, published_at, at)
             fp = sha256(fold_ws(quote)) if quote else None
+            if fp:
+                # 본문은 지문 키로 따로 둔다. 지운(묘비) 문장을 다시 읽어도 본문을 다시 쓰지 않는다(07 D7)
+                self.db.execute("INSERT OR IGNORE INTO quote_text(quote_fp, text, stored_at) VALUES (?,?,?)",
+                                (fp, quote, at))
             parts = [ed, position, outcome, fp, method, receipt_id]
             if not self.features["drawer"] and project:
                 parts.append(project)   # 서랍을 끄면 프로젝트마다 따로 기억한다
@@ -205,11 +230,11 @@ class Ledger:
                     self.rereads[project] = self.rereads.get(project, 0) + 1
                 return row[0], False
             cur = self.db.execute(
-                "INSERT INTO observation(edition_id, position, observed_at, method, outcome, quote, quote_lang,"
-                " quote_fp, statement, evidence_ref, flip_position, receipt_id, reader, idem_key)"
+                "INSERT INTO observation(edition_id, position, observed_at, method, outcome, quote_lang,"
+                " quote_fp, statement, evidence_ref, flip_position, receipt_id, reader, via_alias, idem_key)"
                 " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (ed, position, at, method, outcome, quote, quote_lang, fp, statement, evidence_ref,
-                 flip_position, receipt_id, reader, key))
+                (ed, position, at, method, outcome, quote_lang, fp, statement, evidence_ref,
+                 flip_position, receipt_id, reader, via_alias, key))
             obs_id = cur.lastrowid
             if project:
                 self.origin[obs_id] = project
@@ -230,7 +255,8 @@ class Ledger:
             (obs_id, slot, height, lang, text)).fetchone()[0]
 
     def _privacy_lint(self, obs_id: int, text: str):
-        obs = self.db.execute("SELECT quote, statement FROM observation WHERE obs_id=?", (obs_id,)).fetchone()
+        obs = self.db.execute("SELECT q.text AS quote, o.statement FROM observation o"
+                              " LEFT JOIN quote_text q USING(quote_fp) WHERE o.obs_id=?", (obs_id,)).fetchone()
         source_side = set(content_tokens((obs["quote"] or "") + " " + obs["statement"]))
         for p in self.projects:
             for r in self.db.execute(f"SELECT text FROM {p}.request_rev"):
@@ -284,9 +310,14 @@ class Ledger:
                 (a, b, kind, at, evidence_obs)).lastrowid
 
     def cancel_alias(self, alias_id: int, at: str, reason: str) -> None:
+        """별칭을 취소한다. 그 별칭을 따라 연 관측마다 원 주소에서 다시 확인하는 감사 작업을 만들고,
+        그 관측을 인용한 답 자리에는 전파가 알린다(07 D5)."""
         with self.db:
             self.db.execute("INSERT INTO locator_alias_cancel(alias_id, cancelled_at, reason) VALUES (?,?,?)",
                             (alias_id, at, reason))
+            for (oid,) in self.db.execute("SELECT obs_id FROM observation WHERE via_alias=? ORDER BY obs_id",
+                                          (alias_id,)).fetchall():
+                self._enqueue(oid, "audit", f"alias:{alias_id}", utc(at))
 
     def resolve(self, url: str, at: str) -> str:
         """취소되지 않은 별칭을 따라 지금 열 주소를 돌려준다. 과거 인용은 원 주소 그대로 둔다."""
@@ -348,7 +379,7 @@ class Ledger:
         return cur.rowcount == 1   # 새 작업을 만들었을 때만 True
 
     def due(self, at: str) -> int:
-        """공지 기한 24시간 전과 기한 시각에 직접 읽는 작업을 만든다. 기한 경과만으로 관측을 무효로 하지 않는다."""
+        """DEADLINE_READS(기한 24시간 전, 기한, 24시간 뒤)마다 직접 읽는 작업을 만든다. 기한 경과만으로 관측을 무효로 하지 않는다."""
         n = 0
         with self.db:
             rows = self.db.execute(
@@ -356,7 +387,7 @@ class Ledger:
                 {"at": at}).fetchall()
             for w in rows:
                 try:
-                    plan = (("T-24h", _shift(w["deadline"], -24)), ("T", utc(w["deadline"])))
+                    plan = tuple((ref, _shift(w["deadline"], h)) for ref, h in self.DEADLINE_READS)
                 except ValueError as e:
                     # 한 행의 형식 오류가 다른 관측의 기한 작업까지 막지 않게 한다(M9)
                     self.clock_errors.append({"obs_id": w["obs_id"], "deadline": w["deadline"], "error": str(e)})
@@ -374,23 +405,31 @@ class Ledger:
         ws = self.db.execute(
             "SELECT w.*, c.last_polled_at, c.period_h, c.url AS ch_url FROM watch w JOIN channel c USING(channel_id)"
             " WHERE w.obs_id=?", (obs_id,)).fetchall()
+        last = self.db.execute(
+            "SELECT max(t) FROM (SELECT observed_at AS t FROM observation WHERE obs_id=?"
+            " UNION ALL SELECT seen_at FROM sighting WHERE obs_id=?)", (obs_id, obs_id)).fetchone()[0]
         if not ws:
             why.append("감시 없음")
+        last_read = max(h for _r, h in self.DEADLINE_READS)
         for w in ws:
             if not w["last_polled_at"] or w["last_polled_at"] < _shift(at, -2 * w["period_h"]):
                 why.append(f"채널 커서가 늙음({w['ch_url']})")
-            if w["deadline"] and _shift(w["deadline"], -24) <= at:
+            # 기한 읽기 창(T-24h ~ 마지막 기한 읽기) 안이거나, 기한이 지났는데 그 뒤 직접 확인이 없을 때만 다시 연다.
+            # v1은 기한이 지나면 대체될 때까지 영원히 다시 열었다
+            if w["deadline"] and (_shift(w["deadline"], -24) <= at <= _shift(w["deadline"], max(0, last_read))
+                                  or (w["deadline"] <= at and last < w["deadline"])):
                 why.append(f"공지 기한 {w['deadline']} 임박 또는 경과")
         if self.db.execute("SELECT 1 FROM recheck_job WHERE obs_id=? AND state IN ('queued','leased')",
                            (obs_id,)).fetchone():
             why.append("처리 안 된 재확인 작업")
         if self.stale(obs_id, at):
             why.append(f"대체되었거나 철회된 관측(현재 관측 {self.current(obs_id, at)})")
-        last = self.db.execute(
-            "SELECT max(t) FROM (SELECT observed_at AS t FROM observation WHERE obs_id=?"
-            " UNION ALL SELECT seen_at FROM sighting WHERE obs_id=?)", (obs_id, obs_id)).fetchone()[0]
-        if last < _shift(at, -168):
-            why.append("마지막 직접 확인이 168시간보다 오래됨")
+        kind = self.db.execute("SELECT e.kind FROM observation o JOIN edition e USING(edition_id) WHERE o.obs_id=?",
+                               (obs_id,)).fetchone()[0]
+        # 주장이 판에 고정된 종류(태그·커밋·DOI)는 원문이 바뀌지 않는다. 바뀌는 것은 판의 지위(철회·이동)이고 채널이 잡는다
+        limit = self.IMMUTABLE_RECHECK_H if kind in self.IMMUTABLE_KINDS else 168
+        if limit is not None and last < _shift(at, -limit):
+            why.append(f"마지막 직접 확인이 {limit}시간보다 오래됨")
         polled = [w["last_polled_at"] for w in ws if w["last_polled_at"]]
         return {"decision": "reopen" if why else "reuse", "why": why,
                 "basis": None if why else f"채널 확인 시각 {max(polled)}"}
@@ -466,6 +505,73 @@ class Ledger:
                 self._supersede(old, result_obs, effect, known_from, effective_from)
         return True
 
+    def job_editions(self, job_id: int) -> list[dict]:
+        """이 작업에 합쳐진 채널 항목이 가리키는 판들(07 D3). 판 키가 있는 항목마다 작업자가 그 판을 읽고,
+        읽은 판을 발행 시각 순으로 대체 사슬에 잇는다. 한 폴링 주기 안에 개정이 둘 와도 가운데 판을 잃지 않는다.
+        판 키가 있는 항목이 없으면 빈 목록이다(읽는 시각의 최신 판을 읽는다)."""
+        j = self.db.execute("SELECT cause, cause_ref, merged_causes FROM recheck_job WHERE job_id=?",
+                            (job_id,)).fetchone()
+        refs = [(j["cause"], j["cause_ref"])] + [tuple(m.split(":", 1)) for m in j["merged_causes"].split(",") if m]
+        out, seen = [], set()
+        for cause, ref in refs:
+            if cause != "channel" or "#" not in ref:
+                continue
+            ch_url, ext = ref.rsplit("#", 1)
+            row = self.db.execute(
+                "SELECT i.edition_key, i.locator_url, i.first_seen_at FROM channel_item i JOIN channel c USING(channel_id)"
+                " WHERE c.url=? AND i.external_id=?", (ch_url, ext)).fetchone()
+            if row and row["edition_key"] and row["edition_key"] not in seen:
+                seen.add(row["edition_key"])
+                out.append({"edition_key": row["edition_key"], "url": row["locator_url"], "item": ext,
+                            "first_seen_at": row["first_seen_at"]})
+        return out
+
+    def redact(self, *, at: str, reason: str, quote_fp: str | None = None, obs_id: int | None = None) -> int:
+        """권리자 요청으로 인용 본문을 지운다. 관측·지문·진술은 남고, 본문 자리에 지운 시각과 이유(묘비)가 남는다(07 D7).
+        같은 문장을 인용한 다른 판의 관측도 함께 지워진다(같은 지문)."""
+        if obs_id is not None:
+            quote_fp = self.obs(obs_id)["quote_fp"]
+        if not quote_fp:
+            return 0
+        with self.db:
+            cur = self.db.execute("UPDATE quote_text SET text=NULL, erased_at=?, erase_reason=?"
+                                  " WHERE quote_fp=? AND text IS NOT NULL", (utc(at), reason, quote_fp))
+        return cur.rowcount
+
+    # ------------------------------------------------------------------ 예산(07 D1)
+    def fetched(self, url: str, edition_key: str | None, at: str, outcome: str = "ok", nbytes: int | None = None, *,
+                p: str | None = None, req: int | None = None, clock: str = "request", job_id: int | None = None) -> None:
+        """원문을 한 번 가져왔다고 적는다. 예산은 이 기록으로 센다. 실패·재시도도 한 번이다. 실행은 영수증으로 따로 센다.
+        요청 시계의 기록은 프로젝트 장부에, 후속·배경 시계의 기록은 공용 장부에 둔다. not_modified(조건부 요청 304)는 따로 센다."""
+        with self.db:
+            if clock == "request":
+                if p is None or req is None:
+                    raise ValueError("요청 시계의 가져오기는 프로젝트와 요청판을 적는다")
+                self.db.execute(f"INSERT INTO {p}.fetch_log(req_id, url, edition_key, at, outcome, bytes)"
+                                " VALUES (?,?,?,?,?,?)", (req, url, edition_key, utc(at), outcome, nbytes))
+            else:
+                self.db.execute("INSERT INTO fetch_log(clock, url, edition_key, at, outcome, bytes, job_id)"
+                                " VALUES (?,?,?,?,?,?,?)", (clock, url, edition_key, utc(at), outcome, nbytes, job_id))
+
+    def request_budget_left(self, p: str, req: int) -> int:
+        """이 요청판이 더 가져올 수 있는 원문 수(07 D11). 0이면 budget_exhausted로 답한다."""
+        return self.REQUEST_FETCHES - self.fetch_count(p=p, req=req)
+
+    def follow_budget_left(self, at: str) -> int:
+        """후속 시계가 지금부터 더 가져올 수 있는 원문 수. 168시간 창, 감시 출처(채널) 10개당 FOLLOW_FETCHES_PER_10_SOURCES."""
+        n = self.db.execute("SELECT count(*) FROM channel").fetchone()[0]
+        cap = self.FOLLOW_FETCHES_PER_10_SOURCES * max(1, -(-n // 10))
+        return cap - self.fetch_count(clock="follow", since=_shift(at, -168))
+
+    def fetch_count(self, *, p: str | None = None, req: int | None = None, clock: str = "request",
+                    since: str | None = None, include_not_modified: bool = False) -> int:
+        nm = "" if include_not_modified else " AND outcome<>'not_modified'"
+        if clock == "request":
+            q = f"SELECT count(*) FROM {p}.fetch_log WHERE (? IS NULL OR req_id=?) AND (? IS NULL OR at>=?){nm}"
+            return self.db.execute(q, (req, req, since, since)).fetchone()[0]
+        q = f"SELECT count(*) FROM fetch_log WHERE clock=? AND (? IS NULL OR at>=?){nm}"
+        return self.db.execute(q, (clock, since, since)).fetchone()[0]
+
     def recall_reader(self, reader: str, at: str) -> int:
         """판독기 하나의 관측을 모두 다시 확인한다(그 판독기의 오류가 드러났을 때). 만든 작업 수를 돌려준다."""
         n = 0
@@ -485,8 +591,9 @@ class Ledger:
     # ------------------------------------------------------------------ 공용 장부 읽기
     def obs(self, obs_id: int) -> sqlite3.Row:
         return self.db.execute(
-            "SELECT o.*, e.edition_key, e.published_at, l.url FROM observation o"
-            " JOIN edition e USING(edition_id) JOIN locator l USING(locator_id) WHERE o.obs_id=?",
+            "SELECT o.*, q.text AS quote, e.edition_key, e.kind AS edition_kind, e.published_at, l.url"
+            " FROM observation o JOIN edition e USING(edition_id) JOIN locator l USING(locator_id)"
+            " LEFT JOIN quote_text q ON q.quote_fp = o.quote_fp WHERE o.obs_id=?",
             (obs_id,)).fetchone()
 
     def link(self, obs_id: int) -> str:
@@ -762,6 +869,14 @@ class Ledger:
         return {"kept": kept, "dropped": dropped}
 
     @staticmethod
+    def edition_matches(context_version: str, edition_key: str) -> bool:
+        """맥락의 판과 관측 판이 맞는가(07 D9). 맥락이 작은 판까지만 말하면('CPython 3.13') 같은 작은 판의
+        어느 수정 판('v3.13.18')이든 맞고, 수정 판까지 말하면('3.13.18') 그 판만 맞는다. 답 문장에는 관측 판을 적는다."""
+        ver = context_version.split()[-1] if context_version else ""
+        ek = edition_key.lstrip("v")
+        return bool(ver) and (ek == ver or ek.startswith(ver + "."))
+
+    @staticmethod
     def gate(*, role_map: list[tuple[str, str]], invariant_quote: str | None, break_input: str | None,
              baseline_prediction: str | None, principle_prediction: str | None,
              target_doc_states_it: bool) -> dict:
@@ -914,9 +1029,10 @@ class Ledger:
                     label = {"invalidates": "근거 무효", "changes_value": "값 바뀜", "confirms": "다시 확인됨"}[s["effect"]]
                     text = f"{label}: {new['statement']} (알게 된 시각 {s['known_from']})"
                     cur = self.db.execute(
-                        f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text)"
-                        " VALUES (?,?,?,?,?,?,?)",
-                        (t["run_id"], t["slot_no"], s["old_obs"], s["new_obs"], s["effect"], s["known_from"], text))
+                        f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text, held)"
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                        (t["run_id"], t["slot_no"], s["old_obs"], s["new_obs"], s["effect"], s["known_from"], text,
+                         0 if self.is_active(p, t["run_id"], s["known_from"]) else 1))
                     if cur.rowcount:
                         out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": s["effect"], "text": text})
             # 대체 취소: 그 대체로 알림을 받은 자리에 '다시 유효'를, 철회된 판독을 인용한 자리에 '근거 무효'를 붙인다
@@ -935,12 +1051,50 @@ class Ledger:
                 for effect, text, sql, args in groups:
                     for t in self.db.execute(sql, args).fetchall():
                         cur = self.db.execute(
-                            f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text)"
-                            " VALUES (?,?,?,?,?,?,?)",
-                            (t["run_id"], t["slot_no"], c["new_obs"], c["old_obs"], effect, c["cancelled_at"], text))
+                            f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text, held)"
+                            " VALUES (?,?,?,?,?,?,?,?)",
+                            (t["run_id"], t["slot_no"], c["new_obs"], c["old_obs"], effect, c["cancelled_at"], text,
+                             0 if self.is_active(p, t["run_id"], c["cancelled_at"]) else 1))
                         if cur.rowcount:
                             out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": effect, "text": text})
+            # 별칭 취소: 그 별칭을 따라 연 관측을 인용한 자리에 알린다(07 D5). 관측 자체는 그 주소에 대해 여전히 참이다
+            for a in self.db.execute(
+                    "SELECT c.alias_id, c.cancelled_at, c.reason FROM locator_alias_cancel c WHERE c.cancelled_at<=?"
+                    " ORDER BY c.cancelled_at", (at,)).fetchall():
+                text = (f"주소 별칭 취소: 이 근거는 별칭을 따라 연 다른 대상일 수 있다({a['reason']}). "
+                        f"원 주소에서 다시 확인한다 (취소 시각 {a['cancelled_at']})")
+                for t in self.db.execute(
+                        f"SELECT DISTINCT u.run_id, u.slot_no, u.obs_id FROM {p}.usage u JOIN {p}.answer_run r USING(run_id)"
+                        " JOIN observation o ON o.obs_id=u.obs_id WHERE o.via_alias=? AND u.part<>'contrast'"
+                        " AND r.produced_at<=?", (a["alias_id"], a["cancelled_at"])).fetchall():
+                    cur = self.db.execute(
+                        f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text, held)"
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                        (t["run_id"], t["slot_no"], t["obs_id"], t["obs_id"], "alias_cancelled", a["cancelled_at"], text,
+                         0 if self.is_active(p, t["run_id"], a["cancelled_at"]) else 1))
+                    if cur.rowcount:
+                        out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": "alias_cancelled", "text": text})
         return out
+
+    def is_active(self, p: str, run_id: int, at: str) -> bool:
+        """at 시각에 이 실행이 활성 답인가(07 D2, ACTIVE_RULE). 활성이 아닌 답의 알림은 쌓되(held) 알리지 않고 재생 때 붙인다."""
+        if self.ACTIVE_RULE == "all":
+            return True
+        key = self.db.execute(f"SELECT r.request_key FROM {p}.answer_run a JOIN {p}.request_rev r USING(req_id)"
+                              " WHERE a.run_id=?", (run_id,)).fetchone()[0]
+        runs = self.db.execute(
+            f"SELECT a.run_id, EXISTS(SELECT 1 FROM {p}.exposure x WHERE x.run_id=a.run_id AND x.event='shown'"
+            f" AND x.at<=?) AS shown FROM {p}.answer_run a JOIN {p}.request_rev r USING(req_id)"
+            " WHERE r.request_key=? AND a.produced_at<=? ORDER BY a.produced_at, a.run_id", (at, key, at)).fetchall()
+        if not runs:
+            return True
+        pool = [r for r in runs if r["shown"]] if self.ACTIVE_RULE == "shown_latest" else []
+        return (pool or runs)[-1]["run_id"] == run_id
+
+    def inbox(self, p: str, at: str) -> list[sqlite3.Row]:
+        """사용자에게 알릴 알림(활성 답의 알림만). 재생(replay)은 held 알림도 붙인다."""
+        return self.db.execute(f"SELECT * FROM {p}.notice WHERE held=0 AND created_at<=? ORDER BY created_at, notice_id",
+                               (at,)).fetchall()
 
     def note(self, p: str, run_id: int, slot_no: int, old_obs: int, new_obs: int, effect: str, at: str,
              text: str) -> None:
