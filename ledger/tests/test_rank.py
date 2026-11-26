@@ -45,5 +45,26 @@ class RankR2(unittest.TestCase):
         self.assertEqual(config.DRAWER_SYMBOL_SCOPE, "eligible")
 
 
+class OneSlotEligibilityI24(unittest.TestCase):
+    def test_e2_lets_one_slot_requests_qualify_and_e1_stays_default(self):
+        self.assertEqual(config.ELIG_RULES, "e1")             # e2는 상위 10 잡음이 늘어 되돌림(08 I24)
+        out = {}
+        for rule in ("e1", "e2"):
+            L = Ledger()
+            L.elig_rules = rule
+            o, _ = L.observe(url="https://example.org/q", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                             method="intro_only", statement="q")
+            L.tag(o, "summary", "one_up", "en", "bounded queue blocks the producer when full")
+            o2, _ = L.observe(url="https://example.org/r", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                              method="intro_only", statement="r")
+            L.tag(o2, "summary", "one_up", "en", "queue of print jobs")
+            p = L.project("A")
+            req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[],
+                           needs=[{"slot": "summary", "lang": "en", "text": "a bounded queue that blocks"}])
+            out[rule] = {h["obs_id"]: h["eligible"] for h in L.search_drawer(p, req, T, k=10, log=False)}
+        self.assertEqual(out["e1"], {o: False, o2: False})    # 칸 하나뿐인 요청은 설계 자격(두 칸)을 얻지 못한다
+        self.assertEqual(out["e2"], {o: True, o2: False})     # e2: 그 칸에서 서로 다른 내용어 둘(bounded, block)
+
+
 if __name__ == "__main__":
     unittest.main()
