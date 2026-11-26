@@ -50,7 +50,7 @@ class Fmt:
                       lambda m: str(self.v[m.group(1)] if m.group(2) is None else self.v[m.group(1)][m.group(2)]), s)
 
 
-def run(mode: str = "replay", needs: str = "studio", noise: bool = True) -> dict:
+def run(mode: str = "replay", needs: str = "studio", noise: bool = True, noise_loader=None) -> dict:
     """needs="i1"이면 Studio의 칸별 필요 문장을 빼고 접수 규칙 i1이 쓰게 한다(A4).
     noise=False면 서랍에 F01 잡음을 넣지 않는다(설계 사례의 서랍: 012 자료집 156항목만)."""
     plan = load("plan.json")
@@ -59,6 +59,8 @@ def run(mode: str = "replay", needs: str = "studio", noise: bool = True) -> dict
     L = Ledger()
     catalog = preload_catalog(L)
     noise = preload_noise(L, "F01") if noise else {}
+    if noise_loader:   # 규모 측정(08 I20): 잡음을 더 넣는다. 반환값은 관측 ID들
+        noise = dict(noise) | {o: {"record": "extra"} for o in noise_loader(L)}
     inv = {v: k for k, v in catalog.items()}
     out: dict = {"mode": "live" if mode == "live" else "replay",
                  "rules": {k: getattr(config, k) for k in dir(config)

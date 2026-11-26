@@ -46,3 +46,40 @@ def preload_noise(L, problem="F01", at="2026-11-20T00:00:00Z") -> dict[int, dict
             L.tag(oid, "summary", "concrete", "mixed", r["evidence"], written_from="source_quote")
         out[oid] = r
     return out
+
+
+def preload_all_link_index(L, at="2026-11-20T00:00:00Z") -> dict[int, dict]:
+    """link-index의 모든 문제 행을 서랍에 넣는다(실제 잡음). 돌려주는 값: 관측 ID → 행."""
+    out = {}
+    for r in link_index_rows():
+        oid, _ = L.observe(url=r["url"], edition_key=f"link-index@{r['commit'][:12]}", edition_kind="fetch",
+                           position=f"record {r['record']}", at=at, method="intro_only", statement=r["use"],
+                           via="collection", evidence_ref=f"opensource@{r['commit']} {r['file']}#L{r['line']}")
+        L.tag(oid, "summary", "one_up", "ko", r["use"], written_from="catalog_description")
+        if r["evidence"].strip():
+            L.tag(oid, "summary", "concrete", "mixed", r["evidence"], written_from="source_quote")
+        out[oid] = r
+    return out
+
+
+def preload_synthetic(L, n: int, *, seed: int = 11, at="2026-11-20T00:00:00Z") -> list[int]:
+    """합성 잡음 n개(07 R-6의 2만 개 규모용). link-index의 실제 use·evidence 문장을 반씩 잘라 고정 씨앗으로 다시 섞는다.
+    어휘가 같은 분야라 실제 잡음보다 쉽지 않다. 주소는 합성 표시(synthetic.invalid)를 단다."""
+    import random
+    rows = link_index_rows()
+    rng = random.Random(seed)
+    halves = []
+    for r in rows:
+        for t in (r["use"], r["evidence"]):
+            w = t.split()
+            if len(w) >= 6:
+                halves += [" ".join(w[: len(w) // 2]), " ".join(w[len(w) // 2:])]
+    ids = []
+    for i in range(n):
+        a, b, c = rng.choice(halves), rng.choice(halves), rng.choice(halves)
+        oid, _ = L.observe(url=f"https://synthetic.invalid/noise/{seed}/{i}", edition_key="synthetic", edition_kind="fetch",
+                           position="synthetic", at=at, method="intro_only", statement=f"{a} {b}", via="collection")
+        L.tag(oid, "summary", "one_up", "ko", f"{a} {b}", written_from="catalog_description")
+        L.tag(oid, "summary", "concrete", "mixed", c, written_from="source_quote")
+        ids.append(oid)
+    return ids

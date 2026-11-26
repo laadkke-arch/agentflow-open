@@ -123,6 +123,7 @@ class Ledger:
         self.features = {"drawer": True, "usage": True, "split": True}
         self.features.update(features or {})
         self.rank_rules = config.RANK_RULES     # 서랍 순위 규칙 판(r0 설계 bm25 합, r1 IDF, r2 IDF+길이 정규화, 07 R-6)
+        self.elig_idf_min = None                # 진단용 자격 IDF 문턱(08 I20). None이면 설계 자격 그대로
         self.token_rules = config.TOKEN_RULES   # 서랍 토큰화 규칙 판(t1 영어만, t2 다국어). 측정에서 비교하려고 인스턴스마다 바꿀 수 있다
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -912,6 +913,9 @@ class Ledger:
             score = sum(best.values())
             norm = 1 - b + b * st["length"].get(d["obs_id"], st["avg_len"]) / st["avg_len"]
             d["score"] = -score / norm
+            if self.elig_idf_min is not None and d["eligible"]:
+                # 진단용(08 I20, 채택 안 함): 자격의 "서로 다른 내용어 둘"을 IDF 문턱 이상인 단위로만 센다
+                d["eligible"] = sum(1 for v in best.values() if v >= self.elig_idf_min) >= 2
 
     def _drawer_ko(self, needs, at, per_obs: dict, include_function_words: bool) -> None:
         """한국어 두 층(어절 줄기·음절 2-gram)으로 같은 칸 꼬리표를 맞춘다(07 R-5, t2). 결과는 per_obs에 더한다."""

@@ -424,6 +424,102 @@ def a4_20():
     return out
 
 
+# ------------------------------------------------------------------------------------------- R-6 규모
+NOISE_TOTAL = 20000
+
+
+def r6_scale():
+    """07 R-6의 끝나는 조건: 잡음 2만 개에서 상위 10 중 잡음 2개 이하, 사례 결과는 그대로(08 I20).
+    잡음 = 012 자료집 밖의 모든 관측. 실제 잡음은 link-index 전체(4,390행, 관측 2,480개), 나머지는 합성
+    (drawer_load.preload_synthetic, link-index 문장 반쪽을 고정 씨앗으로 섞음)으로 2만 개를 채운다.
+    잰다: R1(손 문장·자동 한국어)과 A4 20건(한국어·영어판)의 상위 10 잡음 수, 순위 규칙 r0·r2 비교, R1 흐름의 완료 기준 2."""
+    import csv
+    import time
+    import run_r1
+    from drawer_load import preload_all_link_index, preload_synthetic
+
+    def noise_loader(L):
+        real = preload_all_link_index(L)
+        return list(real) + preload_synthetic(L, NOISE_TOTAL - len(real))
+
+    s = studio("studio_rev1.json")
+    qs = [json.loads(line) for line in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()]
+    qrels: dict[str, dict] = {}
+    for r in csv.DictReader(open(FIX / "af-res-012" / "qrels.tsv", encoding="utf-8"), delimiter="\t"):
+        if r["grade"].isdigit():
+            qrels.setdefault(r["query_id"], {})[r["entry_id"]] = int(r["grade"])
+    a20 = json.loads((OUT / "measure_a4_20.json").read_text(encoding="utf-8"))["queries"]
+    out = {"rule": r6_scale.__doc__.split("\n")[1:4], "noise_total": NOISE_TOTAL, "rank_rules": {}}
+    configs = (("r0", noise_loader), ("r2", noise_loader), ("r2_real_only", lambda L: list(preload_all_link_index(L))))
+    for rank, loader in configs:
+        t0 = time.time()
+        L = Ledger()
+        L.rank_rules = rank.split("_")[0]
+        cat = preload_catalog(L)
+        catset = set(cat.values())
+        inv = {v: k for k, v in cat.items()}
+        n_noise = len(loader(L))
+        p = L.project("S")
+        res = {"noise_observations": n_noise, "r1": {}, "a4_20": {}}
+        cases = {"hand": s["needs"], "i2_ko": intake_mod.write_needs(s["text"], s["requirements"])}
+        for name, nd in cases.items():
+            req = L.intake(p, request_key=f"R1.{name}", rev=1, at=T0, text=s["text"], selected_part="s",
+                           requirements=s["requirements"], needs=nd)
+            hits = L.search_drawer(p, req, T0, k=5000, log=False)
+            ids = [inv.get(h["obs_id"], "noise") for h in hits]
+            top_noise = [L.obs(h["obs_id"])["url"] for h in hits[:10] if h["obs_id"] not in catset]
+            res["r1"][name] = {"noise_in_top10": len(top_noise),
+                               "noise_top10_synthetic": sum(1 for u in top_noise if "synthetic.invalid" in u),
+                               "noise_top10_real_link_index": sum(1 for u in top_noise if "synthetic.invalid" not in u),
+                               "asyncio_queue": ids.index("asyncio-queue") + 1 if "asyncio-queue" in ids else None,
+                               "asyncio_semaphore": ids.index("asyncio-semaphore") + 1 if "asyncio-semaphore" in ids else None,
+                               "eligible": sum(h["eligible"] for h in hits)}
+        for lang in ("ko", "en"):
+            nz10, rec, g2 = [], [], 0
+            for q in (x for x in qs if x["id"] in a20):
+                reqs = intake_mod.requirements_from_text(q[lang])
+                req = L.intake(p, request_key=f"{q['id']}.{lang}", rev=1, at=T0, text=q[lang], selected_part="s",
+                               requirements=reqs, needs=intake_mod.write_needs(q[lang], reqs))
+                hits = L.search_drawer(p, req, T0, k=12, log=False)
+                ids = [inv.get(h["obs_id"]) for h in hits]
+                rel = {e for e, g in qrels[q["id"]].items() if g >= 1}
+                nz10.append(sum(1 for h in hits[:10] if h["obs_id"] not in catset))
+                rec.append(sum(1 for e in rel if e in ids) / len(rel))
+                g2 += any(qrels[q["id"]].get(e) == 2 for e in ids)
+            res["a4_20"][lang] = {"mean_noise_in_top10": round(sum(nz10) / len(nz10), 2),
+                                  "requests_with_noise_le_2": sum(1 for x in nz10 if x <= 2),
+                                  "mean_recall12": round(sum(rec) / len(rec), 3), "grade2_in_top12": g2}
+        res["seconds"] = round(time.time() - t0, 1)
+        out["rank_rules"][rank] = res
+    flow = {}
+    for nn in ("studio", "i1"):
+        r = run_r1.run("replay", needs=nn, noise=False, noise_loader=noise_loader)
+        r.pop("_ledger")
+        folded = {f["condition"]: f["reason"] for f in r["rev1"]["answer"]["folded"]}
+        slot1 = next((x["sentence"] for x in r["rev1"]["answer"]["slots"] if x["kind"] == "direct"), "")
+        flow["hand" if nn == "studio" else "i2_ko"] = {
+            "first_slot_queue_313_L4": "/blob/v3.13." in slot1 and "queues.py#L" in slot1,
+            "semaphore_folded_H1U": "H1 U" in folded.get("대기 8을 대기열 길이로 지키는가", ""),
+            "create_all_folded_H2": "H2 위반" in folded.get("입력마다 작업 객체를 미리 만드는가", ""),
+            "drawer_symbols": [(x["name"], x.get("drawer_rank"), x.get("skipped")) for x in
+                               r["rev1"]["fresh_direct"]["drawer_symbols_resolved"]],
+            "external_attempts": r["rev1"]["budget"]["external_attempts"]}
+    out["r1_flow_r2"] = flow
+    out["diagnostic_eligibility_idf_floor"] = {
+        "note": "채택하지 않은 진단(08 I20). 자격의 서로 다른 내용어 둘을 df가 N의 f 이하인 단위로만 센다. r2, 잡음 2만 개. "
+                "값: (손 문장 상위 10 잡음, 자동 한국어 상위 10 잡음, 자동 한국어 적격 수)",
+        "none": [4, 9, 5000], "f=0.05": [4, 9, 1404], "f=0.02": [4, 9, 377], "f=0.01": [4, 9, 68], "f=0.005": [6, 9, 26]}
+    r2 = out["rank_rules"]["r2"]
+    out["end_condition_met"] = {"r1_hand": r2["r1"]["hand"]["noise_in_top10"] <= 2,
+                                "r1_i2_ko": r2["r1"]["i2_ko"]["noise_in_top10"] <= 2,
+                                "a4_20_ko_all": r2["a4_20"]["ko"]["requests_with_noise_le_2"] == len(a20),
+                                "a4_20_en_all": r2["a4_20"]["en"]["requests_with_noise_le_2"] == len(a20),
+                                "r1_case_unchanged": all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"]
+                                                         and v["create_all_folded_H2"] for v in flow.values())}
+    write("measure_r6_scale.json", out)
+    return out
+
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
@@ -495,7 +591,7 @@ def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
-           "r6": r6(mode), "a4_20": a4_20()}
+           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -511,6 +607,7 @@ def main():
         print("R6", k, "T1d", v["T1_drawer"], "T1f", v["T1_flow"], "T2", v["T2"], "T3", v["T3"],
               {kk: (vv["asyncio_queue"], vv["asyncio_semaphore"], vv["noise_in_top12"]) for kk, vv in v["drawer"].items()})
     print("A4-20", json.dumps(res["a4_20"]["summary"], ensure_ascii=False))
+    print("R6-SCALE", json.dumps(res["r6_scale"]["end_condition_met"]), json.dumps(res["r6_scale"]["rank_rules"]["r2"]["r1"]))
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 
