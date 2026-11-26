@@ -1,0 +1,48 @@
+"""서랍 미리 채우기(수집 흐름 대신 고정 자료). 단위 3의 수집 흐름이 아니다. 시험·측정·R1 실행이 같이 쓴다.
+
+- 012 자료집 156항목: 청구 없는 관측(소개만 봄)과 영어·한국어 summary 꼬리표(D-b). 설계 예제 cases.preload_catalog와 같다.
+- 같은 분야 잡음: opensource link-index의 F01(작업 대기열과 역압) 행. 관측은 소개만 봄, 꼬리표는 use(한국어)와 evidence.
+"""
+from __future__ import annotations
+
+import csv
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+FIX = HERE / "fixtures"
+
+
+def preload_catalog(L, at="2026-11-20T00:00:00Z") -> dict[str, int]:
+    ids = {}
+    for line in (FIX / "af-res-012" / "entries.jsonl").read_text(encoding="utf-8").splitlines():
+        e = json.loads(line)
+        oid, _ = L.observe(url=e["url"], edition_key="catalog@cb602858", edition_kind="fetch",
+                           position="catalog entry", at=at, method="intro_only", quote=e["D-b"]["en"],
+                           quote_lang="en", statement=e["D-b"]["ko"], via="collection",
+                           evidence_ref=f"AF-RES-012@cb602858 corpus/entries.jsonl#{e['id']}")
+        L.tag(oid, "summary", "one_up", "en", e["D-b"]["en"], written_from="catalog_description")
+        L.tag(oid, "summary", "one_up", "ko", e["D-b"]["ko"], written_from="catalog_description")
+        ids[e["id"]] = oid
+    return ids
+
+
+def link_index_rows() -> list[dict]:
+    with open(FIX / "link-index" / "link_index.tsv", encoding="utf-8", newline="") as fh:
+        return list(csv.DictReader(fh, delimiter="\t", quoting=csv.QUOTE_NONE, escapechar="\\"))
+
+
+def preload_noise(L, problem="F01", at="2026-11-20T00:00:00Z") -> dict[int, dict]:
+    """link-index의 한 문제 행을 서랍에 넣는다. 돌려주는 값: 관측 ID → 행."""
+    out = {}
+    for r in link_index_rows():
+        if r["problem"] != problem:
+            continue
+        oid, _ = L.observe(url=r["url"], edition_key=f"link-index@{r['commit'][:12]}", edition_kind="fetch",
+                           position=f"record {r['record']}", at=at, method="intro_only", statement=r["use"],
+                           via="collection", evidence_ref=f"opensource@{r['commit']} {r['file']}#L{r['line']}")
+        L.tag(oid, "summary", "one_up", "ko", r["use"], written_from="catalog_description")
+        if r["evidence"].strip():
+            L.tag(oid, "summary", "concrete", "mixed", r["evidence"], written_from="source_quote")
+        out[oid] = r
+    return out
