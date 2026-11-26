@@ -87,6 +87,21 @@ class CompletionCriteria(unittest.TestCase):
         self.assertNotIn("대기 최대", d["commons_exec_statement_example"])
         self.assertIn("대기 최대 8", d["project_exec_note_example"])
 
+    def test_c2_holds_with_automatic_korean_intake_after_r5_r6(self):
+        # R-5(다국어 토큰화)와 R-6(순위 r2 + 확인 범위) 뒤: 자동 한국어 접수로도 완료 기준 2가 성립한다(08 I17·I18)
+        for noise in (False, True):
+            r = run_r1.run("replay", needs="i1", noise=noise)
+            r.pop("_ledger")
+            a = r["rev1"]
+            self.assertEqual(a["needs_by"], "i1")
+            folded = {f["condition"]: f["reason"] for f in a["answer"]["folded"]}
+            self.assertIn("H1 U", folded["대기 8을 대기열 길이로 지키는가"], noise)
+            self.assertIn("H2 위반", folded["입력마다 작업 객체를 미리 만드는가"])
+            s1 = a["answer"]["slots"][1]["sentence"]
+            self.assertIn("/blob/v3.13.", s1)
+            self.assertIn("[필수] 일꾼 작업을 정확히 4개", s1)
+            self.assertLessEqual(a["budget"]["external_attempts"], 10)
+
     def test_live_output_is_committed_and_agrees(self):
         live = json.loads((HERE.parent / "out/r1_live.json").read_text(encoding="utf-8"))
         self.assertEqual(live["mode"], "live")

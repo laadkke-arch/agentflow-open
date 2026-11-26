@@ -355,10 +355,78 @@ def r1_map():
     return out
 
 
+# ------------------------------------------------------------------------------------------- R-6
+R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
+               ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
+
+
+def r6(mode):
+    """07 R-6: 서랍 순위. I17의 목표 셋 — (T1) 자동 한국어 R1에서 세마포어가 자료집만·F01 포함 모두 상위 12 안,
+    (T2) F01 포함에서 asyncio-queue가 1~2위, (T3) 손 문장 결과는 그대로(1번 자리·접힘·asyncio-queue 1위).
+    고르는 순서(사용자 지시, 2026-11-26): 흔한 분야 낱말의 가중치를 낮추는 방식(IDF, 꼬리표 길이 정규화)을 먼저,
+    서랍 상위 12와 자격 규칙은 마지막 수단. T1은 서랍 순위로, 그리고 R1 흐름 전체의 세마포어 접힘으로 본다."""
+    import run_r1
+    from afledger import config as cfg
+    s = studio("studio_rev1.json")
+    needs = {"hand": s["needs"], "i1_ko": intake_mod.write_needs(s["text"], s["requirements"])}
+    saved = (cfg.RANK_RULES, cfg.RANK_LENGTH_B, cfg.DRAWER_SYMBOL_SCOPE)
+    out = {"targets": r6.__doc__.split("\n")[1:3], "variants": {}}
+    base_top = {}
+    for rank, b, scope in R6_VARIANTS:
+        cfg.RANK_RULES, cfg.RANK_LENGTH_B, cfg.DRAWER_SYMBOL_SCOPE = rank, b, scope
+        name = f"{rank}" + (f"_b{b}" if rank == "r2" else "") + (f"+{scope}" if scope != "top_k" else "")
+        row = {"rank_rules": rank, "length_b": b if rank == "r2" else None, "symbol_scope": scope, "drawer": {}, "flow": {}}
+        for noise in (False, True):
+            L = Ledger()
+            cat = preload_catalog(L)
+            nz = preload_noise(L) if noise else {}
+            p = L.project("A")
+            for nn, nd in needs.items():
+                req = L.intake(p, request_key=nn, rev=1, at=T0, text=s["text"], selected_part="s",
+                               requirements=s["requirements"], needs=nd)
+                hits = L.search_drawer(p, req, T0, k=5000, log=False)
+                ids = drawer_ids(L, cat, nz, hits)
+                key = f"{nn}_{'with_F01' if noise else 'catalog_only'}"
+                top = ids[:12]
+                base_top.setdefault(key, top)
+                row["drawer"][key] = {"asyncio_queue": ids.index("asyncio-queue") + 1 if "asyncio-queue" in ids else None,
+                                      "asyncio_semaphore": ids.index("asyncio-semaphore") + 1 if "asyncio-semaphore" in ids else None,
+                                      "noise_in_top12": sum(1 for i in top if str(i).startswith("F01:")),
+                                      "top12_same_as_r0": top == base_top[key]}
+                # 순위 비교는 기록된 응답만 재생한다(변형 6개 × 흐름 4개를 실제로 돌리면 검색 한도를 넘는다)
+                r = run_r1.run("replay", needs="studio" if nn == "hand" else "i1", noise=noise)
+                r.pop("_ledger")
+                folded = {f["condition"]: f["reason"] for f in r["rev1"]["answer"]["folded"]}
+                slot1 = next((x["sentence"] for x in r["rev1"]["answer"]["slots"] if x["kind"] == "direct"), "")
+                row["flow"][key] = {"first_slot_queue_313_L4": "/blob/v3.13." in slot1 and "queues.py#L" in slot1
+                                    and "이 판에서 실행해 값을 확인했다" in slot1,
+                                    "semaphore_folded_H1U": "H1 U" in folded.get("대기 8을 대기열 길이로 지키는가", ""),
+                                    "create_all_folded_H2": "H2 위반" in folded.get("입력마다 작업 객체를 미리 만드는가", ""),
+                                    "external_attempts": r["rev1"]["budget"]["external_attempts"]}
+        d = row["drawer"]
+        row["T1_drawer"] = all((d[k]["asyncio_semaphore"] or 999) <= 12 for k in ("i1_ko_catalog_only", "i1_ko_with_F01"))
+        row["T1_flow"] = all(row["flow"][k]["semaphore_folded_H1U"] for k in ("i1_ko_catalog_only", "i1_ko_with_F01"))
+        row["T2"] = (d["i1_ko_with_F01"]["asyncio_queue"] or 999) <= 2
+        row["T3"] = all(d[k]["asyncio_queue"] == 1 and row["flow"][k]["first_slot_queue_313_L4"]
+                        and row["flow"][k]["semaphore_folded_H1U"] and row["flow"][k]["create_all_folded_H2"]
+                        for k in ("hand_catalog_only", "hand_with_F01"))
+        out["variants"][name] = row
+    cfg.RANK_RULES, cfg.RANK_LENGTH_B, cfg.DRAWER_SYMBOL_SCOPE = saved
+    reweight = {k: v for k, v in out["variants"].items() if v["symbol_scope"] == "top_k"}
+    score = lambda v: (v["T1_flow"] + v["T2"] + v["T3"], v["T1_drawer"])  # noqa: E731
+    out["best_reweighting_only"] = max(reweight, key=lambda k: score(reweight[k]))
+    out["chosen"] = next((k for k, v in out["variants"].items()
+                          if v["symbol_scope"] == "top_k" and v["T1_flow"] and v["T2"] and v["T3"]), None) or \
+        next((k for k, v in out["variants"].items() if v["T1_flow"] and v["T2"] and v["T3"]), None)
+    write("measure_r6.json", out)
+    return out
+
+
 def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
-    res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map()}
+    res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
+           "r6": r6(mode)}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -370,6 +438,10 @@ def main():
                                                 "distinct_target_or_page", "errors", "idempotent_page_on_url_norm")})
     print("F01", {k: {x: v[x] for x in ("noise_in_top10", "asyncio_queue_rank", "function_word_only_hits_that_are_eligible_under_rule", "eligible_noise_total")} for k, v in res["f01"].items() if isinstance(v, dict)})
     print("R1MAP", res["r1_map"]["total"])
+    for k, v in res["r6"]["variants"].items():
+        print("R6", k, "T1d", v["T1_drawer"], "T1f", v["T1_flow"], "T2", v["T2"], "T3", v["T3"],
+              {kk: (vv["asyncio_queue"], vv["asyncio_semaphore"], vv["noise_in_top12"]) for kk, vv in v["drawer"].items()})
+    print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 
 if __name__ == "__main__":

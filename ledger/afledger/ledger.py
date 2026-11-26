@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import sqlite3
 from pathlib import Path
@@ -121,6 +122,7 @@ class Ledger:
     def __init__(self, path: str = ":memory:", features: dict | None = None):
         self.features = {"drawer": True, "usage": True, "split": True}
         self.features.update(features or {})
+        self.rank_rules = config.RANK_RULES     # 서랍 순위 규칙 판(r0 설계 bm25 합, r1 IDF, r2 IDF+길이 정규화, 07 R-6)
         self.token_rules = config.TOKEN_RULES   # 서랍 토큰화 규칙 판(t1 영어만, t2 다국어). 측정에서 비교하려고 인스턴스마다 바꿀 수 있다
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -841,6 +843,8 @@ class Ledger:
             d["eligible"] = (content_slots >= min_slots and len(distinct) >= 2) or \
                             (min_slots <= 1 and content_slots >= 1)
             hits.append(d)
+        if self.rank_rules != "r0":
+            self._rescore(per_obs, hits, at)
         hits.sort(key=lambda d: (not d["eligible"], d["lexical_accident"], d["score"]))
         hits = hits[:k]
         for d in hits:
@@ -865,6 +869,49 @@ class Ledger:
                 d["rank"] = i
                 d["slots"] = sorted(d["slots"])
         return hits
+
+    def _drawer_stats(self, at: str) -> dict:
+        """서랍 순위용 통계(07 R-6). 문서 = 관측(그 관측의 꼬리표를 합친 것). at 이전에 관측된 것만 센다.
+        df: 영어 어간·한국어 줄기·한국어 2-gram마다 그것을 가진 관측 수. length: 관측의 서로 다른 내용 단위 수."""
+        units: dict[int, set] = {}
+        for r in self.db.execute(
+                "SELECT t.obs_id, t.text, k.words, k.grams FROM tag t JOIN observation o ON o.obs_id = t.obs_id"
+                " LEFT JOIN tag_fts_ko k ON k.rowid = t.tag_id WHERE o.observed_at <= ?", (at,)):
+            u = units.setdefault(r["obs_id"], set())
+            u |= {("en", stem(x)) for x in tokens(r["text"]) if x not in FUNCTION_WORDS and not x.isdigit()}
+            if r["words"]:
+                u |= {("kw", w) for w in r["words"].split()} | {("kg", g) for g in r["grams"].split()}
+        df: dict[tuple, int] = {}
+        for u in units.values():
+            for k in u:
+                df[k] = df.get(k, 0) + 1
+        lengths = {o: sum(1 for k in u if k[0] != "kg") for o, u in units.items()}
+        n = len(units) or 1
+        return {"n": n, "df": df, "length": lengths, "avg_len": (sum(lengths.values()) / n) if lengths else 1.0}
+
+    def _rescore(self, per_obs: dict, hits: list, at: str) -> None:
+        """규칙 판 r1: 맞은 내용 단위(질의 낱말 하나 = 한 번)마다 IDF를 더한다. 설계(r0)는 칸·꼬리표 행마다 bm25를 더해
+        긴 summary 꼬리표가 모든 칸에서 거듭 점수를 받았다(08 I17). r2: r1을 꼬리표 길이로 정규화한다(BM25의 b).
+        점수는 작을수록 앞이다(설계와 같은 방향)."""
+        st = self._drawer_stats(at)
+        b = config.RANK_LENGTH_B if self.rank_rules == "r2" else 0.0
+        for d in hits:
+            best: dict[str, float] = {}
+            for m in d["matched"]:
+                if m in d.get("func", ()):
+                    continue
+                if "~" in m:
+                    unit, key = m.split("~")[0], ("kg", m.split("~")[1])
+                elif re.search(r"[가-힣]", m):
+                    unit, key = m, ("kw", m)
+                else:
+                    unit, key = "en:" + stem(m), ("en", stem(m))
+                df = st["df"].get(key, 0)
+                idf = math.log(1 + (st["n"] - df + 0.5) / (df + 0.5))
+                best[unit] = max(best.get(unit, 0.0), idf)
+            score = sum(best.values())
+            norm = 1 - b + b * st["length"].get(d["obs_id"], st["avg_len"]) / st["avg_len"]
+            d["score"] = -score / norm
 
     def _drawer_ko(self, needs, at, per_obs: dict, include_function_words: bool) -> None:
         """한국어 두 층(어절 줄기·음절 2-gram)으로 같은 칸 꼬리표를 맞춘다(07 R-5, t2). 결과는 per_obs에 더한다."""

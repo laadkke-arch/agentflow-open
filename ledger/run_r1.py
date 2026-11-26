@@ -61,7 +61,8 @@ def run(mode: str = "replay", needs: str = "studio", noise: bool = True) -> dict
     noise = preload_noise(L, "F01") if noise else {}
     inv = {v: k for k, v in catalog.items()}
     out: dict = {"mode": "live" if mode == "live" else "replay",
-                 "rules": {k: getattr(config, k) for k in dir(config) if k.endswith("_RULES") or k == "RULE_VERSION"},
+                 "rules": {k: getattr(config, k) for k in dir(config)
+                           if k.endswith("_RULES") or k in ("RULE_VERSION", "RANK_LENGTH_B", "DRAWER_SYMBOL_SCOPE")},
                  "drawer_size": {"catalog": len(catalog), "noise_F01": len(noise)}}
 
     # =========================================================== 요청판 1 (CPython 3.13)
@@ -93,8 +94,11 @@ def run(mode: str = "replay", needs: str = "studio", noise: bool = True) -> dict
     direct = direct_branch(L, t, p, req1, t0, context=L.context(p, req1), request_text=s1["text"],
                            selected_part=s1["selected_part"]["label"], content_tokens=content_tokens, budget=budget1)
     log_fresh(L, p, req1, t0, direct)
-    symbols = resolve_drawer_symbols(L, t, p, req1, t0, scope=direct["scope"], drawer_hits=drawer, budget=budget1)
-    searched_paths = {r["path"] for r in direct["results"]} | {x["path"] for s_ in symbols for x in s_["results"]}
+    # 사용자 판 확인으로 넘길 서랍 후보: 상위 12(top_k) 또는 적격 전부(eligible, 예산 안에서 순위순). 08 I18
+    symbol_pool = drawer if config.DRAWER_SYMBOL_SCOPE == "top_k" else \
+        [h for h in L.search_drawer(p, req1, t0, k=5000, log=False) if h["eligible"]]
+    symbols = resolve_drawer_symbols(L, t, p, req1, t0, scope=direct["scope"], drawer_hits=symbol_pool, budget=budget1)
+    searched_paths = {r["path"] for r in direct["results"]} | {x["path"] for s_ in symbols for x in s_.get("results", [])}
 
     # 확인 2: 사용자 판의 원문 줄
     reader = GitHubPinnedReader(L, t, p, req1)

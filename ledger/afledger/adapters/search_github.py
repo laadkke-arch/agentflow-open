@@ -131,6 +131,7 @@ def resolve_drawer_symbols(L, transport, p: str, req: int, at: str, *, scope: di
     if not scope or not scope.get("package"):
         return []
     out = []
+    from ..budget import BudgetExhausted
     for h in drawer_hits:
         if not h.get("eligible") or h.get("lexical_accident"):
             continue
@@ -140,7 +141,11 @@ def resolve_drawer_symbols(L, transport, p: str, req: int, at: str, *, scope: di
         if not m:
             continue
         if budget is not None:
-            budget.check_external()
+            try:
+                budget.check_external()
+            except BudgetExhausted:
+                out.append({"name": name, "drawer_rank": h["rank"], "skipped": "예산"})
+                continue
         q = f'"class {m.group(1)}" repo:{scope["repo"]} path:{scope["path"]} language:Python'
         url = API + "?" + urllib.parse.urlencode({"q": q, "per_page": 10})
         r = transport.get(url, {"Accept": "application/vnd.github.text-match+json"}, note=f"search symbol {q}")

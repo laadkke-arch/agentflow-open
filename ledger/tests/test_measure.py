@@ -25,6 +25,13 @@ class MeasuredChoices(unittest.TestCase):
         self.assertEqual(chosen["leak_passed"], 0)
         self.assertLess(chosen["legit_reject_rate"], 0.05)
 
+    def test_r6_choice_matches_config(self):
+        r = load("measure_r6.json")
+        v = r["variants"][r["chosen"]]
+        self.assertEqual((config.RANK_RULES, config.RANK_LENGTH_B, config.DRAWER_SYMBOL_SCOPE),
+                         (v["rank_rules"], v["length_b"], v["symbol_scope"]))
+        self.assertTrue(v["T1_flow"] and v["T2"] and v["T3"])
+
     def test_a4_and_maps_are_recorded(self):
         a = load("measure_a4.json")
         self.assertFalse(a["variants"]["i1_en@t2"]["catalog_only"]["big_deviation"])
