@@ -513,12 +513,14 @@ def r6_scale():
         if r["grade"].isdigit():
             qrels.setdefault(r["query_id"], {})[r["entry_id"]] = int(r["grade"])
     a20 = json.loads((OUT / "measure_a4_20.json").read_text(encoding="utf-8"))["queries"]
-    out = {"rule": r6_scale.__doc__.split("\n")[1:4], "noise_total": NOISE_TOTAL, "rank_rules": {}}
+    out = {"rule": r6_scale.__doc__.split("\n")[1:4], "noise_total": NOISE_TOTAL, "rank_rules": {},
+           "rank_rules_current": __import__("afledger").config.RANK_RULES}
     configs = (("r0", noise_loader), ("r2", noise_loader), ("r2_real_only", lambda L: list(preload_all_link_index(L))))
     for rank, loader in configs:
         t0 = time.time()
         L = Ledger()
-        L.rank_rules = rank.split("_")[0]
+        # "r2" 열쇠는 "지금 순위 규칙" 자리다(I20 이후 이름을 지킨다). 실제 규칙은 rank_rules_current에 남긴다
+        L.rank_rules = "r0" if rank == "r0" else __import__("afledger").config.RANK_RULES
         cat = preload_catalog(L)
         catset = set(cat.values())
         inv = {v: k for k, v in cat.items()}
@@ -699,7 +701,7 @@ def i25_sample(pairs_file="i25_pairs.json", cap=120) -> list[dict]:
     return out
 
 
-def i25_score(pairs_file="i25_pairs.json", judgments=FIX / "i25" / "judgments.tsv"):
+def i25_score(pairs_file="i25_pairs.json", judgments=FIX / "i25" / "judgments.tsv", out_name="measure_i25.json"):
     """08 I25: 판정으로 고친 잡음 수. 상위 10의 실제 행 가운데 등급 1·2는 잡음에서 뺀다. R1과 A4 20건 요청마다 다시 센다.
     잡음 2만 개(합성 포함)와 실제 잡음만 두 설정, 합성 잡음은 따로 센다."""
     import csv
@@ -734,9 +736,86 @@ def i25_score(pairs_file="i25_pairs.json", judgments=FIX / "i25" / "judgments.ts
         dist[g] = dist.get(g, 0) + 1
     out = {"rule": I25_RULE, "judged_pairs": len(grade), "grade_counts": dict(sorted(dist.items())),
            "elig_rules": pairs["elig_rules"], "catalog_ko_slots": pairs.get("catalog_ko_slots"), "by_config": per}
-    write("measure_i25.json", out)
+    write(out_name, out)
     return out
 
+
+
+# ------------------------------------------------------------------------------------------- I26 012 한국어 칸별 꼬리표
+def i26():
+    """08 I26 (I20의 a): 012 자료집에 한국어 breaks_when 꼬리표(D-c 둘째 문장)를 더하기 전과 뒤. 채택 규칙(돌리기 전에 정함):
+    실제 잡음만에서 A4 한국어의 판정 잡음 평균이 줄고, R1 손 문장·자동 한국어와 A4 영어판의 판정 잡음이 두 설정 어디서도 늘지 않고,
+    R1 흐름의 완료 기준 2가 그대로면 기본으로 켠다. 판정은 I25의 120쌍을 그대로 쓰고 새로 든 실제 행은 판정 안 함(잡음)으로 센다."""
+    import drawer_load
+    saved = drawer_load.CATALOG_KO_SLOTS
+    res = {}
+    try:
+        for flag in sorted((False, True), key=lambda f: f == saved):
+            drawer_load.CATALOG_KO_SLOTS = flag
+            key = "ko_slots" if flag else "before"
+            a, r = a4_20(), r6_scale()
+            i25_collect(out_name=f"i26_pairs_{key}.json")
+            sc = i25_score(pairs_file=f"i26_pairs_{key}.json", out_name=f"measure_i26_{key}.json")
+            res[key] = {"a4_20": a["summary"], "r6_scale_r2": {k: r["rank_rules"]["r2"][k] for k in ("r1", "a4_20")},
+                        "r6_scale_real_only": {k: r["rank_rules"]["r2_real_only"][k] for k in ("r1", "a4_20")},
+                        "r1_flow": r["r1_flow_r2"], "end_condition_met_unjudged": r["end_condition_met"],
+                        "judged": {c: {"r1": {k: v["noise_after"] for k, v in x["r1"].items()}, "a4_20": x["a4_20"]}
+                                   for c, x in sc["by_config"].items()}}
+    finally:
+        drawer_load.CATALOG_KO_SLOTS = saved
+
+    def j(key, cfg):
+        x = res[key]["judged"][cfg]
+        return {"r1_hand": x["r1"]["R1.hand"], "r1_i2_ko": x["r1"]["R1.i2_ko"],
+                "a4_ko": x["a4_20"]["ko"]["mean_noise_after"], "a4_en": x["a4_20"]["en"]["mean_noise_after"]}
+    cmp = {cfg: {"before": j("before", cfg), "ko_slots": j("ko_slots", cfg)} for cfg in ("real_only", "noise_20k")}
+    flow_ok = all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                  for v in res["ko_slots"]["r1_flow"].values())
+    worse = [f"{cfg}.{k}" for cfg in cmp for k in ("r1_hand", "r1_i2_ko", "a4_en")
+             if cmp[cfg]["ko_slots"][k] > cmp[cfg]["before"][k]]
+    adopt = cmp["real_only"]["ko_slots"]["a4_ko"] < cmp["real_only"]["before"]["a4_ko"] and not worse and flow_ok
+    out = {"rule": i26.__doc__.split("\n")[1:4], "judged_noise": cmp, "worse": worse, "r1_flow_ok": flow_ok,
+           "adopt": adopt, "results": res}
+    write("measure_i26.json", out)
+    return out
+
+
+def i26_rank():
+    """08 I26 둘째: 순위 r2(관측 전체 길이로 정규화) 대 r3(언어 칸별 길이로 정규화, BM25F식). 012 꼬리표는 I26 첫째에서 정한 대로.
+    채택 규칙(돌리기 전에 정함): 실제 잡음만에서 A4 한국어 판정 잡음 평균이 줄고, R1 손 문장·자동 한국어와 A4 영어판의 판정 잡음이
+    두 설정 어디서도 늘지 않고, A4 자료집만 회수율(한국어·영어판)이 줄지 않고, R1 흐름의 완료 기준 2가 그대로면 r3를 기본으로 한다."""
+    from afledger import config
+    saved = config.RANK_RULES
+    res = {}
+    try:
+        for rank in sorted(("r2", "r3"), key=lambda r: r == saved):
+            config.RANK_RULES = rank
+            a, r = a4_20(), r6_scale()
+            i25_collect(out_name=f"i26_pairs_{rank}.json")
+            sc = i25_score(pairs_file=f"i26_pairs_{rank}.json", out_name=f"measure_i26_{rank}.json")
+            res[rank] = {"a4_20": a["summary"], "r6_scale_cur": {k: r["rank_rules"]["r2"][k] for k in ("r1", "a4_20")},
+                         "r6_scale_real_only": {k: r["rank_rules"]["r2_real_only"][k] for k in ("r1", "a4_20")},
+                         "r1_flow": r["r1_flow_r2"],
+                         "judged": {c: {"r1": {k: v["noise_after"] for k, v in x["r1"].items()}, "a4_20": x["a4_20"]}
+                                    for c, x in sc["by_config"].items()}}
+    finally:
+        config.RANK_RULES = saved
+
+    def j(rank, cfg):
+        x = res[rank]["judged"][cfg]
+        return {"r1_hand": x["r1"]["R1.hand"], "r1_i2_ko": x["r1"]["R1.i2_ko"],
+                "a4_ko": x["a4_20"]["ko"]["mean_noise_after"], "a4_en": x["a4_20"]["en"]["mean_noise_after"]}
+    cmp = {cfg: {r: j(r, cfg) for r in ("r2", "r3")} for cfg in ("real_only", "noise_20k")}
+    rec = {r: {lang: res[r]["a4_20"]["catalog_only"][lang]["mean_recall12"] for lang in ("ko", "en")} for r in ("r2", "r3")}
+    flow_ok = all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                  for v in res["r3"]["r1_flow"].values())
+    worse = [f"{cfg}.{k}" for cfg in cmp for k in ("r1_hand", "r1_i2_ko", "a4_en") if cmp[cfg]["r3"][k] > cmp[cfg]["r2"][k]]
+    worse += [f"recall.{lang}" for lang in ("ko", "en") if rec["r3"][lang] < rec["r2"][lang]]
+    adopt = cmp["real_only"]["r3"]["a4_ko"] < cmp["real_only"]["r2"]["a4_ko"] and not worse and flow_ok
+    out = {"rule": i26_rank.__doc__.split("\n")[1:4], "judged_noise": cmp, "catalog_only_recall12": rec, "worse": worse,
+           "r1_flow_ok": flow_ok, "adopt_r3": adopt, "results": res}
+    write("measure_i26_rank.json", out)
+    return out
 
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),

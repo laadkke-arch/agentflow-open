@@ -904,16 +904,25 @@ class Ledger:
                 df[k] = df.get(k, 0) + 1
         lengths = {o: sum(1 for k in u if k[0] != "kg") for o, u in units.items()}
         n = len(units) or 1
-        return {"n": n, "df": df, "length": lengths, "avg_len": (sum(lengths.values()) / n) if lengths else 1.0}
+        # r3(08 I26): 언어 칸별 길이. en = 영어 어간, ko = 한국어 줄기. 평균은 그 칸이 있는 관측만으로
+        field_len = {o: {"en": sum(1 for k in u if k[0] == "en"), "ko": sum(1 for k in u if k[0] == "kw")}
+                     for o, u in units.items()}
+        field_avg = {}
+        for f in ("en", "ko"):
+            xs = [v[f] for v in field_len.values() if v[f]]
+            field_avg[f] = (sum(xs) / len(xs)) if xs else 1.0
+        return {"n": n, "df": df, "length": lengths, "avg_len": (sum(lengths.values()) / n) if lengths else 1.0,
+                "field_len": field_len, "field_avg": field_avg}
 
     def _rescore(self, per_obs: dict, hits: list, at: str) -> None:
         """규칙 판 r1: 맞은 내용 단위(질의 낱말 하나 = 한 번)마다 IDF를 더한다. 설계(r0)는 칸·꼬리표 행마다 bm25를 더해
         긴 summary 꼬리표가 모든 칸에서 거듭 점수를 받았다(08 I17). r2: r1을 꼬리표 길이로 정규화한다(BM25의 b).
         점수는 작을수록 앞이다(설계와 같은 방향)."""
         st = self._drawer_stats(at)
-        b = config.RANK_LENGTH_B if self.rank_rules == "r2" else 0.0
+        b = config.RANK_LENGTH_B if self.rank_rules in ("r2", "r3") else 0.0
         for d in hits:
             best: dict[str, float] = {}
+            field: dict[str, str] = {}
             for m in d["matched"]:
                 if m in d.get("func", ()):
                     continue
@@ -926,9 +935,20 @@ class Ledger:
                 df = st["df"].get(key, 0)
                 idf = math.log(1 + (st["n"] - df + 0.5) / (df + 0.5))
                 best[unit] = max(best.get(unit, 0.0), idf)
-            score = sum(best.values())
-            norm = 1 - b + b * st["length"].get(d["obs_id"], st["avg_len"]) / st["avg_len"]
-            d["score"] = -score / norm
+                field[unit] = "en" if key[0] == "en" else "ko"
+            if self.rank_rules == "r3":
+                # BM25F처럼 칸마다 그 칸의 길이로 정규화한 뒤 더한다(F30 C5: europeana bm25f-3~5, Elastic combined_fields)
+                fl = st["field_len"].get(d["obs_id"], {})
+                total = 0.0
+                for f in ("en", "ko"):
+                    sf = sum(v for u, v in best.items() if field[u] == f)
+                    if sf:
+                        total += sf / (1 - b + b * (fl.get(f) or st["field_avg"][f]) / st["field_avg"][f])
+                d["score"] = -total
+            else:
+                score = sum(best.values())
+                norm = 1 - b + b * st["length"].get(d["obs_id"], st["avg_len"]) / st["avg_len"]
+                d["score"] = -score / norm
             if self.elig_idf_min is not None and d["eligible"]:
                 # 진단용(08 I20, 채택 안 함): 자격의 "서로 다른 내용어 둘"을 IDF 문턱 이상인 단위로만 센다
                 d["eligible"] = sum(1 for v in best.values() if v >= self.elig_idf_min) >= 2
