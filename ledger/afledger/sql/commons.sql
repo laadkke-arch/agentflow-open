@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS quote_text (
 -- 원문 가져오기 기록(07 D1). 예산이 세는 단위다. 요청 시계의 가져오기는 프로젝트 장부에 둔다(누가 왜 읽었는지는 공용에 남기지 않는다).
 CREATE TABLE IF NOT EXISTS fetch_log (
   fetch_id    INTEGER PRIMARY KEY,
-  clock       TEXT NOT NULL CHECK (clock IN ('follow','background')),
+  clock       TEXT NOT NULL CHECK (clock IN ('follow','background','deadline')),  -- deadline: 기한 읽기를 따로 셀 때(08 I22)
   url         TEXT NOT NULL,
   edition_key TEXT,
   at          TEXT NOT NULL,

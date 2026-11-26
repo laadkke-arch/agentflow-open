@@ -22,6 +22,7 @@ REQUEST_FETCHES = 4                # 요청판 하나의 가져오기 수
 REQUEST_BYTES = 1 << 20            # 요청판 하나가 받는 원문 바이트(1 MiB)
 REQUEST_EXTERNAL_ATTEMPTS = 10     # 요청판 하나의 외부 시도(검색 호출 + 가져오기)
 FOLLOW_FETCHES_PER_10_SOURCES = 3  # 후속 시계, 168시간당 감시 출처 10개마다
+DEADLINE_BUDGET = "follow"         # 기한 읽기(D4)를 어느 몫으로 세나. "follow"(D11 그대로) | "separate"(기한마다 3회, 후속 몫과 따로). 08 I22, 결정 전
 
 # ---- 시계(07 D2·D4·D8)
 DEADLINE_READS = (("T-24h", -24), ("T", 0), ("T+24h", 24))
