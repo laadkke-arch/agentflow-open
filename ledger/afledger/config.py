@@ -1,0 +1,30 @@
+"""설정 상수는 이 파일 한 곳에 둔다. 값을 바꾸면 해당 규칙 판(*_RULES)을 올리고 08-implementation.md에 적는다.
+
+설계 근거: 07-review.md 6절 D1·D2·D4·D8·D11, 04-architecture.md 5절.
+"""
+
+# ---- 규칙 판(결과 행에 남겨 나중 규칙으로 다시 계산할 수 있게 한다)
+RULE_VERSION = "unit1-r1"          # answer_run.rule_version. 설계 예제는 "final-v1+review"
+NORM_RULES = "n1"                  # 주소 정규화(R-1 임시안). afledger/normalize.py가 실제 값을 정한다
+MAP_RULES = "m1"                   # 판 사이 위치 대응(R-1 임시안). afledger/locate.py
+BUDGET_RULES = "b1"                # 예산 셈법(D1·D11 그대로). afledger/budget.py
+PRIVACY_RULES = "p1"               # 꼬리표 사생활 검사. p1 = 설계 예제(영어 토큰). p2는 08 노트 참조
+SEARCH_RULES = "s1"                # 새 검색 직접 갈래의 질의 규칙. afledger/adapters/search_github.py
+INTAKE_RULES = "i1"                # 접수가 쓰는 칸별 필요 문장. afledger/intake.py
+
+# ---- 예산(07 D1·D11, 06 C1)
+REQUEST_FETCHES = 4                # 요청판 하나의 가져오기 수
+REQUEST_BYTES = 1 << 20            # 요청판 하나가 받는 원문 바이트(1 MiB)
+REQUEST_EXTERNAL_ATTEMPTS = 10     # 요청판 하나의 외부 시도(검색 호출 + 가져오기)
+FOLLOW_FETCHES_PER_10_SOURCES = 3  # 후속 시계, 168시간당 감시 출처 10개마다
+
+# ---- 시계(07 D2·D4·D8)
+DEADLINE_READS = (("T-24h", -24), ("T", 0), ("T+24h", 24))
+ACTIVE_RULE = "shown_latest"
+IMMUTABLE_KINDS = ("release", "commit", "tag", "doi")
+IMMUTABLE_RECHECK_H = None
+RECHECK_H = 168
+
+# ---- 채널 ID 체계 변경 의심(06 C11)
+RESET_MIN_NEW = 50
+RESET_SHARE = 0.8
