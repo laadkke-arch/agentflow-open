@@ -5,6 +5,9 @@
 즉 이 코드가 보증하는 것은 "판독 결과가 주어졌을 때 기록과 전파가 맞게 일어나는가"이고,
 판독 자체의 품질은 보증하지 않는다.
 
+운영 시뮬레이션(../sim/ops_sim.py)에서 드러난 규칙 위반을 고친 판이다(../07-review.md 5절).
+재사용·인용·승계는 대체를 보고, 작업 완료는 임차 표지를 확인하며, 대체는 감시를 새 관측으로 넘기고, 잘못된 대체는 취소 행으로 되돌린다.
+
 features로 핵심 구성요소를 끄면 구성요소 삭제 시험을 같은 코드로 돌릴 수 있다.
   drawer : 공용 장부를 프로젝트 사이·시점 사이에 재사용한다(끄면 프로젝트마다 따로 기억).
   usage  : 답 자리 → 관측 사용 쪽지로 철회를 전파한다(끄면 프로젝트의 모든 답 자리에 알림).
@@ -63,11 +66,33 @@ def content_tokens(text: str) -> list[str]:
     return out
 
 
+ISO = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def _parse_iso(s: str):
+    """'YYYY-MM-DD', 'YYYY-MM-DDTHH:MM:SSZ', '+09:00' 같은 시간대 표기를 모두 UTC로 읽는다."""
+    from datetime import datetime, timezone
+    s = s.strip()
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        return datetime.strptime(s, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    t = datetime.fromisoformat(s[:-1] + "+00:00" if s.endswith("Z") else s)
+    return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
+
+
+def utc(s: str | None, *, date_only_ok=False) -> str | None:
+    """저장 전에 시각을 UTC 'Z' 형식으로 맞춘다. 문자열 비교가 시간대 표기에 흔들리지 않게 한다.
+    date_only_ok이면 날짜·연월만 있는 발행 표기('2015-01-08', '2018-10')는 그대로 둔다."""
+    if s is None:
+        return None
+    if date_only_ok and re.fullmatch(r"\d{4}(-\d{2}){0,2}", s.strip()):
+        return s.strip()
+    return _parse_iso(s).strftime(ISO)
+
+
 def _shift(iso: str, hours: float) -> str:
-    """ISO 시각 문자열을 hours만큼 옮긴다(같은 'YYYY-MM-DDTHH:MM:SSZ' 형식)."""
-    from datetime import datetime, timedelta, timezone
-    t = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) + timedelta(hours=hours)
-    return t.strftime("%Y-%m-%dT%H:%M:%SZ")
+    """시각 문자열을 hours만큼 옮긴다. 날짜만 있거나 시간대 표기가 있어도 UTC로 읽는다."""
+    from datetime import timedelta
+    return (_parse_iso(iso) + timedelta(hours=hours)).strftime(ISO)
 
 
 def stem(t: str) -> str:
@@ -92,10 +117,37 @@ class Ledger:
         self.db.executescript((HERE / "schema.sql").read_text(encoding="utf-8"))
         self.projects: list[str] = []
         self.origin: dict[int, str] = {}   # drawer=False일 때만 쓰는 관측의 출처 프로젝트
-        self.opens: dict[str, int] = {}    # 원문을 새로 연 횟수(요청 시계 비용)
+        self.opens: dict[str, int] = {}    # 원문을 새로 연 횟수(요청 시계 비용). 새 관측만 센다
+        self.rereads: dict[str, int] = {}  # 다시 읽었지만 내용이 같아 다시 본 기록만 남은 횟수. 이것도 실제 가져오기다
+        self.alerts: list[dict] = []       # 운영자 경보(채널 ID 체계 변경 의심 등)
+        self.clock_errors: list[dict] = [] # 기한 시계가 읽지 못한 행(형식 오류). 다른 행의 작업은 계속 만든다
         if not self.features["split"]:
             self.db.execute("""CREATE TABLE IF NOT EXISTS shared_judgment (
                 obs_id INTEGER, project TEXT, code TEXT, verdict TEXT, role TEXT, reason TEXT, at TEXT)""")
+
+    # ------------------------------------------------------------------ 대체 상태
+    # 감시를 멈출 관측: 취소되지 않은 대체의 앞 관측(효과와 무관, 감시는 새 관측으로 넘어간다) + 철회된 판독.
+    RETIRED_SQL = ("SELECT s.old_obs FROM supersession s WHERE s.known_from<=:at AND NOT EXISTS"
+                   " (SELECT 1 FROM supersession_cancel c WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs"
+                   "  AND c.cancelled_at<=:at)"
+                   " UNION SELECT c.new_obs FROM supersession_cancel c WHERE c.cancelled_at<=:at")
+    # 근거로 쓰면 안 되는 관측: 취소되지 않은 invalidates·changes_value 대체의 앞 관측 + 철회된 판독.
+    STALE_SQL = ("SELECT s.old_obs FROM supersession s WHERE s.known_from<=:at AND s.effect<>'confirms' AND NOT EXISTS"
+                 " (SELECT 1 FROM supersession_cancel c WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs"
+                 "  AND c.cancelled_at<=:at)"
+                 " UNION SELECT c.new_obs FROM supersession_cancel c WHERE c.cancelled_at<=:at")
+    FAR_FUTURE = "9999-12-31T23:59:59Z"
+    RULE_VERSION = "final-v1+review"   # 07-review.md의 고침(조합 검사·임차 표지 등)을 넣은 규칙 판
+
+    def stale(self, obs_id: int, at: str | None = None) -> bool:
+        """at 시각에 이 관측을 근거로 인용하면 안 되는가(무효·값 바뀜으로 대체됐거나 철회된 판독)."""
+        return bool(self.db.execute(f"SELECT 1 FROM ({self.STALE_SQL}) x WHERE x.old_obs=:o",
+                                    {"at": at or self.FAR_FUTURE, "o": obs_id}).fetchone())
+
+    def retired(self, obs_id: int, at: str | None = None) -> bool:
+        """at 시각에 이 관측의 감시를 멈추는가(대체돼 감시가 새 관측으로 넘어갔거나 철회된 판독)."""
+        return bool(self.db.execute(f"SELECT 1 FROM ({self.RETIRED_SQL}) x WHERE x.old_obs=:o",
+                                    {"at": at or self.FAR_FUTURE, "o": obs_id}).fetchone())
 
     # ------------------------------------------------------------------ 프로젝트
     def project(self, name: str) -> str:
@@ -115,6 +167,7 @@ class Ledger:
         return self.db.execute("SELECT locator_id FROM locator WHERE url=?", (url,)).fetchone()[0]
 
     def _edition(self, locator_id: int, key: str, kind: str, published_at, at: str) -> int:
+        published_at = utc(published_at, date_only_ok=True)
         self.db.execute(
             "INSERT OR IGNORE INTO edition(locator_id, edition_key, kind, published_at, first_seen_at)"
             " VALUES (?,?,?,?,?)", (locator_id, key, kind, published_at, at))
@@ -133,8 +186,9 @@ class Ledger:
 
     def observe(self, *, url, edition_key, edition_kind, position, at, method, outcome="content",
                 quote=None, quote_lang=None, statement, flip_position=None, receipt_id=None,
-                published_at=None, via="request", evidence_ref=None, project=None) -> tuple[int, bool]:
-        """관측을 남긴다. 같은 (판, 위치, 결과, 인용 지문, 방법, 영수증)이면 새 행 대신 sighting을 더한다."""
+                published_at=None, via="request", evidence_ref=None, project=None, reader=None) -> tuple[int, bool]:
+        """관측을 남긴다. 같은 (판, 위치, 결과, 인용 지문, 방법, 영수증)이면 새 행 대신 sighting을 더한다.
+        reader는 판독한 주체(모델 ID·프롬프트 판, 사람)다. 멱등 키에는 넣지 않는다."""
         with self.db:
             loc = self._locator(url, at, via)
             ed = self._edition(loc, edition_key, edition_kind, published_at, at)
@@ -145,15 +199,17 @@ class Ledger:
             key = sha256("|".join(map(str, parts)))
             row = self.db.execute("SELECT obs_id FROM observation WHERE idem_key=?", (key,)).fetchone()
             if row:
-                self.db.execute("INSERT OR IGNORE INTO sighting(obs_id, seen_at, via) VALUES (?,?,?)",
-                                (row[0], at, via if via != "operator" else "request"))
+                self.db.execute("INSERT OR IGNORE INTO sighting(obs_id, seen_at, via, reader) VALUES (?,?,?,?)",
+                                (row[0], at, via if via != "operator" else "request", reader))
+                if project and method in ("read_line", "executed"):
+                    self.rereads[project] = self.rereads.get(project, 0) + 1
                 return row[0], False
             cur = self.db.execute(
                 "INSERT INTO observation(edition_id, position, observed_at, method, outcome, quote, quote_lang,"
-                " quote_fp, statement, evidence_ref, flip_position, receipt_id, idem_key)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                " quote_fp, statement, evidence_ref, flip_position, receipt_id, reader, idem_key)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (ed, position, at, method, outcome, quote, quote_lang, fp, statement, evidence_ref,
-                 flip_position, receipt_id, key))
+                 flip_position, receipt_id, reader, key))
             obs_id = cur.lastrowid
             if project:
                 self.origin[obs_id] = project
@@ -182,7 +238,8 @@ class Ledger:
                 leaked = [t for t in content_tokens(text) if t in private and len(t) >= 5]
                 # 요청에만 있는 긴 내용어가 둘 이상 들어가면 요청 문장을 옮겨 적은 것으로 본다.
                 if len(leaked) >= 2:
-                    raise PrivacyError(f"tag repeats request-only words {leaked} from {p}")
+                    # 거절 문장에 다른 프로젝트의 별칭이나 낱말을 넣지 않는다(거절이 비공개 내용을 다른 쓰기 경로로 흘린다).
+                    raise PrivacyError(f"tag repeats {len(leaked)} words that appear only in a private request")
 
     def contrast(self, left_obs, right_obs, condition, left_value, right_value, receipt_id=None) -> None:
         with self.db:
@@ -191,10 +248,32 @@ class Ledger:
                 " VALUES (?,?,?,?,?,?)", (left_obs, right_obs, condition, left_value, right_value, receipt_id))
 
     def supersede(self, old_obs, new_obs, effect, known_from, effective_from=None) -> None:
+        """대체를 쓰고, 앞 관측의 감시(채널·키·층)를 새 관측으로 넘긴다. 기한은 원문 내용이라 넘기지 않는다.
+        넘기지 않으면 첫 대체 뒤 공급자 층 감시가 사라진다(운영 시뮬레이션 M1)."""
         with self.db:
-            self.db.execute(
-                "INSERT OR IGNORE INTO supersession(old_obs, new_obs, effect, effective_from, known_from)"
-                " VALUES (?,?,?,?,?)", (old_obs, new_obs, effect, effective_from, known_from))
+            self._supersede(old_obs, new_obs, effect, known_from, effective_from)
+
+    def _supersede(self, old_obs, new_obs, effect, known_from, effective_from=None) -> None:
+        self.db.execute(
+            "INSERT OR IGNORE INTO supersession(old_obs, new_obs, effect, effective_from, known_from)"
+            " VALUES (?,?,?,?,?)", (old_obs, new_obs, effect, utc(effective_from, date_only_ok=True), utc(known_from)))
+        self.db.execute(
+            "INSERT OR IGNORE INTO watch(obs_id, channel_id, match_key, layer, deadline)"
+            " SELECT ?, channel_id, match_key, layer, NULL FROM watch WHERE obs_id=?", (new_obs, old_obs))
+
+    def cancel_supersession(self, old_obs: int, new_obs: int, at: str, reason: str) -> None:
+        """잘못 쓴 대체를 취소한다. 앞 관측은 다시 유효해지고 감시가 돌아오며, new_obs는 철회된 판독이 된다.
+        바른 판독은 앞 관측과 내용이 같아 새 관측이 생기지 않으므로 confirms 대체로는 되돌릴 수 없다(순환)."""
+        with self.db:
+            self.db.execute("INSERT INTO supersession_cancel(old_obs, new_obs, cancelled_at, reason) VALUES (?,?,?,?)",
+                            (old_obs, new_obs, utc(at), reason))
+            # 잘못 대체된 동안 철회된 판독 쪽으로 들어온 재확인 원인은 앞 관측이 이어받는다(그 사이 채널 항목을 놓치지 않게)
+            for j in self.db.execute("SELECT cause, cause_ref, merged_causes FROM recheck_job WHERE obs_id=? AND"
+                                     " state='queued' AND cause<>'audit'", (new_obs,)).fetchall():
+                self._enqueue(old_obs, j["cause"], j["cause_ref"], utc(at))
+                for m in [m for m in j["merged_causes"].split(",") if m]:
+                    c, ref = m.split(":", 1)
+                    self._enqueue(old_obs, c, ref, utc(at))
 
     def alias(self, from_url: str, to_url: str, kind: str, at: str, evidence_obs=None) -> int:
         with self.db:
@@ -242,14 +321,19 @@ class Ledger:
     def watch(self, obs_id: int, channel_url: str, match_key: str = "", *, layer="same_address",
               deadline: str | None = None) -> None:
         ch = self.db.execute("SELECT channel_id FROM channel WHERE url=?", (channel_url,)).fetchone()[0]
+        deadline = utc(deadline)   # 날짜만 적은 기한은 그날 0시 UTC로. 형식이 틀리면 여기서 거절한다
         with self.db:
-            self.db.execute("INSERT OR IGNORE INTO watch(obs_id, channel_id, match_key, layer, deadline)"
-                            " VALUES (?,?,?,?,?)", (obs_id, ch, match_key, layer, deadline))
+            # 대체가 넘겨준 감시 행이 이미 있으면 기한만 채운다
+            self.db.execute("INSERT INTO watch(obs_id, channel_id, match_key, layer, deadline) VALUES (?,?,?,?,?)"
+                            " ON CONFLICT(obs_id, channel_id, match_key) DO UPDATE SET"
+                            " deadline=COALESCE(excluded.deadline, watch.deadline)",
+                            (obs_id, ch, match_key, layer, deadline))
 
     def _enqueue(self, obs_id: int, cause: str, cause_ref: str, at: str) -> bool:
-        """같은 관측에 열린 작업이 있으면 새 원인을 거기에 합친다(기한 작업과 채널 항목이 같은 날 오면 하나)."""
+        """같은 관측에 대기 중인 작업이 있으면 새 원인을 거기에 합친다(기한 작업과 채널 항목이 같은 날 오면 하나).
+        임차 중인 작업에는 합치지 않는다. 작업자가 이미 받아 온 판으로 끝내면 새 원인이 읽히지 않고 끝나기 때문이다(M5b)."""
         open_job = self.db.execute(
-            "SELECT job_id, merged_causes FROM recheck_job WHERE obs_id=? AND state IN ('queued','leased')",
+            "SELECT job_id, merged_causes FROM recheck_job WHERE obs_id=? AND state='queued'",
             (obs_id,)).fetchone()
         if open_job:
             ref = f"{cause}:{cause_ref}"
@@ -268,10 +352,16 @@ class Ledger:
         n = 0
         with self.db:
             rows = self.db.execute(
-                "SELECT obs_id, deadline FROM watch WHERE deadline IS NOT NULL AND obs_id NOT IN"
-                " (SELECT old_obs FROM supersession WHERE known_from<=?)", (at,)).fetchall()
+                f"SELECT obs_id, deadline FROM watch WHERE deadline IS NOT NULL AND obs_id NOT IN ({self.RETIRED_SQL})",
+                {"at": at}).fetchall()
             for w in rows:
-                for ref, when in (("T-24h", _shift(w["deadline"], -24)), ("T", w["deadline"])):
+                try:
+                    plan = (("T-24h", _shift(w["deadline"], -24)), ("T", utc(w["deadline"])))
+                except ValueError as e:
+                    # 한 행의 형식 오류가 다른 관측의 기한 작업까지 막지 않게 한다(M9)
+                    self.clock_errors.append({"obs_id": w["obs_id"], "deadline": w["deadline"], "error": str(e)})
+                    continue
+                for ref, when in plan:
                     if when <= at and self._enqueue(w["obs_id"], "deadline", f"{w['deadline']}#{ref}", at):
                         n += 1
         return n
@@ -294,6 +384,8 @@ class Ledger:
         if self.db.execute("SELECT 1 FROM recheck_job WHERE obs_id=? AND state IN ('queued','leased')",
                            (obs_id,)).fetchone():
             why.append("처리 안 된 재확인 작업")
+        if self.stale(obs_id, at):
+            why.append(f"대체되었거나 철회된 관측(현재 관측 {self.current(obs_id, at)})")
         last = self.db.execute(
             "SELECT max(t) FROM (SELECT observed_at AS t FROM observation WHERE obs_id=?"
             " UNION ALL SELECT seen_at FROM sighting WHERE obs_id=?)", (obs_id, obs_id)).fetchone()[0]
@@ -308,16 +400,27 @@ class Ledger:
         ch = self.db.execute("SELECT channel_id FROM channel WHERE url=?", (channel_url,)).fetchone()[0]
         known = {r[0] for r in self.db.execute(
             "SELECT external_id FROM channel_item WHERE channel_id=?", (ch,))}
-        new = [it for it in listing if it["id"] not in known]
+        new, ids = [], set()
+        for it in listing:                 # 목록 안의 중복 ID는 첫 항목만 쓴다(중복이면 거래 전체가 실패했다, M12)
+            if it["id"] not in known and it["id"] not in ids:
+                new.append(it)
+                ids.add(it["id"])
+        reset = bool(known) and len(new) >= self.RESET_MIN_NEW and len(new) >= self.RESET_SHARE * len(listing)
+        if reset:
+            # ID 체계가 바뀐 것으로 보고 기준선만 다시 잡는다. 재확인 작업은 만들지 않고 운영자에게 알린다 [가정: 문턱]
+            self.alerts.append({"kind": "channel_id_reset_suspected", "channel": channel_url, "at": at,
+                                "new_ids": len(new), "listing": len(listing)})
         with self.db:
             for it in new:
                 self.db.execute(
                     "INSERT INTO channel_item(channel_id, external_id, first_seen_at, title, summary, locator_url,"
                     " edition_key) VALUES (?,?,?,?,?,?,?)",
                     (ch, it["id"], at, it["title"], it.get("summary"), it.get("url"), it.get("edition")))
+                if reset:
+                    continue
                 active = self.db.execute(
-                    "SELECT obs_id, match_key FROM watch WHERE channel_id=? AND obs_id NOT IN"
-                    " (SELECT old_obs FROM supersession WHERE known_from<=?)", (ch, at)).fetchall()
+                    f"SELECT obs_id, match_key FROM watch WHERE channel_id=:ch AND obs_id NOT IN ({self.RETIRED_SQL})",
+                    {"ch": ch, "at": at}).fetchall()
                 for w in active:
                     hay = (it["title"] + " " + (it.get("summary") or "")).lower()
                     if w["match_key"] and w["match_key"].lower() not in hay:
@@ -327,21 +430,51 @@ class Ledger:
                             (at, len(listing), ch))
         return new
 
+    RESET_MIN_NEW = 50      # [가정] 기준선이 있는 채널에서 한 번에 새 ID가 이만큼 이상이고
+    RESET_SHARE = 0.8       # [가정] 목록의 이 비율 이상이면 ID 체계 변경으로 의심한다
+
     def jobs(self, state="queued") -> list[sqlite3.Row]:
         return self.db.execute("SELECT * FROM recheck_job WHERE state=? ORDER BY job_id", (state,)).fetchall()
 
-    def lease(self, job_id: int, until: str) -> bool:
-        """작업자 둘이 같은 작업을 잡지 않게 한다. 이미 잡혔으면 False."""
+    def lease(self, job_id: int, until: str) -> int:
+        """작업자 둘이 같은 작업을 잡지 않게 한다. 잡으면 임차 표지(이번 시도 번호, 1 이상)를, 이미 잡혔으면 0을 돌려준다."""
         with self.db:
             cur = self.db.execute(
                 "UPDATE recheck_job SET state='leased', lease_until=?, attempts=attempts+1"
                 " WHERE job_id=? AND state='queued'", (until, job_id))
-        return cur.rowcount == 1
+        if cur.rowcount != 1:
+            return 0
+        return self.db.execute("SELECT attempts FROM recheck_job WHERE job_id=?", (job_id,)).fetchone()[0]
 
-    def finish(self, job_id: int, result_obs: int | None, ok=True) -> None:
+    def finish(self, job_id: int, result_obs: int | None, ok=True, token: int | None = None,
+               supersede: tuple | None = None) -> bool:
+        """작업을 끝낸다. token을 주면 지금도 그 임차가 유효할 때만 받는다(임차가 풀려 다른 작업자가 잡았으면 거절).
+        supersede=(앞 관측, 효과, 알게 된 시각, 효력 시각)을 주면 대체를 같은 거래 안에서 쓴다. 늦게 돌아온 작업자가
+        대체를 먼저 써 버려 대체가 두 갈래로 생기는 일을 막는다(M5a). token 없이 부르면 예전처럼 무조건 받는다."""
         with self.db:
-            self.db.execute("UPDATE recheck_job SET state=?, result_obs=? WHERE job_id=?",
-                            ("done" if ok else "failed", result_obs, job_id))
+            if token is not None:
+                cur = self.db.execute(
+                    "UPDATE recheck_job SET state=?, result_obs=? WHERE job_id=? AND state='leased' AND attempts=?",
+                    ("done" if ok else "failed", result_obs, job_id, token))
+                if cur.rowcount != 1:
+                    return False
+            else:
+                self.db.execute("UPDATE recheck_job SET state=?, result_obs=? WHERE job_id=?",
+                                ("done" if ok else "failed", result_obs, job_id))
+            if supersede and result_obs is not None:
+                old, effect, known_from, effective_from = supersede
+                self._supersede(old, result_obs, effect, known_from, effective_from)
+        return True
+
+    def recall_reader(self, reader: str, at: str) -> int:
+        """판독기 하나의 관측을 모두 다시 확인한다(그 판독기의 오류가 드러났을 때). 만든 작업 수를 돌려준다."""
+        n = 0
+        with self.db:
+            for (oid,) in self.db.execute("SELECT obs_id FROM observation WHERE reader=? ORDER BY obs_id",
+                                          (reader,)).fetchall():
+                if self._enqueue(oid, "audit", f"reader:{reader}", at):
+                    n += 1
+        return n
 
     def release_expired(self, now: str) -> int:
         with self.db:
@@ -369,13 +502,16 @@ class Ledger:
             url += f"#L{m.group(1)}" + (f"-L{m.group(2)}" if m.group(2) else "")
         return url
 
-    def reusable(self, url: str, edition_key: str, position: str, project: str | None = None):
-        """같은 판·같은 위치의 관측이 있으면 돌려준다. 판이 다르면 None(그 판을 다시 열어야 한다)."""
+    def reusable(self, url: str, edition_key: str, position: str, project: str | None = None, at: str | None = None):
+        """같은 판·같은 위치의 관측이 있으면 돌려준다. 판이 다르면 None(그 판을 다시 열어야 한다).
+        일시 실패(unreachable·truncated)는 재사용하지 않는다. not_found는 '그 판에 없다'는 사실이라 재사용한다.
+        at 시각까지 무효·값 바뀜으로 대체됐거나 철회된 판독이면 None이다(현재 관측으로 다시 확인해야 한다, M7e)."""
         row = self.db.execute(
             "SELECT o.obs_id FROM observation o JOIN edition e USING(edition_id) JOIN locator l USING(locator_id)"
-            " WHERE l.url=? AND e.edition_key=? AND o.position=? ORDER BY o.obs_id DESC LIMIT 1",
+            " WHERE l.url=? AND e.edition_key=? AND o.position=? AND o.outcome NOT IN ('unreachable','truncated')"
+            " ORDER BY o.observed_at DESC, o.obs_id DESC LIMIT 1",
             (url, edition_key, position)).fetchone()
-        if not row:
+        if not row or self.stale(row[0], at):
             return None
         if not self.features["drawer"] and project and self.origin.get(row[0]) != project:
             return None
@@ -387,8 +523,9 @@ class Ledger:
         cur = obs_id
         while True:
             nxt = self.db.execute(
-                "SELECT new_obs FROM supersession WHERE old_obs=? AND known_from<=? ORDER BY known_from DESC LIMIT 1",
-                (cur, at)).fetchone()
+                "SELECT s.new_obs FROM supersession s WHERE s.old_obs=? AND s.known_from<=? AND NOT EXISTS"
+                " (SELECT 1 FROM supersession_cancel c WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs"
+                "  AND c.cancelled_at<=?) ORDER BY s.known_from DESC LIMIT 1", (cur, at, at)).fetchone()
             if not nxt or nxt[0] in seen:
                 return cur
             cur = nxt[0]
@@ -463,10 +600,23 @@ class Ledger:
         return "conditional"
 
     def interpret(self, p, req, code, chosen, other, decision, at, question=None, answer=None):
+        """해석 결정을 남긴다. 덮어쓰지 않는다(예전에는 INSERT OR REPLACE라 한 번 묻기의 질문·답 기록이 지워질 수 있었다).
+        같은 결정의 재전송은 무시하고, 한 번 묻기에 나중에 온 답만 빈 answer 칸에 채운다. 그 밖의 변경은 새 요청판으로."""
         with self.db:
-            self.db.execute(
-                f"INSERT OR REPLACE INTO {p}.interpretation(req_id, code, chosen, other, decision, question, answer, decided_at)"
-                " VALUES (?,?,?,?,?,?,?,?)", (req, code, chosen, other, decision, question, answer, at))
+            row = self.db.execute(f"SELECT chosen, other, decision, question, answer FROM {p}.interpretation"
+                                  " WHERE req_id=? AND code=?", (req, code)).fetchone()
+            if row is None:
+                self.db.execute(
+                    f"INSERT INTO {p}.interpretation(req_id, code, chosen, other, decision, question, answer, decided_at)"
+                    " VALUES (?,?,?,?,?,?,?,?)", (req, code, chosen, other, decision, question, answer, at))
+                return
+            same = (row["chosen"], row["other"], row["decision"], row["question"]) == (chosen, other, decision, question)
+            if same and row["answer"] == answer:
+                return
+            if same and row["answer"] is None and answer is not None:
+                self.db.execute(f"UPDATE {p}.interpretation SET answer=? WHERE req_id=? AND code=?", (answer, req, code))
+                return
+            raise ValueError("해석 결정은 고치지 않는다. 바뀐 해석은 새 요청판으로 받는다")
 
     # ------------------------------------------------------------------ 찾기
     def search_drawer(self, p: str, req: int, at: str, *, k=10, min_slots=2,
@@ -509,6 +659,9 @@ class Ledger:
             hits.append(d)
         hits.sort(key=lambda d: (not d["eligible"], d["lexical_accident"], d["score"]))
         hits = hits[:k]
+        for d in hits:
+            # 서랍은 옛 관측의 꼬리표로도 적중한다. 인용 전에 현재 관측을 확인하라고 같이 돌려준다(M7e)
+            d["current"] = self.current(d["obs_id"], at)
         if not log:   # 진단용 검색(기능어 포함 감사 등)은 탐색 기록에 남기지 않는다
             for i, d in enumerate(hits, 1):
                 d["rank"] = i
@@ -553,6 +706,17 @@ class Ledger:
         return {"drawer_only": sorted(drawer - fresh), "fresh_only": sorted(fresh - drawer),
                 "both": sorted(drawer & fresh)}
 
+    def drawer_contribution(self, p: str, req: int) -> dict:
+        """S로 줄이는 규칙(04 7절)의 입력. 서랍만 찾은 적격 후보 가운데 이 요청의 답 자리(대조 인용 제외)나
+        접힌 근접 대안에 실제로 오른 것만 센다. 적격 적중 수는 쓸모와 무관하게 거의 늘 1 이상이다(M8)."""
+        only = set(self.path_log(p, req)["drawer_only"])
+        used = set()
+        for (run,) in self.db.execute(f"SELECT run_id FROM {p}.answer_run WHERE req_id=?", (req,)).fetchall():
+            used |= {self.obs(o)["url"] for (o,) in self.db.execute(
+                f"SELECT obs_id FROM {p}.usage WHERE run_id=? AND part<>'contrast'", (run,))}
+            used |= {u for (u,) in self.db.execute(f"SELECT url FROM {p}.folded WHERE run_id=?", (run,))}
+        return {"drawer_only_eligible": len(only), "drawer_only_used": sorted(only & used)}
+
     # ------------------------------------------------------------------ 판정
     def judge(self, p: str, req: int, code: str, obs_id: int, verdict: str, role: str, ladder: str,
               reason: str, at: str, *, premises=None, cause="initial", supersedes=None) -> int:
@@ -582,6 +746,12 @@ class Ledger:
             prem = json.loads(s["premises"])
             ok = all(ctx.get(k) == v for k, v in prem.items())
             ed_ok = edition_of(self.obs(s["obs_id"]), ctx)
+            if self.stale(s["obs_id"], at):
+                # 무효가 된 관측이나 철회된 판독에 기댄 쪽지는 옮기지 않는다(M4c, M7d)
+                dropped.append({"slip": s["slip_id"], "code": s["code"], "obs": s["obs_id"],
+                                "premise_mismatch": [k for k, v in prem.items() if ctx.get(k) != v],
+                                "edition_mismatch": not ed_ok, "superseded": True})
+                continue
             if ok and ed_ok:
                 kept.append(self.judge(p, new_req, s["code"], s["obs_id"], s["verdict"], s["role"], s["ladder"],
                                        s["reason"], at, premises=prem, cause="request", supersedes=s["slip_id"]))
@@ -623,14 +793,30 @@ class Ledger:
             return row[0]
         searched = {r[0] for r in self.db.execute(
             f"SELECT h.url FROM {p}.search_hit h JOIN {p}.search_run r USING(search_id) WHERE r.req_id=?", (req,))}
-        for s in slots:
-            if s.get("kind") == "check" and s.get("first") and self.obs(s["first"])["url"] not in searched:
-                raise ValueError("확인할 후보도 탐색 기록에 있는 이름만 낸다(모델 기억에서만 나온 이름 금지)")
+        for i, s in enumerate(slots, 1):
+            if s.get("kind") == "check":
+                addr = self.obs(s["first"])["url"] if s.get("first") else s.get("url")
+                # first 없이 url만 준 확인할 후보도 같은 검사를 받는다(예전에는 이 길로 검사를 건너뛰었다)
+                if not addr or addr not in searched:
+                    raise ValueError("확인할 후보도 탐색 기록에 있는 이름만 낸다(모델 기억에서만 나온 이름 금지)")
+            if s.get("kind") == "principle" and s.get("ladder") not in ("L0", "L1", "L2"):
+                raise ValueError("원리 자리의 근거 수준은 L2를 넘지 않는다(04 3.5 규칙 4)")
+            for part in ("first", "support", "flip"):
+                ids = [s.get(part)] if part == "first" else s.get(part, [])
+                for oid in ids:
+                    if oid and self.stale(oid, at):
+                        raise ValueError(f"대체되었거나 철회된 관측 {oid}를 근거로 인용할 수 없다. "
+                                         f"현재 관측 {self.current(oid, at)}을 확인해 인용한다(대조 인용은 허용)")
+        if status == "complete":
+            first = slots[0] if slots else {}
+            if first.get("kind") not in ("direct", "transplant") or first.get("ladder") not in ("L2", "L3", "L4"):
+                raise ValueError("complete는 1번 자리가 직접·이식 자리이고 L2 이상일 때만 쓴다(04 3.2, 3.5 규칙 2)")
         with self.db:
             run = self.db.execute(
-                f"INSERT INTO {p}.answer_run(req_id, produced_at, status, budget_json, next_action, idem_key)"
-                " VALUES (?,?,?,?,?,?)",
-                (req, at, status, json.dumps(budget or {}, ensure_ascii=False), next_action, key)).lastrowid
+                f"INSERT INTO {p}.answer_run(req_id, produced_at, status, budget_json, next_action, rule_version, idem_key)"
+                " VALUES (?,?,?,?,?,?,?)",
+                (req, at, status, json.dumps(budget or {}, ensure_ascii=False), next_action, self.RULE_VERSION,
+                 key)).lastrowid
             if readback:
                 self.db.execute(
                     f"INSERT INTO {p}.answer_slot(run_id, slot_no, kind, sentence, ladder, hold) VALUES (?,?,?,?,?,?)",
@@ -655,7 +841,8 @@ class Ledger:
     def show(self, p: str, run_id: int, slot_no: int, at: str) -> None:
         """노출 기록. 봉인 행(given/declined/none)이 먼저 있어야 한다. 그래야 '새로 알았나'를 셀 수 있다."""
         req = self.db.execute(f"SELECT req_id FROM {p}.answer_run WHERE run_id=?", (run_id,)).fetchone()[0]
-        if not self.db.execute(f"SELECT 1 FROM {p}.prior_seal WHERE req_id=?", (req,)).fetchone():
+        seal = self.db.execute(f"SELECT sealed_at FROM {p}.prior_seal WHERE req_id=?", (req,)).fetchone()
+        if not seal or seal[0] > at:
             raise ValueError("봉인 전에는 노출하지 않는다")
         with self.db:
             self.db.execute(f"INSERT OR IGNORE INTO {p}.exposure(run_id, slot_no, event, at) VALUES (?,?,?,?)",
@@ -695,15 +882,20 @@ class Ledger:
             if o in out:
                 continue
             out.append(o)
-            todo += [r[0] for r in self.db.execute("SELECT old_obs FROM supersession WHERE new_obs=?", (o,))]
+            todo += [r[0] for r in self.db.execute(
+                "SELECT s.old_obs FROM supersession s WHERE s.new_obs=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c"
+                " WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs)", (o,))]
         return out
 
     def propagate(self, p: str, at: str) -> list[dict]:
         """at까지 알려진 대체 가운데 이 프로젝트 답 자리에 닿는 것만 알림으로 만든다.
         usage=False이면 어느 자리가 무엇을 인용했는지 모르므로 프로젝트의 모든 답 자리에 알린다."""
         out = []
-        sups = self.db.execute("SELECT * FROM supersession WHERE known_from<=? ORDER BY known_from",
-                               (at,)).fetchall()
+        # at까지 취소된 대체는 알리지 않는다(알리기 전에 취소됐으면 알림도 복원도 없다)
+        sups = self.db.execute(
+            "SELECT * FROM supersession s WHERE s.known_from<=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c"
+            " WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs AND c.cancelled_at<=?) ORDER BY s.known_from",
+            (at, at)).fetchall()
         with self.db:
             for s in sups:
                 if self.features["usage"]:
@@ -727,6 +919,27 @@ class Ledger:
                         (t["run_id"], t["slot_no"], s["old_obs"], s["new_obs"], s["effect"], s["known_from"], text))
                     if cur.rowcount:
                         out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": s["effect"], "text": text})
+            # 대체 취소: 그 대체로 알림을 받은 자리에 '다시 유효'를, 철회된 판독을 인용한 자리에 '근거 무효'를 붙인다
+            cancels = self.db.execute(
+                "SELECT c.*, s.known_from FROM supersession_cancel c JOIN supersession s USING(old_obs, new_obs)"
+                " WHERE c.cancelled_at<=? ORDER BY c.cancelled_at", (at,)).fetchall()
+            for c in cancels:
+                groups = (
+                    ("restored", f"다시 유효: 대체 취소({c['reason']}) (취소 시각 {c['cancelled_at']})",
+                     f"SELECT DISTINCT run_id, slot_no FROM {p}.notice WHERE old_obs=? AND new_obs=?",
+                     (c["old_obs"], c["new_obs"])),
+                    ("invalidates", f"근거 무효: 철회된 판독({c['reason']}) (취소 시각 {c['cancelled_at']})",
+                     f"SELECT DISTINCT u.run_id, u.slot_no FROM {p}.usage u JOIN {p}.answer_run r USING(run_id)"
+                     f" WHERE u.obs_id=? AND u.part<>'contrast' AND r.produced_at<=?", (c["new_obs"], c["cancelled_at"])),
+                )
+                for effect, text, sql, args in groups:
+                    for t in self.db.execute(sql, args).fetchall():
+                        cur = self.db.execute(
+                            f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text)"
+                            " VALUES (?,?,?,?,?,?,?)",
+                            (t["run_id"], t["slot_no"], c["new_obs"], c["old_obs"], effect, c["cancelled_at"], text))
+                        if cur.rowcount:
+                            out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": effect, "text": text})
         return out
 
     def note(self, p: str, run_id: int, slot_no: int, old_obs: int, new_obs: int, effect: str, at: str,

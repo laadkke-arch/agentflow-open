@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS observation (
   evidence_ref  TEXT,              -- 인용이 원문 그대로가 아니면 판독문의 출처(연구 원장 행 등)
   flip_position TEXT,              -- 이 결론이 기대는 문장·줄·플래그
   receipt_id    INTEGER REFERENCES receipt(receipt_id),
+  reader        TEXT,              -- 판독한 주체: 모델 ID와 프롬프트 판, 또는 사람. 잘못된 판독기의 관측을 골라 다시 확인한다
   idem_key      TEXT NOT NULL UNIQUE,
   CHECK (outcome <> 'content' OR quote IS NOT NULL OR receipt_id IS NOT NULL OR method = 'intro_only'),
   CHECK (method <> 'executed' OR receipt_id IS NOT NULL)
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS sighting (
   obs_id  INTEGER NOT NULL REFERENCES observation(obs_id),
   seen_at TEXT NOT NULL,
   via     TEXT NOT NULL CHECK (via IN ('request','collection','channel','audit')),
+  reader  TEXT,
   PRIMARY KEY (obs_id, seen_at, via)
 );
 
@@ -123,6 +125,18 @@ CREATE TABLE IF NOT EXISTS supersession (
   known_from     TEXT NOT NULL,     -- 우리가 안 시각
   PRIMARY KEY (old_obs, new_obs),
   CHECK (old_obs <> new_obs)
+);
+
+-- 대체 취소: 잘못 쓴 대체(판독 오류)를 되돌린다. 대체 행은 고치지 않고 취소 행을 더한다.
+-- 바른 판독은 원 관측과 내용이 같아 새 관측이 생기지 않으므로, "반대 방향의 새 관측"으로는 되돌릴 수 없다.
+-- 취소된 대체의 new_obs는 철회된 판독으로 본다(재사용·인용·감시에서 뺀다).
+CREATE TABLE IF NOT EXISTS supersession_cancel (
+  old_obs      INTEGER NOT NULL,
+  new_obs      INTEGER NOT NULL,
+  cancelled_at TEXT NOT NULL,
+  reason       TEXT NOT NULL,
+  PRIMARY KEY (old_obs, new_obs),
+  FOREIGN KEY (old_obs, new_obs) REFERENCES supersession(old_obs, new_obs)
 );
 
 -- 변경 채널과 항목. 항목은 외부 ID 집합의 차분으로만 들어온다(표시일 창을 쓰지 않는다).
@@ -183,6 +197,10 @@ CREATE TRIGGER IF NOT EXISTS receipt_no_update BEFORE UPDATE ON receipt
 BEGIN SELECT RAISE(ABORT, 'receipt is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS supersession_no_update BEFORE UPDATE ON supersession
 BEGIN SELECT RAISE(ABORT, 'supersession is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS supersession_no_delete BEFORE DELETE ON supersession
+BEGIN SELECT RAISE(ABORT, 'supersession is append-only; add supersession_cancel'); END;
+CREATE TRIGGER IF NOT EXISTS supersession_cancel_no_update BEFORE UPDATE ON supersession_cancel
+BEGIN SELECT RAISE(ABORT, 'supersession_cancel is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS tag_ai AFTER INSERT ON tag BEGIN
   INSERT INTO tag_fts(rowid, text) VALUES (new.tag_id, new.text);
 END;

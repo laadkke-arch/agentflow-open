@@ -145,7 +145,7 @@ Studio가 채운 사실은 `runtime = CPython 3.13`(프로젝트 실행 환경 �
 
 - 서랍이 q1을 keeps·output 칸에서 queue·never·bounded·blocks·removes·item·full로 찾았다.
 - 같은 판·위치 관측이 있으므로 재사용 관문을 본다. 결과는 `reopen`이다. 이유는 둘이다. 채널 커서가 늙었고(이 사례에서 채널을 폴링하지 않음), 마지막 직접 확인이 168시간보다 오래됐다.
-- 그래서 뒤집을 위치 세 줄만 다시 대조했다. 지문이 같아 새 관측 대신 다시 본 기록 1건이 생겼다. 전체 원문 열람은 0회다.
+- 그래서 뒤집을 위치 세 줄만 다시 대조했다. 지문이 같아 새 관측 대신 다시 본 기록 1건이 생겼다. 새 판독(새 관측)은 0건이고 파일 전체를 다시 읽지 않았다. 다만 세 줄을 대조하려고 원문을 한 번 가져왔으므로 예산으로는 가져오기 1회다(04 5절 셈법, [07-review.md](07-review.md) M3).
 - 프로젝트 C는 프로젝트 A의 쪽지를 0건 본다. 판단은 C의 조건(C1 대기 묶음 수 상한, C2 쓰기가 느리면 수집 쪽이 기다린다)으로 새로 한다.
 
 ### 2.9 자료집에 답이 없을 때
@@ -278,9 +278,11 @@ T3-a(관계로 재발견)와 T3-b(판단 불승계)를 모두 지켰다.
 
 | 장부 | 쓴 행(사례 B 전체) |
 | --- | --- |
-| 공용 | locator 3, edition 7, observation 8, sighting 1, tag 6, supersession 5, channel 2, channel_item 6, watch 6, recheck_job 5 |
+| 공용 | locator 3, edition 7, observation 8, sighting 1, tag 6, supersession 5, channel 2, channel_item 6, watch 11, recheck_job 5 |
 | 프로젝트 X | request_rev 1, requirement 5, context_fact 1, prior_seal 1, need 4, interpretation 1, search_run 5, search_hit 3, slip 5, answer_run 2, answer_slot 4, usage 9, folded 1, notice 5, exposure 1 |
 | 프로젝트 W | request_rev 1, requirement 1, prior_seal 1, need 2, interpretation 1, search_run 5, search_hit 1, slip 1, answer_run 1, answer_slot 2, usage 3 |
+
+watch는 v1 엔진에서 6이었다. 대체가 공급자 층 감시를 새 관측으로 넘기게 고친 뒤 관측마다 공급자 층·같은 주소 층 두 행이 되어 11이다(첫 관측은 공급자 층 하나, [07-review.md](07-review.md) F7). v1에서는 첫 대체 뒤 Mozilla 피드 감시가 사라졌다.
 
 여섯 달 동안 원문 열람은 Pocket 쪽 다섯 판과 T0의 OAI 두 절이다. 152 모형으로는 196,608 B다([sections/discovery_ops.md 6절](sections/discovery_ops.md)).
 

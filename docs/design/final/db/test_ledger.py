@@ -142,9 +142,14 @@ class StorageContract(unittest.TestCase):
         req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
         slot = {"kind": "check", "first": o, "ladder": "L0", "verb": "v", "reason": "r", "hold": "h"}
         with self.assertRaises(ValueError):
-            L.compose(p, req, T, slots=[slot])
+            L.compose(p, req, T, slots=[slot], status="partial")
+        with self.assertRaises(ValueError):    # first 없이 url만 줘도 같은 검사를 받는다
+            L.compose(p, req, T, slots=[{"kind": "check", "url": "https://example.org/memory-only", "ladder": "L0",
+                                         "verb": "v", "reason": "r", "hold": "h"}], status="partial")
         L.search_fresh(p, req, T, {"direct": [{"url": "https://example.org/doc"}]})
-        L.compose(p, req, T, slots=[slot])
+        L.compose(p, req, T, slots=[slot], status="partial")
+        with self.assertRaises(ValueError):    # 확인할 후보만으로는 complete가 될 수 없다
+            L.compose(p, req, T, slots=[slot])
 
     def test_cancelled_alias_is_not_followed(self):
         L = Ledger()
@@ -286,6 +291,189 @@ class Cases(unittest.TestCase):
         self.assertGreater(nodrawer["A_projectC_full_opens"], base["A_projectC_full_opens"])
         self.assertGreater(rows["사용 쪽지 끔"]["B_principle_false_notices"], 0)
         self.assertGreater(rows["판단 분리 끔"]["B_T3_inherited_judgments"], 0)
+
+
+class OperationalFixes(unittest.TestCase):
+    """운영 시뮬레이션(../sim/ops_sim.py)이 찾은 깨짐을 고친 뒤 지키는 계약. 07-review.md 5절."""
+    CH = "https://example.org/changes"
+
+    def watched(self, deadline=None):
+        L, o = small()
+        L.channel("ex", self.CH, "changelog")
+        L.watch(o, self.CH, deadline=deadline)
+        return L, o
+
+    def second(self, L, at="2026-11-27T00:00:00Z", key="v2", quote="Read-only.", **kw):
+        return L.observe(url="https://example.org/doc", edition_key=key, edition_kind="release", position="§1",
+                         at=at, method="read_line", quote=quote, quote_lang="en", statement=quote, **kw)[0]
+
+    def test_late_worker_is_fenced_and_supersession_is_written_once(self):   # M5a
+        L, o = self.watched()
+        L.poll(self.CH, [{"id": "1", "title": "v2"}], T)
+        job = L.jobs()[0]["job_id"]
+        t1 = L.lease(job, "2026-11-26T01:00:00Z")
+        self.assertEqual(L.release_expired("2026-11-26T02:00:00Z"), 1)
+        t2 = L.lease(job, "2026-11-26T03:00:00Z")
+        self.assertNotEqual(t1, t2)
+        o2 = self.second(L, at="2026-11-26T02:30:00Z")
+        self.assertTrue(L.finish(job, o2, token=t2, supersede=(o, "changes_value", "2026-11-26T02:30:00Z", None)))
+        o3 = self.second(L, at="2026-11-26T03:30:00Z", quote="Read-only, export removed.")
+        self.assertFalse(L.finish(job, o3, token=t1, supersede=(o, "changes_value", "2026-11-26T03:30:00Z", None)))
+        self.assertEqual(L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 1)
+        self.assertEqual(L.db.execute("SELECT result_obs FROM recheck_job WHERE job_id=?", (job,)).fetchone()[0], o2)
+
+    def test_new_cause_does_not_merge_into_a_leased_job(self):   # M5b
+        L, o = self.watched()
+        L.poll(self.CH, [{"id": "1", "title": "v2"}], T)
+        job = L.jobs()[0]["job_id"]
+        L.lease(job, "2026-11-26T05:00:00Z")
+        L.poll(self.CH, [{"id": "2", "title": "v3"}], "2026-11-26T01:00:00Z")
+        self.assertEqual(len(L.jobs("queued")), 1)
+        self.assertNotEqual(L.jobs("queued")[0]["job_id"], job)
+
+    def test_watch_moves_to_the_new_observation(self):   # M1 공급자 층 감시 소멸
+        L, o = self.watched()
+        o2 = self.second(L)
+        L.supersede(o, o2, "changes_value", "2026-11-27T00:00:00Z")
+        L.poll(self.CH, [{"id": "x", "title": "v3"}], "2026-11-28T00:00:00Z")
+        self.assertEqual([j["obs_id"] for j in L.jobs()], [o2])
+
+    def test_cancelled_supersession_restores_and_warns(self):   # M4c
+        L, o = self.watched()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "§1", "reason": "r", "hold": "h"}
+        run = L.compose(p, req, T, slots=[slot])
+        o2 = self.second(L, key="v1", quote="Export is not supported.")      # 같은 판을 잘못 읽은 판독
+        L.supersede(o, o2, "changes_value", "2026-11-27T00:00:00Z")
+        self.assertEqual(L.current(o, "2026-11-27T01:00:00Z"), o2)
+        self.assertEqual([n["effect"] for n in L.propagate(p, "2026-11-27T01:00:00Z")], ["changes_value"])
+        req2 = L.intake(p, request_key="R", rev=2, at="2026-11-27T02:00:00Z", text="t2", selected_part="s",
+                        requirements=[])
+        run2 = L.compose(p, req2, "2026-11-27T02:00:00Z", slots=[dict(slot, first=o2)])
+        L.cancel_supersession(o, o2, "2026-11-28T00:00:00Z", "판독 오류")
+        at = "2026-11-28T01:00:00Z"
+        self.assertEqual(L.current(o, at), o)
+        self.assertTrue(L.stale(o2, at))
+        self.assertFalse(L.stale(o, at))
+        got = {(n["run"], n["effect"]) for n in L.propagate(p, at)}
+        self.assertEqual(got, {(run, "restored"), (run2, "invalidates")})
+        L.poll(self.CH, [{"id": "y", "title": "v3"}], "2026-11-28T02:00:00Z")   # 감시가 앞 관측으로 돌아온다
+        self.assertIn(o, [j["obs_id"] for j in L.jobs()])
+        with self.assertRaises(sqlite3.DatabaseError):
+            L.db.execute("DELETE FROM supersession")
+
+    def test_stale_observation_is_not_reused_or_cited(self):   # M7e
+        L, o = small()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        o2 = self.second(L)
+        L.supersede(o, o2, "invalidates", "2026-11-27T00:00:00Z")
+        at = "2026-11-27T01:00:00Z"
+        self.assertEqual(L.reusable("https://example.org/doc", "v1", "§1", at=T), o)
+        self.assertIsNone(L.reusable("https://example.org/doc", "v1", "§1", at=at))
+        slot = {"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "§1", "reason": "r", "hold": "h"}
+        with self.assertRaises(ValueError):
+            L.compose(p, req, at, slots=[slot])
+        L.compose(p, req, at, slots=[dict(slot, first=o2)])
+        self.assertIn("대체되었거나", " ".join(L.reuse_gate(o, at)["why"]))
+
+    def test_transient_failure_is_not_reusable(self):
+        L = Ledger()
+        L.observe(url="https://example.org/x", edition_key="v1", edition_kind="release", position="§1", at=T,
+                  method="intro_only", outcome="unreachable", statement="열리지 않음")
+        self.assertIsNone(L.reusable("https://example.org/x", "v1", "§1"))
+
+    def test_compose_rules_for_principle_and_complete(self):
+        L, o = small()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        base = {"first": o, "verb": "v", "where": "§1", "reason": "r", "hold": "h", "borrow": "b", "recheck": "c",
+                "break": "x"}
+        with self.assertRaises(ValueError):
+            L.compose(p, req, T, slots=[dict(base, kind="principle", ladder="L3")], status="partial")
+        with self.assertRaises(ValueError):
+            L.compose(p, req, T, slots=[dict(base, kind="principle", ladder="L2")])
+        L.compose(p, req, T, slots=[dict(base, kind="principle", ladder="L2")], status="partial")
+
+    def test_deadline_formats_are_normalized_or_rejected(self):   # M9
+        L, o = small()
+        L.channel("ex", self.CH, "changelog")
+        L.watch(o, self.CH, deadline="2026-12-01")
+        self.assertEqual(L.db.execute("SELECT deadline FROM watch").fetchone()[0], "2026-12-01T00:00:00Z")
+        self.assertEqual(L.due("2026-11-30T00:00:00Z"), 1)
+        with self.assertRaises(ValueError):
+            L.watch(o, self.CH, "k2", deadline="12월 1일")
+        L.db.execute("INSERT INTO watch(obs_id, channel_id, match_key, layer, deadline) VALUES (?,1,'bad',"
+                     "'same_address','soon')", (o,))
+        L2, o2 = self.watched(deadline="2026-12-01T09:00:00+09:00")    # 한국 시각 9시 = UTC 0시
+        self.assertEqual(L2.db.execute("SELECT deadline FROM watch").fetchone()[0], "2026-12-01T00:00:00Z")
+        L.due("2026-12-02T00:00:00Z")             # 형식이 틀린 행 하나가 전체를 막지 않는다
+        self.assertEqual(len(L.clock_errors), 1)
+
+    def test_channel_duplicates_and_id_scheme_reset(self):   # M12
+        L, o = self.watched()
+        L.poll(self.CH, [{"id": "a", "title": "x"}, {"id": "a", "title": "x"}], T)
+        L.poll(self.CH, [{"id": str(i), "title": "x"} for i in range(5)], "2026-11-27T00:00:00Z")
+        before = len(L.jobs())
+        L.poll(self.CH, [{"id": f"new-{i}", "title": "x"} for i in range(60)], "2026-11-28T00:00:00Z")
+        self.assertEqual(len(L.jobs()), before)
+        self.assertEqual(L.alerts[-1]["kind"], "channel_id_reset_suspected")
+        self.assertEqual(L.poll(self.CH, [{"id": "new-0", "title": "x"}], "2026-11-29T00:00:00Z"), [])
+
+    def test_exposure_needs_seal_time_and_seal_is_immutable(self):
+        L, o = small()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at="2026-11-27T00:00:00Z", text="t", selected_part="s",
+                       requirements=[], prior={"state": "none"})
+        run = L.compose(p, req, T, slots=[{"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "§1",
+                                           "reason": "r", "hold": "h"}])
+        with self.assertRaises(ValueError):
+            L.show(p, run, 1, T)
+        L.show(p, run, 1, "2026-11-27T00:00:00Z")
+        with self.assertRaises(sqlite3.DatabaseError):
+            L.db.execute(f"UPDATE {p}.prior_seal SET items_json='{{}}'")
+
+    def test_privacy_error_does_not_echo_the_private_words(self):   # M2b
+        L, o = small()
+        p = L.project("A")
+        L.intake(p, request_key="R", rev=1, at=T, text="auditor handover of confidential conversation transcripts",
+                 selected_part="s", requirements=[])
+        with self.assertRaises(PrivacyError) as e:
+            L.tag(o, "summary", "one_up", "en", "export confidential conversation transcripts")
+        for w in ("confidential", "conversation", "transcripts", p):
+            self.assertNotIn(w, str(e.exception))
+
+    def test_reader_is_recorded_and_can_be_recalled(self):   # M7c
+        L = Ledger()
+        for i, r in enumerate(("reader-a", "reader-a", "reader-b")):
+            L.observe(url=f"https://example.org/{i}", edition_key="v1", edition_kind="release", position="§1",
+                      at=T, method="read_line", quote=f"q{i}", quote_lang="en", statement=f"s{i}", reader=r)
+        self.assertEqual(L.recall_reader("reader-a", "2026-11-27T00:00:00Z"), 2)
+        self.assertTrue(all(j["cause"] == "audit" and j["cause_ref"] == "reader:reader-a" for j in L.jobs()))
+
+    def test_interpretation_is_not_overwritten(self):
+        L, _o = small()
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        L.interpret(p, req, "C1", "a", "b", "ask_once", T, question="a인가요 b인가요?")
+        L.interpret(p, req, "C1", "a", "b", "ask_once", T, question="a인가요 b인가요?")
+        L.interpret(p, req, "C1", "a", "b", "ask_once", T, question="a인가요 b인가요?", answer="a")
+        with self.assertRaises(ValueError):
+            L.interpret(p, req, "C1", "b", "a", "proceed", T)
+        self.assertEqual(L.db.execute(f"SELECT answer FROM {p}.interpretation").fetchone()[0], "a")
+
+    def test_carry_slips_drops_judgments_on_retired_observations(self):   # M7d
+        L, o = small()
+        p = L.project("A")
+        r1 = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        L.judge(p, r1, "H1", o, "Y", "direct", "L2", "r", T)
+        r2 = L.intake(p, request_key="R", rev=2, at="2026-11-28T00:00:00Z", text="t2", selected_part="s",
+                      requirements=[])
+        L.supersede(o, self.second(L), "invalidates", "2026-11-27T00:00:00Z")
+        out = L.carry_slips(p, r1, r2, "2026-11-28T00:00:00Z", lambda obs, ctx: True)
+        self.assertEqual(out["kept"], [])
+        self.assertTrue(out["dropped"][0]["superseded"])
 
 
 if __name__ == "__main__":
