@@ -13,7 +13,20 @@ HERE = Path(__file__).resolve().parent
 FIX = HERE / "fixtures"
 
 
-def preload_catalog(L, at="2026-11-20T00:00:00Z") -> dict[str, int]:
+# 012 자료집의 한국어 칸별 꼬리표(08 I25, I20의 a). D-c의 둘째 문장(항목마다 한계·주의 문장)을 한국어 breaks_when 꼬리표로 쓴다.
+# 첫 문장은 D-b와 같아 summary에 이미 있다. False면 I20까지의 적재(D-b 영어·한국어 summary 둘)
+CATALOG_KO_SLOTS = False
+
+
+def catalog_ko_breaks(e: dict) -> str:
+    """D-c 한국어에서 D-b(첫 문장) 뒤에 붙은 한계 문장."""
+    head = e["D-b"]["ko"].strip()
+    full = e["D-c"]["ko"].strip()
+    return full[len(head):].strip() if full.startswith(head) else ""
+
+
+def preload_catalog(L, at="2026-11-20T00:00:00Z", ko_slots=None) -> dict[str, int]:
+    ko_slots = CATALOG_KO_SLOTS if ko_slots is None else ko_slots
     ids = {}
     for line in (FIX / "af-res-012" / "entries.jsonl").read_text(encoding="utf-8").splitlines():
         e = json.loads(line)
@@ -23,6 +36,8 @@ def preload_catalog(L, at="2026-11-20T00:00:00Z") -> dict[str, int]:
                            evidence_ref=f"AF-RES-012@cb602858 corpus/entries.jsonl#{e['id']}")
         L.tag(oid, "summary", "one_up", "en", e["D-b"]["en"], written_from="catalog_description")
         L.tag(oid, "summary", "one_up", "ko", e["D-b"]["ko"], written_from="catalog_description")
+        if ko_slots and catalog_ko_breaks(e):
+            L.tag(oid, "breaks_when", "concrete", "ko", catalog_ko_breaks(e), written_from="catalog_description")
         ids[e["id"]] = oid
     return ids
 

@@ -124,6 +124,7 @@ class Ledger:
         self.features.update(features or {})
         self.rank_rules = config.RANK_RULES     # 서랍 순위 규칙 판(r0 설계 bm25 합, r1 IDF, r2 IDF+길이 정규화, 07 R-6)
         self.elig_idf_min = None                # 진단용 자격 IDF 문턱(08 I20). None이면 설계 자격 그대로
+        self.elig_rules = config.ELIG_RULES     # 서랍 자격 규칙 판(e1 설계: min_slots 칸, e2: min(min_slots, 요청 칸 수) 칸, 08 I24)
         self.token_rules = config.TOKEN_RULES   # 서랍 토큰화 규칙 판(t1 영어만, t2 다국어). 측정에서 비교하려고 인스턴스마다 바꿀 수 있다
         self.db = sqlite3.connect(path)
         self.db.row_factory = sqlite3.Row
@@ -848,12 +849,15 @@ class Ledger:
         if self.token_rules == "t2":
             self._drawer_ko(needs, at, per_obs, include_function_words)
         hits = []
+        # e2(08 I24): 요청이 칸 하나만 쓰면 그 칸에서 서로 다른 내용어 둘로 자격을 준다. 자격 칸 수 = min(min_slots, 요청 칸 수)
+        need_slots = len({n["slot"] for n in needs if (n["text"] or "").strip()})
+        slots_needed = min(min_slots, max(1, need_slots)) if self.elig_rules == "e2" else min_slots
         for d in per_obs.values():
             d.setdefault("func", set())
             d["lexical_accident"] = all(m in d["func"] for m in d["matched"])
             content_slots = len(d["slots"]) if not d["lexical_accident"] else 0
             distinct = {stem(m) if "~" not in m else m.split("~")[0] for m in d["matched"] if m not in d["func"]}
-            d["eligible"] = (content_slots >= min_slots and len(distinct) >= 2) or \
+            d["eligible"] = (content_slots >= slots_needed and len(distinct) >= 2) or \
                             (min_slots <= 1 and content_slots >= 1)
             hits.append(d)
         if self.rank_rules != "r0":

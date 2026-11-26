@@ -584,6 +584,143 @@ def r6_scale():
     return out
 
 
+# ------------------------------------------------------------------------------------------- I24 한 칸 요청의 자격
+def i24():
+    """08 I24: 서랍 자격 e1(설계, 맞은 칸 2 이상) 대 e2(자격 칸 수 = min(2, 요청 칸 수)). A4 20건과 잡음 2만 개(R-6 끝나는 조건)를
+    같은 규칙으로 두 번 잰다. 되돌리는 규칙(돌리기 전에 정함, 사용자 결정): e2에서 상위 10 잡음이 e1보다 늘면 e1로 되돌린다.
+    비교하는 잡음 수: R1 손 문장·자동 한국어의 상위 10 잡음, A4 20건 한국어·영어판의 평균 상위 10 잡음(r2, 2만 개)."""
+    from afledger import config
+    saved = config.ELIG_RULES
+    res = {}
+    try:
+        for rule in ("e1", "e2"):
+            config.ELIG_RULES = rule
+            a, r = a4_20(), r6_scale()
+            res[rule] = {"a4_20": a["summary"], "r6_scale_r2": {k: r["rank_rules"]["r2"][k] for k in ("r1", "a4_20")},
+                         "r6_scale_real_only": {k: r["rank_rules"]["r2_real_only"][k] for k in ("r1", "a4_20")},
+                         "end_condition_met": r["end_condition_met"], "r1_flow": r["r1_flow_r2"]}
+    finally:
+        config.ELIG_RULES = saved
+
+    def noise(rule):
+        x = res[rule]["r6_scale_r2"]
+        return {"r1_hand": x["r1"]["hand"]["noise_in_top10"], "r1_i2_ko": x["r1"]["i2_ko"]["noise_in_top10"],
+                "a4_20_ko_mean": x["a4_20"]["ko"]["mean_noise_in_top10"], "a4_20_en_mean": x["a4_20"]["en"]["mean_noise_in_top10"]}
+    n1, n2 = noise("e1"), noise("e2")
+    worse = [k for k in n1 if n2[k] > n1[k]]
+    out = {"rule": i24.__doc__.split("\n")[1:4], "noise_top10": {"e1": n1, "e2": n2}, "worse_under_e2": worse,
+           "revert_to_e1": bool(worse), "results": res}
+    write("measure_i24.json", out)
+    return out
+
+
+# ------------------------------------------------------------------------------------------- I25 잡음 판정(I20 c)
+def _r6_requests(L, p, s, qs, a20):
+    """R-6 끝나는 조건의 요청들: R1 손 문장·자동 한국어, A4 20건 한국어·영어판. (이름, 요청 번호) 목록."""
+    out = []
+    for name, nd in (("R1.hand", s["needs"]), ("R1.i2_ko", intake_mod.write_needs(s["text"], s["requirements"]))):
+        out.append((name, L.intake(p, request_key=name, rev=1, at=T0, text=s["text"], selected_part="s",
+                                   requirements=s["requirements"], needs=nd)))
+    for lang in ("ko", "en"):
+        for q in (x for x in qs if x["id"] in a20):
+            reqs = intake_mod.requirements_from_text(q[lang])
+            out.append((f"{q['id']}.{lang}", L.intake(p, request_key=f"{q['id']}.{lang}", rev=1, at=T0, text=q[lang],
+                                                      selected_part="s", requirements=reqs,
+                                                      needs=intake_mod.write_needs(q[lang], reqs))))
+    return out
+
+
+def i25_collect(out_name="i25_pairs.json"):
+    """08 I25 (I20의 c): 상위 10에 든 012 밖 실제 행(link-index)을 모은다. 판정할 목록을 out/i25_pairs.json에 쓴다.
+    설정: r2, 현재 자격 규칙, 잡음 2만 개와 실제 잡음만. 같은 (요청, 관측) 쌍은 한 번만."""
+    from drawer_load import preload_all_link_index, preload_synthetic
+    s = studio("studio_rev1.json")
+    qs = [json.loads(line) for line in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()]
+    qtext = {q["id"]: q for q in qs}
+    a20 = json.loads((OUT / "measure_a4_20.json").read_text(encoding="utf-8"))["queries"]
+    import drawer_load
+    pairs: dict = {}
+    top10: dict = {}
+    for cfg in ("noise_20k", "real_only"):
+        L = Ledger()
+        cat = preload_catalog(L)
+        catset = set(cat.values())
+        real = preload_all_link_index(L)
+        if cfg == "noise_20k":
+            preload_synthetic(L, NOISE_TOTAL - len(real))
+        p = L.project("S")
+        for name, req in _r6_requests(L, p, s, qs, a20):
+            hits = L.search_drawer(p, req, T0, k=10, log=False)
+            top10.setdefault(cfg, {})[name] = [
+                {"kind": "catalog" if h["obs_id"] in catset else "real" if h["obs_id"] in real else "synthetic",
+                 "url": L.obs(h["obs_id"])["url"]} for h in hits]
+            for rank, h in enumerate(hits, 1):
+                if h["obs_id"] in catset or h["obs_id"] not in real:
+                    continue
+                o = L.obs(h["obs_id"])
+                key = f"{name}|{o['url']}"
+                e = pairs.setdefault(key, {"request": name, "url": o["url"], "seen_in": {},
+                                           "tags": [t["text"] for t in L.db.execute(
+                                               "SELECT text FROM tag WHERE obs_id=? ORDER BY tag_id", (h["obs_id"],))],
+                                           "problems": sorted({r["problem"] for r in link_index_rows() if r["url"] == o["url"]})})
+                e["seen_in"][cfg] = rank
+    reqtext = {"R1.hand": s["text"], "R1.i2_ko": s["text"]}
+    for k, q in qtext.items():
+        reqtext[f"{k}.ko"], reqtext[f"{k}.en"] = q["ko"], q["en"]
+    out = {"rule": i25_collect.__doc__.split("\n")[1:3], "elig_rules": __import__("afledger").config.ELIG_RULES,
+           "catalog_ko_slots": drawer_load.CATALOG_KO_SLOTS, "top10": top10,
+           "requests": {n: reqtext[n] for n in sorted({e["request"] for e in pairs.values()})},
+           "pairs": sorted(pairs.values(), key=lambda e: (e["request"], e["url"]))}
+    write(out_name, out)
+    return out
+
+
+I25_RULE = [
+    "판정 대상: i25_collect가 모은 (요청, 실제 행) 쌍 전부. 120쌍을 넘으면 요청마다 상위 순위부터 고르게 120쌍(고정 순서)만 판정하고 나머지는 잡음으로 둔다.",
+    "등급(012 qrels와 같은 눈금): 2 = 요청의 조건 하나에 바로 쓰일 장치·원리, 1 = 같은 구체 문제의 쓸 만한 배경, 0 = 넓은 분야나 낱말만 겹침.",
+    "잡음 = 등급 0과 판정하지 않은 실제 행, 그리고 합성 잡음 전부(합성은 따로 보고). 판정자: 이 세션의 모델(사람 판정 아님), 판정 근거 한 줄을 남긴다.",
+]
+
+
+def i25_score(pairs_file="i25_pairs.json", judgments=FIX / "i25" / "judgments.tsv"):
+    """08 I25: 판정으로 고친 잡음 수. 상위 10의 실제 행 가운데 등급 1·2는 잡음에서 뺀다. R1과 A4 20건 요청마다 다시 센다.
+    잡음 2만 개(합성 포함)와 실제 잡음만 두 설정, 합성 잡음은 따로 센다."""
+    import csv
+    pairs = json.loads((OUT / pairs_file).read_text(encoding="utf-8"))
+    grade = {}
+    for r in csv.DictReader(open(judgments, encoding="utf-8"), delimiter="\t"):
+        grade[(r["request"], r["url"])] = int(r["grade"])
+    per = {}
+    for cfg in ("noise_20k", "real_only"):
+        tops = pairs["top10"][cfg]
+        rows = {}
+        for req, items in tops.items():
+            synth = sum(1 for x in items if x["kind"] == "synthetic")
+            real = [x for x in items if x["kind"] == "real"]
+            judged_rel = sum(1 for x in real if grade.get((req, x["url"]), 0) >= 1)
+            unjudged = sum(1 for x in real if (req, x["url"]) not in grade)
+            rows[req] = {"noise_before": synth + len(real), "synthetic": synth, "real": len(real),
+                         "real_judged_relevant": judged_rel, "real_unjudged": unjudged,
+                         "noise_after": synth + len(real) - judged_rel, "real_noise_after": len(real) - judged_rel}
+        a4 = {lang: [v for k, v in rows.items() if k.endswith("." + lang) and not k.startswith("R1.")] for lang in ("ko", "en")}
+        per[cfg] = {"r1": {k: v for k, v in rows.items() if k.startswith("R1.")},
+                    "a4_20": {lang: {"mean_noise_before": round(sum(x["noise_before"] for x in xs) / len(xs), 2),
+                                     "mean_noise_after": round(sum(x["noise_after"] for x in xs) / len(xs), 2),
+                                     "mean_real_noise_after": round(sum(x["real_noise_after"] for x in xs) / len(xs), 2),
+                                     "le2_before": sum(1 for x in xs if x["noise_before"] <= 2),
+                                     "le2_after": sum(1 for x in xs if x["noise_after"] <= 2),
+                                     "le2_after_real_only_count": sum(1 for x in xs if x["real_noise_after"] <= 2)}
+                              for lang, xs in a4.items()},
+                    "rows": rows}
+    dist = {}
+    for g in grade.values():
+        dist[g] = dist.get(g, 0) + 1
+    out = {"rule": I25_RULE, "judged_pairs": len(grade), "grade_counts": dict(sorted(dist.items())),
+           "elig_rules": pairs["elig_rules"], "catalog_ko_slots": pairs.get("catalog_ko_slots"), "by_config": per}
+    write("measure_i25.json", out)
+    return out
+
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
@@ -655,7 +792,7 @@ def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
-           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode)}
+           "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -673,6 +810,7 @@ def main():
     print("R3", json.dumps(res["r3"]["by_pair"]), json.dumps(res["r3"]["ledger"]), [x["same_quote_fp"] for x in res["r3"]["range"]])
     print("A4-20", json.dumps(res["a4_20"]["summary"], ensure_ascii=False))
     print("R6-SCALE", json.dumps(res["r6_scale"]["end_condition_met"]), json.dumps(res["r6_scale"]["rank_rules"]["r2"]["r1"]))
+    print("I24", json.dumps(res["i24"]["noise_top10"]), "revert", res["i24"]["revert_to_e1"])
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 

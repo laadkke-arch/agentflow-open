@@ -12,6 +12,7 @@ PRIVACY_RULES = "p2"               # 꼬리표 사생활 검사. p1 = 설계 예
 SEARCH_RULES = "s1"                # 새 검색 직접 갈래의 질의 규칙. afledger/adapters/search_github.py
 INTAKE_RULES = "i2"                # 접수가 쓰는 칸별 필요 문장. afledger/intake.py
 RANK_RULES = "r2"                  # 서랍 순위(R-6). r0 = 설계(bm25 합), r1 = 단위별 IDF 합, r2 = r1 + 꼬리표 길이 정규화(08 I18)
+ELIG_RULES = "e2"                  # 서랍 자격. e1 = 설계(내용어가 맞은 칸 2 이상, 서로 다른 내용어 2), e2 = 자격 칸 수를 min(2, 요청 칸 수)로(08 I24)
 RANK_LENGTH_B = 0.75               # r2의 길이 정규화 세기(BM25 b와 같은 뜻)
 DRAWER_SYMBOL_SCOPE = "eligible"   # 서랍 후보를 사용자 판 소스로 확인할 범위. "top_k"(서랍 상위 12만) | "eligible"(적격 전부, 예산 안에서 순위순). 마지막 수단(08 I18)
 TOKEN_RULES = "t2"                 # 서랍 토큰화(R-5 결정: 다국어). t1 = 설계 예제(영어만). afledger/tokenize.py
