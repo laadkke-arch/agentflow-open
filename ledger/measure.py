@@ -817,6 +817,48 @@ def i26_rank():
     write("measure_i26_rank.json", out)
     return out
 
+
+def i26_combo():
+    """08 I26 셋째(첫째·둘째 결과를 본 뒤, 돌리기 전에 정함): 012 한국어 꼬리표 + r3 대 지금(꼬리표 없음 + r2).
+    첫째에서 한국어 꼬리표가 한국어는 낫게, 영어·R1 손 문장은 나쁘게 한 까닭이 관측 전체 길이 정규화(r2)라는 가설을 시험한다.
+    채택 규칙: 첫째 규칙(실제 잡음만 A4 한국어 판정 잡음 감소, R1 둘·A4 영어판 판정 잡음이 두 설정 어디서도 늘지 않음, R1 흐름 그대로)
+    + A4 자료집만 회수율(한국어·영어판)이 줄지 않으면 둘을 함께 기본으로 한다."""
+    import drawer_load
+    from afledger import config
+    base = json.loads((OUT / "measure_i26.json").read_text(encoding="utf-8"))["results"]["before"]
+    saved = (drawer_load.CATALOG_KO_SLOTS, config.RANK_RULES)
+    try:
+        drawer_load.CATALOG_KO_SLOTS, config.RANK_RULES = True, "r3"
+        a, r = a4_20(), r6_scale()
+        i25_collect(out_name="i26_pairs_ko_slots_r3.json")
+        sc = i25_score(pairs_file="i26_pairs_ko_slots_r3.json", out_name="measure_i26_ko_slots_r3.json")
+        new = {"a4_20": a["summary"], "r6_scale_cur": {k: r["rank_rules"]["r2"][k] for k in ("r1", "a4_20")},
+               "r6_scale_real_only": {k: r["rank_rules"]["r2_real_only"][k] for k in ("r1", "a4_20")},
+               "r1_flow": r["r1_flow_r2"],
+               "judged": {c: {"r1": {k: v["noise_after"] for k, v in x["r1"].items()}, "a4_20": x["a4_20"]}
+                          for c, x in sc["by_config"].items()}}
+    finally:
+        drawer_load.CATALOG_KO_SLOTS, config.RANK_RULES = saved
+        a4_20(), r6_scale()          # 공용 출력 파일을 기본 설정으로 되돌린다
+
+    def j(x, cfg):
+        y = x["judged"][cfg]
+        return {"r1_hand": y["r1"]["R1.hand"], "r1_i2_ko": y["r1"]["R1.i2_ko"],
+                "a4_ko": y["a4_20"]["ko"]["mean_noise_after"], "a4_en": y["a4_20"]["en"]["mean_noise_after"]}
+    cmp = {cfg: {"now": j(base, cfg), "ko_slots_r3": j(new, cfg)} for cfg in ("real_only", "noise_20k")}
+    rec = {k: {lang: x["a4_20"]["catalog_only"][lang]["mean_recall12"] for lang in ("ko", "en")}
+           for k, x in (("now", base), ("ko_slots_r3", new))}
+    flow_ok = all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                  for v in new["r1_flow"].values())
+    worse = [f"{cfg}.{k}" for cfg in cmp for k in ("r1_hand", "r1_i2_ko", "a4_en")
+             if cmp[cfg]["ko_slots_r3"][k] > cmp[cfg]["now"][k]]
+    worse += [f"recall.{lang}" for lang in ("ko", "en") if rec["ko_slots_r3"][lang] < rec["now"][lang]]
+    adopt = cmp["real_only"]["ko_slots_r3"]["a4_ko"] < cmp["real_only"]["now"]["a4_ko"] and not worse and flow_ok
+    out = {"rule": i26_combo.__doc__.split("\n")[1:5], "judged_noise": cmp, "catalog_only_recall12": rec, "worse": worse,
+           "r1_flow_ok": flow_ok, "adopt": adopt, "result": new}
+    write("measure_i26_combo.json", out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
