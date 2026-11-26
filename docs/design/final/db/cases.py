@@ -100,8 +100,10 @@ def load_receipt(L: Ledger, fname: str, ran_at: str) -> tuple[int, dict]:
 def edition_matches_runtime(obs, ctx) -> bool:
     if "python/cpython" not in obs["url"]:
         return True
-    rt = ctx.get("runtime", "")          # 예: "CPython 3.13"
-    ver = rt.split()[-1] if rt else ""
+    rt = ctx.get("runtime", "")          # 예: "CPython 3.13" 대 "v3.13.18"
+    if hasattr(Ledger, "edition_matches"):
+        return Ledger.edition_matches(rt, obs["edition_key"])     # 07 D9
+    ver = rt.split()[-1] if rt else ""   # v1 고정판(sim/pin_v1.sh)의 앞부분 일치
     return obs["edition_key"].lstrip("v").startswith(ver + ".")
 
 

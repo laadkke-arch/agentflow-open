@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS {p}.answer_run (
                                               'source_unreachable','none_in_scope')),
   budget_json TEXT NOT NULL,
   next_action TEXT,
+  rule_version TEXT NOT NULL DEFAULT 'final-v1',  -- 자리 규칙·관문·문턱의 판. 규칙이 바뀐 뒤에도 재생이 어느 규칙의 답인지 안다
   idem_key    TEXT NOT NULL UNIQUE
 );
 CREATE TABLE IF NOT EXISTS {p}.answer_slot (
@@ -133,7 +134,7 @@ CREATE TABLE IF NOT EXISTS {p}.folded (
   obs_id    INTEGER,
   condition TEXT NOT NULL,
   reason    TEXT NOT NULL,
-  PRIMARY KEY (run_id, url)
+  PRIMARY KEY (run_id, url, condition)   -- 같은 주소의 다른 위치·다른 갈린 조건을 따로 접을 수 있게
 );
 -- 알림: 공용 관측의 대체가 이 프로젝트 답 자리에 닿았을 때.
 CREATE TABLE IF NOT EXISTS {p}.notice (
@@ -145,7 +146,18 @@ CREATE TABLE IF NOT EXISTS {p}.notice (
   effect     TEXT NOT NULL,
   created_at TEXT NOT NULL,
   text       TEXT NOT NULL,
+  held       INTEGER NOT NULL DEFAULT 0 CHECK (held IN (0,1)),  -- 1: 활성 답이 아니라 알리지 않고 재생 때만 붙인다(07 D2)
   UNIQUE (run_id, slot_no, old_obs, new_obs)
+);
+-- 요청 시계의 원문 가져오기(07 D1). 예산은 이 행 수로 센다. 실행은 따로 센다.
+CREATE TABLE IF NOT EXISTS {p}.fetch_log (
+  fetch_id    INTEGER PRIMARY KEY,
+  req_id      INTEGER NOT NULL REFERENCES request_rev(req_id),
+  url         TEXT NOT NULL,
+  edition_key TEXT,
+  at          TEXT NOT NULL,
+  outcome     TEXT NOT NULL CHECK (outcome IN ('ok','not_modified','not_found','unreachable','truncated','unsupported')),
+  bytes       INTEGER
 );
 -- 노출과 이후 행동(평가용).
 CREATE TABLE IF NOT EXISTS {p}.exposure (
@@ -159,6 +171,11 @@ CREATE TABLE IF NOT EXISTS {p}.exposure (
 
 CREATE TRIGGER IF NOT EXISTS {p}.request_rev_no_update BEFORE UPDATE ON request_rev
 BEGIN SELECT RAISE(ABORT, 'request_rev is immutable'); END;
+-- 봉인은 노출보다 먼저이고 노출 뒤에 바꿀 수 없어야 '새로 알았나'를 셀 수 있다.
+CREATE TRIGGER IF NOT EXISTS {p}.prior_seal_no_update BEFORE UPDATE ON prior_seal
+BEGIN SELECT RAISE(ABORT, 'prior_seal is immutable'); END;
+CREATE TRIGGER IF NOT EXISTS {p}.prior_seal_no_delete BEFORE DELETE ON prior_seal
+BEGIN SELECT RAISE(ABORT, 'prior_seal is immutable'); END;
 CREATE TRIGGER IF NOT EXISTS {p}.slip_no_update BEFORE UPDATE ON slip
 BEGIN SELECT RAISE(ABORT, 'slip is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS {p}.slip_no_delete BEFORE DELETE ON slip

@@ -8,23 +8,25 @@
 
 ```sh
 cd docs/design/final/db
-python3 -I test_ledger.py -v        # 시험 26개
+python3 -I test_ledger.py -v        # 시험 50개
 python3 -I cases.py                 # 세 사례 요약과 구성요소 삭제 결과
-python3 -I cases.py --json > out/cases.json   # 커밋된 실행 기록과 바이트 단위로 같다
+python3 -I cases.py --json | cmp - out/cases.json   # 커밋된 실행 기록과 바이트 단위로 같다
 python3 receipts/r1_queue.py        # R1 실행 영수증(실행한 CPython 판의 결과를 출력)
 ```
 
 `-I`로 실행해도 각 스크립트가 자기 디렉터리를 경로에 넣는다.
 
+운영 시뮬레이션은 [../sim/](../sim/)에 있다. 이 엔진에 실제 시계·작업자·예산·여러 프로젝트를 붙여 13장면을 돌린다(`python3 -I ../sim/ops_sim.py`). 설정 값(`ACTIVE_RULE`, `DEADLINE_READS`, `IMMUTABLE_KINDS`, 예산 몫)의 후보안 비교는 `python3 -I ../sim/decide_sim.py`다. 결과와 고친 내용, 확정한 결정은 [../07-review.md](../07-review.md)에 있다.
+
 ## 파일
 
 | 파일 | 내용 |
 | --- | --- |
-| [schema.sql](schema.sql) | 공용 장부. 위치, 별칭과 취소, 판, 실행 영수증, 관측, 다시 본 기록, 꼬리표와 전문 색인, 대비, 대체, 변경 채널과 항목, 감시 키(층, 기한), 재확인 작업. 확정 기록은 덧붙이기만 한다(트리거) |
-| [project_schema.sql](project_schema.sql) | 프로젝트 장부. 프로젝트마다 따로 붙인다. 요청판, 조건, 맥락 사실, 봉인, 필요 문장, 해석, 탐색 기록, 판정 쪽지, 답 실행과 자리, 사용 쪽지, 접힌 대안, 알림, 노출 |
+| [schema.sql](schema.sql) | 공용 장부. 위치, 별칭과 취소, 판, 실행 영수증, 관측(따라 연 별칭 포함), 인용 본문(지울 수만 있다), 다시 본 기록, 꼬리표와 전문 색인, 대비, 대체와 취소, 변경 채널과 항목, 감시 키(층, 기한), 재확인 작업, 후속·배경 가져오기 기록. 확정 기록은 덧붙이기만 한다(트리거) |
+| [project_schema.sql](project_schema.sql) | 프로젝트 장부. 프로젝트마다 따로 붙인다. 요청판, 조건, 맥락 사실, 봉인, 필요 문장, 해석, 탐색 기록, 판정 쪽지, 답 실행과 자리, 사용 쪽지, 접힌 대안, 알림(활성 답이 아니면 쌓아 둠), 노출, 요청 가져오기 기록 |
 | [ledger.py](ledger.py) | 엔진. 규칙 하나가 함수 하나다(아래 표) |
 | [cases.py](cases.py) | 사례 A(R1), 사례 B(EVAL-X1), 장면 2(R2) 재생과 구성요소 삭제 시험 |
-| [test_ledger.py](test_ledger.py) | 저장 계약, 규칙, 세 사례, 구성요소 삭제의 기대값 |
+| [test_ledger.py](test_ledger.py) | 저장 계약, 규칙, 운영 고침(`OperationalFixes`), 세 사례, 구성요소 삭제의 기대값 |
 | [receipts/](receipts/) | R1 실행 영수증 프로그램과 CPython 3.13.18·3.12.3 출력 |
 | [fixtures/af-res-012/](fixtures/af-res-012/) | AF-RES-012 고정판 `cb602858`의 자료집(156항목)과 질의 사본 |
 | [out/cases.json](out/cases.json) | 이 커밋에서 `cases.py --json`을 돌린 결과 |
@@ -43,13 +45,36 @@ python3 receipts/r1_queue.py        # R1 실행 영수증(실행한 CPython 판�
 | 확인할 후보도 탐색 기록에 있는 이름만 | `Ledger.compose` | `test_check_slot_name_must_come_from_search_record` |
 | 봉인이 노출보다 먼저 | `Ledger.show` | `test_exposure_needs_seal_first` |
 | 채널은 외부 ID 집합의 차분만 읽는다 | `Ledger.poll` | `test_channel_uses_id_diff_not_display_window` |
-| 공지 기한 24시간 전과 기한에 직접 읽고, 기한 경과만으로 무효로 하지 않는다 | `Ledger.due`, `Ledger._enqueue` | `test_deadline_job_merges_with_channel_item_and_does_not_invalidate` |
+| 공지 기한 24시간 전, 기한, 24시간 뒤에 직접 읽고, 기한 경과만으로 무효로 하지 않는다 | `Ledger.due`, `Ledger._enqueue` | `test_deadline_job_merges_with_channel_item_and_does_not_invalidate` |
 | 작업자 둘이 같은 재확인을 잡지 않는다 | `Ledger.lease`, `Ledger.release_expired` | `test_lease_prevents_double_work_and_expires` |
 | 철회는 사용 쪽지를 따라 인용한 자리에만, 대조 인용은 제외 | `Ledger.propagate` | `test_b_each_event_touches_only_the_pocket_slot` |
 | 그날 알던 것 | `Ledger.known_on`, `Ledger.current` | `test_b_what_we_knew_on_a_day` |
 | 지난 답은 당시 문장 그대로 | `Ledger.replay` | `test_b_replay_and_no_answer` |
 | 답이 없으면 상태·가장 가까운 대안·다음에 열 원문 | `Ledger.compose(status=…, next_action=…)` | `test_a_no_answer_gives_next_action_not_a_bare_abstain` |
 | 취소된 별칭은 따라가지 않는다 | `Ledger.resolve` | `test_cancelled_alias_is_not_followed` |
+| 일시 실패와 대체·철회된 관측은 재사용하지 않는다 | `Ledger.reusable(at=)`, `Ledger.stale`, `Ledger.reuse_gate` | `test_stale_observation_is_not_reused_or_cited`, `test_transient_failure_is_not_reusable` |
+| 대체·철회된 관측 인용 금지, 원리 L2 상한, complete 조건 | `Ledger.compose` | `test_compose_rules_for_principle_and_complete` |
+| 늦게 돌아온 작업자는 결과와 대체를 쓰지 못한다(임차 표지) | `Ledger.lease`, `Ledger.finish(token=, supersede=)` | `test_late_worker_is_fenced_and_supersession_is_written_once` |
+| 새 원인은 대기 중 작업에만 합친다 | `Ledger._enqueue` | `test_new_cause_does_not_merge_into_a_leased_job` |
+| 대체가 감시를 새 관측으로 넘긴다 | `Ledger.supersede`, `Ledger.watch` | `test_watch_moves_to_the_new_observation` |
+| 잘못된 대체는 취소로 되돌린다 | `Ledger.cancel_supersession`, `Ledger.propagate` | `test_cancelled_supersession_restores_and_warns` |
+| 시각은 UTC로 맞추고 형식 오류는 그 행만 건너뛴다 | `utc`, `Ledger.watch`, `Ledger.due` | `test_deadline_formats_are_normalized_or_rejected` |
+| 채널 목록 중복 ID와 ID 체계 변경 | `Ledger.poll` | `test_channel_duplicates_and_id_scheme_reset` |
+| 봉인은 노출보다 먼저이고 고칠 수 없다 | `Ledger.show`, `prior_seal` 트리거 | `test_exposure_needs_seal_time_and_seal_is_immutable` |
+| 사생활 검사 거절문에 비공개 낱말을 넣지 않는다 | `Ledger._privacy_lint` | `test_privacy_error_does_not_echo_the_private_words` |
+| 판독 주체를 남기고 판독기 하나의 관측을 다시 확인한다 | `Ledger.observe(reader=)`, `Ledger.recall_reader` | `test_reader_is_recorded_and_can_be_recalled` |
+| 대체·철회된 관측에 기댄 쪽지는 옮기지 않는다 | `Ledger.carry_slips` | `test_carry_slips_drops_judgments_on_retired_observations` |
+| 해석 결정은 덮어쓰지 않는다 | `Ledger.interpret` | `test_interpretation_is_not_overwritten` |
+| S로 줄이는 규칙의 입력(서랍만 찾았고 답에 오른 후보) | `Ledger.drawer_contribution` | 시뮬레이션 M8 |
+| 예산은 가져오기를 센다(304는 세지 않음), 시계별 몫 (07 D1·D11) | `Ledger.fetched`, `fetch_count`, `request_budget_left`, `follow_budget_left` | `test_d1_budget_counts_fetches_not_observations` |
+| 활성 답에만 알리고 나머지는 쌓아 둔다 (07 D2) | `Ledger.is_active`, `inbox`, `propagate` | `test_d2_only_the_active_answer_is_notified` |
+| 합친 재확인 작업은 든 판을 모두 준다 (07 D3) | `Ledger.job_editions` | `test_d3_merged_job_lists_every_revision` |
+| 기한 뒤 24시간에 한 번 더 읽고, 기한 뒤 확인이 있으면 관문을 닫는다 (07 D4) | `Ledger.due`, `reuse_gate` | `test_d4_deadline_is_read_again_a_day_later`, `test_deadline_window_closes_after_it_was_checked` |
+| 별칭 취소는 그 별칭을 따라 연 관측의 인용 자리에 알린다 (07 D5) | `Ledger.observe(via_alias=)`, `cancel_alias`, `propagate` | `test_d5_alias_cancel_reaches_slots_that_followed_it` |
+| 비공개 원문은 공용 장부에 쓰지 않고, 요청이 연 위치의 시각은 날짜로 (07 D6) | `Ledger.observe(visibility=)`, `_locator` | `test_d6_private_source_and_request_time` |
+| 인용 본문은 지울 수 있고 묘비가 남는다 (07 D7) | `Ledger.redact`, `quote_text` 트리거 | `test_d7_quote_is_erased_with_a_tombstone` |
+| 고정판은 나이만으로 다시 읽지 않는다 (07 D8) | `Ledger.reuse_gate`, `IMMUTABLE_KINDS` | `test_d8_pinned_edition_is_not_reread_on_age_alone` |
+| 맥락 판과 관측 판 맞추기 (07 D9) | `Ledger.edition_matches` | `test_d9_edition_match_rule` |
 
 ## 구성요소 끄기
 

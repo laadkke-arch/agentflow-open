@@ -33,7 +33,7 @@
 
 **요청판(불변, 비공개).** gallim 입력의 칸(선택·제외 ID, 간선, 조건의 원문 범위 등)[gin]에 다음을 더한다. original_text(바꾸면 새 revision), pointed[](파일 줄 또는 지도 마디, 고정판), conditions[](원문 범위, 해야 함·하면 안 됨, 시점, 필수·선호, 명시·추론), out_of_scope[], unknowns[]('모름'은 '지원 안 함'과 다르다), environment[](판, OS, 계정 상태), current_state[](상태 출력·설정의 지문), seal(자유 회상, Studio 의존성, sealed_at, 받음·거절·없음), self_sources[], interpretations[](갈린 조건, 고른 해석, 근거 칸, 접은 해석), budget(개봉·모델 호출·벽시계 상한).
 
-**답 실행(덧붙이기만).** answer_run_id, revision_id, rule_version, created_at, budget_used, slots[1..3], folded[](근접 대안·우연 적중과 갈린 조건), status(answered / none_verified / budget_exhausted / source_unreachable / none_in_scope), next_check(조건, 후보, 풀 경로: Studio 회수·실행·원문 열람·질문), question(문장, 후보 이름 포함 여부, sent_at, answer_at). 자리 칸은 verb(그대로 쓴다·일부를 옮긴다·시험해 본다·읽어 둔다·확인할 후보), role, first_link(URL, 고정판, 절·줄), reason_line(충족 조건 ID, 보존·변경), conditions{ID: Y/N/U/NA}, ladder(L0–L5), receipt_ids, flip_at, companions[], near[], prior_mark(기지·새것·미상), observation_ids, found_by(서랍·새 검색·수집, first_seen_at)다. gallim next_check는 풀 경로를 적지 않아 그 칸을 더했다 (a)[gnc].
+**답 실행(덧붙이기만).** answer_run_id, revision_id, rule_version, created_at, budget_used, slots[1..3], folded[](근접 대안·우연 적중과 갈린 조건), status(complete / partial / none_verified / budget_exhausted / source_unreachable / none_in_scope. 이름과 뜻은 [04 3.2](../04-architecture.md)가 기준이다. 이 문서의 처음 판은 answered 하나로 적었다), next_check(조건, 후보, 풀 경로: Studio 회수·실행·원문 열람·질문), question(문장, 후보 이름 포함 여부, sent_at, answer_at). 자리 칸은 verb(그대로 쓴다·일부를 옮긴다·시험해 본다·읽어 둔다·확인할 후보), role, first_link(URL, 고정판, 절·줄), reason_line(충족 조건 ID, 보존·변경), conditions{ID: Y/N/U/NA}, ladder(L0–L5), receipt_ids, flip_at, companions[], near[], prior_mark(기지·새것·미상), observation_ids, found_by(서랍·새 검색·수집, first_seen_at)다. gallim next_check는 풀 경로를 적지 않아 그 칸을 더했다 (a)[gnc].
 
 **답 한 자리의 실제 문장(R1 첫 자리).**
 
@@ -110,7 +110,7 @@ DB 동작이 넷 바뀐다. ① '보임' 노출 행은 봉인 행이나 봉인 '
 
 **팔.** G는 같은 모델과 웹 검색이다. S는 P의 공개 관측에서 URL·판·절 위치·설명 한 줄만 남긴 카탈로그, 전문 검색, 같은 절·판 영수증이고, 꼬리표·대비·관계·쪽지·변화 감시·원리 관문이 없다. P는 제품 전체이고, 서랍을 비운 P0로 서랍의 몫을 본다.
 
-**예산.** 질의가 아니라 원문 개봉 수로 맞춘다. 109에서 두 방식은 질의 15회로 같았지만 명시 개봉은 23과 29였다 (b)[109]. 개봉에는 실패·재열람·실행을 넣고 모델 호출·벽시계는 같은 상한으로 둔다. 서랍을 채운 이전 비용은 따로 보고하고, S의 카탈로그는 그 시점 P의 공개 관측과 같게 둔다.
+**예산.** 질의가 아니라 원문 개봉 수로 맞춘다. 109에서 두 방식은 질의 15회로 같았지만 명시 개봉은 23과 29였다 (b)[109]. 개봉에는 실패·재열람·실행을 넣고 모델 호출·벽시계는 같은 상한으로 둔다. **[재검토, 07 D1]** 예산이 세는 것은 가져오기((주소, 판)의 원문을 받은 횟수, 실패·재열람 포함)이고 실행은 따로 센다([04-architecture.md](../04-architecture.md) 5절). 서랍을 채운 이전 비용은 따로 보고하고, S의 카탈로그는 그 시점 P의 공개 관측과 같게 둔다.
 
 **공통 조건.** 같은 요청판과 봉인된 필수조건, 요청 단위 짝, 팔을 가린 판정자 2명, 같은 답 양식을 쓰고 자기 출처는 뺀다(220에서 자기를 빼면 외부 첫 해법은 개선 0·동률 4 (b)). 정답은 봉인 적격집합과 세 팔 결과의 합집합이고, 조건별로 판정하며 미판정은 U다.
 

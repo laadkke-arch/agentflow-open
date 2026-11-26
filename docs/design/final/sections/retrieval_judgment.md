@@ -154,7 +154,7 @@ T2-b를 지키려면 OAI 자리의 사용 쪽지가 서비스 관측을 **대조
 4. 역할 경로가 분야명을 모르는 요청을 원리 후보에 닿게 한다. 회수 관측은 0이다.
 5. 정의한 동종 기준선으로 대부분의 ③이 갈린다. BagIt의 백업 관행 기준선은 원문이 없다.
 6. 근접 대안 둘이면 사람에게 충분하다. 사람 비교는 0이다.
-7. R1 첫 링크는 절 앵커이며 소스 줄로 고정하지 않았다.
+7. R1 첫 링크는 절 앵커이며 소스 줄로 고정하지 않았다. (재검토 주석: 04·05·README는 고정판 소스 줄 `…/blob/v3.13.18/Lib/asyncio/queues.py#L36-L38`을 첫 링크로 쓴다. 두 형식이 섞였으므로 [07-review.md](../07-review.md) D10의 안대로 소스 줄을 첫 링크로, 문서 절 앵커를 함께 필요한 것으로 둔다.)
 8. EVAL-X1의 증분 수확이 서비스 호출 한도 안에서 된다. 그 API의 판독은 없다.
 
 [p03]: https://github.com/laadkke-arch/agentflow-open/blob/cb602858378db90adb1f085953016267f9afbd6d/docs/workstreams/research/AF-RES-012/queries/queries.jsonl#L31

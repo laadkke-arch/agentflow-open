@@ -1,0 +1,703 @@
+{
+ "engine": "docs/design/final/db",
+ "note": "세계 모형은 가정이다. 결과는 안 사이의 비교에만 쓴다. 07-review.md 6절",
+ "results": {
+  "D2": {
+   "world": "요청 키 40개(요청판 1~3), 프로젝트 4개, 답마다 70% 확률로 노출. 사용자는 가장 늦게 노출된 답을 따른다[가정]. 인용 관측 하나가 무효가 된다",
+   "table": {
+    "all": {
+     "notices": 77,
+     "delivered": 77,
+     "held": 0,
+     "delivered_to_followed_answer": 38,
+     "delivered_to_unfollowed_answer": 39,
+     "followed_answers_missed": 0,
+     "followed_answers": 38
+    },
+    "latest": {
+     "notices": 77,
+     "delivered": 40,
+     "held": 37,
+     "delivered_to_followed_answer": 34,
+     "delivered_to_unfollowed_answer": 6,
+     "followed_answers_missed": 4,
+     "followed_answers": 38
+    },
+    "shown_latest": {
+     "notices": 77,
+     "delivered": 40,
+     "held": 37,
+     "delivered_to_followed_answer": 38,
+     "delivered_to_unfollowed_answer": 2,
+     "followed_answers_missed": 0,
+     "followed_answers": 38
+    }
+   },
+   "rule": "사용자가 따르는 답을 놓친 수가 가장 적고, 그다음 따르지 않는 답에 간 알림이 적은 안",
+   "chosen": "shown_latest"
+  },
+  "D3": {
+   "world": "문서 20개, 개정 간격 지수분포 평균 48시간, 2026-01~03, 72시간 폴링(문서마다 위상 무작위), 개정 이력에서 지난 판을 열 수 있음",
+   "table": {
+    "A 합쳐 최신만(v1)": {
+     "revisions": 890,
+     "observed": 477,
+     "observed_share": 0.536,
+     "jobs": 457,
+     "reads": 457,
+     "chain_in_publication_order": "457/457"
+    },
+    "B 항목마다 작업": {
+     "revisions": 890,
+     "observed": 890,
+     "observed_share": 1.0,
+     "jobs": 870,
+     "reads": 870,
+     "chain_in_publication_order": "870/870"
+    },
+    "C 합친 작업이 판마다 읽기": {
+     "revisions": 890,
+     "observed": 890,
+     "observed_share": 1.0,
+     "jobs": 466,
+     "reads": 870,
+     "chain_in_publication_order": "870/870"
+    }
+   },
+   "rule": "관측한 개정 비율이 높고, 그다음 작업 수, 그다음 읽기 수가 적은 안",
+   "chosen": "C 합친 작업이 판마다 읽기"
+  },
+  "D4": {
+   "options": {
+    "A 기한 전날·기한(v1)": [
+     [
+      "T-24h",
+      -24
+     ],
+     [
+      "T",
+      0
+     ]
+    ],
+    "B A+기한 6시간 뒤": [
+     [
+      "T-24h",
+      -24
+     ],
+     [
+      "T",
+      0
+     ],
+     [
+      "T+6h",
+      6
+     ]
+    ],
+    "C A+기한 24시간 뒤": [
+     [
+      "T-24h",
+      -24
+     ],
+     [
+      "T",
+      0
+     ],
+     [
+      "T+24h",
+      24
+     ]
+    ],
+    "D A+6시간 뒤+24시간 뒤": [
+     [
+      "T-24h",
+      -24
+     ],
+     [
+      "T",
+      0
+     ],
+     [
+      "T+6h",
+      6
+     ],
+     [
+      "T+24h",
+      24
+     ]
+    ],
+    "E 기한·기한 24시간 뒤(전날 뺌)": [
+     [
+      "T",
+      0
+     ],
+     [
+      "T+24h",
+      24
+     ]
+    ],
+    "F 기한 시계 없음": null
+   },
+   "worlds_post_offset_h": {
+    "30시간 일찍 게시": -30,
+    "효력일 0시 게시(사례)": 0,
+    "6시": 6,
+    "14시": 14,
+    "23시": 23
+   },
+   "deadline_day_revisions": [
+    "300072",
+    "308355",
+    "313551"
+   ],
+   "phases": 12,
+   "table": {
+    "A 기한 전날·기한(v1)": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 6.83,
+      "reads_mean": 6.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 6.0,
+      "deadline_rev_lag_mean_h": 5.5
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 10.08,
+      "reads_mean": 10.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "6시": {
+      "jobs_mean": 10.33,
+      "reads_mean": 10.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 66.0,
+      "deadline_rev_lag_mean_h": 29.6
+     },
+     "14시": {
+      "jobs_mean": 10.33,
+      "reads_mean": 10.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 70.0,
+      "deadline_rev_lag_mean_h": 33.6
+     },
+     "23시": {
+      "jobs_mean": 10.33,
+      "reads_mean": 10.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 67.0,
+      "deadline_rev_lag_mean_h": 30.6
+     }
+    },
+    "B A+기한 6시간 뒤": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 6.83,
+      "reads_mean": 6.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 6.0,
+      "deadline_rev_lag_mean_h": 5.5
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 10.08,
+      "reads_mean": 10.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "6시": {
+      "jobs_mean": 13.08,
+      "reads_mean": 13.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "14시": {
+      "jobs_mean": 13.33,
+      "reads_mean": 13.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 70.0,
+      "deadline_rev_lag_mean_h": 33.6
+     },
+     "23시": {
+      "jobs_mean": 13.33,
+      "reads_mean": 13.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 67.0,
+      "deadline_rev_lag_mean_h": 30.6
+     }
+    },
+    "C A+기한 24시간 뒤": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 6.83,
+      "reads_mean": 6.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 6.0,
+      "deadline_rev_lag_mean_h": 5.5
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 10.08,
+      "reads_mean": 10.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "6시": {
+      "jobs_mean": 12.33,
+      "reads_mean": 12.33,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 18.0,
+      "deadline_rev_lag_mean_h": 15.0
+     },
+     "14시": {
+      "jobs_mean": 12.83,
+      "reads_mean": 12.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 10.0,
+      "deadline_rev_lag_mean_h": 9.5
+     },
+     "23시": {
+      "jobs_mean": 13.08,
+      "reads_mean": 13.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 1.0,
+      "deadline_rev_lag_mean_h": 1.0
+     }
+    },
+    "D A+6시간 뒤+24시간 뒤": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 6.83,
+      "reads_mean": 6.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 6.0,
+      "deadline_rev_lag_mean_h": 5.5
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 10.08,
+      "reads_mean": 10.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "6시": {
+      "jobs_mean": 13.08,
+      "reads_mean": 13.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "14시": {
+      "jobs_mean": 15.83,
+      "reads_mean": 15.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 10.0,
+      "deadline_rev_lag_mean_h": 9.5
+     },
+     "23시": {
+      "jobs_mean": 16.08,
+      "reads_mean": 16.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 1.0,
+      "deadline_rev_lag_mean_h": 1.0
+     }
+    },
+    "E 기한·기한 24시간 뒤(전날 뺌)": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 5.83,
+      "reads_mean": 5.83,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 30.0,
+      "deadline_rev_lag_mean_h": 20.6
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 7.08,
+      "reads_mean": 7.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 0.0,
+      "deadline_rev_lag_mean_h": 0.0
+     },
+     "6시": {
+      "jobs_mean": 9.33,
+      "reads_mean": 9.33,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 18.0,
+      "deadline_rev_lag_mean_h": 15.0
+     },
+     "14시": {
+      "jobs_mean": 9.83,
+      "reads_mean": 9.83,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 10.0,
+      "deadline_rev_lag_mean_h": 9.5
+     },
+     "23시": {
+      "jobs_mean": 10.08,
+      "reads_mean": 10.08,
+      "deadline_rev_never_observed": 0,
+      "deadline_rev_lag_max_h": 1.0,
+      "deadline_rev_lag_mean_h": 1.0
+     }
+    },
+    "F 기한 시계 없음": {
+     "30시간 일찍 게시": {
+      "jobs_mean": 4.33,
+      "reads_mean": 4.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 66.0,
+      "deadline_rev_lag_mean_h": 29.6
+     },
+     "효력일 0시 게시(사례)": {
+      "jobs_mean": 4.33,
+      "reads_mean": 4.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 66.0,
+      "deadline_rev_lag_mean_h": 29.6
+     },
+     "6시": {
+      "jobs_mean": 4.33,
+      "reads_mean": 4.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 66.0,
+      "deadline_rev_lag_mean_h": 29.6
+     },
+     "14시": {
+      "jobs_mean": 4.33,
+      "reads_mean": 4.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 70.0,
+      "deadline_rev_lag_mean_h": 33.6
+     },
+     "23시": {
+      "jobs_mean": 4.33,
+      "reads_mean": 4.33,
+      "deadline_rev_never_observed": 8,
+      "deadline_rev_lag_max_h": 67.0,
+      "deadline_rev_lag_mean_h": 30.6
+     }
+    }
+   },
+   "score(never, worst_lag_over_24h, reads, worst_lag)": {
+    "A 기한 전날·기한(v1)": [
+     24,
+     1,
+     47.9,
+     70.0
+    ],
+    "B A+기한 6시간 뒤": [
+     16,
+     1,
+     56.65,
+     70.0
+    ],
+    "C A+기한 24시간 뒤": [
+     0,
+     0,
+     55.15,
+     18.0
+    ],
+    "D A+6시간 뒤+24시간 뒤": [
+     0,
+     0,
+     61.9,
+     10.0
+    ],
+    "E 기한·기한 24시간 뒤(전날 뺌)": [
+     8,
+     1,
+     42.15,
+     30.0
+    ],
+    "F 기한 시계 없음": [
+     40,
+     1,
+     21.65,
+     70.0
+    ]
+   },
+   "rule": "놓친 기한 개정이 가장 적고, 다섯 세계 모두에서 최대 지연이 24시간 이하인 안 가운데 읽기 수(세계 합)가 가장 적은 안",
+   "chosen": "C A+기한 24시간 뒤"
+  },
+  "D8": {
+   "world": "26주, 고정판 관측 30개(그중 3개 철회, 철회는 채널이 늘 알림), 바뀌는 판 관측 10개(내용 변화 1~3회, 채널 재현율 0.8[가정]), 주간 요청 10건, 72시간 폴링",
+   "table": {
+    "A 모든 판 168시간(v1)": {
+     "requests": 260,
+     "request_rereads": 195,
+     "reuse": 65,
+     "follow_reads": 14,
+     "stale_answers": 0,
+     "stale_rate": 0.0
+    },
+    "B 고정판은 면제": {
+     "requests": 260,
+     "request_rereads": 53,
+     "reuse": 207,
+     "follow_reads": 14,
+     "stale_answers": 0,
+     "stale_rate": 0.0
+    },
+    "C 고정판은 30일": {
+     "requests": 260,
+     "request_rereads": 133,
+     "reuse": 127,
+     "follow_reads": 14,
+     "stale_answers": 0,
+     "stale_rate": 0.0
+    }
+   },
+   "rule": "낡은 답 수가 가장 적고, 그다음 요청 시계 재열람이 적은 안",
+   "chosen": "B 고정판은 면제"
+  },
+  "D11": {
+   "world": "M3와 같은 출처·요청 모형, 12주. 출처 절반은 72시간·절반은 168시간 주기, 폴링마다 5% 확률로 변화(후속 읽기 1회). 한 묶음 예산은 168시간당 24회. 시계별은 요청당 4회, 후속 168시간당 3회, 배경 폴링은 조건부 요청이라 읽기 예산 밖[가정, 07 R-2]",
+   "grid": {
+    "A 한 묶음, 폴링 먼저(v1 해석)": {
+     "C3_req5": {
+      "deferred_rate": 0.167,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.233,
+      "max_cursor_age_h": 154,
+      "source_reads_per_week": 11.3,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C3_req20": {
+      "deferred_rate": 0.421,
+      "exhausted_rate": 0.545,
+      "gate_reopen_rate": 0.075,
+      "max_cursor_age_h": 155,
+      "source_reads_per_week": 18.8,
+      "polls_per_week": 5.2,
+      "follow_hours_deferred": 208
+     },
+     "C10_req5": {
+      "deferred_rate": 0.367,
+      "exhausted_rate": 0.483,
+      "gate_reopen_rate": 0.677,
+      "max_cursor_age_h": 216,
+      "source_reads_per_week": 7.5,
+      "polls_per_week": 15.8,
+      "follow_hours_deferred": 397
+     },
+     "C10_req20": {
+      "deferred_rate": 0.223,
+      "exhausted_rate": 0.751,
+      "gate_reopen_rate": 0.397,
+      "max_cursor_age_h": 168,
+      "source_reads_per_week": 12.1,
+      "polls_per_week": 11.9,
+      "follow_hours_deferred": 256
+     },
+     "C30_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.982,
+      "gate_reopen_rate": 1.0,
+      "max_cursor_age_h": 1992,
+      "source_reads_per_week": 0.4,
+      "polls_per_week": 23.6,
+      "follow_hours_deferred": 4688
+     },
+     "C30_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.987,
+      "gate_reopen_rate": 1.0,
+      "max_cursor_age_h": 1992,
+      "source_reads_per_week": 0.8,
+      "polls_per_week": 23.2,
+      "follow_hours_deferred": 11347
+     }
+    },
+    "B 한 묶음, 요청 먼저": {
+     "C3_req5": {
+      "deferred_rate": 0.167,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.25,
+      "max_cursor_age_h": 154,
+      "source_reads_per_week": 11.4,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C3_req20": {
+      "deferred_rate": 0.451,
+      "exhausted_rate": 0.511,
+      "gate_reopen_rate": 0.157,
+      "max_cursor_age_h": 309,
+      "source_reads_per_week": 20.8,
+      "polls_per_week": 3.2,
+      "follow_hours_deferred": 255
+     },
+     "C10_req5": {
+      "deferred_rate": 0.55,
+      "exhausted_rate": 0.3,
+      "gate_reopen_rate": 0.619,
+      "max_cursor_age_h": 326,
+      "source_reads_per_week": 9.7,
+      "polls_per_week": 14.2,
+      "follow_hours_deferred": 1154
+     },
+     "C10_req20": {
+      "deferred_rate": 0.318,
+      "exhausted_rate": 0.657,
+      "gate_reopen_rate": 0.637,
+      "max_cursor_age_h": 1964,
+      "source_reads_per_week": 17.7,
+      "polls_per_week": 6.3,
+      "follow_hours_deferred": 4386
+     },
+     "C30_req5": {
+      "deferred_rate": 0.518,
+      "exhausted_rate": 0.464,
+      "gate_reopen_rate": 0.967,
+      "max_cursor_age_h": 1992,
+      "source_reads_per_week": 7.6,
+      "polls_per_week": 16.4,
+      "follow_hours_deferred": 2201
+     },
+     "C30_req20": {
+      "deferred_rate": 0.143,
+      "exhausted_rate": 0.843,
+      "gate_reopen_rate": 0.972,
+      "max_cursor_age_h": 1992,
+      "source_reads_per_week": 8.9,
+      "polls_per_week": 15.1,
+      "follow_hours_deferred": 5801
+     }
+    },
+    "C 시계별(폴링은 조건부 요청)": {
+     "C3_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.25,
+      "max_cursor_age_h": 154,
+      "source_reads_per_week": 11.4,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C3_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.021,
+      "max_cursor_age_h": 155,
+      "source_reads_per_week": 40.8,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C10_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.617,
+      "max_cursor_age_h": 165,
+      "source_reads_per_week": 13.7,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C10_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.158,
+      "max_cursor_age_h": 167,
+      "source_reads_per_week": 43.8,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C30_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.833,
+      "max_cursor_age_h": 162,
+      "source_reads_per_week": 16.3,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 1395
+     },
+     "C30_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.463,
+      "max_cursor_age_h": 166,
+      "source_reads_per_week": 51.6,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 658
+     }
+    },
+    "D 시계별 + 후속 몫을 출처 10개당 168시간 3회": {
+     "C3_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.25,
+      "max_cursor_age_h": 154,
+      "source_reads_per_week": 11.4,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C3_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.021,
+      "max_cursor_age_h": 155,
+      "source_reads_per_week": 40.8,
+      "polls_per_week": 5.7,
+      "follow_hours_deferred": 0
+     },
+     "C10_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.617,
+      "max_cursor_age_h": 165,
+      "source_reads_per_week": 13.7,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C10_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.158,
+      "max_cursor_age_h": 167,
+      "source_reads_per_week": 43.8,
+      "polls_per_week": 16.7,
+      "follow_hours_deferred": 0
+     },
+     "C30_req5": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.817,
+      "max_cursor_age_h": 162,
+      "source_reads_per_week": 16.3,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 0
+     },
+     "C30_req20": {
+      "deferred_rate": 0.0,
+      "exhausted_rate": 0.0,
+      "gate_reopen_rate": 0.471,
+      "max_cursor_age_h": 166,
+      "source_reads_per_week": 51.8,
+      "polls_per_week": 50.0,
+      "follow_hours_deferred": 0
+     }
+    }
+   },
+   "rule": "보류율 5% 초과나 예산 소진이 난 설정 수가 가장 적고, 그다음 후속 읽기가 밀린 설정 수, 그다음 커서 최고령이 낮은 안",
+   "bad_configs": {
+    "A 한 묶음, 폴링 먼저(v1 해석)": [
+     6,
+     5,
+     1992
+    ],
+    "B 한 묶음, 요청 먼저": [
+     6,
+     5,
+     1992
+    ],
+    "C 시계별(폴링은 조건부 요청)": [
+     0,
+     2,
+     167
+    ],
+    "D 시계별 + 후속 몫을 출처 10개당 168시간 3회": [
+     0,
+     0,
+     167
+    ]
+   },
+   "chosen": "D 시계별 + 후속 몫을 출처 10개당 168시간 3회"
+  }
+ }
+}
