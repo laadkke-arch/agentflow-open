@@ -7,7 +7,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
-from afledger import Ledger, PrivacyError, studio  # noqa: E402
+from afledger import Ledger, PrivacyError, config, studio  # noqa: E402
 from afledger.adapters import search_github  # noqa: E402
 from afledger.adapters.http import ReplayMiss, Transport  # noqa: E402
 from afledger.adapters.runner import ReceiptRunner, record_receipt  # noqa: E402
@@ -77,7 +77,7 @@ class StudioAndIntake(unittest.TestCase):
         d = json.loads((FIX / "r1/studio_rev1.json").read_text(encoding="utf-8"))
         d.pop("needs")
         req, info = intake(L, p, d)
-        self.assertEqual(info["needs_by"], "i1")
+        self.assertEqual(info["needs_by"], config.INTAKE_RULES)
         slots = {n["slot"] for n in info["needs"]}
         self.assertTrue({"keeps", "breaks_when"} <= slots)
         self.assertEqual(L.db.execute(f"SELECT count(*) FROM {p}.need WHERE req_id=?", (req,)).fetchone()[0], len(slots))

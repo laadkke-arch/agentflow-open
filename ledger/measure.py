@@ -355,6 +355,75 @@ def r1_map():
     return out
 
 
+# ------------------------------------------------------------------------------------------- A4 한국어 20건
+def a4_20():
+    """A4를 한국어 요청 20건으로 넓힌다(08 I19). 고르는 규칙(돌리기 전에 정함): 012 질의 가운데 등급 2 판정이 하나 이상 있고
+    P03 묶음(R1)이 아닌 것, 파일 순서로 앞의 20건. 조건은 원문의 'Pxx-Hn:' 줄에서 읽고(requirements_from_text), 칸별 필요 문장은
+    접수 규칙(config.INTAKE_RULES)이 쓴다. 비교 팔은 같은 규칙을 012의 영어판에 쓴 것(번역 접수의 대용). 서랍은 012 자료집 156항목
+    (+F01 잡음). 판정은 012 qrels(등급 1·2).
+    확인 범위 예산(I18): 런타임이 CPython이라고 둘 때 사용자 판 확인으로 넘길 서랍 후보(적격, 자료집 이름이 '<표준 라이브러리>.<클래스>')
+    수를 top_k(상위 12)와 eligible(적격 전부)로 세고, 외부 시도 = 직접 갈래 낱말 6 + 확인 검색 + 가져오기 2로 한도 10과 비교한다."""
+    import csv
+    import sys as _sys
+    from afledger.adapters.search_github import MAX_TERMS
+    qs = [json.loads(line) for line in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()]
+    qrels: dict[str, dict] = {}
+    for r in csv.DictReader(open(FIX / "af-res-012" / "qrels.tsv", encoding="utf-8"), delimiter="\t"):
+        if r["grade"].isdigit():   # N은 판정 보류(근접 오답 표시 등)라 빼고 센다
+            qrels.setdefault(r["query_id"], {})[r["entry_id"]] = int(r["grade"])
+    chosen = [q for q in qs if any(g == 2 for g in qrels.get(q["id"], {}).values())
+              and not q["id"].startswith("P03")][:20]
+    rows, agg = [], {}
+    for noise in (False, True):
+        L = Ledger()
+        cat = preload_catalog(L)
+        nz = preload_noise(L) if noise else {}
+        inv = {v: k for k, v in cat.items()}
+        p = L.project("A20")
+        for q in chosen:
+            row = {"id": q["id"], "noise": noise}
+            for lang in ("ko", "en"):
+                text = q[lang]
+                reqs = intake_mod.requirements_from_text(text)
+                needs = intake_mod.write_needs(text, reqs)
+                req = L.intake(p, request_key=f"{q['id']}.{lang}", rev=1, at=T0, text=text, selected_part="s",
+                               requirements=reqs, needs=needs)
+                hits = L.search_drawer(p, req, T0, k=5000, log=False)
+                ids = [inv.get(h["obs_id"]) for h in hits]
+                rel = {e: g for e, g in qrels[q["id"]].items() if g >= 1}
+                top = ids[:12]
+                g2 = [e for e, g in rel.items() if g == 2]
+                best2 = min((ids.index(e) + 1 for e in g2 if e in ids), default=None)
+                sym = [h for h in hits if h["eligible"] and re.fullmatch(
+                    r"([a-z_]+)\.[A-Z]\w*", (L.obs(h["obs_id"])["quote"] or "").split(" — ")[0])
+                    and (L.obs(h["obs_id"])["quote"] or "").split(".")[0] in _sys.stdlib_module_names]
+                row[lang] = {"needs_slots": sorted(n["slot"] for n in needs),
+                             "eligible": sum(h["eligible"] for h in hits),
+                             "recall12": round(sum(1 for e in rel if e in top) / len(rel), 3) if rel else None,
+                             "grade2_best_rank": best2, "grade2_in_top12": bool(best2 and best2 <= 12),
+                             "symbol_confirm_top_k": sum(1 for h in sym if hits.index(h) < 12),
+                             "symbol_confirm_eligible": len(sym)}
+                for scope in ("top_k", "eligible"):
+                    row[lang][f"projected_external_{scope}"] = MAX_TERMS + row[lang][f"symbol_confirm_{scope}"] + 2
+            rows.append(row)
+        key = "with_F01" if noise else "catalog_only"
+        rs = [r for r in rows if r["noise"] == noise]
+        agg[key] = {lang: {"mean_recall12": round(sum(r[lang]["recall12"] or 0 for r in rs) / len(rs), 3),
+                           "grade2_in_top12": sum(r[lang]["grade2_in_top12"] for r in rs),
+                           "zero_eligible": sum(1 for r in rs if r[lang]["eligible"] == 0),
+                           "max_symbol_confirm_eligible": max(r[lang]["symbol_confirm_eligible"] for r in rs),
+                           "over_budget_eligible": sum(1 for r in rs if r[lang]["projected_external_eligible"] > 10)}
+                    for lang in ("ko", "en")}
+        agg[key]["ko_misses_grade2_en_finds"] = [r["id"] for r in rs if r["en"]["grade2_in_top12"]
+                                                 and not r["ko"]["grade2_in_top12"]]
+        agg[key]["ko_recall_below_en_by_0.25"] = [r["id"] for r in rs if (r["ko"]["recall12"] or 0)
+                                                  < (r["en"]["recall12"] or 0) - 0.25]
+    out = {"rule": a4_20.__doc__.split("\n")[1:3], "queries": [q["id"] for q in chosen],
+           "intake_rules": __import__("afledger").config.INTAKE_RULES, "summary": agg, "rows": rows}
+    write("measure_a4_20.json", out)
+    return out
+
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
@@ -426,7 +495,7 @@ def main():
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
-           "r6": r6(mode)}
+           "r6": r6(mode), "a4_20": a4_20()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -441,6 +510,7 @@ def main():
     for k, v in res["r6"]["variants"].items():
         print("R6", k, "T1d", v["T1_drawer"], "T1f", v["T1_flow"], "T2", v["T2"], "T3", v["T3"],
               {kk: (vv["asyncio_queue"], vv["asyncio_semaphore"], vv["noise_in_top12"]) for kk, vv in v["drawer"].items()})
+    print("A4-20", json.dumps(res["a4_20"]["summary"], ensure_ascii=False))
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 

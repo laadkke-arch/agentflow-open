@@ -7,6 +7,11 @@ i1은 번역도 모델도 쓰지 않는 규칙이다. 요청 원문의 줄과 �
   - 조건 must_not → breaks_when
   - out_of_scope, 대상 부분/Target part 줄 → 쓰지 않는다
 칸마다 문장을 이어 한 줄로 쓰고, 언어는 원문 그대로 둔다(한글이 있으면 ko). 이 규칙의 쓸모는 A4가 잰다(ledger/out/measure_a4.json).
+
+i2(08 I19) = i1 + 이름표 없는 줄. 012의 K·P1·P2 요청처럼 '목표/전제' 이름표 없이 산문으로 쓴 줄은 i1이 버렸다.
+i2는 그런 줄의 문장마다 단서로 칸을 정한다: 금지 단서(안 된다, 않아야, 금지, 허용하지 않, must not, may not) → breaks_when,
+상한 단서 → keeps, 입력 단서 → input, 그 밖 → summary. 이름표가 있는 줄(R1)은 i1과 같게 다룬다.
+requirements_from_text는 Studio가 조건을 따로 주지 않았을 때 원문의 'P02-H1:' 같은 줄을 조건으로 읽는다(측정용).
 """
 from __future__ import annotations
 
@@ -17,6 +22,9 @@ from . import config, studio
 RULES = config.INTAKE_RULES
 INPUT_CUES = ("입력", "iterator", "producer", "받는", "input", "receive", "lazy")
 BOUND_CUES = ("최대", "상한", "이하", "넘지", "at most", "maximum", "bound", "limit", "no more than")
+PROHIBIT_CUES = ("안 된다", "안 되", "않아야", "금지", "허용하지 않", "허용되지 않", "must not", "may not", "prohibit",
+                 "not allowed", "should not")
+REQ_HEAD = re.compile(r"^[A-Z]+\d*-H\d+$")
 SKIP_PREFIX = ("대상 부분", "target part", "범위 밖", "out of scope")
 
 
@@ -46,8 +54,20 @@ def write_needs(text: str, requirements: list[dict]) -> list[dict]:
             for s in _sentences(body):
                 slot = "input" if any(c in s.lower() for c in INPUT_CUES) else "summary"
                 slots.setdefault(slot, []).append(s)
-        elif any(body.strip() == t for t in req_texts):
+        elif any(body.strip() == t for t in req_texts) or REQ_HEAD.match(head.strip()):
             continue   # 조건 줄은 아래에서 조건 종류로 나눈다
+        elif RULES != "i1" and line.strip() not in req_texts:
+            for s_ in _sentences(line):          # i2: 이름표 없는 산문 줄
+                lo = s_.lower()
+                if any(c in lo for c in PROHIBIT_CUES):
+                    slot = "breaks_when"
+                elif any(c in lo for c in BOUND_CUES):
+                    slot = "keeps"
+                elif any(c in lo for c in INPUT_CUES):
+                    slot = "input"
+                else:
+                    slot = "summary"
+                slots.setdefault(slot, []).append(s_)
     for r in requirements:
         t = r["text"].strip()
         if r["kind"] == "out_of_scope":
@@ -61,6 +81,22 @@ def write_needs(text: str, requirements: list[dict]) -> list[dict]:
         slots.setdefault(slot, []).append(t)
     order = ["input", "output", "keeps", "breaks_when", "summary"]
     return [{"slot": s, "lang": _lang(" ".join(slots[s])), "text": " ".join(slots[s])} for s in order if s in slots]
+
+
+def requirements_from_text(text: str) -> list[dict]:
+    """원문의 'P02-H1: …'·'범위 밖: …' 줄을 조건으로 읽는다. Studio가 조건을 주지 않은 측정용 요청에 쓴다."""
+    out = []
+    for line in text.splitlines():
+        head, sep, body = line.partition(":")
+        h, body = head.strip(), body.strip()
+        if not sep or not body:
+            continue
+        if REQ_HEAD.match(h):
+            kind = "must_not" if any(c in body.lower() for c in PROHIBIT_CUES) else "must"
+            out.append({"code": h.split("-")[-1], "kind": kind, "text": body})
+        elif h.lower() in ("범위 밖", "out of scope"):
+            out.append({"code": "X", "kind": "out_of_scope", "text": body})
+    return out
 
 
 def intake(L, p: str, studio_json: dict) -> tuple[int, dict]:
