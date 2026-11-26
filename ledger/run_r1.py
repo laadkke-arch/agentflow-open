@@ -152,7 +152,7 @@ def run(mode: str = "replay", needs: str = "studio") -> dict:
     searched_urls = {r[0] for r in L.db.execute(
         f"SELECT h.url FROM {p}.search_hit h JOIN {p}.search_run r USING(search_id) WHERE r.req_id=?", (req1,))}
 
-    def folded_list(obs_map):
+    def folded_list(obs_map, fmt, unread_now, tag_now):
         fl, skipped = [], []
         for it_ in plan["folded"]:
             o = obs_map.get(it_["ref"]) if not it_["ref"].startswith("cat:") else catalog[it_["ref"][4:]]
@@ -163,13 +163,13 @@ def run(mode: str = "replay", needs: str = "studio") -> dict:
                 skipped.append({"ref": it_["ref"], "why": "이 요청의 탐색 기록에 없음(단위 1은 관계·분야·언어 갈래가 비어 있다)"})
                 continue
             url = L.link(o) if not it_["ref"].startswith("cat:") else L.obs(o)["url"]
-            fl.append({"url": url, "obs": o, "condition": it_["condition"], "reason": f(it_["reason"])})
-        for u in unread:
-            fl.append({"url": f"https://github.com/{REPO}/blob/{tag}/{u['path']}", "obs": None,
+            fl.append({"url": url, "obs": o, "condition": it_["condition"], "reason": fmt(it_["reason"])})
+        for u in unread_now:
+            fl.append({"url": f"https://github.com/{REPO}/blob/{tag_now}/{u['path']}", "obs": None,
                        "condition": f"읽지 않은 후보 {u['id']}", "reason": u["reason"]})
         return fl, skipped
 
-    folded1, skipped1 = folded_list(obs)
+    folded1, skipped1 = folded_list(obs, f, unread, tag)
     sp = plan["slot_rev1"]
     slot = {k: (f(v) if isinstance(v, str) else v) for k, v in sp.items()}
     slot.update(first=obs.get(sp["first"]), support=[obs[x] for x in sp["support"] if x in obs],
@@ -264,11 +264,7 @@ def run(mode: str = "replay", needs: str = "studio") -> dict:
         if o in obs2:
             L.judge(p, req2, code, obs2[o], v, role, lad, f2(reason), t1,
                     premises=prem.get(pr, pr) if isinstance(pr, str) else pr)
-    unread = []
-    f_save = f
-    f = f2
-    folded2, _ = folded_list(obs2)
-    f = f_save
+    folded2, _ = folded_list(obs2, f2, [], tag2)
     sp2 = dict(plan["slot_rev1"], **plan["slot_rev2"])
     slot2 = {k: (f2(v) if isinstance(v, str) else v) for k, v in sp2.items()}
     slot2.update(first=obs2["q1"], support=[obs2["q2"], obs2["eA"]], flip=[obs2["q1"]])
