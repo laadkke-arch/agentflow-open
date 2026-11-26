@@ -25,7 +25,10 @@ import re
 import sqlite3
 from pathlib import Path
 
-from . import config
+import hmac
+import secrets
+
+from . import config, locate, normalize, privacy
 
 SQL_DIR = Path(__file__).resolve().parent / "sql"
 
@@ -169,6 +172,8 @@ class Ledger:
             self.db.execute(f"ATTACH DATABASE ':memory:' AS {alias}")
             ddl = (SQL_DIR / "project.sql").read_text(encoding="utf-8").replace("{p}", alias)
             self.db.executescript(ddl)
+            # 공용 장부에 두는 영수증·대비 지문의 열쇠(07 D6c). 프로젝트 밖으로 나가지 않는다
+            self.db.execute(f"INSERT OR IGNORE INTO {alias}.secret(one, k) VALUES (1, ?)", (secrets.token_hex(32),))
             self.projects.append(alias)
         return alias
 
@@ -177,9 +182,10 @@ class Ledger:
         if via == "request":
             # 요청이 처음 연 주소의 첫 관측 시각은 날짜까지만 둔다. 누가 언제 무엇을 찾았는지 짐작하지 못하게(07 D6)
             at = utc(at)[:10] + "T00:00:00Z"
+        k = normalize.keys(url)   # 정규화 키(07 R-1, n1). 원래 문자열은 그대로 둔다
         self.db.execute(
-            "INSERT OR IGNORE INTO locator(url, first_seen_at, first_seen_via) VALUES (?,?,?)",
-            (url, at, via))
+            "INSERT OR IGNORE INTO locator(url, first_seen_at, first_seen_via, url_norm, page, target, norm_rules)"
+            " VALUES (?,?,?,?,?,?,?)", (url, at, via, k["url_norm"], k["page"], k["target"], k["rules"]))
         return self.db.execute("SELECT locator_id FROM locator WHERE url=?", (url,)).fetchone()[0]
 
     def _edition(self, locator_id: int, key: str, kind: str, published_at, at: str) -> int:
@@ -191,19 +197,55 @@ class Ledger:
             "SELECT edition_id FROM edition WHERE locator_id=? AND edition_key=?",
             (locator_id, key)).fetchone()[0]
 
-    def receipt(self, runtime: str, program_sha256: str, inp: dict, out: dict, ran_at: str) -> int:
-        body = json.dumps(out, ensure_ascii=False, sort_keys=True)
-        key = sha256("|".join([runtime, program_sha256, json.dumps(inp, sort_keys=True), body]))
-        self.db.execute(
-            "INSERT OR IGNORE INTO receipt(runtime, program_sha256, input_json, output_json, ran_at, idem_key)"
-            " VALUES (?,?,?,?,?,?)",
-            (runtime, program_sha256, json.dumps(inp, sort_keys=True), body, ran_at, key))
-        return self.db.execute("SELECT receipt_id FROM receipt WHERE idem_key=?", (key,)).fetchone()[0]
+    def project_fp(self, p: str, body) -> str:
+        """프로젝트 열쇠로 만든 지문(HMAC-SHA256). 공용에 두는 영수증·대비 지문이다(07 D6c)."""
+        k = self.db.execute(f"SELECT k FROM {p}.secret WHERE one=1").fetchone()[0]
+        text = body if isinstance(body, str) else json.dumps(body, ensure_ascii=False, sort_keys=True)
+        return hmac.new(bytes.fromhex(k), text.encode("utf-8"), "sha256").hexdigest()
+
+    def receipt(self, runtime: str, program_sha256: str, inp: dict, out, ran_at: str, *, p: str | None = None) -> int:
+        """실행 영수증(07 D6c). 입력·출력 본문은 요청 프로젝트 장부에, 공용에는 런타임·프로그램 지문·입출력 지문만 둔다.
+        요청 수치가 든 영수증이 공용으로 가지 않게 p 없이는 쓰지 않는다."""
+        if p is None:
+            raise PrivacyError("실행 영수증의 입력·출력은 요청 프로젝트 장부에 둔다(07 D6c): p를 준다")
+        in_fp, out_fp = self.project_fp(p, inp), self.project_fp(p, out)
+        key = sha256("|".join([runtime, program_sha256, in_fp, out_fp]))
+        with self.db:
+            self.db.execute(
+                "INSERT OR IGNORE INTO receipt(runtime, program_sha256, input_fp, output_fp, ran_on, idem_key)"
+                " VALUES (?,?,?,?,?,?)", (runtime, program_sha256, in_fp, out_fp, utc(ran_at)[:10], key))
+            rid = self.db.execute("SELECT receipt_id FROM receipt WHERE idem_key=?", (key,)).fetchone()[0]
+            self.db.execute(f"INSERT OR IGNORE INTO {p}.receipt_body(receipt_id, input_json, output_json, ran_at)"
+                            " VALUES (?,?,?,?)", (rid, json.dumps(inp, ensure_ascii=False, sort_keys=True),
+                                                  json.dumps(out, ensure_ascii=False, sort_keys=True), utc(ran_at)))
+        return rid
+
+    def receipt_body(self, p: str, receipt_id: int) -> dict | None:
+        r = self.db.execute(f"SELECT * FROM {p}.receipt_body WHERE receipt_id=?", (receipt_id,)).fetchone()
+        return None if r is None else {"input": json.loads(r["input_json"]), "output": json.loads(r["output_json"]),
+                                       "ran_at": r["ran_at"]}
+
+    def observe_run(self, p: str, *, url, edition_key, edition_kind, position, at, receipt_id, statement,
+                    reader=None, published_at=None) -> tuple[int, bool]:
+        """실행 관측(07 D6c). 공용 관측 문장은 영수증이 있다는 것만 말하고, 값 문장은 프로젝트 장부 exec_note에 둔다."""
+        r = self.db.execute("SELECT runtime, program_sha256 FROM receipt WHERE receipt_id=?", (receipt_id,)).fetchone()
+        public = f"실행 영수증: 프로그램 {r['program_sha256'][:12]}을 {r['runtime']}에서 실행했다(입력·출력·값은 요청 프로젝트 장부)"
+        oid, created = self.observe(url=url, edition_key=edition_key, edition_kind=edition_kind, position=position, at=at,
+                                    method="executed", receipt_id=receipt_id, statement=public, reader=reader,
+                                    published_at=published_at, project=p)
+        with self.db:
+            self.db.execute(f"INSERT OR IGNORE INTO {p}.exec_note(obs_id, statement) VALUES (?,?)", (oid, statement))
+        return oid, created
+
+    def exec_note(self, p: str, obs_id: int) -> str | None:
+        r = self.db.execute(f"SELECT statement FROM {p}.exec_note WHERE obs_id=?", (obs_id,)).fetchone()
+        return r[0] if r else None
 
     def observe(self, *, url, edition_key, edition_kind, position, at, method, outcome="content",
                 quote=None, quote_lang=None, statement, flip_position=None, receipt_id=None,
                 published_at=None, via="request", evidence_ref=None, project=None, reader=None,
-                via_alias=None, visibility="public") -> tuple[int, bool]:
+                via_alias=None, visibility="public", anchor_symbol=None, anchor_in_doc=None, map_method=None,
+                map_from=None, byte_span=None) -> tuple[int, bool]:
         """관측을 남긴다. 같은 (판, 위치, 결과, 인용 지문, 방법, 영수증)이면 새 행 대신 sighting을 더한다.
         reader는 판독한 주체(모델 ID·프롬프트 판, 사람)다. via_alias는 이 관측을 연 별칭이다. 둘 다 멱등 키에는 넣지 않는다.
         visibility는 판독 어댑터가 정한다. 공개가 아닌 원문(사용자 저장소, 사내 문서)은 공용 장부에 쓰지 않는다(07 D6)."""
@@ -230,10 +272,13 @@ class Ledger:
                 return row[0], False
             cur = self.db.execute(
                 "INSERT INTO observation(edition_id, position, observed_at, method, outcome, quote_lang,"
-                " quote_fp, statement, evidence_ref, flip_position, receipt_id, reader, via_alias, idem_key)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                " quote_fp, statement, evidence_ref, flip_position, receipt_id, reader, via_alias,"
+                " anchor_symbol, anchor_in_doc, map_method, map_from, map_rules, byte_span, idem_key)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (ed, position, at, method, outcome, quote_lang, fp, statement, evidence_ref,
-                 flip_position, receipt_id, reader, via_alias, key))
+                 flip_position, receipt_id, reader, via_alias, anchor_symbol,
+                 None if anchor_in_doc is None else int(anchor_in_doc), map_method, map_from,
+                 locate.MAP_RULES if map_method else None, byte_span, key))
             obs_id = cur.lastrowid
             if project:
                 self.origin[obs_id] = project
@@ -254,23 +299,26 @@ class Ledger:
             (obs_id, slot, height, lang, text)).fetchone()[0]
 
     def _privacy_lint(self, obs_id: int, text: str):
+        """규칙은 privacy.py(p1·p2, config.PRIVACY_RULES). 모든 프로젝트의 요청 원문과 대조한다."""
         obs = self.db.execute("SELECT q.text AS quote, o.statement FROM observation o"
                               " LEFT JOIN quote_text q USING(quote_fp) WHERE o.obs_id=?", (obs_id,)).fetchone()
-        source_side = set(content_tokens((obs["quote"] or "") + " " + obs["statement"]))
-        for p in self.projects:
-            for r in self.db.execute(f"SELECT text FROM {p}.request_rev"):
-                private = set(content_tokens(r["text"])) - source_side
-                leaked = [t for t in content_tokens(text) if t in private and len(t) >= 5]
-                # 요청에만 있는 긴 내용어가 둘 이상 들어가면 요청 문장을 옮겨 적은 것으로 본다.
-                if len(leaked) >= 2:
-                    # 거절 문장에 다른 프로젝트의 별칭이나 낱말을 넣지 않는다(거절이 비공개 내용을 다른 쓰기 경로로 흘린다).
-                    raise PrivacyError(f"tag repeats {len(leaked)} words that appear only in a private request")
+        source_side = (obs["quote"] or "") + " " + obs["statement"]
+        # 요청 원문과 함께 비공개 칸별 필요 문장도 대조한다(설계 예제는 요청 원문만 봤다, 08 I8)
+        requests = [r["text"] for p in self.projects for r in self.db.execute(
+            f"SELECT text FROM {p}.request_rev UNION ALL SELECT text FROM {p}.need")]
+        privacy.check(text, source_side, requests)
 
-    def contrast(self, left_obs, right_obs, condition, left_value, right_value, receipt_id=None) -> None:
+    def contrast(self, left_obs, right_obs, condition, left_value, right_value, receipt_id=None, *, p: str | None = None):
+        """대비(07 D6c). 조건과 값은 요청 수치를 담으므로 프로젝트 장부에 두고, 공용에는 두 관측과 본문 지문만 둔다."""
+        if p is None:
+            raise PrivacyError("대비 본문은 요청 프로젝트 장부에 둔다(07 D6c): p를 준다")
+        fp = self.project_fp(p, [condition, left_value, right_value])
         with self.db:
-            self.db.execute(
-                "INSERT OR IGNORE INTO contrast(left_obs, right_obs, condition, left_value, right_value, receipt_id)"
-                " VALUES (?,?,?,?,?,?)", (left_obs, right_obs, condition, left_value, right_value, receipt_id))
+            self.db.execute("INSERT OR IGNORE INTO contrast(left_obs, right_obs, body_fp, receipt_id) VALUES (?,?,?,?)",
+                            (left_obs, right_obs, fp, receipt_id))
+            self.db.execute(f"INSERT OR IGNORE INTO {p}.contrast(left_obs, right_obs, condition, left_value, right_value,"
+                            " receipt_id, body_fp) VALUES (?,?,?,?,?,?,?)",
+                            (left_obs, right_obs, condition, left_value, right_value, receipt_id, fp))
 
     def supersede(self, old_obs, new_obs, effect, known_from, effective_from=None) -> None:
         """대체를 쓰고, 앞 관측의 감시(채널·키·층)를 새 관측으로 넘긴다. 기한은 원문 내용이라 넘기지 않는다.
@@ -552,6 +600,20 @@ class Ledger:
                 self.db.execute("INSERT INTO fetch_log(clock, url, edition_key, at, outcome, bytes, job_id)"
                                 " VALUES (?,?,?,?,?,?,?)", (clock, url, edition_key, utc(at), outcome, nbytes, job_id))
 
+    def called(self, p: str, req: int, kind: str, query: str, at: str, outcome: str, total: int | None = None) -> None:
+        """검색 호출을 적는다. 가져오기가 아니라 외부 시도로 센다(budget.py)."""
+        with self.db:
+            self.db.execute(f"INSERT INTO {p}.call_log(req_id, kind, query, at, outcome, total) VALUES (?,?,?,?,?,?)",
+                            (req, kind, query, utc(at), outcome, total))
+
+    def executed(self, p: str, req: int, *, runtime_wanted: str, runtime_ran: str | None, program_sha256: str, at: str,
+                 ok: bool, receipt_id: int | None = None, note: str | None = None) -> None:
+        """실행을 적는다. 가져오기와 따로 센다(07 D1). 원한 판과 실제로 돈 판을 둘 다 남긴다."""
+        with self.db:
+            self.db.execute(f"INSERT INTO {p}.exec_log(req_id, runtime_wanted, runtime_ran, program_sha256, at, ok,"
+                            " receipt_id, note) VALUES (?,?,?,?,?,?,?,?)",
+                            (req, runtime_wanted, runtime_ran, program_sha256, utc(at), int(ok), receipt_id, note))
+
     def request_budget_left(self, p: str, req: int) -> int:
         """이 요청판이 더 가져올 수 있는 원문 수(07 D11). 0이면 budget_exhausted로 답한다."""
         return self.REQUEST_FETCHES - self.fetch_count(p=p, req=req)
@@ -590,33 +652,39 @@ class Ledger:
     # ------------------------------------------------------------------ 공용 장부 읽기
     def obs(self, obs_id: int) -> sqlite3.Row:
         return self.db.execute(
-            "SELECT o.*, q.text AS quote, e.edition_key, e.kind AS edition_kind, e.published_at, l.url"
+            "SELECT o.*, q.text AS quote, e.edition_key, e.kind AS edition_kind, e.published_at, l.url,"
+            " l.url_norm, l.page, l.target, l.norm_rules"
             " FROM observation o JOIN edition e USING(edition_id) JOIN locator l USING(locator_id)"
             " LEFT JOIN quote_text q ON q.quote_fp = o.quote_fp WHERE o.obs_id=?",
             (obs_id,)).fetchone()
 
     def link(self, obs_id: int) -> str:
+        """답에 쓰는 링크. GitHub 소스는 판을 넣은 고정판 줄 링크로 만든다(D10)."""
         o = self.obs(obs_id)
         if o["method"] == "executed":
-            r = self.db.execute("SELECT runtime FROM receipt WHERE receipt_id=?", (o["receipt_id"],)).fetchone()
-            return f"실행 영수증 receipts/r1_queue.py ({r['runtime']}, {o['position'].split()[-1]})"
+            r = self.db.execute("SELECT runtime, program_sha256 FROM receipt WHERE receipt_id=?",
+                                (o["receipt_id"],)).fetchone()
+            return f"실행 영수증 {r['program_sha256'][:12]} ({r['runtime']}, {o['position'].split()[-1]})"
         url = o["url"]
         if "/blob/main/" in url:
             url = url.replace("/blob/main/", f"/blob/{o['edition_key']}/")
-        m = re.search(r"L(\d+)(?:[–-](\d+))?", o["position"])
-        if m and "github.com" in url:
-            url += f"#L{m.group(1)}" + (f"-L{m.group(2)}" if m.group(2) else "")
+        r = locate.parse_position(o["position"])
+        if r and "github.com" in url and "#" not in url:
+            url += f"#L{r[0]}" + (f"-L{r[1]}" if r[1] != r[0] else "")
         return url
 
     def reusable(self, url: str, edition_key: str, position: str, project: str | None = None, at: str | None = None):
         """같은 판·같은 위치의 관측이 있으면 돌려준다. 판이 다르면 None(그 판을 다시 열어야 한다).
         일시 실패(unreachable·truncated)는 재사용하지 않는다. not_found는 '그 판에 없다'는 사실이라 재사용한다.
         at 시각까지 무효·값 바뀜으로 대체됐거나 철회된 판독이면 None이다(현재 관측으로 다시 확인해야 한다, M7e)."""
+        # 재사용 키는 (page, 판, 위치)다(07 R-1 임시안 n1). 같은 문서의 다른 주소 꼴(blob/main, blob/태그, raw)이 만난다.
+        # target으로는 묶지 않는다(전역 병합 금지)
+        page = normalize.keys(url)["page"]
         row = self.db.execute(
             "SELECT o.obs_id FROM observation o JOIN edition e USING(edition_id) JOIN locator l USING(locator_id)"
-            " WHERE l.url=? AND e.edition_key=? AND o.position=? AND o.outcome NOT IN ('unreachable','truncated')"
+            " WHERE l.page=? AND e.edition_key=? AND o.position=? AND o.outcome NOT IN ('unreachable','truncated')"
             " ORDER BY o.observed_at DESC, o.obs_id DESC LIMIT 1",
-            (url, edition_key, position)).fetchone()
+            (page, edition_key, position)).fetchone()
         if not row or self.stale(row[0], at):
             return None
         if not self.features["drawer"] and project and self.origin.get(row[0]) != project:

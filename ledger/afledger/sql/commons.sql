@@ -1,3 +1,6 @@
+-- 확인 장부 공용 장부 스키마(제품 단위 1). 설계 예제 docs/design/final/db/schema.sql에서 옮겼다.
+-- 바꾼 것: locator 정규화 열(R-1 n1), observation 앵커·대응 열(R-1 m1), receipt·contrast는 지문만(07 D6c).
+-- 08-implementation.md I3·I4·I5 참조.
 -- 확인 장부 구조 v1 저장 스키마 (SQLite 3.35 이상, FTS5 필요)
 --
 -- 두 저장소로 나눈다.
@@ -13,8 +16,15 @@ CREATE TABLE IF NOT EXISTS locator (
   locator_id     INTEGER PRIMARY KEY,
   url            TEXT NOT NULL UNIQUE,
   first_seen_at  TEXT NOT NULL,
-  first_seen_via TEXT NOT NULL CHECK (first_seen_via IN ('request','collection','channel','operator'))
+  first_seen_via TEXT NOT NULL CHECK (first_seen_via IN ('request','collection','channel','operator')),
+  -- 정규화 키(07 R-1 임시안). 원래 문자열(url)은 그대로 두고 키를 더한다. 재사용은 (page, 판, 위치)로 찾는다.
+  -- target은 묶어 보여 주는 데만 쓴다(전역 병합 금지). norm_rules가 실패 이유를 담으면 page = url이다.
+  url_norm       TEXT,
+  page           TEXT,
+  target         TEXT,
+  norm_rules     TEXT
 );
+CREATE INDEX IF NOT EXISTS locator_by_page ON locator(page);
 
 -- 주소 별칭: 리다이렉트, 이관, 거울, 보관본. 같은 대상이라는 뜻이 아니라 "이 주소로도 열린다"는 뜻이다.
 CREATE TABLE IF NOT EXISTS locator_alias (
@@ -67,14 +77,17 @@ CREATE TABLE IF NOT EXISTS edition (
   UNIQUE (locator_id, edition_key)
 );
 
--- 실행 영수증: 정확한 런타임, 프로그램 지문, 입력, 출력.
+-- 실행 영수증: 정확한 런타임, 프로그램 지문, 입력·출력의 지문(07 D6c).
+-- 입력·출력 본문은 요청 수치를 담으므로 요청 프로젝트 장부({p}.receipt_body)에 둔다. 지문은 프로젝트 비밀 열쇠로 만든
+-- HMAC이라, 작은 입력(예: maxsize 8)을 사전 대입으로 되찾을 수 없다. 대신 프로젝트 사이 영수증 재사용은 없다(08 I5).
+-- ran_on은 날짜까지만 둔다(07 D6b와 같은 이유).
 CREATE TABLE IF NOT EXISTS receipt (
   receipt_id     INTEGER PRIMARY KEY,
-  runtime        TEXT NOT NULL,
-  program_sha256 TEXT NOT NULL,
-  input_json     TEXT NOT NULL,
-  output_json    TEXT NOT NULL,
-  ran_at         TEXT NOT NULL,
+  runtime        TEXT NOT NULL,      -- 실제로 돈 판(예: CPython 3.12.3). 원한 판과 다르면 프로젝트 장부 exec_log에 둘 다 남는다
+  program_sha256 TEXT NOT NULL,      -- 공개 프로그램의 sha256(요청 수치는 프로그램이 아니라 입력으로 받는다)
+  input_fp       TEXT NOT NULL,
+  output_fp      TEXT NOT NULL,
+  ran_on         TEXT NOT NULL,
   idem_key       TEXT NOT NULL UNIQUE
 );
 
@@ -94,6 +107,13 @@ CREATE TABLE IF NOT EXISTS observation (
   receipt_id    INTEGER REFERENCES receipt(receipt_id),
   reader        TEXT,              -- 판독한 주체: 모델 ID와 프롬프트 판, 또는 사람. 잘못된 판독기의 관측을 골라 다시 확인한다
   via_alias     INTEGER REFERENCES locator_alias(alias_id),  -- 이 별칭을 따라 열었다(07 D5). 별칭 취소 때 인용 자리에 알린다
+  -- 앵커와 판 사이 대응(07 R-1 임시안 m1). 인용 앵커는 quote_fp다. 멱등 키에는 넣지 않는다.
+  anchor_symbol TEXT,              -- ast 기호 경로(예: Queue, Queue.shutdown)
+  anchor_in_doc INTEGER CHECK (anchor_in_doc IN (0,1)),   -- 위치가 그 기호의 docstring 안인가
+  map_method    TEXT CHECK (map_method IN ('direct','exact_quote','symbol','unmapped')),  -- 이 위치를 어떻게 찾았나
+  map_from      INTEGER REFERENCES observation(obs_id),   -- 대응의 출발 관측(앞 판)
+  map_rules     TEXT,
+  byte_span     TEXT,              -- 고정판 원문의 바이트 범위('683-897'). 관문 재열람 때 이 범위만 받는다
   idem_key      TEXT NOT NULL UNIQUE,
   CHECK (outcome <> 'content' OR quote_fp IS NOT NULL OR receipt_id IS NOT NULL OR method = 'intro_only'),
   CHECK (method <> 'executed' OR receipt_id IS NOT NULL)
@@ -127,16 +147,15 @@ CREATE VIRTUAL TABLE IF NOT EXISTS tag_fts USING fts5(
   text, content='tag', content_rowid='tag_id', tokenize='porter unicode61'
 );
 
--- 대비: 같은 조건에서 두 관측이 어떻게 갈리는가. 원문에 대한 사실이라 공용이다.
+-- 대비: 같은 조건에서 두 관측이 어떻게 갈리는가. 조건과 값에 요청 수치가 들어가므로(07 M7c) 본문은
+-- 프로젝트 장부({p}.contrast)에 두고 공용에는 두 관측과 본문 지문(HMAC)만 둔다(07 D6c).
 CREATE TABLE IF NOT EXISTS contrast (
   contrast_id INTEGER PRIMARY KEY,
   left_obs    INTEGER NOT NULL REFERENCES observation(obs_id),
   right_obs   INTEGER NOT NULL REFERENCES observation(obs_id),
-  condition   TEXT NOT NULL,
-  left_value  TEXT NOT NULL,
-  right_value TEXT NOT NULL,
+  body_fp     TEXT NOT NULL,
   receipt_id  INTEGER REFERENCES receipt(receipt_id),
-  UNIQUE (left_obs, right_obs, condition)
+  UNIQUE (left_obs, right_obs, body_fp)
 );
 
 -- 대체: 나중 관측이 앞 관측의 "지금" 결론을 바꾼다. 앞 관측 자체는 그대로 남는다.

@@ -1,3 +1,4 @@
+-- 확인 장부 프로젝트 장부 스키마(제품 단위 1). 설계 예제 project_schema.sql에서 옮기고 D6c·예산 기록 표를 더했다.
 -- 확인 장부 구조 v1 프로젝트 장부 스키마. 프로젝트마다 따로 둔다(ATTACH 별칭 {p}).
 -- 공용 장부 ID(obs_id 등)는 값으로만 든다. 외래 키로 묶지 않는다.
 
@@ -158,6 +159,56 @@ CREATE TABLE IF NOT EXISTS {p}.fetch_log (
   at          TEXT NOT NULL,
   outcome     TEXT NOT NULL CHECK (outcome IN ('ok','not_modified','not_found','unreachable','truncated','unsupported')),
   bytes       INTEGER
+);
+-- 프로젝트 비밀 열쇠. 공용 장부에 두는 영수증·대비 지문(HMAC)을 만든다(07 D6c). 한 행.
+CREATE TABLE IF NOT EXISTS {p}.secret (
+  one INTEGER PRIMARY KEY CHECK (one = 1),
+  k   TEXT NOT NULL
+);
+-- 영수증 본문(07 D6c): 요청 수치가 든 입력과 출력.
+CREATE TABLE IF NOT EXISTS {p}.receipt_body (
+  receipt_id  INTEGER PRIMARY KEY,   -- 공용 receipt.receipt_id(값으로만)
+  input_json  TEXT NOT NULL,
+  output_json TEXT NOT NULL,
+  ran_at      TEXT NOT NULL
+);
+-- 실행 관측의 값 문장(07 D6c). 공용 관측 문장은 "실행 영수증이 있다"만 말한다.
+CREATE TABLE IF NOT EXISTS {p}.exec_note (
+  obs_id    INTEGER PRIMARY KEY,
+  statement TEXT NOT NULL
+);
+-- 대비 본문(07 D6c).
+CREATE TABLE IF NOT EXISTS {p}.contrast (
+  left_obs    INTEGER NOT NULL,
+  right_obs   INTEGER NOT NULL,
+  condition   TEXT NOT NULL,
+  left_value  TEXT NOT NULL,
+  right_value TEXT NOT NULL,
+  receipt_id  INTEGER,
+  body_fp     TEXT NOT NULL,
+  PRIMARY KEY (left_obs, right_obs, condition)
+);
+-- 실행 기록(07 D1: 실행은 가져오기와 따로 센다). 원한 판과 실제로 돈 판을 함께 남긴다.
+CREATE TABLE IF NOT EXISTS {p}.exec_log (
+  exec_id         INTEGER PRIMARY KEY,
+  req_id          INTEGER NOT NULL,
+  runtime_wanted  TEXT NOT NULL,
+  runtime_ran     TEXT,
+  program_sha256  TEXT NOT NULL,
+  at              TEXT NOT NULL,
+  ok              INTEGER NOT NULL CHECK (ok IN (0,1)),
+  receipt_id      INTEGER,
+  note            TEXT
+);
+-- 검색 호출 기록(외부 시도로 센다, budget.py). 질의는 비공개다.
+CREATE TABLE IF NOT EXISTS {p}.call_log (
+  call_id INTEGER PRIMARY KEY,
+  req_id  INTEGER NOT NULL,
+  kind    TEXT NOT NULL,
+  query   TEXT NOT NULL,
+  at      TEXT NOT NULL,
+  outcome TEXT NOT NULL,
+  total   INTEGER
 );
 -- 노출과 이후 행동(평가용).
 CREATE TABLE IF NOT EXISTS {p}.exposure (
