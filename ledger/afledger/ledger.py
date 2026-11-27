@@ -293,6 +293,8 @@ class Ledger:
                 for (old,) in self.db.execute(
                         "SELECT obs_id FROM observation WHERE edition_id=? AND position=? AND method='read_line'"
                         " AND outcome='content' AND quote_fp<>? AND obs_id<>?", (ed, position, fp, obs_id)).fetchall():
+                    if config.CANCEL_RELINK and self.retracted(old) is not None:
+                        continue   # 철회된 판독과는 견주지 않는다(08 I42 규칙 2)
                     linked = self.db.execute("SELECT 1 FROM supersession WHERE (old_obs=? AND new_obs=?) OR"
                                              " (old_obs=? AND new_obs=?)", (old, obs_id, obs_id, old)).fetchone()
                     if not linked:
@@ -371,9 +373,12 @@ class Ledger:
                 self.db.execute("UPDATE recheck_job SET state='done', result_obs=NULL WHERE job_id=?", (j["job_id"],))
             # 하류 다시 잇기(I37 규칙 4): new에서 나간 대체 new→X가 있으면 X를 낸 작업의 채널 원인을 old에 다시 넣는다.
             # 작업자가 X의 판을 old 기준으로 읽고 이미 있는 관측 X로 잇는다(규칙 3). 효과는 old와 견준 것이 된다
-            for (x,) in self.db.execute(
-                    "SELECT s.new_obs FROM supersession s WHERE s.old_obs=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c"
-                    " WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs)", (new_obs,)).fetchall():
+            relink = [x for (x,) in self.db.execute(
+                "SELECT s.new_obs FROM supersession s WHERE s.old_obs=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c"
+                " WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs)", (new_obs,)).fetchall()]
+            if config.CANCEL_RELINK:
+                relink.append(new_obs)   # 취소된 판 자체의 원인도 되살린다(08 I42 규칙 1): 바른 판독이 그 판을 다시 읽게
+            for x in relink:
                 for j in self.db.execute("SELECT job_id, cause, cause_ref, merged_causes FROM recheck_job"
                                          " WHERE result_obs=? AND state='done'", (x,)).fetchall():
                     self._move_causes(j, old_obs, utc(at), only=("channel",))

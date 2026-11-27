@@ -38,7 +38,10 @@ def reason_key(why: str) -> str:
     return next((k for k in REASONS if why.startswith(k)), why)
 
 
-def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=None) -> dict:
+MISREAD = {"rev": "300072", "suffix": " (오독: 기한 연장으로 읽음)", "effect": "changes_value", "cancel_after_h": 48}
+
+
+def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=None, inject_cancel: bool = False) -> dict:
     """probe=True면 매일 12:00Z 틱 시작에 재사용 관문을 묻는다(08 I39, 읽기만). gate(L, 관측, 시각)로 관문을 바꿔 시험할 수 있다."""
     d = d or load()
     revs = {r["id"]: r for r in d["revisions"]}
@@ -75,19 +78,37 @@ def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=
         return [{"id": r["id"], "title": f"future-of-pocket revision {r['id']}", "url": d["kb"], "edition": r["edition"]}
                 for r in reversed(d["revisions"]) if r["first_seen_in_channel"] <= at]
 
+    injected = {"done": False, "obs": None, "cancelled_at": None}
+
     def reader(obs, edition_key, at):
         visible = [r for r in d["revisions"] if r["first_seen_in_channel"] <= at]
         r = next((x for x in visible if x["edition"] == edition_key), None) if edition_key else (visible[-1] if visible else None)
         if not r:
             return None
-        return {"url": d["kb"], "edition_key": r["edition"], "position": POSITION, "quote": r["reading"], "quote_lang": "ko-reading",
-                "statement": r["reading"], "published_at": r["first_seen_in_channel"], "effective_from": r["effective_from"],
+        text = r["reading"]
+        if inject_cancel and r["id"] == MISREAD["rev"] and not injected["done"]:
+            injected["done"] = True                       # 처음 한 번만 잘못 읽는다(08 I42 시나리오 1)
+            text = r["reading"] + MISREAD["suffix"]
+        return {"url": d["kb"], "edition_key": r["edition"], "position": POSITION, "quote": text, "quote_lang": "ko-reading",
+                "statement": text, "published_at": r["first_seen_in_channel"], "effective_from": r["effective_from"],
                 "flip_position": "기한과 가용 범위 문장", "reader": "replay:AF-RES-152", "rev": r["id"],
                 "evidence_ref": f"AF-RES-152@ba038a0a {r['ledger_source']}",
                 "watch": [{"channel": d["kb_history"], "deadline": r["deadline_stated"]}]}
 
     def judge(old_obs, r):
+        if r["quote"].endswith(MISREAD["suffix"]):
+            return MISREAD["effect"]
         return revs[r["rev"]]["effect"]
+
+    def operator(at):
+        """잘못된 대체를 안 시각에서 48시간 뒤 틱 시작에 취소한다(08 I42 시나리오 2)."""
+        if injected["cancelled_at"]:
+            return
+        row = L.db.execute("SELECT s.old_obs, s.new_obs, s.known_from FROM supersession s JOIN observation o ON o.obs_id=s.new_obs"
+                           " JOIN quote_text q ON q.quote_fp=o.quote_fp WHERE q.text LIKE ?", ("%" + MISREAD["suffix"],)).fetchone()
+        if row and _shift(row["known_from"], MISREAD["cancel_after_h"]) <= at:
+            L.cancel_supersession(row["old_obs"], row["new_obs"], at, "판독 오류(재생 주입)")
+            injected.update(cancelled_at=at, obs=row["new_obs"])
 
     w = RecheckWorker(L, reader, judge)
     probes = []
@@ -112,7 +133,8 @@ def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=
     clock = PollingClock(L, w, {
         d["supplier_feed"]: {"listing": supplier_listing, "period_h": PERIOD, "phase_h": phases["supplier"]},
         d["kb_history"]: {"listing": kb_listing, "period_h": PERIOD, "phase_h": phases["kb"]}}, projects=[p],
-        before_tick=probe_fn if probe else None)
+        before_tick=(lambda at: (operator(at), probe_fn(at))) if inject_cancel and probe else
+        operator if inject_cancel else probe_fn if probe else None)
     clock.run(START, END)
 
     # (1) 개정마다 관측 지연
@@ -125,8 +147,9 @@ def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=
              - __import__("datetime").datetime.strptime(r["first_seen_in_channel"], "%Y-%m-%dT%H:%M:%SZ")).total_seconds() / 3600, 1)
     # (2) 대체 사슬의 관측마다 공급자 층 감시
     chain = [pocket0]
-    while True:
-        nxt = L.db.execute("SELECT new_obs FROM supersession WHERE old_obs=?", (chain[-1],)).fetchone()
+    while True:   # 취소된 대체는 따라가지 않는다(08 I42). 취소가 없으면 예전과 같다
+        nxt = L.db.execute("SELECT s.new_obs FROM supersession s WHERE s.old_obs=? AND NOT EXISTS (SELECT 1 FROM"
+                           " supersession_cancel c WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs)", (chain[-1],)).fetchone()
         if not nxt:
             break
         chain.append(nxt[0])
@@ -134,6 +157,18 @@ def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=
                                         " AND w.layer='supplier'", (o,)).fetchone()) for o in chain]
     notices = L.replay(p, run0)["notices"]
     extra = {"probes": probes} if probe else {}
+    if inject_cancel:
+        rev = next(r for r in d["revisions"] if r["id"] == MISREAD["rev"])
+        good = L.db.execute("SELECT min(o.observed_at) FROM observation o JOIN edition e USING(edition_id) JOIN quote_text q"
+                            " ON q.quote_fp=o.quote_fp WHERE e.edition_key=? AND q.text=?", (rev["edition"], rev["reading"])).fetchone()[0]
+        c = injected["cancelled_at"]
+        extra["cancel"] = {"misread_obs": injected["obs"], "cancelled_at": c, "correct_observed_at": good,
+                           "hours_cancel_to_correct": None if not (c and good) else round(
+                               (__import__("datetime").datetime.strptime(good, "%Y-%m-%dT%H:%M:%SZ")
+                                - __import__("datetime").datetime.strptime(c, "%Y-%m-%dT%H:%M:%SZ")).total_seconds() / 3600, 1),
+                           "conflict_alerts": sum(1 for a in L.alerts if a["kind"] == "reading_conflict"),
+                           "reread_alerts": sum(1 for a in L.alerts if a["kind"] == "retracted_reread"),
+                           "notice_effects_pocket": [n["effect"] for n in L.replay(p, run0)["notices"] if n["slot"] == 1]}
     return extra | {"phases": phases, "delays_h": delays, "max_delay_h": max(v for v in delays.values() if v is not None) if all(
         v is not None for v in delays.values()) else None, "missed": [k for k, v in delays.items() if v is None],
         "chain_editions": [L.obs(o)["edition_key"] for o in chain], "supplier_watch_alive": supplier_alive,
@@ -211,6 +246,39 @@ def run_reuse(n_phases: int = 12, seed: int = 7, gate=None) -> dict:
             "per_phase": per}
 
 
+def run_cancel(n_phases: int = 12, seed: int = 7, rev: str = "300072") -> dict:
+    """취소가 든 재생 위상(08 I42). 지금 코드(CANCEL_RELINK=False)와 규칙을 넣은 코드를 같은 위상으로 돈다."""
+    from afledger import config
+    saved, saved_rev = config.CANCEL_RELINK, MISREAD["rev"]
+    MISREAD["rev"] = rev
+    d = load()
+    base_chain = None
+    out = {"note": f"기록 재생에 rev:{rev} 오독 1회와 48시간 뒤 취소를 주입했다(08 I42).", "misread": dict(MISREAD)}
+    try:
+        for name, flag in (("current_code", False), ("with_rules", True)):
+            config.CANCEL_RELINK = flag
+            rng = random.Random(seed)
+            per = []
+            for _ in range(n_phases):
+                ph = {"supplier": rng.randrange(PERIOD), "kb": rng.randrange(PERIOD)}
+                if base_chain is None or ph not in [b[0] for b in base_chain]:
+                    base_chain = (base_chain or []) + [(ph, run_phase(ph, d)["chain_editions"])]
+                r = run_phase(ph, d, inject_cancel=True)
+                ref = next(c for p_, c in base_chain if p_ == ph)
+                per.append({"phases": ph, "max_delay_h": r["max_delay_h"], "supplier_watch_alive": all(r["supplier_watch_alive"]),
+                            "notices_principle_slot": r["notices_principle_slot"],
+                            "chain_same_as_no_injection": r["chain_editions"] == ref, "chain_editions": r["chain_editions"],
+                            "follow_budget_skips": r["follow_budget_skips"]} | r["cancel"])
+            hrs = [x["hours_cancel_to_correct"] for x in per]
+            out[name] = {"all_within_24h": all(h is not None and h <= 24 for h in hrs), "hours_cancel_to_correct": hrs,
+                         "chains_same": all(x["chain_same_as_no_injection"] for x in per),
+                         "criteria_2_3": all(x["supplier_watch_alive"] and x["notices_principle_slot"] == 0 for x in per),
+                         "conflict_alerts": [x["conflict_alerts"] for x in per], "per_phase": per}
+    finally:
+        config.CANCEL_RELINK, MISREAD["rev"] = saved, saved_rev
+    return out
+
+
 def compare() -> dict:
     """D4(기한 읽기 셋)와 D11(후속 몫 168시간당 3회)의 충돌을 본다(08 I22). 세 경우를 같은 위상 12개로 돈다.
     deadline_separate가 결정된 기본(b2, 08 I23)이고 design_D4_in_follow는 b1이다."""
@@ -260,3 +328,12 @@ if __name__ == "__main__":
                                                 "stale_reuse_by_phase": [x["stale_reuse"] for x in diag["per_phase"]]}
     (HERE / "out" / "unit2_reuse.json").write_text(json.dumps(reuse, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print("reuse gate", json.dumps(reuse["total"], ensure_ascii=False))
+    canc = run_cancel()
+    diag = run_cancel(rev="308355")
+    canc["diagnostic_rev_308355"] = {"note": "진단(판정 밖): 같은 주입을 rev:308355에", **{
+        k: {kk: v for kk, v in diag[k].items() if kk != "per_phase"} | {
+            "chains_differ": [x["phases"] for x in diag[k]["per_phase"] if not x["chain_same_as_no_injection"]]}
+        for k in ("current_code", "with_rules")}}
+    (HERE / "out" / "unit2_cancel.json").write_text(json.dumps(canc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print("cancel", {k: {kk: canc[k][kk] for kk in ("all_within_24h", "chains_same", "criteria_2_3")}
+                     for k in ("current_code", "with_rules")})

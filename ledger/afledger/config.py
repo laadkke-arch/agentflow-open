@@ -24,6 +24,7 @@ REQUEST_FETCHES = 4                # 요청판 하나의 가져오기 수
 REQUEST_BYTES = 1 << 20            # 요청판 하나가 받는 원문 바이트(1 MiB)
 REQUEST_EXTERNAL_ATTEMPTS = 10     # 요청판 하나의 외부 시도(검색 호출 + 가져오기)
 FOLLOW_FETCHES_PER_10_SOURCES = 3  # 후속 시계, 168시간당 감시 출처 10개마다
+CANCEL_RELINK = False  # 08 I42 규칙 1·2(취소된 판의 원인 되살리기, 철회된 관측과 충돌 검사 안 함). 비교 뒤 정한다
 RETRY_WAIT_H = 2  # 일시 실패 뒤 다시 하기까지 기다림(152 재시도 구성, 08 I41)
 RETRY_MAX = 2  # 한 작업의 다시 하기 횟수(처음 시도 합쳐 3회)
 RETRY_OUTCOMES = ("unreachable", "truncated")  # 다시 하는 실패. not_found·unsupported는 사실이라 다시 하지 않는다
