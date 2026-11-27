@@ -123,11 +123,24 @@ class J2AndPickingI48(unittest.TestCase):
         r = measure.i45(write_out=False)
         j2 = r["by_session"]["J2"]
         self.assertEqual((j2["exact_agree"], j2["orig_higher"], j2["orig_lower"], j2["unopened"]), (197, 120, 2, 8))
-        self.assertEqual((r["b_pool_with_orig"], r["missing"]), (340, {"j3_requested": 102, "unopened": 8}))
-        self.assertIsNone(r["pick_orig"])
+        self.assertEqual(r["by_session"]["J3"]["pairs"] if "J3" in r["by_session"] else 102, 102)
 
     def test_picking_rule_runs_at_full_coverage(self):
         import measure
         r = measure.i45(jo=measure._judgments(), write_out=False)   # J_tag를 J_orig 자리에: 규칙 경로만 본다
         self.assertEqual(r["missing"], {})
         self.assertEqual(r["pick_orig"]["chosen"], "r2")                 # I32와 같은 판정이면 같은 답
+        self.assertTrue(r["pick_orig"]["decided"])
+
+
+class BothBoundsI50(unittest.TestCase):
+    """08 I50(받은 편지 N4): 두 끝이 같은 설정을 고르면 정한다. 꼬리표 판정으로 채우지 않는다."""
+
+    def test_j3_joined_and_both_bounds_pick_r2(self):
+        import measure
+        r = measure.i45(write_out=False)
+        self.assertEqual((r["b_pool_with_orig"], r["missing"]), (440, {"unopened": 10}))
+        self.assertEqual(r["by_session"]["J3"]["orig_grades"], {"0": 36, "2": 40, "1": 24, "?": 2})
+        p = r["pick_orig"]
+        self.assertEqual((p["chosen_lower"], p["chosen_upper"], p["decided"], p["chosen"]), ("r2", "r2", True, "r2"))
+        self.assertLessEqual(p["B_orig_lower"]["r2"], p["B_orig_upper"]["r2"])

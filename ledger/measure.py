@@ -1577,21 +1577,40 @@ def i45(jo: dict | None = None, write_out: bool = True):
                           "orig_higher": sum(v for (a, b), v in opened.items() if b > a),
                           "orig_lower": sum(v for (a, b), v in opened.items() if b < a),
                           "confusion_tag_to_orig": {f"{a}->{b}": v for (a, b), v in sorted(c.items())}}
-    pick = None
-    if not missing:
-        # 08 I48 규칙 3: I32 고르기 규칙을 J_orig로. link-index 동률 깨기(3)는 건너뛴다(J_orig 없음, 판정자를 섞지 않음)
-        prev = json.loads((OUT / "measure_i32.json").read_text(encoding="utf-8"))["results"]
-        order = ["r2", "r5", "p5_r2", "p5_r5"]
-        cand = [n for n in order if prev[n]["r1_flow_ok"]]
-        ranked = sorted(cand, key=lambda n: (-res[n]["orig_judge_lower"]["B_met"],
-                                             -sum(prev[n]["recall12_catalog_only"].values()), order.index(n)))
-        pick = {"ranking": ranked, "chosen": ranked[0] if ranked else None,
-                "B_orig": {n: res[n]["orig_judge_lower"]["B_met"] for n in order}}
+    for sess in sorted({r["session"].split("-")[0] for r in rows if r["prompt"] == "j3"}):
+        rs = [r for r in rows if r["session"].split("-")[0] == sess]
+        c = Counter((str(jt.get((r["request"], r["url"]), "-")), r["grade"]) for r in rs)
+        opened = {k: v for k, v in c.items() if k[1] != "?" and k[0] != "-"}
+        sessions[sess] = {"pairs": len(rs), "unopened": sum(v for k, v in c.items() if k[1] == "?"),
+                          "orig_grades": dict(Counter(r["grade"] for r in rs)),
+                          "exact_agree": sum(v for (a, b), v in opened.items() if a == b),
+                          "binary_agree": sum(v for (a, b), v in opened.items() if (a == "0") == (b == "0")),
+                          "orig_higher": sum(v for (a, b), v in opened.items() if b > a),
+                          "orig_lower": sum(v for (a, b), v in opened.items() if b < a),
+                          "confusion_tag_to_orig": {f"{a}->{b}": v for (a, b), v in sorted(c.items())}}
+    # 08 I48 규칙 3: I32 고르기 규칙을 J_orig로. link-index 동률 깨기(3)는 건너뛴다(J_orig 없음, 판정자를 섞지 않음).
+    # 08 I50(고친 규칙 4): 두 끝(남은 행을 모두 잡음 / 모두 관련)에서 같은 설정을 고르면 정한다
+    prev = json.loads((OUT / "measure_i32.json").read_text(encoding="utf-8"))["results"]
+    order = ["r2", "r5", "p5_r2", "p5_r5"]
+    cand = [n for n in order if prev[n]["r1_flow_ok"]]
+
+    def ranked(bound):
+        return sorted(cand, key=lambda n: (-res[n][bound]["B_met"], -sum(prev[n]["recall12_catalog_only"].values()),
+                                           order.index(n)))
+    lo, hi = ranked("orig_judge_lower"), ranked("orig_judge_upper")
+    same = bool(lo) and lo[0] == hi[0]
+    pick = {"ranking_lower": lo, "ranking_upper": hi, "chosen_lower": lo[0] if lo else None,
+            "chosen_upper": hi[0] if hi else None, "decided": not missing or same,
+            "chosen": (lo[0] if (not missing or same) else None),
+            "B_orig_lower": {n: res[n]["orig_judge_lower"]["B_met"] for n in order},
+            "B_orig_upper": {n: res[n]["orig_judge_upper"]["B_met"] for n in order}}
     out = {"rules": "08 I45", "judges": {"tag": "이 세션의 모델, 꼬리표 문장만(I25·I27·I32·I33)",
                                          "orig": "opensource judge/ dot D 모델, 원문을 엶(사람 아님)"},
            "orig_pairs": len(jo), "j1": stats, "b_pool_pairs": len(pool), "b_pool_with_orig": len(pool) - len(missing),
            "missing": dict(cov), "by_session": sessions,
-           "decision": "판정 안 한 행이 남아 정하지 않음(I45 규칙 4)" if missing else "J_orig로 고름(I48 규칙 3)",
+           "decision": ("J_orig로 고름(풀을 다 덮음)" if not missing else
+                        "두 끝이 같은 설정을 골라 정함(I50 규칙 4a)" if same else
+                        "두 끝이 달라 J4를 기다림(I50 규칙 4b)"),
            "pick_orig": pick, "B_catalog20k": res}
     if write_out:
         write("measure_i45.json", out)
