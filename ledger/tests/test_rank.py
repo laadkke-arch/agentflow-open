@@ -66,5 +66,30 @@ class OneSlotEligibilityI24(unittest.TestCase):
         self.assertEqual(out["e2"], {o: True, o2: False})     # e2: 그 칸에서 서로 다른 내용어 둘(bounded, block)
 
 
+class RrfLengthR5(unittest.TestCase):
+    def test_r5_prefers_the_short_tag_inside_a_ranker_where_r4_prefers_the_long_one(self):
+        out = {}
+        for rule in ("r4", "r5"):
+            L = Ledger()
+            L.rank_rules = rule
+            short, _ = L.observe(url="https://example.org/s", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                                 method="intro_only", statement="s")
+            L.tag(short, "summary", "one_up", "en", "bounded queue blocks producer")
+            long_, _ = L.observe(url="https://example.org/l", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                                 method="intro_only", statement="l")
+            L.tag(long_, "summary", "one_up", "en", "bounded queue blocks producer worker pool scheduler metrics tracing "
+                  "dashboards retries timeouts logging alerts storage replication sharding consensus snapshots")
+            for i in range(6):
+                o, _ = L.observe(url=f"https://example.org/x{i}", edition_key="v1", edition_kind="fetch", position="§",
+                                 at=T, method="intro_only", statement="x")
+                L.tag(o, "summary", "one_up", "en", f"unrelated record {i} worker")
+            p = L.project("A")
+            req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[],
+                           needs=[{"slot": "summary", "lang": "en", "text": "bounded queue blocks producer worker"}])
+            out[rule] = [h["obs_id"] for h in L.search_drawer(p, req, T, k=2, log=False)]
+        self.assertEqual(out["r4"][0], long_)       # 길이 보정 없는 RRF: 낱말을 더 맞힌 긴 꼬리표가 앞(08 I28의 실패 모습)
+        self.assertEqual(out["r5"][0], short)       # r5: 검색기 안에서 r2 길이 보정
+
+
 if __name__ == "__main__":
     unittest.main()
