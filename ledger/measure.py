@@ -1498,7 +1498,8 @@ def main():
            "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24(), "i25_pairs": i25_collect(), "i25": i25_score(),
            "i26": i26(), "i26_rank": i26_rank(), "i26_combo": i26_combo(),
            "i27": i27(), "i27_judged": i27_score(), "i28": i28(), "i29": i29(),
-           "i30": i30(), "i31": i31(), "i32_run": i32_run_both(), "i32": i32_decide(), "i32_human": i32_human_sample()}
+           "i30": i30(), "i31": i31(), "i32_run": i32_run_both(), "i32": i32_decide(), "i32_human": i32_human_sample(),
+           "i33_run": i33_run(), "i33": i33_decide()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -1523,6 +1524,7 @@ def main():
     print("I28", res["i28"]["adopt_r4"], res["i28"]["worse"], "I29", res["i29"]["recommend_reask"])
     print("I30", res["i30"]["adopt_p5"], res["i30"]["worse"], "I31", res["i31"]["adopt_r5"], res["i31"]["worse"])
     print("I32", res["i32"]["ranking"], {n: r["catalog20k"]["B_met"] for n, r in res["i32"]["results"].items()})
+    print("I33", res["i33"]["ranking"], {n: r["catalog20k"]["B_met"] for n, r in res["i33"]["results"].items()})
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 

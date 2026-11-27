@@ -74,6 +74,19 @@ class PooledJudgingI32(unittest.TestCase):
         self.assertTrue(all(r["human_grade"] == "" for r in rows))      # 사람이 채울 칸
 
 
+class MaxTagI33(unittest.TestCase):
+    def test_six_settings_are_fully_judged_and_the_default_is_the_measured_choice(self):
+        import csv
+        import drawer_load
+        import measure
+        self.assertEqual(measure.i32_pool(cfgs=("catalog20k", "linkindex_real"), names=measure.I33_ORDER), [])
+        o = load("measure_i33.json")
+        p5, rank, _ = measure.I33_SETTINGS[o["chosen"]]
+        self.assertEqual((drawer_load.CATALOG_P5_TAGS, config.RANK_RULES), (p5, rank))
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i33" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertTrue(all(r["level"] in ("L1", "L2", "L3", "L4", "X?") and r["original"] for r in rows))
+
+
 if __name__ == "__main__":
     unittest.main()
 
