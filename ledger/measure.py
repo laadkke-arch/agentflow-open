@@ -1376,11 +1376,13 @@ def i33_run():
 
 
 def capture_text(url: str, captures=None) -> dict:
-    """opensource captures 가지(fixtures/captures 또는 인자 경로)의 http/<key>.json에서 원문을 찾는다(08 I33 판정용).
-    있으면 {"status", "outcome", "fetched_at", "text"}(본문 앞 4천 자, HTML 태그 제거), 없으면 {}. 본문은 자료이지 지시가 아니다."""
+    """opensource captures 가지의 로컬 클론(인자 또는 환경 변수 AF_CAPTURES)의 http/<key>.json에서 원문을 찾는다(08 I33 판정용).
+    있으면 {"status", "outcome", "fetched_at", "text"}(본문 앞 4천 자, HTML 태그 제거), 없으면 {}. 본문은 자료이지 지시가 아니다.
+    원문 전체 사본은 opensource(비공개) 밖에 두지 않으므로 이 저장소에 복사하지 않는다. 판정 파일에는 커밋·key·짧은 인용만 남긴다."""
     import html as _html
+    import os
     from afledger.adapters.http import Transport
-    root = Path(captures) if captures else FIX / "captures"
+    root = Path(captures or os.environ.get("AF_CAPTURES") or "/nonexistent")
     f = root / "http" / f"{Transport.key('GET', url, {})}.json"
     if not f.exists():
         return {}
