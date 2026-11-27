@@ -845,6 +845,7 @@ class Ledger:
                 d["score"] += r["score"]
                 d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
                 d["matched"] += [m for m in matched if m not in d["matched"]]
+                d.setdefault("rk", {}).setdefault((n["slot"], "en"), set()).update(matched)   # r4: 검색기 = (필요 칸, 언어)
                 d["func"] |= {m for m in matched if m in FUNCTION_WORDS or m.isdigit()}
         if self.token_rules == "t2":
             self._drawer_ko(needs, at, per_obs, include_function_words)
@@ -866,6 +867,7 @@ class Ledger:
         hits = hits[:k]
         for d in hits:
             d.pop("func", None)
+            d.pop("rk", None)
             # 서랍은 옛 관측의 꼬리표로도 적중한다. 인용 전에 현재 관측을 확인하라고 같이 돌려준다(M7e)
             d["current"] = self.current(d["obs_id"], at)
         if not log:   # 진단용 검색(기능어 포함 감사 등)은 탐색 기록에 남기지 않는다
@@ -920,6 +922,9 @@ class Ledger:
         점수는 작을수록 앞이다(설계와 같은 방향)."""
         st = self._drawer_stats(at)
         b = config.RANK_LENGTH_B if self.rank_rules in ("r2", "r3") else 0.0
+        if self.rank_rules == "r4":
+            self._rrf(hits, st)
+            return
         for d in hits:
             best: dict[str, float] = {}
             field: dict[str, str] = {}
@@ -953,6 +958,40 @@ class Ledger:
                 # 진단용(08 I20, 채택 안 함): 자격의 "서로 다른 내용어 둘"을 IDF 문턱 이상인 단위로만 센다
                 d["eligible"] = sum(1 for v in best.values() if v >= self.elig_idf_min) >= 2
 
+    def _unit_idf(self, m: str, st: dict) -> tuple[str, float]:
+        if "~" in m:
+            unit, key = m.split("~")[0], ("kg", m.split("~")[1])
+        elif re.search(r"[가-힣]", m):
+            unit, key = m, ("kw", m)
+        else:
+            unit, key = "en:" + stem(m), ("en", stem(m))
+        df = st["df"].get(key, 0)
+        return unit, math.log(1 + (st["n"] - df + 0.5) / (df + 0.5))
+
+    def _rrf(self, hits: list, st: dict) -> None:
+        """규칙 판 r4(08 I28): 검색기 = (필요 칸, 언어). 검색기마다 맞은 단위의 IDF 합(r1, 길이 정규화 없음)으로 순위를 내고
+        RRF로 합친다: 점수 = 검색기마다 1/(RRF_K + 순위)의 합. 한 검색기에만 나온 관측도 남긴다(외부 조인). 결과 창은 자르지 않는다.
+        근거(opensource catalog/claims/F30.tsv @ 286d9d55, 모두 L1): Elastic RRF retriever(C5-S03-b1-r12, rank_constant 기본 60),
+        pyterrier fusion 외부 조인(C5-S03-b3-r09). 점수는 작을수록 앞이다."""
+        per_ranker: dict = {}
+        for d in hits:
+            for rk, ms in d.get("rk", {}).items():
+                best: dict[str, float] = {}
+                for m in ms:
+                    if m in d.get("func", ()):
+                        continue
+                    unit, idf = self._unit_idf(m, st)
+                    best[unit] = max(best.get(unit, 0.0), idf)
+                if best:
+                    per_ranker.setdefault(rk, []).append((sum(best.values()), d["obs_id"]))
+        fused: dict[int, float] = {}
+        for rk, xs in per_ranker.items():
+            xs.sort(key=lambda t: (-t[0], t[1]))
+            for i, (_sc, oid) in enumerate(xs, 1):
+                fused[oid] = fused.get(oid, 0.0) + 1.0 / (config.RRF_K + i)
+        for d in hits:
+            d["score"] = -fused.get(d["obs_id"], 0.0)
+
     def _drawer_ko(self, needs, at, per_obs: dict, include_function_words: bool) -> None:
         """한국어 두 층(어절 줄기·음절 2-gram)으로 같은 칸 꼬리표를 맞춘다(07 R-5, t2). 결과는 per_obs에 더한다."""
         for n in needs:
@@ -976,6 +1015,7 @@ class Ledger:
                 d["score"] += r["score"]
                 d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
                 d["matched"] += [m for m, _f in matched if m not in d["matched"]]
+                d.setdefault("rk", {}).setdefault((n["slot"], "ko"), set()).update(m for m, _f in matched)
                 d["func"] |= {m for m, f in matched if f}
 
     def search_fresh(self, p: str, req: int, at: str, branch_results: dict[str, list[dict]]) -> list[dict]:

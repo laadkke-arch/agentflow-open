@@ -940,6 +940,47 @@ def i27(rank=None, out_name="measure_i27.json"):
     write(out_name, out)
     return out
 
+
+# ------------------------------------------------------------------------------------------- I28 RRF
+def i28():
+    """08 I28: 서랍 순위 r4(검색기 = (필요 칸, 언어), 검색기 안은 IDF 합, RRF k=60으로 결합) 대 r2.
+    채택 규칙(돌리기 전에 정함): 실제 행 2만 개(I27)에서 A4 한국어 판정 잡음(I25 판정 이어 씀, 판정 안 한 것은 잡음) 평균이 줄고,
+    R1 손 문장·자동 한국어·A4 영어판의 판정 잡음이 실제 행 2만 개와 link-index 실제 잡음만(I25) 어디서도 늘지 않고,
+    A4 자료집만 회수율(한국어·영어판)이 줄지 않고, 실제 행 2만 개에서 R1 흐름의 완료 기준 2가 그대로면 r4를 기본으로 한다."""
+    from afledger import config
+    saved = config.RANK_RULES
+    res = {}
+    try:
+        for rank in sorted(("r2", "r4"), key=lambda r: r == saved):
+            config.RANK_RULES = rank
+            a = a4_20()
+            c = i27(rank, out_name=f"measure_i28_catalog_{rank}.json")
+            i25_collect(out_name=f"i28_pairs_{rank}.json")
+            sc = i25_score(pairs_file=f"i28_pairs_{rank}.json", out_name=f"measure_i28_linkindex_{rank}.json")
+            li = sc["by_config"]["real_only"]
+            res[rank] = {"recall12_catalog_only": {lang: a["summary"]["catalog_only"][lang]["mean_recall12"] for lang in ("ko", "en")},
+                         "catalog20k": {"r1_hand": c["r1"]["R1.hand"]["noise_judged"], "r1_i2_ko": c["r1"]["R1.i2_ko"]["noise_judged"],
+                                        "a4_ko": c["a4_20"]["ko"]["noise_judged"], "a4_en": c["a4_20"]["en"]["noise_judged"],
+                                        "a4_ko_estimate": c["a4_20"]["ko"]["noise_estimate"],
+                                        "a4_en_estimate": c["a4_20"]["en"]["noise_estimate"],
+                                        "le2_judged": {l: c["a4_20"][l]["le2_noise_judged"] for l in ("ko", "en")}},
+                         "linkindex_real": {"r1_hand": li["r1"]["R1.hand"]["noise_after"], "r1_i2_ko": li["r1"]["R1.i2_ko"]["noise_after"],
+                                            "a4_ko": li["a4_20"]["ko"]["mean_noise_after"], "a4_en": li["a4_20"]["en"]["mean_noise_after"]},
+                         "r1_flow": c["r1_flow"],
+                         "r1_ranks": {k: (v["asyncio_queue"], v["asyncio_semaphore"]) for k, v in c["r1"].items()}}
+    finally:
+        config.RANK_RULES = saved
+    a, b = res["r2"], res["r4"]
+    flow_ok = all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                  for v in b["r1_flow"].values())
+    worse = [f"{cfg}.{k}" for cfg in ("catalog20k", "linkindex_real") for k in ("r1_hand", "r1_i2_ko", "a4_en")
+             if b[cfg][k] > a[cfg][k]]
+    worse += [f"recall.{l}" for l in ("ko", "en") if b["recall12_catalog_only"][l] < a["recall12_catalog_only"][l]]
+    adopt = b["catalog20k"]["a4_ko"] < a["catalog20k"]["a4_ko"] and not worse and flow_ok
+    out = {"rule": i28.__doc__.split("\n")[1:5], "results": res, "worse": worse, "r1_flow_ok": flow_ok, "adopt_r4": adopt}
+    write("measure_i28.json", out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
