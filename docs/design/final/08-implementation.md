@@ -660,6 +660,34 @@
 - **시험.** `test_rank.MaxTagR6`, `test_measure.MaxTagI33`(여섯 설정의 판정 풀이 비어 있고, 기본값이 비교가 고른 설정과 같고, 판정 행마다 확인 단계와 원문 칸이 있음). 시험 85개.
 - **영향.** 07 R-6.
 
+### I35. 단위 2 이어서: 채널 변화 커서와 겹침 구간 결번(규칙 먼저)
+
+- **결정(사용자, 2026-11-27 다섯째).** R-6을 멈추고 둘째 구현 단위(변경 채널·감시)를 잇는다. 원문 자료는 opensource catalog F09·F14다. 규칙을 먼저 적고 항목마다 커밋한다.
+- **문제(구현에서 본 것).**
+  - 채널 커서는 `channel.last_polled_at`, 즉 폴링을 시도한 시각이다. 재사용 관문 조건 (1)("채널 커서가 주기의 2배 안")도 이 값을 본다.
+  - 조건부 채널(`ConditionalFileChannel`)은 오류 화면이나 404를 받으면 기준선을 옮기지 않으려고 이전 목록을 그대로 돌려준다. 그런데 `poll`은 받은 목록이 무엇이든 `last_polled_at`을 지금으로 바꾼다. 그래서 원문에 닿지 못한 폴링도 커서를 새것으로 보이게 하고, 관문은 그 동안 재사용을 허락한다.
+  - 04 7절의 "겹침 구간 결번(직전 ID가 48시간 겹침에 없음) → 전체 목록 1회" 규칙은 표에만 있고 구현되어 있지 않다.
+- **원문(데이터, 커밋 [`7695256`](https://github.com/laadkke-arch/opensource/tree/769525650df4176b2358aa1252811a54a7307761/catalog/claims)).**
+  - Kubernetes API concepts(B11-S01-b3-r09, **L4**): "It is a special kind of event to mark that all changes up to a given `resourceVersion` the client is requesting have already been sent." 알림이 없어도 "여기까지 다 받았다"는 진행 표시로 커서를 전진시킨다(BOOKMARK).
+  - rss-curator(B4-S01-b2-r15, **L3**): 외부 전송 실패를 성공으로 기록하지 않는 회귀 시험. 실패한 처리로는 완료 상태와 체크포인트를 옮기지 않는다.
+  - EventStore(B8-S01-b1-r14, **L3**): 필터에서 제외된 사건도 체크포인트를 전진시킨다.
+  - Watchman clockspec(W1-S03-b1-r13, **L1**): "ticking as changes are detected rather than as time moves." 커서는 시각이 아니라 변화로 센다.
+  - RFC 5005(W1-S03-b1-r03, **L1**): "clients SHOULD NOT present paged feeds as coherent or complete." 목록의 한 쪽만으로 결번 여부를 판단하지 않는다.
+- **규칙(구현 전에 정함).**
+  1. 폴링 결과를 셋으로 나눈다. `ok`는 목록을 받아 처리했다는 뜻이고 304도 여기에 든다. `error`는 원문에 닿지 못했거나 기대 표지가 없다는 뜻이다. `gap`은 창(window)으로 받는 채널에서 직전 최신 ID가 받은 목록에 없다는 뜻이다.
+  2. 채널은 시도 시각(`last_polled_at`)과 따로 **확인 커서**를 가진다. 확인 커서는 `confirmed_at`(마지막 `ok` 시각)과 `cursor`(지금까지 본 외부 ID 집합의 지문)다. `ok`만 확인 커서를 옮긴다. 새 ID가 없는 `ok`도 옮긴다(BOOKMARK). 감시에 걸리지 않는 항목도 확인 커서에 들어간다(EventStore).
+  3. `error`는 확인 커서를 옮기지 않는다(rss-curator). 시도 시각은 운영 지표로만 남긴다.
+  4. 창 채널(`windowed=True`)에서 기준선이 있는데 직전 최신 ID가 받은 목록에 없으면 `gap`이다. 새 ID는 넣되 확인 커서는 옮기지 않는다. 경보 `channel_gap_suspected`를 남기고 채널에 `needs_full_listing`을 켠다. 다음 폴링에 전체 목록(`windowed=False`)이 오면 그 표지를 끄고 확인 커서를 옮긴다(04 7절 "전체 목록 1회", RFC 5005). 창이 아닌 채널은 지금처럼 전체 목록으로 본다.
+  5. 재사용 관문 조건 (1)은 `confirmed_at`을 본다. 확인 커서가 주기의 2배보다 늙었으면 다시 연다.
+  6. `poll`의 기존 호출(`poll(url, listing, at)`)은 `ok`·창 아님으로 본다. 그래서 설계 시험 33개의 동작은 바뀌지 않는다.
+- **합격 조건(구현 전에 정함).**
+  - (a) 설계 시험 33개와 기존 시험이 그대로 통과한다.
+  - (b) 오류 폴링만 이어지면 `confirmed_at`이 멈추고, 주기의 2배가 지나면 관문이 다시 연다. 지금 코드는 재사용을 허락한다.
+  - (c) 창 채널에서 직전 최신 ID가 빠진 목록은 `gap` 경보를 내고 확인 커서를 멈춘다. 다음 전체 목록에서 회복한다.
+  - (d) 새 ID가 없는 정상 폴링은 확인 커서를 옮긴다.
+  - (e) EVAL-X1 기록 재생(위상 12개)의 세 기준과 최악 지연이 바뀌지 않는다.
+  - (f) 조건부 채널의 오류 응답은 `error`로 넘어간다.
+
 ## 2. 다음 단계
 
 1. ~~A4 한국어 20건~~(I19 끝). 한 문장 요청의 서랍 자격: (a)는 쟀고 되돌렸다(I24). 남은 길은 (b)·(c).
