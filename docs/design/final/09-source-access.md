@@ -213,7 +213,7 @@ O3가 이기는 까닭은 하나다. 꼬리를 덮는 안(O2·O3·O9·O10) 가�
 
 ### 4.6 기록 재생과 하나로
 
-`Transport`의 세 모드(live·record·replay)에 넷째 원천을 더한다. 재생 디렉터리를 여럿 두고 앞에서부터 찾는다(`fixtures/http/` → 포착 가지의 `http/`를 모은 `fixtures/captures/`). 시험은 지금처럼 재생만 하고 네트워크를 쓰지 않는다(`test_replay_used_no_network` 유지). 측정의 `--live`는 경로 A·B만 실제로 읽고, C 몫은 포착 저장소에서 모은 최신 포착물을 읽는다. 결과 파일에 포착 시각을 함께 적어 "몇 시간 전 원문인가"가 보이게 한다. 포착 저장소에서 고정물로 모으는 도구는 지금의 `tools/snapshot_*.py`처럼 읽기만 하고 커밋·경로를 `SOURCES.json`에 남긴다.
+`Transport`의 세 모드(live·record·replay)에 넷째 원천을 더한다. 재생 디렉터리를 여럿 두고 앞에서부터 찾는다(`fixtures/http/` → opensource `captures` 가지 로컬 복제의 `http/`, 경로는 인자나 환경 변수 `AF_CAPTURES`). agentflow-open은 공개 저장소이므로 포착한 웹 페이지 전문을 이 저장소에 복사해 커밋하지 않는다. 시험 고정물로는 인용 길이의 발췌나 합성 기록만 둔다. 시험은 지금처럼 재생만 하고 네트워크를 쓰지 않는다(`test_replay_used_no_network` 유지). 측정의 `--live`는 경로 A·B만 실제로 읽고, C 몫은 포착 저장소에서 모은 최신 포착물을 읽는다. 결과 파일에 포착 시각을 함께 적어 "몇 시간 전 원문인가"가 보이게 한다. 측정 결과에는 읽은 포착 가지의 커밋과 기록 키만 남긴다.
 
 ### 4.7 catalog 확인 단계와 맞물림
 
