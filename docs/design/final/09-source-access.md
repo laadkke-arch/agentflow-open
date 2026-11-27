@@ -37,7 +37,7 @@
 | CDN 미러·대리 읽기 | 막힘 | jsDelivr, unpkg, docs.rs, `r.jina.ai` |
 | Claude Code 내장 읽기 도구(WebFetch) | 열림 | 같은 세션에서 `docs.python.org`·`support.mozilla.org`·`commoncrawl.org`를 200으로 읽었다. 셸과 다른 길이다. 돌려주는 것은 바이트가 아니라 작은 모델의 답이다(1.4절) |
 
-제품 문서가 말하는 수준은 넷이다. None, Trusted(패키지 저장소·GitHub·클라우드 SDK), Full(모든 도메인), Custom(직접 쓴 허용 목록, 기본 목록 포함 선택). 환경마다 하나를 고르고, 예약 작업(routine)도 환경을 골라 돈다(a, [cloud environments](https://code.claude.com/docs/en/cloud-environments) "Access levels"). 이 사실이 4.3절의 포착 일꾼을 가능하게 한다.
+제품 문서가 말하는 수준은 넷이다. None, Trusted(패키지 저장소·GitHub·클라우드 SDK), Full(모든 도메인), Custom(직접 쓴 허용 목록, 기본 목록 포함 선택). 환경마다 하나를 고르고, 예약 작업(routine)도 환경을 골라 돈다(a, [cloud environments](https://code.claude.com/docs/en/cloud-environments) "Access levels"). 이 사실이 4.3절의 포착 일꾼을 가능하게 한다. 다만 프로젝트 안에서 만든 예약 작업은 프로젝트 설정의 환경으로 돈다(4.3절).
 
 ### 1.2 catalog 23,395개를 원문 경로로 나누면 (b)
 
@@ -158,18 +158,20 @@ O3가 이기는 까닭은 하나다. 꼬리를 덮는 안(O2·O3·O9·O10) 가�
 
 ### 4.3 포착 일꾼
 
-**어디서.** 준혁님 개인 클라우드 환경을 하나 더 만든다. 이름 "원문 포착", 네트워크 Full, 환경 변수와 비밀 없음. 예약 작업에는 opensource 저장소 하나만 붙인다. 예약 작업 "원문 포착"이 이 환경에서 6시간마다(첫 이틀은 매시) 돈다. 지금 "수집소 6시간 정리"와 같은 운영 방식이라 사람이 스크립트를 돌릴 일이 없다.
+**어디서.** 준혁님 개인 클라우드 환경 "opensource 원문 포착"(2026-11-27 만듦, 환경 변수와 비밀 없음, 저장소 opensource)에서 돈다. 도구로 만들 수 있는 것은 허용 목록 20개 호스트까지라 지금은 EVAL-X1의 세 호스트와 대기열 상위 17개 호스트만 열려 있고, 네트워크를 Full로 올리는 것은 준혁님이 설정에서 한다. 그 환경에서 준혁님이 한 번 연 세션이 일꾼이다. 이 세션이 자기에게 돌아오는 예약 작업을 매시(첫 이틀), 그 뒤 6시간마다 건다. 시작 글은 프로젝트 파일 `prompts/capture-worker-session.md`에 있다.
 
-**무엇을.** 예약 작업은 opensource의 `tools/capture.py run --minutes 25` 하나를 돌리고 결과 숫자만 보고한다. 스크립트가 하는 일은 다음과 같다.
+이렇게 둔 까닭은 플랫폼 제약 둘이다(2026-11-27 확인). 프로젝트 안에서 만든 예약 작업은 실행마다 그 프로젝트 설정의 환경에서 새 스레드로 돌아 따로 둔 환경을 고를 수 없다. 프로젝트 스레드 세션은 다른 환경으로 옮길 수 없고, 제한 없는 환경으로는 어떤 세션도 옮길 수 없다. 그래서 새 환경에서 처음부터 시작한 세션만 그 망을 쓴다. 사람이 스크립트를 돌릴 일은 없고, 세션을 한 번 여는 일만 사람 몫이다.
 
-1. 포착 대기열(`captures/queue/*.jsonl`)과 감시 목록(`captures/watch.json`, 주기·위상이 붙은 출처)을 읽는다.
+**무엇을.** 예약 작업은 opensource `captures` 가지의 `tools/capture.py run --minutes 8 --commit`을 세 번까지 돌리고(셸 한 번에 10분 제한) 결과 숫자만 보고한다. 스크립트가 하는 일은 다음과 같다.
+
+1. 포착 대기열(`queue/*.jsonl`)과 감시 목록(`watch.json`, 주기·위상·따라갈 링크 규칙이 붙은 출처), 포착 색인(`index/*.jsonl`)을 읽는다. 경로는 `captures` 가지 맨 위 기준이다. 대기열은 `enqueue-catalog`가 기본 가지의 catalog에서 경로 A·B로 못 읽는 주소를 골라 채운다(첫날 21,543개).
 2. 호스트마다 robots.txt를 24시간 캐시로 보고, 금지면 받지 않고 `robots` 결과를 남긴다.
 3. GET·HEAD만 쓴다. 쿠키를 쓰지 않고, 로그인 화면을 따라가지 않는다. 호스트당 2초에 1회, 전체 동시 8개, 응답 20초, 크기 5MB 상한. 받을 형식은 HTML·텍스트·JSON·XML·PDF.
 4. 지난 포착의 ETag·Last-Modified로 조건부 요청을 보낸다. 304는 포착 기록만 남기고 바이트를 다시 받지 않는다. 이 비율이 07 R-2의 실제 값이 된다.
 5. 리디렉션은 5번까지 따라가며 하나하나 적는다. 봇 차단 화면(상태 403·429·503과 알려진 표지)과 로그인 화면을 알아보고 실패로 분류한다.
-6. 받은 바이트를 sha256으로 이름 붙여 저장하고, 포착 기록(4.4절)과 색인 줄을 쓴 뒤 `captures` 가지에 커밋·푸시한다. 기본 가지와 dot 가지에는 쓰지 않는다.
+6. 받은 바이트의 sha256을 재고, 포착 기록(4.4절, `http/<key>.json`)과 색인 줄을 쓴 뒤 `captures` 가지에 커밋·푸시한다. 같은 지문이면 기록을 다시 쓰지 않고 색인에만 남긴다. 기본 가지와 dot 가지에는 쓰지 않는다. 일꾼은 부분 복제와 sparse checkout으로 `http/`를 받지 않고 색인과 대기열만 받는다.
 
-**하지 않는 것.** 예약 작업의 Claude는 받은 본문 파일을 열지 않는다. 스크립트는 개수와 상태만 출력한다. 웹 글이 담은 지시가 장부나 코드에 닿을 길을 처음부터 두지 않기 위해서다. 사용자 이름·메일 같은 개인 정보를 User-Agent에 넣지 않는다(일반 이름 `agentflow-capture/0`).
+**하지 않는 것.** 예약 작업의 Claude는 받은 본문 파일을 열지 않는다. 스크립트는 개수와 상태만 출력한다. 웹 글이 담은 지시가 장부나 코드에 닿을 길을 처음부터 두지 않기 위해서다. 사용자 이름·메일 같은 개인 정보를 User-Agent에 넣지 않는다(일반 이름 `capture-worker/0`. 프로젝트 이름도 넣지 않는다).
 
 **얼마나.** C 대상 18,860개는 호스트가 넓게 흩어져 있어 호스트당 속도보다 실행 시간이 묶는다. 한 번에 2,000~3,000개면 첫 이틀(매시)에 다 돈다 **[가정 C19]**. 그 뒤로는 감시 목록과 새 대상만 돈다.
 
@@ -190,13 +192,14 @@ O3가 이기는 까닭은 하나다. 꼬리를 덮는 안(O2·O3·O9·O10) 가�
   "redirects": [],
   "route": "C", "binding": "d", "worker": "capture-env/routine@tools/capture.py#<커밋>",
   "robots": "allowed",
-  "payload_sha256": "…", "payload_bytes": 20744, "payload_ref": "captures/blob/ab/cd/<sha256>.gz",
+  "payload_sha256": "…", "payload_bytes": 20744, "payload_ref": null,
+  "body": "<!DOCTYPE html>…",
   "outcome": "ok",
   "reason": "watch"
 }
 ```
 
-`outcome`은 4.9절의 분류다. `reason`은 `request`·`catalog`·`watch` 셋 중 하나이고 어느 프로젝트의 요청인지 적지 않는다. WARC와는 `url`=WARC-Target-URI, `fetched_at`=WARC-Date, `payload_sha256`=WARC-Payload-Digest(sha256)로 맞춘다. 원천 대응(B)의 기록은 `route: "B"`, `binding: "s"`, `source: {"repo": "python/cpython", "ref": "3.13", "path": "Doc/library/asyncio-queue.rst"}`를 더한다.
+본문은 지금 고정물처럼 기록 안에 둔다(`body`, UTF-8이 아니면 `body_b64`). git이 압축해 저장하고, 지금 재생기가 손대지 않고 읽는다. `payload_ref`는 5MB를 넘는 본문을 따로 둘 때를 위해 비워 둔다. `outcome`은 4.9절의 분류다. `reason`은 `request`·`catalog`·`watch` 셋 중 하나이고 어느 프로젝트의 요청인지 적지 않는다. WARC와는 `url`=WARC-Target-URI, `fetched_at`=WARC-Date, `payload_sha256`=WARC-Payload-Digest(sha256)로 맞춘다. 원천 대응(B)의 기록은 `route: "B"`, `binding: "s"`, `source: {"repo": "python/cpython", "ref": "3.13", "path": "Doc/library/asyncio-queue.rst"}`를 더한다.
 
 ### 4.5 장부와 맞물림
 
@@ -210,7 +213,7 @@ O3가 이기는 까닭은 하나다. 꼬리를 덮는 안(O2·O3·O9·O10) 가�
 
 ### 4.6 기록 재생과 하나로
 
-`Transport`의 세 모드(live·record·replay)에 넷째 원천을 더한다. 재생 디렉터리를 여럿 두고 앞에서부터 찾는다(`fixtures/http/` → 포착 저장소에서 모은 `fixtures/captures/`). 시험은 지금처럼 재생만 하고 네트워크를 쓰지 않는다(`test_replay_used_no_network` 유지). 측정의 `--live`는 경로 A·B만 실제로 읽고, C 몫은 포착 저장소에서 모은 최신 포착물을 읽는다. 결과 파일에 포착 시각을 함께 적어 "몇 시간 전 원문인가"가 보이게 한다. 포착 저장소에서 고정물로 모으는 도구는 지금의 `tools/snapshot_*.py`처럼 읽기만 하고 커밋·경로를 `SOURCES.json`에 남긴다.
+`Transport`의 세 모드(live·record·replay)에 넷째 원천을 더한다. 재생 디렉터리를 여럿 두고 앞에서부터 찾는다(`fixtures/http/` → 포착 가지의 `http/`를 모은 `fixtures/captures/`). 시험은 지금처럼 재생만 하고 네트워크를 쓰지 않는다(`test_replay_used_no_network` 유지). 측정의 `--live`는 경로 A·B만 실제로 읽고, C 몫은 포착 저장소에서 모은 최신 포착물을 읽는다. 결과 파일에 포착 시각을 함께 적어 "몇 시간 전 원문인가"가 보이게 한다. 포착 저장소에서 고정물로 모으는 도구는 지금의 `tools/snapshot_*.py`처럼 읽기만 하고 커밋·경로를 `SOURCES.json`에 남긴다.
 
 ### 4.7 catalog 확인 단계와 맞물림
 
@@ -294,7 +297,8 @@ O3가 이기는 까닭은 하나다. 꼬리를 덮는 안(O2·O3·O9·O10) 가�
 
 **단계 1. 포착 환경(준혁님 승인 뒤).**
 
-- 이 스레드가 환경 "원문 포착"(Full)과 예약 작업을 만든다. 둘 다 준혁님 화면에 승인 카드가 뜬다.
+- 됨(2026-11-27): 환경 "opensource 원문 포착"(허용 목록 20개), opensource `captures` 가지(`tools/capture.py`, 감시 목록, 대기열 21,543개, 자체 시험 통과).
+- 준혁님 몫: 그 환경의 네트워크를 Full로 올리고, 그 환경에서 세션을 한 번 열어 `prompts/capture-worker-session.md`를 붙여 넣는다. 그 세션이 매시 예약 작업을 건다.
 - 수집소 쪽에 `tools/capture.py`를 두고 C 대상을 돈다. 완료 기준: 이틀 뒤 C 대상의 경로별 결과 표(C18·C19), L3d 증가, 304 비율.
 - 구현 쪽: EVAL-X1을 포착물로 다시 돌린다. 완료 기준: 06 3.4 단위 2 기준 셋이 포착 시각으로 맞고, 313578에서 알림 0.
 
