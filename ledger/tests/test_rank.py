@@ -91,5 +91,30 @@ class RrfLengthR5(unittest.TestCase):
         self.assertEqual(out["r5"][0], short)       # r5: 검색기 안에서 r2 길이 보정
 
 
+class MaxTagR6(unittest.TestCase):
+    def test_r6_does_not_penalise_extra_tags_where_r2_does(self):
+        out = {}
+        for rule in ("r2", "r6"):
+            L = Ledger()
+            L.rank_rules = rule
+            plain, _ = L.observe(url="https://example.org/p", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                                 method="intro_only", statement="p")
+            L.tag(plain, "summary", "one_up", "en", "bounded queue blocks producer")
+            more, _ = L.observe(url="https://example.org/m", edition_key="v1", edition_kind="fetch", position="§", at=T,
+                                method="intro_only", statement="m")
+            L.tag(more, "summary", "one_up", "en", "bounded queue blocks producer")
+            L.tag(more, "summary", "concrete", "en", "tracing dashboards metrics retries timeouts logging alerts storage")
+            for i in range(6):
+                o, _ = L.observe(url=f"https://example.org/x{i}", edition_key="v1", edition_kind="fetch", position="§",
+                                 at=T, method="intro_only", statement="x")
+                L.tag(o, "summary", "one_up", "en", f"unrelated record {i} worker")
+            p = L.project("A")
+            req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[],
+                           needs=[{"slot": "summary", "lang": "en", "text": "bounded queue blocks producer"}])
+            out[rule] = {h["obs_id"]: h["score"] for h in L.search_drawer(p, req, T, k=10, log=False)}
+        self.assertLess(out["r2"][plain], out["r2"][more])             # r2: 관측 전체 길이로 깎여 꼬리표가 많은 쪽이 뒤(I30)
+        self.assertAlmostEqual(out["r6"][plain], out["r6"][more])      # r6: 맞은 줄 하나의 점수라 덧붙인 줄이 깎지 않는다
+
+
 if __name__ == "__main__":
     unittest.main()

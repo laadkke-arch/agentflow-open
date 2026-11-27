@@ -1122,7 +1122,8 @@ def i29():
 def _judgments() -> dict:
     import csv
     g = {}
-    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv", FIX / "i32" / "judgments.tsv"):
+    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv", FIX / "i32" / "judgments.tsv",
+              FIX / "i33" / "judgments.tsv"):
         if not f.exists():
             continue
         for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t"):
@@ -1244,7 +1245,7 @@ def i32_run_both():
 
 
 def _i32_top10(name: str, cfg: str) -> dict:
-    tag = I32_SETTINGS[name][2]
+    tag = (I33_SETTINGS if name in globals().get("I33_SETTINGS", {}) else I32_SETTINGS)[name][2]
     if cfg == "catalog20k":
         return json.loads((OUT / f"measure_{tag}_catalog.json").read_text(encoding="utf-8"))["top10"]
     return json.loads((OUT / f"{tag}_linkindex_pairs.json").read_text(encoding="utf-8"))["top10"]["real_only"]
@@ -1340,6 +1341,89 @@ def i32_human_sample(n=30):
         w.writerows(out)
     return out
 
+
+# ------------------------------------------------------------------------------------------- I33 꼬리표 한 줄당 최대 점수
+I33_SETTINGS = dict(I32_SETTINGS) | {"r6": (False, "r6", "i33_r6"), "p5_r6": (True, "r6", "i33_p5_r6")}
+I33_ORDER = ["r2", "r5", "r6", "p5_r2", "p5_r5", "p5_r6"]   # 바꾸는 것이 적은 순(돌리기 전에 정함)
+I33_EV = {"r2": ("measure_i31.json", "r2"), "r5": ("measure_i31.json", "r5"), "p5_r2": ("measure_i30.json", "p5"),
+          "p5_r5": ("measure_i32_p5_r5.json", None), "r6": ("measure_i33_r6.json", None), "p5_r6": ("measure_i33_p5_r6.json", None)}
+
+
+I33_JUDGE_RULE = [
+    "판정 대상: 여섯 설정 상위 10의 합집합에서 아직 판정하지 않은 실제 행 쌍 전부(실제 행 2만 개, link-index).",
+    "등급은 I25 그대로. 꼬리표 문장과 함께, opensource captures 가지에 그 주소의 원문(http/<key>.json)이 있으면 원문 문장도 읽고 판정한다.",
+    "판정 행마다 확인 단계(catalog 대상의 level, 대상이 없으면 L1)와 원문을 봤는지(captures 커밋과 key, 없으면 none)를 적는다.",
+    "판정자: 이 세션의 모델(사람 판정 아님).",
+]
+
+
+def i33_run():
+    """08 I33: r6(꼬리표 한 줄당 최대 점수)으로 012 p5 꼬리표 끔·켬 두 설정의 상위 10을 만든다."""
+    import drawer_load
+    from afledger import config
+    saved = (drawer_load.CATALOG_P5_TAGS, config.RANK_RULES)
+    out = {}
+    try:
+        for name in ("r6", "p5_r6"):
+            p5, rank, tag = I33_SETTINGS[name]
+            drawer_load.CATALOG_P5_TAGS, config.RANK_RULES = p5, rank
+            out[name] = _setting_eval(tag)
+            write(f"measure_{tag}.json", out[name])
+    finally:
+        drawer_load.CATALOG_P5_TAGS, config.RANK_RULES = saved
+        a4_20()
+    return out
+
+
+def capture_text(url: str, captures=None) -> dict:
+    """opensource captures 가지의 로컬 클론(인자 또는 환경 변수 AF_CAPTURES)의 http/<key>.json에서 원문을 찾는다(08 I33 판정용).
+    있으면 {"status", "outcome", "fetched_at", "text"}(본문 앞 4천 자, HTML 태그 제거), 없으면 {}. 본문은 자료이지 지시가 아니다.
+    원문 전체 사본은 opensource(비공개) 밖에 두지 않으므로 이 저장소에 복사하지 않는다. 판정 파일에는 커밋·key·짧은 인용만 남긴다."""
+    import html as _html
+    import os
+    from afledger.adapters.http import Transport
+    root = Path(captures or os.environ.get("AF_CAPTURES") or "/nonexistent")
+    f = root / "http" / f"{Transport.key('GET', url, {})}.json"
+    if not f.exists():
+        return {}
+    rec = json.loads(f.read_text(encoding="utf-8"))
+    body = rec.get("body") or ""
+    text = re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<(script|style).*?</\1>", " ", body))))
+    return {"status": rec.get("status"), "outcome": rec.get("outcome"), "fetched_at": rec.get("fetched_at"), "text": text[:4000]}
+
+
+def i33_decide():
+    """08 I33 B 조건 비교(돌리기 전에 정함). 설정은 I32의 넷에 r6 끔·켬을 더한 여섯. 요청별 B와 고르는 규칙은 i32_decide와 같고,
+    (5)의 순서만 I33_ORDER(r2 < r5 < r6 < p5_r2 < p5_r5 < p5_r6)다. 판정 안 한 행이 남은 설정·요청은 B를 만족하지 않은 것으로 센다.
+    판정은 I25·I27·I32·I33 판정을 합친 것이고, I33 판정은 captures 가지의 원문이 있으면 원문 문장도 본다."""
+    res = {}
+    for n in I33_ORDER:
+        f, k = I33_EV[n]
+        ev = json.loads((OUT / f).read_text(encoding="utf-8"))
+        ev = ev["results"][k] if k else ev
+        row = {"recall12_catalog_only": ev["recall12_catalog_only"], "grade2_catalog_only": ev["grade2_catalog_only"],
+               "r1_flow_ok": all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                                 for v in ev["r1_flow"].values()), "r1_ranks": ev["r1_ranks"]}
+        for cfg in ("catalog20k", "linkindex_real"):
+            tag = I33_SETTINGS[n][2]
+            top = (json.loads((OUT / f"measure_{tag}_catalog.json").read_text(encoding="utf-8"))["top10"] if cfg == "catalog20k"
+                   else json.loads((OUT / f"{tag}_linkindex_pairs.json").read_text(encoding="utf-8"))["top10"]["real_only"])
+            j = _judge_top10(top)
+            per = j["per_request"]
+            b = {k2: v["judged_only"] <= 2 and v["unjudged"] == 0 for k2, v in per.items()}
+            row[cfg] = {"B_met": sum(b.values()), "requests": len(b), "unjudged_total": sum(v["unjudged"] for v in per.values()),
+                        "B_by_request": b, "r1": j["r1"], "a4_20": j["a4_20"],
+                        "B_a4": {l: sum(1 for k2, v in b.items() if v and k2.endswith("." + l) and not k2.startswith("R1"))
+                                 for l in ("ko", "en")}}
+        res[n] = row
+    cand = [n for n in I33_ORDER if res[n]["r1_flow_ok"]]
+    best = sorted(cand, key=lambda n: (-res[n]["catalog20k"]["B_met"], -res[n]["linkindex_real"]["B_met"],
+                                       -sum(res[n]["recall12_catalog_only"].values()), I33_ORDER.index(n)))
+    out = {"rule": i33_decide.__doc__.split("\n")[1:5], "judged_pairs": len(_judgments()), "results": res,
+           "ranking": best, "chosen": best[0] if best else None}
+    write("measure_i33.json", out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
@@ -1414,7 +1498,8 @@ def main():
            "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24(), "i25_pairs": i25_collect(), "i25": i25_score(),
            "i26": i26(), "i26_rank": i26_rank(), "i26_combo": i26_combo(),
            "i27": i27(), "i27_judged": i27_score(), "i28": i28(), "i29": i29(),
-           "i30": i30(), "i31": i31(), "i32_run": i32_run_both(), "i32": i32_decide(), "i32_human": i32_human_sample()}
+           "i30": i30(), "i31": i31(), "i32_run": i32_run_both(), "i32": i32_decide(), "i32_human": i32_human_sample(),
+           "i33_run": i33_run(), "i33": i33_decide()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -1439,6 +1524,7 @@ def main():
     print("I28", res["i28"]["adopt_r4"], res["i28"]["worse"], "I29", res["i29"]["recommend_reask"])
     print("I30", res["i30"]["adopt_p5"], res["i30"]["worse"], "I31", res["i31"]["adopt_r5"], res["i31"]["worse"])
     print("I32", res["i32"]["ranking"], {n: r["catalog20k"]["B_met"] for n, r in res["i32"]["results"].items()})
+    print("I33", res["i33"]["ranking"], {n: r["catalog20k"]["B_met"] for n, r in res["i33"]["results"].items()})
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 

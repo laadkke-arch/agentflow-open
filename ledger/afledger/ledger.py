@@ -846,6 +846,7 @@ class Ledger:
                 d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
                 d["matched"] += [m for m in matched if m not in d["matched"]]
                 d.setdefault("rk", {}).setdefault((n["slot"], "en"), set()).update(matched)   # r4: 검색기 = (필요 칸, 언어)
+                d.setdefault("tg", {}).setdefault(r["tag_id"], set()).update(matched)        # r6: 꼬리표 한 줄마다 맞은 단위
                 d["func"] |= {m for m in matched if m in FUNCTION_WORDS or m.isdigit()}
         if self.token_rules == "t2":
             self._drawer_ko(needs, at, per_obs, include_function_words)
@@ -868,6 +869,7 @@ class Ledger:
         for d in hits:
             d.pop("func", None)
             d.pop("rk", None)
+            d.pop("tg", None)
             # 서랍은 옛 관측의 꼬리표로도 적중한다. 인용 전에 현재 관측을 확인하라고 같이 돌려준다(M7e)
             d["current"] = self.current(d["obs_id"], at)
         if not log:   # 진단용 검색(기능어 포함 감사 등)은 탐색 기록에 남기지 않는다
@@ -893,13 +895,17 @@ class Ledger:
         """서랍 순위용 통계(07 R-6). 문서 = 관측(그 관측의 꼬리표를 합친 것). at 이전에 관측된 것만 센다.
         df: 영어 어간·한국어 줄기·한국어 2-gram마다 그것을 가진 관측 수. length: 관측의 서로 다른 내용 단위 수."""
         units: dict[int, set] = {}
+        tag_len: dict[int, int] = {}
         for r in self.db.execute(
-                "SELECT t.obs_id, t.text, k.words, k.grams FROM tag t JOIN observation o ON o.obs_id = t.obs_id"
+                "SELECT t.tag_id, t.obs_id, t.text, k.words, k.grams FROM tag t JOIN observation o ON o.obs_id = t.obs_id"
                 " LEFT JOIN tag_fts_ko k ON k.rowid = t.tag_id WHERE o.observed_at <= ?", (at,)):
             u = units.setdefault(r["obs_id"], set())
-            u |= {("en", stem(x)) for x in tokens(r["text"]) if x not in FUNCTION_WORDS and not x.isdigit()}
+            tu = {("en", stem(x)) for x in tokens(r["text"]) if x not in FUNCTION_WORDS and not x.isdigit()}
             if r["words"]:
-                u |= {("kw", w) for w in r["words"].split()} | {("kg", g) for g in r["grams"].split()}
+                tu |= {("kw", w) for w in r["words"].split()}
+                u |= {("kg", g) for g in r["grams"].split()}
+            u |= tu
+            tag_len[r["tag_id"]] = len(tu)   # r6(08 I33): 꼬리표 한 줄의 서로 다른 내용 단위 수
         df: dict[tuple, int] = {}
         for u in units.values():
             for k in u:
@@ -914,7 +920,8 @@ class Ledger:
             xs = [v[f] for v in field_len.values() if v[f]]
             field_avg[f] = (sum(xs) / len(xs)) if xs else 1.0
         return {"n": n, "df": df, "length": lengths, "avg_len": (sum(lengths.values()) / n) if lengths else 1.0,
-                "field_len": field_len, "field_avg": field_avg}
+                "field_len": field_len, "field_avg": field_avg, "tag_len": tag_len,
+                "avg_tag_len": (sum(tag_len.values()) / len(tag_len)) if tag_len else 1.0}
 
     def _rescore(self, per_obs: dict, hits: list, at: str) -> None:
         """규칙 판 r1: 맞은 내용 단위(질의 낱말 하나 = 한 번)마다 IDF를 더한다. 설계(r0)는 칸·꼬리표 행마다 bm25를 더해
@@ -924,6 +931,9 @@ class Ledger:
         b = config.RANK_LENGTH_B if self.rank_rules in ("r2", "r3") else 0.0
         if self.rank_rules in ("r4", "r5"):
             self._rrf(hits, st, length_b=config.RANK_LENGTH_B if self.rank_rules == "r5" else 0.0)
+            return
+        if self.rank_rules == "r6":
+            self._max_tag(hits, st)
             return
         for d in hits:
             best: dict[str, float] = {}
@@ -968,6 +978,27 @@ class Ledger:
         df = st["df"].get(key, 0)
         return unit, math.log(1 + (st["n"] - df + 0.5) / (df + 0.5))
 
+    def _max_tag(self, hits: list, st: dict) -> None:
+        """규칙 판 r6(08 I33): 꼬리표 한 줄당 최대 점수. 꼬리표마다 그 줄에서 맞은 내용 단위의 IDF 합(단위는 한 번)을 그 줄의 길이로
+        보정하고(1 - b + b·줄 길이/평균 줄 길이, b = RANK_LENGTH_B), 관측 점수는 그 가운데 최댓값이다. 꼬리표가 늘어도 관측이
+        깎이지 않고, 긴 줄 하나가 여러 낱말을 모아 이기지도 않는다. 근거(opensource catalog/by-problem/F30.md @ 423aebf, L1):
+        Vespa의 다값 칸 maxWeight(맞은 원소 가운데 최댓값, C5-S02-b1-r08). 점수는 작을수록 앞이다."""
+        b = config.RANK_LENGTH_B
+        avg = st["avg_tag_len"]
+        for d in hits:
+            best_tag = 0.0
+            for tag_id, ms in d.get("tg", {}).items():
+                best: dict[str, float] = {}
+                for m in ms:
+                    if m in d.get("func", ()):
+                        continue
+                    unit, idf = self._unit_idf(m, st)
+                    best[unit] = max(best.get(unit, 0.0), idf)
+                if best:
+                    norm = 1 - b + b * st["tag_len"].get(tag_id, avg) / avg
+                    best_tag = max(best_tag, sum(best.values()) / norm)
+            d["score"] = -best_tag
+
     def _rrf(self, hits: list, st: dict, length_b: float = 0.0) -> None:
         """규칙 판 r4(08 I28): 검색기 = (필요 칸, 언어). 검색기마다 맞은 단위의 IDF 합(r1, 길이 정규화 없음)으로 순위를 내고
         RRF로 합친다: 점수 = 검색기마다 1/(RRF_K + 순위)의 합. 한 검색기에만 나온 관측도 남긴다(외부 조인). 결과 창은 자르지 않는다.
@@ -1005,7 +1036,7 @@ class Ledger:
             slot_filter = "" if n["slot"] == "summary" else "AND (t.slot=? OR t.slot='summary')"
             args = [" OR ".join(terms), at] + ([] if n["slot"] == "summary" else [n["slot"]])
             rows = self.db.execute(
-                "SELECT t.obs_id, t.slot, k.words, k.grams, bm25(tag_fts_ko) AS score FROM tag_fts_ko k"
+                "SELECT t.tag_id, t.obs_id, t.slot, k.words, k.grams, bm25(tag_fts_ko) AS score FROM tag_fts_ko k"
                 " JOIN tag t ON t.tag_id = k.rowid JOIN observation o ON o.obs_id = t.obs_id"
                 f" WHERE tag_fts_ko MATCH ? AND o.observed_at <= ? {slot_filter}", args).fetchall()
             for r in rows:
@@ -1018,6 +1049,7 @@ class Ledger:
                 d["slots"].add(n["slot"] if n["slot"] != "summary" else r["slot"])
                 d["matched"] += [m for m, _f in matched if m not in d["matched"]]
                 d.setdefault("rk", {}).setdefault((n["slot"], "ko"), set()).update(m for m, _f in matched)
+                d.setdefault("tg", {}).setdefault(r["tag_id"], set()).update(m for m, _f in matched)
                 d["func"] |= {m for m, f in matched if f}
 
     def search_fresh(self, p: str, req: int, at: str, branch_results: dict[str, list[dict]]) -> list[dict]:
