@@ -184,6 +184,21 @@ CREATE TABLE IF NOT EXISTS supersession_cancel (
   FOREIGN KEY (old_obs, new_obs) REFERENCES supersession(old_obs, new_obs)
 );
 
+-- 원문 접근 실패 연속(08 I38): 같은 실패가 SOURCE_FAIL_STREAK번 이어진 순간. 전파가 이 행으로 '원문 접근 실패'를 알린다.
+CREATE TABLE IF NOT EXISTS source_failure (
+  failure_id  INTEGER PRIMARY KEY,
+  base_obs    INTEGER NOT NULL REFERENCES observation(obs_id),   -- 감시 계보의 기준 관측
+  fail_obs    INTEGER NOT NULL REFERENCES observation(obs_id),   -- 마지막 실패 관측
+  outcome     TEXT NOT NULL,
+  at          TEXT NOT NULL,
+  streak      INTEGER NOT NULL,
+  UNIQUE (base_obs, fail_obs, at)
+);
+CREATE TRIGGER IF NOT EXISTS source_failure_no_update BEFORE UPDATE ON source_failure
+BEGIN SELECT RAISE(ABORT, 'source_failure is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS source_failure_no_delete BEFORE DELETE ON source_failure
+BEGIN SELECT RAISE(ABORT, 'source_failure is append-only'); END;
+
 -- 변경 채널과 항목. 항목은 외부 ID 집합의 차분으로만 들어온다(표시일 창을 쓰지 않는다).
 CREATE TABLE IF NOT EXISTS channel (
   channel_id     INTEGER PRIMARY KEY,
