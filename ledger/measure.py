@@ -941,6 +941,33 @@ def i27(rank=None, out_name="measure_i27.json"):
     return out
 
 
+
+I27_JUDGE_RULE = [
+    "판정 대상(판정 전에 정함): measure_i27.json 상위 10의 catalog 행 가운데 I25에서 판정하지 않은 (요청, 주소) 쌍.",
+    "R1 두 요청의 쌍은 전부, A4 요청은 이름순으로 돌아가며 요청마다 가장 좋은 순위부터 한 쌍씩, 합쳐 80쌍까지.",
+    "등급과 판정자는 I25_RULE과 같다(이 세션의 모델, 꼬리표만 보고, 원문은 열지 않음). 근거는 대상의 what·principle·scene·쓸모 문장.",
+]
+
+
+def i27_sample(cap=80) -> list[dict]:
+    import csv
+    o = json.loads((OUT / "measure_i27.json").read_text(encoding="utf-8"))
+    judged = {(r["request"], r["url"]) for r in csv.DictReader(open(FIX / "i25" / "judgments.tsv", encoding="utf-8"), delimiter="\t")}
+    by: dict = {}
+    for req, items in o["top10"].items():
+        for rank, x in enumerate(items, 1):
+            if x["kind"] == "p5" and (req, x["url"]) not in judged:
+                by.setdefault(req, []).append({"request": req, "url": x["url"], "key": x["key"], "rank": rank})
+    out = [x for k in sorted(by) if k.startswith("R1.") for x in by[k]]
+    a4 = sorted(k for k in by if not k.startswith("R1."))
+    i = 0
+    while len(out) < cap and any(i < len(by[k]) for k in a4):
+        for k in a4:
+            if i < len(by[k]) and len(out) < cap:
+                out.append(by[k][i])
+        i += 1
+    return out
+
 # ------------------------------------------------------------------------------------------- I28 RRF
 def i28():
     """08 I28: 서랍 순위 r4(검색기 = (필요 칸, 언어), 검색기 안은 IDF 합, RRF k=60으로 결합) 대 r2.
