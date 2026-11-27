@@ -50,7 +50,9 @@ def link(rows: list[dict]) -> tuple[list[dict], dict]:
     miss_txt = subprocess.run(["git", "-C", str(HERE), "show", f"{MISSING_REF}:ledger/fixtures/judge-orig/missing_for_b.tsv"],
                               capture_output=True, text=True).stdout
     miss = {(r["request"], r["url"]) for r in csv.DictReader(miss_txt.splitlines(), delimiter="\t")} if miss_txt else set()
-    out, dropped = [], {"n_unknown": 0, "request_mismatch": 0, "url_mismatch": 0, "j3_not_in_missing": 0, "amp_fixed": 0}
+    out, dropped = [], {"n_unknown": 0, "request_mismatch": 0, "url_mismatch": 0, "j3_not_in_missing": 0, "j4_not_unopened": 0,
+                        "amp_fixed": 0}
+    unopened = set()
     for r in rows:
         url = r["url"].replace("&amp;", "&")
         dropped["amp_fixed"] += url != r["url"]
@@ -65,9 +67,17 @@ def link(rows: list[dict]) -> tuple[list[dict], dict]:
             if t["url"] != url:
                 dropped["url_mismatch"] += 1
                 continue
+            if r["grade"] == "?":
+                unopened.add((r["request"], url))
+        elif r["prompt"] == "j4":
+            if (r["request"], url) not in unopened:     # 08 I51 규칙 1: 앞 고정에서 ?였던 쌍만
+                dropped["j4_not_unopened"] += 1
+                continue
         elif (r["request"], url) not in miss:
             dropped["j3_not_in_missing"] += 1
             continue
+        if r["grade"] == "?" and r["prompt"] == "j3":
+            unopened.add((r["request"], url))
         out.append(r | {"url": url})
     return out, dropped
 

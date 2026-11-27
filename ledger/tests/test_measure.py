@@ -139,8 +139,22 @@ class BothBoundsI50(unittest.TestCase):
     def test_j3_joined_and_both_bounds_pick_r2(self):
         import measure
         r = measure.i45(write_out=False)
-        self.assertEqual((r["b_pool_with_orig"], r["missing"]), (440, {"unopened": 10}))
         self.assertEqual(r["by_session"]["J3"]["orig_grades"], {"0": 36, "2": 40, "1": 24, "?": 2})
         p = r["pick_orig"]
         self.assertEqual((p["chosen_lower"], p["chosen_upper"], p["decided"], p["chosen"]), ("r2", "r2", True, "r2"))
         self.assertLessEqual(p["B_orig_lower"]["r2"], p["B_orig_upper"]["r2"])
+
+
+class UnopenableExcludedI51(unittest.TestCase):
+    """08 I51(받은 편지 N5): J4 뒤에도 열지 못한 8쌍을 풀에서 빼고 원문 판정으로 고른다."""
+
+    def test_eight_excluded_full_coverage_and_r2(self):
+        import measure
+        r = measure.i45(write_out=False)
+        self.assertEqual(r["excluded_unopenable"]["count"], 8)
+        self.assertEqual((r["b_pool_pairs"], r["b_pool_with_orig"], r["missing"]), (442, 442, {}))
+        self.assertEqual(r["pick_orig"]["chosen"], "r2")
+        self.assertEqual(r["B_catalog20k"]["r2"]["orig_judge_lower"]["unjudged_pairs_in_top10"], 0)
+        top = measure._i32_top10("r2", "catalog20k")
+        b = measure._b_count({}, top, "relevant", frozenset((q, x["url"]) for q, xs in top.items() for x in xs))
+        self.assertEqual(b["unjudged_pairs_in_top10"], 0)                   # 뺀 행은 세지 않는다

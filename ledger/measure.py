@@ -1502,11 +1502,12 @@ def _judgments_orig() -> dict:
             if r["grade"] != "?"}    # 열지 못한 쌍은 판정 안 함(08 I48 규칙 2)
 
 
-def _b_count(g: dict, top10: dict, unjudged_as: str) -> dict:
-    """판정 사전 g 하나로만 B를 센다. unjudged_as: 'noise'(아래 끝) 또는 'relevant'(위 끝)."""
+def _b_count(g: dict, top10: dict, unjudged_as: str, exclude: frozenset = frozenset()) -> dict:
+    """판정 사전 g 하나로만 B를 센다. unjudged_as: 'noise'(아래 끝) 또는 'relevant'(위 끝).
+    exclude: 원문을 열 수 없어 풀에서 뺀 (요청, 주소). 상위 10에서 지우고 11위로 채우지 않는다(08 I51 규칙 2)."""
     met, unj_total = {}, 0
     for req, items in top10.items():
-        nz = [x for x in items if x["kind"] != "catalog"]
+        nz = [x for x in items if x["kind"] != "catalog" and (req, x["url"]) not in exclude]
         syn = sum(1 for x in nz if x["kind"] == "synthetic")
         real = [x["url"] for x in nz if x["kind"] != "synthetic"]
         unj = sum(1 for u in real if (req, u) not in g)
@@ -1540,13 +1541,17 @@ def i45(jo: dict | None = None, write_out: bool = True):
         for h in sorted(diff, key=lambda h: int(h["n"])):
             w.writerow([h["n"], h["request"], h["request_text"], h["url"], h["row_text"], h["model_grade"],
                         j1[h["n"]]["grade"], "", ""])
+    # 08 I51 규칙 2: J4 뒤에도 ?인 쌍은 "열 수 없음"으로 풀에서 뺀다(J4가 들어온 뒤에만)
+    j4 = [r for r in rows if r["prompt"] == "j4"]
+    excluded = frozenset((r["request"], r["url"]) for r in j4 if r["grade"] == "?")
     pool, res = set(), {}
     for n in I32_SETTINGS:
         top = _i32_top10(n, "catalog20k")
         for req, items in top.items():
-            pool |= {(req, x["url"]) for x in items if x["kind"] in ("p5", "real")}
+            pool |= {(req, x["url"]) for x in items if x["kind"] in ("p5", "real") and (req, x["url"]) not in excluded}
         res[n] = {"tag_judge": _b_count(jt, top, "noise"),
-                  "orig_judge_lower": _b_count(jo, top, "noise"), "orig_judge_upper": _b_count(jo, top, "relevant")}
+                  "orig_judge_lower": _b_count(jo, top, "noise", excluded),
+                  "orig_judge_upper": _b_count(jo, top, "relevant", excluded)}
     src = {}
     for name in ("i25", "i27", "i32", "i33"):
         for r in csv.DictReader(open(FIX / name / "judgments.tsv", encoding="utf-8"), delimiter="\t"):
@@ -1608,6 +1613,7 @@ def i45(jo: dict | None = None, write_out: bool = True):
                                          "orig": "opensource judge/ dot D 모델, 원문을 엶(사람 아님)"},
            "orig_pairs": len(jo), "j1": stats, "b_pool_pairs": len(pool), "b_pool_with_orig": len(pool) - len(missing),
            "missing": dict(cov), "by_session": sessions,
+           "excluded_unopenable": {"count": len(excluded), "pairs": sorted(list(p_) for p_ in excluded)},
            "decision": ("J_orig로 고름(풀을 다 덮음)" if not missing else
                         "두 끝이 같은 설정을 골라 정함(I50 규칙 4a)" if same else
                         "두 끝이 달라 J4를 기다림(I50 규칙 4b)"),
