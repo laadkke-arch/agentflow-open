@@ -59,6 +59,21 @@ class JudgedNoiseI25(unittest.TestCase):
         self.assertEqual(config.ELIG_RULES, "e1")
 
 
+class PooledJudgingI32(unittest.TestCase):
+    def test_pool_is_fully_judged_and_the_default_is_the_measured_choice(self):
+        import csv
+        import drawer_load
+        import measure
+        self.assertEqual(measure.i32_pool(cfgs=("catalog20k", "linkindex_real"), names=list(measure.I32_SETTINGS)), [])
+        o = load("measure_i32.json")
+        self.assertTrue(all(r[c]["unjudged_total"] == 0 for r in o["results"].values() for c in ("catalog20k", "linkindex_real")))
+        p5, rank, _ = measure.I32_SETTINGS[o["chosen"]]
+        self.assertEqual((drawer_load.CATALOG_P5_TAGS, config.RANK_RULES), (p5, rank))
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i32" / "human_check.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertEqual(len(rows), 30)
+        self.assertTrue(all(r["human_grade"] == "" for r in rows))      # 사람이 채울 칸
+
+
 if __name__ == "__main__":
     unittest.main()
 
