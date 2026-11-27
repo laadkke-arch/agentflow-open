@@ -859,6 +859,87 @@ def i26_combo():
     write("measure_i26_combo.json", out)
     return out
 
+
+# ------------------------------------------------------------------------------------------- I27 실제 행 2만 개
+def i27(rank=None, out_name="measure_i27.json"):
+    """08 I27: R-6 잡음 2만 개를 opensource catalog p5 대상(012 주소·012 보강 회차 기록을 뺀 것, 키 SHA-1 순 앞 2만 개)으로 채운다.
+    정한 것(돌리기 전): 이 설정을 R-6 잡음 2만 개의 기본 설정으로 쓰고 합성 잡음은 비교로만 둔다. 칸 대응은 drawer_load.P5_SLOT_MAP.
+    012 쪽 꼬리표는 지금 기본(D-b 영어·한국어 summary) 그대로다. 잡음은 셋으로 센다: 그대로(012 밖 전부), I25 판정을 같은 (요청, 주소)에
+    이어 씀(판정 안 한 것은 잡음), 판정 안 한 것에 I25 관련 비율을 적용한 추정. 사례 결과는 R1 흐름 완료 기준 2."""
+    import csv
+    import run_r1
+    from afledger import config
+    from drawer_load import preload_catalog_p5
+    rank = rank or config.RANK_RULES
+    s = studio("studio_rev1.json")
+    qs = [json.loads(line) for line in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()]
+    qrels: dict[str, dict] = {}
+    for r in csv.DictReader(open(FIX / "af-res-012" / "qrels.tsv", encoding="utf-8"), delimiter="\t"):
+        if r["grade"].isdigit():
+            qrels.setdefault(r["query_id"], {})[r["entry_id"]] = int(r["grade"])
+    a20 = json.loads((OUT / "measure_a4_20.json").read_text(encoding="utf-8"))["queries"]
+    grade = {(r["request"], r["url"]): int(r["grade"]) for r in
+             csv.DictReader(open(FIX / "i25" / "judgments.tsv", encoding="utf-8"), delimiter="\t")}
+    rate = sum(1 for g in grade.values() if g >= 1) / len(grade)
+    L = Ledger()
+    L.rank_rules = rank
+    cat = preload_catalog(L)
+    catset = set(cat.values())
+    inv = {v: k for k, v in cat.items()}
+    noise = preload_catalog_p5(L)
+    p = L.project("S")
+    per, top10 = {}, {}
+    for name, req in _r6_requests(L, p, s, qs, a20):
+        hits = L.search_drawer(p, req, T0, k=5000 if name.startswith("R1") else 12, log=False)
+        ids = [inv.get(h["obs_id"]) for h in hits]
+        top = [h for h in hits[:10]]
+        nz = [L.obs(h["obs_id"])["url"] for h in top if h["obs_id"] not in catset]
+        rel_judged = sum(1 for u in nz if grade.get((name, u), 0) >= 1)
+        unj = sum(1 for u in nz if (name, u) not in grade)
+        top10[name] = [{"kind": "catalog" if h["obs_id"] in catset else "p5", "url": L.obs(h["obs_id"])["url"],
+                        "key": noise[h["obs_id"]]["key"] if h["obs_id"] in noise else inv.get(h["obs_id"])} for h in top]
+        row = {"noise_raw": len(nz), "noise_judged": len(nz) - rel_judged, "unjudged": unj,
+               "noise_estimate": round(len(nz) - rel_judged - unj * rate, 2)}
+        if name.startswith("R1"):
+            row |= {"asyncio_queue": ids.index("asyncio-queue") + 1 if "asyncio-queue" in ids else None,
+                    "asyncio_semaphore": ids.index("asyncio-semaphore") + 1 if "asyncio-semaphore" in ids else None,
+                    "eligible": sum(h["eligible"] for h in hits)}
+        else:
+            q = name.rsplit(".", 1)[0]
+            rel = {e for e, g in qrels[q].items() if g >= 1}
+            row |= {"recall12": round(sum(1 for e in rel if e in ids[:12]) / len(rel), 3),
+                    "grade2_in_top12": any(qrels[q].get(e) == 2 for e in ids[:12])}
+        per[name] = row
+    a4 = {}
+    for lang in ("ko", "en"):
+        xs = [v for k, v in per.items() if k.endswith("." + lang) and not k.startswith("R1")]
+        a4[lang] = {m: round(sum(x[m] for x in xs) / len(xs), 2) for m in ("noise_raw", "noise_judged", "noise_estimate", "recall12")}
+        a4[lang] |= {f"le2_{m}": sum(1 for x in xs if x[m] <= 2) for m in ("noise_raw", "noise_judged", "noise_estimate")}
+        a4[lang]["grade2_in_top12"] = sum(x["grade2_in_top12"] for x in xs)
+    flow = {}
+    for nn in ("studio", "i1"):
+        r = run_r1.run("replay", needs=nn, noise=False, noise_loader=lambda L_: list(preload_catalog_p5(L_)))
+        r.pop("_ledger")
+        folded = {f["condition"]: f["reason"] for f in r["rev1"]["answer"]["folded"]}
+        slot1 = next((x["sentence"] for x in r["rev1"]["answer"]["slots"] if x["kind"] == "direct"), "")
+        flow["hand" if nn == "studio" else "i2_ko"] = {
+            "first_slot_queue_313_L4": "/blob/v3.13." in slot1 and "queues.py#L" in slot1,
+            "semaphore_folded_H1U": "H1 U" in folded.get("대기 8을 대기열 길이로 지키는가", ""),
+            "create_all_folded_H2": "H2 위반" in folded.get("입력마다 작업 객체를 미리 만드는가", ""),
+            "drawer_symbols": [(x["name"], x.get("drawer_rank"), x.get("skipped")) for x in
+                               r["rev1"]["fresh_direct"]["drawer_symbols_resolved"]],
+            "external_attempts": r["rev1"]["budget"]["external_attempts"]}
+    commit = json.loads((FIX / "catalog-p5" / "SOURCES.json").read_text(encoding="utf-8"))["commit"]
+    out = {"rule": i27.__doc__.split("\n")[1:5], "catalog_commit": commit, "rank_rules": rank,
+           "noise_observations": len(noise), "i25_relevant_rate": round(rate, 3),
+           "r1": {k: v for k, v in per.items() if k.startswith("R1")}, "a4_20": a4, "r1_flow": flow,
+           "end_condition_met": {m: {"r1_hand": per["R1.hand"][m] <= 2, "r1_i2_ko": per["R1.i2_ko"][m] <= 2,
+                                     "a4_ko_all": a4["ko"][f"le2_{m}"] == len(a20), "a4_en_all": a4["en"][f"le2_{m}"] == len(a20)}
+                                 for m in ("noise_raw", "noise_judged", "noise_estimate")},
+           "per_request": per, "top10": top10}
+    write(out_name, out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]

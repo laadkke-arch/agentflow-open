@@ -98,3 +98,54 @@ def preload_synthetic(L, n: int, *, seed: int = 11, at="2026-11-20T00:00:00Z") -
         L.tag(oid, "summary", "concrete", "mixed", c, written_from="source_quote")
         ids.append(oid)
     return ids
+
+
+# ---- 08 I27: opensource catalog p5 대상으로 채운 실제 잡음(fixtures/catalog-p5, 커밋은 SOURCES.json)
+P5_EXCLUDE_SESSIONS = ("AR2", "BR2", "CR2")     # 012 보강 회차(REQUESTS Q3)의 기록은 012 꼬리표 쪽이라 잡음에서 뺀다
+P5_SLOT_MAP = (
+    # (catalog 칸, 꼬리표 칸, 높이, 언어) — 돌리기 전에 정함(08 I27)
+    ("what", "summary", "one_up", "source"),        # 원문 언어 한 줄 소개
+    ("principle", "summary", "one_up", "ko"),       # 한국어 원리
+    ("scene", "summary", "concrete", "ko"),         # 한국어 적용 장면(장면은 실패 조건이 아니라 쓰임새라 breaks_when에 두지 않는다)
+    ("claim.text", "summary", "one_up", "ko"),      # 쓸모 주장(link-index의 use와 같은 자리)
+    ("claim.evidence", "summary", "concrete", "mixed"),   # 원문 문장(link-index의 evidence와 같은 자리)
+)
+# claim.gap(원문에 없는 이식 단계)은 넣지 않는다. 가설이라 원문 쪽 꼬리표가 아니다.
+
+
+def catalog_p5_rows() -> list[dict]:
+    import gzip
+    with gzip.open(FIX / "catalog-p5" / "targets.jsonl.gz", "rt", encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh]
+
+
+def catalog_p5_noise_rows(n: int = 20000) -> list[dict]:
+    """012 주소(n1의 page가 같은 것)와 012 보강 회차 기록을 뺀 대상 가운데 대상 키의 SHA-1 순으로 앞 n개."""
+    import hashlib
+    from afledger import normalize
+    pages = {normalize.keys(json.loads(x)["url"])["page"]
+             for x in (FIX / "af-res-012" / "entries.jsonl").read_text(encoding="utf-8").splitlines()}
+    keep = [r for r in catalog_p5_rows()
+            if not any(normalize.keys(u)["page"] in pages for u in r["urls"] or [r["url"]])
+            and not any(rec.split("-")[0] in P5_EXCLUDE_SESSIONS for rec in r["records"])]
+    keep.sort(key=lambda r: hashlib.sha1(r["key"].encode("utf-8")).hexdigest())
+    return keep[:n]
+
+
+def preload_catalog_p5(L, n: int = 20000, at="2026-11-20T00:00:00Z") -> dict[int, dict]:
+    """catalog p5 대상 n개를 잡음 관측으로 넣는다. 대상 하나 = 관측 하나. 꼬리표는 P5_SLOT_MAP대로."""
+    commit = json.loads((FIX / "catalog-p5" / "SOURCES.json").read_text(encoding="utf-8"))["commit"]
+    out = {}
+    for r in catalog_p5_noise_rows(n):
+        oid, _ = L.observe(url=r["url"] or f"https://catalog.invalid/{r['key']}", edition_key=f"catalog-p5@{commit[:12]}",
+                           edition_kind="fetch", position=f"target {r['key']}", at=at, method="intro_only",
+                           statement=r["what"] or r["principle"] or r["key"], via="collection",
+                           evidence_ref=f"opensource@{commit} {r['file']}#{r['key']}")
+        src_lang = (r["lang"] or ["mixed"])[0] if isinstance(r["lang"], list) else (r["lang"] or "mixed")
+        for field, slot, height, lang in P5_SLOT_MAP:
+            texts = [c[field.split(".")[1]] for c in r["claims"]] if field.startswith("claim.") else [r[field]]
+            for t in texts:
+                if t and t.strip():
+                    L.tag(oid, slot, height, src_lang if lang == "source" else lang, t, written_from="catalog_description")
+        out[oid] = r
+    return out
