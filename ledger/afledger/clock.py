@@ -40,8 +40,11 @@ class PollingClock:
                     self._last_ids[url] = ids
                     if not c.get("self_logging"):   # 조건부 채널 어댑터는 스스로 가져오기를 적는다
                         self.L.fetched(url, None, at, outcome, None, clock="background")
-                    new = self.L.poll(url, listing, at)
-                    self.polls.append({"at": at, "channel": url, "new": [i["id"] for i in new], "outcome": outcome})
+                    src = getattr(c["listing"], "__self__", None)   # 어댑터가 오류를 알리면 확인 커서를 옮기지 않는다(08 I35)
+                    poll_outcome = c.get("outcome", lambda _at: getattr(src, "last_outcome", "ok"))(at)
+                    new = self.L.poll(url, listing, at, outcome=poll_outcome)
+                    self.polls.append({"at": at, "channel": url, "new": [i["id"] for i in new], "outcome": outcome,
+                                       "poll_outcome": self.L.last_poll_outcome})
             self.L.due(at)
             self.worker.run_once(at)
             for p in self.projects:

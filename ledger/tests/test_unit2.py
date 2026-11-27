@@ -115,5 +115,59 @@ class EvalX1Replay(unittest.TestCase):
             config.DEADLINE_BUDGET = saved
 
 
+class ChangeCursorI35(unittest.TestCase):
+    def test_error_polls_do_not_freshen_the_cursor_and_the_gate_reopens(self):            # (b)
+        L, o = doc_ledger()
+        L.poll(CH, [], "2026-11-26T00:00:00Z")                                     # 항목 없음: 재확인 작업도 없다
+        self.assertEqual(L.reuse_gate(o, "2026-11-27T00:00:00Z")["decision"], "reuse")
+        for h in ("2026-11-29T00:00:00Z", "2026-12-02T00:00:00Z", "2026-12-05T00:00:00Z"):
+            L.poll(CH, [], h, outcome="error")
+        g = L.reuse_gate(o, "2026-12-05T01:00:00Z")
+        self.assertEqual(g["decision"], "reopen")
+        self.assertTrue(any("채널 커서가 늙음" in w for w in g["why"]))
+        row = L.db.execute("SELECT last_polled_at, confirmed_at FROM channel WHERE url=?", (CH,)).fetchone()
+        self.assertEqual((row[0], row[1]), ("2026-12-05T00:00:00Z", "2026-11-26T00:00:00Z"))
+
+    def test_windowed_listing_missing_the_newest_known_id_is_a_gap_until_a_full_listing(self):   # (c)
+        L = Ledger()
+        feed = "https://example.org/feed"
+        L.channel("ex", feed, "feed", windowed=True)
+        L.poll(feed, [{"id": "a", "title": "a"}, {"id": "b", "title": "b"}], "2026-11-26T00:00:00Z")
+        c0 = L.db.execute("SELECT confirmed_at, cursor FROM channel WHERE url=?", (feed,)).fetchone()
+        new = L.poll(feed, [{"id": "d", "title": "d"}, {"id": "e", "title": "e"}], "2026-11-29T00:00:00Z")
+        self.assertEqual([i["id"] for i in new], ["d", "e"])                         # 새 ID는 넣는다
+        self.assertEqual(L.last_poll_outcome, "gap")
+        self.assertTrue(any(a["kind"] == "channel_gap_suspected" for a in L.alerts))
+        c1 = L.db.execute("SELECT confirmed_at, cursor, needs_full_listing FROM channel WHERE url=?", (feed,)).fetchone()
+        self.assertEqual((c1[0], c1[1], c1[2]), (c0[0], c0[1], 1))                   # 확인 커서는 멈춘다
+        new = L.poll(feed, [{"id": x, "title": x} for x in "abcde"], "2026-11-29T01:00:00Z", full_listing=True)
+        self.assertEqual([i["id"] for i in new], ["c"])                              # 빠졌던 c를 전체 목록에서 찾는다
+        c2 = L.db.execute("SELECT confirmed_at, needs_full_listing FROM channel WHERE url=?", (feed,)).fetchone()
+        self.assertEqual((c2[0], c2[1]), ("2026-11-29T01:00:00Z", 0))
+
+    def test_ok_poll_without_new_ids_advances_the_cursor(self):                          # (d) BOOKMARK
+        L, o = doc_ledger()
+        L.poll(CH, [], "2026-11-26T00:00:00Z")
+        L.poll(CH, [], "2026-12-02T00:00:00Z")
+        self.assertEqual(L.db.execute("SELECT confirmed_at FROM channel WHERE url=?", (CH,)).fetchone()[0],
+                         "2026-12-02T00:00:00Z")
+        self.assertEqual(L.reuse_gate(o, "2026-12-03T00:00:00Z")["why"].count("채널 커서가 늙음(%s)" % CH), 0)
+
+    def test_conditional_channel_error_reaches_poll_as_error(self):                       # (f)
+        L = Ledger()
+        t = ConditionalChannel.T()
+        ch = ConditionalFileChannel(L, t, "https://example.org/f", expect="hello")
+        L.channel("ex", "https://example.org/f", "revision_history")
+        t.body, t.status = b"hello v1", 200
+        L.poll("https://example.org/f", ch.listing("2026-11-26T00:00:00Z"), "2026-11-26T00:00:00Z",
+               outcome=ch.last_outcome)
+        t.body, t.etag = b"<html>error</html>", '"e2"'                              # 200인데 기대 표지가 없다
+        listing = ch.listing("2026-11-29T00:00:00Z")
+        self.assertEqual(ch.last_outcome, "error")
+        L.poll("https://example.org/f", listing, "2026-11-29T00:00:00Z", outcome=ch.last_outcome)
+        self.assertEqual(L.db.execute("SELECT confirmed_at FROM channel WHERE url=?", ("https://example.org/f",)).fetchone()[0],
+                         "2026-11-26T00:00:00Z")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -412,10 +412,10 @@ class Ledger:
         return row[0] if row else None
 
     # ------------------------------------------------------------------ 변경 채널
-    def channel(self, supplier: str, url: str, kind: str, period_h: int = 72) -> int:
+    def channel(self, supplier: str, url: str, kind: str, period_h: int = 72, *, windowed: bool = False) -> int:
         with self.db:
-            self.db.execute("INSERT OR IGNORE INTO channel(supplier, url, kind, period_h) VALUES (?,?,?,?)",
-                            (supplier, url, kind, period_h))
+            self.db.execute("INSERT OR IGNORE INTO channel(supplier, url, kind, period_h, windowed) VALUES (?,?,?,?,?)",
+                            (supplier, url, kind, period_h, int(windowed)))
         return self.db.execute("SELECT channel_id FROM channel WHERE url=?", (url,)).fetchone()[0]
 
     def watch(self, obs_id: int, channel_url: str, match_key: str = "", *, layer="same_address",
@@ -472,8 +472,8 @@ class Ledger:
         (4) 감시가 주장과 같은 층(감시를 달 때 확인 단계가 보증) (5) 마지막 직접 확인이 168시간 안."""
         why = []
         ws = self.db.execute(
-            "SELECT w.*, c.last_polled_at, c.period_h, c.url AS ch_url FROM watch w JOIN channel c USING(channel_id)"
-            " WHERE w.obs_id=?", (obs_id,)).fetchall()
+            "SELECT w.*, c.last_polled_at, c.confirmed_at, c.period_h, c.url AS ch_url FROM watch w"
+            " JOIN channel c USING(channel_id) WHERE w.obs_id=?", (obs_id,)).fetchall()
         last = self.db.execute(
             "SELECT max(t) FROM (SELECT observed_at AS t FROM observation WHERE obs_id=?"
             " UNION ALL SELECT seen_at FROM sighting WHERE obs_id=?)", (obs_id, obs_id)).fetchone()[0]
@@ -481,7 +481,8 @@ class Ledger:
             why.append("감시 없음")
         last_read = max(h for _r, h in self.DEADLINE_READS)
         for w in ws:
-            if not w["last_polled_at"] or w["last_polled_at"] < _shift(at, -2 * w["period_h"]):
+            # 확인 커서(마지막 ok 폴링)로 본다. 시도 시각은 원문에 닿지 못한 폴링도 새것으로 만든다(08 I35)
+            if not w["confirmed_at"] or w["confirmed_at"] < _shift(at, -2 * w["period_h"]):
                 why.append(f"채널 커서가 늙음({w['ch_url']})")
             # 기한 읽기 창(T-24h ~ 마지막 기한 읽기) 안이거나, 기한이 지났는데 그 뒤 직접 확인이 없을 때만 다시 연다.
             # v1은 기한이 지나면 대체될 때까지 영원히 다시 열었다
@@ -499,15 +500,35 @@ class Ledger:
         limit = self.IMMUTABLE_RECHECK_H if kind in self.IMMUTABLE_KINDS else config.RECHECK_H
         if limit is not None and last < _shift(at, -limit):
             why.append(f"마지막 직접 확인이 {limit}시간보다 오래됨")
-        polled = [w["last_polled_at"] for w in ws if w["last_polled_at"]]
+        polled = [w["confirmed_at"] for w in ws if w["confirmed_at"]]
         return {"decision": "reopen" if why else "reuse", "why": why,
                 "basis": None if why else f"채널 확인 시각 {max(polled)}"}
 
-    def poll(self, channel_url: str, listing: list[dict], at: str) -> list[dict]:
-        """채널 목록 전체를 받아 외부 ID 집합의 차분만 새 항목으로 넣고, 닿는 관측의 재확인 작업을 만든다."""
-        ch = self.db.execute("SELECT channel_id FROM channel WHERE url=?", (channel_url,)).fetchone()[0]
-        known = {r[0] for r in self.db.execute(
-            "SELECT external_id FROM channel_item WHERE channel_id=?", (ch,))}
+    def poll(self, channel_url: str, listing: list[dict], at: str, *, outcome: str = "ok",
+             full_listing: bool | None = None) -> list[dict]:
+        """채널 목록 전체를 받아 외부 ID 집합의 차분만 새 항목으로 넣고, 닿는 관측의 재확인 작업을 만든다.
+        확인 커서(08 I35): outcome="ok"이고 결번이 없을 때만 confirmed_at·cursor를 옮긴다. "error"(원문에 닿지 못함)는
+        목록을 처리하지 않고 시도 시각만 남긴다. 창 채널에서 직전 최신 ID가 목록에 없으면 결번(gap)으로 보고 새 ID는 넣되
+        확인 커서를 멈추고 전체 목록 1회를 요청한다(needs_full_listing). full_listing=True인 목록은 결번 검사를 하지 않는다."""
+        chrow = self.db.execute("SELECT * FROM channel WHERE url=?", (channel_url,)).fetchone()
+        ch = chrow["channel_id"]
+        self.last_poll_outcome = outcome
+        if outcome == "error":
+            with self.db:
+                self.db.execute("UPDATE channel SET last_polled_at=? WHERE channel_id=?", (at, ch))
+            return []
+        known_rows = self.db.execute(
+            "SELECT external_id FROM channel_item WHERE channel_id=? ORDER BY item_id", (ch,)).fetchall()
+        known = {r[0] for r in known_rows}
+        full = (not chrow["windowed"]) if full_listing is None else full_listing
+        gap = False
+        if chrow["windowed"] and not full and known:
+            newest_known = known_rows[-1][0]
+            gap = newest_known not in {it["id"] for it in listing}
+        if gap:
+            self.last_poll_outcome = "gap"
+            self.alerts.append({"kind": "channel_gap_suspected", "channel": channel_url, "at": at,
+                                "missing": newest_known})
         new, ids = [], set()
         for it in listing:                 # 목록 안의 중복 ID는 첫 항목만 쓴다(중복이면 거래 전체가 실패했다, M12)
             if it["id"] not in known and it["id"] not in ids:
@@ -536,6 +557,13 @@ class Ledger:
                     self._enqueue(w["obs_id"], "channel", f"{channel_url}#{it['id']}", at)
             self.db.execute("UPDATE channel SET last_polled_at=?, last_item_count=? WHERE channel_id=?",
                             (at, len(listing), ch))
+            if gap:
+                self.db.execute("UPDATE channel SET needs_full_listing=1 WHERE channel_id=?", (ch,))
+            else:
+                ids_all = sorted(known | {it["id"] for it in new})
+                cur = hashlib.sha256("\n".join(ids_all).encode("utf-8")).hexdigest()[:16]
+                self.db.execute("UPDATE channel SET confirmed_at=?, cursor=?, needs_full_listing=0 WHERE channel_id=?",
+                                (at, cur, ch))
         return new
 
     RESET_MIN_NEW = config.RESET_MIN_NEW   # [가정] 기준선이 있는 채널에서 한 번에 새 ID가 이만큼 이상이고

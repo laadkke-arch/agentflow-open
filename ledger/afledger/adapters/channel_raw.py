@@ -22,6 +22,7 @@ class ConditionalFileChannel:
         headers = {"If-None-Match": self.etag} if self.etag else {}
         r = self.t.get(self.url, headers, note=f"conditional poll {self.url}")
         if r.status == 304:
+            self.last_outcome = "ok"             # 304도 확인이다: 바뀐 것이 없다는 진행 표시(08 I35, BOOKMARK)
             self.L.fetched(self.url, None, at, "not_modified", 0, clock="background")
             self.log.append({"at": at, "status": 304, "bytes": 0})
             return list(self.items)
@@ -30,6 +31,7 @@ class ConditionalFileChannel:
         self.L.fetched(self.url, None, at, "ok" if ok else ("not_found" if r.status == 404 else "unreachable"),
                        len(body), clock="background")
         self.log.append({"at": at, "status": r.status, "bytes": len(body), "accepted": bool(ok)})
+        self.last_outcome = "ok" if ok else "error"   # 오류는 확인 커서를 옮기지 않는다(08 I35)
         if not ok:
             return list(self.items)          # 기준선을 옮기지 않는다
         etag = r.headers.get("etag") or hashlib.sha256(body).hexdigest()

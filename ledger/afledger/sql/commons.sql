@@ -191,8 +191,12 @@ CREATE TABLE IF NOT EXISTS channel (
   url            TEXT NOT NULL UNIQUE,
   kind           TEXT NOT NULL CHECK (kind IN ('release_notes','changelog','errata','yank_flag','revision_history','status','feed')),
   period_h       INTEGER NOT NULL DEFAULT 72,   -- 배경 시계 주기. 커서가 2배보다 늙으면 재사용 게이트가 닫힌다
-  last_polled_at TEXT,
-  last_item_count INTEGER NOT NULL DEFAULT 0
+  last_polled_at TEXT,                          -- 폴링을 시도한 시각(운영 지표). 커서가 아니다(08 I35)
+  last_item_count INTEGER NOT NULL DEFAULT 0,
+  windowed       INTEGER NOT NULL DEFAULT 0,    -- 목록이 최근 창만 주는 채널(피드 한 쪽). 결번 규칙이 적용된다
+  confirmed_at   TEXT,                          -- 확인 커서: 마지막 ok 폴링 시각. 재사용 관문 조건 (1)이 본다
+  cursor         TEXT,                          -- 확인 커서: 지금까지 본 외부 ID 집합의 지문(시각이 아니라 변화로 센다)
+  needs_full_listing INTEGER NOT NULL DEFAULT 0 -- 겹침 구간 결번 뒤 전체 목록 1회가 필요하다(04 7절)
 );
 CREATE TABLE IF NOT EXISTS channel_item (
   item_id       INTEGER PRIMARY KEY,

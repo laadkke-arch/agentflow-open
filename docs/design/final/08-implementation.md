@@ -660,7 +660,7 @@
 - **시험.** `test_rank.MaxTagR6`, `test_measure.MaxTagI33`(여섯 설정의 판정 풀이 비어 있고, 기본값이 비교가 고른 설정과 같고, 판정 행마다 확인 단계와 원문 칸이 있음). 시험 85개.
 - **영향.** 07 R-6.
 
-### I35. 단위 2 이어서: 채널 변화 커서와 겹침 구간 결번(규칙 먼저)
+### I35. 단위 2 이어서: 채널 변화 커서와 겹침 구간 결번
 
 - **결정(사용자, 2026-11-27 다섯째).** R-6을 멈추고 둘째 구현 단위(변경 채널·감시)를 잇는다. 원문 자료는 opensource catalog F09·F14다. 규칙을 먼저 적고 항목마다 커밋한다.
 - **문제(구현에서 본 것).**
@@ -687,6 +687,17 @@
   - (d) 새 ID가 없는 정상 폴링은 확인 커서를 옮긴다.
   - (e) EVAL-X1 기록 재생(위상 12개)의 세 기준과 최악 지연이 바뀌지 않는다.
   - (f) 조건부 채널의 오류 응답은 `error`로 넘어간다.
+- **구현.**
+  - `channel`에 `windowed`, `confirmed_at`, `cursor`, `needs_full_listing` 칸을 더했다.
+  - `Ledger.poll(…, outcome=, full_listing=)`이 규칙 1~4를 따른다. `Ledger.last_poll_outcome`이 ok·error·gap을 알린다. `Ledger.channel(…, windowed=)`로 창 채널을 지정한다. `reuse_gate`는 `confirmed_at`을 본다.
+  - `ConditionalFileChannel.last_outcome`이 304와 정상 200을 `ok`로, 오류 화면·404·연결 실패를 `error`로 알린다. `PollingClock`은 그 값을 `poll`에 넘긴다(채널 설정에 `outcome` 함수를 줄 수도 있다).
+- **결과.** 합격 조건 여섯이 모두 맞는다.
+  - (a) 시험 89개 통과(설계 시험 33개 그대로).
+  - (b)~(d)·(f) `test_unit2.ChangeCursorI35`의 시험 넷.
+  - (e) EVAL-X1 기록 재생은 세 기준, 최악 지연 67시간, 위상별 지연·후속 가져오기·예산 비교가 이전과 같다([unit2_x1.json](../../../ledger/out/unit2_x1.json)).
+  - EVAL-X1의 재생 채널은 오류를 내지 않는 기록이라 결과가 같은 것이 맞다. 이 항목이 고친 것은 오류·결번이 있을 때의 재사용 관문이다.
+- **남은 것.** 공급자가 변화 토큰(Kubernetes `resourceVersion`, JMAP `queryState` 같은 것)을 주는 채널은 아직 없다. 생기면 `cursor`에 그 토큰을 넣고 410 Gone류 응답을 결번으로 다룬다. 지금 `cursor`는 본 ID 집합의 지문이다.
+- **영향.** 04 3.8·7절(겹침 구간 결번 규칙 구현), 04 5절(재사용 관문 조건 1).
 
 ## 2. 다음 단계
 
