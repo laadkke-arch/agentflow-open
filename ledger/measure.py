@@ -1289,7 +1289,8 @@ def main():
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
            "r6": r6(mode), "a4_20": a4_20(), "r6_scale": r6_scale(), "r3": r3(mode), "i24": i24(), "i25_pairs": i25_collect(), "i25": i25_score(),
            "i26": i26(), "i26_rank": i26_rank(), "i26_combo": i26_combo(),
-           "i27": i27(), "i27_judged": i27_score(), "i28": i28(), "i29": i29()}
+           "i27": i27(), "i27_judged": i27_score(), "i28": i28(), "i29": i29(),
+           "i30": i30(), "i31": i31()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
@@ -1312,6 +1313,7 @@ def main():
     print("I26", res["i26"]["adopt"], res["i26_rank"]["adopt_r3"], res["i26_combo"]["adopt"], json.dumps(res["i26_combo"]["judged_noise"]))
     print("I27", json.dumps(res["i27_judged"]["r1"]), json.dumps(res["i27_judged"]["a4_20"]))
     print("I28", res["i28"]["adopt_r4"], res["i28"]["worse"], "I29", res["i29"]["recommend_reask"])
+    print("I30", res["i30"]["adopt_p5"], res["i30"]["worse"], "I31", res["i31"]["adopt_r5"], res["i31"]["worse"])
     print("R6 best reweighting", res["r6"]["best_reweighting_only"], "chosen", res["r6"]["chosen"])
 
 
