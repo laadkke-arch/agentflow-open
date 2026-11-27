@@ -108,3 +108,33 @@ def intake(L, p: str, studio_json: dict) -> tuple[int, dict]:
         by = RULES
     req = L.intake(p, **kw)
     return req, {"needs_by": by, "needs": kw["needs"]}
+
+
+# ---- 08 I29: 한 문장 요청에 한 번 되묻기(I19의 b를 복사 대신 질문으로)
+REASK = (("input", {"ko": "무엇을 받아 처리하나요?", "en": "What does it take in?"}),
+         ("breaks_when", {"ko": "무엇이 깨지면 안 되나요?", "en": "What must not break?"}))
+
+
+def reask_questions(needs: list[dict], lang: str = "ko") -> list[dict]:
+    """필요 문장이 칸 하나뿐이면 비어 있는 칸(받는 것, 깨지면 안 되는 것)마다 질문 하나를 돌려준다. 한 번만 묻는다.
+    칸이 둘 이상이면 묻지 않는다. 같은 문장을 다른 칸에 복사하지 않는다(I24)."""
+    filled = {n["slot"] for n in needs if (n["text"] or "").strip()}
+    if len(filled) >= 2:
+        return []
+    return [{"slot": slot, "question": q[lang]} for slot, q in REASK if slot not in filled and
+            not (slot == "breaks_when" and "keeps" in filled)]
+
+
+def apply_reask(needs: list[dict], answers: dict[str, str]) -> list[dict]:
+    """되묻기 답을 칸으로 넣는다. "깨지면 안 되는 것" 답은 상한 단서가 있으면 keeps, 아니면 breaks_when. 이미 있는 문장은 넣지 않는다."""
+    have = {(n["text"] or "").strip() for n in needs}
+    out = [dict(n) for n in needs]
+    for slot, text in answers.items():
+        text = (text or "").strip()
+        if not text or text in have:
+            continue
+        if slot == "breaks_when" and any(c in text.lower() for c in BOUND_CUES) and \
+                not any(c in text.lower() for c in PROHIBIT_CUES):
+            slot = "keeps"
+        out.append({"slot": slot, "lang": _lang(text), "text": text})
+    return out

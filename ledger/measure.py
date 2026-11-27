@@ -981,6 +981,88 @@ def i28():
     write("measure_i28.json", out)
     return out
 
+
+# ------------------------------------------------------------------------------------------- I29 한 문장 요청 되묻기
+def i29():
+    """08 I29: 한 문장 요청(012의 부분 질의)에 한 번 되묻기(intake.reask_questions: 받는 것, 깨지면 안 되는 것) 대 그대로.
+    대리 답(돌리기 전에 정함): 같은 문제의 전체 질의(.w)를 접수 규칙으로 나눈 칸에서 input은 "받는 것" 답, keeps·breaks_when은
+    "깨지면 안 되는 것" 답이다. 부분 질의 문장과 같은 문장은 답에서 뺀다(복사 금지). 전체 질의 그대로는 위쪽 한계로 같이 잰다.
+    대상: A4 20건 가운데 부분 질의(.1·.2) 16건, 한국어·영어판. 잡음은 실제 행 2만 개(I27), 순위는 지금 기본.
+    권하는 규칙: 한국어·영어판 모두 적격 0 요청이 줄고, 자료집만 회수율 평균과 등급 2 상위 12 수가 줄지 않고, 실제 행 2만 개의 판정 잡음
+    평균이 늘지 않으면 접수 설계에 되묻기를 권한다. 새 검색 맡기기(c)는 직접 갈래가 CPython 소스 검색뿐이라 012 질의에는 잴 수 없다."""
+    import csv
+    from drawer_load import preload_catalog_p5
+    qs = {json.loads(x)["id"]: json.loads(x) for x in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()}
+    qrels: dict[str, dict] = {}
+    for r in csv.DictReader(open(FIX / "af-res-012" / "qrels.tsv", encoding="utf-8"), delimiter="\t"):
+        if r["grade"].isdigit():
+            qrels.setdefault(r["query_id"], {})[r["entry_id"]] = int(r["grade"])
+    a20 = json.loads((OUT / "measure_a4_20.json").read_text(encoding="utf-8"))["queries"]
+    parts = [q for q in a20 if not q.endswith(".w")]
+    grade = {(r["request"], r["url"]): int(r["grade"]) for r in
+             csv.DictReader(open(FIX / "i25" / "judgments.tsv", encoding="utf-8"), delimiter="\t")}
+
+    def needs_for(qid, lang, arm):
+        text = qs[qid][lang]
+        nd = intake_mod.write_needs(text, intake_mod.requirements_from_text(text))
+        if arm == "part":
+            return nd, []
+        whole = qs[qid.split(".")[0] + ".w"][lang]
+        wn = intake_mod.write_needs(whole, intake_mod.requirements_from_text(whole))
+        if arm == "whole":
+            return wn, []
+        asked = intake_mod.reask_questions(nd, lang)
+        mine = {s_.strip() for n in nd for s_ in intake_mod._sentences(n["text"])}
+        ans = {}
+        for a in asked:
+            src = ("input",) if a["slot"] == "input" else ("keeps", "breaks_when")
+            ans[a["slot"]] = " ".join(s_ for n in wn if n["slot"] in src for s_ in intake_mod._sentences(n["text"])
+                                      if s_.strip() not in mine)
+        return intake_mod.apply_reask(nd, ans), asked
+
+    out = {"rule": i29.__doc__.split("\n")[1:7], "parts": parts, "arms": {}}
+    for noise in ("catalog_only", "catalog20k"):
+        L = Ledger()
+        cat = preload_catalog(L)
+        catset = set(cat.values())
+        inv = {v: k for k, v in cat.items()}
+        if noise == "catalog20k":
+            preload_catalog_p5(L)
+        p = L.project("Q")
+        for arm in ("part", "reask", "whole"):
+            for lang in ("ko", "en"):
+                rows = []
+                for qid in parts:
+                    nd, asked = needs_for(qid, lang, arm)
+                    req = L.intake(p, request_key=f"{qid}.{lang}.{arm}", rev=1, at=T0, text=qs[qid][lang], selected_part="s",
+                                   requirements=[], needs=nd)
+                    hits = L.search_drawer(p, req, T0, k=12, log=False)
+                    ids = [inv.get(h["obs_id"]) for h in hits]
+                    rel = {e for e, g in qrels[qid].items() if g >= 1}
+                    nz = [L.obs(h["obs_id"])["url"] for h in hits[:10] if h["obs_id"] not in catset]
+                    rows.append({"id": qid, "slots": sorted({n["slot"] for n in nd}), "asked": len(asked),
+                                 "eligible": sum(h["eligible"] for h in hits),
+                                 "recall12": sum(1 for e in rel if e in ids) / len(rel),
+                                 "grade2": any(qrels[qid].get(e) == 2 for e in ids),
+                                 "noise_judged": len(nz) - sum(1 for u in nz if grade.get((f"{qid}.{lang}", u), 0) >= 1)})
+                out["arms"].setdefault(noise, {}).setdefault(arm, {})[lang] = {
+                    "zero_eligible_in_top12": sum(1 for r in rows if r["eligible"] == 0),
+                    "mean_recall12": round(sum(r["recall12"] for r in rows) / len(rows), 3),
+                    "grade2_in_top12": sum(r["grade2"] for r in rows),
+                    "mean_noise_judged": round(sum(r["noise_judged"] for r in rows) / len(rows), 2),
+                    "asked_requests": sum(1 for r in rows if r["asked"]), "rows": rows}
+    A = out["arms"]
+    ok = {}
+    for lang in ("ko", "en"):
+        c0, c1 = A["catalog_only"]["part"][lang], A["catalog_only"]["reask"][lang]
+        n0, n1 = A["catalog20k"]["part"][lang], A["catalog20k"]["reask"][lang]
+        ok[lang] = (n1["zero_eligible_in_top12"] < n0["zero_eligible_in_top12"] and c1["mean_recall12"] >= c0["mean_recall12"]
+                    and c1["grade2_in_top12"] >= c0["grade2_in_top12"] and n1["mean_noise_judged"] <= n0["mean_noise_judged"])
+    out["recommend_reask"] = all(ok.values())
+    out["by_lang"] = ok
+    write("measure_i29.json", out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]

@@ -109,5 +109,20 @@ class CompletionCriteria(unittest.TestCase):
         self.assertEqual(live["rev2"]["answer"], self.r["rev2"]["answer"])
 
 
+class ReaskI29(unittest.TestCase):
+    def test_one_slot_request_gets_at_most_two_questions_and_answers_are_not_copies(self):
+        from afledger import intake as I
+        nd = [{"slot": "summary", "lang": "ko", "text": "백엔드가 멈춰도 전송 대기 자료의 손실을 줄이고 싶다."}]
+        qs = I.reask_questions(nd, "ko")
+        self.assertEqual([q["slot"] for q in qs], ["input", "breaks_when"])
+        self.assertEqual(I.reask_questions(nd + [{"slot": "input", "lang": "ko", "text": "수집기 출력"}], "ko"), [])
+        out = I.apply_reask(nd, {"input": "수집기가 내보내는 추적 자료", "breaks_when": nd[0]["text"]})   # 같은 문장은 복사하지 않는다
+        self.assertEqual([n["slot"] for n in out], ["summary", "input"])
+        out = I.apply_reask(nd, {"breaks_when": "디스크 사용은 최대 1GB를 넘지 않아야 한다"})
+        self.assertEqual(out[-1]["slot"], "breaks_when")                  # 금지 단서가 있으면 상한 단서보다 breaks_when
+        out = I.apply_reask(nd, {"breaks_when": "대기열은 최대 8개"})
+        self.assertEqual(out[-1]["slot"], "keeps")
+
+
 if __name__ == "__main__":
     unittest.main()
