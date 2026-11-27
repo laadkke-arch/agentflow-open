@@ -1282,5 +1282,8 @@ laadkke-arch/opensource는 읽기만 했다. inbox·records·plan은 고치지 �
 | `catalog/claims/F09.tsv`·`F14.tsv` | I35~I38·I41·I44 단위 2 근거(대부분 L1) | [`7695256`](https://github.com/laadkke-arch/opensource/tree/769525650df4176b2358aa1252811a54a7307761/catalog/claims) |
 | `judge/J1-D.txt`·`J1-D-2.txt`(원문을 연 모델 판정 30쌍) | I45. 모은 파일 `ledger/fixtures/judge-orig/`(등급만, 인용·이유는 옮기지 않음) | [`d11ae71`](https://github.com/laadkke-arch/opensource/tree/d11ae71d829465d8b435f5072e9418cf2232a1bc/judge) |
 | captures 가지 `tools/capture.py`(env_breaker·env_suspect) | I46 환경 고장 의심 규칙 | [`c57390f`](https://github.com/laadkke-arch/opensource/blob/c57390f26cfa74079dce822090a79c00a90141d6/tools/capture.py) |
+| `judge/J2-D1~D4.txt`·`J3-D1.txt`·`J4-D1.txt`(원문을 연 모델 판정) | I48·I50·I51. `ledger/fixtures/judge-orig/`(등급만) | [`70c86f8`](https://github.com/laadkke-arch/opensource/tree/70c86f811a4370906e2212d91b260a941a6abbb8/judge) |
+| `judge/ID1-D1.txt`·`plan/eval/ID1-pairs.tsv`(같은 대상 고정 묶음, 모델 판정) | I52. `ledger/fixtures/id1/`(바이트 그대로) | [`70c86f8`](https://github.com/laadkke-arch/opensource/blob/70c86f811a4370906e2212d91b260a941a6abbb8/plan/eval/README.md) |
+| `plan/impl/INBOX.md`와 지시 파일(받은 편지 N1~) | 사용자 결정으로 지시로 따름(다음 단계 맨 위의 처리 번호) | [`70c86f8`](https://github.com/laadkke-arch/opensource/blob/70c86f811a4370906e2212d91b260a941a6abbb8/plan/impl/INBOX.md) |
 
 **출처 표기(2026-11-27부터).** 설계 근거로 opensource 원문을 인용할 때는 커밋, 기록 id와 함께 catalog의 확인 단계(L1 병합만, L2 주소 살아 있음, L3 인용이 원문에 있음, L4 교차 확인이 쓸모까지 받침)를 적는다. 커밋 `286d9d5`에서 대상 20,533개 가운데 L1이 20,247, L3이 276이다. 이 노트가 지금까지 인용한 F09·F14·F30 기록은 모두 **L1**이다(인용이 원문에 있는지 이 세션이 대조하지 않았다). 상위 대상의 웹 원문 135건은 다음 dot 회차의 교차 확인(VR1)이 본다.
