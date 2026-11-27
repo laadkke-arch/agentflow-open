@@ -660,9 +660,82 @@
 - **시험.** `test_rank.MaxTagR6`, `test_measure.MaxTagI33`(여섯 설정의 판정 풀이 비어 있고, 기본값이 비교가 고른 설정과 같고, 판정 행마다 확인 단계와 원문 칸이 있음). 시험 85개.
 - **영향.** 07 R-6.
 
+### I35. 단위 2 이어서: 채널 변화 커서와 겹침 구간 결번
+
+- **결정(사용자, 2026-11-27 다섯째).** R-6을 멈추고 둘째 구현 단위(변경 채널·감시)를 잇는다. 원문 자료는 opensource catalog F09·F14다. 규칙을 먼저 적고 항목마다 커밋한다.
+- **문제(구현에서 본 것).**
+  - 채널 커서는 `channel.last_polled_at`, 즉 폴링을 시도한 시각이다. 재사용 관문 조건 (1)("채널 커서가 주기의 2배 안")도 이 값을 본다.
+  - 조건부 채널(`ConditionalFileChannel`)은 오류 화면이나 404를 받으면 기준선을 옮기지 않으려고 이전 목록을 그대로 돌려준다. 그런데 `poll`은 받은 목록이 무엇이든 `last_polled_at`을 지금으로 바꾼다. 그래서 원문에 닿지 못한 폴링도 커서를 새것으로 보이게 하고, 관문은 그 동안 재사용을 허락한다.
+  - 04 7절의 "겹침 구간 결번(직전 ID가 48시간 겹침에 없음) → 전체 목록 1회" 규칙은 표에만 있고 구현되어 있지 않다.
+- **원문(데이터, 커밋 [`7695256`](https://github.com/laadkke-arch/opensource/tree/769525650df4176b2358aa1252811a54a7307761/catalog/claims)).**
+  - Kubernetes API concepts(B11-S01-b3-r09, **L4**): "It is a special kind of event to mark that all changes up to a given `resourceVersion` the client is requesting have already been sent." 알림이 없어도 "여기까지 다 받았다"는 진행 표시로 커서를 전진시킨다(BOOKMARK).
+  - rss-curator(B4-S01-b2-r15, **L3**): 외부 전송 실패를 성공으로 기록하지 않는 회귀 시험. 실패한 처리로는 완료 상태와 체크포인트를 옮기지 않는다.
+  - EventStore(B8-S01-b1-r14, **L3**): 필터에서 제외된 사건도 체크포인트를 전진시킨다.
+  - Watchman clockspec(W1-S03-b1-r13, **L1**): "ticking as changes are detected rather than as time moves." 커서는 시각이 아니라 변화로 센다.
+  - RFC 5005(W1-S03-b1-r03, **L1**): "clients SHOULD NOT present paged feeds as coherent or complete." 목록의 한 쪽만으로 결번 여부를 판단하지 않는다.
+- **규칙(구현 전에 정함).**
+  1. 폴링 결과를 셋으로 나눈다. `ok`는 목록을 받아 처리했다는 뜻이고 304도 여기에 든다. `error`는 원문에 닿지 못했거나 기대 표지가 없다는 뜻이다. `gap`은 창(window)으로 받는 채널에서 직전 최신 ID가 받은 목록에 없다는 뜻이다.
+  2. 채널은 시도 시각(`last_polled_at`)과 따로 **확인 커서**를 가진다. 확인 커서는 `confirmed_at`(마지막 `ok` 시각)과 `cursor`(지금까지 본 외부 ID 집합의 지문)다. `ok`만 확인 커서를 옮긴다. 새 ID가 없는 `ok`도 옮긴다(BOOKMARK). 감시에 걸리지 않는 항목도 확인 커서에 들어간다(EventStore).
+  3. `error`는 확인 커서를 옮기지 않는다(rss-curator). 시도 시각은 운영 지표로만 남긴다.
+  4. 창 채널(`windowed=True`)에서 기준선이 있는데 직전 최신 ID가 받은 목록에 없으면 `gap`이다. 새 ID는 넣되 확인 커서는 옮기지 않는다. 경보 `channel_gap_suspected`를 남기고 채널에 `needs_full_listing`을 켠다. 다음 폴링에 전체 목록(`windowed=False`)이 오면 그 표지를 끄고 확인 커서를 옮긴다(04 7절 "전체 목록 1회", RFC 5005). 창이 아닌 채널은 지금처럼 전체 목록으로 본다.
+  5. 재사용 관문 조건 (1)은 `confirmed_at`을 본다. 확인 커서가 주기의 2배보다 늙었으면 다시 연다.
+  6. `poll`의 기존 호출(`poll(url, listing, at)`)은 `ok`·창 아님으로 본다. 그래서 설계 시험 33개의 동작은 바뀌지 않는다.
+- **합격 조건(구현 전에 정함).**
+  - (a) 설계 시험 33개와 기존 시험이 그대로 통과한다.
+  - (b) 오류 폴링만 이어지면 `confirmed_at`이 멈추고, 주기의 2배가 지나면 관문이 다시 연다. 지금 코드는 재사용을 허락한다.
+  - (c) 창 채널에서 직전 최신 ID가 빠진 목록은 `gap` 경보를 내고 확인 커서를 멈춘다. 다음 전체 목록에서 회복한다.
+  - (d) 새 ID가 없는 정상 폴링은 확인 커서를 옮긴다.
+  - (e) EVAL-X1 기록 재생(위상 12개)의 세 기준과 최악 지연이 바뀌지 않는다.
+  - (f) 조건부 채널의 오류 응답은 `error`로 넘어간다.
+- **구현.**
+  - `channel`에 `windowed`, `confirmed_at`, `cursor`, `needs_full_listing` 칸을 더했다.
+  - `Ledger.poll(…, outcome=, full_listing=)`이 규칙 1~4를 따른다. `Ledger.last_poll_outcome`이 ok·error·gap을 알린다. `Ledger.channel(…, windowed=)`로 창 채널을 지정한다. `reuse_gate`는 `confirmed_at`을 본다.
+  - `ConditionalFileChannel.last_outcome`이 304와 정상 200을 `ok`로, 오류 화면·404·연결 실패를 `error`로 알린다. `PollingClock`은 그 값을 `poll`에 넘긴다(채널 설정에 `outcome` 함수를 줄 수도 있다).
+- **결과.** 합격 조건 여섯이 모두 맞는다.
+  - (a) 시험 89개 통과(설계 시험 33개 그대로).
+  - (b)~(d)·(f) `test_unit2.ChangeCursorI35`의 시험 넷.
+  - (e) EVAL-X1 기록 재생은 세 기준, 최악 지연 67시간, 위상별 지연·후속 가져오기·예산 비교가 이전과 같다([unit2_x1.json](../../../ledger/out/unit2_x1.json)).
+  - EVAL-X1의 재생 채널은 오류를 내지 않는 기록이라 결과가 같은 것이 맞다. 이 항목이 고친 것은 오류·결번이 있을 때의 재사용 관문이다.
+- **남은 것.** 공급자가 변화 토큰(Kubernetes `resourceVersion`, JMAP `queryState` 같은 것)을 주는 채널은 아직 없다. 생기면 `cursor`에 그 토큰을 넣고 410 Gone류 응답을 결번으로 다룬다. 지금 `cursor`는 본 ID 집합의 지문이다.
+- **영향.** 04 3.8·7절(겹침 구간 결번 규칙 구현), 04 5절(재사용 관문 조건 1).
+
+### I36. 단위 2: 작업자의 판 사이 위치 대응(m1)
+
+- **설계가 말한 것.** 04 3.8의 2: "판이 바뀌어 위치가 옮겨졌으면 뒤집을 위치로 찾는다 [빈칸: 판 사이 위치 대응 규칙, 07 R-1]". I4가 m1(정확한 인용 → 같은 기호 → 대응 없음)으로 그 빈칸을 채웠다. 다만 그 규칙은 요청 시계의 판독기(`GitHubPinnedReader.map_to`)에만 있고, 작업자의 reader는 위치가 고정된 기록 재생이다(I22 다음 단계 (d)).
+- **규칙(구현 전에 정함).**
+  1. 작업자용 고정판 코드 판독기 `PinnedCodeChannelReader`를 둔다. 관측 주소에서 저장소·경로를 읽고, 채널 항목이 준 새 판(태그)의 원문을 받는다. 앞 관측의 앵커(인용, 기호, docstring 여부)를 `locate.map_position`(m1)으로 새 판에서 찾는다.
+  2. 찾으면 새 판의 그 줄 범위를 새 관측으로 낸다. 위치 = 찾은 줄, 인용 = 새 판의 그 줄 본문, `map_method`(exact_quote|symbol), `map_from`(앞 관측 번호), 기호 앵커를 그대로 적는다. 진술은 앞 관측의 진술이고, 효과는 judge가 정한다.
+  3. 못 찾으면(unmapped) 새 관측을 만들지 않는다. 그 판에 같은 자리가 없다는 사실을 거짓 위치로 적지 않기 위해서다. 작업은 대체 없이 끝내고, 감사 작업(`unmapped:<판>`)과 경보(`position_unmapped`)를 남긴다. 앞 관측은 그 판에 대해 여전히 참이므로 철회하지 않는다.
+  4. 원문 받기는 후속 시계로 센다(판마다 1회, 실패도 1회). 요청 예산(`RequestBudget`)은 쓰지 않는다.
+  5. 작업자는 reader가 준 `map_method`·`map_from`·`anchor_symbol`·`anchor_in_doc`·`byte_span`을 `observe`에 그대로 넘긴다.
+- **합격 조건(구현 전에 정함).**
+  - (a) v3.12.3 `queues.py`의 관측이 v3.13.18 판 항목으로 재확인되면, 새 판의 대응 위치에 새 관측이 생기고 `map_method`·`map_from`이 남는다. 인용이 같으면 judge가 confirms로 대체한다.
+  - (b) 앵커가 새 판에 없으면 새 관측 0, 대체 0, 감사 작업 1, 경보 1이고 작업은 끝난다.
+  - (c) 판마다 후속 가져오기 1회이고 요청 예산을 쓰지 않는다.
+  - (d) 네트워크 없이 기록된 원문(`fixtures/http`)으로 돈다.
+  - (e) 기존 시험과 EVAL-X1 재생이 그대로다.
+- **구현.**
+  - `afledger/adapters/reader_channel.py`의 `PinnedCodeChannelReader(ledger, transport)`가 규칙 1~3을 따른다. 관측 주소에서 저장소·경로를 읽고, `raw.githubusercontent.com/<repo>/<판>/<경로>`를 받아 `locate.map_position`으로 찾는다. 찾으면 `locate.anchor`·`byte_span`으로 새 판의 앵커를 적고, 못 찾으면 `{"unmapped": True, "map": …}`를 돌려준다. 채널 항목이 판을 주지 않으면 읽을 판을 모르므로 실패(None)로 센다.
+  - `RecheckWorker._work`는 unmapped 판을 따로 모은다. 관측은 만들지 않고, 가져오기는 `ok`로 센다(원문은 받았다). 작업을 끝낸 같은 흐름에서 감사 작업 `audit / unmapped:<판>`과 경보 `position_unmapped`(새 판에 같은 기호가 있는지 `symbol_present` 포함)를 남긴다. 결과 기록의 `result`는 `unmapped`다.
+  - `run_once`는 원인이 모두 `audit`인 작업을 잡지 않는다(I21 판독 충돌과 같은 운영자 몫). 채널 원인이 합쳐지면 다시 잡는다. 규칙에 적지 않았던 변경이라 여기에 적는다. 이것이 없으면 작업자가 감사 작업을 다시 읽어 같은 경보를 되풀이한다.
+  - observe에 `anchor_symbol`·`anchor_in_doc`·`map_method`·`map_from`·`byte_span`을 넘긴다(규칙 5). 판 종류는 스키마의 `release`다(규칙 1이 "태그"라 쓴 것과 같은 뜻).
+- **결과.** 합격 조건 다섯이 모두 맞는다(`test_unit2.CrossEditionMappingI36`, 시험 넷).
+  - (a) v3.12.3 `queues.py` L36-L38(`Queue.__init__` 안 `# Futures.` 줄)이 v3.13.18 항목으로 L48-L50에 `exact_quote`로 대응되고, 인용이 같아 confirms로 대체된다. `map_from`은 앞 관측이다. 같은 판 쌍에서 `Queue.put` docstring(v3.12.3 L111-L115)은 3.13에서 문장이 늘어 인용이 맞지 않고, `symbol`로 L126-L132에 대응되어 changes_value로 대체된다.
+  - (b) 앵커(인용·기호)가 새 판에 없으면 새 관측 0, 대체 0, 감사 작업 1(`unmapped:v3.13.18`), 경보 1이고 채널 작업은 끝난다. 앞 관측이 그대로 현재 관측이다. 감사 작업은 작업자가 다시 잡지 않는다. **이 경우의 앵커는 만든 것이다.** 기록된 v3.12.3→v3.13.18 `queues.py`·`locks.py`에는 사라진 기호가 없어 실제 사례로 재지 못했다.
+  - (c) 후속 가져오기 1회, 공용 `fetch_log`의 시계는 `follow` 하나이고 요청판 장부는 건드리지 않는다.
+  - (d) `Transport("replay", fixtures/http)`로만 돈다. 새로 기록한 응답은 없다(R1 때 받은 v3.12.3·v3.13.18 원문 그대로).
+  - (e) 시험 93개 통과(설계 시험 33개 그대로). EVAL-X1 기록 재생 출력([unit2_x1.json](../../../ledger/out/unit2_x1.json))이 바이트 그대로다.
+- **원문(데이터, 결과를 적으며 찾음, 커밋 [`7695256`](https://github.com/laadkke-arch/opensource/blob/769525650df4176b2358aa1252811a54a7307761/catalog/claims/F09.tsv)).** 규칙 3(대응 없음을 삭제로 적지 않는다)은 이 기록들 없이 정했다. 뒤에 F09에서 같은 구분을 찾았다. 모두 **L1**이다.
+  - Distill Website Monitor(B5-S01-b3-r14): "Deleted means that the page has dropped out of the monitored set, not necessarily that it has been removed from the website." 감시 범위에서 빠진 것과 원천에서 사라진 것을 가른다.
+  - Subscribe·any docs(B22-S01-b1-r15): "Only `deleted` means the record or object is gone." 제거 사유(deleted·filtered-out·displaced)를 나눈다.
+  - 이 노트의 대응 없음은 "m1이 새 판에서 같은 자리를 찾지 못했다"이지 "그 내용이 없어졌다"가 아니다. 그래서 철회 대신 감사 작업이다.
+- **남은 것.** (1) 대응 없음의 실제 사례(기호 이름 바꾸기·파일 옮기기)를 기록 재생에 넣기. 파일이 옮겨지면 지금 판독기는 404를 받아 실패로 센다. (2) 문서 절(docs) 판 사이 대응은 R-1 넓히기(다음 단계 4)와 같이 본다.
+- **영향.** 04 3.8의 2(작업자의 판 사이 위치), 다음 단계 2(d).
+
 ## 2. 다음 단계
 
 1. ~~A4 한국어 20건~~(I19 끝). 한 문장 요청의 서랍 자격: (a)는 쟀고 되돌렸다(I24). 남은 길은 (b)·(c).
+1g. **R-6 순위 실험 보류(사용자 결정, 2026-11-27 다섯째).** R-6 순위 실험은 여기서 멈춘다. 기본값은 순위 r2, 012 p5 꼬리표 끔(`RANK_RULES = "r2"`, `CATALOG_P5_TAGS = False`)이다. 남은 길 셋은 **보류**다: (1) catalog 원문 문장(evidence) 꼬리표를 별도 칸으로, (2) r2와 r6 섞기, (3) 끝나는 조건 다시 보기. 다시 시작하는 조건: 사람 확인 30쌍(`ledger/fixtures/i32/human_check.tsv`)의 결과와 opensource captures 가지의 원문이 들어오면. 그때 먼저 사람 판정과 모델 판정의 일치율을 보고, 원문을 보며 판정한 쌍과 꼬리표만 본 쌍의 차이를 잰 뒤 (1)~(3)을 고른다. 그 사이 R-6 관련 코드와 출력은 바꾸지 않는다.
 1f. **사용자 결정(2026-11-27 넷째) 진행 상황.** r6(꼬리표 한 줄당 최대 점수) 잼, 넣지 않음(I33: 실제 행 2만 개에서 B 0/42). 판정 396쌍에 확인 단계와 원문 여부를 적음(captures 원문은 아직 없음). 기다리는 것: 사용자의 사람 확인 30쌍(`fixtures/i32/human_check.tsv`), captures 가지의 원문.
 1e. **사용자 결정(2026-11-27 셋째) 진행 상황.** A 판정 풀 끝(562쌍 더 판정, 판정 안 한 행 0, 사람 확인 30쌍 `fixtures/i32/human_check.tsv`). B 비교 끝(I32: 기본 r2·꼬리표 끔 그대로, 실제 행 2만 개에서 B 만족 3/42). 다음은 사람 확인 30쌍의 결과를 보고, I32의 남은 길 (1)~(3) 가운데 고르는 것.
 1d. **사용자 결정(2026-11-27 둘째) 진행 상황.** 1 opensource `55c51d4`로 다시 고정, 012 꼬리표를 Q3 p5 기록으로 켬/끔 다시 잼(I30, judged 기준 넣지 않음). 2 r5(검색기 안 r2 길이 보정 + RRF) 잼(I31, judged 기준 넣지 않음). 3 잡음 두 값(judged, judged_only) 보고와 끝나는 조건 제안(I31 아래 "제안"). 다음은 제안 A(판정 풀 535쌍)나 B(조건 문구) 가운데 사용자가 고르는 것.
@@ -671,11 +744,11 @@
 1a. **사용자 할 일 목록(2026-11-26) 진행 상황.** 1 A4 20건 끝(I19). 2 R-6 잡음 2만 개 끝(I20, 조건 미달·원인 기록). 3 판독 재현성 끝(I21). 4 단위 2 착수 끝(I22: 작업자·시계·조건부 채널, EVAL-X1 기록 재생). 네 항목을 모두 마쳤다. 이어 갈 때는 이 줄과 git log를 본다.
 2. **단위 2 이어서(I22).**
    - ~~(a) D4·D11 충돌 결정~~(I23 끝: 기한 읽기를 따로 센다).
-   - (b) 채널 커서를 시각 대신 변화 커서(마지막으로 본 외부 ID 집합의 지문)로 바꿀지 본다(F09 #41).
+   - ~~(b) 채널 커서를 시각 대신 변화 커서로~~(I35 끝: 확인 커서와 겹침 구간 결번).
    - (c) 실제 채널: 이 환경에서 닿는 곳은 raw.githubusercontent.com뿐이다. SUMO·공급자 피드는 네트워크 허용이 필요하다(환경 설정 변경이라 먼저 묻는다).
-   - (d) 작업자의 판 사이 위치는 m1(I4)을 쓴다. 지금 reader는 위치가 고정된 기록 재생이다.
+   - ~~(d) 작업자의 판 사이 위치는 m1(I4)을 쓴다~~(I36 끝: `PinnedCodeChannelReader`, 대응 없음은 감사 작업).
    - (e) 재사용 관문(I14)은 채널 커서가 생겼으니 EVAL-X1에서 reuse가 나오는지 잰다.
-3. **R-6 규모의 남은 길(I20).** 잡음 정의를 판정으로(I25 끝), 한국어 꼬리표(I26, 넣지 않음), 실제 행 잡음(I27 끝), RRF(I28, 넣지 않음). 남은 것: I28의 (1) 검색기 안 길이 보정 + RRF, (2) summary 검색기 따로, (3) 결과 창 자르기, I26의 (1) 질의 언어 칸 정규화, (3) 출처 종류 칸. Q3 꼬리표가 들어오면 I26 비교 다시.
+3. **R-6 규모의 남은 길(I20) — 보류(1g).** 잡음 정의를 판정으로(I25 끝), 한국어 꼬리표(I26, 넣지 않음), 실제 행 잡음(I27 끝), RRF(I28, 넣지 않음). 남은 것: I28의 (1) 검색기 안 길이 보정 + RRF, (2) summary 검색기 따로, (3) 결과 창 자르기, I26의 (1) 질의 언어 칸 정규화, (3) 출처 종류 칸. Q3 꼬리표가 들어오면 I26 비교 다시.
 4. **R-1 넓히기.** 다른 저장소·문서 절로 대응 50개 이상, docs 판 정규화(n2) 여부.
 5. **R-3의 남은 쪽(I21).** 모델 판독기가 진술을 쓰기 시작하면 세 번 읽기 불일치율.
 
