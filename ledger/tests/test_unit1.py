@@ -126,3 +126,21 @@ class ReaskI29(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SameTargetID1I52(unittest.TestCase):
+    """08 I52(받은 편지 N5): ID1 고정 묶음(바이트 그대로)으로 장부 n1 같은 대상 규칙을 잰다."""
+
+    def test_fixture_is_byte_identical_and_measure_holds(self):
+        import hashlib
+        import json
+        fix = Path(__file__).resolve().parents[1] / "fixtures" / "id1"
+        src = json.loads((fix / "SOURCES.json").read_text(encoding="utf-8"))
+        for name, meta in src["files"].items():
+            self.assertEqual(hashlib.sha256((fix / name).read_bytes()).hexdigest(), meta["sha256"])
+        import id1
+        r = id1.run()
+        self.assertEqual(r["i_other_target_merged"]["count"], 0)
+        self.assertEqual((r["ii_same_document_split"]["count"], r["ii_same_document_split"]["of"]), (19, 21))
+        self.assertEqual(r["iii_other_version"], {"split": 11, "edition_lost": 2, "of": 13})
+        self.assertEqual(r["iv_same_project"]["neither"], 21)

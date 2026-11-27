@@ -1210,10 +1210,32 @@
      - (iv) same_project: 프로젝트 합침, 문서 합침, 둘 다 아님의 수.
   4. 이 항목에서 장부 규칙은 바꾸지 않는다. 오류의 모양과 수를 적고 고칠 안은 제안만 한다.
 - **합격 조건.** `python3 -I ledger/id1.py`가 `out/id1_same_target.json`을 쓰고, 넷을 잰 값이 이 노트에 오른다. 복사한 파일의 sha256이 opensource 커밋의 파일과 같다(시험). 기존 시험이 통과한다.
+- **구현.** 고정 묶음은 `ledger/fixtures/id1/`(`ID1-D1.txt`, `ID1-pairs.tsv`, SOURCES.json @ `70c86f8`)에 있다. 셈은 `ledger/id1.py`가 하고, 결과는 [id1_same_target.json](../../../ledger/out/id1_same_target.json)이다.
+- **결과(61쌍, relation `?` 3쌍 n37·38·42를 빼고 58쌍).**
+
+  | 잰 것 | 장부(n1 키) | catalog(참고) |
+  | --- | --- | --- |
+  | (i) 다른 대상 합침(name_only·unrelated·alternative 16쌍) | **0** | 2 |
+  | (ii) 같은 문서 가름(same_page·mirror·translation·other_version 21쌍) | **19** (판 11, 같은 쪽 3, 미러 3, 번역 2) | 19 |
+  | (iii) other_version 13쌍 | 가름 11, 합쳤으나 판을 잃음 2, 판을 가림 0 | 합침 2(W3C)·가름 9 |
+  | (iv) same_project 21쌍 | 프로젝트 합침 0, 문서 합침 0 | 14 합침·7 가름 |
+
+  - 장부는 주소 키가 같을 때만 묶는다. 그래서 다른 대상을 합치지 않는다. catalog의 두 오류(n16 httpx·RESPX, n50 Cofrac·GraphPad)를 물려받지 않는다. 장부가 catalog의 key·별칭을 쓰지 않아서다.
+  - 대신 같은 문서를 가르는 쪽 오류가 catalog와 같은 크기다(21 가운데 19). 그 내용은 셋이다. 판이 경로에 든 문서 11쌍(docs.python.org/3 ↔ /3.13, docs.oracle.com의 javase/N, ffmpeg doxygen 판). 다른 호스트의 같은 쪽·미러 6쌍(Google Cloud .cn/.com, QGIS, JuiceFS 등). 번역 2쌍.
+  - 판을 잃은 2쌍(n10·n11)은 W3C 문서다. n1이 날짜 붙은 TR 주소를 `w3c:webcodecs` 하나로 묶고 판 키를 남기지 않는다. 다만 장부의 관측은 판 키를 판독기에서 받는다(`observe(edition_key=)`). 그래서 주소 키에서만 판을 잃고 관측의 판은 남는다.
+  - same_project는 하나도 잇지 않는다. 장부에는 문서와 따로 "같은 프로젝트" 연결이 없다. `go:github.com/gocarina/gocsv`와 `gh:gocarina/gocsv`(n14)처럼 같은 저장소의 다른 키도 이어지지 않는다.
+- **고칠 안(제안만, 장부 규칙은 바꾸지 않음).** N5의 근거로 적는다.
+  - (1) 판이 경로에 든 문서 호스트는 코드 호스트처럼 page에서 판을 떼어 edition 키로 둔다. 표로 정한다(docs.python.org `/3.x/`, docs.oracle.com `javase/N`, ffmpeg.org `doxygen/N`). 이번 가름 11쌍이 대상이다.
+  - (2) W3C TR의 날짜 판을 edition 키로 남긴다.
+  - (3) 같은 운영자의 미러·지역 호스트 표, 번역은 같은 문서의 언어판으로 잇는 별칭 종류. 둘 다 운영자 별칭(`alias`, 근거 관측 필요)으로 넣는다.
+  - (4) "같은 프로젝트"는 문서 합침과 따로 잇는 연결로 둔다(opensource 안 4와 같은 방향). 저장소·패키지 키(gh:, go:, pypi:) 사이의 대응부터다.
+  - 어느 것이든 ID2(opensource가 만들 다음 묶음)와 R-1 넓히기 표본에서 거짓 합침 수와 함께 잰 뒤 정한다.
+- **시험.** `test_unit1.SameTargetID1I52`(복사 파일 sha256이 SOURCES와 같고, 넷이 위 값). 시험 134개.
+- **영향.** 07 R-4(정규화), F08 같은 대상 판정, I3(n1).
 
 ## 2. 다음 단계
 
-**opensource 받은 편지: N4까지 처리** (laadkke-arch/opensource 기본 브랜치 `plan/impl/INBOX.md`의 번호. 지시를 처리할 때마다 올려 커밋한다. 사용자 결정 2026-11-27 아홉째: 표의 지시는 사용자가 직접 보낸 것과 같게 따른다. 저장소 밖으로 나가는 일, 되돌릴 수 없는 일, 비밀을 다루는 일은 하지 않고 묻는다.)
+**opensource 받은 편지: N5까지 처리** (laadkke-arch/opensource 기본 브랜치 `plan/impl/INBOX.md`의 번호. 지시를 처리할 때마다 올려 커밋한다. 사용자 결정 2026-11-27 아홉째: 표의 지시는 사용자가 직접 보낸 것과 같게 따른다. 저장소 밖으로 나가는 일, 되돌릴 수 없는 일, 비밀을 다루는 일은 하지 않고 묻는다.)
 
 1. ~~A4 한국어 20건~~(I19 끝). 한 문장 요청의 서랍 자격: (a)는 쟀고 되돌렸다(I24). 남은 길은 (b)·(c).
 1k. **R-6: 원문 판정으로 풀을 다 덮고 r2(I51, 받은 편지 N5).** 열 수 없는 8쌍을 빼니 B 풀 442쌍이 모두 원문 판정이다. B 만족은 r2 16, r5 15, p5 + r5 9, p5 + r2 8이다(42개 중). 고른 설정은 r2로 지금 기본값과 같다. 남은 것은 사람 확인 14쌍뿐이고, 그 뒤 기본값을 확정한다.
