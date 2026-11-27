@@ -968,6 +968,33 @@ def i27_sample(cap=80) -> list[dict]:
         i += 1
     return out
 
+
+def i27_score(src="measure_i27.json", out_name="measure_i27_judged.json"):
+    """08 I27 판정 뒤: 실제 행 2만 개 상위 10을 I25·I27 판정을 합쳐 다시 센다. 판정 안 한 행은 잡음, 추정은 두 판정의 관련 비율로."""
+    import csv
+    o = json.loads((OUT / src).read_text(encoding="utf-8"))
+    grade = {}
+    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv"):
+        for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t"):
+            grade[(r["request"], r["url"])] = int(r["grade"])
+    rate = sum(1 for g in grade.values() if g >= 1) / len(grade)
+    per = {}
+    for req, items in o["top10"].items():
+        nz = [x["url"] for x in items if x["kind"] != "catalog"]
+        rel = sum(1 for u in nz if grade.get((req, u), 0) >= 1)
+        unj = sum(1 for u in nz if (req, u) not in grade)
+        per[req] = {"noise_raw": len(nz), "noise_judged": len(nz) - rel, "unjudged": unj,
+                    "noise_estimate": round(len(nz) - rel - unj * rate, 2)}
+    a4 = {}
+    for lang in ("ko", "en"):
+        xs = [v for k, v in per.items() if k.endswith("." + lang) and not k.startswith("R1")]
+        a4[lang] = {m: round(sum(x[m] for x in xs) / len(xs), 2) for m in ("noise_raw", "noise_judged", "unjudged", "noise_estimate")}
+        a4[lang] |= {f"le2_{m}": sum(1 for x in xs if x[m] <= 2) for m in ("noise_raw", "noise_judged", "noise_estimate")}
+    out = {"src": src, "judged_pairs": len(grade), "relevant_rate": round(rate, 3),
+           "r1": {k: v for k, v in per.items() if k.startswith("R1")}, "a4_20": a4, "per_request": per}
+    write(out_name, out)
+    return out
+
 # ------------------------------------------------------------------------------------------- I28 RRF
 def i28():
     """08 I28: 서랍 순위 r4(검색기 = (필요 칸, 언어), 검색기 안은 IDF 합, RRF k=60으로 결합) 대 r2.
