@@ -11,7 +11,7 @@ BUDGET_RULES = "b2"                # 예산 셈법. b1 = D1·D11 그대로, b2 =
 PRIVACY_RULES = "p2"               # 꼬리표 사생활 검사. p1 = 설계 예제(영어 토큰), p2 = p1 + 한국어(privacy.py, 08 I8)
 SEARCH_RULES = "s1"                # 새 검색 직접 갈래의 질의 규칙. afledger/adapters/search_github.py
 INTAKE_RULES = "i2"                # 접수가 쓰는 칸별 필요 문장. afledger/intake.py
-RANK_RULES = "r2"                  # 서랍 순위(R-6). r0 = 설계(bm25 합), r1 = 단위별 IDF 합, r2 = r1 + 꼬리표 길이 정규화(08 I18), r3 = 언어 칸별 정규화(I26, 채택 안 함), r4 = (칸, 언어) 검색기의 RRF(I28, 채택 안 함), r5 = r4 + 검색기 안 r2 길이 보정(I31)
+RANK_RULES = "r2"                  # 서랍 순위(R-6). r0 = 설계(bm25 합), r1 = 단위별 IDF 합, r2 = r1 + 꼬리표 길이 정규화(08 I18), r3 = 언어 칸별 정규화(I26, 채택 안 함), r4 = (칸, 언어) 검색기의 RRF(I28, 채택 안 함), r5 = r4 + 검색기 안 r2 길이 보정(I31), r6 = 꼬리표 한 줄당 최대 점수(I33)
 ELIG_RULES = "e1"                  # 서랍 자격. e1 = 설계(내용어가 맞은 칸 2 이상, 서로 다른 내용어 2), e2 = 자격 칸 수를 min(2, 요청 칸 수)로. e2는 상위 10 잡음이 늘어 되돌림(08 I24)
 RRF_K = 60                         # r4의 RRF 상수(Elastic rank_constant 기본값, 08 I28)
 RANK_LENGTH_B = 0.75               # r2의 길이 정규화 세기(BM25 b와 같은 뜻)
