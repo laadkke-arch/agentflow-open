@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS fetch_log (
   at          TEXT NOT NULL,
   outcome     TEXT NOT NULL CHECK (outcome IN ('ok','not_modified','not_found','unreachable','truncated','unsupported')),
   bytes       INTEGER,
-  job_id      INTEGER
+  job_id      INTEGER,
+  env_suspect INTEGER NOT NULL DEFAULT 0     -- 환경 고장 의심 실패(08 I46): 연속·다시 하기 셈에서 뺀다
 );
 
 -- 판: 번호·태그·커밋·DOI·문서 개정 ID. 없으면 kind='fetch'로 (가져온 시각, 지문)을 키로 쓴다.

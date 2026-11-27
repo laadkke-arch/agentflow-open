@@ -66,8 +66,10 @@ class RecheckWorker:
         for ek in editions:
             r = self.reader(L.obs(cur), ek, at)
             outcome = (r or {}).get("outcome", "content") if r else "unreachable"
+            env = bool((r or {}).get("env_suspect")) and outcome != "content"
             L.fetched((r or {}).get("url") or L.obs(cur)["url"], (r or {}).get("edition_key", ek), at,
-                      "ok" if outcome == "content" else outcome, (r or {}).get("bytes"), clock=clock, job_id=j["job_id"])
+                      "ok" if outcome == "content" else outcome, (r or {}).get("bytes"), clock=clock, job_id=j["job_id"],
+                      env_suspect=env)
             if outcome != "content":
                 # 실패도 관측이다(04 6.2, 08 I38 규칙 1). 대체 사슬에는 잇지 않는다(규칙 2)
                 o = L.obs(cur)
@@ -76,7 +78,7 @@ class RecheckWorker:
                                    method="read_line", outcome=outcome, statement=f"원문 접근 실패({outcome})",
                                    via="channel", reader=(r or {}).get("reader", self.name))
                 failed.append(fid)
-                fail_info.append((outcome, (r or {}).get("retry_after_h") or 0))
+                fail_info.append((outcome, (r or {}).get("retry_after_h") or 0, env))
             elif r.get("unmapped"):
                 unmapped.append(r)     # 그 판에 같은 자리가 없다. 거짓 위치로 관측을 만들지 않는다(08 I36)
             elif r:
@@ -102,14 +104,20 @@ class RecheckWorker:
             new_obs = oid if created else new_obs
         if not chain:
             all_failed = bool(failed) and not readings and not unmapped
-            transient = all_failed and all(o_ in config.RETRY_OUTCOMES for o_, _ in fail_info)
-            if transient and token <= config.RETRY_MAX:
-                # 일시 실패: 같은 작업을 기다렸다 다시 한다(08 I41). 처음 시도 + RETRY_MAX회
+            transient = all_failed and all(o_ in config.RETRY_OUTCOMES for o_, _, _ in fail_info)
+            env_attempt = all_failed and all(e for _, _, e in fail_info)
+            tries = L.job_attempts(j["job_id"])
+            if transient and (tries["env"] <= config.ENV_RETRY_MAX if env_attempt else tries["real"] <= config.RETRY_MAX):
+                # 일시 실패: 같은 작업을 기다렸다 다시 한다(08 I41). 처음 시도 + RETRY_MAX회.
+                # 환경 고장 의심 시도는 따로 ENV_RETRY_MAX회까지 세고 RETRY_MAX를 쓰지 않는다(08 I46 규칙 4)
                 from .ledger import _shift
-                wait = max(config.RETRY_WAIT_H, max(h for _, h in fail_info))
+                wait = max(config.RETRY_WAIT_H, max(h for _, h, _ in fail_info))
                 L.last_finish = None
                 ok = L.retry(j["job_id"], token, _shift(at, wait))
                 result = "retry_scheduled"
+            elif env_attempt:
+                ok = L.finish(j["job_id"], None, ok=False, token=token, base=(old, base, at))
+                result = L.last_finish or "env_failed"
             else:
                 ok = L.finish(j["job_id"], new_obs or cur, ok=not all_failed, token=token, base=(old, base, at))
                 result = L.last_finish or ("failed" if all_failed else "unmapped" if unmapped and not readings else
@@ -129,6 +137,9 @@ class RecheckWorker:
                    "chain": [(a_, b_, e_) for a_, b_, e_, _ in chain], "accepted": ok}
         if ok and failed:
             rec["source_failure"] = L.note_source_failure(base, failed[-1], at)
+            if any(e for _, _, e in fail_info) and not any(a["kind"] == "env_suspect" and a.get("job") == j["job_id"]
+                                                          for a in L.alerts):
+                L.alerts.append({"kind": "env_suspect", "job": j["job_id"], "obs": base, "at": at})
         if ok and (readings or unmapped) and L.last_finish != "base_moved":
             rec["source_recovery"] = L.note_source_recovery(L.current(old, at), at)   # 원문을 다시 읽었다(08 I44)
         if ok and (unmapped or reread):

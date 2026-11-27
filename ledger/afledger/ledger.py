@@ -404,9 +404,11 @@ class Ledger:
         lineage = sorted({base} | self.earlier_obs(base, at))
         marks = ",".join("?" * len(lineage))
         n, kind = 0, None
-        for (o,) in self.db.execute(
-                f"SELECT f.outcome FROM fetch_log f JOIN recheck_job j ON j.job_id=f.job_id WHERE j.obs_id IN ({marks})"
+        for (o, env) in self.db.execute(
+                f"SELECT f.outcome, f.env_suspect FROM fetch_log f JOIN recheck_job j ON j.job_id=f.job_id WHERE j.obs_id IN ({marks})"
                 " AND f.at<=? ORDER BY f.fetch_id DESC", (*lineage, at)):
+            if env and o not in ("ok", "not_modified"):
+                continue   # 환경 고장 의심 실패는 세지도 끊지도 않는다(08 I46 규칙 3)
             if o in ("ok", "not_modified") or (kind is not None and o != kind):
                 break
             kind, n = o, n + 1
@@ -662,6 +664,12 @@ class Ledger:
             return 0
         return self.db.execute("SELECT attempts FROM recheck_job WHERE job_id=?", (job_id,)).fetchone()[0]
 
+    def job_attempts(self, job_id: int) -> dict:
+        """작업의 시도를 가른다(08 I46): 실패한 시도 가운데 모든 실패가 환경 고장 의심이면 env, 아니면 real."""
+        rows = self.db.execute("SELECT at, min(env_suspect) AS all_env FROM fetch_log WHERE job_id=? AND outcome IN"
+                               " ('unreachable','truncated','not_found','unsupported') GROUP BY at", (job_id,)).fetchall()
+        return {"env": sum(1 for r in rows if r["all_env"]), "real": sum(1 for r in rows if not r["all_env"])}
+
     def retry(self, job_id: int, token: int, not_before: str) -> bool:
         """임차한 작업을 대기로 되돌리고 not_before 전에는 잡히지 않게 한다(08 I41). 임차가 이미 풀렸으면 False."""
         with self.db:
@@ -745,7 +753,8 @@ class Ledger:
 
     # ------------------------------------------------------------------ 예산(07 D1)
     def fetched(self, url: str, edition_key: str | None, at: str, outcome: str = "ok", nbytes: int | None = None, *,
-                p: str | None = None, req: int | None = None, clock: str = "request", job_id: int | None = None) -> None:
+                p: str | None = None, req: int | None = None, clock: str = "request", job_id: int | None = None,
+                env_suspect: bool = False) -> None:
         """원문을 한 번 가져왔다고 적는다. 예산은 이 기록으로 센다. 실패·재시도도 한 번이다. 실행은 영수증으로 따로 센다.
         요청 시계의 기록은 프로젝트 장부에, 후속·배경 시계의 기록은 공용 장부에 둔다. not_modified(조건부 요청 304)는 따로 센다."""
         with self.db:
@@ -755,8 +764,9 @@ class Ledger:
                 self.db.execute(f"INSERT INTO {p}.fetch_log(req_id, url, edition_key, at, outcome, bytes)"
                                 " VALUES (?,?,?,?,?,?)", (req, url, edition_key, utc(at), outcome, nbytes))
             else:
-                self.db.execute("INSERT INTO fetch_log(clock, url, edition_key, at, outcome, bytes, job_id)"
-                                " VALUES (?,?,?,?,?,?,?)", (clock, url, edition_key, utc(at), outcome, nbytes, job_id))
+                self.db.execute("INSERT INTO fetch_log(clock, url, edition_key, at, outcome, bytes, job_id, env_suspect)"
+                                " VALUES (?,?,?,?,?,?,?,?)", (clock, url, edition_key, utc(at), outcome, nbytes, job_id,
+                                                              int(bool(env_suspect))))
 
     def called(self, p: str, req: int, kind: str, query: str, at: str, outcome: str, total: int | None = None) -> None:
         """검색 호출을 적는다. 가져오기가 아니라 외부 시도로 센다(budget.py)."""

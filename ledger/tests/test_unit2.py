@@ -596,3 +596,58 @@ class RecoveryI44(SourceFailureI38):
         RecheckWorker(self.L, reader, lambda a, b: "changes_value").run_once("2026-12-30T01:00:00Z")
         effects = sorted(n["effect"] for n in self.L.propagate(self.p, "2026-12-30T02:00:00Z"))
         self.assertEqual(effects, ["changes_value", "source_recovered"])
+
+
+class EnvSuspectI46(unittest.TestCase):
+    """08 I46: 환경 고장 의심 실패는 '세 번 이어짐'과 다시 하기 셈에서 빠진다."""
+    ENV = {"outcome": "unreachable", "env_suspect": True}
+
+    def streak_case(self, seq):
+        t = SourceFailureI38("test_a_third_consecutive_failure_notices_once")
+        t.setUp()
+        saved = config.ENV_RETRY_MAX
+        config.ENV_RETRY_MAX = 0                  # 연속 규칙만 본다(다시 하기는 test_c)
+        t.addCleanup(setattr, config, "ENV_RETRY_MAX", saved)
+        out = []
+        for x in seq:
+            t.i += 1
+            from afledger.ledger import _shift
+            day = _shift("2026-12-01T00:00:00Z", (t.i - 1) * 8 * 24)[:10]
+            r = None if x == "real" else self.ENV
+            t.L.poll(CH, [{"id": f"x{t.i}", "title": "t"}], f"{day}T00:00:00Z")
+            RecheckWorker(t.L, lambda o, ek, at, r=r: r, lambda a, b: "confirms").run_once(f"{day}T01:00:00Z")
+            out.append([n for n in t.L.propagate(t.p, f"{day}T02:00:00Z") if n["effect"] == "source_unreachable"])
+        t.doCleanups()
+        return t, out
+
+    def test_a_three_env_failures_make_no_notice(self):
+        t, out = self.streak_case(["env", "env", "env"])
+        self.assertEqual(out, [[], [], []])
+        self.assertEqual(t.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+        self.assertEqual([a["kind"] for a in t.L.alerts].count("env_suspect"), 3)
+
+    def test_b_env_failures_neither_count_nor_break_the_streak(self):
+        _, out = self.streak_case(["env", "real", "real", "env", "real"])
+        self.assertEqual([len(x) for x in out], [0, 0, 0, 0, 1])
+
+    def test_c_env_attempts_do_not_use_the_retry_limit(self):
+        t = RetryI41("test_a_two_failures_then_success")
+        t.setUp()
+        t.L.FOLLOW_FETCHES_PER_10_SOURCES = 100   # 후속 몫(168시간 3회)이 다시 하기를 막지 않게(08 I46 결과 참고)
+        recs = t.drive([self.ENV, self.ENV, None, None, None], hours=24)
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 4 + ["failed"])
+        t2 = RetryI41("test_a_two_failures_then_success")
+        t2.setUp()
+        t2.L.FOLLOW_FETCHES_PER_10_SOURCES = 100
+        recs = t2.drive([self.ENV], hours=24)
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 6 + ["env_failed"])
+        self.assertEqual(t2.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+
+    def test_d_mark_runs(self):
+        from afledger.envcheck import mark_runs
+        bad = [{"run": "c1", "status": 0, "outcome": "unreachable"}] * 30 + [{"run": "c1", "status": 200, "outcome": "ok"}] * 30
+        good = ([{"run": "c2", "status": 0, "outcome": "unreachable"}] * 10 + [{"run": "c2", "status": 200, "outcome": "ok"}] * 50
+                + [{"run": "c2", "status": 0, "outcome": "unreachable", "env_suspect": True}])
+        out = mark_runs(bad + good)
+        self.assertEqual(sum(1 for l in out if l["run"] == "c1" and l.get("env_suspect")), 30)
+        self.assertEqual(sum(1 for l in out if l["run"] == "c2" and l.get("env_suspect")), 1)
