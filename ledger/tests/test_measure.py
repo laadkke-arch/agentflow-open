@@ -99,3 +99,17 @@ class ReaderReproducibility(unittest.TestCase):
             self.assertEqual(pair["same_quote_fp"], pair["compared"])
         self.assertEqual(r["ledger"]["conflicts_flagged"], 0)
         self.assertTrue(all(x["same_quote_fp"] for x in r["range"]))
+
+
+class OrigJudgeI45(unittest.TestCase):
+    """08 I45: 원문 판정(J1)을 꼬리표 판정과 섞지 않고 센다."""
+
+    def test_j1_matches_opensource_table_and_judges_stay_separate(self):
+        import measure
+        r = measure.i45()
+        self.assertEqual((r["j1"]["exact_agree"], r["j1"]["binary_agree"], r["j1"]["orig_lower"]), (16, 23, 0))
+        self.assertEqual(len(r["j1"]["diverging_n"]), 14)
+        b = r["B_catalog20k"]["r2"]
+        self.assertEqual(b["tag_judge"]["B_met"], 3)                                   # I32 그대로
+        self.assertLessEqual(b["orig_judge_lower"]["B_met"], b["orig_judge_upper"]["B_met"])
+        self.assertTrue(set(measure._judgments_orig()) <= set(measure._judgments()))   # 같은 쌍을 따로 매긴 것

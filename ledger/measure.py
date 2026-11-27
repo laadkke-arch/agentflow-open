@@ -1491,7 +1491,84 @@ def r6(mode):
     return out
 
 
+# ------------------------------------------------------------------------------------------- I45 원문 판정(J1)과 B 다시 세기
+def _judgments_orig() -> dict:
+    """원문을 연 판정(J_orig: opensource judge/, dot D 모델). 꼬리표 판정 _judgments()와 섞지 않는다(08 I45 규칙 1)."""
+    import csv
+    f = FIX / "judge-orig" / "judgments.tsv"
+    if not f.exists():
+        return {}
+    return {(r["request"], r["url"]): int(r["grade"]) for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t")}
+
+
+def _b_count(g: dict, top10: dict, unjudged_as: str) -> dict:
+    """판정 사전 g 하나로만 B를 센다. unjudged_as: 'noise'(아래 끝) 또는 'relevant'(위 끝)."""
+    met, unj_total = {}, 0
+    for req, items in top10.items():
+        nz = [x for x in items if x["kind"] != "catalog"]
+        syn = sum(1 for x in nz if x["kind"] == "synthetic")
+        real = [x["url"] for x in nz if x["kind"] != "synthetic"]
+        unj = sum(1 for u in real if (req, u) not in g)
+        noise0 = sum(1 for u in real if (req, u) in g and g[(req, u)] == 0)
+        noise = syn + noise0 + (unj if unjudged_as == "noise" else 0)
+        unj_total += unj
+        met[req] = noise <= 2
+    return {"B_met": sum(met.values()), "requests": len(met), "unjudged_pairs_in_top10": unj_total}
+
+
+def i45():
+    """08 I45: J1 견주기와 B를 J_orig로 다시 세기(두 끝). 판정자를 섞지 않는다."""
+    import csv
+    from collections import Counter
+    jt, jo = _judgments(), _judgments_orig()
+    hc = list(csv.DictReader(open(FIX / "i32" / "human_check.tsv", encoding="utf-8"), delimiter="\t"))
+    rows = list(csv.DictReader(open(FIX / "judge-orig" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+    j1 = {r["n"]: r for r in rows if r["session"] == "J1-D"}
+    conf = Counter((h["model_grade"], j1[h["n"]]["grade"]) for h in hc if h["n"] in j1)
+    diff = [h for h in hc if h["n"] in j1 and h["model_grade"] != j1[h["n"]]["grade"]]
+    stats = {"pairs": sum(conf.values()), "exact_agree": sum(v for (a, b), v in conf.items() if a == b),
+             "binary_agree": sum(v for (a, b), v in conf.items() if (a == "0") == (b == "0")),
+             "orig_higher": sum(v for (a, b), v in conf.items() if b > a), "orig_lower": sum(v for (a, b), v in conf.items() if b < a),
+             "confusion_tag_to_orig": {f"{a}->{b}": v for (a, b), v in sorted(conf.items())},
+             "diverging_n": sorted(int(h["n"]) for h in diff)}
+    with open(FIX / "judge-orig" / "human_check_14.tsv", "w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+        w.writerow(["n", "request", "request_text", "url", "row_text", "tag_grade", "orig_grade", "human_grade", "human_note"])
+        for h in sorted(diff, key=lambda h: int(h["n"])):
+            w.writerow([h["n"], h["request"], h["request_text"], h["url"], h["row_text"], h["model_grade"],
+                        j1[h["n"]]["grade"], "", ""])
+    pool, res = set(), {}
+    for n in I32_SETTINGS:
+        top = _i32_top10(n, "catalog20k")
+        for req, items in top.items():
+            pool |= {(req, x["url"]) for x in items if x["kind"] in ("p5", "real")}
+        res[n] = {"tag_judge": _b_count(jt, top, "noise"),
+                  "orig_judge_lower": _b_count(jo, top, "noise"), "orig_judge_upper": _b_count(jo, top, "relevant")}
+    src = {}
+    for name in ("i25", "i27", "i32", "i33"):
+        for r in csv.DictReader(open(FIX / name / "judgments.tsv", encoding="utf-8"), delimiter="\t"):
+            src.setdefault((r["request"], r["url"]), name + (":" + r["cfg"] if r.get("cfg") else ""))
+    missing = sorted(k for k in pool if k not in jo)
+    with open(FIX / "judge-orig" / "missing_for_b.tsv", "w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+        w.writerow(["request", "url", "tag_judgment_from", "in_j2_scope"])
+        for req, url in missing:
+            s_ = src.get((req, url), "")
+            w.writerow([req, url, s_, "yes" if s_ == "i32:catalog20k" else "no"])
+    cov = Counter("j2_scope" if src.get(k) == "i32:catalog20k" else "outside_j2" for k in missing)
+    out = {"rules": "08 I45", "judges": {"tag": "이 세션의 모델, 꼬리표 문장만(I25·I27·I32·I33)",
+                                         "orig": "opensource judge/ dot D 모델, 원문을 엶(사람 아님)"},
+           "orig_pairs": len(jo), "j1": stats, "b_pool_pairs": len(pool), "b_pool_with_orig": len(pool) - len(missing),
+           "missing": dict(cov), "decision": "판정 안 한 행이 남아 정하지 않음(규칙 4)" if missing else "다시 돌릴 수 있음",
+           "B_catalog20k": res}
+    write("measure_i45.json", out)
+    return out
+
+
 def main():
+    if sys.argv[1:2] == ["i45"]:
+        print(json.dumps(i45(), ensure_ascii=False, indent=1))
+        return
     mode = "live" if "--live" in sys.argv else "replay"
     OUT.mkdir(exist_ok=True)
     res = {"a4": a4(mode), "b1": b1(), "r4": r4(), "norm": norm_regression(), "f01": f01(), "r1_map": r1_map(),
@@ -1499,7 +1576,7 @@ def main():
            "i26": i26(), "i26_rank": i26_rank(), "i26_combo": i26_combo(),
            "i27": i27(), "i27_judged": i27_score(), "i28": i28(), "i29": i29(),
            "i30": i30(), "i31": i31(), "i32_run": i32_run_both(), "i32": i32_decide(), "i32_human": i32_human_sample(),
-           "i33_run": i33_run(), "i33": i33_decide()}
+           "i33_run": i33_run(), "i33": i33_decide(), "i45": i45()}
     a = res["a4"]["variants"]
     print("A4", {k: (v["catalog_only"]["asyncio_queue_rank"], v["catalog_only"].get("overlap_with_hand_top6"),
                      v["catalog_only"]["eligible_count"], v["catalog_only"]["deep_rank"])
