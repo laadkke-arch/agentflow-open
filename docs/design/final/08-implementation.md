@@ -438,6 +438,30 @@
 - **시험.** 시험 80개 그대로 통과(기본값이 바뀌지 않았다). 결과 파일은 `out/measure_i26*.json`, `out/i26_pairs_*.json`.
 - **영향.** 07 R-6(끝나는 조건 미달 그대로, 남은 길 갱신), 06 B3.
 
+### I27. R-6 잡음 2만 개를 실제 행(opensource catalog p5)으로: 영어는 합성보다 어렵고, 판정으로 빼도 조건은 멀다
+
+- **배경(사용자 정보, 2026-11-27).** opensource catalog가 대상 20,533개(p5 한국어 원리·적용 장면 14,261개)로 늘어, 012 밖 실제 행만으로 2만 개를 채울 수 있다. 서랍에 실제로 들어갈 글이 이 형식이라 합성(I20)보다 현실에 가깝다.
+- **자료.** `catalog/targets/00~15.jsonl` @ [`286d9d5`](https://github.com/laadkke-arch/opensource/tree/286d9d558739dbc67803bb9de52697ef7c95988d/catalog/targets)를 읽기만 해 [fixtures/catalog-p5](../../../ledger/fixtures/catalog-p5/SOURCES.json)에 모았다(`tools/snapshot_catalog_p5.py`). 확인 단계는 L1 20,247, L3 276이다.
+- **정한 것(돌리기 전, `measure.i27` docstring과 `drawer_load.P5_SLOT_MAP`).**
+  - 잡음: 012 주소와 n1 page가 같은 대상 17개(사용자 말의 15개보다 둘 많다. n1이 `rfc:`·`w3c:` 같은 키를 page로 겹쳐 본다)와 012 보강 회차 기록(AR2·BR2·CR2, 지금 0건)을 뺀 20,516개에서 대상 키 SHA-1 순 앞 2만 개. 대상 하나가 관측 하나다.
+  - 칸 대응: what → 원문 언어 summary(one_up), principle → 한국어 summary(one_up), scene → 한국어 summary(concrete), 쓸모 주장 → 한국어 summary(one_up), 쓸모의 원문 문장(evidence) → summary(concrete, mixed). scene은 실패 조건이 아니라 쓰임새라 breaks_when에 두지 않았다. gap(원문에 없는 이식 단계)은 가설이라 넣지 않았다.
+  - 012 쪽 꼬리표는 지금 기본(D-b) 그대로다. 이 설정을 R-6 잡음 2만 개의 기본 설정으로 쓰고 합성은 비교로만 둔다.
+- **결과(r2)**, [measure_i27.json](../../../ledger/out/measure_i27.json)과 판정 뒤 [measure_i27_judged.json](../../../ledger/out/measure_i27_judged.json):
+
+  | 상위 10 잡음 | 합성 2만 개(I20·I25) | 실제 행 2만 개, 그대로 | 판정 뒤(판정 안 한 것은 잡음) | 판정 안 한 것에 관련 비율 32% 적용 |
+  | --- | --- | --- | --- | --- |
+  | R1 손 문장 | 4 | 5 | **3** | 3 |
+  | R1 자동 한국어 | 8~9 | 9 | **5** | 5 |
+  | A4 한국어 평균(2개 이하 요청) | 9.2(0) | 9.0(0) | 7.95(0) | 6.0(0) |
+  | A4 영어판 평균(2개 이하 요청) | 4.25(3) | 6.7(1) | 6.15(1) | 4.6(1) |
+
+  - 판정: I25 판정 120쌍을 같은 (요청, 주소)에 이어 쓰고, 상위 10의 새 행 80쌍을 더 판정했다. 규칙은 판정 전에 적었다(`measure.I27_JUDGE_RULE`, `i27_sample`: R1 쌍 전부 + A4 요청을 돌아가며). 등급 2가 7, 1이 20, 0이 53으로 관련 34%다. **판정자는 이 세션의 모델이다(사람 판정 아님).** [fixtures/i27/judgments.tsv](../../../ledger/fixtures/i27/judgments.tsv).
+  - 실제 행은 영어 요청에 합성보다 어렵다(A4 영어판 4.25 → 6.7). catalog의 what·evidence가 영어 원문 문장이라 영어 질의가 맞는 단위가 많다.
+  - 상위 10의 실제 행은 같은 분야의 관련 글이 많다. K01(Collector 손실)에 OpenTelemetry Collector resiliency 문서와 Vector의 디스크 버퍼가, K03(접수와 완료)에 Step Functions 작업 토큰과 Azure SMS의 202 대 배달 상태가 든다(모두 등급 2). 2만 개 규모에서는 012 자료집 밖에도 정답급 글이 있다. "012 밖 = 잡음"이 지나치게 엄하다는 I20 (c)의 걱정이 실제 행에서 더 뚜렷하다.
+  - 사례 결과는 그대로다. R1 흐름은 손 문장·자동 한국어 모두 1번 자리와 두 접힘이 성립한다(세마포어는 확인 범위 넓히기로 서랍 14위·477위에서 확인, 외부 시도 10/10).
+- **정한 것.** 실제 행 2만 개가 R-6의 기본 잡음 설정이다. 끝나는 조건은 여전히 맞지 않는다. 다음 순위 시험(I28)은 이 설정과 link-index 실제 잡음으로 잰다.
+- **영향.** 07 R-6(잡음 설정), 06 B3.
+
 ## 2. 다음 단계
 
 1. ~~A4 한국어 20건~~(I19 끝). 한 문장 요청의 서랍 자격: (a)는 쟀고 되돌렸다(I24). 남은 길은 (b)·(c).
@@ -464,3 +488,9 @@ laadkke-arch/opensource는 읽기만 했다. inbox·records·plan은 고치지 �
 | `docs/trials/out/normalize_trial.txt` | I3: n1이 연구 폴더 261개·주소 773,473회에서 시험됐다는 근거 | [`9c091fc1`](https://github.com/laadkke-arch/opensource/blob/9c091fc1e0425c7e35d6affd0440d0ab5ae229fe/docs/trials/out/normalize_trial.txt) |
 | `plan/scouting/R0/SUMMARY.md` | 단위 1에서는 쓰지 않았다. 다음 단위: FTS5 trigram과 두 글자 질의의 한계(R-5), Cargo `.cargo_vcs_info.json`으로 패키지 판에서 커밋·경로 찾기(R-1 레지스트리 판, I7), Crossref 철회 경로(R-8) | [`9c091fc1`](https://github.com/laadkke-arch/opensource/blob/9c091fc1e0425c7e35d6affd0440d0ab5ae229fe/plan/scouting/R0/SUMMARY.md) |
 | 기본 브랜치의 통합 목록(`catalog/`, 커밋 `9c091fc1`) | 쓰지 않았다. 과제 지시대로 세 dot 브랜치의 link-index를 썼다. 서랍을 키울 때 후보다 | [`9c091fc1` catalog](https://github.com/laadkke-arch/opensource/tree/9c091fc1e0425c7e35d6affd0440d0ab5ae229fe/catalog) |
+| `catalog/by-problem/F09.md`·`F14.md` | I22 단위 2 설계 근거 | [`b9d1dbf`](https://github.com/laadkke-arch/opensource/tree/b9d1dbfcf86bcb8f9b421ee80035bfa514e5bb5f/catalog/by-problem) |
+| `catalog/by-problem/F30.md` C5 기록 | I26 BM25F | [`423aebf`](https://github.com/laadkke-arch/opensource/blob/423aebf91ed181c1c161c30bdef22af218c92251/catalog/by-problem/F30.md) |
+| `catalog/targets/00~15.jsonl`(대상 20,533, p5 한국어 원리·적용 장면 14,261) | I27 실제 행 잡음, I28 RRF 측정. 모은 파일 `ledger/fixtures/catalog-p5/`(gap은 넣지 않음) | [`286d9d5`](https://github.com/laadkke-arch/opensource/tree/286d9d558739dbc67803bb9de52697ef7c95988d/catalog/targets) |
+| `catalog/claims/F30.tsv` C5-S02·C5-S03 기록 | I28 RRF 설계 근거 | [`286d9d5`](https://github.com/laadkke-arch/opensource/blob/286d9d558739dbc67803bb9de52697ef7c95988d/catalog/claims/F30.tsv) |
+
+**출처 표기(2026-11-27부터).** 설계 근거로 opensource 원문을 인용할 때는 커밋, 기록 id와 함께 catalog의 확인 단계(L1 병합만, L2 주소 살아 있음, L3 인용이 원문에 있음, L4 교차 확인이 쓸모까지 받침)를 적는다. 커밋 `286d9d5`에서 대상 20,533개 가운데 L1이 20,247, L3이 276이다. 이 노트가 지금까지 인용한 F09·F14·F30 기록은 모두 **L1**이다(인용이 원문에 있는지 이 세션이 대조하지 않았다). 상위 대상의 웹 원문 135건은 다음 dot 회차의 교차 확인(VR1)이 본다.
