@@ -533,3 +533,26 @@ class RetryI41(unittest.TestCase):
     def test_d_retry_after_is_respected(self):
         self.drive([{"outcome": "unreachable", "retry_after_h": 5}, "ok"])
         self.assertEqual(self.calls, ["2026-12-01T00:00:00Z", "2026-12-01T05:00:00Z"])
+
+
+class DownstreamClosureI43(unittest.TestCase):
+    """08 I43: 작업 하나가 new→X→Y를 쓴 뒤 old→new를 취소해도 X·Y의 원인이 되살아난다."""
+
+    def test_relink_finds_a_job_that_ended_on_a_later_link(self):
+        L, o = doc_ledger()
+        revs = {"rev:2": ("rev:2", "Export closed.", "2026-11-27T00:00:00Z"),          # 오독
+                "rev:3": ("rev:3", "Export until July.", "2026-11-28T00:00:00Z"),
+                "rev:4": ("rev:4", "Export until August.", "2026-11-29T00:00:00Z")}
+        judge = lambda a, r: "changes_value"                                          # noqa: E731
+        L.poll(CH, [{"id": "2", "title": "r2", "edition": "rev:2"}], "2026-11-27T01:00:00Z")
+        RecheckWorker(L, reader_for(revs), judge).run_once("2026-11-27T02:00:00Z")
+        n = L.current(o, "2026-11-27T03:00:00Z")
+        L.poll(CH, [{"id": "4", "title": "r4", "edition": "rev:4"}, {"id": "3", "title": "r3", "edition": "rev:3"}],
+               "2026-11-29T01:00:00Z")
+        rec = RecheckWorker(L, reader_for(revs), judge).run_once("2026-11-29T02:00:00Z")
+        self.assertEqual(len(rec[0]["chain"]), 2)                                     # 작업 하나가 n→X→Y
+        x, y = rec[0]["chain"][0][1], rec[0]["chain"][1][1]
+        L.cancel_supersession(o, n, "2026-11-30T00:00:00Z", "판독 오류")
+        RecheckWorker(L, reader_for(revs), judge).run_once("2026-12-07T03:00:00Z")    # 후속 몫(168시간 3회) 창 밖
+        self.assertEqual(L.current(o, "2026-12-07T04:00:00Z"), y)
+        self.assertEqual(L.db.execute("SELECT new_obs FROM supersession WHERE old_obs=? AND new_obs<>?", (o, n)).fetchone()[0], x)
