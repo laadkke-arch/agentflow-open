@@ -135,6 +135,7 @@ class Ledger:
         self.opens: dict[str, int] = {}    # 원문을 새로 연 횟수(요청 시계 비용). 새 관측만 센다
         self.rereads: dict[str, int] = {}  # 다시 읽었지만 내용이 같아 다시 본 기록만 남은 횟수. 이것도 실제 가져오기다
         self.alerts: list[dict] = []       # 운영자 경보(채널 ID 체계 변경 의심 등)
+        self.last_finish: str | None = None
         self.clock_errors: list[dict] = [] # 기한 시계가 읽지 못한 행(형식 오류). 다른 행의 작업은 계속 만든다
         if not self.features["split"]:
             self.db.execute("""CREATE TABLE IF NOT EXISTS shared_judgment (
@@ -362,13 +363,39 @@ class Ledger:
         with self.db:
             self.db.execute("INSERT INTO supersession_cancel(old_obs, new_obs, cancelled_at, reason) VALUES (?,?,?,?)",
                             (old_obs, new_obs, utc(at), reason))
-            # 잘못 대체된 동안 철회된 판독 쪽으로 들어온 재확인 원인은 앞 관측이 이어받는다(그 사이 채널 항목을 놓치지 않게)
-            for j in self.db.execute("SELECT cause, cause_ref, merged_causes FROM recheck_job WHERE obs_id=? AND"
+            # 잘못 대체된 동안 철회된 판독 쪽으로 들어온 재확인 원인은 앞 관측이 이어받는다(그 사이 채널 항목을 놓치지 않게).
+            # 옮긴 작업은 철회된 쪽에서 닫는다. 남겨 두면 작업자가 철회된 판독에서 출발해 다시 대체를 쓴다(08 I37 규칙 1)
+            for j in self.db.execute("SELECT job_id, cause, cause_ref, merged_causes FROM recheck_job WHERE obs_id=? AND"
                                      " state='queued' AND cause<>'audit'", (new_obs,)).fetchall():
-                self._enqueue(old_obs, j["cause"], j["cause_ref"], utc(at))
-                for m in [m for m in j["merged_causes"].split(",") if m]:
-                    c, ref = m.split(":", 1)
-                    self._enqueue(old_obs, c, ref, utc(at))
+                self._move_causes(j, old_obs, utc(at))
+                self.db.execute("UPDATE recheck_job SET state='done', result_obs=NULL WHERE job_id=?", (j["job_id"],))
+            # 하류 다시 잇기(I37 규칙 4): new에서 나간 대체 new→X가 있으면 X를 낸 작업의 채널 원인을 old에 다시 넣는다.
+            # 작업자가 X의 판을 old 기준으로 읽고 이미 있는 관측 X로 잇는다(규칙 3). 효과는 old와 견준 것이 된다
+            for (x,) in self.db.execute(
+                    "SELECT s.new_obs FROM supersession s WHERE s.old_obs=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c"
+                    " WHERE c.old_obs=s.old_obs AND c.new_obs=s.new_obs)", (new_obs,)).fetchall():
+                for j in self.db.execute("SELECT job_id, cause, cause_ref, merged_causes FROM recheck_job"
+                                         " WHERE result_obs=? AND state='done'", (x,)).fetchall():
+                    self._move_causes(j, old_obs, utc(at), only=("channel",))
+
+    def _move_causes(self, j, target: int, at: str, only: tuple = ("channel", "deadline", "request")) -> None:
+        for c, ref in [(j["cause"], j["cause_ref"])] + [tuple(m.split(":", 1)) for m in j["merged_causes"].split(",") if m]:
+            if c in only:
+                self._enqueue(target, c, ref, at)
+
+    def retracted(self, obs_id: int, at: str | None = None) -> int | None:
+        """철회된 판독이면 되살아난 앞 관측 번호를, 아니면 None을 돌려준다(취소된 대체의 새 관측)."""
+        r = self.db.execute("SELECT old_obs FROM supersession_cancel WHERE new_obs=? AND (? IS NULL OR cancelled_at<=?)"
+                            " ORDER BY cancelled_at DESC LIMIT 1", (obs_id, at, at)).fetchone()
+        return r[0] if r else None
+
+    def earlier_obs(self, obs_id: int, at: str) -> set[int]:
+        """취소되지 않은 대체를 거꾸로 따라 닿는 앞선 관측들."""
+        rows = self.db.execute(
+            "WITH RECURSIVE up(o) AS (SELECT ? UNION SELECT s.old_obs FROM supersession s JOIN up ON s.new_obs=up.o"
+            " WHERE s.known_from<=? AND NOT EXISTS (SELECT 1 FROM supersession_cancel c WHERE c.old_obs=s.old_obs"
+            " AND c.new_obs=s.new_obs AND c.cancelled_at<=?)) SELECT o FROM up", (obs_id, at, at)).fetchall()
+        return {r[0] for r in rows} - {obs_id}
 
     def alias(self, from_url: str, to_url: str, kind: str, at: str, evidence_obs=None) -> int:
         with self.db:
@@ -583,11 +610,30 @@ class Ledger:
         return self.db.execute("SELECT attempts FROM recheck_job WHERE job_id=?", (job_id,)).fetchone()[0]
 
     def finish(self, job_id: int, result_obs: int | None, ok=True, token: int | None = None,
-               supersede: tuple | None = None) -> bool:
+               supersede: tuple | None = None, chain_before: list | None = None, base: tuple | None = None) -> bool:
         """작업을 끝낸다. token을 주면 지금도 그 임차가 유효할 때만 받는다(임차가 풀려 다른 작업자가 잡았으면 거절).
         supersede=(앞 관측, 효과, 알게 된 시각, 효력 시각)을 주면 대체를 같은 거래 안에서 쓴다. 늦게 돌아온 작업자가
-        대체를 먼저 써 버려 대체가 두 갈래로 생기는 일을 막는다(M5a). token 없이 부르면 예전처럼 무조건 받는다."""
+        대체를 먼저 써 버려 대체가 두 갈래로 생기는 일을 막는다(M5a). token 없이 부르면 예전처럼 무조건 받는다.
+        chain_before=[(앞, 뒤, 효과, 알게 된 시각, 효력 시각), …]은 마지막 대체 앞의 고리로, 같은 거래에서 먼저 쓴다.
+        base=(작업 관측, 기준 관측, 시각)을 주면 기준 관측이 아직 작업 관측의 현재 관측이고 철회되지 않았을 때만 대체를 쓴다.
+        아니면 대체 없이 작업을 닫고 원인을 되살아난 관측으로 옮긴 뒤 False를 돌려준다(08 I37 규칙 1, last_finish="base_moved")."""
+        self.last_finish = None
         with self.db:
+            if base is not None:
+                job_obs, b0, at_ = base
+                back = self.retracted(b0)
+                if back is not None or self.current(job_obs, at_) != b0:
+                    if token is not None:
+                        cur = self.db.execute("UPDATE recheck_job SET state='done', result_obs=NULL WHERE job_id=?"
+                                              " AND state='leased' AND attempts=?", (job_id, token))
+                        if cur.rowcount != 1:
+                            return False
+                    j = self.db.execute("SELECT job_id, cause, cause_ref, merged_causes FROM recheck_job WHERE job_id=?",
+                                        (job_id,)).fetchone()
+                    target = self.current(back if back is not None else job_obs, at_)
+                    self._move_causes(j, target, utc(at_))
+                    self.last_finish = "base_moved"
+                    return False
             if token is not None:
                 cur = self.db.execute(
                     "UPDATE recheck_job SET state=?, result_obs=? WHERE job_id=? AND state='leased' AND attempts=?",
@@ -597,6 +643,8 @@ class Ledger:
             else:
                 self.db.execute("UPDATE recheck_job SET state=?, result_obs=? WHERE job_id=?",
                                 ("done" if ok else "failed", result_obs, job_id))
+            for a, b, effect, known_from, effective_from in chain_before or []:
+                self._supersede(a, b, effect, known_from, effective_from)
             if supersede and result_obs is not None:
                 old, effect, known_from, effective_from = supersede
                 self._supersede(old, result_obs, effect, known_from, effective_from)

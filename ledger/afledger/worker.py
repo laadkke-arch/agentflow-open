@@ -52,7 +52,13 @@ class RecheckWorker:
     def _work(self, j, token: int, at: str, clock: str = "follow") -> dict:
         L = self.L
         old = j["obs_id"]
-        cur = L.current(old, at)
+        cur = base = L.current(old, at)
+        if L.retracted(cur, at) is not None:
+            # 철회된 판독에 걸린 작업(취소 전에 임차된 것). 읽지 않고 원인을 되살아난 관측으로 옮긴다(08 I37 규칙 1)
+            ok = L.finish(j["job_id"], None, token=token, base=(old, base, at))
+            rec = {"at": at, "job": j["job_id"], "obs": old, "result": L.last_finish or "same", "accepted": ok}
+            self.log.append(rec)
+            return rec
         editions = [e["edition_key"] for e in L.job_editions(j["job_id"])] or [None]
         readings, unmapped = [], []
         for ek in editions:
@@ -64,7 +70,7 @@ class RecheckWorker:
             elif r:
                 readings.append(r)
         readings.sort(key=lambda r: r.get("published_at") or "")
-        chain, new_obs = [], None
+        chain, new_obs, reread = [], None, []
         for r in readings:
             oid, created = L.observe(url=r["url"], edition_key=r["edition_key"], edition_kind=r.get("edition_kind", "revision"),
                                      position=r["position"], at=at, method="read_line", quote=r["quote"],
@@ -73,36 +79,41 @@ class RecheckWorker:
                                      evidence_ref=r.get("evidence_ref"), anchor_symbol=r.get("anchor_symbol"),
                                      anchor_in_doc=r.get("anchor_in_doc"), map_method=r.get("map_method"),
                                      map_from=r.get("map_from"), byte_span=r.get("byte_span"))
+            if not created and oid != cur and L.retracted(oid, at) is not None:
+                reread.append(oid)     # 운영자가 철회한 판독을 다시 읽었다. 취소는 그대로 두고 감사로 넘긴다(I37 규칙 2)
+                continue
             prev_pub = L.obs(cur)["published_at"] or ""
-            if created and oid != cur and (r.get("published_at") or "") >= prev_pub:
+            linkable = created or oid not in L.earlier_obs(cur, at)    # 이미 있는 관측도 잇는다(I37 규칙 3)
+            if oid != cur and linkable and (r.get("published_at") or "") >= prev_pub:
                 chain.append((cur, oid, self.judge(L.obs(cur), r), r))
                 cur = oid
             new_obs = oid if created else new_obs
         if not chain:
-            ok = L.finish(j["job_id"], new_obs or cur, token=token)
-            rec = {"at": at, "job": j["job_id"], "obs": old, "result": "unmapped" if unmapped and not readings else "same",
-                   "accepted": ok}
-            if ok and unmapped:
-                with L.db:
-                    for r in unmapped:
-                        L._enqueue(cur, "audit", f"unmapped:{r['edition_key']}", at)
-                        L.alerts.append({"kind": "position_unmapped", "obs": cur, "edition": r["edition_key"],
-                                         "at": at, "symbol_present": r["map"].get("symbol_present")})
-            self.log.append(rec)
-            return rec
-        for a, b, effect, r in chain[:-1]:
-            if not self._still_mine(j["job_id"], token):
-                break
-            L.supersede(a, b, effect, known_from=at, effective_from=r.get("effective_from"))
-        a, b, effect, r = chain[-1]
-        ok = L.finish(j["job_id"], b, token=token, supersede=(a, effect, at, r.get("effective_from")))
-        if ok:
-            for a_, b_, _e, r_ in chain:
-                for w in r_.get("watch", []):
-                    L.watch(b_, w["channel"], w.get("match_key", ""), layer=w.get("layer", "same_address"),
-                            deadline=w.get("deadline"))
-        rec = {"at": at, "job": j["job_id"], "obs": old, "result": "superseded", "chain": [(a_, b_, e_) for a_, b_, e_, _ in chain],
-               "accepted": ok}
+            ok = L.finish(j["job_id"], new_obs or cur, token=token, base=(old, base, at))
+            result = L.last_finish or ("unmapped" if unmapped and not readings else
+                                       "retracted_reread" if reread else "same")
+            rec = {"at": at, "job": j["job_id"], "obs": old, "result": result, "accepted": ok}
+        else:
+            a, b, effect, r = chain[-1]
+            ok = L.finish(j["job_id"], b, token=token, supersede=(a, effect, at, r.get("effective_from")),
+                          chain_before=[(a_, b_, e_, at, r_.get("effective_from")) for a_, b_, e_, r_ in chain[:-1]],
+                          base=(old, base, at))
+            if ok:
+                for a_, b_, _e, r_ in chain:
+                    for w in r_.get("watch", []):
+                        L.watch(b_, w["channel"], w.get("match_key", ""), layer=w.get("layer", "same_address"),
+                                deadline=w.get("deadline"))
+            rec = {"at": at, "job": j["job_id"], "obs": old, "result": L.last_finish or "superseded",
+                   "chain": [(a_, b_, e_) for a_, b_, e_, _ in chain], "accepted": ok}
+        if ok and (unmapped or reread):
+            with L.db:
+                for r in unmapped:
+                    L._enqueue(base, "audit", f"unmapped:{r['edition_key']}", at)
+                    L.alerts.append({"kind": "position_unmapped", "obs": base, "edition": r["edition_key"],
+                                     "at": at, "symbol_present": r["map"].get("symbol_present")})
+                for oid in reread:
+                    L._enqueue(base, "audit", f"reread_retracted:{oid}", at)
+                    L.alerts.append({"kind": "retracted_reread", "obs": base, "retracted": oid, "at": at})
         self.log.append(rec)
         return rec
 
