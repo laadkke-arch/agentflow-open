@@ -33,6 +33,8 @@ class RecheckWorker:
             causes = [j["cause"]] + [m.split(":", 1)[0] for m in j["merged_causes"].split(",") if m]
             if all(c == "audit" for c in causes):
                 continue   # 감사 작업은 운영자 몫이다(판독 충돌 I21, 위치 대응 없음 I36). 작업자가 원문을 다시 읽지 않는다
+            if j["not_before"] and j["not_before"] > at:
+                continue   # 다시 하기를 기다리는 작업(08 I41)
             deadline_only = j["cause"] == "deadline" and not any(
                 m.split(":", 1)[0] != "deadline" for m in j["merged_causes"].split(",") if m)
             separate = config.DEADLINE_BUDGET == "separate" and deadline_only
@@ -60,7 +62,7 @@ class RecheckWorker:
             self.log.append(rec)
             return rec
         editions = [e["edition_key"] for e in L.job_editions(j["job_id"])] or [None]
-        readings, unmapped, failed = [], [], []
+        readings, unmapped, failed, fail_info = [], [], [], []
         for ek in editions:
             r = self.reader(L.obs(cur), ek, at)
             outcome = (r or {}).get("outcome", "content") if r else "unreachable"
@@ -74,6 +76,7 @@ class RecheckWorker:
                                    method="read_line", outcome=outcome, statement=f"원문 접근 실패({outcome})",
                                    via="channel", reader=(r or {}).get("reader", self.name))
                 failed.append(fid)
+                fail_info.append((outcome, (r or {}).get("retry_after_h") or 0))
             elif r.get("unmapped"):
                 unmapped.append(r)     # 그 판에 같은 자리가 없다. 거짓 위치로 관측을 만들지 않는다(08 I36)
             elif r:
@@ -99,9 +102,18 @@ class RecheckWorker:
             new_obs = oid if created else new_obs
         if not chain:
             all_failed = bool(failed) and not readings and not unmapped
-            ok = L.finish(j["job_id"], new_obs or cur, ok=not all_failed, token=token, base=(old, base, at))
-            result = L.last_finish or ("failed" if all_failed else "unmapped" if unmapped and not readings else
-                                       "retracted_reread" if reread else "same")
+            transient = all_failed and all(o_ in config.RETRY_OUTCOMES for o_, _ in fail_info)
+            if transient and token <= config.RETRY_MAX:
+                # 일시 실패: 같은 작업을 기다렸다 다시 한다(08 I41). 처음 시도 + RETRY_MAX회
+                from .ledger import _shift
+                wait = max(config.RETRY_WAIT_H, max(h for _, h in fail_info))
+                L.last_finish = None
+                ok = L.retry(j["job_id"], token, _shift(at, wait))
+                result = "retry_scheduled"
+            else:
+                ok = L.finish(j["job_id"], new_obs or cur, ok=not all_failed, token=token, base=(old, base, at))
+                result = L.last_finish or ("failed" if all_failed else "unmapped" if unmapped and not readings else
+                                           "retracted_reread" if reread else "same")
             rec = {"at": at, "job": j["job_id"], "obs": old, "result": result, "accepted": ok}
         else:
             a, b, effect, r = chain[-1]

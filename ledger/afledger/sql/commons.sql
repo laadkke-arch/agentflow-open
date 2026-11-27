@@ -247,6 +247,7 @@ CREATE TABLE IF NOT EXISTS recheck_job (
   attempts    INTEGER NOT NULL DEFAULT 0,
   result_obs  INTEGER REFERENCES observation(obs_id),
   merged_causes TEXT NOT NULL DEFAULT '',   -- 열린 작업에 합쳐진 다른 원인(쉼표 구분)
+  not_before  TEXT,                         -- 다시 하기(08 I41): 이 시각 전에는 작업자가 잡지 않는다
   UNIQUE (obs_id, cause, cause_ref)
 );
 

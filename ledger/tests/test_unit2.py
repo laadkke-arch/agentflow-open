@@ -373,6 +373,9 @@ class SourceFailureI38(unittest.TestCase):
     """08 I38: 같은 원문 실패가 세 번 이어지면 그 관측을 인용한 자리에 '원문 접근 실패' 알림."""
 
     def setUp(self):
+        self.saved_retry = config.RETRY_MAX
+        config.RETRY_MAX = 0                      # I38 규칙만 본다. 다시 하기와 합친 동작은 RetryI41
+        self.addCleanup(setattr, config, "RETRY_MAX", self.saved_retry)
         self.L, self.o = doc_ledger()
         L = self.L
         self.p = L.project("A")
@@ -473,3 +476,60 @@ class WatchCoverageI40(unittest.TestCase):
 
     def test_immutable_edition_is_covered_by_any_layer(self):
         self.assertEqual(self.gate("release", ["supplier"])["decision"], "reuse")
+
+
+class RetryI41(unittest.TestCase):
+    """08 I41: 일시 실패는 같은 작업을 2시간 뒤 다시 한다(최대 2회). not_found는 다시 하지 않는다."""
+
+    def setUp(self):
+        self.L, self.o = doc_ledger()
+        self.p = self.L.project("A")
+        req = self.L.intake(self.p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": self.o, "ladder": "L2", "verb": "v", "where": "§", "reason": "r", "hold": "h"}
+        self.L.compose(self.p, req, T, slots=[slot])
+        self.calls = []
+
+    def reader(self, script):
+        def read(obs, ek, at):
+            self.calls.append(at)
+            r = script[min(len(self.calls), len(script)) - 1]
+            if r == "ok":
+                return {"url": "https://example.org/doc", "edition_key": "rev:1", "position": "§",
+                        "quote": "Export until June.", "statement": "6월까지 내보내기", "published_at": "2026-11-01T00:00:00Z"}
+            return r
+        return read
+
+    def drive(self, script, hours=12):
+        self.L.poll(CH, [{"id": "x", "title": "t"}], "2026-12-01T00:00:00Z")
+        w = RecheckWorker(self.L, self.reader(script), lambda a, b: "confirms")
+        from afledger.ledger import _shift
+        out = []
+        for h in range(hours + 1):
+            out += w.run_once(_shift("2026-12-01T00:00:00Z", h))
+        return out
+
+    def notices(self):
+        return [n for n in self.L.propagate(self.p, "2026-12-02T00:00:00Z") if n["effect"] == "source_unreachable"]
+
+    def test_a_two_failures_then_success(self):
+        recs = self.drive([None, None, "ok"])
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled", "retry_scheduled", "same"])
+        self.assertEqual(self.calls, ["2026-12-01T00:00:00Z", "2026-12-01T02:00:00Z", "2026-12-01T04:00:00Z"])
+        self.assertEqual(self.L.fetch_count(clock="follow"), 3)
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["done"])
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+
+    def test_b_always_unreachable_fails_after_three_and_notices_once(self):
+        recs = self.drive([None])
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled", "retry_scheduled", "failed"])
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["failed"])
+        self.assertEqual(len(self.notices()), 1)
+
+    def test_c_not_found_is_not_retried(self):
+        recs = self.drive([{"outcome": "not_found"}])
+        self.assertEqual([r["result"] for r in recs], ["failed"])
+        self.assertEqual(len(self.calls), 1)
+
+    def test_d_retry_after_is_respected(self):
+        self.drive([{"outcome": "unreachable", "retry_after_h": 5}, "ok"])
+        self.assertEqual(self.calls, ["2026-12-01T00:00:00Z", "2026-12-01T05:00:00Z"])

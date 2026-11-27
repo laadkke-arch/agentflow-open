@@ -640,6 +640,13 @@ class Ledger:
             return 0
         return self.db.execute("SELECT attempts FROM recheck_job WHERE job_id=?", (job_id,)).fetchone()[0]
 
+    def retry(self, job_id: int, token: int, not_before: str) -> bool:
+        """임차한 작업을 대기로 되돌리고 not_before 전에는 잡히지 않게 한다(08 I41). 임차가 이미 풀렸으면 False."""
+        with self.db:
+            cur = self.db.execute("UPDATE recheck_job SET state='queued', lease_until=NULL, not_before=?"
+                                  " WHERE job_id=? AND state='leased' AND attempts=?", (utc(not_before), job_id, token))
+        return cur.rowcount == 1
+
     def finish(self, job_id: int, result_obs: int | None, ok=True, token: int | None = None,
                supersede: tuple | None = None, chain_before: list | None = None, base: tuple | None = None) -> bool:
         """작업을 끝낸다. token을 주면 지금도 그 임차가 유효할 때만 받는다(임차가 풀려 다른 작업자가 잡았으면 거절).
