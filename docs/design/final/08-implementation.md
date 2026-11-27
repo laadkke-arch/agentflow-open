@@ -796,6 +796,23 @@
   - Checkmk 개념(F09 B26-S01-b1-r03): "Die Services verbleiben im jeweils letzten Zustand, werden aber nach Ablauf einer bestimmten Zeit als stale markiert." 마지막 상태는 두고 stale 표시만 붙인다. 규칙 2와 같은 쪽이다.
   - 카카오디벨로퍼스 웹훅(F09 B11-S01-b3-r04): "계정 상태 변경 웹훅은 이벤트 발송이 3시간 동안 연속적으로 실패하면 비활성화됩니다." 연속 실패에 문턱을 둔 예다. 그쪽은 시간으로, 이 규칙은 횟수로 센다. 세 번이라는 값의 근거는 아니다.
   - Nagios freshness(F09 B26-S01-b3-r10): 기대한 보고가 오지 않으면 원본을 따로 확인하는 2단계 판정. 이 항목에는 넣지 않았다(자동 재시도·다시 읽기는 남은 것).
+- **구현.**
+  - `config.SOURCE_FAIL_STREAK = 3`. 공용 장부에 `source_failure`(기준 관측, 마지막 실패 관측, outcome, 시각, 연속 수) 표를 더했다. 덧붙이기만 한다(수정·삭제 트리거).
+  - `RecheckWorker._work`: 판독 실패(None 또는 `outcome`)를 그 outcome으로 세고 실패 관측을 남긴다. 모든 판이 실패하면 `finish(ok=False)`로 `failed`이고 결과 기록은 `failed`다. 작업이 받아들여지면 `Ledger.note_source_failure`를 부른다.
+  - `Ledger.fail_streak(기준, 시각)`·`note_source_failure`가 규칙 4·5를 따른다. 연속 수가 문턱과 **같을 때만** 행을 남기므로 한 연속에 한 행이다. 경보 `source_failure`도 남긴다.
+  - `propagate`가 `source_failure` 행마다 계보(`ancestors`)를 인용한 자리에 `source_unreachable` 알림을 붙인다.
+- **결과.** 합격 조건 여섯이 모두 맞는다(`test_unit2.SourceFailureI38` 다섯).
+  - (a) 실패 셋째 뒤 알림 1("원문 접근 실패: unreachable 3회 연속 (마지막 시각 …)"), 둘째 뒤 0, 넷째 뒤 0.
+  - (b) 실패·실패·성공·실패는 0. (c) unreachable·unreachable·not_found는 0이고, 연속은 (1, not_found)이다.
+  - (d) 실패 관측 하나(`unreachable`, 인용 없음). 앞 관측이 그대로 현재 관측이고, 대체 0, 재사용 안 됨.
+  - (e) 작업 상태 `failed`, 후속 가져오기 1회.
+  - (f) 시험 104개 통과(설계 시험 33개 그대로). EVAL-X1 기록 재생 출력이 바이트 그대로다.
+  - 시험은 채널 항목을 8일 간격으로 넣는다. 감시 출처가 하나면 후속 몫이 168시간당 3회라, 같은 주에 네 번째 작업은 몫에 걸려 대기로 남는다. 실패도 몫을 쓴다(규칙 1). 그래서 원문이 계속 죽어 있으면 그 출처는 몫을 실패에 쓴다.
+- **남은 것.**
+  - 자동 재시도·백오프가 없다. 실패한 채널 항목의 판은 다음 항목이 그 판을 다시 주지 않으면 읽히지 않는다. 152의 재시도 구성(4시간에 2회 한도, 429, 2시간 대기)과 Nagios식 2단계 확인은 이 다음이다.
+  - 회복 알림("원문 다시 읽힘")은 설계에 없어 넣지 않았다. 성공은 연속을 끝낼 뿐이다.
+  - 같은 판의 같은 실패는 한 실패 관측으로 합쳐진다. 그래서 회복 뒤 같은 판에서 다시 세 번 실패하면, 마지막 실패 관측이 같을 때 알림 키(`old_obs`, `new_obs`)가 겹쳐 둘째 알림이 생기지 않는다. 판 키가 없는 실패(`attempt@시각`)에서는 생기지 않는다. 시험하지 않았다.
+- **영향.** 04 6.2(실패도 관측, 세 번 → 알림. [가정] 값은 그대로).
 
 ## 2. 다음 단계
 

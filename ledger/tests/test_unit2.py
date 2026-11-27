@@ -367,3 +367,64 @@ class SharedTargetI37(CpythonQueues, unittest.TestCase):
         self.assertEqual(n1, n2)
         self.assertNotIn(n1, (o1, o2))
         self.assertEqual(self.L.obs(n1)["position"], "L126-L132")
+
+
+class SourceFailureI38(unittest.TestCase):
+    """08 I38: 같은 원문 실패가 세 번 이어지면 그 관측을 인용한 자리에 '원문 접근 실패' 알림."""
+
+    def setUp(self):
+        self.L, self.o = doc_ledger()
+        L = self.L
+        self.p = L.project("A")
+        req = L.intake(self.p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": self.o, "ladder": "L2", "verb": "v", "where": "§", "reason": "r", "hold": "h"}
+        self.run = L.compose(self.p, req, T, slots=[slot])
+        self.i = 0
+
+    def step(self, result):
+        """채널 항목 하나(판 키 없음)를 받고 작업자를 한 번 돌린다. result: 'ok' 또는 실패 outcome."""
+        self.i += 1
+        day = f"2026-12-{(self.i - 1) * 8 + 1:02d}"                         # 후속 몫(168시간당 3회)에 걸리지 않게 8일 간격
+
+        def reader(obs, ek, at):
+            if result == "ok":
+                return {"url": "https://example.org/doc", "edition_key": "rev:1", "position": "§",
+                        "quote": "Export until June.", "statement": "6월까지 내보내기", "published_at": "2026-11-01T00:00:00Z"}
+            return None if result == "unreachable" else {"outcome": result}
+        self.L.poll(CH, [{"id": f"x{self.i}", "title": "t"}], f"{day}T00:00:00Z")
+        rec = RecheckWorker(self.L, reader, lambda a, b: "confirms").run_once(f"{day}T01:00:00Z")
+        return rec[0], [n for n in self.L.propagate(self.p, f"{day}T02:00:00Z") if n["effect"] == "source_unreachable"]
+
+    def test_a_third_consecutive_failure_notices_once(self):
+        self.assertEqual(self.step("unreachable")[1], [])
+        self.assertEqual(self.step("unreachable")[1], [])
+        rec, ns = self.step("unreachable")
+        self.assertEqual([(n["run"], n["effect"]) for n in ns], [(self.run, "source_unreachable")])
+        self.assertIn("원문 접근 실패: unreachable 3회 연속", ns[0]["text"])
+        self.assertTrue(rec["source_failure"])
+        self.assertEqual(self.step("unreachable")[1], [])                     # 같은 연속의 넷째는 새 알림 없음
+
+    def test_b_a_success_breaks_the_streak(self):
+        for r in ("unreachable", "unreachable", "ok", "unreachable"):
+            self.assertEqual(self.step(r)[1], [])
+
+    def test_c_different_outcomes_are_not_the_same_failure(self):
+        for r in ("unreachable", "unreachable", "not_found"):
+            self.assertEqual(self.step(r)[1], [])
+        self.assertEqual(self.L.fail_streak(self.o, "2026-12-31T00:00:00Z"), (1, "not_found"))
+
+    def test_d_failure_is_an_observation_not_a_supersession(self):
+        L, o = self.L, self.o
+        rec, _ = self.step("unreachable")
+        f = L.db.execute("SELECT obs_id, outcome, quote_fp FROM observation WHERE outcome<>'content'").fetchall()
+        self.assertEqual([(x["outcome"], x["quote_fp"]) for x in f], [("unreachable", None)])
+        self.assertEqual(L.current(o, "2026-12-02T00:00:00Z"), o)
+        self.assertEqual(L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 0)
+        self.assertEqual(L.reusable("https://example.org/doc", L.obs(f[0]["obs_id"])["edition_key"], "§",
+                                    at="2026-12-02T00:00:00Z"), None)
+
+    def test_e_failed_job_state_and_one_fetch(self):
+        rec, _ = self.step("unreachable")
+        self.assertEqual(rec["result"], "failed")
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["failed"])
+        self.assertEqual(self.L.fetch_count(clock="follow", include_not_modified=True), 1)

@@ -60,12 +60,21 @@ class RecheckWorker:
             self.log.append(rec)
             return rec
         editions = [e["edition_key"] for e in L.job_editions(j["job_id"])] or [None]
-        readings, unmapped = [], []
+        readings, unmapped, failed = [], [], []
         for ek in editions:
             r = self.reader(L.obs(cur), ek, at)
+            outcome = (r or {}).get("outcome", "content") if r else "unreachable"
             L.fetched((r or {}).get("url") or L.obs(cur)["url"], (r or {}).get("edition_key", ek), at,
-                      "ok" if r else "unreachable", (r or {}).get("bytes"), clock=clock, job_id=j["job_id"])
-            if r and r.get("unmapped"):
+                      "ok" if outcome == "content" else outcome, (r or {}).get("bytes"), clock=clock, job_id=j["job_id"])
+            if outcome != "content":
+                # 실패도 관측이다(04 6.2, 08 I38 규칙 1). 대체 사슬에는 잇지 않는다(규칙 2)
+                o = L.obs(cur)
+                fid, _ = L.observe(url=o["url"], edition_key=ek or f"attempt@{at}",
+                                   edition_kind=o["edition_kind"] if ek else "fetch", position=o["position"], at=at,
+                                   method="read_line", outcome=outcome, statement=f"원문 접근 실패({outcome})",
+                                   via="channel", reader=(r or {}).get("reader", self.name))
+                failed.append(fid)
+            elif r.get("unmapped"):
                 unmapped.append(r)     # 그 판에 같은 자리가 없다. 거짓 위치로 관측을 만들지 않는다(08 I36)
             elif r:
                 readings.append(r)
@@ -89,8 +98,9 @@ class RecheckWorker:
                 cur = oid
             new_obs = oid if created else new_obs
         if not chain:
-            ok = L.finish(j["job_id"], new_obs or cur, token=token, base=(old, base, at))
-            result = L.last_finish or ("unmapped" if unmapped and not readings else
+            all_failed = bool(failed) and not readings and not unmapped
+            ok = L.finish(j["job_id"], new_obs or cur, ok=not all_failed, token=token, base=(old, base, at))
+            result = L.last_finish or ("failed" if all_failed else "unmapped" if unmapped and not readings else
                                        "retracted_reread" if reread else "same")
             rec = {"at": at, "job": j["job_id"], "obs": old, "result": result, "accepted": ok}
         else:
@@ -105,6 +115,8 @@ class RecheckWorker:
                                 deadline=w.get("deadline"))
             rec = {"at": at, "job": j["job_id"], "obs": old, "result": L.last_finish or "superseded",
                    "chain": [(a_, b_, e_) for a_, b_, e_, _ in chain], "accepted": ok}
+        if ok and failed:
+            rec["source_failure"] = L.note_source_failure(base, failed[-1], at)
         if ok and (unmapped or reread):
             with L.db:
                 for r in unmapped:

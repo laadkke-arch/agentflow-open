@@ -389,6 +389,31 @@ class Ledger:
                             " ORDER BY cancelled_at DESC LIMIT 1", (obs_id, at, at)).fetchone()
         return r[0] if r else None
 
+    def fail_streak(self, base: int, at: str) -> tuple[int, str | None]:
+        """감시 계보(기준 관측과 앞선 관측들)에 걸린 재확인 작업의 가져오기를 최근 것부터 보아, 맨 뒤에서 이어진 같은 실패의
+        수와 그 outcome을 돌려준다. ok·not_modified가 나오거나 outcome이 바뀌면 멈춘다(08 I38 규칙 4)."""
+        lineage = sorted({base} | self.earlier_obs(base, at))
+        marks = ",".join("?" * len(lineage))
+        n, kind = 0, None
+        for (o,) in self.db.execute(
+                f"SELECT f.outcome FROM fetch_log f JOIN recheck_job j ON j.job_id=f.job_id WHERE j.obs_id IN ({marks})"
+                " AND f.at<=? ORDER BY f.fetch_id DESC", (*lineage, at)):
+            if o in ("ok", "not_modified") or (kind is not None and o != kind):
+                break
+            kind, n = o, n + 1
+        return n, kind
+
+    def note_source_failure(self, base: int, fail_obs: int, at: str) -> bool:
+        """연속이 문턱에 처음 닿은 순간이면 source_failure 행을 남기고 True를 돌려준다."""
+        n, kind = self.fail_streak(base, at)
+        if n != config.SOURCE_FAIL_STREAK:
+            return False
+        with self.db:
+            self.db.execute("INSERT OR IGNORE INTO source_failure(base_obs, fail_obs, outcome, at, streak)"
+                            " VALUES (?,?,?,?,?)", (base, fail_obs, kind, utc(at), n))
+        self.alerts.append({"kind": "source_failure", "obs": base, "outcome": kind, "streak": n, "at": at})
+        return True
+
     def earlier_obs(self, obs_id: int, at: str) -> set[int]:
         """취소되지 않은 대체를 거꾸로 따라 닿는 앞선 관측들."""
         rows = self.db.execute(
@@ -1397,6 +1422,23 @@ class Ledger:
                              0 if self.is_active(p, t["run_id"], c["cancelled_at"]) else 1))
                         if cur.rowcount:
                             out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": effect, "text": text})
+            # 원문 접근 실패(04 6.2, 08 I38): 같은 실패가 문턱만큼 이어진 기준 관측의 계보를 인용한 자리에 알린다.
+            # 실패는 대체가 아니다. 앞 관측은 그대로 두고 표시만 붙인다
+            for f in self.db.execute("SELECT * FROM source_failure WHERE at<=? ORDER BY at", (at,)).fetchall():
+                chain = self.ancestors(f["base_obs"])
+                marks = ",".join("?" * len(chain))
+                text = f"원문 접근 실패: {f['outcome']} {f['streak']}회 연속 (마지막 시각 {f['at']})"
+                for t in self.db.execute(
+                        f"SELECT DISTINCT u.run_id, u.slot_no FROM {p}.usage u JOIN {p}.answer_run r USING(run_id)"
+                        f" WHERE u.obs_id IN ({marks}) AND u.part<>'contrast' AND r.produced_at<=?",
+                        (*chain, f["at"])).fetchall():
+                    cur = self.db.execute(
+                        f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text, held)"
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                        (t["run_id"], t["slot_no"], f["base_obs"], f["fail_obs"], "source_unreachable", f["at"], text,
+                         0 if self.is_active(p, t["run_id"], f["at"]) else 1))
+                    if cur.rowcount:
+                        out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": "source_unreachable", "text": text})
             # 별칭 취소: 그 별칭을 따라 연 관측을 인용한 자리에 알린다(07 D5). 관측 자체는 그 주소에 대해 여전히 참이다
             for a in self.db.execute(
                     "SELECT c.alias_id, c.cancelled_at, c.reason FROM locator_alias_cancel c WHERE c.cancelled_at<=?"
