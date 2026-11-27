@@ -1,0 +1,92 @@
+{
+ "_note": "배포 대상 런타임이 3.12로 바뀌었다고 Studio가 알린 요청판 2 [고정 자료].",
+ "request_key": "R1",
+ "rev": 2,
+ "received_at": "2026-12-10T01:00:00Z",
+ "text": "목표: 이미지 변환보다 저장 단계가 느려도 대기 작업과 동시 작업 수가 계속 늘어나지 않게 하고 싶다.\n대상 부분: Python 3.13 asyncio의 작업 투입·완료 신호\n전제: 단일 event loop다. producer는 멈출 수 있는 lazy 입력 iterator다. 각 worker는 변환과 최종 저장을 await한다. 항목을 버리는 방식은 허용하지 않는다. 외부 source가 일방적으로 무한 push하는 환경이 아니다.\nP03-H1: 대기 큐 안의 항목 수는 최대 8개이고 처리 중 작업은 최대 4개여야 한다.\nP03-H2: sink가 느려지면 producer가 기다려야 하며, 모든 입력에 대해 task를 미리 만들거나 다른 무제한 buffer로 옮기면 안 된다.\nP03-H3: 처리 완료/용량 회복을 투입 재개의 근거로 삼고, 단순 시간 경과만으로 처리 중 상한을 넘겨서는 안 된다.\n범위 밖: 전체 RAM byte 상한, producer가 손에 든 한 항목, 변환 내부 메모리, 처리량 향상 수치, 강제 즉시 취소, 장애 복구",
+ "selected_part": {
+  "label": "파이프라인: 작업 투입·완료 신호"
+ },
+ "environment": {
+  "runtime": "CPython 3.12",
+  "os": "linux"
+ },
+ "context": {
+  "producer_pausable": {
+   "value": "yes",
+   "provenance": "explicit"
+  },
+  "single_loop": {
+   "value": "yes",
+   "provenance": "explicit"
+  },
+  "drop_allowed": {
+   "value": "no",
+   "provenance": "explicit"
+  },
+  "workers_fixed": {
+   "value": "yes",
+   "provenance": "studio",
+   "source": "선택 부분의 일꾼 생성 코드 [고정 자료]"
+  }
+ },
+ "requirements": [
+  {
+   "code": "H1",
+   "kind": "must",
+   "text": "대기 큐 안의 항목 수는 최대 8개이고 처리 중 작업은 최대 4개여야 한다."
+  },
+  {
+   "code": "H2",
+   "kind": "must_not",
+   "text": "sink가 느려지면 producer가 기다려야 하며, 모든 입력에 대해 task를 미리 만들거나 다른 무제한 buffer로 옮기면 안 된다."
+  },
+  {
+   "code": "H3",
+   "kind": "must",
+   "text": "처리 완료/용량 회복을 투입 재개의 근거로 삼고, 단순 시간 경과만으로 처리 중 상한을 넘겨서는 안 된다."
+  },
+  {
+   "code": "S1",
+   "kind": "must",
+   "text": "입력이 끝났음을 일꾼에게 알린다(대상 부분 '작업 투입·완료 신호'에서 추론).",
+   "provenance": "inferred"
+  },
+  {
+   "code": "X",
+   "kind": "out_of_scope",
+   "text": "전체 RAM byte 상한, producer가 손에 든 한 항목, 변환 내부 메모리, 처리량 향상 수치, 강제 즉시 취소, 장애 복구"
+  }
+ ],
+ "prior": {
+  "state": "given",
+  "known": []
+ },
+ "needs": [
+  {
+   "slot": "input",
+   "lang": "en",
+   "text": "a lazy input iterator that the producer can pause"
+  },
+  {
+   "slot": "output",
+   "lang": "en",
+   "text": "the producer waits when the queue is full and puts again only after a worker removes an item"
+  },
+  {
+   "slot": "keeps",
+   "lang": "en",
+   "text": "at most eight items wait in the queue and at most four jobs run at once"
+  },
+  {
+   "slot": "breaks_when",
+   "lang": "en",
+   "text": "tasks are created for every input ahead of time or items move into an unbounded buffer"
+  },
+  {
+   "slot": "summary",
+   "lang": "en",
+   "text": "bounded waiting work where completion of a worker frees capacity and lets the producer resume"
+  }
+ ]
+}

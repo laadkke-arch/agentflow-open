@@ -1,0 +1,160 @@
+"""측정 결과 파일과 설정이 서로 맞는지 지킨다(측정을 바꾸면 결과 파일을 다시 쓴다)."""
+import json
+import sys
+import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from afledger import config, privacy  # noqa: E402
+
+OUT = HERE.parent / "out"
+
+
+def load(name):
+    return json.loads((OUT / name).read_text(encoding="utf-8"))
+
+
+class MeasuredChoices(unittest.TestCase):
+    def test_privacy_default_is_the_measured_choice(self):
+        r = load("measure_r4.json")
+        chosen = r["variants"][r["chosen"]]
+        self.assertEqual(config.PRIVACY_RULES, "p2")
+        self.assertEqual((privacy.KO_TOKEN_RULE, privacy.VERBATIM_CHARS),
+                         (chosen.get("KO_TOKEN_RULE", True), chosen["VERBATIM_CHARS"]))
+        self.assertEqual(chosen["leak_passed"], 0)
+        self.assertLess(chosen["legit_reject_rate"], 0.05)
+
+    def test_r6_choice_matches_config(self):
+        r = load("measure_r6.json")
+        v = r["variants"][r["chosen"]]
+        self.assertEqual((config.RANK_RULES, config.RANK_LENGTH_B, config.DRAWER_SYMBOL_SCOPE),
+                         (v["rank_rules"], v["length_b"], v["symbol_scope"]))
+        self.assertTrue(v["T1_flow"] and v["T2"] and v["T3"])
+
+    def test_a4_and_maps_are_recorded(self):
+        a = load("measure_a4.json")
+        self.assertFalse(a["variants"]["i1_en@t2"]["catalog_only"]["big_deviation"])
+        self.assertEqual(set(a["r1_flow_with_i1_ko"]), {"t1_catalog_only", "t1_with_F01", "t2_catalog_only", "t2_with_F01"})
+        b = load("measure_b1.json")["modes"]
+        self.assertGreaterEqual(b["t2"]["reached"], b["t1"]["reached"])
+        m = load("measure_r1_map.json")
+        self.assertEqual(m["total"]["agree"], m["total"]["positions"])
+        n = load("measure_normalize.json")
+        self.assertEqual(n["errors"], {})
+
+
+class JudgedNoiseI25(unittest.TestCase):
+    def test_judgments_cover_the_fixed_sample_and_e1_is_the_measured_default(self):
+        import csv
+        import measure
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i25" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertEqual(len(rows), 120)
+        self.assertTrue(all(r["grade"] in ("0", "1", "2") and r["reason"] for r in rows))
+        sample = measure.i25_sample()                                    # 판정 표본은 모은 쌍에서 규칙으로 다시 나온다
+        self.assertEqual([(r["request"], r["url"]) for r in rows], [(x["request"], x["url"]) for x in sample])
+        self.assertEqual(load("i25_pairs.json")["elig_rules"], config.ELIG_RULES)
+        i24 = load("measure_i24.json")
+        self.assertTrue(i24["revert_to_e1"])
+        self.assertEqual(config.ELIG_RULES, "e1")
+
+
+class PooledJudgingI32(unittest.TestCase):
+    def test_pool_is_fully_judged_and_the_default_is_the_measured_choice(self):
+        import csv
+        import drawer_load
+        import measure
+        self.assertEqual(measure.i32_pool(cfgs=("catalog20k", "linkindex_real"), names=list(measure.I32_SETTINGS)), [])
+        o = load("measure_i32.json")
+        self.assertTrue(all(r[c]["unjudged_total"] == 0 for r in o["results"].values() for c in ("catalog20k", "linkindex_real")))
+        p5, rank, _ = measure.I32_SETTINGS[o["chosen"]]
+        self.assertEqual((drawer_load.CATALOG_P5_TAGS, config.RANK_RULES), (p5, rank))
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i32" / "human_check.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertEqual(len(rows), 30)
+        self.assertTrue(all(r["human_grade"] == "" for r in rows))      # 사람이 채울 칸
+
+
+class MaxTagI33(unittest.TestCase):
+    def test_six_settings_are_fully_judged_and_the_default_is_the_measured_choice(self):
+        import csv
+        import drawer_load
+        import measure
+        self.assertEqual(measure.i32_pool(cfgs=("catalog20k", "linkindex_real"), names=measure.I33_ORDER), [])
+        o = load("measure_i33.json")
+        p5, rank, _ = measure.I33_SETTINGS[o["chosen"]]
+        self.assertEqual((drawer_load.CATALOG_P5_TAGS, config.RANK_RULES), (p5, rank))
+        rows = list(csv.DictReader(open(HERE.parent / "fixtures" / "i33" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+        self.assertTrue(all(r["level"] in ("L1", "L2", "L3", "L4", "X?") and r["original"] for r in rows))
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+class ReaderReproducibility(unittest.TestCase):
+    def test_r3_recorded_rereads_agree(self):
+        r = load("measure_r3.json")
+        self.assertGreaterEqual(r["positions"], 50)
+        for pair in r["by_pair"].values():
+            self.assertEqual(pair["same_quote_fp"], pair["compared"])
+        self.assertEqual(r["ledger"]["conflicts_flagged"], 0)
+        self.assertTrue(all(x["same_quote_fp"] for x in r["range"]))
+
+
+class OrigJudgeI45(unittest.TestCase):
+    """08 I45: 원문 판정(J1)을 꼬리표 판정과 섞지 않고 센다."""
+
+    def test_j1_matches_opensource_table_and_judges_stay_separate(self):
+        import measure
+        r = measure.i45(write_out=False)
+        self.assertEqual((r["j1"]["exact_agree"], r["j1"]["binary_agree"], r["j1"]["orig_lower"]), (16, 23, 0))
+        self.assertEqual(len(r["j1"]["diverging_n"]), 14)
+        b = r["B_catalog20k"]["r2"]
+        self.assertEqual(b["tag_judge"]["B_met"], 3)                                   # I32 그대로
+        self.assertLessEqual(b["orig_judge_lower"]["B_met"], b["orig_judge_upper"]["B_met"])
+        self.assertTrue(set(measure._judgments_orig()) <= set(measure._judgments()))   # 같은 쌍을 따로 매긴 것
+
+
+class J2AndPickingI48(unittest.TestCase):
+    """08 I48: J2 견주기, ?는 판정 안 함, 다 덮었을 때 고르는 규칙."""
+
+    def test_j2_matches_opensource_table_and_no_decision_yet(self):
+        import measure
+        r = measure.i45(write_out=False)
+        j2 = r["by_session"]["J2"]
+        self.assertEqual((j2["exact_agree"], j2["orig_higher"], j2["orig_lower"], j2["unopened"]), (197, 120, 2, 8))
+        self.assertEqual(r["by_session"]["J3"]["pairs"] if "J3" in r["by_session"] else 102, 102)
+
+    def test_picking_rule_runs_at_full_coverage(self):
+        import measure
+        r = measure.i45(jo=measure._judgments(), write_out=False)   # J_tag를 J_orig 자리에: 규칙 경로만 본다
+        self.assertEqual(r["missing"], {})
+        self.assertEqual(r["pick_orig"]["chosen"], "r2")                 # I32와 같은 판정이면 같은 답
+        self.assertTrue(r["pick_orig"]["decided"])
+
+
+class BothBoundsI50(unittest.TestCase):
+    """08 I50(받은 편지 N4): 두 끝이 같은 설정을 고르면 정한다. 꼬리표 판정으로 채우지 않는다."""
+
+    def test_j3_joined_and_both_bounds_pick_r2(self):
+        import measure
+        r = measure.i45(write_out=False)
+        self.assertEqual(r["by_session"]["J3"]["orig_grades"], {"0": 36, "2": 40, "1": 24, "?": 2})
+        p = r["pick_orig"]
+        self.assertEqual((p["chosen_lower"], p["chosen_upper"], p["decided"], p["chosen"]), ("r2", "r2", True, "r2"))
+        self.assertLessEqual(p["B_orig_lower"]["r2"], p["B_orig_upper"]["r2"])
+
+
+class UnopenableExcludedI51(unittest.TestCase):
+    """08 I51(받은 편지 N5): J4 뒤에도 열지 못한 8쌍을 풀에서 빼고 원문 판정으로 고른다."""
+
+    def test_eight_excluded_full_coverage_and_r2(self):
+        import measure
+        r = measure.i45(write_out=False)
+        self.assertEqual(r["excluded_unopenable"]["count"], 8)
+        self.assertEqual((r["b_pool_pairs"], r["b_pool_with_orig"], r["missing"]), (442, 442, {}))
+        self.assertEqual(r["pick_orig"]["chosen"], "r2")
+        self.assertEqual(r["B_catalog20k"]["r2"]["orig_judge_lower"]["unjudged_pairs_in_top10"], 0)
+        top = measure._i32_top10("r2", "catalog20k")
+        b = measure._b_count({}, top, "relevant", frozenset((q, x["url"]) for q, xs in top.items() for x in xs))
+        self.assertEqual(b["unjudged_pairs_in_top10"], 0)                   # 뺀 행은 세지 않는다

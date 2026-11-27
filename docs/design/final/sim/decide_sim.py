@@ -5,6 +5,7 @@
   D4  기한 읽기 시각: T-24h·T에 무엇을 더하나(게시 시각이 다른 세계 다섯)
   D8  불변 판의 재확인: 168시간 직접 확인을 고정판에도 하나(그대로 / 면제 / 30일)
   D11 예산 배분: 한 묶음 예산인가 시계별 예산인가(폴링 우선 / 요청 우선 / 시계별, 폴링은 조건부 요청)
+  D11d D11에 D4 기한 읽기를 넣어 다시: (1) 네 안의 순위가 같은가, (2) 기한 읽기를 후속 몫에 넣나 따로 세나(08 I22)
 
 엔진은 ../db의 것을 그대로 쓰고, 안마다 엔진의 설정 값(DEADLINE_READS, ACTIVE_RULE, IMMUTABLE_KINDS 등)만 바꾼다.
 세계 모형은 가정이다. 고른 안과 고른 규칙은 out/decide.json의 "chosen"과 "rule"에 있다.
@@ -379,7 +380,55 @@ def d11() -> dict:
             "bad_configs": {p: bad(p) for p in policies}, "chosen": ranking[0]}
 
 
-SCENARIOS = [("D2", d2), ("D3", d3), ("D4", d4), ("D8", d8), ("D11", d11)]
+# ============================================================================ D11d 기한 읽기를 넣은 예산 배분(08 I22)
+D11D_DEADLINE_EVERY = {"기한 드묾(출처마다 평균 8주)": 8 * 168, "기한 잦음(출처마다 평균 2주)": 2 * 168}
+D11D_OPTIONS = {"D + 기한 읽기가 후속 몫을 함께 씀(D4·D11 그대로)": "follow", "D + 기한 읽기를 기한마다 3회 따로 셈": "separate"}
+
+
+def d11d() -> dict:
+    policies = base.BUDGET_POLICIES
+    run = base.budget_model
+    cfgs = [(C, lam, dname, every) for C in (3, 10, 30) for lam in (5, 20) for dname, every in D11D_DEADLINE_EVERY.items()]
+
+    def key(C, lam, dname):
+        return f"C{C}_req{lam}_{dname}"
+    # (1) 같은 결론인가: 기한 읽기를 넣고 D11의 네 안을 D11 규칙으로 다시 줄 세운다. 셈법 둘 다
+    #     follow: 기한 읽기가 각 안의 몫(한 묶음이면 그 묶음, 시계별이면 후속 몫)을 쓴다. separate: 기한마다 3회 따로
+    def rank(mode):
+        grid = {pol: {key(C, lam, dn): run(pol, C, lam, deadline_every_h=ev, deadline_mode=mode) for C, lam, dn, ev in cfgs}
+                for pol in policies}
+
+        def bad(pol):
+            g = grid[pol].values()
+            return (sum(1 for x in g if x["deferred_rate"] > 0.05 or x["exhausted_rate"] > 0),
+                    sum(1 for x in g if x["follow_hours_deferred"] > 0),
+                    max(x["max_cursor_age_h"] for x in g))
+        ranking = sorted(policies, key=bad)
+        best = [p for p in policies if bad(p) == bad(ranking[0])]
+        return {"grid": grid, "bad_configs": {p: bad(p) for p in policies}, "best": best,
+                "same_as_D11": best == [policies[3]]}
+    same = {mode: rank(mode) for mode in ("follow", "separate")}
+    # (2) 기한 읽기를 어느 몫으로 세나(안 D 위에서)
+    grid2 = {name: {key(C, lam, dn): run(policies[3], C, lam, deadline_every_h=ev, deadline_mode=mode) for C, lam, dn, ev in cfgs}
+             for name, mode in D11D_OPTIONS.items()}
+
+    def bad2(name):
+        g = grid2[name].values()
+        return (sum(1 for x in g if x["follow_lag_max_h"] > 24 or x["deadline_reads_late"] > 0),
+                max(x["all_reads_per_week"] for x in g))
+    ranking2 = sorted(D11D_OPTIONS, key=bad2)
+    return {"world": "D11과 같은 출처·요청 모형 12주에 기한을 더한다. 출처마다 지수 간격(평균 8주 또는 2주)으로 기한이 오고, "
+                     "기한마다 T-24h·T·T+24h 직접 읽기 3회(D4). 후속 읽기와 기한 읽기는 예정 시각 순으로 몫을 받는다[가정]",
+            "same_conclusion": {"rule": "D11과 같은 규칙. best는 가장 나은 안(동률이면 모두), same_as_D11은 D 하나만 가장 나은가",
+                                **same},
+            "deadline_share": {"grid": grid2,
+                               "rule": "후속 읽기가 관측 뒤 24시간을 넘겨 밀리거나(06 3.4 단위 2 기준 1) 기한 읽기가 예정 시각보다 늦은 설정 수가 "
+                                       "가장 적고, 그다음 주당 원문 읽기 최대가 적은 안",
+                               "bad_configs": {n: bad2(n) for n in D11D_OPTIONS}, "chosen": ranking2[0]},
+            "chosen": ranking2[0]}
+
+
+SCENARIOS = [("D2", d2), ("D3", d3), ("D4", d4), ("D8", d8), ("D11", d11), ("D11d", d11d)]
 
 
 def main():

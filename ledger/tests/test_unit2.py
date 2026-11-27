@@ -1,0 +1,689 @@
+"""둘째 구현 단위 착수: 재확인 작업자, 폴링 시계, 조건부 요청 채널, EVAL-X1 재생(06 3.4)."""
+import sys
+import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE))
+from afledger import Ledger, config  # noqa: E402
+from afledger.adapters.channel_raw import ConditionalFileChannel  # noqa: E402
+from afledger.worker import RecheckWorker  # noqa: E402
+from fakes import FakeResponse  # noqa: E402
+import run_unit2  # noqa: E402
+
+T = "2026-11-26T00:00:00Z"
+CH = "https://example.org/history"
+
+
+def doc_ledger():
+    L = Ledger()
+    o, _ = L.observe(url="https://example.org/doc", edition_key="rev:1", edition_kind="revision", position="§", at=T,
+                     method="read_line", quote="Export until June.", quote_lang="en", statement="6월까지 내보내기",
+                     published_at="2026-11-01T00:00:00Z")
+    L.channel("ex", CH, "revision_history")
+    L.watch(o, CH)
+    return L, o
+
+
+def reader_for(revs):
+    def reader(obs, ek, at):
+        r = revs.get(ek) if ek else revs[max(revs)]
+        return {"url": "https://example.org/doc", "edition_key": r[0], "position": "§", "quote": r[1], "statement": r[1],
+                "published_at": r[2]}
+    return reader
+
+
+class Worker(unittest.TestCase):
+    def test_merged_job_reads_every_edition_and_chains_in_publication_order(self):   # D3
+        L, o = doc_ledger()
+        revs = {"rev:2": ("rev:2", "Export until July.", "2026-11-27T00:00:00Z"),
+                "rev:3": ("rev:3", "Export closed.", "2026-11-28T00:00:00Z")}
+        L.poll(CH, [{"id": "3", "title": "r3", "edition": "rev:3"}, {"id": "2", "title": "r2", "edition": "rev:2"}],
+               "2026-11-28T01:00:00Z")
+        w = RecheckWorker(L, reader_for(revs), lambda old, r: "changes_value")
+        w.run_once("2026-11-28T02:00:00Z")
+        self.assertEqual([L.obs(L.current(o, "2026-11-28T03:00:00Z"))["edition_key"]], ["rev:3"])
+        chain = L.db.execute("SELECT count(*) FROM supersession").fetchone()[0]
+        self.assertEqual(chain, 2)                                   # 가운데 판을 잃지 않는다
+        self.assertEqual(L.fetch_count(clock="follow"), 2)           # 판마다 가져오기 1회
+
+    def test_same_content_finishes_without_supersession(self):
+        L, o = doc_ledger()
+        L.poll(CH, [{"id": "1", "title": "r1", "edition": "rev:1"}], "2026-11-27T00:00:00Z")
+        w = RecheckWorker(L, reader_for({"rev:1": ("rev:1", "Export until June.", "2026-11-01T00:00:00Z")}),
+                          lambda old, r: "changes_value")
+        self.assertEqual(w.run_once("2026-11-27T01:00:00Z")[0]["result"], "same")
+        self.assertEqual(L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 0)
+
+    def test_follow_budget_leaves_jobs_queued(self):
+        L, o = doc_ledger()
+        for i in range(config.FOLLOW_FETCHES_PER_10_SOURCES):
+            L.fetched("https://example.org/x", None, "2026-11-26T12:00:00Z", clock="follow")
+        L.poll(CH, [{"id": "9", "title": "r9"}], "2026-11-27T00:00:00Z")
+        w = RecheckWorker(L, reader_for({"rev:1": ("rev:1", "x", "2026-11-01T00:00:00Z")}), lambda o_, r: "confirms")
+        self.assertEqual(w.run_once("2026-11-27T01:00:00Z"), [])
+        self.assertEqual(len(L.jobs("queued")), 1)
+
+
+class ConditionalChannel(unittest.TestCase):
+    class T:
+        def __init__(self):
+            self.body, self.etag, self.status, self.calls = b"v1 text", '"e1"', 200, []
+
+        def get(self, url, headers=None, note=""):
+            headers = headers or {}
+            self.calls.append(dict(headers))
+            if headers.get("If-None-Match") == self.etag and self.status == 200:
+                r = FakeResponse(url, 304, b"")
+            else:
+                r = FakeResponse(url, self.status, self.body)
+            r.headers = {"etag": self.etag}
+            return r
+
+    def test_304_is_not_counted_and_error_page_keeps_baseline(self):
+        L = Ledger()
+        t = self.T()
+        ch = ConditionalFileChannel(L, t, "https://raw.example/a.txt", expect="text")
+        self.assertEqual(len(ch.listing(T)), 1)
+        self.assertEqual(len(ch.listing("2026-11-26T03:00:00Z")), 1)          # 304
+        self.assertEqual(t.calls[1], {"If-None-Match": '"e1"'})
+        self.assertEqual(L.fetch_count(clock="background"), 1)
+        self.assertEqual(L.fetch_count(clock="background", include_not_modified=True), 2)
+        t.body, t.etag = b"<html>error</html>", '"e2"'                           # 200인데 기대 표지가 없다(오류 페이지)
+        self.assertEqual([i["id"] for i in ch.listing("2026-11-26T06:00:00Z")], ['"e1"'])
+        self.assertEqual(ch.etag, '"e1"')                                       # 기준선을 옮기지 않는다
+        t.body = b"v2 text"
+        self.assertEqual([i["id"] for i in ch.listing("2026-11-26T09:00:00Z")], ['"e1"', '"e2"'])
+
+
+class EvalX1Replay(unittest.TestCase):
+    def test_criteria_2_and_3_hold_and_1_depends_on_the_deadline_budget(self):
+        saved = config.DEADLINE_BUDGET
+        try:
+            config.DEADLINE_BUDGET = "follow"
+            r = run_unit2.run_phase({"supplier": 10, "kb": 40})
+            self.assertTrue(all(r["supplier_watch_alive"]))
+            self.assertEqual(r["notices_principle_slot"], 0)
+            self.assertEqual({s for s, _ in r["notices"]}, {1})
+            self.assertGreater(r["max_delay_h"], 96)                            # D4+D11 충돌(08 I22)
+            config.DEADLINE_BUDGET = "separate"
+            r = run_unit2.run_phase({"supplier": 10, "kb": 40})
+            self.assertLessEqual(r["max_delay_h"], 96)
+            self.assertEqual(r["follow_budget_skips"], 0)
+        finally:
+            config.DEADLINE_BUDGET = saved
+
+
+class ChangeCursorI35(unittest.TestCase):
+    def test_error_polls_do_not_freshen_the_cursor_and_the_gate_reopens(self):            # (b)
+        L, o = doc_ledger()
+        L.poll(CH, [], "2026-11-26T00:00:00Z")                                     # 항목 없음: 재확인 작업도 없다
+        self.assertEqual(L.reuse_gate(o, "2026-11-27T00:00:00Z")["decision"], "reuse")
+        for h in ("2026-11-29T00:00:00Z", "2026-12-02T00:00:00Z", "2026-12-05T00:00:00Z"):
+            L.poll(CH, [], h, outcome="error")
+        g = L.reuse_gate(o, "2026-12-05T01:00:00Z")
+        self.assertEqual(g["decision"], "reopen")
+        self.assertTrue(any("채널 커서가 늙음" in w for w in g["why"]))
+        row = L.db.execute("SELECT last_polled_at, confirmed_at FROM channel WHERE url=?", (CH,)).fetchone()
+        self.assertEqual((row[0], row[1]), ("2026-12-05T00:00:00Z", "2026-11-26T00:00:00Z"))
+
+    def test_windowed_listing_missing_the_newest_known_id_is_a_gap_until_a_full_listing(self):   # (c)
+        L = Ledger()
+        feed = "https://example.org/feed"
+        L.channel("ex", feed, "feed", windowed=True)
+        L.poll(feed, [{"id": "a", "title": "a"}, {"id": "b", "title": "b"}], "2026-11-26T00:00:00Z")
+        c0 = L.db.execute("SELECT confirmed_at, cursor FROM channel WHERE url=?", (feed,)).fetchone()
+        new = L.poll(feed, [{"id": "d", "title": "d"}, {"id": "e", "title": "e"}], "2026-11-29T00:00:00Z")
+        self.assertEqual([i["id"] for i in new], ["d", "e"])                         # 새 ID는 넣는다
+        self.assertEqual(L.last_poll_outcome, "gap")
+        self.assertTrue(any(a["kind"] == "channel_gap_suspected" for a in L.alerts))
+        c1 = L.db.execute("SELECT confirmed_at, cursor, needs_full_listing FROM channel WHERE url=?", (feed,)).fetchone()
+        self.assertEqual((c1[0], c1[1], c1[2]), (c0[0], c0[1], 1))                   # 확인 커서는 멈춘다
+        new = L.poll(feed, [{"id": x, "title": x} for x in "abcde"], "2026-11-29T01:00:00Z", full_listing=True)
+        self.assertEqual([i["id"] for i in new], ["c"])                              # 빠졌던 c를 전체 목록에서 찾는다
+        c2 = L.db.execute("SELECT confirmed_at, needs_full_listing FROM channel WHERE url=?", (feed,)).fetchone()
+        self.assertEqual((c2[0], c2[1]), ("2026-11-29T01:00:00Z", 0))
+
+    def test_ok_poll_without_new_ids_advances_the_cursor(self):                          # (d) BOOKMARK
+        L, o = doc_ledger()
+        L.poll(CH, [], "2026-11-26T00:00:00Z")
+        L.poll(CH, [], "2026-12-02T00:00:00Z")
+        self.assertEqual(L.db.execute("SELECT confirmed_at FROM channel WHERE url=?", (CH,)).fetchone()[0],
+                         "2026-12-02T00:00:00Z")
+        self.assertEqual(L.reuse_gate(o, "2026-12-03T00:00:00Z")["why"].count("채널 커서가 늙음(%s)" % CH), 0)
+
+    def test_conditional_channel_error_reaches_poll_as_error(self):                       # (f)
+        L = Ledger()
+        t = ConditionalChannel.T()
+        ch = ConditionalFileChannel(L, t, "https://example.org/f", expect="hello")
+        L.channel("ex", "https://example.org/f", "revision_history")
+        t.body, t.status = b"hello v1", 200
+        L.poll("https://example.org/f", ch.listing("2026-11-26T00:00:00Z"), "2026-11-26T00:00:00Z",
+               outcome=ch.last_outcome)
+        t.body, t.etag = b"<html>error</html>", '"e2"'                              # 200인데 기대 표지가 없다
+        listing = ch.listing("2026-11-29T00:00:00Z")
+        self.assertEqual(ch.last_outcome, "error")
+        L.poll("https://example.org/f", listing, "2026-11-29T00:00:00Z", outcome=ch.last_outcome)
+        self.assertEqual(L.db.execute("SELECT confirmed_at FROM channel WHERE url=?", ("https://example.org/f",)).fetchone()[0],
+                         "2026-11-26T00:00:00Z")
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+class CpythonQueues:
+    """기록된 CPython v3.12.3·v3.13.18 queues.py로 재생하는 판 사이 위치 시험의 공통 준비."""
+    REPO, PATH, CHC = "python/cpython", "Lib/asyncio/queues.py", "https://example.org/cpython-tags"
+
+    def setUp(self):
+        from afledger import locate, normalize
+        from afledger.adapters.http import Transport
+        from afledger.adapters.reader_channel import PinnedCodeChannelReader
+        from afledger.adapters.reader_github import raw_url
+        self.locate, self.normalize = locate, normalize
+        self.t = Transport("replay", HERE.parent / "fixtures" / "http")
+        self.old_text = self.t.get(raw_url(self.REPO, "v3.12.3", self.PATH)).text()
+        self.L = Ledger()
+        self.reader = PinnedCodeChannelReader(self.L, self.t)
+        self.L.channel("cpython-tags", self.CHC, "release_notes")
+
+    def obs_at(self, a, b, *, quote=None, symbol=None, in_doc=None, poll=True):
+        an = self.locate.anchor(self.old_text, a, b, python=True)
+        bs = self.locate.byte_span(self.old_text, a, b)
+        o, _ = self.L.observe(url=self.normalize.pinned_blob(self.REPO, self.PATH, "v3.12.3"), edition_key="v3.12.3",
+                              edition_kind="release", position=self.locate.position(a, b), at=T, method="read_line",
+                              quote=quote or an["quote"], quote_lang="en", statement="앞 판의 문장",
+                              anchor_symbol=symbol or an["symbol"],
+                              anchor_in_doc=an["in_doc"] if in_doc is None else in_doc, byte_span=f"{bs[0]}-{bs[1]}")
+        self.L.watch(o, self.CHC)
+        if poll:
+            self.poll()
+        return o
+
+    def poll(self):
+        self.L.poll(self.CHC, [{"id": "v3.13.18", "title": "v3.13.18", "edition": "v3.13.18"}], "2026-11-27T00:00:00Z")
+
+    def work(self):
+        judge = lambda old, r: "confirms" if old["quote"] == r["quote"] else "changes_value"   # noqa: E731
+        return RecheckWorker(self.L, self.reader, judge).run_once("2026-11-27T01:00:00Z")
+
+
+
+class CrossEditionMappingI36(CpythonQueues, unittest.TestCase):
+    """08 I36: 채널 항목이 준 새 판에서 앞 관측의 위치를 m1으로 찾는다."""
+
+    def test_a_exact_quote_maps_to_new_lines_and_confirms(self):
+        o = self.obs_at(36, 38)                                        # Queue.__init__ 안의 Futures 줄
+        rec = self.work()
+        self.assertEqual(rec[0]["result"], "superseded")
+        n = self.L.obs(self.L.current(o, "2026-11-27T02:00:00Z"))
+        self.assertEqual((n["edition_key"], n["position"], n["map_method"], n["map_from"]),
+                         ("v3.13.18", "L48-L50", "exact_quote", o))
+        self.assertEqual(n["quote"], self.L.obs(o)["quote"])
+        self.assertEqual(rec[0]["chain"][0][2], "confirms")
+        self.assertEqual(n["anchor_symbol"], "Queue.__init__")
+        self.assertTrue(n["byte_span"])
+
+    def test_a_symbol_fallback_maps_changed_docstring(self):
+        o = self.obs_at(111, 115)                                      # Queue.put docstring, 3.13에서 문장이 늘었다
+        rec = self.work()
+        n = self.L.obs(self.L.current(o, "2026-11-27T02:00:00Z"))
+        self.assertEqual((n["position"], n["map_method"], n["anchor_in_doc"]), ("L126-L132", "symbol", 1))
+        self.assertEqual(rec[0]["chain"][0][2], "changes_value")
+
+    def test_b_unmapped_makes_no_observation_and_opens_an_audit(self):
+        o = self.obs_at(36, 38, quote="self._never_written = True", symbol="Queue._gone")
+        n_obs = self.L.db.execute("SELECT count(*) FROM observation").fetchone()[0]
+        rec = self.work()
+        self.assertEqual(rec[0]["result"], "unmapped")
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM observation").fetchone()[0], n_obs)
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 0)
+        jobs = self.L.db.execute("SELECT state, cause, cause_ref FROM recheck_job ORDER BY job_id").fetchall()
+        self.assertEqual([tuple(j) for j in jobs], [("done", "channel", jobs[0]["cause_ref"]),
+                                                    ("queued", "audit", "unmapped:v3.13.18")])
+        self.assertEqual([a["kind"] for a in self.L.alerts], ["position_unmapped"])
+        self.assertIsNone(self.L.obs(o)["retracted_at"] if "retracted_at" in self.L.obs(o).keys() else None)
+        self.assertEqual(self.L.current(o, "2026-11-27T02:00:00Z"), o)
+        self.assertEqual(self.work(), [])                              # 감사 작업은 작업자가 잡지 않는다
+
+    def test_c_one_follow_fetch_per_edition_and_no_request_budget(self):
+        self.obs_at(36, 38)
+        self.work()
+        self.assertEqual(self.L.fetch_count(clock="follow"), 1)
+        clocks = [r[0] for r in self.L.db.execute("SELECT clock FROM fetch_log")]
+        self.assertEqual(clocks, ["follow"])                          # 요청판 장부(프로젝트 fetch_log)는 건드리지 않는다
+
+
+class CancelMeetsWorkerI37(unittest.TestCase):
+    """08 I37: 대체 취소가 작업자·채널과 만날 때."""
+    REVS = {"rev:2": ("rev:2", "Export closed.", "2026-11-27T00:00:00Z"),        # rev:2의 오독(실제는 6월 그대로)
+            "rev:3": ("rev:3", "Export until July.", "2026-11-29T00:00:00Z")}
+
+    def setUp(self):
+        self.L, self.o = doc_ledger()
+        self.judged = []
+
+    def judge(self, old, r):
+        self.judged.append((old["quote"], r["quote"]))
+        return "invalidates" if "closed" in r["quote"] else "changes_value"
+
+    def worker(self, reader=None):
+        return RecheckWorker(self.L, reader or reader_for(self.REVS), self.judge)
+
+    def wrong(self):
+        self.L.poll(CH, [{"id": "2", "title": "r2", "edition": "rev:2"}], "2026-11-27T01:00:00Z")
+        self.worker().run_once("2026-11-27T02:00:00Z")
+        n = self.L.current(self.o, "2026-11-27T03:00:00Z")
+        self.assertNotEqual(n, self.o)
+        return n
+
+    def n_sup(self):
+        return self.L.db.execute("SELECT count(*) FROM supersession").fetchone()[0]
+
+    def test_a_cancel_restores_watch_and_notices_once(self):
+        L, o = self.L, self.o
+        p = L.project("A")
+        req = L.intake(p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": o, "ladder": "L2", "verb": "v", "where": "§", "reason": "r", "hold": "h"}
+        run = L.compose(p, req, T, slots=[slot])
+        n = self.wrong()
+        self.assertEqual([x["effect"] for x in L.propagate(p, "2026-11-27T04:00:00Z")], ["invalidates"])
+        L.cancel_supersession(o, n, "2026-11-28T00:00:00Z", "판독 오류")
+        self.assertEqual(L.current(o, "2026-11-28T01:00:00Z"), o)
+        self.assertEqual({(x["run"], x["effect"]) for x in L.propagate(p, "2026-11-28T01:00:00Z")}, {(run, "restored")})
+        self.assertEqual(L.propagate(p, "2026-11-28T02:00:00Z"), [])                 # 한 번만
+        L.poll(CH, [{"id": "3", "title": "r3", "edition": "rev:3"}], "2026-11-29T01:00:00Z")
+        self.assertEqual([j["obs_id"] for j in L.jobs("queued")], [o])               # 철회된 쪽에는 작업이 없다
+
+    def test_b_late_finish_after_cancel_writes_nothing_from_the_retracted_reading(self):
+        L, o = self.L, self.o
+        n = self.wrong()
+        L.poll(CH, [{"id": "3", "title": "r3", "edition": "rev:3"}], "2026-11-29T01:00:00Z")
+        self.assertEqual([j["obs_id"] for j in L.jobs("queued")], [n])
+        base = reader_for(self.REVS)
+
+        def cancelling_reader(obs, ek, at):                                          # 임차 뒤, 완료 전에 운영자가 취소
+            L.cancel_supersession(o, n, at, "판독 오류")
+            return base(obs, ek, at)
+        rec = self.worker(cancelling_reader).run_once("2026-11-29T02:00:00Z")
+        self.assertEqual((rec[0]["result"], rec[0]["accepted"]), ("base_moved", False))
+        self.assertEqual(L.db.execute("SELECT count(*) FROM supersession WHERE old_obs=?", (n,)).fetchone()[0], 0)
+        q = [(j["obs_id"], j["cause_ref"]) for j in L.jobs("queued")]
+        self.assertEqual(q, [(o, CH + "#3")])
+        self.assertEqual(L.current(o, "2026-11-29T03:00:00Z"), o)
+
+    def test_b_queued_job_on_the_retracted_reading_is_closed_at_cancel(self):
+        L, o = self.L, self.o
+        n = self.wrong()
+        L.poll(CH, [{"id": "3", "title": "r3", "edition": "rev:3"}], "2026-11-29T01:00:00Z")
+        L.cancel_supersession(o, n, "2026-11-29T01:30:00Z", "판독 오류")
+        rows = {(r["obs_id"], r["state"]) for r in L.db.execute("SELECT obs_id, state FROM recheck_job WHERE cause_ref=?",
+                                                                 (CH + "#3",))}
+        self.assertEqual(rows, {(n, "done"), (o, "queued")})
+        self.worker().run_once("2026-11-29T02:00:00Z")
+        self.assertEqual(L.obs(L.current(o, "2026-11-29T03:00:00Z"))["edition_key"], "rev:3")
+        self.assertEqual(self.judged[-1], ("Export until June.", "Export until July."))   # 되살아난 관측과 견줌
+
+    def test_c_rereading_the_retracted_reading_opens_an_audit(self):
+        L, o = self.L, self.o
+        n = self.wrong()
+        L.cancel_supersession(o, n, "2026-11-28T00:00:00Z", "판독 오류")
+        k = self.n_sup()
+        L.poll(CH, [{"id": "2b", "title": "r2 again", "edition": "rev:2"}], "2026-11-28T01:00:00Z")
+        rec = self.worker().run_once("2026-11-28T02:00:00Z")
+        self.assertEqual(rec[0]["result"], "retracted_reread")
+        self.assertEqual(self.n_sup(), k)
+        self.assertEqual([(j["obs_id"], j["cause_ref"]) for j in L.jobs("queued")], [(o, f"reread_retracted:{n}")])
+        self.assertEqual([a["kind"] for a in L.alerts], ["retracted_reread"])
+        self.assertEqual(L.current(o, "2026-11-28T03:00:00Z"), o)
+
+    def test_e_downstream_is_relinked_against_the_restored_observation(self):
+        L, o = self.L, self.o
+        n = self.wrong()
+        L.poll(CH, [{"id": "3", "title": "r3", "edition": "rev:3"}], "2026-11-29T01:00:00Z")
+        self.worker().run_once("2026-11-29T02:00:00Z")
+        x = L.current(o, "2026-11-29T03:00:00Z")
+        self.assertEqual(L.obs(x)["edition_key"], "rev:3")
+        self.assertEqual(self.judged[-1], ("Export closed.", "Export until July."))     # 오독과 견준 효과
+        L.cancel_supersession(o, n, "2026-11-30T00:00:00Z", "판독 오류")
+        self.assertEqual(L.current(o, "2026-11-30T00:30:00Z"), o)
+        self.assertEqual([(j["obs_id"], j["cause_ref"]) for j in L.jobs("queued")], [(o, CH + "#3")])
+        rec = self.worker().run_once("2026-11-30T01:00:00Z")
+        self.assertEqual(rec[0]["chain"], [(o, x, "changes_value")])
+        self.assertEqual(self.judged[-1], ("Export until June.", "Export until July."))  # 되살아난 관측과 견줌
+        self.assertEqual(L.current(o, "2026-11-30T02:00:00Z"), x)
+
+
+class SharedTargetI37(CpythonQueues, unittest.TestCase):
+    def test_d_two_observations_mapped_to_the_same_new_lines_are_both_superseded(self):
+        o1 = self.obs_at(113, 115, poll=False)                    # Queue.put docstring 일부 둘
+        o2 = self.obs_at(114, 115, poll=False)
+        self.poll()
+        self.work()
+        at = "2026-11-27T02:00:00Z"
+        n1, n2 = self.L.current(o1, at), self.L.current(o2, at)
+        self.assertEqual(n1, n2)
+        self.assertNotIn(n1, (o1, o2))
+        self.assertEqual(self.L.obs(n1)["position"], "L126-L132")
+
+
+class SourceFailureI38(unittest.TestCase):
+    """08 I38: 같은 원문 실패가 세 번 이어지면 그 관측을 인용한 자리에 '원문 접근 실패' 알림."""
+
+    def setUp(self):
+        self.saved_retry = config.RETRY_MAX
+        config.RETRY_MAX = 0                      # I38 규칙만 본다. 다시 하기와 합친 동작은 RetryI41
+        self.addCleanup(setattr, config, "RETRY_MAX", self.saved_retry)
+        self.L, self.o = doc_ledger()
+        L = self.L
+        self.p = L.project("A")
+        req = L.intake(self.p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": self.o, "ladder": "L2", "verb": "v", "where": "§", "reason": "r", "hold": "h"}
+        self.run = L.compose(self.p, req, T, slots=[slot])
+        self.i = 0
+
+    def step(self, result):
+        """채널 항목 하나(판 키 없음)를 받고 작업자를 한 번 돌린다. result: 'ok' 또는 실패 outcome."""
+        self.i += 1
+        from afledger.ledger import _shift
+        day = _shift("2026-12-01T00:00:00Z", (self.i - 1) * 8 * 24)[:10]       # 후속 몫(168시간당 3회)에 걸리지 않게 8일 간격
+
+        def reader(obs, ek, at):
+            if result == "ok":
+                return {"url": "https://example.org/doc", "edition_key": "rev:1", "position": "§",
+                        "quote": "Export until June.", "statement": "6월까지 내보내기", "published_at": "2026-11-01T00:00:00Z"}
+            return None if result == "unreachable" else {"outcome": result}
+        self.L.poll(CH, [{"id": f"x{self.i}", "title": "t"}], f"{day}T00:00:00Z")
+        rec = RecheckWorker(self.L, reader, lambda a, b: "confirms").run_once(f"{day}T01:00:00Z")
+        return rec[0], [n for n in self.L.propagate(self.p, f"{day}T02:00:00Z") if n["effect"] == "source_unreachable"]
+
+    def test_a_third_consecutive_failure_notices_once(self):
+        self.assertEqual(self.step("unreachable")[1], [])
+        self.assertEqual(self.step("unreachable")[1], [])
+        rec, ns = self.step("unreachable")
+        self.assertEqual([(n["run"], n["effect"]) for n in ns], [(self.run, "source_unreachable")])
+        self.assertIn("원문 접근 실패: unreachable 3회 연속", ns[0]["text"])
+        self.assertTrue(rec["source_failure"])
+        self.assertEqual(self.step("unreachable")[1], [])                     # 같은 연속의 넷째는 새 알림 없음
+
+    def test_b_a_success_breaks_the_streak(self):
+        for r in ("unreachable", "unreachable", "ok", "unreachable"):
+            self.assertEqual(self.step(r)[1], [])
+
+    def test_c_different_outcomes_are_not_the_same_failure(self):
+        for r in ("unreachable", "unreachable", "not_found"):
+            self.assertEqual(self.step(r)[1], [])
+        self.assertEqual(self.L.fail_streak(self.o, "2026-12-31T00:00:00Z"), (1, "not_found"))
+
+    def test_d_failure_is_an_observation_not_a_supersession(self):
+        L, o = self.L, self.o
+        rec, _ = self.step("unreachable")
+        f = L.db.execute("SELECT obs_id, outcome, quote_fp FROM observation WHERE outcome<>'content'").fetchall()
+        self.assertEqual([(x["outcome"], x["quote_fp"]) for x in f], [("unreachable", None)])
+        self.assertEqual(L.current(o, "2026-12-02T00:00:00Z"), o)
+        self.assertEqual(L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 0)
+        self.assertEqual(L.reusable("https://example.org/doc", L.obs(f[0]["obs_id"])["edition_key"], "§",
+                                    at="2026-12-02T00:00:00Z"), None)
+
+    def test_e_failed_job_state_and_one_fetch(self):
+        rec, _ = self.step("unreachable")
+        self.assertEqual(rec["result"], "failed")
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["failed"])
+        self.assertEqual(self.L.fetch_count(clock="follow", include_not_modified=True), 1)
+
+
+class ReuseGateProbeI39(unittest.TestCase):
+    """08 I39: EVAL-X1 기록 재생 도중의 요청 시계 탐침."""
+
+    def test_probe_is_read_only(self):
+        ph = {"supplier": 10, "kb": 40}
+        with_probe = run_unit2.run_phase(ph, probe=True)
+        probes = with_probe.pop("probes")
+        self.assertEqual(len(probes), 189)
+        self.assertEqual(with_probe, run_unit2.run_phase(ph))
+
+    def test_stale_reuse_is_counted_when_the_gate_lets_a_behind_observation_through(self):
+        always = lambda L, o, at: {"decision": "reuse", "why": []}     # noqa: E731
+        r = run_unit2.summarize_probes(run_unit2.run_phase({"supplier": 10, "kb": 40}, probe=True, gate=always)["probes"])
+        self.assertGreater(r["behind"], 0)
+        self.assertEqual(len(r["stale_reuse"]), r["behind"])
+        real = run_unit2.summarize_probes(run_unit2.run_phase({"supplier": 10, "kb": 40}, probe=True)["probes"])
+        self.assertFalse(any(x["item_known"] for x in real["stale_reuse"]))   # 장부가 아는 개정 뒤의 재사용은 없다
+
+
+class WatchCoverageI40(unittest.TestCase):
+    """08 I40: 바뀌는 판은 같은 주소 층 감시가 있어야 재사용한다. 고정판은 어느 층이든 감시 하나로 충분하다."""
+
+    def gate(self, kind, layers):
+        L = Ledger()
+        o, _ = L.observe(url="https://example.org/doc", edition_key="e1", edition_kind=kind, position="§", at=T,
+                         method="read_line", quote="Export until June.", quote_lang="en", statement="s")
+        for i, layer in enumerate(layers):
+            url = f"https://example.org/ch{i}"
+            L.channel("ex", url, "feed")
+            L.watch(o, url, "doc", layer=layer)
+            L.poll(url, [], "2026-11-26T06:00:00Z")
+        return L.reuse_gate(o, "2026-11-27T00:00:00Z")
+
+    def test_changing_edition_with_supplier_layer_only_reopens(self):
+        for kind in ("fetch", "revision"):
+            g = self.gate(kind, ["supplier"])
+            self.assertEqual((g["decision"], g["why"]), ("reopen", ["감시 범위 부족(같은 주소 층 감시 없음)"]))
+
+    def test_same_address_layer_covers(self):
+        self.assertEqual(self.gate("revision", ["supplier", "same_address"])["decision"], "reuse")
+
+    def test_immutable_edition_is_covered_by_any_layer(self):
+        self.assertEqual(self.gate("release", ["supplier"])["decision"], "reuse")
+
+
+class RetryI41(unittest.TestCase):
+    """08 I41: 일시 실패는 같은 작업을 2시간 뒤 다시 한다(최대 2회). not_found는 다시 하지 않는다."""
+
+    def setUp(self):
+        self.L, self.o = doc_ledger()
+        self.p = self.L.project("A")
+        req = self.L.intake(self.p, request_key="R", rev=1, at=T, text="t", selected_part="s", requirements=[])
+        slot = {"kind": "direct", "first": self.o, "ladder": "L2", "verb": "v", "where": "§", "reason": "r", "hold": "h"}
+        self.L.compose(self.p, req, T, slots=[slot])
+        self.calls = []
+
+    def reader(self, script):
+        def read(obs, ek, at):
+            self.calls.append(at)
+            r = script[min(len(self.calls), len(script)) - 1]
+            if r == "ok":
+                return {"url": "https://example.org/doc", "edition_key": "rev:1", "position": "§",
+                        "quote": "Export until June.", "statement": "6월까지 내보내기", "published_at": "2026-11-01T00:00:00Z"}
+            return r
+        return read
+
+    def drive(self, script, hours=12):
+        self.L.poll(CH, [{"id": "x", "title": "t"}], "2026-12-01T00:00:00Z")
+        w = RecheckWorker(self.L, self.reader(script), lambda a, b: "confirms")
+        from afledger.ledger import _shift
+        out = []
+        for h in range(hours + 1):
+            out += w.run_once(_shift("2026-12-01T00:00:00Z", h))
+        return out
+
+    def notices(self):
+        return [n for n in self.L.propagate(self.p, "2026-12-02T00:00:00Z") if n["effect"] == "source_unreachable"]
+
+    def test_a_two_failures_then_success(self):
+        recs = self.drive([None, None, "ok"])
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled", "retry_scheduled", "same"])
+        self.assertEqual(self.calls, ["2026-12-01T00:00:00Z", "2026-12-01T02:00:00Z", "2026-12-01T04:00:00Z"])
+        self.assertEqual(self.L.fetch_count(clock="follow"), 3)
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["done"])
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+
+    def test_b_always_unreachable_fails_after_three_and_notices_once(self):
+        recs = self.drive([None])
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled", "retry_scheduled", "failed"])
+        self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["failed"])
+        self.assertEqual(len(self.notices()), 1)
+
+    def test_c_not_found_is_not_retried(self):
+        recs = self.drive([{"outcome": "not_found"}])
+        self.assertEqual([r["result"] for r in recs], ["failed"])
+        self.assertEqual(len(self.calls), 1)
+
+    def test_d_retry_after_is_respected(self):
+        self.drive([{"outcome": "unreachable", "retry_after_h": 5}, "ok"])
+        self.assertEqual(self.calls, ["2026-12-01T00:00:00Z", "2026-12-01T05:00:00Z"])
+
+
+class DownstreamClosureI43(unittest.TestCase):
+    """08 I43: 작업 하나가 new→X→Y를 쓴 뒤 old→new를 취소해도 X·Y의 원인이 되살아난다."""
+
+    def test_relink_finds_a_job_that_ended_on_a_later_link(self):
+        L, o = doc_ledger()
+        revs = {"rev:2": ("rev:2", "Export closed.", "2026-11-27T00:00:00Z"),          # 오독
+                "rev:3": ("rev:3", "Export until July.", "2026-11-28T00:00:00Z"),
+                "rev:4": ("rev:4", "Export until August.", "2026-11-29T00:00:00Z")}
+        judge = lambda a, r: "changes_value"                                          # noqa: E731
+        L.poll(CH, [{"id": "2", "title": "r2", "edition": "rev:2"}], "2026-11-27T01:00:00Z")
+        RecheckWorker(L, reader_for(revs), judge).run_once("2026-11-27T02:00:00Z")
+        n = L.current(o, "2026-11-27T03:00:00Z")
+        L.poll(CH, [{"id": "4", "title": "r4", "edition": "rev:4"}, {"id": "3", "title": "r3", "edition": "rev:3"}],
+               "2026-11-29T01:00:00Z")
+        rec = RecheckWorker(L, reader_for(revs), judge).run_once("2026-11-29T02:00:00Z")
+        self.assertEqual(len(rec[0]["chain"]), 2)                                     # 작업 하나가 n→X→Y
+        x, y = rec[0]["chain"][0][1], rec[0]["chain"][1][1]
+        L.cancel_supersession(o, n, "2026-11-30T00:00:00Z", "판독 오류")
+        RecheckWorker(L, reader_for(revs), judge).run_once("2026-12-07T03:00:00Z")    # 후속 몫(168시간 3회) 창 밖
+        self.assertEqual(L.current(o, "2026-12-07T04:00:00Z"), y)
+        self.assertEqual(L.db.execute("SELECT new_obs FROM supersession WHERE old_obs=? AND new_obs<>?", (o, n)).fetchone()[0], x)
+
+
+class RecoveryI44(SourceFailureI38):
+    """08 I44: 세 번 연속 실패 알림 뒤 처음 성공하면 그 자리에 '원문 다시 읽힘'. I38 준비를 그대로 쓴다(RETRY_MAX=0)."""
+
+    def rec_notices(self, day):
+        self.L.propagate(self.p, day)          # step()의 전파가 이미 넣었을 수 있으니 알림 표에서 센다
+        return [{"run": r[0], "effect": r[1], "text": r[2]} for r in self.L.db.execute(
+            f"SELECT run_id, effect, text FROM {self.p}.notice WHERE effect='source_recovered' ORDER BY notice_id")]
+
+    def test_a_first_success_after_a_notice_recovers_once(self):
+        for _ in range(3):
+            self.step("unreachable")
+        rec, _ = self.step("ok")
+        self.assertEqual(rec["source_recovery"], 1)
+        ns = self.rec_notices("2027-01-31T00:00:00Z")
+        self.assertEqual([(n["run"], n["effect"]) for n in ns], [(self.run, "source_recovered")])
+        self.assertIn("원문 다시 읽힘", ns[0]["text"])
+        self.step("ok")
+        self.assertEqual(len(self.rec_notices("2027-02-28T00:00:00Z")), 1)        # 둘째 성공은 새 알림 없음
+
+    def test_b_no_failure_notice_no_recovery(self):
+        self.step("unreachable")
+        self.step("unreachable")
+        rec, _ = self.step("ok")
+        self.assertEqual(rec["source_recovery"], 0)
+        self.assertEqual(self.rec_notices("2026-12-31T00:00:00Z"), [])
+
+    def test_c_recovery_with_changed_content_also_notices_the_change(self):
+        for _ in range(3):
+            self.step("unreachable")
+        self.L.poll(CH, [{"id": "new", "title": "t"}], "2026-12-30T00:00:00Z")
+
+        def reader(obs, ek, at):
+            return {"url": "https://example.org/doc", "edition_key": "rev:2", "position": "§", "quote": "Export until July.",
+                    "statement": "7월까지 내보내기", "published_at": "2026-12-29T00:00:00Z"}
+        RecheckWorker(self.L, reader, lambda a, b: "changes_value").run_once("2026-12-30T01:00:00Z")
+        effects = sorted(n["effect"] for n in self.L.propagate(self.p, "2026-12-30T02:00:00Z"))
+        self.assertEqual(effects, ["changes_value", "source_recovered"])
+
+
+class EnvSuspectI46(unittest.TestCase):
+    """08 I46: 환경 고장 의심 실패는 '세 번 이어짐'과 다시 하기 셈에서 빠진다."""
+    ENV = {"outcome": "unreachable", "env_suspect": True}
+
+    def streak_case(self, seq):
+        t = SourceFailureI38("test_a_third_consecutive_failure_notices_once")
+        t.setUp()
+        saved = config.ENV_RETRY_MAX
+        config.ENV_RETRY_MAX = 0                  # 연속 규칙만 본다(다시 하기는 test_c)
+        t.addCleanup(setattr, config, "ENV_RETRY_MAX", saved)
+        out = []
+        for x in seq:
+            t.i += 1
+            from afledger.ledger import _shift
+            day = _shift("2026-12-01T00:00:00Z", (t.i - 1) * 8 * 24)[:10]
+            r = None if x == "real" else self.ENV
+            t.L.poll(CH, [{"id": f"x{t.i}", "title": "t"}], f"{day}T00:00:00Z")
+            RecheckWorker(t.L, lambda o, ek, at, r=r: r, lambda a, b: "confirms").run_once(f"{day}T01:00:00Z")
+            out.append([n for n in t.L.propagate(t.p, f"{day}T02:00:00Z") if n["effect"] == "source_unreachable"])
+        t.doCleanups()
+        return t, out
+
+    def test_a_three_env_failures_make_no_notice(self):
+        t, out = self.streak_case(["env", "env", "env"])
+        self.assertEqual(out, [[], [], []])
+        self.assertEqual(t.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+        self.assertEqual([a["kind"] for a in t.L.alerts].count("env_suspect"), 3)
+
+    def test_b_env_failures_neither_count_nor_break_the_streak(self):
+        _, out = self.streak_case(["env", "real", "real", "env", "real"])
+        self.assertEqual([len(x) for x in out], [0, 0, 0, 0, 1])
+
+    def test_c_env_attempts_do_not_use_the_retry_limit(self):
+        t = RetryI41("test_a_two_failures_then_success")
+        t.setUp()                                 # 기본 후속 몫(168시간 3회): 의심 시도는 몫 밖(08 I49)
+        recs = t.drive([self.ENV, self.ENV, None, None, None], hours=24)
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 4 + ["failed"])
+        self.assertEqual(t.L.follow_budget_left("2026-12-02T00:00:00Z"), 0)   # 진짜 실패 셋은 몫을 쓴다(08 I49 (c))
+        t2 = RetryI41("test_a_two_failures_then_success")
+        t2.setUp()
+        recs = t2.drive([self.ENV], hours=24)
+        self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 6 + ["env_failed"])
+        self.assertEqual(t2.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+        self.assertEqual(t2.L.follow_budget_left("2026-12-02T00:00:00Z"), 3)  # 의심 7회 뒤에도 몫 그대로(08 I49 (b))
+        t2.L.poll(CH, [{"id": "y", "title": "t2"}], "2026-12-02T00:00:00Z")
+        ok = RecheckWorker(t2.L, t2.reader(["ok"]), lambda a, b: "confirms").run_once("2026-12-02T00:00:00Z")
+        self.assertEqual([r["result"] for r in ok], ["same"])                 # 같은 주의 다른 항목이 바로 읽힌다
+
+    def test_d_mark_runs(self):
+        from afledger.envcheck import mark_runs
+        bad = [{"run": "c1", "status": 0, "outcome": "unreachable"}] * 30 + [{"run": "c1", "status": 200, "outcome": "ok"}] * 30
+        good = ([{"run": "c2", "status": 0, "outcome": "unreachable"}] * 10 + [{"run": "c2", "status": 200, "outcome": "ok"}] * 50
+                + [{"run": "c2", "status": 0, "outcome": "unreachable", "env_suspect": True}])
+        out = mark_runs(bad + good)
+        self.assertEqual(sum(1 for l in out if l["run"] == "c1" and l.get("env_suspect")), 30)
+        self.assertEqual(sum(1 for l in out if l["run"] == "c2" and l.get("env_suspect")), 1)
+
+
+class RealVanishedSymbolI47(unittest.TestCase):
+    """08 I47: 실제로 사라진 기호(SafeChildWatcher, v3.13.0 → v3.14.0)는 작업자 경로에서 대응 없음·감사 작업이 된다."""
+
+    def test_worker_records_unmapped_for_a_removed_class(self):
+        from afledger import locate, normalize
+        from afledger.adapters.http import Transport
+        from afledger.adapters.reader_channel import PinnedCodeChannelReader
+        import i47
+        a, b = i47.texts()
+        L = Ledger()
+        chc = "https://example.org/cpython-tags"
+        L.channel("cpython-tags", chc, "release_notes")
+        rng = locate.symbols(a)["SafeChildWatcher"]["doc"]
+        an = locate.anchor(a, *rng, python=True)
+        o, _ = L.observe(url=normalize.pinned_blob(i47.REPO, i47.PATH, i47.OLD), edition_key=i47.OLD, edition_kind="release",
+                         position=locate.position(*rng), at=T, method="read_line", quote=an["quote"], quote_lang="en",
+                         statement="SafeChildWatcher", anchor_symbol=an["symbol"], anchor_in_doc=an["in_doc"])
+        L.watch(o, chc)
+        L.poll(chc, [{"id": i47.NEW, "title": i47.NEW, "edition": i47.NEW}], "2026-11-27T00:00:00Z")
+        n_obs = L.db.execute("SELECT count(*) FROM observation").fetchone()[0]
+        reader = PinnedCodeChannelReader(L, Transport("replay", HERE.parent / "fixtures" / "http"))
+        rec = RecheckWorker(L, reader, lambda x, r: "confirms").run_once("2026-11-27T01:00:00Z")
+        self.assertEqual(rec[0]["result"], "unmapped")
+        self.assertEqual(L.db.execute("SELECT count(*) FROM observation").fetchone()[0], n_obs)
+        self.assertEqual([(j["cause"], j["cause_ref"]) for j in L.jobs("queued")], [("audit", f"unmapped:{i47.NEW}")])
+        self.assertEqual([(a_["kind"], a_["symbol_present"]) for a_ in L.alerts], [("position_unmapped", False)])
+
+    def test_m1_measure_has_no_false_mapping(self):
+        import i47
+        r = i47.run()
+        self.assertEqual(r["summary"], {"correct": 11, "no_anchor": 1, "miss": 2})

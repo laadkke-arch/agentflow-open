@@ -574,11 +574,15 @@ BUDGET_POLICIES = ["A 한 묶음, 폴링 먼저(v1 해석)", "B 한 묶음, 요�
                    "D 시계별 + 후속 몫을 출처 10개당 168시간 3회"]
 
 
-def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, request_cap=4, follow_per_10=3) -> dict:
+def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, request_cap=4, follow_per_10=3,
+                 deadline_every_h=None, deadline_mode="follow") -> dict:
     """출처 C개, 주간 요청 lam건을 weeks주 돌린다. 출처 절반은 72시간·절반은 168시간 주기로 폴링하고, 폴링마다
     p_change 확률로 바뀐 것을 봐 후속 읽기 1회를 만든다. 요청은 새 원문 2회와 관문이 닫히면 재열람 1회를 쓴다.
     한 묶음(A·B)은 168시간당 budget회를 모두가 나눠 쓰고, 시계별(C·D)은 요청당 request_cap회, 후속은 168시간당
-    follow_per_10회(D는 출처 10개마다 그만큼), 배경 폴링은 조건부 요청이라 읽기 예산 밖이다[가정, 07 R-2]."""
+    follow_per_10회(D는 출처 10개마다 그만큼), 배경 폴링은 조건부 요청이라 읽기 예산 밖이다[가정, 07 R-2].
+    deadline_every_h가 있으면 출처마다 평균 그 간격으로 기한이 오고(D4), 기한마다 T-24h·T·T+24h에 직접 읽는다.
+    deadline_mode="follow"는 기한 읽기가 후속 몫(한 묶음이면 그 묶음)을 함께 쓰고, "separate"는 기한마다 3회를
+    따로 센다(08 I22). 후속 읽기와 기한 읽기는 예정 시각 순으로 몫을 받는다. 없으면 결과는 예전과 바이트까지 같다."""
     rnd = random.Random(seed + C * 7 + lam)
     per_clock = policy[0] in "CD"
     H = weeks * 168
@@ -590,6 +594,19 @@ def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, re
     follow_spent: list[int] = []
     pending = []
     arrivals = sorted((int(rnd.uniform(0, H)), rnd.randrange(C)) for _ in range(int(lam * weeks)))
+    dl_reads = []         # (예정 시각, 출처) 기한 읽기. 따로 쓰는 난수라 기한이 없을 때의 흐름을 바꾸지 않는다
+    if deadline_every_h:
+        rd = random.Random(seed * 31 + C * 7 + lam + 1)
+        for i in range(C):
+            t = rd.expovariate(1 / deadline_every_h)
+            while t < H:
+                dl_reads.extend((int(t) + off, i) for off in (-24, 0, 24) if 0 <= int(t) + off < H)
+                t += rd.expovariate(1 / deadline_every_h)
+        dl_reads.sort()
+    di = 0
+    dl_queue: list = []
+    dl_delay: list[int] = []
+    follow_lag: list[int] = []
     ai = 0
     st = Counter()
     cursor_age = []
@@ -633,14 +650,19 @@ def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, re
                     last_poll[i] = h
                     next_due[i] = h + period[i]
                     if rnd.random() < p_change:
-                        follow.append(i)
+                        follow.append((h, i))
                 else:
                     st["poll_hours_deferred"] += 1
         if policy != BUDGET_POLICIES[1]:
             do_requests()
-        keep_f = []
-        for i in follow:
-            if per_clock:
+        while di < len(dl_reads) and dl_reads[di][0] <= h:
+            dl_queue.append(dl_reads[di])
+            di += 1
+        keep_f, keep_d = [], []
+        for kind, (due, i) in sorted([("f", x) for x in follow] + [("d", x) for x in dl_queue], key=lambda e: e[1][0]):
+            if kind == "d" and deadline_mode == "separate":
+                ok = True
+            elif per_clock:
                 cap = follow_per_10 if policy[0] == "C" else follow_per_10 * max(1, -(-C // 10))
                 ok = len(follow_spent) < cap
                 if ok:
@@ -650,19 +672,31 @@ def budget_model(policy, C, lam, weeks=12, seed=11, budget=24, p_change=0.05, re
                 if ok:
                     spent.append(h)
             if ok:
-                st["follow_reads"] += 1
                 last_direct[i] = h
-            else:
-                keep_f.append(i)
+                if kind == "f":
+                    st["follow_reads"] += 1
+                    follow_lag.append(h - due)
+                else:
+                    st["deadline_reads"] += 1
+                    dl_delay.append(h - due)
+            elif kind == "f":
+                keep_f.append((due, i))
                 st["follow_hours_deferred"] += 1
-        follow = keep_f
+            else:
+                keep_d.append((due, i))
+        follow, dl_queue = keep_f, keep_d
         if h % 24 == 0:
             cursor_age.append(max((h - lp) if lp is not None else h for lp in last_poll))
     n = max(1, st["done"] + st["exhausted"])
     return {"deferred_rate": round(st["deferred"] / n, 3), "exhausted_rate": round(st["exhausted"] / n, 3),
             "gate_reopen_rate": round(st["reopen"] / max(1, st["done"]), 3), "max_cursor_age_h": max(cursor_age),
             "source_reads_per_week": round((st["request_reads"] + st["follow_reads"]) / weeks, 1),
-            "polls_per_week": round(st["polls"] / weeks, 1), "follow_hours_deferred": st["follow_hours_deferred"]}
+            "polls_per_week": round(st["polls"] / weeks, 1), "follow_hours_deferred": st["follow_hours_deferred"],
+            **({} if not deadline_every_h else {
+                "follow_lag_max_h": max(follow_lag, default=0), "deadline_reads_per_week": round(st["deadline_reads"] / weeks, 1),
+                "deadline_read_delay_max_h": max(dl_delay, default=0),
+                "deadline_reads_late": sum(1 for x in dl_delay if x > 0) + len(dl_queue),
+                "all_reads_per_week": round((st["request_reads"] + st["follow_reads"] + st["deadline_reads"]) / weeks, 1)})}
 
 
 # ============================================================================ M3 예산
