@@ -106,10 +106,28 @@ class OrigJudgeI45(unittest.TestCase):
 
     def test_j1_matches_opensource_table_and_judges_stay_separate(self):
         import measure
-        r = measure.i45()
+        r = measure.i45(write_out=False)
         self.assertEqual((r["j1"]["exact_agree"], r["j1"]["binary_agree"], r["j1"]["orig_lower"]), (16, 23, 0))
         self.assertEqual(len(r["j1"]["diverging_n"]), 14)
         b = r["B_catalog20k"]["r2"]
         self.assertEqual(b["tag_judge"]["B_met"], 3)                                   # I32 그대로
         self.assertLessEqual(b["orig_judge_lower"]["B_met"], b["orig_judge_upper"]["B_met"])
         self.assertTrue(set(measure._judgments_orig()) <= set(measure._judgments()))   # 같은 쌍을 따로 매긴 것
+
+
+class J2AndPickingI48(unittest.TestCase):
+    """08 I48: J2 견주기, ?는 판정 안 함, 다 덮었을 때 고르는 규칙."""
+
+    def test_j2_matches_opensource_table_and_no_decision_yet(self):
+        import measure
+        r = measure.i45(write_out=False)
+        j2 = r["by_session"]["J2"]
+        self.assertEqual((j2["exact_agree"], j2["orig_higher"], j2["orig_lower"], j2["unopened"]), (197, 120, 2, 8))
+        self.assertEqual((r["b_pool_with_orig"], r["missing"]), (340, {"j3_requested": 102, "unopened": 8}))
+        self.assertIsNone(r["pick_orig"])
+
+    def test_picking_rule_runs_at_full_coverage(self):
+        import measure
+        r = measure.i45(jo=measure._judgments(), write_out=False)   # J_tag를 J_orig 자리에: 규칙 경로만 본다
+        self.assertEqual(r["missing"], {})
+        self.assertEqual(r["pick_orig"]["chosen"], "r2")                 # I32와 같은 판정이면 같은 답

@@ -1498,7 +1498,8 @@ def _judgments_orig() -> dict:
     f = FIX / "judge-orig" / "judgments.tsv"
     if not f.exists():
         return {}
-    return {(r["request"], r["url"]): int(r["grade"]) for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t")}
+    return {(r["request"], r["url"]): int(r["grade"]) for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t")
+            if r["grade"] != "?"}    # 열지 못한 쌍은 판정 안 함(08 I48 규칙 2)
 
 
 def _b_count(g: dict, top10: dict, unjudged_as: str) -> dict:
@@ -1516,11 +1517,13 @@ def _b_count(g: dict, top10: dict, unjudged_as: str) -> dict:
     return {"B_met": sum(met.values()), "requests": len(met), "unjudged_pairs_in_top10": unj_total}
 
 
-def i45():
-    """08 I45: J1 견주기와 B를 J_orig로 다시 세기(두 끝). 판정자를 섞지 않는다."""
+def i45(jo: dict | None = None, write_out: bool = True):
+    """08 I45·I48: J1·J2 견주기와 B를 J_orig로 다시 세기(두 끝). 판정자를 섞지 않는다.
+    jo를 주면 그 판정을 J_orig 자리에 쓴다(시험용). write_out=False면 파일을 쓰지 않는다."""
     import csv
+    import io
     from collections import Counter
-    jt, jo = _judgments(), _judgments_orig()
+    jt, jo = _judgments(), (_judgments_orig() if jo is None else jo)
     hc = list(csv.DictReader(open(FIX / "i32" / "human_check.tsv", encoding="utf-8"), delimiter="\t"))
     rows = list(csv.DictReader(open(FIX / "judge-orig" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
     j1 = {r["n"]: r for r in rows if r["session"] == "J1-D"}
@@ -1531,7 +1534,7 @@ def i45():
              "orig_higher": sum(v for (a, b), v in conf.items() if b > a), "orig_lower": sum(v for (a, b), v in conf.items() if b < a),
              "confusion_tag_to_orig": {f"{a}->{b}": v for (a, b), v in sorted(conf.items())},
              "diverging_n": sorted(int(h["n"]) for h in diff)}
-    with open(FIX / "judge-orig" / "human_check_14.tsv", "w", encoding="utf-8", newline="") as fh:
+    with (open(FIX / "judge-orig" / "human_check_14.tsv", "w", encoding="utf-8", newline="") if write_out else io.StringIO()) as fh:
         w = csv.writer(fh, delimiter="\t", lineterminator="\n")
         w.writerow(["n", "request", "request_text", "url", "row_text", "tag_grade", "orig_grade", "human_grade", "human_note"])
         for h in sorted(diff, key=lambda h: int(h["n"])):
@@ -1549,19 +1552,49 @@ def i45():
         for r in csv.DictReader(open(FIX / name / "judgments.tsv", encoding="utf-8"), delimiter="\t"):
             src.setdefault((r["request"], r["url"]), name + (":" + r["cfg"] if r.get("cfg") else ""))
     missing = sorted(k for k in pool if k not in jo)
-    with open(FIX / "judge-orig" / "missing_for_b.tsv", "w", encoding="utf-8", newline="") as fh:
+    unopened = {(r["request"], r["url"]) for r in rows if r["grade"] == "?"}
+    # missing_for_b.tsv는 J3 의뢰의 기준(@027eeb04)이라 그대로 두고, 지금 남은 쌍은 missing_now.tsv에 쓴다(08 I48 규칙 2)
+    with (open(FIX / "judge-orig" / "missing_now.tsv", "w", encoding="utf-8", newline="") if write_out else io.StringIO()) as fh:
         w = csv.writer(fh, delimiter="\t", lineterminator="\n")
-        w.writerow(["request", "url", "tag_judgment_from", "in_j2_scope"])
+        w.writerow(["request", "url", "tag_judgment_from", "reason"])
         for req, url in missing:
             s_ = src.get((req, url), "")
-            w.writerow([req, url, s_, "yes" if s_ == "i32:catalog20k" else "no"])
-    cov = Counter("j2_scope" if src.get(k) == "i32:catalog20k" else "outside_j2" for k in missing)
+            w.writerow([req, url, s_, "unopened" if (req, url) in unopened else
+                        "j3_requested" if s_ != "i32:catalog20k" else "not_judged"])
+    cov = Counter("unopened" if k in unopened else "j3_requested" if src.get(k) != "i32:catalog20k" else "not_judged"
+                  for k in missing)
+    i32 = {r["n"]: r for r in csv.DictReader(open(FIX / "i32" / "judgments.tsv", encoding="utf-8"), delimiter="\t")}
+    sessions = {}
+    for sess in sorted({r["session"].split("-")[0] for r in rows}):
+        rs = [r for r in rows if r["session"].split("-")[0] == sess and r["prompt"] in ("j1", "j2")]
+        if not rs:
+            continue
+        c = Counter((i32[r["n"]]["grade"], r["grade"]) for r in rs)
+        opened = {k: v for k, v in c.items() if k[1] != "?"}
+        sessions[sess] = {"pairs": len(rs), "unopened": sum(v for k, v in c.items() if k[1] == "?"),
+                          "exact_agree": sum(v for (a, b), v in opened.items() if a == b),
+                          "binary_agree": sum(v for (a, b), v in opened.items() if (a == "0") == (b == "0")),
+                          "orig_higher": sum(v for (a, b), v in opened.items() if b > a),
+                          "orig_lower": sum(v for (a, b), v in opened.items() if b < a),
+                          "confusion_tag_to_orig": {f"{a}->{b}": v for (a, b), v in sorted(c.items())}}
+    pick = None
+    if not missing:
+        # 08 I48 규칙 3: I32 고르기 규칙을 J_orig로. link-index 동률 깨기(3)는 건너뛴다(J_orig 없음, 판정자를 섞지 않음)
+        prev = json.loads((OUT / "measure_i32.json").read_text(encoding="utf-8"))["results"]
+        order = ["r2", "r5", "p5_r2", "p5_r5"]
+        cand = [n for n in order if prev[n]["r1_flow_ok"]]
+        ranked = sorted(cand, key=lambda n: (-res[n]["orig_judge_lower"]["B_met"],
+                                             -sum(prev[n]["recall12_catalog_only"].values()), order.index(n)))
+        pick = {"ranking": ranked, "chosen": ranked[0] if ranked else None,
+                "B_orig": {n: res[n]["orig_judge_lower"]["B_met"] for n in order}}
     out = {"rules": "08 I45", "judges": {"tag": "이 세션의 모델, 꼬리표 문장만(I25·I27·I32·I33)",
                                          "orig": "opensource judge/ dot D 모델, 원문을 엶(사람 아님)"},
            "orig_pairs": len(jo), "j1": stats, "b_pool_pairs": len(pool), "b_pool_with_orig": len(pool) - len(missing),
-           "missing": dict(cov), "decision": "판정 안 한 행이 남아 정하지 않음(규칙 4)" if missing else "다시 돌릴 수 있음",
-           "B_catalog20k": res}
-    write("measure_i45.json", out)
+           "missing": dict(cov), "by_session": sessions,
+           "decision": "판정 안 한 행이 남아 정하지 않음(I45 규칙 4)" if missing else "J_orig로 고름(I48 규칙 3)",
+           "pick_orig": pick, "B_catalog20k": res}
+    if write_out:
+        write("measure_i45.json", out)
     return out
 
 
