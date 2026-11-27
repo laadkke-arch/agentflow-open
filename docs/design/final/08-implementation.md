@@ -1045,6 +1045,17 @@
 - **남은 것.** 포착 기록 가져오기 자체(실행을 커밋으로 가르기 포함)는 만들지 않았다. 그때 `mark_runs`와 `fetched(env_suspect=)`를 쓴다. 두 문턱(0.5, 50)은 [가정]이고 포착 실행에서 재지 않았다.
 - **영향.** 04 6.2(실패 셈), 06 C7.
 
+### I47. 판 사이 위치 m1을 실제로 사라진·이름이 바뀐 기호에서 재기
+
+- **들어온 것(사용자 정보, 2026-11-27 일곱째).** I36의 "대응 없음" 시험은 만든 앵커였다. 실제 사례가 있다. CPython `Lib/asyncio/unix_events.py`에서 v3.13.0에는 7개 클래스가 있다(`AbstractChildWatcher`, `BaseChildWatcher`, `SafeChildWatcher`, `FastChildWatcher`, `MultiLoopChildWatcher`, `PidfdChildWatcher`, `ThreadedChildWatcher`). v3.14.0에는 `_PidfdChildWatcher`와 `_ThreadedChildWatcher` 둘만 남는다.
+- **규칙(재기 전에 정함).**
+  1. 원문 두 개(v3.13.0, v3.14.0의 raw)를 한 번씩 기록해 `fixtures/http`에 둔다. 실제 네트워크 요청은 2회다. 그 뒤는 재생이다.
+  2. v3.13.0의 위 7개 클래스마다 앵커 둘을 만든다. 하나는 클래스 docstring이 있으면 그 docstring, 다른 하나는 클래스 정의 전체 범위다. 각 앵커를 `locate.map_position`(m1, 바꾸지 않음)으로 v3.14.0에서 찾는다.
+  3. **옳고 그름을 미리 정한다.** 사라진 5개 클래스는 대응 없음이 옳다. 어디로든 대응되면 **거짓 대응**이다. 이름이 바뀐 2개(`PidfdChildWatcher` → `_PidfdChildWatcher`, `ThreadedChildWatcher` → `_ThreadedChildWatcher`)는 새 이름 클래스의 범위 안으로 대응되면 옳다. 대응 없음은 **놓침**이고, 범위 밖으로 대응되면 거짓 대응이다.
+  4. 이 항목에서 m1은 바꾸지 않는다. 놓침이나 거짓 대응이 있으면 그 경우를 적고 후보 규칙을 **제안만** 한다.
+  5. 작업자 경로도 한 번 돈다. 사라진 클래스(`SafeChildWatcher` docstring)의 관측을 v3.14.0 채널 항목으로 재확인하면 I36 규칙 3대로 새 관측 0, 감사 작업 1, 경보 1이어야 한다(실제 기록으로).
+- **합격 조건.** 14개 앵커의 결과(옳음·놓침·거짓 대응)를 `out/i47_unix_events.json`에 쓴다. 작업자 경로 시험이 통과한다. 기존 시험과 재생 출력이 그대로다.
+
 ## 2. 다음 단계
 
 1. ~~A4 한국어 20건~~(I19 끝). 한 문장 요청의 서랍 자격: (a)는 쟀고 되돌렸다(I24). 남은 길은 (b)·(c).
