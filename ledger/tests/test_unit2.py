@@ -651,3 +651,36 @@ class EnvSuspectI46(unittest.TestCase):
         out = mark_runs(bad + good)
         self.assertEqual(sum(1 for l in out if l["run"] == "c1" and l.get("env_suspect")), 30)
         self.assertEqual(sum(1 for l in out if l["run"] == "c2" and l.get("env_suspect")), 1)
+
+
+class RealVanishedSymbolI47(unittest.TestCase):
+    """08 I47: 실제로 사라진 기호(SafeChildWatcher, v3.13.0 → v3.14.0)는 작업자 경로에서 대응 없음·감사 작업이 된다."""
+
+    def test_worker_records_unmapped_for_a_removed_class(self):
+        from afledger import locate, normalize
+        from afledger.adapters.http import Transport
+        from afledger.adapters.reader_channel import PinnedCodeChannelReader
+        import i47
+        a, b = i47.texts()
+        L = Ledger()
+        chc = "https://example.org/cpython-tags"
+        L.channel("cpython-tags", chc, "release_notes")
+        rng = locate.symbols(a)["SafeChildWatcher"]["doc"]
+        an = locate.anchor(a, *rng, python=True)
+        o, _ = L.observe(url=normalize.pinned_blob(i47.REPO, i47.PATH, i47.OLD), edition_key=i47.OLD, edition_kind="release",
+                         position=locate.position(*rng), at=T, method="read_line", quote=an["quote"], quote_lang="en",
+                         statement="SafeChildWatcher", anchor_symbol=an["symbol"], anchor_in_doc=an["in_doc"])
+        L.watch(o, chc)
+        L.poll(chc, [{"id": i47.NEW, "title": i47.NEW, "edition": i47.NEW}], "2026-11-27T00:00:00Z")
+        n_obs = L.db.execute("SELECT count(*) FROM observation").fetchone()[0]
+        reader = PinnedCodeChannelReader(L, Transport("replay", HERE.parent / "fixtures" / "http"))
+        rec = RecheckWorker(L, reader, lambda x, r: "confirms").run_once("2026-11-27T01:00:00Z")
+        self.assertEqual(rec[0]["result"], "unmapped")
+        self.assertEqual(L.db.execute("SELECT count(*) FROM observation").fetchone()[0], n_obs)
+        self.assertEqual([(j["cause"], j["cause_ref"]) for j in L.jobs("queued")], [("audit", f"unmapped:{i47.NEW}")])
+        self.assertEqual([(a_["kind"], a_["symbol_present"]) for a_ in L.alerts], [("position_unmapped", False)])
+
+    def test_m1_measure_has_no_false_mapping(self):
+        import i47
+        r = i47.run()
+        self.assertEqual(r["summary"], {"correct": 11, "no_anchor": 1, "miss": 2})
