@@ -1122,7 +1122,9 @@ def i29():
 def _judgments() -> dict:
     import csv
     g = {}
-    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv"):
+    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv", FIX / "i32" / "judgments.tsv"):
+        if not f.exists():
+            continue
         for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t"):
             g[(r["request"], r["url"])] = int(r["grade"])
     return g
@@ -1214,6 +1216,86 @@ def i31():
     out = {"rule": [i31.__doc__.split("\n")[1:3], _adopt.__doc__.split("\n")[0:4]], "catalog_p5_tags": drawer_load.CATALOG_P5_TAGS,
            "judged": cmp, "worse": worse, "adopt_r5": ok, "results": res}
     write("measure_i31.json", out)
+    return out
+
+
+# ------------------------------------------------------------------------------------------- I32 판정 풀과 B 조건
+I32_SETTINGS = {   # 이름: (012 p5 꼬리표, 순위 규칙, 상위 10 파일 접두)
+    "r2": (False, "r2", "i31_r2"),
+    "r5": (False, "r5", "i31_r5"),
+    "p5_r2": (True, "r2", "i30_p5"),
+    "p5_r5": (True, "r5", "i32_p5_r5"),
+}
+
+
+def i32_run_both():
+    """08 I32: 네 번째 설정(012 p5 꼬리표 켬 + r5)의 상위 10을 만든다. 나머지 셋은 I30·I31의 출력을 쓴다."""
+    import drawer_load
+    from afledger import config
+    saved = (drawer_load.CATALOG_P5_TAGS, config.RANK_RULES)
+    try:
+        drawer_load.CATALOG_P5_TAGS, config.RANK_RULES = True, "r5"
+        r = _setting_eval("i32_p5_r5")
+    finally:
+        drawer_load.CATALOG_P5_TAGS, config.RANK_RULES = saved
+        a4_20()                      # 공용 출력 파일을 기본 설정으로 되돌린다
+    write("measure_i32_p5_r5.json", r)
+    return r
+
+
+def _i32_top10(name: str, cfg: str) -> dict:
+    tag = I32_SETTINGS[name][2]
+    if cfg == "catalog20k":
+        return json.loads((OUT / f"measure_{tag}_catalog.json").read_text(encoding="utf-8"))["top10"]
+    return json.loads((OUT / f"{tag}_linkindex_pairs.json").read_text(encoding="utf-8"))["top10"]["real_only"]
+
+
+def i32_pool(cfgs=("catalog20k",), names=None) -> list[dict]:
+    """판정 풀: 네 설정 상위 10의 합집합 가운데 아직 판정하지 않은 실제 행 (요청, 주소) 쌍. 요청·주소 순으로 고정."""
+    g = _judgments()
+    names = names or [n for n in I32_SETTINGS if (OUT / (f"measure_{I32_SETTINGS[n][2]}_catalog.json")).exists()]
+    pool = {}
+    for cfg in cfgs:
+        for n in names:
+            for req, items in _i32_top10(n, cfg).items():
+                for x in items:
+                    if x["kind"] in ("p5", "real") and (req, x["url"]) not in g:
+                        pool.setdefault((req, x["url"]), {"request": req, "url": x["url"], "key": x.get("key"), "cfg": cfg})
+    return [pool[k] for k in sorted(pool)]
+
+
+def i32_decide():
+    """08 I32 B 조건 비교(돌리기 전에 정함, 사용자 결정 2026-11-27 셋째).
+    요청마다 B 조건: 상위 10의 판정한 잡음(등급 0인 실제 행 + 합성) 2개 이하이고 판정 안 한 실제 행 0개.
+    요청은 R1 손 문장·자동 한국어와 A4 20건 한국어·영어판(42개), 잡음 설정은 실제 행 2만 개(주)와 link-index 실제 잡음(보조).
+    기본값 고르기: (1) 실제 행 2만 개에서 R1 흐름 완료 기준 2가 성립하지 않는 설정은 뺀다. (2) 실제 행 2만 개에서 B를 만족한 요청 수가
+    가장 많은 설정. (3) 같으면 link-index에서 B를 만족한 요청 수. (4) 같으면 A4 자료집만 회수율(한국어+영어판) 합. (5) 같으면 바꾸는 것이
+    적은 쪽(r2 < r5, 꼬리표 끔 < 켬). 판정 안 한 행이 남은 설정·요청은 B를 만족하지 않은 것으로 센다."""
+    res = {}
+    for n in I32_SETTINGS:
+        tag = I32_SETTINGS[n][2]
+        ev = json.loads((OUT / (f"measure_i32_p5_r5.json" if n == "p5_r5" else
+                                ("measure_i31.json" if n in ("r2", "r5") else "measure_i30.json"))).read_text(encoding="utf-8"))
+        ev = ev if n == "p5_r5" else ev["results"]["p5" if n == "p5_r2" else n]
+        row = {"recall12_catalog_only": ev["recall12_catalog_only"], "grade2_catalog_only": ev["grade2_catalog_only"],
+               "r1_flow_ok": all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                                 for v in ev["r1_flow"].values()), "r1_ranks": ev["r1_ranks"]}
+        for cfg in ("catalog20k", "linkindex_real"):
+            j = _judge_top10(_i32_top10(n, cfg))
+            per = j["per_request"]
+            b = {k: v["judged_only"] <= 2 and v["unjudged"] == 0 for k, v in per.items()}
+            row[cfg] = {"B_met": sum(b.values()), "requests": len(b), "unjudged_total": sum(v["unjudged"] for v in per.values()),
+                        "B_by_request": b, "r1": j["r1"], "a4_20": j["a4_20"],
+                        "B_a4": {l: sum(1 for k, v in b.items() if v and k.endswith("." + l) and not k.startswith("R1"))
+                                 for l in ("ko", "en")}}
+        res[n] = row
+    order = ["r2", "r5", "p5_r2", "p5_r5"]   # (5)의 단순한 순서
+    cand = [n for n in order if res[n]["r1_flow_ok"]]
+    best = sorted(cand, key=lambda n: (-res[n]["catalog20k"]["B_met"], -res[n]["linkindex_real"]["B_met"],
+                                       -sum(res[n]["recall12_catalog_only"].values()), order.index(n)))
+    out = {"rule": i32_decide.__doc__.split("\n")[1:7], "judged_pairs": len(_judgments()), "results": res,
+           "ranking": best, "chosen": best[0] if best else None}
+    write("measure_i32.json", out)
     return out
 
 # ------------------------------------------------------------------------------------------- R-6
