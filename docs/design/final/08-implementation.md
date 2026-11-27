@@ -714,6 +714,23 @@
   - (c) 판마다 후속 가져오기 1회이고 요청 예산을 쓰지 않는다.
   - (d) 네트워크 없이 기록된 원문(`fixtures/http`)으로 돈다.
   - (e) 기존 시험과 EVAL-X1 재생이 그대로다.
+- **구현.**
+  - `afledger/adapters/reader_channel.py`의 `PinnedCodeChannelReader(ledger, transport)`가 규칙 1~3을 따른다. 관측 주소에서 저장소·경로를 읽고, `raw.githubusercontent.com/<repo>/<판>/<경로>`를 받아 `locate.map_position`으로 찾는다. 찾으면 `locate.anchor`·`byte_span`으로 새 판의 앵커를 적고, 못 찾으면 `{"unmapped": True, "map": …}`를 돌려준다. 채널 항목이 판을 주지 않으면 읽을 판을 모르므로 실패(None)로 센다.
+  - `RecheckWorker._work`는 unmapped 판을 따로 모은다. 관측은 만들지 않고, 가져오기는 `ok`로 센다(원문은 받았다). 작업을 끝낸 같은 흐름에서 감사 작업 `audit / unmapped:<판>`과 경보 `position_unmapped`(새 판에 같은 기호가 있는지 `symbol_present` 포함)를 남긴다. 결과 기록의 `result`는 `unmapped`다.
+  - `run_once`는 원인이 모두 `audit`인 작업을 잡지 않는다(I21 판독 충돌과 같은 운영자 몫). 채널 원인이 합쳐지면 다시 잡는다. 규칙에 적지 않았던 변경이라 여기에 적는다. 이것이 없으면 작업자가 감사 작업을 다시 읽어 같은 경보를 되풀이한다.
+  - observe에 `anchor_symbol`·`anchor_in_doc`·`map_method`·`map_from`·`byte_span`을 넘긴다(규칙 5). 판 종류는 스키마의 `release`다(규칙 1이 "태그"라 쓴 것과 같은 뜻).
+- **결과.** 합격 조건 다섯이 모두 맞는다(`test_unit2.CrossEditionMappingI36`, 시험 넷).
+  - (a) v3.12.3 `queues.py` L36-L38(`Queue.__init__` 안 `# Futures.` 줄)이 v3.13.18 항목으로 L48-L50에 `exact_quote`로 대응되고, 인용이 같아 confirms로 대체된다. `map_from`은 앞 관측이다. 같은 판 쌍에서 `Queue.put` docstring(v3.12.3 L111-L115)은 3.13에서 문장이 늘어 인용이 맞지 않고, `symbol`로 L126-L132에 대응되어 changes_value로 대체된다.
+  - (b) 앵커(인용·기호)가 새 판에 없으면 새 관측 0, 대체 0, 감사 작업 1(`unmapped:v3.13.18`), 경보 1이고 채널 작업은 끝난다. 앞 관측이 그대로 현재 관측이다. 감사 작업은 작업자가 다시 잡지 않는다. **이 경우의 앵커는 만든 것이다.** 기록된 v3.12.3→v3.13.18 `queues.py`·`locks.py`에는 사라진 기호가 없어 실제 사례로 재지 못했다.
+  - (c) 후속 가져오기 1회, 공용 `fetch_log`의 시계는 `follow` 하나이고 요청판 장부는 건드리지 않는다.
+  - (d) `Transport("replay", fixtures/http)`로만 돈다. 새로 기록한 응답은 없다(R1 때 받은 v3.12.3·v3.13.18 원문 그대로).
+  - (e) 시험 93개 통과(설계 시험 33개 그대로). EVAL-X1 기록 재생 출력([unit2_x1.json](../../../ledger/out/unit2_x1.json))이 바이트 그대로다.
+- **원문(데이터, 결과를 적으며 찾음, 커밋 [`7695256`](https://github.com/laadkke-arch/opensource/blob/769525650df4176b2358aa1252811a54a7307761/catalog/claims/F09.tsv)).** 규칙 3(대응 없음을 삭제로 적지 않는다)은 이 기록들 없이 정했다. 뒤에 F09에서 같은 구분을 찾았다. 모두 **L1**이다.
+  - Distill Website Monitor(B5-S01-b3-r14): "Deleted means that the page has dropped out of the monitored set, not necessarily that it has been removed from the website." 감시 범위에서 빠진 것과 원천에서 사라진 것을 가른다.
+  - Subscribe·any docs(B22-S01-b1-r15): "Only `deleted` means the record or object is gone." 제거 사유(deleted·filtered-out·displaced)를 나눈다.
+  - 이 노트의 대응 없음은 "m1이 새 판에서 같은 자리를 찾지 못했다"이지 "그 내용이 없어졌다"가 아니다. 그래서 철회 대신 감사 작업이다.
+- **남은 것.** (1) 대응 없음의 실제 사례(기호 이름 바꾸기·파일 옮기기)를 기록 재생에 넣기. 파일이 옮겨지면 지금 판독기는 404를 받아 실패로 센다. (2) 문서 절(docs) 판 사이 대응은 R-1 넓히기(다음 단계 4)와 같이 본다.
+- **영향.** 04 3.8의 2(작업자의 판 사이 위치), 다음 단계 2(d).
 
 ## 2. 다음 단계
 
@@ -727,9 +744,9 @@
 1a. **사용자 할 일 목록(2026-11-26) 진행 상황.** 1 A4 20건 끝(I19). 2 R-6 잡음 2만 개 끝(I20, 조건 미달·원인 기록). 3 판독 재현성 끝(I21). 4 단위 2 착수 끝(I22: 작업자·시계·조건부 채널, EVAL-X1 기록 재생). 네 항목을 모두 마쳤다. 이어 갈 때는 이 줄과 git log를 본다.
 2. **단위 2 이어서(I22).**
    - ~~(a) D4·D11 충돌 결정~~(I23 끝: 기한 읽기를 따로 센다).
-   - (b) 채널 커서를 시각 대신 변화 커서(마지막으로 본 외부 ID 집합의 지문)로 바꿀지 본다(F09 #41).
+   - ~~(b) 채널 커서를 시각 대신 변화 커서로~~(I35 끝: 확인 커서와 겹침 구간 결번).
    - (c) 실제 채널: 이 환경에서 닿는 곳은 raw.githubusercontent.com뿐이다. SUMO·공급자 피드는 네트워크 허용이 필요하다(환경 설정 변경이라 먼저 묻는다).
-   - (d) 작업자의 판 사이 위치는 m1(I4)을 쓴다. 지금 reader는 위치가 고정된 기록 재생이다.
+   - ~~(d) 작업자의 판 사이 위치는 m1(I4)을 쓴다~~(I36 끝: `PinnedCodeChannelReader`, 대응 없음은 감사 작업).
    - (e) 재사용 관문(I14)은 채널 커서가 생겼으니 EVAL-X1에서 reuse가 나오는지 잰다.
 3. **R-6 규모의 남은 길(I20) — 보류(1g).** 잡음 정의를 판정으로(I25 끝), 한국어 꼬리표(I26, 넣지 않음), 실제 행 잡음(I27 끝), RRF(I28, 넣지 않음). 남은 것: I28의 (1) 검색기 안 길이 보정 + RRF, (2) summary 검색기 따로, (3) 결과 창 자르기, I26의 (1) 질의 언어 칸 정규화, (3) 출처 종류 칸. Q3 꼬리표가 들어오면 I26 비교 다시.
 4. **R-1 넓히기.** 다른 저장소·문서 절로 대응 50개 이상, docs 판 정규화(n2) 여부.

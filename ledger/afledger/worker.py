@@ -30,6 +30,9 @@ class RecheckWorker:
     def run_once(self, at: str) -> list[dict]:
         done = []
         for j in self.L.jobs("queued"):
+            causes = [j["cause"]] + [m.split(":", 1)[0] for m in j["merged_causes"].split(",") if m]
+            if all(c == "audit" for c in causes):
+                continue   # 감사 작업은 운영자 몫이다(판독 충돌 I21, 위치 대응 없음 I36). 작업자가 원문을 다시 읽지 않는다
             deadline_only = j["cause"] == "deadline" and not any(
                 m.split(":", 1)[0] != "deadline" for m in j["merged_causes"].split(",") if m)
             separate = config.DEADLINE_BUDGET == "separate" and deadline_only
@@ -51,12 +54,14 @@ class RecheckWorker:
         old = j["obs_id"]
         cur = L.current(old, at)
         editions = [e["edition_key"] for e in L.job_editions(j["job_id"])] or [None]
-        readings = []
+        readings, unmapped = [], []
         for ek in editions:
             r = self.reader(L.obs(cur), ek, at)
             L.fetched((r or {}).get("url") or L.obs(cur)["url"], (r or {}).get("edition_key", ek), at,
                       "ok" if r else "unreachable", (r or {}).get("bytes"), clock=clock, job_id=j["job_id"])
-            if r:
+            if r and r.get("unmapped"):
+                unmapped.append(r)     # 그 판에 같은 자리가 없다. 거짓 위치로 관측을 만들지 않는다(08 I36)
+            elif r:
                 readings.append(r)
         readings.sort(key=lambda r: r.get("published_at") or "")
         chain, new_obs = [], None
@@ -65,7 +70,9 @@ class RecheckWorker:
                                      position=r["position"], at=at, method="read_line", quote=r["quote"],
                                      quote_lang=r.get("quote_lang"), statement=r["statement"], published_at=r.get("published_at"),
                                      flip_position=r.get("flip_position"), via="channel", reader=r.get("reader", self.name),
-                                     evidence_ref=r.get("evidence_ref"))
+                                     evidence_ref=r.get("evidence_ref"), anchor_symbol=r.get("anchor_symbol"),
+                                     anchor_in_doc=r.get("anchor_in_doc"), map_method=r.get("map_method"),
+                                     map_from=r.get("map_from"), byte_span=r.get("byte_span"))
             prev_pub = L.obs(cur)["published_at"] or ""
             if created and oid != cur and (r.get("published_at") or "") >= prev_pub:
                 chain.append((cur, oid, self.judge(L.obs(cur), r), r))
@@ -73,7 +80,14 @@ class RecheckWorker:
             new_obs = oid if created else new_obs
         if not chain:
             ok = L.finish(j["job_id"], new_obs or cur, token=token)
-            rec = {"at": at, "job": j["job_id"], "obs": old, "result": "same", "accepted": ok}
+            rec = {"at": at, "job": j["job_id"], "obs": old, "result": "unmapped" if unmapped and not readings else "same",
+                   "accepted": ok}
+            if ok and unmapped:
+                with L.db:
+                    for r in unmapped:
+                        L._enqueue(cur, "audit", f"unmapped:{r['edition_key']}", at)
+                        L.alerts.append({"kind": "position_unmapped", "obs": cur, "edition": r["edition_key"],
+                                         "at": at, "symbol_present": r["map"].get("symbol_present")})
             self.log.append(rec)
             return rec
         for a, b, effect, r in chain[:-1]:

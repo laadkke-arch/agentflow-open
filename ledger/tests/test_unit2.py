@@ -171,3 +171,77 @@ class ChangeCursorI35(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CrossEditionMappingI36(unittest.TestCase):
+    """08 I36: 채널 항목이 준 새 판에서 앞 관측의 위치를 m1으로 찾는다. 기록된 CPython v3.12.3·v3.13.18 queues.py로 재생."""
+    REPO, PATH, CHC = "python/cpython", "Lib/asyncio/queues.py", "https://example.org/cpython-tags"
+
+    def setUp(self):
+        from afledger import locate, normalize
+        from afledger.adapters.http import Transport
+        from afledger.adapters.reader_channel import PinnedCodeChannelReader
+        from afledger.adapters.reader_github import raw_url
+        self.locate, self.normalize = locate, normalize
+        self.t = Transport("replay", HERE.parent / "fixtures" / "http")
+        self.old_text = self.t.get(raw_url(self.REPO, "v3.12.3", self.PATH)).text()
+        self.L = Ledger()
+        self.reader = PinnedCodeChannelReader(self.L, self.t)
+        self.L.channel("cpython-tags", self.CHC, "release_notes")
+
+    def obs_at(self, a, b, *, quote=None, symbol=None, in_doc=None):
+        an = self.locate.anchor(self.old_text, a, b, python=True)
+        bs = self.locate.byte_span(self.old_text, a, b)
+        o, _ = self.L.observe(url=self.normalize.pinned_blob(self.REPO, self.PATH, "v3.12.3"), edition_key="v3.12.3",
+                              edition_kind="release", position=self.locate.position(a, b), at=T, method="read_line",
+                              quote=quote or an["quote"], quote_lang="en", statement="앞 판의 문장",
+                              anchor_symbol=symbol or an["symbol"],
+                              anchor_in_doc=an["in_doc"] if in_doc is None else in_doc, byte_span=f"{bs[0]}-{bs[1]}")
+        self.L.watch(o, self.CHC)
+        self.L.poll(self.CHC, [{"id": "v3.13.18", "title": "v3.13.18", "edition": "v3.13.18"}], "2026-11-27T00:00:00Z")
+        return o
+
+    def work(self):
+        judge = lambda old, r: "confirms" if old["quote"] == r["quote"] else "changes_value"   # noqa: E731
+        return RecheckWorker(self.L, self.reader, judge).run_once("2026-11-27T01:00:00Z")
+
+    def test_a_exact_quote_maps_to_new_lines_and_confirms(self):
+        o = self.obs_at(36, 38)                                        # Queue.__init__ 안의 Futures 줄
+        rec = self.work()
+        self.assertEqual(rec[0]["result"], "superseded")
+        n = self.L.obs(self.L.current(o, "2026-11-27T02:00:00Z"))
+        self.assertEqual((n["edition_key"], n["position"], n["map_method"], n["map_from"]),
+                         ("v3.13.18", "L48-L50", "exact_quote", o))
+        self.assertEqual(n["quote"], self.L.obs(o)["quote"])
+        self.assertEqual(rec[0]["chain"][0][2], "confirms")
+        self.assertEqual(n["anchor_symbol"], "Queue.__init__")
+        self.assertTrue(n["byte_span"])
+
+    def test_a_symbol_fallback_maps_changed_docstring(self):
+        o = self.obs_at(111, 115)                                      # Queue.put docstring, 3.13에서 문장이 늘었다
+        rec = self.work()
+        n = self.L.obs(self.L.current(o, "2026-11-27T02:00:00Z"))
+        self.assertEqual((n["position"], n["map_method"], n["anchor_in_doc"]), ("L126-L132", "symbol", 1))
+        self.assertEqual(rec[0]["chain"][0][2], "changes_value")
+
+    def test_b_unmapped_makes_no_observation_and_opens_an_audit(self):
+        o = self.obs_at(36, 38, quote="self._never_written = True", symbol="Queue._gone")
+        n_obs = self.L.db.execute("SELECT count(*) FROM observation").fetchone()[0]
+        rec = self.work()
+        self.assertEqual(rec[0]["result"], "unmapped")
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM observation").fetchone()[0], n_obs)
+        self.assertEqual(self.L.db.execute("SELECT count(*) FROM supersession").fetchone()[0], 0)
+        jobs = self.L.db.execute("SELECT state, cause, cause_ref FROM recheck_job ORDER BY job_id").fetchall()
+        self.assertEqual([tuple(j) for j in jobs], [("done", "channel", jobs[0]["cause_ref"]),
+                                                    ("queued", "audit", "unmapped:v3.13.18")])
+        self.assertEqual([a["kind"] for a in self.L.alerts], ["position_unmapped"])
+        self.assertIsNone(self.L.obs(o)["retracted_at"] if "retracted_at" in self.L.obs(o).keys() else None)
+        self.assertEqual(self.L.current(o, "2026-11-27T02:00:00Z"), o)
+        self.assertEqual(self.work(), [])                              # 감사 작업은 작업자가 잡지 않는다
+
+    def test_c_one_follow_fetch_per_edition_and_no_request_budget(self):
+        self.obs_at(36, 38)
+        self.work()
+        self.assertEqual(self.L.fetch_count(clock="follow"), 1)
+        clocks = [r[0] for r in self.L.db.execute("SELECT clock FROM fetch_log")]
+        self.assertEqual(clocks, ["follow"])                          # 요청판 장부(프로젝트 fetch_log)는 건드리지 않는다
