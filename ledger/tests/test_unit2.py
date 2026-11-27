@@ -632,16 +632,19 @@ class EnvSuspectI46(unittest.TestCase):
 
     def test_c_env_attempts_do_not_use_the_retry_limit(self):
         t = RetryI41("test_a_two_failures_then_success")
-        t.setUp()
-        t.L.FOLLOW_FETCHES_PER_10_SOURCES = 100   # 후속 몫(168시간 3회)이 다시 하기를 막지 않게(08 I46 결과 참고)
+        t.setUp()                                 # 기본 후속 몫(168시간 3회): 의심 시도는 몫 밖(08 I49)
         recs = t.drive([self.ENV, self.ENV, None, None, None], hours=24)
         self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 4 + ["failed"])
+        self.assertEqual(t.L.follow_budget_left("2026-12-02T00:00:00Z"), 0)   # 진짜 실패 셋은 몫을 쓴다(08 I49 (c))
         t2 = RetryI41("test_a_two_failures_then_success")
         t2.setUp()
-        t2.L.FOLLOW_FETCHES_PER_10_SOURCES = 100
         recs = t2.drive([self.ENV], hours=24)
         self.assertEqual([r["result"] for r in recs], ["retry_scheduled"] * 6 + ["env_failed"])
         self.assertEqual(t2.L.db.execute("SELECT count(*) FROM source_failure").fetchone()[0], 0)
+        self.assertEqual(t2.L.follow_budget_left("2026-12-02T00:00:00Z"), 3)  # 의심 7회 뒤에도 몫 그대로(08 I49 (b))
+        t2.L.poll(CH, [{"id": "y", "title": "t2"}], "2026-12-02T00:00:00Z")
+        ok = RecheckWorker(t2.L, t2.reader(["ok"]), lambda a, b: "confirms").run_once("2026-12-02T00:00:00Z")
+        self.assertEqual([r["result"] for r in ok], ["same"])                 # 같은 주의 다른 항목이 바로 읽힌다
 
     def test_d_mark_runs(self):
         from afledger.envcheck import mark_runs

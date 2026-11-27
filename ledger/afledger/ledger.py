@@ -790,7 +790,11 @@ class Ledger:
         """후속 시계가 지금부터 더 가져올 수 있는 원문 수. 168시간 창, 감시 출처(채널) 10개당 FOLLOW_FETCHES_PER_10_SOURCES."""
         n = self.db.execute("SELECT count(*) FROM channel").fetchone()[0]
         cap = self.FOLLOW_FETCHES_PER_10_SOURCES * max(1, -(-n // 10))
-        return cap - self.fetch_count(clock="follow", since=_shift(at, -168))
+        used = self.fetch_count(clock="follow", since=_shift(at, -168))
+        # 환경 고장 의심 시도는 출처에 닿지 못했으므로 후속 몫에서 뺀다(08 I49). ENV_RETRY_MAX가 따로 묶는다
+        used -= self.db.execute("SELECT count(*) FROM fetch_log WHERE clock='follow' AND env_suspect=1 AND at>=?"
+                                " AND outcome<>'not_modified'", (_shift(at, -168),)).fetchone()[0]
+        return cap - used
 
     def fetch_count(self, *, p: str | None = None, req: int | None = None, clock: str = "request",
                     since: str | None = None, include_not_modified: bool = False) -> int:
