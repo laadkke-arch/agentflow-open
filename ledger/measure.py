@@ -1298,6 +1298,48 @@ def i32_decide():
     write("measure_i32.json", out)
     return out
 
+
+I32_HUMAN_SEED = 20261127   # 사람 확인 표본의 씨앗(판정 전에 정함)
+
+
+def i32_human_sample(n=30):
+    """08 I32: 사람이 확인할 수 있게 I32 판정에서 무작위 n쌍을 뽑아 fixtures/i32/human_check.tsv로 남긴다.
+    씨앗은 I32_HUMAN_SEED. 칸: 번호, 요청, 요청 문장(영어판·R1 요약), 주소, 행의 꼬리표 문장, 모델 등급·근거, 사람 등급·메모(빈칸)."""
+    import csv
+    import gzip
+    import random
+    rows = list(csv.DictReader(open(FIX / "i32" / "judgments.tsv", encoding="utf-8"), delimiter="\t"))
+    pick = sorted(random.Random(I32_HUMAN_SEED).sample(range(len(rows)), n))
+    qs = {json.loads(x)["id"]: json.loads(x) for x in (FIX / "af-res-012" / "queries.jsonl").read_text(encoding="utf-8").splitlines()}
+    cat = {}
+    with gzip.open(FIX / "catalog-p5" / "targets.jsonl.gz", "rt", encoding="utf-8") as fh:
+        for line in fh:
+            t = json.loads(line)
+            cat[t["key"]] = t
+    li = {}
+    for f in sorted(OUT.glob("*linkindex_pairs.json")) + [OUT / "i25_pairs.json"]:
+        for x in json.loads(f.read_text(encoding="utf-8"))["pairs"]:
+            li.setdefault(x["url"], x["tags"])
+    r1 = ("R1: asyncio 이미지 변환·저장. 대기 큐 최대 8, 처리 중 최대 4, sink가 느리면 producer가 기다림, 모든 입력의 task를 미리 "
+          "만들거나 무제한 buffer로 옮기기 금지, 완료·용량 회복이 재개 근거, 항목 버리기 금지")
+    out = []
+    for i in pick:
+        r = rows[i]
+        req = r["request"]
+        qtext = r1 if req.startswith("R1") else qs[req.rsplit(".", 1)[0]]["en"].replace("\n", " / ")
+        if r["key"] and r["key"] in cat:
+            t = cat[r["key"]]
+            text = " || ".join(x for x in [t["what"], t["principle"], t["scene"]] + [c["text"] for c in t["claims"][:2]] if x)
+        else:
+            text = " || ".join(li.get(r["url"], []))
+        out.append({"n": r["n"], "request": req, "request_text": qtext, "url": r["url"], "row_text": text,
+                    "model_grade": r["grade"], "model_reason": r["reason"], "human_grade": "", "human_note": ""})
+    with open(FIX / "i32" / "human_check.tsv", "w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(out[0]), delimiter="\t", lineterminator="\n")
+        w.writeheader()
+        w.writerows(out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
