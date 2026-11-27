@@ -428,3 +428,22 @@ class SourceFailureI38(unittest.TestCase):
         self.assertEqual(rec["result"], "failed")
         self.assertEqual([j["state"] for j in self.L.db.execute("SELECT state FROM recheck_job")], ["failed"])
         self.assertEqual(self.L.fetch_count(clock="follow", include_not_modified=True), 1)
+
+
+class ReuseGateProbeI39(unittest.TestCase):
+    """08 I39: EVAL-X1 기록 재생 도중의 요청 시계 탐침."""
+
+    def test_probe_is_read_only(self):
+        ph = {"supplier": 10, "kb": 40}
+        with_probe = run_unit2.run_phase(ph, probe=True)
+        probes = with_probe.pop("probes")
+        self.assertEqual(len(probes), 189)
+        self.assertEqual(with_probe, run_unit2.run_phase(ph))
+
+    def test_stale_reuse_is_counted_when_the_gate_lets_a_behind_observation_through(self):
+        always = lambda L, o, at: {"decision": "reuse", "why": []}     # noqa: E731
+        r = run_unit2.summarize_probes(run_unit2.run_phase({"supplier": 10, "kb": 40}, probe=True, gate=always)["probes"])
+        self.assertGreater(r["behind"], 0)
+        self.assertEqual(len(r["stale_reuse"]), r["behind"])
+        real = run_unit2.summarize_probes(run_unit2.run_phase({"supplier": 10, "kb": 40}, probe=True)["probes"])
+        self.assertFalse(any(x["item_known"] for x in real["stale_reuse"]))   # 장부가 아는 개정 뒤의 재사용은 없다

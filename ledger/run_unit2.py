@@ -31,7 +31,15 @@ def load():
     return json.loads((FIX / "x1_events.json").read_text(encoding="utf-8"))
 
 
-def run_phase(phases: dict, d: dict | None = None) -> dict:
+REASONS = ("감시 없음", "채널 커서가 늙음", "공지 기한", "처리 안 된 재확인 작업", "대체되었거나 철회된 관측", "마지막 직접 확인이")
+
+
+def reason_key(why: str) -> str:
+    return next((k for k in REASONS if why.startswith(k)), why)
+
+
+def run_phase(phases: dict, d: dict | None = None, *, probe: bool = False, gate=None) -> dict:
+    """probe=True면 매일 12:00Z 틱 시작에 재사용 관문을 묻는다(08 I39, 읽기만). gate(L, 관측, 시각)로 관문을 바꿔 시험할 수 있다."""
     d = d or load()
     revs = {r["id"]: r for r in d["revisions"]}
     L = Ledger()
@@ -82,9 +90,29 @@ def run_phase(phases: dict, d: dict | None = None) -> dict:
         return revs[r["rev"]]["effect"]
 
     w = RecheckWorker(L, reader, judge)
+    probes = []
+    gate = gate or (lambda L_, o, at: L_.reuse_gate(o, at))
+
+    def probe_fn(at):
+        if not at.endswith("T12:00:00Z"):
+            return
+        cur = L.current(pocket0, at)
+        g = gate(L, cur, at)
+        visible = [r for r in d["revisions"] if r["first_seen_in_channel"] <= at]
+        behind = bool(visible) and L.obs(cur)["edition_key"] != visible[-1]["edition"]
+        g2 = gate(L, oai, at)
+        # 뒤처졌을 때 장부가 그 개정 항목을 이미 받았나(받았으면 관문의 구멍, 못 받았으면 폴링 주기 안의 지연)
+        known = bool(visible) and bool(L.db.execute(
+            "SELECT 1 FROM channel_item i JOIN channel c USING(channel_id) WHERE c.url=? AND i.external_id=?",
+            (d["kb_history"], visible[-1]["id"])).fetchone())
+        probes.append({"at": at, "obs": cur, "edition": L.obs(cur)["edition_key"], "decision": g["decision"],
+                       "why": g["why"], "behind": behind, "item_known": known, "oai_decision": g2["decision"],
+                       "oai_why": g2["why"]})
+
     clock = PollingClock(L, w, {
         d["supplier_feed"]: {"listing": supplier_listing, "period_h": PERIOD, "phase_h": phases["supplier"]},
-        d["kb_history"]: {"listing": kb_listing, "period_h": PERIOD, "phase_h": phases["kb"]}}, projects=[p])
+        d["kb_history"]: {"listing": kb_listing, "period_h": PERIOD, "phase_h": phases["kb"]}}, projects=[p],
+        before_tick=probe_fn if probe else None)
     clock.run(START, END)
 
     # (1) 개정마다 관측 지연
@@ -105,7 +133,8 @@ def run_phase(phases: dict, d: dict | None = None) -> dict:
     supplier_alive = [bool(L.db.execute("SELECT 1 FROM watch w JOIN channel c USING(channel_id) WHERE w.obs_id=?"
                                         " AND w.layer='supplier'", (o,)).fetchone()) for o in chain]
     notices = L.replay(p, run0)["notices"]
-    return {"phases": phases, "delays_h": delays, "max_delay_h": max(v for v in delays.values() if v is not None) if all(
+    extra = {"probes": probes} if probe else {}
+    return extra | {"phases": phases, "delays_h": delays, "max_delay_h": max(v for v in delays.values() if v is not None) if all(
         v is not None for v in delays.values()) else None, "missed": [k for k, v in delays.items() if v is None],
         "chain_editions": [L.obs(o)["edition_key"] for o in chain], "supplier_watch_alive": supplier_alive,
         "notices": [(n["slot"], n["effect"]) for n in notices],
@@ -130,6 +159,56 @@ def run(n_phases: int = 12, seed: int = 7) -> dict:
                          "3_notices_only_pocket_slot": all(r["notices_principle_slot"] == 0 and r["notices"] and
                                                           all(s == 1 for s, _ in r["notices"]) for r in runs)},
             "worst_delay_h": max((r["max_delay_h"] or 9999) for r in runs), "runs": runs}
+
+
+def summarize_probes(probes: list[dict]) -> dict:
+    from collections import Counter
+    n = len(probes)
+    reuse = [x for x in probes if x["decision"] == "reuse"]
+    fresh = [x for x in probes if not x["behind"]]
+    why = Counter(reason_key(w) for x in probes if x["decision"] == "reopen" for w in x["why"])
+    only5 = [x for x in fresh if x["decision"] == "reopen" and {reason_key(w) for w in x["why"]} == {"마지막 직접 확인이"}]
+    stale = [{"at": x["at"], "edition": x["edition"], "item_known": x["item_known"]} for x in reuse if x["behind"]]
+    return {"probes": n, "reuse": len(reuse), "reuse_share": round(len(reuse) / n, 3) if n else None,
+            "behind": n - len(fresh), "fresh": len(fresh),
+            "reuse_share_when_fresh": round(sum(1 for x in fresh if x["decision"] == "reuse") / len(fresh), 3) if fresh else None,
+            "reopen_reasons": dict(why.most_common()), "reopen_only_recheck_h": len(only5), "stale_reuse": stale,
+            "oai_reuse": sum(1 for x in probes if x["oai_decision"] == "reuse"),
+            "oai_reopen_reasons": dict(Counter(reason_key(w) for x in probes for w in x["oai_why"]).most_common())}
+
+
+def gate_without_recheck_h(L, o, at):
+    """진단용(08 I39 판정 규칙 (b)의 제안 근거, 채택 아님): 조건 (5) '마지막 직접 확인이 RECHECK_H 안'을 뺀 관문."""
+    g = L.reuse_gate(o, at)
+    why = [w for w in g["why"] if reason_key(w) != "마지막 직접 확인이"]
+    return {"decision": "reopen" if why else "reuse", "why": why}
+
+
+def run_reuse(n_phases: int = 12, seed: int = 7, gate=None) -> dict:
+    """재사용 관문을 EVAL-X1 기록 재생 도중에 잰다(08 I39). 위상은 run()과 같은 씨앗."""
+    rng = random.Random(seed)
+    d = load()
+    per = []
+    for _ in range(n_phases):
+        ph = {"supplier": rng.randrange(PERIOD), "kb": rng.randrange(PERIOD)}
+        r = run_phase(ph, d, probe=True, gate=gate)
+        per.append({"phases": ph} | summarize_probes(r["probes"]) | {"timeline": [
+            (x["at"][:10], "U" if x["decision"] == "reuse" else "O", int(x["behind"])) for x in r["probes"]]})
+    allp = sum(x["probes"] for x in per)
+    tot = {k: sum(x[k] for x in per) for k in ("probes", "reuse", "behind", "fresh", "reopen_only_recheck_h", "oai_reuse")}
+    from collections import Counter
+    reasons = Counter()
+    for x in per:
+        reasons.update(x["reopen_reasons"])
+    return {"note": "기록 재생(AF-RES-152 개정 이력) 도중 매일 12:00Z 틱 시작에 묻는 요청 시계 탐침. 관문은 읽기만 한다.",
+            "rules": "08 I39", "seed": seed, "recheck_h": __import__("afledger.config", fromlist=["x"]).RECHECK_H,
+            "total": tot | {"reuse_share": round(tot["reuse"] / allp, 3),
+                            "reuse_share_when_fresh": round(sum(x["fresh"] * (x["reuse_share_when_fresh"] or 0) for x in per)
+                                                            / max(1, tot["fresh"]), 3),
+                            "stale_reuse": sum(len(x["stale_reuse"]) for x in per),
+                            "stale_reuse_item_known": sum(1 for x in per for y in x["stale_reuse"] if y["item_known"]),
+                            "reopen_reasons": dict(reasons.most_common())},
+            "per_phase": per}
 
 
 def compare() -> dict:
@@ -175,3 +254,9 @@ if __name__ == "__main__":
     out["conditional_poll"] = conditional_poll("live" if "--live" in sys.argv else "replay")
     (HERE / "out" / "unit2_x1.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(out["criteria"]), "worst delay", out["worst_delay_h"])
+    reuse = run_reuse()
+    diag = run_reuse(gate=gate_without_recheck_h)
+    reuse["diagnostic_without_condition_5"] = {"note": "진단(채택 아님): 조건 (5)를 뺀 관문", "total": diag["total"],
+                                                "stale_reuse_by_phase": [x["stale_reuse"] for x in diag["per_phase"]]}
+    (HERE / "out" / "unit2_reuse.json").write_text(json.dumps(reuse, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print("reuse gate", json.dumps(reuse["total"], ensure_ascii=False))

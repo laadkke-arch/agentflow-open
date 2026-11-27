@@ -16,9 +16,11 @@ def _t(s: str) -> datetime:
 
 
 class PollingClock:
-    def __init__(self, ledger, worker, channels: dict, *, projects=(), step_h: int = 1):
-        """channels: {채널 주소: {"listing": fn(at) -> list[dict], "period_h": 72, "phase_h": 0..period}}"""
+    def __init__(self, ledger, worker, channels: dict, *, projects=(), step_h: int = 1, before_tick=None):
+        """channels: {채널 주소: {"listing": fn(at) -> list[dict], "period_h": 72, "phase_h": 0..period}}
+        before_tick(at): 틱 시작(폴링·작업 전)에 부르는 훅. 읽기만 해야 한다(요청 시계 탐침, 08 I39)."""
         self.L, self.worker, self.channels, self.projects, self.step_h = ledger, worker, channels, list(projects), step_h
+        self.before_tick = before_tick
         self.polls: list[dict] = []
         self.notices: list[dict] = []
         self._last_ids: dict[str, tuple] = {}
@@ -32,6 +34,8 @@ class PollingClock:
         t0, t, t1 = _t(start), _t(start), _t(end)
         while t <= t1:
             at = t.strftime(ISO)
+            if self.before_tick:
+                self.before_tick(at)
             for url, c in self.channels.items():
                 if self.due_poll(url, t, t0):
                     listing = c["listing"](at)
