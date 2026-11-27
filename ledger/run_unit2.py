@@ -31,7 +31,7 @@ def load():
     return json.loads((FIX / "x1_events.json").read_text(encoding="utf-8"))
 
 
-REASONS = ("감시 없음", "채널 커서가 늙음", "공지 기한", "처리 안 된 재확인 작업", "대체되었거나 철회된 관측", "마지막 직접 확인이")
+REASONS = ("감시 없음", "감시 범위 부족", "채널 커서가 늙음", "공지 기한", "처리 안 된 재확인 작업", "대체되었거나 철회된 관측", "마지막 직접 확인이")
 
 
 def reason_key(why: str) -> str:

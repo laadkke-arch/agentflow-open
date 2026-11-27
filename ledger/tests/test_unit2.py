@@ -447,3 +447,29 @@ class ReuseGateProbeI39(unittest.TestCase):
         self.assertEqual(len(r["stale_reuse"]), r["behind"])
         real = run_unit2.summarize_probes(run_unit2.run_phase({"supplier": 10, "kb": 40}, probe=True)["probes"])
         self.assertFalse(any(x["item_known"] for x in real["stale_reuse"]))   # 장부가 아는 개정 뒤의 재사용은 없다
+
+
+class WatchCoverageI40(unittest.TestCase):
+    """08 I40: 바뀌는 판은 같은 주소 층 감시가 있어야 재사용한다. 고정판은 어느 층이든 감시 하나로 충분하다."""
+
+    def gate(self, kind, layers):
+        L = Ledger()
+        o, _ = L.observe(url="https://example.org/doc", edition_key="e1", edition_kind=kind, position="§", at=T,
+                         method="read_line", quote="Export until June.", quote_lang="en", statement="s")
+        for i, layer in enumerate(layers):
+            url = f"https://example.org/ch{i}"
+            L.channel("ex", url, "feed")
+            L.watch(o, url, "doc", layer=layer)
+            L.poll(url, [], "2026-11-26T06:00:00Z")
+        return L.reuse_gate(o, "2026-11-27T00:00:00Z")
+
+    def test_changing_edition_with_supplier_layer_only_reopens(self):
+        for kind in ("fetch", "revision"):
+            g = self.gate(kind, ["supplier"])
+            self.assertEqual((g["decision"], g["why"]), ("reopen", ["감시 범위 부족(같은 주소 층 감시 없음)"]))
+
+    def test_same_address_layer_covers(self):
+        self.assertEqual(self.gate("revision", ["supplier", "same_address"])["decision"], "reuse")
+
+    def test_immutable_edition_is_covered_by_any_layer(self):
+        self.assertEqual(self.gate("release", ["supplier"])["decision"], "reuse")

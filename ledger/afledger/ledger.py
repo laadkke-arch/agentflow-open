@@ -519,7 +519,9 @@ class Ledger:
         return n
 
     def reuse_gate(self, obs_id: int, at: str) -> dict:
-        """요청 시계에서 재사용 관측을 다시 열지 않아도 되는가. 다섯 조건이 모두 참이면 다시 열지 않는다.
+        """요청 시계에서 재사용 관측을 다시 열지 않아도 되는가. 조건이 모두 참이면 다시 열지 않는다.
+        보증(08 I40): 장부가 받은 변화 뒤에는 재사용하지 않는다. 받기 전의 지연은 감시 채널 주기(확인 커서 2배 한도)로 묶인다.
+        (4') 바뀌는 판은 같은 주소 층 감시가 있어야 한다(감시 범위, I40).
         (1) 감시 채널 커서가 주기의 2배 안에서 성공 (2) 열린 재확인 작업 없음 (3) 공지 기한이 24시간 안에 오지 않음
         (4) 감시가 주장과 같은 층(감시를 달 때 확인 단계가 보증) (5) 마지막 직접 확인이 168시간 안."""
         why = []
@@ -548,6 +550,10 @@ class Ledger:
             why.append(f"대체되었거나 철회된 관측(현재 관측 {self.current(obs_id, at)})")
         kind = self.db.execute("SELECT e.kind FROM observation o JOIN edition e USING(edition_id) WHERE o.obs_id=?",
                                (obs_id,)).fetchone()[0]
+        # (4') 감시 범위(08 I40): 바뀌는 판은 그 주소의 변화를 받는 같은 주소 층 감시가 있어야 한다. 공급자 층은 지위 공지만 받는다.
+        # 고정판은 내용이 바뀌지 않으므로 어느 층이든 감시 하나로 충분하다
+        if ws and kind not in self.IMMUTABLE_KINDS and not any(w["layer"] == "same_address" for w in ws):
+            why.append("감시 범위 부족(같은 주소 층 감시 없음)")
         # 주장이 판에 고정된 종류(태그·커밋·DOI)는 원문이 바뀌지 않는다. 바뀌는 것은 판의 지위(철회·이동)이고 채널이 잡는다
         limit = self.IMMUTABLE_RECHECK_H if kind in self.IMMUTABLE_KINDS else config.RECHECK_H
         if limit is not None and last < _shift(at, -limit):
