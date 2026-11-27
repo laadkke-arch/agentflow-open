@@ -922,8 +922,8 @@ class Ledger:
         점수는 작을수록 앞이다(설계와 같은 방향)."""
         st = self._drawer_stats(at)
         b = config.RANK_LENGTH_B if self.rank_rules in ("r2", "r3") else 0.0
-        if self.rank_rules == "r4":
-            self._rrf(hits, st)
+        if self.rank_rules in ("r4", "r5"):
+            self._rrf(hits, st, length_b=config.RANK_LENGTH_B if self.rank_rules == "r5" else 0.0)
             return
         for d in hits:
             best: dict[str, float] = {}
@@ -968,11 +968,12 @@ class Ledger:
         df = st["df"].get(key, 0)
         return unit, math.log(1 + (st["n"] - df + 0.5) / (df + 0.5))
 
-    def _rrf(self, hits: list, st: dict) -> None:
+    def _rrf(self, hits: list, st: dict, length_b: float = 0.0) -> None:
         """규칙 판 r4(08 I28): 검색기 = (필요 칸, 언어). 검색기마다 맞은 단위의 IDF 합(r1, 길이 정규화 없음)으로 순위를 내고
         RRF로 합친다: 점수 = 검색기마다 1/(RRF_K + 순위)의 합. 한 검색기에만 나온 관측도 남긴다(외부 조인). 결과 창은 자르지 않는다.
         근거(opensource catalog/claims/F30.tsv @ 286d9d55, 모두 L1): Elastic RRF retriever(C5-S03-b1-r12, rank_constant 기본 60),
-        pyterrier fusion 외부 조인(C5-S03-b3-r09). 점수는 작을수록 앞이다."""
+        pyterrier fusion 외부 조인(C5-S03-b3-r09). 점수는 작을수록 앞이다.
+        r5(08 I31): 검색기 안의 점수를 r2처럼 관측 전체 길이로 보정한다(IDF 합 / (1 - b + b·길이/평균)). 합치는 것은 그대로 순위만."""
         per_ranker: dict = {}
         for d in hits:
             for rk, ms in d.get("rk", {}).items():
@@ -983,7 +984,8 @@ class Ledger:
                     unit, idf = self._unit_idf(m, st)
                     best[unit] = max(best.get(unit, 0.0), idf)
                 if best:
-                    per_ranker.setdefault(rk, []).append((sum(best.values()), d["obs_id"]))
+                    norm = 1 - length_b + length_b * st["length"].get(d["obs_id"], st["avg_len"]) / st["avg_len"]
+                    per_ranker.setdefault(rk, []).append((sum(best.values()) / norm, d["obs_id"]))
         fused: dict[int, float] = {}
         for rk, xs in per_ranker.items():
             xs.sort(key=lambda t: (-t[0], t[1]))

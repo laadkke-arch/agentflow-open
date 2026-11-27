@@ -13,6 +13,27 @@ HERE = Path(__file__).resolve().parent
 FIX = HERE / "fixtures"
 
 
+# 012 보강 회차 p5 기록(opensource Q3, AR2·BR2·CR2)으로 쓴 012 꼬리표(08 I30). 켜면 D-b 둘에 더해 P5_SLOT_MAP 그대로
+# (잡음 쪽 catalog 대상과 같은 칸 대응) 꼬리표를 붙인다. I26의 D-c 둘째 문장 판(CATALOG_KO_SLOTS)과는 따로 센다.
+CATALOG_P5_TAGS = False
+
+
+def catalog_012_p5() -> dict[str, dict]:
+    return {json.loads(x)["id"]: json.loads(x) for x in
+            (FIX / "af-res-012-p5" / "records.jsonl").read_text(encoding="utf-8").splitlines()}
+
+
+def tag_p5(L, oid: int, r: dict) -> None:
+    """p5 기록 하나(what·principle·scene·쓸모)를 P5_SLOT_MAP대로 꼬리표로 붙인다. 잡음 쪽과 012 쪽이 같은 함수를 쓴다."""
+    lang = r.get("lang")
+    src_lang = (lang or ["mixed"])[0] if isinstance(lang, list) else (lang or "mixed")
+    for field, slot, height, lg in P5_SLOT_MAP:
+        texts = [c[field.split(".")[1]] for c in r["claims"]] if field.startswith("claim.") else [r[field]]
+        for t in texts:
+            if t and t.strip():
+                L.tag(oid, slot, height, src_lang if lg == "source" else lg, t, written_from="catalog_description")
+
+
 # 012 자료집의 한국어 칸별 꼬리표(08 I25, I20의 a). D-c의 둘째 문장(항목마다 한계·주의 문장)을 한국어 breaks_when 꼬리표로 쓴다.
 # 첫 문장은 D-b와 같아 summary에 이미 있다. False면 I20까지의 적재(D-b 영어·한국어 summary 둘)
 CATALOG_KO_SLOTS = False
@@ -25,8 +46,10 @@ def catalog_ko_breaks(e: dict) -> str:
     return full[len(head):].strip() if full.startswith(head) else ""
 
 
-def preload_catalog(L, at="2026-11-20T00:00:00Z", ko_slots=None) -> dict[str, int]:
+def preload_catalog(L, at="2026-11-20T00:00:00Z", ko_slots=None, p5_tags=None) -> dict[str, int]:
     ko_slots = CATALOG_KO_SLOTS if ko_slots is None else ko_slots
+    p5_tags = CATALOG_P5_TAGS if p5_tags is None else p5_tags
+    p5 = catalog_012_p5() if p5_tags else {}
     ids = {}
     for line in (FIX / "af-res-012" / "entries.jsonl").read_text(encoding="utf-8").splitlines():
         e = json.loads(line)
@@ -38,6 +61,8 @@ def preload_catalog(L, at="2026-11-20T00:00:00Z", ko_slots=None) -> dict[str, in
         L.tag(oid, "summary", "one_up", "ko", e["D-b"]["ko"], written_from="catalog_description")
         if ko_slots and catalog_ko_breaks(e):
             L.tag(oid, "breaks_when", "concrete", "ko", catalog_ko_breaks(e), written_from="catalog_description")
+        if e["id"] in p5:
+            tag_p5(L, oid, p5[e["id"]])
         ids[e["id"]] = oid
     return ids
 
@@ -141,11 +166,6 @@ def preload_catalog_p5(L, n: int = 20000, at="2026-11-20T00:00:00Z") -> dict[int
                            edition_kind="fetch", position=f"target {r['key']}", at=at, method="intro_only",
                            statement=r["what"] or r["principle"] or r["key"], via="collection",
                            evidence_ref=f"opensource@{commit} {r['file']}#{r['key']}")
-        src_lang = (r["lang"] or ["mixed"])[0] if isinstance(r["lang"], list) else (r["lang"] or "mixed")
-        for field, slot, height, lang in P5_SLOT_MAP:
-            texts = [c[field.split(".")[1]] for c in r["claims"]] if field.startswith("claim.") else [r[field]]
-            for t in texts:
-                if t and t.strip():
-                    L.tag(oid, slot, height, src_lang if lang == "source" else lang, t, written_from="catalog_description")
+        tag_p5(L, oid, r)
         out[oid] = r
     return out

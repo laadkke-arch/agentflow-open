@@ -1117,6 +1117,105 @@ def i29():
     write("measure_i29.json", out)
     return out
 
+
+# ------------------------------------------------------------------------------------------- I30·I31 공용
+def _judgments() -> dict:
+    import csv
+    g = {}
+    for f in (FIX / "i25" / "judgments.tsv", FIX / "i27" / "judgments.tsv"):
+        for r in csv.DictReader(open(f, encoding="utf-8"), delimiter="\t"):
+            g[(r["request"], r["url"])] = int(r["grade"])
+    return g
+
+
+def _judge_top10(top10: dict) -> dict:
+    """상위 10 잡음을 두 값으로 센다(08 I30 사용자 결정 3): judged = 판정 안 한 실제 행을 잡음으로 셈, judged_only = 판정 안 한
+    실제 행을 빼고 셈(판정 0인 실제 행 + 합성). 판정은 I25·I27을 합친 것. 요청별 값과 R1·A4 요약을 돌려준다."""
+    g = _judgments()
+    per = {}
+    for req, items in top10.items():
+        nz = [x for x in items if x["kind"] != "catalog"]
+        syn = sum(1 for x in nz if x["kind"] == "synthetic")
+        real = [x["url"] for x in nz if x["kind"] != "synthetic"]
+        rel = sum(1 for u in real if g.get((req, u), 0) >= 1)
+        unj = sum(1 for u in real if (req, u) not in g)
+        per[req] = {"raw": len(nz), "synthetic": syn, "unjudged": unj, "judged": len(nz) - rel, "judged_only": len(nz) - rel - unj}
+    a4 = {}
+    for lang in ("ko", "en"):
+        xs = [v for k, v in per.items() if k.endswith("." + lang) and not k.startswith("R1")]
+        a4[lang] = {m: round(sum(x[m] for x in xs) / len(xs), 2) for m in ("raw", "unjudged", "judged", "judged_only")}
+        a4[lang] |= {f"le2_{m}": sum(1 for x in xs if x[m] <= 2) for m in ("raw", "judged", "judged_only")}
+    return {"r1": {k: v for k, v in per.items() if k.startswith("R1")}, "a4_20": a4, "per_request": per}
+
+
+def _setting_eval(tag: str) -> dict:
+    """지금 설정(012 꼬리표, 순위 규칙)으로 A4 자료집만 회수율, 실제 행 2만 개(R1 흐름 포함), link-index 실제 잡음만을 잰다."""
+    a = a4_20()
+    c = i27(out_name=f"measure_{tag}_catalog.json")
+    li = i25_collect(out_name=f"{tag}_linkindex_pairs.json")
+    return {"recall12_catalog_only": {l: a["summary"]["catalog_only"][l]["mean_recall12"] for l in ("ko", "en")},
+            "grade2_catalog_only": {l: a["summary"]["catalog_only"][l]["grade2_in_top12"] for l in ("ko", "en")},
+            "zero_eligible_catalog_only": {l: a["summary"]["catalog_only"][l]["zero_eligible"] for l in ("ko", "en")},
+            "catalog20k": _judge_top10(c["top10"]), "linkindex_real": _judge_top10(li["top10"]["real_only"]),
+            "r1_flow": c["r1_flow"], "r1_ranks": {k: (v["asyncio_queue"], v["asyncio_semaphore"]) for k, v in c["r1"].items()}}
+
+
+def _adopt(base: dict, new: dict) -> tuple[bool, list, dict]:
+    """I30·I31 채택 규칙(돌리기 전에 정함): 실제 행 2만 개에서 A4 한국어 judged 평균이 줄고, R1 손 문장·자동 한국어·A4 영어판의
+    judged가 실제 행 2만 개와 link-index 실제 잡음 어디서도 늘지 않고, A4 자료집만 회수율(한국어·영어판)이 줄지 않고, 실제 행
+    2만 개에서 R1 흐름 완료 기준 2가 그대로면 채택한다. judged_only는 보고만 한다."""
+    def j(x, cfg):
+        y = x[cfg]
+        return {"r1_hand": y["r1"]["R1.hand"]["judged"], "r1_i2_ko": y["r1"]["R1.i2_ko"]["judged"],
+                "a4_ko": y["a4_20"]["ko"]["judged"], "a4_en": y["a4_20"]["en"]["judged"]}
+    cmp = {cfg: {"base": j(base, cfg), "new": j(new, cfg)} for cfg in ("catalog20k", "linkindex_real")}
+    worse = [f"{cfg}.{k}" for cfg in cmp for k in ("r1_hand", "r1_i2_ko", "a4_en") if cmp[cfg]["new"][k] > cmp[cfg]["base"][k]]
+    worse += [f"recall.{l}" for l in ("ko", "en") if new["recall12_catalog_only"][l] < base["recall12_catalog_only"][l]]
+    flow_ok = all(v["first_slot_queue_313_L4"] and v["semaphore_folded_H1U"] and v["create_all_folded_H2"]
+                  for v in new["r1_flow"].values())
+    ok = cmp["catalog20k"]["new"]["a4_ko"] < cmp["catalog20k"]["base"]["a4_ko"] and not worse and flow_ok
+    return ok, worse, cmp
+
+
+def i30():
+    """08 I30: 012 꼬리표를 opensource Q3 보강 회차 p5 기록(AR2·BR2·CR2, fixtures/af-res-012-p5)으로 켬 대 끔(D-b만), 순위 r2.
+    켬 = D-b 영어·한국어 summary + p5 기록을 잡음 쪽과 같은 칸 대응(P5_SLOT_MAP)으로. 잡음은 실제 행 2만 개(I27, catalog 55c51d4)와
+    link-index 실제 잡음만. 채택 규칙은 _adopt(돌리기 전에 정함). 켜면 drawer_load.CATALOG_P5_TAGS를 기본으로 바꾼다."""
+    import drawer_load
+    saved = drawer_load.CATALOG_P5_TAGS
+    res = {}
+    try:
+        for flag in sorted((False, True), key=lambda f: f == saved):
+            drawer_load.CATALOG_P5_TAGS = flag
+            res["p5" if flag else "db_only"] = _setting_eval("i30_p5" if flag else "i30_db_only")
+    finally:
+        drawer_load.CATALOG_P5_TAGS = saved
+    ok, worse, cmp = _adopt(res["db_only"], res["p5"])
+    out = {"rule": [i30.__doc__.split("\n")[1:4], _adopt.__doc__.split("\n")[0:4]], "judged": cmp, "worse": worse,
+           "adopt_p5": ok, "results": res}
+    write("measure_i30.json", out)
+    return out
+
+
+def i31():
+    """08 I31: 순위 r5(검색기 = (필요 칸, 언어), 검색기 안은 r2처럼 IDF 합을 관측 길이로 보정, RRF k=60) 대 r2.
+    012 꼬리표는 I30에서 정한 기본. 잡음과 채택 규칙은 I30과 같다(_adopt). 채택하면 RANK_RULES를 r5로 바꾼다."""
+    from afledger import config
+    saved = config.RANK_RULES
+    res = {}
+    try:
+        for rank in sorted(("r2", "r5"), key=lambda r: r == saved):
+            config.RANK_RULES = rank
+            res[rank] = _setting_eval(f"i31_{rank}")
+    finally:
+        config.RANK_RULES = saved
+    ok, worse, cmp = _adopt(res["r2"], res["r5"])
+    import drawer_load
+    out = {"rule": [i31.__doc__.split("\n")[1:3], _adopt.__doc__.split("\n")[0:4]], "catalog_p5_tags": drawer_load.CATALOG_P5_TAGS,
+           "judged": cmp, "worse": worse, "adopt_r5": ok, "results": res}
+    write("measure_i31.json", out)
+    return out
+
 # ------------------------------------------------------------------------------------------- R-6
 R6_VARIANTS = [("r0", 0.75, "top_k"), ("r1", 0.75, "top_k"), ("r2", 0.5, "top_k"), ("r2", 0.75, "top_k"),
                ("r2", 1.0, "top_k"), ("r2", 0.75, "eligible")]
