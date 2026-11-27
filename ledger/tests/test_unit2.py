@@ -387,7 +387,8 @@ class SourceFailureI38(unittest.TestCase):
     def step(self, result):
         """채널 항목 하나(판 키 없음)를 받고 작업자를 한 번 돌린다. result: 'ok' 또는 실패 outcome."""
         self.i += 1
-        day = f"2026-12-{(self.i - 1) * 8 + 1:02d}"                         # 후속 몫(168시간당 3회)에 걸리지 않게 8일 간격
+        from afledger.ledger import _shift
+        day = _shift("2026-12-01T00:00:00Z", (self.i - 1) * 8 * 24)[:10]       # 후속 몫(168시간당 3회)에 걸리지 않게 8일 간격
 
         def reader(obs, ek, at):
             if result == "ok":
@@ -556,3 +557,42 @@ class DownstreamClosureI43(unittest.TestCase):
         RecheckWorker(L, reader_for(revs), judge).run_once("2026-12-07T03:00:00Z")    # 후속 몫(168시간 3회) 창 밖
         self.assertEqual(L.current(o, "2026-12-07T04:00:00Z"), y)
         self.assertEqual(L.db.execute("SELECT new_obs FROM supersession WHERE old_obs=? AND new_obs<>?", (o, n)).fetchone()[0], x)
+
+
+class RecoveryI44(SourceFailureI38):
+    """08 I44: 세 번 연속 실패 알림 뒤 처음 성공하면 그 자리에 '원문 다시 읽힘'. I38 준비를 그대로 쓴다(RETRY_MAX=0)."""
+
+    def rec_notices(self, day):
+        self.L.propagate(self.p, day)          # step()의 전파가 이미 넣었을 수 있으니 알림 표에서 센다
+        return [{"run": r[0], "effect": r[1], "text": r[2]} for r in self.L.db.execute(
+            f"SELECT run_id, effect, text FROM {self.p}.notice WHERE effect='source_recovered' ORDER BY notice_id")]
+
+    def test_a_first_success_after_a_notice_recovers_once(self):
+        for _ in range(3):
+            self.step("unreachable")
+        rec, _ = self.step("ok")
+        self.assertEqual(rec["source_recovery"], 1)
+        ns = self.rec_notices("2027-01-31T00:00:00Z")
+        self.assertEqual([(n["run"], n["effect"]) for n in ns], [(self.run, "source_recovered")])
+        self.assertIn("원문 다시 읽힘", ns[0]["text"])
+        self.step("ok")
+        self.assertEqual(len(self.rec_notices("2027-02-28T00:00:00Z")), 1)        # 둘째 성공은 새 알림 없음
+
+    def test_b_no_failure_notice_no_recovery(self):
+        self.step("unreachable")
+        self.step("unreachable")
+        rec, _ = self.step("ok")
+        self.assertEqual(rec["source_recovery"], 0)
+        self.assertEqual(self.rec_notices("2026-12-31T00:00:00Z"), [])
+
+    def test_c_recovery_with_changed_content_also_notices_the_change(self):
+        for _ in range(3):
+            self.step("unreachable")
+        self.L.poll(CH, [{"id": "new", "title": "t"}], "2026-12-30T00:00:00Z")
+
+        def reader(obs, ek, at):
+            return {"url": "https://example.org/doc", "edition_key": "rev:2", "position": "§", "quote": "Export until July.",
+                    "statement": "7월까지 내보내기", "published_at": "2026-12-29T00:00:00Z"}
+        RecheckWorker(self.L, reader, lambda a, b: "changes_value").run_once("2026-12-30T01:00:00Z")
+        effects = sorted(n["effect"] for n in self.L.propagate(self.p, "2026-12-30T02:00:00Z"))
+        self.assertEqual(effects, ["changes_value", "source_recovered"])

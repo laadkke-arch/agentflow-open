@@ -199,6 +199,17 @@ BEGIN SELECT RAISE(ABORT, 'source_failure is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS source_failure_no_delete BEFORE DELETE ON source_failure
 BEGIN SELECT RAISE(ABORT, 'source_failure is append-only'); END;
 
+-- 원문 다시 읽힘(08 I44): source_failure 뒤 그 계보에서 처음 성공한 순간. 실패 행 하나에 한 번.
+CREATE TABLE IF NOT EXISTS source_recovery (
+  failure_id  INTEGER PRIMARY KEY REFERENCES source_failure(failure_id),
+  at          TEXT NOT NULL,
+  obs_id      INTEGER NOT NULL REFERENCES observation(obs_id)   -- 성공 뒤 현재 관측
+);
+CREATE TRIGGER IF NOT EXISTS source_recovery_no_update BEFORE UPDATE ON source_recovery
+BEGIN SELECT RAISE(ABORT, 'source_recovery is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS source_recovery_no_delete BEFORE DELETE ON source_recovery
+BEGIN SELECT RAISE(ABORT, 'source_recovery is append-only'); END;
+
 -- 변경 채널과 항목. 항목은 외부 ID 집합의 차분으로만 들어온다(표시일 창을 쓰지 않는다).
 CREATE TABLE IF NOT EXISTS channel (
   channel_id     INTEGER PRIMARY KEY,

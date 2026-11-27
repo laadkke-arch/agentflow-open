@@ -129,6 +129,8 @@ class RecheckWorker:
                    "chain": [(a_, b_, e_) for a_, b_, e_, _ in chain], "accepted": ok}
         if ok and failed:
             rec["source_failure"] = L.note_source_failure(base, failed[-1], at)
+        if ok and (readings or unmapped) and L.last_finish != "base_moved":
+            rec["source_recovery"] = L.note_source_recovery(L.current(old, at), at)   # 원문을 다시 읽었다(08 I44)
         if ok and (unmapped or reread):
             with L.db:
                 for r in unmapped:

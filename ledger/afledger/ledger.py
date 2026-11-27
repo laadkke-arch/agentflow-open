@@ -423,6 +423,19 @@ class Ledger:
         self.alerts.append({"kind": "source_failure", "obs": base, "outcome": kind, "streak": n, "at": at})
         return True
 
+    def note_source_recovery(self, base: int, at: str) -> int:
+        """계보(base와 앞선 관측들)에 회복 기록이 없는 source_failure가 있으면 회복을 남긴다(08 I44). 남긴 수를 돌려준다."""
+        lineage = sorted({base} | self.earlier_obs(base, at))
+        marks = ",".join("?" * len(lineage))
+        rows = self.db.execute(
+            f"SELECT f.failure_id FROM source_failure f WHERE f.base_obs IN ({marks}) AND f.at<? AND NOT EXISTS"
+            " (SELECT 1 FROM source_recovery r WHERE r.failure_id=f.failure_id)", (*lineage, utc(at))).fetchall()
+        with self.db:
+            for (fid,) in rows:
+                self.db.execute("INSERT OR IGNORE INTO source_recovery(failure_id, at, obs_id) VALUES (?,?,?)",
+                                (fid, utc(at), base))
+        return len(rows)
+
     def earlier_obs(self, obs_id: int, at: str) -> set[int]:
         """취소되지 않은 대체를 거꾸로 따라 닿는 앞선 관측들."""
         rows = self.db.execute(
@@ -1461,6 +1474,21 @@ class Ledger:
                          0 if self.is_active(p, t["run_id"], f["at"]) else 1))
                     if cur.rowcount:
                         out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": "source_unreachable", "text": text})
+            # 원문 다시 읽힘(08 I44): 그 실패로 '원문 접근 실패' 알림을 받은 자리에만 붙인다. 내용 변화는 대체 알림이 따로 한다
+            for r in self.db.execute(
+                    "SELECT r.at, r.obs_id, f.base_obs, f.fail_obs FROM source_recovery r JOIN source_failure f USING(failure_id)"
+                    " WHERE r.at<=? ORDER BY r.at", (at,)).fetchall():
+                text = f"원문 다시 읽힘: {r['at']}에 원문을 다시 읽었다"
+                for t in self.db.execute(
+                        f"SELECT DISTINCT run_id, slot_no FROM {p}.notice WHERE effect='source_unreachable' AND old_obs=?"
+                        " AND new_obs=?", (r["base_obs"], r["fail_obs"])).fetchall():
+                    cur = self.db.execute(
+                        f"INSERT OR IGNORE INTO {p}.notice(run_id, slot_no, old_obs, new_obs, effect, created_at, text, held)"
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                        (t["run_id"], t["slot_no"], r["fail_obs"], r["obs_id"], "source_recovered", r["at"], text,
+                         0 if self.is_active(p, t["run_id"], r["at"]) else 1))
+                    if cur.rowcount:
+                        out.append({"run": t["run_id"], "slot": t["slot_no"], "effect": "source_recovered", "text": text})
             # 별칭 취소: 그 별칭을 따라 연 관측을 인용한 자리에 알린다(07 D5). 관측 자체는 그 주소에 대해 여전히 참이다
             for a in self.db.execute(
                     "SELECT c.alias_id, c.cancelled_at, c.reason FROM locator_alias_cancel c WHERE c.cancelled_at<=?"
